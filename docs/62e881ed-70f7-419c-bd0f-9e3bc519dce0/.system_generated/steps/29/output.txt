@@ -1,0 +1,184 @@
+### Initialize Supabase Client
+
+Source: https://supabase.com/docs/reference/dart/auth-signinwithidtoken
+
+Initialize the Supabase client with your project's URL and anon key. Optional parameters allow for custom headers, HTTP clients, and configuration for authentication, PostgREST, Realtime, and Storage.
+
+```APIDOC
+## Initialize Supabase Client
+
+### Description
+Initializes the Supabase client with your project's URL and anon key. Optional parameters allow for custom headers, HTTP clients, and configuration for authentication, PostgREST, Realtime, and Storage.
+
+### Method
+`Supabase.initialize()`
+
+### Parameters
+
+#### Path Parameters
+None
+
+#### Query Parameters
+None
+
+#### Request Body
+None
+
+### Parameters (Arguments for `initialize` method)
+
+- **url** (string) - Required - The unique Supabase URL for your project.
+- **anonKey** (string) - Required - The unique Supabase Key for your project.
+- **headers** (Map<String, String>) - Optional - Custom headers to be passed to the Supabase client.
+- **httpClient** (Client) - Optional - Custom http client to be used by the Supabase client.
+- **authOptions** (FlutterAuthClientOptions) - Optional - Options to change the Auth behaviors.
+- **postgrestOptions** (PostgrestClientOptions) - Optional - Options to change the Postgrest behaviors.
+- **realtimeClientOptions** (RealtimeClientOptions) - Optional - Options to change the Realtime behaviors.
+- **storageOptions** (StorageClientOptions) - Optional - Options to change the Storage behaviors.
+
+### Request Example
+```dart
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://xyzcompany.supabase.co',
+    anonKey: 'publishable-or-anon-key',
+  );
+  runApp(MyApp());
+}
+
+// Get a reference your Supabase client
+final supabase = Supabase.instance.client;
+```
+
+### Response
+#### Success Response (void)
+Initialization is asynchronous and returns void upon completion.
+
+#### Response Example
+N/A (void return type)
+```
+
+--------------------------------
+
+### Initialize Supabase Client in Dart/Flutter
+
+Source: https://supabase.com/docs/reference/dart/auth-updateuser
+
+Initialize the Supabase client in your Dart or Flutter application using the `Supabase.initialize()` method. This requires your Supabase project URL and anon key. It sets up the client for subsequent interactions with Supabase services. The initialization can optionally accept custom configurations for headers, HTTP client, authentication, PostgREST, Realtime, and Storage.
+
+```dart
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://xyzcompany.supabase.co',
+    anonKey: 'publishable-or-anon-key',
+  );
+  runApp(MyApp());
+}
+
+// Get a reference your Supabase client
+final supabase = Supabase.instance.client;
+```
+
+```dart
+await Supabase.initialize(
+  url: supabaseUrl,
+  anonKey: supabaseKey,
+  authFlowType: AuthFlowType.pkce,
+  storageRetryAttempts: 10,
+  realtimeClientOptions: const RealtimeClientOptions(
+    logLevel: RealtimeLogLevel.info,
+  ),
+);
+```
+
+--------------------------------
+
+### Subscribe to Realtime Channel
+
+Source: https://supabase.com/docs/reference/dart/select
+
+Subscribe to realtime changes in your database by creating and subscribing to a specific channel.
+
+```APIDOC
+## Subscribe to Channel
+
+### Description
+Subscribe to realtime changes in your database. If you want to receive the "previous" data for updates and deletes, you will need to set `REPLICA IDENTITY` to `FULL`.
+
+### Method
+POST (or similar, depending on Supabase client implementation)
+
+### Endpoint
+Not explicitly defined, but operates on a Supabase Realtime channel.
+
+### Parameters
+#### Path Parameters
+None
+
+#### Query Parameters
+None
+
+#### Request Body
+None (parameters are passed as method arguments)
+
+### Request Example
+```dart
+supabase
+  .channel('public:countries')
+  .onPostgresChanges(
+    event: PostgresChangeEvent.all,
+    schema: 'public',
+    table: 'countries',
+    callback: (payload) {
+      print('Change received: ${payload.toString()}');
+    }
+  )
+  .subscribe();
+```
+
+### Response
+#### Success Response (200)
+`Completer<void>` or similar, indicating subscription success.
+
+#### Response Example
+(Subscription-based, no direct example)
+
+```
+
+--------------------------------
+
+### Upload File to Storage - Dart
+
+Source: https://supabase.com/docs/reference/dart/auth-getuser
+
+Uploads a file to an existing Storage bucket. Requires `objects: insert` permissions. Supports file options like `cacheControl` and `upsert`, and retry mechanisms.
+
+```dart
+final avatarFile = File('path/to/file');final String fullPath = await supabase.storage.from('avatars').upload(
+      'public/avatar1.png',
+      avatarFile,
+      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+    );
+```
+
+Source: https://supabase.com/docs/reference/dart/storage-from-download
+
+Flutter Client Library > Initializing > Parameters: * urlRequiredstring
+The unique Supabase URL which is supplied when you create a new project in your project dashboard.
+  * anonKeyRequiredstring
+The unique Supabase Key which is supplied when you create a new project in your project dashboard.
+  * headersOptionalMap<String, String>
+Custom header to be passed to the Supabase client.
+  * httpClientOptionalClient
+Custom http client to be used by the Supabase client.
+  * authOptionsOptionalFlutterAuthClientOptions
+Options to change the Auth behaviors.
+Details
+  * postgrestOptionsOptionalPostgrestClientOptions
+Options to change the Postgrest behaviors.
+Details
+  * realtimeClientOptionsOptionalRealtimeClientOptions
+Options to change the Realtime behaviors.
+Details
+  * storageOptionsOptionalStorageClientOptions
+Options to change the Storage behaviors.
+Details

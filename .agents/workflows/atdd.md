@@ -1,0 +1,26 @@
+---
+name: ATDD Workflow
+description: Generates Gherkin Specs and Test Fixtures with Red-Green-Refactor Execution.
+---
+
+# Workflow: /atdd
+
+> [!NOTE]
+> This is the **Test-Driven Architecture** workflow — used to strictly define behavior for complex/high-risk features before coding begins.
+> It sits between `/research` and `/implement`.
+
+## Phase 1: Spec Discovery & Persona
+- **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
+- **Skill Discovery**: You must proactively identify the correct testing skills without user prompting. Derive testing keywords based on the feature context, use `grep_search` on `.agents/skills/`, and load ONLY the most relevant testing/planning `SKILL.md` file (e.g., testing, tdd).
+- **Action**: Identify the focus area and consult relevant project workspace rules in `.agents/rules/` to confirm technical constraints.
+
+## Phase 2: SDET Execution (Test Implementation)
+- **Requirement**: Translate business requirements into strict testing scenarios AND failing test code.
+- **Rule (Anti-Hallucination)**: Every single Gherkin scenario MUST include a comment citing the exact line or rule from `.agents/rules/` or the User's prompt that justifies its existence. If you cannot cite a business source for the test case, you are hallucinating it and must delete it.
+- **Rule (No-Code Mandate)**: Sentinel CANNOT write or modify production code. Sentinel MUST write the test code (Unit Tests, Integration Tests) that proves the production code is either missing or failing.
+- **Action**: Generate formal Gherkin scenarios (Given/When/Then) with citations, then write the corresponding test fixtures in the project's testing framework. Ensure the tests fail (RED) because the feature is not implemented yet.
+
+## Phase 3: Deliverable (The Handoff)
+- **Requirement**: Output the failed test evidence and specifications.
+- **Action**: Create a `specs_[feature].md` artifact and commit the failing test code to the `Test` project.
+- **Handoff (CRITICAL)**: Generate an `implementation_plan.md` that instructs the `/implement` Builder agent to write ONLY the application production code required to make your tests turn GREEN. **If an `implementation_plan.md` already exists from a prior `/analysis` workflow, you MUST update it to prepend your strict ATDD testing constraints.**
