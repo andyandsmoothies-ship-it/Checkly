@@ -1,0 +1,359 @@
+{
+    "_meta": {
+        "description": "Canonical test vectors for scoring engine parity (Dart + C#)",
+        "tolerance": 0.01,
+        "author": "Sentinel ATDD / Slice 4",
+        "date": "2026-03-11"
+    },
+    "vectors": [
+        {
+            "id": "V01_weighted_no_faults",
+            "description": "Weighted audit — no faults → 100%",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 60,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 3,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                },
+                {
+                    "id": "s2",
+                    "weight": 40,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c3",
+                            "groupId": "s2",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [],
+            "expectedScore": 100.00
+        },
+        {
+            "id": "V02_weighted_partial_faults",
+            "description": "Weighted audit — partial faults → deduction",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 3,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 37.50
+        },
+        {
+            "id": "V03_ccp_triggered",
+            "description": "CCP triggered → section A = 0%, section B = 100%, total = 50%",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 50,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": true,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                },
+                {
+                    "id": "s2",
+                    "weight": 50,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c3",
+                            "groupId": "s2",
+                            "pointsWeight": 8,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 50.00
+        },
+        {
+            "id": "V04_risk_triggered",
+            "description": "RISK triggered → total = 0%",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": true
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 0.00
+        },
+        {
+            "id": "V05_checklist_fallback",
+            "description": "Checklist mode (no weights) → 100 - deductions",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 0,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 3,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 97.00
+        },
+        {
+            "id": "V06_max_deduction_cap",
+            "description": "MaxDeductionPoints caps deduction at 5 (raw = 7)",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": 5,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 3,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 4,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 28.57
+        },
+        {
+            "id": "V07_non_conform_triggers_risk",
+            "description": "Pass/Fail non_conform on RISK criterion → 0%",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": true
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": null,
+                    "value": "non_conform"
+                }
+            ],
+            "expectedScore": 0.00
+        },
+        {
+            "id": "V08_conform_no_fault",
+            "description": "Pass/Fail conform on RISK criterion → 100% (no fault)",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": true
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": null,
+                    "value": "conform"
+                }
+            ],
+            "expectedScore": 100.00
+        },
+        {
+            "id": "V09_empty_section_skipped",
+            "description": "Empty section (0 criteria) is skipped, no division by zero",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 50,
+                    "maxDeductionPoints": null,
+                    "criteria": []
+                },
+                {
+                    "id": "s2",
+                    "weight": 50,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s2",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [],
+            "expectedScore": 100.00
+        },
+        {
+            "id": "V10_multi_fault_multiplier",
+            "description": "2 faults × 3 points = 6 deduction → score = 0 (weighted 100%)",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 3,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 2,
+                    "value": null
+                }
+            ],
+            "expectedScore": 0.00
+        }
+    ]
+}

@@ -1,0 +1,206 @@
+import 'package:drift/drift.dart';
+
+// ============================================================
+// Cache Tables (mirror server entities for offline reads)
+// ============================================================
+
+/// Cached audit templates — delta synced via `?since=`.
+class CachedTemplates extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get type => text()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  TextColumn get scoringLogicConfig => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cached template sections (groups) — synced with parent template.
+class CachedGroups extends Table {
+  TextColumn get id => text()();
+  TextColumn get templateId => text().references(CachedTemplates, #id)();
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
+  RealColumn get weight => real().nullable()();
+  RealColumn get maxDeductionPoints => real().nullable()();
+  IntColumn get orderIndex => integer().withDefault(const Constant(0))();
+  TextColumn get parentId => text().nullable()();
+  TextColumn get metadata => text().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cached audit criteria — synced with parent template.
+class CachedCriteria extends Table {
+  TextColumn get id => text()();
+  TextColumn get groupId => text().references(CachedGroups, #id)();
+  TextColumn get label => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get inputType => text()();
+  RealColumn get pointsWeight => real().nullable()();
+  BoolColumn get isCcp => boolean().withDefault(const Constant(false))();
+  BoolColumn get isRisk => boolean().withDefault(const Constant(false))();
+  IntColumn get orderIndex => integer().withDefault(const Constant(0))();
+  TextColumn get metadata => text().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cached stores — full replace on sync.
+class CachedStores extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get address => text().nullable()();
+  TextColumn get areaCode => text().nullable()();
+  RealColumn get gpsLat => real().nullable()();
+  RealColumn get gpsLng => real().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cached submission history — pull from API, cache locally.
+class CachedSubmissions extends Table {
+  TextColumn get id => text()();
+  TextColumn get templateId => text().nullable()();
+  TextColumn get templateTitle => text().nullable()();
+  TextColumn get storeId => text().nullable()();
+  TextColumn get storeName => text().nullable()();
+  TextColumn get auditorId => text().nullable()();
+  TextColumn get auditorName => text().nullable()();
+  TextColumn get status => text()();
+  RealColumn get totalScore => real().nullable()();
+  TextColumn get sectionScores => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get completedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cached action plans — delta synced.
+class CachedActionPlans extends Table {
+  TextColumn get id => text()();
+  TextColumn get submissionId => text().nullable()();
+  TextColumn get answerId => text().nullable()();
+  TextColumn get criteriaLabel => text()();
+  TextColumn get groupTitle => text()();
+  TextColumn get planDescription => text().nullable()();
+  TextColumn get rootCause => text().nullable()();
+  TextColumn get correctionPlan => text().nullable()();
+  TextColumn get evidencePhotoUrl => text().nullable()();
+  TextColumn get evidenceNote => text().nullable()();
+  TextColumn get status => text().withDefault(const Constant('open'))();
+  DateTimeColumn get deadline => dateTime().nullable()();
+  DateTimeColumn get closedAt => dateTime().nullable()();
+  TextColumn get storeName => text().nullable()();
+  TextColumn get storeManagerName => text().nullable()();
+  TextColumn get verifierName => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cached notifications — delta synced via `?since=`.
+class CachedNotifications extends Table {
+  TextColumn get id => text()();
+  TextColumn get userId => text()();
+  TextColumn get type => text()();
+  TextColumn get title => text()();
+  TextColumn get message => text().nullable()();
+  DateTimeColumn get readAt => dateTime().nullable()();
+  TextColumn get actionUrl => text().nullable()();
+  TextColumn get metadata => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+// ============================================================
+// Outbox Tables (local-first writes pending sync)
+// ============================================================
+
+/// Pending audit submissions queued for sync.
+/// syncStatus: 'pending', 'submission_synced', 'photos_pending', 'fully_synced', 'error'.
+class PendingSubmissions extends Table {
+  TextColumn get id => text()();
+  TextColumn get templateId => text()();
+  TextColumn get storeId => text()();
+  RealColumn get clientScore => real()();
+  TextColumn get sectionScores => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  RealColumn get gpsLat => real().nullable()();
+  RealColumn get gpsLng => real().nullable()();
+  TextColumn get idempotencyKey => text()();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  TextColumn get syncError => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Answers for pending submissions.
+class PendingAnswers extends Table {
+  TextColumn get id => text()();
+  TextColumn get pendingSubmissionId =>
+      text().references(PendingSubmissions, #id)();
+  TextColumn get criteriaId => text()();
+  TextColumn get value => text().nullable()();
+  RealColumn get numericValue => real().nullable()();
+  TextColumn get note => text().nullable()();
+  TextColumn get photoUrl => text().nullable()();
+  BoolColumn get isRepeatedError =>
+      boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Photo files awaiting upload after submission sync.
+/// syncStatus: 'pending', 'uploaded', 'error'.
+class PendingPhotos extends Table {
+  TextColumn get id => text()();
+  TextColumn get pendingSubmissionId =>
+      text().references(PendingSubmissions, #id)();
+  TextColumn get localPath => text()();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  TextColumn get syncError => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+// ============================================================
+// Metadata Table
+// ============================================================
+
+/// Tracks last sync timestamp per entity type for delta sync.
+class SyncMeta extends Table {
+  TextColumn get entityType => text()();
+  DateTimeColumn get lastSyncAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {entityType};
+}

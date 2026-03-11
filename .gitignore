@@ -47,9 +47,18 @@ app.*.map.json
 # ASP.NET Core / .NET
 server/bin/
 server/obj/
+server/appsettings.Development.json
 *.user
 *.suo
 .vs/
 
 # Agent temp files
 .agents/tmp/
+
+# Android release signing (never commit secrets)
+android/keystore.properties
+*.jks
+*.keystore
+
+# Server production config (secrets via env vars)
+server/appsettings.Production.json

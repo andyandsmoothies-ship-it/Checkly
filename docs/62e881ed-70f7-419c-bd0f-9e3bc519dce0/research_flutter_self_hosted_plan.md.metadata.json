@@ -1,0 +1,6 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary":  "Revised development plan for the Checkly Flutter mobile app with self-hosted backend. Updated to reflect actual installed versions (PostgreSQL 18.3, JDK 25, Flutter 3.41.4), confirmed project names (Checkly, not UDAT), and actual project structure (Checkly/ root for Flutter, Checkly/server/ for API). Decision points updated to reflect confirmed choices: PostgreSQL ✅, iOS via Codemagic CI, develop both platforms but deploy Android first.",
+  "updatedAt":  "2026-03-10T16:10:47.111798500Z",
+  "version":  "1"
+}
