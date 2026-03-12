@@ -1,9 +1,9 @@
 # Product Requirements Document — Checkly Mobile
 
-> **Version**: 1.0
-> **Date**: 2026-03-11
+> **Version**: 2.0
+> **Date**: 2026-03-12
 > **Author**: Scout (Lead Architect)
-> **Status**: Draft — Awaiting Review
+> **Status**: All Batches Implemented — Entering UAT
 > **Repository**: [github.com/andyandsmoothies-ship-it/Checkly](https://github.com/andyandsmoothies-ship-it/Checkly)
 
 ---
@@ -83,25 +83,32 @@ flowchart LR
 | **RISK trigger** | RISK item failure → entire audit score = 0% |
 | **Weighted density** | Optional: sections weighted by percentage (must sum to 100%) |
 | **Checklist fallback** | No weights defined → `100 - Σ(raw deductions)` |
-| **Server verification** | Server recalculates score on submission; rejects if mismatch > 0.01 |
+| **C3 Progressive repeat** | Optional per template: `deduction = repeatedFaults² × minusPerFault` (quadratic escalation) |
+| **C4 minus_impact** | Per-criteria override: uses `minus_impact` field instead of `points_weight` for deduction |
+| **Server verification** | Server recalculates score on submission; configurable mode (enforce/observe) via `appsettings.json` |
+| **Dart/C# lockstep** | Scoring engine implemented identically in both `scoring_engine.dart` and `ScoringVerifier.cs` |
 
 ### 3.4 Action Plans (Corrective Actions)
 
 | Requirement | Detail |
 |-------------|--------|
-| **Auto-generation** | Created automatically for each failed criteria on submission |
+| **Auto-generation (S1)** | Created automatically for each failed criteria on submission. Snapshots criteria label, group, store name, SM |
 | **Lifecycle** | `open` → `in_progress` → `pending_verify` → `closed` / `overdue` |
 | **Store Manager response** | SM provides root cause, correction plan, and evidence photo |
 | **Verification** | Admin/AM verifies completion, marks as closed |
-| **Deadline tracking** | Configurable per template, with overdue status |
+| **Deadline tracking** | Configurable per template (default 7 days), with overdue status |
+| **Deadline reminders (S6)** | Background service sends notification when AP is within 48h of deadline |
+| **Schedule reminders (S7)** | Background service notifies auditors of tomorrow's scheduled audits |
 
 ### 3.5 Notifications
 
 | Requirement | Detail |
 |-------------|--------|
 | **Real-time** | SignalR push when audit submitted, action plan status changes |
-| **In-app inbox** | List of notifications with read/unread status |
-| **Types** | New audit for store, action plan overdue, audit approved/rejected |
+| **In-app inbox** | List of notifications with read/unread status, bell icon badge |
+| **S2 AP status change** | Notification to relevant users when AP status changes (open → in_progress, etc.) |
+| **S3 Audit submitted** | Notification to store manager when audit is submitted for their store |
+| **Types** | New audit for store, AP status change, AP deadline approaching, audit approved/rejected |
 
 ### 3.6 Reference Data Management (Admin)
 
@@ -184,19 +191,23 @@ Submissions and action plans store **denormalized snapshots** of names/titles at
 **Vertical Slice Architecture** — single project, organized by feature:
 
 ```
-server/Checkly.Api/
+server/
   Features/
     Auth/           → Login.cs, Register.cs
-    Templates/      → ListTemplates.cs, CreateTemplate.cs
-    Submissions/    → CreateSubmission.cs, GetSubmission.cs
-    ActionPlans/    → ListActionPlans.cs, UpdateStatus.cs
-    Photos/         → UploadPhoto.cs
-    Notifications/  → NotificationHub.cs
-    Sync/           → GetChangesSince.cs
+    Templates/      → ListTemplates.cs, CreateTemplate.cs, DeleteTemplate.cs
+    Submissions/    → CreateSubmission.cs, GetSubmission.cs, ReviewSubmission.cs
+    ActionPlans/    → ListActionPlans.cs, CreateActionPlan.cs, UpdateActionPlan.cs
+    Photos/         → UploadPhoto.cs, GetPhoto.cs
+    Notifications/  → ListNotifications.cs, MarkRead.cs
+    Admin/          → ListUsers.cs, UpdateUser.cs, BanUser.cs, TransferStoreManager.cs, ListSystemLogs.cs
+    Analytics/      → GetAnalytics.cs
+    Stores/         → ListStores.cs, GetStoreDashboard.cs
+    Sync/           → SyncEndpoints.cs (delta sync per entity)
   Common/
     Persistence/    → AppDbContext.cs, entity configs
     Auth/           → JwtService.cs, authorization policies
     Scoring/        → ScoringVerifier.cs
+    Services/       → ReminderService.cs (IHostedService — deadline + schedule reminders)
   Program.cs
 ```
 
@@ -250,10 +261,12 @@ flowchart TD
 | **Performance** | Template list and audit form must load in < 500ms from local cache |
 | **Photo handling** | Support up to 500MB of pending photo uploads; auto-cleanup after sync |
 | **Security** | JWT tokens with role claims; no sensitive data in local storage unencrypted |
-| **Data integrity** | Server-side score verification on every submission |
+| **Data integrity** | Server-side score verification on every submission (configurable enforce/observe) |
 | **Concurrency** | Optimistic concurrency (RowVersion) for template edits |
 | **Localization** | UTF-8 throughout (Vietnamese character support) |
 | **Deployment** | Single Windows Server hosts API + PostgreSQL + file storage |
+| **Lifecycle (C2)** | 4-tier app lifecycle recovery: <5min no-op, 5min-12h auth check, 12h-7d full resync, >7d force re-login |
+| **Rejected exclusion (C8)** | Rejected audits excluded from all dashboard metrics and analytics |
 
 ---
 
@@ -269,16 +282,25 @@ flowchart TD
 
 ## 9. Phased Delivery Roadmap
 
+### Completed Phases
+
+| Phase | Name | Status |
+|-------|------|:------:|
+| **0** | Backend Foundation — EF Core schema, auth, CRUD APIs, scoring verification, photo upload | ✅ Done |
+| **Batch 1** | Fix Broken Core — S1 AP auto-creation, S2 notifications, S3 submit notifications, CriteriaCard, C1 overdue blocking | ✅ Done |
+| **Batch 2** | Flutter Shell — Bottom nav, profile page, routes, auth screens | ✅ Done |
+| **Batch 3** | Action Plans + Audits — AP list/detail, audits list redesign, dashboard hero | ✅ Done |
+| **Batch 4** | Role Features — S4 review disposition, S9/S10 constraints, C7 role filtering, admin dashboard | ✅ Done |
+| **Batch 5** | Admin CRUD — User/store management, SM transfer (S8), audit trail (S12), activity history | ✅ Done |
+| **Batch 6** | Analytics + Polish — Scoring edge cases (C3+C4), reminders (S6+S7), analytics, template builder, lifecycle (C2), polish | ✅ Done |
+
+### Future Phases
+
 | Phase | Name | Scope | Estimated Effort |
 |-------|------|-------|-----------------|
-| **0** | Backend Foundation | EF Core schema, auth (JWT+roles), CRUD APIs, scoring verification, photo upload, SignalR | 4-6 weeks |
-| **1** | Flutter Shell | App scaffold, navigation, design system, auth screens, DI setup | 1-2 weeks |
-| **2** | Core Mobile Features | Audit form, template browser, store selector, camera, GPS, local DB | 3-4 weeks |
-| **3** | Offline Engine | Drift schema, sync engine, outbox pattern, delta sync, conflict resolution | 2-3 weeks |
-| **4** | Action Plans & Notifications | Action plan workflow, evidence upload, SignalR notifications, in-app inbox | 2-3 weeks |
-| **5** | Polish & Deploy | Testing, bug fixes, APK build, iOS build (Codemagic), server deployment | 1-2 weeks |
-
-**Total estimated effort**: 13-20 weeks (solo developer)
+| **UAT** | User Acceptance Testing | 90+ test cases across 13 modules (see UAT doc) | 1-2 weeks |
+| **Deploy** | Production Deployment | APK build, server deployment, data migration | 1 week |
+| **Web Portal** | Admin + AM Web Dashboard | Responsive Flutter Web layout for admin and area manager desktop use | 2-3 weeks |
 
 ---
 
@@ -299,12 +321,13 @@ flowchart TD
 
 | Feature | Rationale |
 |---------|-----------|
-| Web dashboard for admin | Can be built later as a separate Blazor or React app |
+| Web dashboard for admin/AM | Flutter Web portal for desktop management (see research_web_admin_enterprise.md) |
 | AI-powered query assistant | Existed in PWA; re-evaluate after MVP |
-| Analytics/reporting engine | Build after core data flows are stable |
+| PDF/Excel report export | Build after web portal is available |
 | Multi-language (i18n) | Vietnamese-only for MVP |
 | Enterprise SSO (SAML/OIDC) | Not needed for internal use |
 | Push notifications (FCM/APNs) | SignalR covers foreground; evaluate background push later |
+| Shorebird OTA updates | Code-push for Flutter; evaluate for production deployment |
 
 ---
 
@@ -315,6 +338,10 @@ flowchart TD
 | Development Plan | [research_flutter_self_hosted_plan.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_flutter_self_hosted_plan.md) |
 | Architecture Decision (VSA vs CA) | [analysis_architecture_decision.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/analysis_architecture_decision.md) |
 | Phase 0 Analysis + Micro-Specs | [analysis_phase0_backend.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/analysis_phase0_backend.md) |
+| PWA→Flutter Parity Audit | [research_pwa_flutter_parity.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_pwa_flutter_parity.md) |
+| Batch 6 Analysis | [analysis_batch6_polish.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/analysis_batch6_polish.md) |
+| UAT Test Cases | [uat_test_cases.md](file:///C:/Users/HP/.gemini/antigravity/brain/2653279f-659a-487a-9f3c-bfe41a3b674d/uat_test_cases.md.resolved) |
+| Web Admin Research | [research_web_admin_enterprise.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_web_admin_enterprise.md) |
 | Scoring Engine KI | [scoring_engine.md](file:///C:/Users/HP/.gemini/antigravity/knowledge/unified_scoring_and_audit_logic/artifacts/scoring_engine.md) |
 | Access Control Strategy KI | [access_control_strategy.md](file:///C:/Users/HP/.gemini/antigravity/knowledge/infrastructure_and_security_standards/artifacts/access_control_strategy.md) |
 | Supabase Live Schema | MCP project ID: `prginlmdoeikzytnioka` |
