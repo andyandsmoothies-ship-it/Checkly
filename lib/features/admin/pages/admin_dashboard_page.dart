@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
+import '../../stores/services/store_api_service.dart';
+import '../../templates/services/template_api_service.dart';
+import '../services/admin_api_service.dart';
 
 final _di = GetIt.instance;
 
@@ -18,12 +21,33 @@ class AdminDashboardPage extends StatefulWidget {
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   late final DashboardManager _manager;
+  int _userCount = 0;
+  int _storeCount = 0;
+  int _templateCount = 0;
 
   @override
   void initState() {
     super.initState();
     _manager = _di<DashboardManager>();
     _manager.loadStats();
+    _loadCounts();
+  }
+
+  Future<void> _loadCounts() async {
+    try {
+      final users = await _di<AdminApiService>().getUsers();
+      final stores = await _di<StoreApiService>().getStores();
+      final templates = await _di<TemplateApiService>().getTemplates();
+      if (mounted) {
+        setState(() {
+          _userCount = users.length;
+          _storeCount = stores.length;
+          _templateCount = templates.length;
+        });
+      }
+    } catch (_) {
+      // API unavailable — keep defaults
+    }
   }
 
   @override
@@ -60,7 +84,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     child: _AdminStat(
                       icon: Icons.people,
                       label: 'USERS',
-                      value: '—',
+                      value: '$_userCount',
                       color: theme.colorScheme.primary,
                       filled: true,
                     ),
@@ -70,7 +94,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     child: _AdminStat(
                       icon: Icons.store,
                       label: 'STORES',
-                      value: '—',
+                      value: '$_storeCount',
                       color: AppTheme.success,
                     ),
                   ),
@@ -83,7 +107,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     child: _AdminStat(
                       icon: Icons.description,
                       label: 'TEMPLATES',
-                      value: '—',
+                      value: '$_templateCount',
                       color: AppTheme.info,
                     ),
                   ),
@@ -105,13 +129,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 icon: Icons.people,
                 title: 'User Management',
                 subtitle: 'Manage auditors & managers',
-                onTap: () {},
+                onTap: () => context.push('/admin/approvals'),
               ),
               _MenuItem(
                 icon: Icons.store,
                 title: 'Store Management',
                 subtitle: 'Manage store locations',
-                onTap: () {},
+                onTap: () => context.push('/admin/dashboard'),
               ),
               _MenuItem(
                 icon: Icons.assignment,
@@ -122,14 +146,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               _MenuItem(
                 icon: Icons.warning_amber,
                 title: 'System Logs',
-                subtitle: 'Monitor application errors',
-                onTap: () {},
+                subtitle: 'Monitor application events',
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('System logs — coming soon')),
+                  );
+                },
               ),
               _MenuItem(
                 icon: Icons.bar_chart,
                 title: 'Analytics',
                 subtitle: 'View performance data',
-                onTap: () {},
+                onTap: () => context.push('/analytics'),
               ),
             ],
           );

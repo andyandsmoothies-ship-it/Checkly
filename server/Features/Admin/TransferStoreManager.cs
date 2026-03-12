@@ -27,7 +27,13 @@ public static class TransferStoreManager
         if (callerRole != "admin")
             return TypedResults.Forbid();
 
-        // S9 guard: check if new manager is already assigned to another store
+        // Validate store exists and is active
+        var store = await db.Stores.AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == storeId, ct);
+        if (store is null)
+            return TypedResults.NotFound(new { error = "Store not found" });
+        if (store.IsActive == false)
+            return TypedResults.BadRequest(new { error = "Cannot transfer SM to a deactivated store" });
         var newManagerProfile = await db.Profiles.FirstOrDefaultAsync(p => p.Id == request.NewManagerId, ct);
         if (newManagerProfile is null)
             return TypedResults.NotFound(new { error = "New manager profile not found" });

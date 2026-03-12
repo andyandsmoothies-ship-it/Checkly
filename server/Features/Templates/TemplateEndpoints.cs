@@ -21,12 +21,34 @@ public static class TemplateEndpoints
             .WithName("CreateTemplate")
             .RequireAuthorization("AdminOnly");
 
+        group.MapPut("/{id}", UpdateTemplate.HandleAsync)
+            .WithName("UpdateTemplate")
+            .RequireAuthorization("AdminOnly");
+
         group.MapDelete("/{id}", DeleteTemplate.HandleAsync)
             .WithName("DeleteTemplate")
             .RequireAuthorization("AdminOnly");
 
+        // Group CRUD
+        group.MapPost("/{templateId}/groups", CreateGroup.HandleAsync)
+            .WithName("CreateGroup")
+            .RequireAuthorization("AdminOnly");
+
+        group.MapPut("/{templateId}/groups/{groupId}", UpdateGroup.HandleAsync)
+            .WithName("UpdateGroup")
+            .RequireAuthorization("AdminOnly");
+
         group.MapDelete("/{templateId}/groups/{groupId}", DeleteGroup.HandleAsync)
             .WithName("DeleteGroup")
+            .RequireAuthorization("AdminOnly");
+
+        // Criterion CRUD
+        group.MapPost("/{templateId}/groups/{groupId}/criteria", CreateCriterion.HandleAsync)
+            .WithName("CreateCriterion")
+            .RequireAuthorization("AdminOnly");
+
+        group.MapPut("/{templateId}/criteria/{criterionId}", UpdateCriterion.HandleAsync)
+            .WithName("UpdateCriterion")
             .RequireAuthorization("AdminOnly");
 
         group.MapDelete("/{templateId}/criteria/{criterionId}", DeleteCriterion.HandleAsync)

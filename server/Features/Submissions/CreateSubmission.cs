@@ -48,12 +48,18 @@ public static class CreateSubmission
         if (template is null)
             return TypedResults.BadRequest(new { error = "Template not found" });
 
+        if (!template.IsActive)
+            return TypedResults.BadRequest(new { error = "Template is archived" });
+
         var store = await db.Stores
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.StoreId, ct);
 
         if (store is null)
             return TypedResults.BadRequest(new { error = "Store not found" });
+
+        if (store.IsActive == false)
+            return TypedResults.BadRequest(new { error = "Store is deactivated" });
 
         // Load groups + criteria for this template
         var groups = await db.Groups

@@ -1,0 +1,48 @@
+using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Persistence.Entities;
+
+namespace Checkly.Api.Features.Stores;
+
+/// <summary>
+/// POST /api/stores — create a new store (AdminOnly).
+/// </summary>
+public static class CreateStore
+{
+    public record Request(
+        string Name,
+        string? Address,
+        string? AreaCode,
+        decimal? GpsLat,
+        decimal? GpsLng);
+
+    public static async Task<IResult> HandleAsync(Request request, AppDbContext db)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return Results.BadRequest(new { error = "Store name is required" });
+
+        var now = DateTimeOffset.UtcNow;
+        var store = new Store
+        {
+            Id = Guid.NewGuid(),
+            Name = request.Name.Trim(),
+            Address = request.Address?.Trim(),
+            AreaCode = request.AreaCode?.Trim(),
+            GpsLat = request.GpsLat,
+            GpsLng = request.GpsLng,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now,
+        };
+
+        db.Stores.Add(store);
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/api/stores/{store.Id}", new
+        {
+            id = store.Id,
+            name = store.Name,
+            address = store.Address,
+            areaCode = store.AreaCode,
+        });
+    }
+}

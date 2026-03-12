@@ -73,7 +73,16 @@ public static class UpdateUser
             userRole.Role = request.Role;
 
         if (request.StoreId.HasValue)
+        {
+            var targetStore = await db.Stores.AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == request.StoreId.Value, ct);
+            if (targetStore is null)
+                return TypedResults.BadRequest(new { error = "Store not found" });
+            if (targetStore.IsActive == false)
+                return TypedResults.BadRequest(new { error = "Cannot assign user to a deactivated store" });
+
             profile.StoreId = request.StoreId;
+        }
 
         if (request.AreaCode != null)
             profile.AreaCode = request.AreaCode;

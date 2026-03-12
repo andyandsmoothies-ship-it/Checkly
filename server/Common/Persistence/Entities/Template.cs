@@ -18,6 +18,9 @@ public sealed class Template
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 
+    /// <summary>Optimistic concurrency token (PostgreSQL xmin).</summary>
+    public uint RowVersion { get; set; }
+
     // Navigation properties
     public ICollection<Group> Groups { get; set; } = [];
     public ICollection<Submission> Submissions { get; set; } = [];

@@ -23,6 +23,8 @@ import 'features/notifications/services/notification_api_service.dart';
 import 'features/notifications/manager/notification_manager.dart';
 import 'features/action_plans/manager/action_plan_manager.dart';
 import 'features/dashboard/manager/dashboard_manager.dart';
+import 'features/admin/services/admin_api_service.dart';
+import 'features/analytics/services/analytics_api_service.dart';
 
 final di = GetIt.instance;
 
@@ -89,4 +91,12 @@ void configureDependencies() {
 
   // ---------- Dashboard (Slice 7) ----------
   di.registerLazySingleton<DashboardManager>(() => DashboardManager());
+
+  // ---------- Admin (CRUD Gaps — MS5) ----------
+  di.registerLazySingleton<AdminApiService>(() => AdminApiService(di<Dio>()));
+
+  // ---------- Analytics (CRUD Gaps — MS5) ----------
+  di.registerLazySingleton<AnalyticsApiService>(
+    () => AnalyticsApiService(di<Dio>()),
+  );
 }
