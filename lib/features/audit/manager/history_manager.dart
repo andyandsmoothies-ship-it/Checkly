@@ -8,11 +8,10 @@ import '../services/submission_api_service.dart';
 
 final _di = GetIt.instance;
 
-/// PFA Manager for audit history — cache-first read path.
+/// PFA Manager for audit history — cache-first read path with pagination.
 ///
-/// `loadHistory()`:
-/// 1. Read from Drift cache → emit immediately
-/// 2. Background API fetch → update Drift → notify listeners
+/// `loadHistory()`: resets to page 1 (initial + pull-to-refresh)
+/// `loadMore()`: loads next page and appends results
 class HistoryManager extends ChangeNotifier {
   final SubmissionApiService _api;
   late final SubmissionDao _dao;
@@ -29,8 +28,16 @@ class HistoryManager extends ChangeNotifier {
   String? error;
   DateTime? lastRefreshed;
 
-  // ---------- Load (cache-first) ----------
+  // Pagination state
+  int _page = 1;
+  static const int _pageSize = 50;
+  bool hasMore = true;
+  bool isLoadingMore = false;
+
+  // ---------- Load (cache-first, page 1) ----------
   Future<void> loadHistory() async {
+    _page = 1;
+    hasMore = true;
     isLoading.value = true;
     error = null;
     notifyListeners();
@@ -44,10 +51,11 @@ class HistoryManager extends ChangeNotifier {
         notifyListeners();
       }
 
-      // 2. Background API fetch
+      // 2. Background API fetch (page 1)
       try {
-        final fresh = await _api.getSubmissions();
+        final fresh = await _api.getSubmissions(page: 1, pageSize: _pageSize);
         submissions.value = fresh;
+        hasMore = fresh.length >= _pageSize;
         lastRefreshed = DateTime.now();
 
         // 3. Update Drift cache
@@ -61,6 +69,26 @@ class HistoryManager extends ChangeNotifier {
       error = 'Failed to load audit history';
     } finally {
       isLoading.value = false;
+      notifyListeners();
+    }
+  }
+
+  // ---------- Load More (next page, append) ----------
+  Future<void> loadMore() async {
+    if (!hasMore || isLoadingMore) return;
+
+    isLoadingMore = true;
+    notifyListeners();
+
+    try {
+      _page++;
+      final more = await _api.getSubmissions(page: _page, pageSize: _pageSize);
+      submissions.value = [...submissions.value, ...more];
+      hasMore = more.length >= _pageSize;
+    } catch (_) {
+      _page--; // Revert on failure so retry works
+    } finally {
+      isLoadingMore = false;
       notifyListeners();
     }
   }

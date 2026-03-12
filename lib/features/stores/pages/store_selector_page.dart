@@ -1,9 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../manager/store_manager.dart';
-import '../model/store_dto.dart';
 
 final _di = GetIt.instance;
 
@@ -20,6 +21,7 @@ class StoreSelectorPage extends StatefulWidget {
 class _StoreSelectorPageState extends State<StoreSelectorPage> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -29,18 +31,17 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
 
-  List<StoreDto> _filtered(List<StoreDto> stores) {
-    if (_searchQuery.isEmpty) return stores;
-    final q = _searchQuery.toLowerCase();
-    return stores.where((s) {
-      return s.name.toLowerCase().contains(q) ||
-          (s.address?.toLowerCase().contains(q) ?? false) ||
-          (s.areaCode?.toLowerCase().contains(q) ?? false);
-    }).toList();
+  void _onSearchChanged(String value) {
+    setState(() => _searchQuery = value);
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _di<StoreManager>().searchStores(value);
+    });
   }
 
   @override
@@ -65,12 +66,12 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          setState(() => _searchQuery = '');
+                          _onSearchChanged('');
                         },
                       )
                     : null,
               ),
-              onChanged: (v) => setState(() => _searchQuery = v),
+              onChanged: _onSearchChanged,
             ),
           ),
 
@@ -105,7 +106,7 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                   );
                 }
 
-                final stores = _filtered(manager.stores.value);
+                final stores = manager.stores.value;
                 if (stores.isEmpty) {
                   return Center(
                     child: Text(

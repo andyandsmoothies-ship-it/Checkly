@@ -18,11 +18,31 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   String _search = '';
   String _filter = 'all'; // all, draft, in_progress, completed, overdue
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _di<HistoryManager>().loadHistory();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final max = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.position.pixels;
+    if (current >= max * 0.8) {
+      final manager = _di<HistoryManager>();
+      if (manager.hasMore && !manager.isLoadingMore) {
+        manager.loadMore();
+      }
+    }
   }
 
   List<SubmissionDto> get _filtered {
@@ -176,15 +196,42 @@ class _HistoryPageState extends State<HistoryPage> {
                     : RefreshIndicator(
                         onRefresh: () => manager.loadHistory(),
                         child: ListView(
+                          controller: _scrollController,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          children: _grouped.entries
-                              .map(
-                                (entry) => _StoreGroup(
-                                  storeName: entry.key,
-                                  submissions: entry.value,
+                          children: [
+                            ..._grouped.entries.map(
+                              (entry) => _StoreGroup(
+                                storeName: entry.key,
+                                submissions: entry.value,
+                              ),
+                            ),
+                            if (manager.isLoadingMore)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 ),
-                              )
-                              .toList(),
+                              ),
+                            if (!manager.hasMore && _filtered.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'All audits loaded',
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
               ),

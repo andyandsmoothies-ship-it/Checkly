@@ -64,4 +64,28 @@ class StoreManager extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // ---------- Search (server-side via B4) ----------
+  Future<void> searchStores(String query) async {
+    if (query.isEmpty) {
+      // Empty query → show cached stores
+      final cached = await _dao.getAllStores();
+      stores.value = cached;
+      notifyListeners();
+      return;
+    }
+
+    isLoading.value = true;
+    notifyListeners();
+
+    try {
+      final results = await _api.getStores(search: query);
+      stores.value = results;
+    } catch (_) {
+      // On error, keep current list
+    } finally {
+      isLoading.value = false;
+      notifyListeners();
+    }
+  }
 }
