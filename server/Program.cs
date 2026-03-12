@@ -8,8 +8,11 @@ using Checkly.Api.Features.Notifications;
 using Checkly.Api.Features.Photos;
 using Checkly.Api.Features.Stores;
 using Checkly.Api.Features.Submissions;
+using Checkly.Api.Features.Admin;
+using Checkly.Api.Features.Analytics;
 using Checkly.Api.Features.Templates;
 using Checkly.Api.Common.Scoring;
+using Checkly.Api.Common.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +67,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<Register.Handler>();
 builder.Services.AddScoped<Login.Handler>();
 builder.Services.AddSingleton<ScoringVerifier>();
+builder.Services.AddHostedService<ReminderService>();
 
 // --- SignalR ---
 builder.Services.AddSignalR();
@@ -96,6 +100,8 @@ app.MapSubmissionEndpoints();
 app.MapPhotoEndpoints();
 app.MapActionPlanEndpoints();
 app.MapNotificationEndpoints();
+app.MapAdminEndpoints();
+app.MapAnalyticsEndpoints();
 
 app.Run();
 

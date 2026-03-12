@@ -6,6 +6,9 @@ class ActionPlanDto {
   final String status; // 'open', 'pending_verify', 'closed'
   final String criteriaLabel;
   final String groupTitle;
+  final String? storeName;
+  final String? storeManagerName;
+  final String? rootCause;
   final String? correctionPlan;
   final String? evidencePhotoUrl;
   final String? evidenceNote;
@@ -20,6 +23,9 @@ class ActionPlanDto {
     required this.status,
     required this.criteriaLabel,
     required this.groupTitle,
+    this.storeName,
+    this.storeManagerName,
+    this.rootCause,
     this.correctionPlan,
     this.evidencePhotoUrl,
     this.evidenceNote,
@@ -35,6 +41,9 @@ class ActionPlanDto {
     status: json['status'] as String,
     criteriaLabel: json['criteriaLabel'] as String? ?? '',
     groupTitle: json['groupTitle'] as String? ?? '',
+    storeName: json['storeName'] as String?,
+    storeManagerName: json['storeManagerName'] as String?,
+    rootCause: json['rootCause'] as String?,
     correctionPlan: json['correctionPlan'] as String?,
     evidencePhotoUrl: json['evidencePhotoUrl'] as String?,
     evidenceNote: json['evidenceNote'] as String?,

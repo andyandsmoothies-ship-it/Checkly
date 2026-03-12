@@ -16,6 +16,7 @@ public sealed class Answer
     public string? PhotoUrl { get; set; }
     public string? PhotoMetadata { get; set; }
     public bool IsRepeatedError { get; set; }
+    public int RepeatedFaults { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public string? Metadata { get; set; }

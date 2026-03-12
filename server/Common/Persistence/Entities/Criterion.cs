@@ -15,6 +15,7 @@ public sealed class Criterion
     public decimal? PointsWeight { get; set; }
     public bool IsCcp { get; set; }
     public bool IsRisk { get; set; }
+    public decimal? MinusImpact { get; set; }
     public int OrderIndex { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }

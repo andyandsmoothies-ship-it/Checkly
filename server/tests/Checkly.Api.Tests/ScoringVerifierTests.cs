@@ -136,4 +136,136 @@ public class ScoringVerifierTests
         Assert.True(result.IsValid, $"conform should not trigger RISK, got {result.ServerScore}");
         Assert.Equal(100m, result.ServerScore);
     }
+
+    // ====================================================================
+    // C3: Progressive Repeat Penalty
+    // Source: SCORING_LOGIC.md §2.A L17-19
+    // "When enabled, repeated faults use quadratic escalation"
+    // ====================================================================
+
+    [Fact]
+    public void C3_Progressive_Repeat_OFF_Uses_Linear_Deduction()
+    {
+        // When progressive_repeat_penalty = false, repeatedFaults are ignored.
+        // Regular deduction: numericValue=3, pointsWeight=2 → 3 × 2 = 6
+        // sectionBefore = 10 → ratio = (10-6)/10 = 0.40 → 40.00%
+        var sectionId = Guid.NewGuid();
+        var cId = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(cId, sectionId, points: 2m) };
+        // Add a second criterion to make sectionBefore = 10
+        var c2 = Guid.NewGuid();
+        var allCriteria = new[]
+        {
+            MakeCriterion(cId, sectionId, points: 2m),
+            MakeCriterion(c2, sectionId, points: 8m),
+        };
+        var answers = new[] { MakeAnswer(cId, numericValue: 3) };
+
+        var result = _sut.Verify(40.00m, answers, groups, allCriteria);
+        Assert.True(result.IsValid, $"Linear deduction: expected 40.00 but got {result.ServerScore}");
+    }
+
+    [Fact]
+    public void C3_Progressive_Repeat_ON_Uses_Quadratic_Deduction()
+    {
+        // When progressive_repeat_penalty = true:
+        // base = numericValue × pointsWeight = 1 × 2 = 2
+        // repeat = repeatedFaults² × pointsWeight = 2² × 2 = 8
+        // total deduction = 2 + 8 = 10
+        // sectionBefore = 10 → ratio = 0/10 = 0.00 → 0.00%
+        var sectionId = Guid.NewGuid();
+        var cId = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var allCriteria = new[]
+        {
+            MakeCriterion(cId, sectionId, points: 2m),
+            MakeCriterion(Guid.NewGuid(), sectionId, points: 8m),
+        };
+        var answers = new[] { new Answer
+        {
+            Id = Guid.NewGuid(),
+            CriteriaId = cId,
+            NumericValue = 1,
+            RepeatedFaults = 2,
+        }};
+
+        var result = _sut.Verify(0.00m, answers, groups, allCriteria, progressiveRepeatPenalty: true);
+        Assert.True(result.IsValid, $"C3 ON: expected 0.00 but got {result.ServerScore}");
+    }
+
+    [Fact]
+    public void C3_Progressive_Repeat_Capped_At_MaxDeduction()
+    {
+        // progressive_repeat_penalty = true, maxDeductionPoints = 5
+        // base = 1×2 = 2, repeat = 3²×2 = 18, raw total = 20, capped at 5
+        // sectionBefore = 10 → (10-5)/10 = 0.50 → 50.00%
+        var sectionId = Guid.NewGuid();
+        var cId = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100, maxDeduction: 5m) };
+        var allCriteria = new[]
+        {
+            MakeCriterion(cId, sectionId, points: 2m),
+            MakeCriterion(Guid.NewGuid(), sectionId, points: 8m),
+        };
+        var answers = new[] { new Answer
+        {
+            Id = Guid.NewGuid(),
+            CriteriaId = cId,
+            NumericValue = 1,
+            RepeatedFaults = 3,
+        }};
+
+        var result = _sut.Verify(50.00m, answers, groups, allCriteria, progressiveRepeatPenalty: true);
+        Assert.True(result.IsValid, $"C3 capped: expected 50.00 but got {result.ServerScore}");
+    }
+
+    // ====================================================================
+    // C4: Minus Impact Override
+    // Source: SCORING_LOGIC.md §2.A L20
+    // "Per-criteria minus_impact overrides Minus Per Fault"
+    // ====================================================================
+
+    [Fact]
+    public void C4_Criterion_With_MinusImpact_Overrides_PointsWeight()
+    {
+        // Criterion A: pointsWeight=5, minus_impact=1
+        // Answer: numericValue=3
+        // Deduction = 3 × 1 = 3 (NOT 3 × 5 = 15)
+        // sectionBefore = 10 → ratio = (10-3)/10 = 0.70 → 70.00%
+        var sectionId = Guid.NewGuid();
+        var cId = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var crit = MakeCriterion(cId, sectionId, points: 5m);
+        crit.MinusImpact = 1m; // C4: override
+        var allCriteria = new[]
+        {
+            crit,
+            MakeCriterion(Guid.NewGuid(), sectionId, points: 5m),
+        };
+        var answers = new[] { MakeAnswer(cId, numericValue: 3) };
+
+        var result = _sut.Verify(70.00m, answers, groups, allCriteria);
+        Assert.True(result.IsValid, $"C4 with minusImpact=1: expected 70.00 but got {result.ServerScore}");
+    }
+
+    [Fact]
+    public void C4_No_MinusImpact_Falls_Back_To_PointsWeight()
+    {
+        // Criteria with no minus_impact → use pointsWeight for deduction.
+        // 1 fault × 5 points = 5 deduction → (5-5)/5 = 0.00 → 0%
+        var sectionId = Guid.NewGuid();
+        var cId = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var allCriteria = new[] { MakeCriterion(cId, sectionId, points: 5m) };
+        var answers = new[] { MakeAnswer(cId, numericValue: 1) };
+
+        var result = _sut.Verify(0.00m, answers, groups, allCriteria);
+        Assert.True(result.IsValid, $"C4 fallback: expected 0.00 but got {result.ServerScore}");
+    }
 }

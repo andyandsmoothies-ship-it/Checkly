@@ -13,5 +13,8 @@ public static class StoreEndpoints
 
         group.MapGet("/", ListStores.HandleAsync)
             .WithName("ListStores");
+
+        group.MapGet("/{id:guid}/dashboard", GetStoreDashboard.HandleAsync)
+            .WithName("GetStoreDashboard");
     }
 }

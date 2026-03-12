@@ -24,6 +24,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Answer> Answers => Set<Answer>();
     public DbSet<ActionPlan> ActionPlans => Set<ActionPlan>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<SystemLog> SystemLogs => Set<SystemLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,6 +41,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureAnswer(modelBuilder);
         ConfigureActionPlan(modelBuilder);
         ConfigureNotification(modelBuilder);
+        ConfigureSystemLog(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -159,6 +161,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.PointsWeight).HasColumnName("points_weight").HasDefaultValue(1.0m);
             e.Property(x => x.IsCcp).HasColumnName("is_ccp").HasDefaultValue(false);
             e.Property(x => x.IsRisk).HasColumnName("is_risk").HasDefaultValue(false);
+            e.Property(x => x.MinusImpact).HasColumnName("minus_impact");
             e.Property(x => x.OrderIndex).HasColumnName("order_index").HasDefaultValue(0);
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
@@ -235,6 +238,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.PhotoUrl).HasColumnName("photo_url");
             e.Property(x => x.PhotoMetadata).HasColumnName("photo_metadata").HasColumnType("jsonb");
             e.Property(x => x.IsRepeatedError).HasColumnName("is_repeated_error").HasDefaultValue(false);
+            e.Property(x => x.RepeatedFaults).HasColumnName("repeated_faults").HasDefaultValue(0);
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
             e.Property(x => x.Metadata).HasColumnName("metadata").HasColumnType("jsonb");
@@ -318,14 +322,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
     private static void ConfigureIdentityRelationships(ModelBuilder mb)
     {
-        // Profile ↔ AppUser: 1:1 via shared primary key
-        mb.Entity<Profile>(e =>
-        {
-            e.HasOne<AppUser>()
-                .WithOne(u => u.Profile)
-                .HasForeignKey<Profile>(p => p.Id)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
+        // Profile ↔ AppUser: logically 1:1 via matching Id
+        // NOT enforced by FK — Profiles can exist without AppUser rows
+        // (e.g., test seeding, offline-created profiles, SQL migration data)
+        // The registration flow ensures both records are created together.
+        mb.Entity<AppUser>().Ignore(u => u.Profile);
 
         // UserRole → AppUser: many-to-1
         mb.Entity<UserRole>(e =>
@@ -334,6 +335,23 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureSystemLog(ModelBuilder mb)
+    {
+        mb.Entity<SystemLog>(e =>
+        {
+            e.ToTable("system_logs");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.UserId).HasColumnName("user_id");
+            e.Property(x => x.Action).HasColumnName("action").IsRequired();
+            e.Property(x => x.Category).HasColumnName("category").IsRequired();
+            e.Property(x => x.Message).HasColumnName("message");
+            e.Property(x => x.Path).HasColumnName("path");
+            e.Property(x => x.Level).HasColumnName("level").HasDefaultValue("info");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
         });
     }
 }

@@ -20,7 +20,8 @@ public sealed class ScoringVerifier
         decimal clientScore,
         IReadOnlyList<Answer> answers,
         IReadOnlyList<Group> groups,
-        IReadOnlyList<Criterion> criteria)
+        IReadOnlyList<Criterion> criteria,
+        bool progressiveRepeatPenalty = false)
     {
         // Check for RISK — any RISK criteria with faults → total score = 0
         var riskTriggered = criteria
@@ -62,7 +63,7 @@ public sealed class ScoringVerifier
                 var sectionBefore = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
                 if (sectionBefore == 0) continue;
 
-                var sectionDeductions = sectionCriteria.Sum(c => GetDeduction(c, answers));
+                var sectionDeductions = sectionCriteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
 
                 // Cap deductions at MaxDeductionPoints if set (per SCORING_LOGIC.md)
                 if (section.MaxDeductionPoints.HasValue)
@@ -70,7 +71,7 @@ public sealed class ScoringVerifier
 
                 var sectionAfter = Math.Max(0, sectionBefore - sectionDeductions);
                 var sectionRatio = sectionAfter / sectionBefore;
-                var sectionWeight = (section.Weight ?? 0) / 100m;
+                var sectionWeight = (section.Weight ?? 0) / totalWeight;
 
                 finalScore += sectionRatio * sectionWeight;
             }
@@ -83,9 +84,13 @@ public sealed class ScoringVerifier
         }
         else
         {
-            // Checklist fallback: max(0, 100 - totalDeductions)
-            var totalDeductions = criteria.Sum(c => GetDeduction(c, answers));
-            var serverScore = Math.Max(0, 100 - totalDeductions);
+            // Checklist fallback: (totalPoints - deductions) / totalPoints * 100
+            var totalPoints = criteria.Sum(c => c.PointsWeight ?? 0);
+            if (totalPoints == 0)
+                return new VerificationResult(clientScore == 100, 100, null);
+
+            var totalDeductions = criteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
+            var serverScore = Math.Max(0, (totalPoints - totalDeductions) / totalPoints * 100);
 
             return new VerificationResult(
                 Math.Abs(clientScore - serverScore) <= Tolerance,
@@ -115,17 +120,41 @@ public sealed class ScoringVerifier
     {
         var answer = answers.FirstOrDefault(a => a.CriteriaId == criterion.Id);
         if (answer is null) return false;
-        // Numeric faults OR pass/fail non-conformance
-        return (answer.NumericValue ?? 0) > 0
-            || string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
+        // Pass/fail mode: explicit conform/na → no fault
+        if (string.Equals(answer.Value, "conform", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(answer.Value, "na", StringComparison.OrdinalIgnoreCase))
+            return false;
+        // Pass/fail mode: non_conform → fault
+        if (string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase))
+            return true;
+        // Numeric mode (Value is null): numericValue > 0 → fault
+        return (answer.NumericValue ?? 0) > 0;
     }
 
-    private static decimal GetDeduction(Criterion criterion, IReadOnlyList<Answer> answers)
+    private static decimal GetDeduction(Criterion criterion, IReadOnlyList<Answer> answers, bool progressiveRepeatPenalty = false)
     {
         var answer = answers.FirstOrDefault(a => a.CriteriaId == criterion.Id);
         if (answer is null) return 0;
+        // Pass/fail mode: explicit conform/na → no deduction
+        if (string.Equals(answer.Value, "conform", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(answer.Value, "na", StringComparison.OrdinalIgnoreCase))
+            return 0;
+        // C4: minus_impact overrides pointsWeight for deduction
+        var impact = criterion.MinusImpact ?? criterion.PointsWeight ?? 0;
+        if (string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase))
+        {
+            // Pass/fail non_conform: 1 fault × impact
+            return impact;
+        }
+        // Numeric mode: faults × impact
         var faults = answer.NumericValue ?? 0;
-        var impact = criterion.PointsWeight ?? 0;
-        return faults * impact;
+        var baseDeduction = faults * impact;
+        // C3: progressive repeat penalty (n² × impact)
+        if (progressiveRepeatPenalty && answer.RepeatedFaults > 0)
+        {
+            var repeatDeduction = (decimal)(answer.RepeatedFaults * answer.RepeatedFaults) * impact;
+            return baseDeduction + repeatDeduction;
+        }
+        return baseDeduction;
     }
 }

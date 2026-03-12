@@ -11,6 +11,7 @@ class CriterionInput {
   final double pointsWeight;
   final bool isCcp;
   final bool isRisk;
+  final double? minusImpact; // C4: overrides pointsWeight for deduction
 
   const CriterionInput({
     required this.id,
@@ -18,6 +19,7 @@ class CriterionInput {
     required this.pointsWeight,
     required this.isCcp,
     required this.isRisk,
+    this.minusImpact,
   });
 }
 
@@ -41,16 +43,27 @@ class AnswerInput {
   final String criteriaId;
   final double? numericValue;
   final String? value;
+  final int repeatedFaults; // C3: count of repeated faults
 
-  const AnswerInput({required this.criteriaId, this.numericValue, this.value});
+  const AnswerInput({
+    required this.criteriaId,
+    this.numericValue,
+    this.value,
+    this.repeatedFaults = 0,
+  });
 }
 
 /// Input to the scoring engine.
 class ScoringInput {
   final List<SectionInput> sections;
   final List<AnswerInput> answers;
+  final bool progressiveRepeatPenalty; // C3: enable n² repeat penalty
 
-  const ScoringInput({required this.sections, required this.answers});
+  const ScoringInput({
+    required this.sections,
+    required this.answers,
+    this.progressiveRepeatPenalty = false,
+  });
 }
 
 /// Result from the scoring engine.
@@ -123,7 +136,9 @@ class ScoringEngine {
 
         var sectionDeductions = criteria.fold<double>(
           0.0,
-          (sum, c) => sum + _getDeduction(c, input.answers),
+          (sum, c) =>
+              sum +
+              _getDeduction(c, input.answers, input.progressiveRepeatPenalty),
         );
 
         // MaxDeductionPoints cap
@@ -159,7 +174,9 @@ class ScoringEngine {
       // --- Rule 5: Checklist fallback ---
       final totalDeductions = allCriteria.fold<double>(
         0.0,
-        (sum, c) => sum + _getDeduction(c, input.answers),
+        (sum, c) =>
+            sum +
+            _getDeduction(c, input.answers, input.progressiveRepeatPenalty),
       );
       final score = max(0.0, 100.0 - totalDeductions);
       return ScoringResult(totalScore: _round2(score));
@@ -181,17 +198,29 @@ class ScoringEngine {
         answer.value?.toLowerCase() == 'non_conform';
   }
 
-  /// Calculates deduction for a criterion: faults × pointsWeight.
+  /// Calculates deduction for a criterion.
+  /// C4: uses minusImpact ?? pointsWeight as impact.
+  /// C3: adds repeatedFaults² × impact when progressiveRepeatPenalty is enabled.
   static double _getDeduction(
     CriterionInput criterion,
     List<AnswerInput> answers,
+    bool progressiveRepeatPenalty,
   ) {
     final answer = answers
         .where((a) => a.criteriaId == criterion.id)
         .firstOrNull;
     if (answer == null) return 0.0;
+    // C4: minus_impact overrides pointsWeight
+    final impact = criterion.minusImpact ?? criterion.pointsWeight;
     final faults = answer.numericValue ?? 0;
-    return faults * criterion.pointsWeight;
+    final baseDeduction = faults * impact;
+    // C3: progressive repeat penalty (n² × impact)
+    if (progressiveRepeatPenalty && answer.repeatedFaults > 0) {
+      final repeatDeduction =
+          answer.repeatedFaults * answer.repeatedFaults * impact;
+      return baseDeduction + repeatDeduction;
+    }
+    return baseDeduction;
   }
 
   /// Rounds to 2 decimal places: (score * 100).round() / 100.0

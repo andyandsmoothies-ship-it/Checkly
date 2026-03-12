@@ -7,7 +7,7 @@ import '../model/submission_dto.dart';
 
 final _di = GetIt.instance;
 
-/// Audit history page — shows past submissions.
+/// Audits page — search, filter chips, grouped by store.
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
 
@@ -16,10 +16,52 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+  String _search = '';
+  String _filter = 'all'; // all, draft, in_progress, completed, overdue
+
   @override
   void initState() {
     super.initState();
     _di<HistoryManager>().loadHistory();
+  }
+
+  List<SubmissionDto> get _filtered {
+    final manager = _di<HistoryManager>();
+    var items = manager.submissions.value;
+
+    // Filter by status
+    if (_filter != 'all') {
+      items = items.where((s) => s.status == _filter).toList();
+    }
+
+    // Filter by search
+    if (_search.isNotEmpty) {
+      final q = _search.toLowerCase();
+      items = items
+          .where(
+            (s) =>
+                (s.storeName ?? '').toLowerCase().contains(q) ||
+                (s.templateTitle ?? '').toLowerCase().contains(q),
+          )
+          .toList();
+    }
+
+    return items;
+  }
+
+  Map<String, List<SubmissionDto>> get _grouped {
+    final map = <String, List<SubmissionDto>>{};
+    for (final sub in _filtered) {
+      final store = sub.storeName ?? 'Unknown Store';
+      map.putIfAbsent(store, () => []).add(sub);
+    }
+    return map;
+  }
+
+  int _countByStatus(String status) {
+    final all = _di<HistoryManager>().submissions.value;
+    if (status == 'all') return all.length;
+    return all.where((s) => s.status == status).length;
   }
 
   @override
@@ -28,7 +70,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final manager = _di<HistoryManager>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Audit History')),
+      appBar: AppBar(title: const Text('Audits')),
       body: ListenableBuilder(
         listenable: manager,
         builder: (context, _) {
@@ -58,31 +100,95 @@ class _HistoryPageState extends State<HistoryPage> {
             );
           }
 
-          final items = manager.submissions.value;
-          if (items.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.history,
-                    size: 48,
-                    color: theme.colorScheme.onSurface.withAlpha(80),
+          return Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    hintText: 'Search stores or audits...',
+                    prefixIcon: Icon(Icons.search),
+                    isDense: true,
                   ),
-                  const SizedBox(height: 12),
-                  Text('No audits yet', style: theme.textTheme.bodyLarge),
-                ],
+                  onChanged: (v) => setState(() => _search = v),
+                ),
               ),
-            );
-          }
 
-          return RefreshIndicator(
-            onRefresh: () => manager.loadHistory(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: items.length,
-              itemBuilder: (context, i) => _HistoryCard(submission: items[i]),
-            ),
+              // Filter chips
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    _FilterChip(
+                      label: 'All',
+                      count: _countByStatus('all'),
+                      selected: _filter == 'all',
+                      onTap: () => setState(() => _filter = 'all'),
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterChip(
+                      label: 'Draft',
+                      count: _countByStatus('draft'),
+                      selected: _filter == 'draft',
+                      onTap: () => setState(() => _filter = 'draft'),
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterChip(
+                      label: 'In Progress',
+                      count: _countByStatus('in_progress'),
+                      selected: _filter == 'in_progress',
+                      onTap: () => setState(() => _filter = 'in_progress'),
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterChip(
+                      label: 'Submitted',
+                      count: _countByStatus('completed'),
+                      selected: _filter == 'completed',
+                      onTap: () => setState(() => _filter = 'completed'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Grouped list
+              Expanded(
+                child: _filtered.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.assignment_turned_in_outlined,
+                              size: 48,
+                              color: theme.colorScheme.onSurface.withAlpha(80),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'No audits found',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () => manager.loadHistory(),
+                        child: ListView(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          children: _grouped.entries
+                              .map(
+                                (entry) => _StoreGroup(
+                                  storeName: entry.key,
+                                  submissions: entry.value,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+              ),
+            ],
           );
         },
       ),
@@ -90,15 +196,105 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
-/// Card for a single audit submission.
-class _HistoryCard extends StatelessWidget {
+// ── Filter Chip ──
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final int count;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.count,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          '$label ($count)',
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: selected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Store Group (collapsible) ──
+
+class _StoreGroup extends StatelessWidget {
+  final String storeName;
+  final List<SubmissionDto> submissions;
+
+  const _StoreGroup({required this.storeName, required this.submissions});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return ExpansionTile(
+      initiallyExpanded: true,
+      tilePadding: EdgeInsets.zero,
+      title: Row(
+        children: [
+          Text(
+            storeName.toUpperCase(),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              '${submissions.length}',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+      children: submissions.map((s) => _AuditCard(submission: s)).toList(),
+    );
+  }
+}
+
+// ── Audit Card ──
+
+class _AuditCard extends StatelessWidget {
   final SubmissionDto submission;
-  const _HistoryCard({required this.submission});
+  const _AuditCard({required this.submission});
 
   Color _scoreColor(double? score, ThemeData theme) {
     if (score == null) return theme.colorScheme.onSurfaceVariant;
     if (score >= 80) return AppTheme.success;
-    if (score >= 50) return AppTheme.warning;
+    if (score >= 60) return AppTheme.warning;
     return theme.colorScheme.error;
   }
 
@@ -108,15 +304,15 @@ class _HistoryCard extends StatelessWidget {
     final color = _scoreColor(submission.totalScore, theme);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Row(
           children: [
             // Score circle
             Container(
-              width: 52,
-              height: 52,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: color.withAlpha(20),
@@ -127,14 +323,14 @@ class _HistoryCard extends StatelessWidget {
                   submission.totalScore != null
                       ? '${submission.totalScore!.toStringAsFixed(0)}%'
                       : '—',
-                  style: theme.textTheme.labelLarge?.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: color,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
 
             // Info
             Expanded(
@@ -151,23 +347,16 @@ class _HistoryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    [
-                      if (submission.storeName != null) submission.storeName,
-                      _formatDate(
-                        submission.completedAt ?? submission.createdAt,
-                      ),
-                    ].join(' • '),
+                    _formatDate(submission.completedAt ?? submission.createdAt),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
 
-            // Status
+            // Status badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(

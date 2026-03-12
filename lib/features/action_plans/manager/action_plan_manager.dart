@@ -1,10 +1,14 @@
+import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../_shared/database/database_service.dart';
 import '../model/action_plan_dto.dart';
 
 // ============================================================
 // Interfaces
 // ============================================================
 
-/// Abstract API for action plan updates.
+/// Abstract API for action plan operations.
 abstract class ActionPlanApi {
   /// Update an action plan with the given field changes.
   Future<ActionPlanDto> updateActionPlan(
@@ -41,8 +45,10 @@ class InvalidTransitionException implements Exception {
 }
 
 // ============================================================
-// ActionPlanManager — role-guarded state machine
+// ActionPlanManager — role-guarded state machine + list loading
 // ============================================================
+
+final _di = GetIt.instance;
 
 /// Manages action plan lifecycle with client-side role guards.
 ///
@@ -54,7 +60,7 @@ class InvalidTransitionException implements Exception {
 /// | `open`          | → `pending_verify`    | `store_manager`     |
 /// | `pending_verify`| → `closed`, → `open`  | `auditor`, `admin`  |
 /// | `closed`        | ∅ (terminal)          | Nobody              |
-class ActionPlanManager {
+class ActionPlanManager extends ChangeNotifier {
   final ActionPlanApi _api;
   final UserRoleProvider _userRole;
 
@@ -63,6 +69,51 @@ class ActionPlanManager {
     required UserRoleProvider userRole,
   }) : _api = api,
        _userRole = userRole;
+
+  // ---------- List state ----------
+  final actionPlans = ValueNotifier<List<ActionPlanDto>>([]);
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  String? error;
+
+  /// Load action plans from local Drift cache.
+  Future<void> loadActionPlans() async {
+    _isLoading = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      final db = _di<DatabaseService>().db;
+      final rows = await db.select(db.cachedActionPlans).get();
+
+      actionPlans.value = rows
+          .map(
+            (row) => ActionPlanDto(
+              id: row.id,
+              status: row.status,
+              criteriaLabel: row.criteriaLabel,
+              groupTitle: row.groupTitle,
+              storeName: row.storeName,
+              storeManagerName: row.storeManagerName,
+              rootCause: row.rootCause,
+              correctionPlan: row.correctionPlan,
+              evidencePhotoUrl: row.evidencePhotoUrl,
+              evidenceNote: row.evidenceNote,
+              closedAt: row.closedAt,
+              verifierName: row.verifierName,
+              deadline: row.deadline,
+              createdAt: row.createdAt,
+              updatedAt: row.updatedAt,
+            ),
+          )
+          .toList();
+    } catch (_) {
+      error = 'Failed to load action plans';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   // ---------- State machine transitions ----------
 

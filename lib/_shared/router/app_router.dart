@@ -11,6 +11,15 @@ import '../../features/stores/pages/store_selector_page.dart';
 import '../../features/audit/pages/audit_form_page.dart';
 import '../../features/audit/pages/history_page.dart';
 import '../../features/dashboard/pages/dashboard_page.dart';
+import '../../features/action_plans/pages/action_plans_page.dart';
+import '../../features/action_plans/pages/action_plan_detail_page.dart';
+import '../../features/profile/pages/profile_page.dart';
+import '../../features/admin/pages/admin_dashboard_page.dart';
+import '../../features/admin/pages/audit_approval_page.dart';
+import '../../features/profile/pages/activity_history_page.dart';
+import '../../features/analytics/pages/analytics_page.dart';
+import '../../features/stores/pages/store_dashboard_page.dart';
+import '../../features/templates/pages/template_builder_page.dart';
 
 final _di = GetIt.instance;
 
@@ -23,7 +32,7 @@ final appRouter = GoRouter(
     // ---------- Auth ----------
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
 
-    // ---------- Shell (bottom nav) ----------
+    // ---------- Shell (bottom nav — 5 tabs) ----------
     ShellRoute(
       builder: (context, state, child) => _MainShell(child: child),
       routes: [
@@ -32,12 +41,20 @@ final appRouter = GoRouter(
           builder: (context, state) => const DashboardPage(),
         ),
         GoRoute(
+          path: '/audits',
+          builder: (context, state) => const HistoryPage(),
+        ),
+        GoRoute(
+          path: '/actions',
+          builder: (context, state) => const ActionPlansPage(),
+        ),
+        GoRoute(
           path: '/templates',
           builder: (context, state) => const TemplateListPage(),
         ),
         GoRoute(
-          path: '/history',
-          builder: (context, state) => const HistoryPage(),
+          path: '/profile',
+          builder: (context, state) => const ProfilePage(),
         ),
       ],
     ),
@@ -61,6 +78,44 @@ final appRouter = GoRouter(
         storeId: state.uri.queryParameters['storeId'] ?? '',
       ),
     ),
+    GoRoute(
+      path: '/actions/:id',
+      builder: (context, state) =>
+          ActionPlanDetailPage(actionPlanId: state.pathParameters['id']!),
+    ),
+
+    // ---------- Admin routes ----------
+    GoRoute(
+      path: '/admin/dashboard',
+      builder: (context, state) => const AdminDashboardPage(),
+    ),
+    GoRoute(
+      path: '/admin/approvals',
+      builder: (context, state) => const AuditApprovalPage(),
+    ),
+    GoRoute(
+      path: '/activity',
+      builder: (context, state) => const ActivityHistoryPage(),
+    ),
+
+    // Legacy redirect: /history → /audits
+    GoRoute(path: '/history', redirect: (_, _) => '/audits'),
+
+    // ---------- 6C: Analytics + Store Dashboard + Template Builder ----------
+    GoRoute(
+      path: '/analytics',
+      builder: (context, state) => const AnalyticsPage(),
+    ),
+    GoRoute(
+      path: '/stores/:id/dashboard',
+      builder: (context, state) =>
+          StoreDashboardPage(storeId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/templates/:id/builder',
+      builder: (context, state) =>
+          TemplateBuilderPage(templateId: state.pathParameters['id']!),
+    ),
   ],
 );
 
@@ -77,16 +132,19 @@ String? _authRedirect(BuildContext context, GoRouterState state) {
   return null;
 }
 
-/// Main shell with bottom navigation.
+/// Main shell with 5-tab bottom navigation matching PWA.
+/// Tabs: Home | Audits | Actions | Templates | Profile
 class _MainShell extends StatelessWidget {
   final Widget child;
 
   const _MainShell({required this.child});
 
   static int _indexFromLocation(String location) {
-    if (location.startsWith('/templates')) return 1;
-    if (location.startsWith('/history')) return 2;
-    return 0;
+    if (location.startsWith('/audits')) return 1;
+    if (location.startsWith('/actions')) return 2;
+    if (location.startsWith('/templates')) return 3;
+    if (location.startsWith('/profile')) return 4;
+    return 0; // /home
   }
 
   @override
@@ -103,9 +161,13 @@ class _MainShell extends StatelessWidget {
             case 0:
               context.go('/home');
             case 1:
-              context.go('/templates');
+              context.go('/audits');
             case 2:
-              context.go('/history');
+              context.go('/actions');
+            case 3:
+              context.go('/templates');
+            case 4:
+              context.go('/profile');
           }
         },
         destinations: const [
@@ -115,14 +177,24 @@ class _MainShell extends StatelessWidget {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.assignment_outlined),
-            selectedIcon: Icon(Icons.assignment),
+            icon: Icon(Icons.assignment_turned_in_outlined),
+            selectedIcon: Icon(Icons.assignment_turned_in),
+            label: 'Audits',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.checklist_outlined),
+            selectedIcon: Icon(Icons.checklist),
+            label: 'Actions',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.description_outlined),
+            selectedIcon: Icon(Icons.description),
             label: 'Templates',
           ),
           NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history),
-            label: 'History',
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),

@@ -17,6 +17,7 @@ public static class CreateSubmission
         ClaimsPrincipal user,
         AppDbContext db,
         ScoringVerifier scorer,
+        IConfiguration config,
         CancellationToken ct)
     {
         var auditorId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -76,15 +77,22 @@ public static class CreateSubmission
 
         // Verify score
         var verification = scorer.Verify(request.ClientScore, tempAnswers, groups, criteria);
+
+        // S5: Score verification mode — enforce (reject) or observe (log only)
+        var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid)
         {
-            return TypedResults.BadRequest(new
+            if (scoreMode == "enforce")
             {
-                error = "Score verification failed",
-                clientScore = request.ClientScore,
-                serverScore = verification.ServerScore,
-                reason = verification.Reason
-            });
+                return TypedResults.BadRequest(new
+                {
+                    error = "Score verification failed",
+                    clientScore = request.ClientScore,
+                    serverScore = verification.ServerScore,
+                    reason = verification.Reason
+                });
+            }
+            // Observe mode: log mismatch but allow submission with server score
         }
 
         // Snapshot auditor info
@@ -139,6 +147,54 @@ public static class CreateSubmission
         db.Submissions.Add(submission);
         db.Answers.AddRange(answers);
         await db.SaveChangesAsync(ct);
+
+        // --- S1: Auto-create action plans for failed answers ---
+        var failedAnswers = answers.Where(a => a.Value == "non_conform").ToList();
+
+        if (failedAnswers.Count > 0)
+        {
+            // Idempotency: skip if APs already exist for this submission
+            var existingAPs = await db.ActionPlans
+                .AnyAsync(ap => ap.SubmissionId == submission.Id, ct);
+
+            if (!existingAPs)
+            {
+                // Look up current SM for this store (live lookup per CORE_WORKFLOWS L103)
+                var smProfile = await db.Profiles
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.StoreId == store.Id, ct);
+
+                // Deadline: default 7 days
+                var deadline = now.AddDays(7);
+
+                foreach (var fail in failedAnswers)
+                {
+                    var criterion = criteria.FirstOrDefault(c => c.Id == fail.CriteriaId);
+                    var group = criterion != null
+                        ? groups.FirstOrDefault(g => g.Id == criterion.GroupId)
+                        : null;
+
+                    db.ActionPlans.Add(new ActionPlan
+                    {
+                        Id = Guid.NewGuid(),
+                        SubmissionId = submission.Id,
+                        AnswerId = fail.Id,
+                        StoreId = submission.StoreId,
+                        StoreManagerId = smProfile?.Id,
+                        CriteriaLabel = criterion?.Label ?? "",
+                        GroupTitle = group?.Title ?? "",
+                        Status = "open",
+                        Deadline = deadline,
+                        StoreName = store.Name,
+                        StoreManagerName = smProfile?.FullName,
+                        CreatedAt = now,
+                        UpdatedAt = now
+                    });
+                }
+
+                await db.SaveChangesAsync(ct);
+            }
+        }
 
         return TypedResults.Created($"/api/submissions/{submission.Id}", new SubmissionDto(
             submission.Id, submission.TemplateId, submission.TemplateTitle,

@@ -2769,6 +2769,17 @@ class $CachedSubmissionsTable extends CachedSubmissions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _reviewStatusMeta = const VerificationMeta(
+    'reviewStatus',
+  );
+  @override
+  late final GeneratedColumn<String> reviewStatus = GeneratedColumn<String>(
+    'review_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2784,6 +2795,7 @@ class $CachedSubmissionsTable extends CachedSubmissions
     notes,
     createdAt,
     completedAt,
+    reviewStatus,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2890,6 +2902,15 @@ class $CachedSubmissionsTable extends CachedSubmissions
         ),
       );
     }
+    if (data.containsKey('review_status')) {
+      context.handle(
+        _reviewStatusMeta,
+        reviewStatus.isAcceptableOrUnknown(
+          data['review_status']!,
+          _reviewStatusMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -2951,6 +2972,10 @@ class $CachedSubmissionsTable extends CachedSubmissions
         DriftSqlType.dateTime,
         data['${effectivePrefix}completed_at'],
       ),
+      reviewStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}review_status'],
+      ),
     );
   }
 
@@ -2975,6 +3000,7 @@ class CachedSubmission extends DataClass
   final String? notes;
   final DateTime createdAt;
   final DateTime? completedAt;
+  final String? reviewStatus;
   const CachedSubmission({
     required this.id,
     this.templateId,
@@ -2989,6 +3015,7 @@ class CachedSubmission extends DataClass
     this.notes,
     required this.createdAt,
     this.completedAt,
+    this.reviewStatus,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3025,6 +3052,9 @@ class CachedSubmission extends DataClass
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || completedAt != null) {
       map['completed_at'] = Variable<DateTime>(completedAt);
+    }
+    if (!nullToAbsent || reviewStatus != null) {
+      map['review_status'] = Variable<String>(reviewStatus);
     }
     return map;
   }
@@ -3064,6 +3094,9 @@ class CachedSubmission extends DataClass
       completedAt: completedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(completedAt),
+      reviewStatus: reviewStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reviewStatus),
     );
   }
 
@@ -3086,6 +3119,7 @@ class CachedSubmission extends DataClass
       notes: serializer.fromJson<String?>(json['notes']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+      reviewStatus: serializer.fromJson<String?>(json['reviewStatus']),
     );
   }
   @override
@@ -3105,6 +3139,7 @@ class CachedSubmission extends DataClass
       'notes': serializer.toJson<String?>(notes),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'completedAt': serializer.toJson<DateTime?>(completedAt),
+      'reviewStatus': serializer.toJson<String?>(reviewStatus),
     };
   }
 
@@ -3122,6 +3157,7 @@ class CachedSubmission extends DataClass
     Value<String?> notes = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> completedAt = const Value.absent(),
+    Value<String?> reviewStatus = const Value.absent(),
   }) => CachedSubmission(
     id: id ?? this.id,
     templateId: templateId.present ? templateId.value : this.templateId,
@@ -3140,6 +3176,7 @@ class CachedSubmission extends DataClass
     notes: notes.present ? notes.value : this.notes,
     createdAt: createdAt ?? this.createdAt,
     completedAt: completedAt.present ? completedAt.value : this.completedAt,
+    reviewStatus: reviewStatus.present ? reviewStatus.value : this.reviewStatus,
   );
   CachedSubmission copyWithCompanion(CachedSubmissionsCompanion data) {
     return CachedSubmission(
@@ -3168,6 +3205,9 @@ class CachedSubmission extends DataClass
       completedAt: data.completedAt.present
           ? data.completedAt.value
           : this.completedAt,
+      reviewStatus: data.reviewStatus.present
+          ? data.reviewStatus.value
+          : this.reviewStatus,
     );
   }
 
@@ -3186,7 +3226,8 @@ class CachedSubmission extends DataClass
           ..write('sectionScores: $sectionScores, ')
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
-          ..write('completedAt: $completedAt')
+          ..write('completedAt: $completedAt, ')
+          ..write('reviewStatus: $reviewStatus')
           ..write(')'))
         .toString();
   }
@@ -3206,6 +3247,7 @@ class CachedSubmission extends DataClass
     notes,
     createdAt,
     completedAt,
+    reviewStatus,
   );
   @override
   bool operator ==(Object other) =>
@@ -3223,7 +3265,8 @@ class CachedSubmission extends DataClass
           other.sectionScores == this.sectionScores &&
           other.notes == this.notes &&
           other.createdAt == this.createdAt &&
-          other.completedAt == this.completedAt);
+          other.completedAt == this.completedAt &&
+          other.reviewStatus == this.reviewStatus);
 }
 
 class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
@@ -3240,6 +3283,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
   final Value<String?> notes;
   final Value<DateTime> createdAt;
   final Value<DateTime?> completedAt;
+  final Value<String?> reviewStatus;
   final Value<int> rowid;
   const CachedSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -3255,6 +3299,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.notes = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.completedAt = const Value.absent(),
+    this.reviewStatus = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedSubmissionsCompanion.insert({
@@ -3271,6 +3316,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.notes = const Value.absent(),
     required DateTime createdAt,
     this.completedAt = const Value.absent(),
+    this.reviewStatus = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        status = Value(status),
@@ -3289,6 +3335,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Expression<String>? notes,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? completedAt,
+    Expression<String>? reviewStatus,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3305,6 +3352,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       if (notes != null) 'notes': notes,
       if (createdAt != null) 'created_at': createdAt,
       if (completedAt != null) 'completed_at': completedAt,
+      if (reviewStatus != null) 'review_status': reviewStatus,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3323,6 +3371,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Value<String?>? notes,
     Value<DateTime>? createdAt,
     Value<DateTime?>? completedAt,
+    Value<String?>? reviewStatus,
     Value<int>? rowid,
   }) {
     return CachedSubmissionsCompanion(
@@ -3339,6 +3388,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       completedAt: completedAt ?? this.completedAt,
+      reviewStatus: reviewStatus ?? this.reviewStatus,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3385,6 +3435,9 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     if (completedAt.present) {
       map['completed_at'] = Variable<DateTime>(completedAt.value);
     }
+    if (reviewStatus.present) {
+      map['review_status'] = Variable<String>(reviewStatus.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3407,6 +3460,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
           ..write('completedAt: $completedAt, ')
+          ..write('reviewStatus: $reviewStatus, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8701,6 +8755,7 @@ typedef $$CachedSubmissionsTableCreateCompanionBuilder =
       Value<String?> notes,
       required DateTime createdAt,
       Value<DateTime?> completedAt,
+      Value<String?> reviewStatus,
       Value<int> rowid,
     });
 typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
@@ -8718,6 +8773,7 @@ typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
       Value<String?> notes,
       Value<DateTime> createdAt,
       Value<DateTime?> completedAt,
+      Value<String?> reviewStatus,
       Value<int> rowid,
     });
 
@@ -8792,6 +8848,11 @@ class $$CachedSubmissionsTableFilterComposer
 
   ColumnFilters<DateTime> get completedAt => $composableBuilder(
     column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reviewStatus => $composableBuilder(
+    column: $table.reviewStatus,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -8869,6 +8930,11 @@ class $$CachedSubmissionsTableOrderingComposer
     column: $table.completedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get reviewStatus => $composableBuilder(
+    column: $table.reviewStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedSubmissionsTableAnnotationComposer
@@ -8930,6 +8996,11 @@ class $$CachedSubmissionsTableAnnotationComposer
     column: $table.completedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get reviewStatus => $composableBuilder(
+    column: $table.reviewStatus,
+    builder: (column) => column,
+  );
 }
 
 class $$CachedSubmissionsTableTableManager
@@ -8985,6 +9056,7 @@ class $$CachedSubmissionsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
+                Value<String?> reviewStatus = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion(
                 id: id,
@@ -9000,6 +9072,7 @@ class $$CachedSubmissionsTableTableManager
                 notes: notes,
                 createdAt: createdAt,
                 completedAt: completedAt,
+                reviewStatus: reviewStatus,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9017,6 +9090,7 @@ class $$CachedSubmissionsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 required DateTime createdAt,
                 Value<DateTime?> completedAt = const Value.absent(),
+                Value<String?> reviewStatus = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion.insert(
                 id: id,
@@ -9032,6 +9106,7 @@ class $$CachedSubmissionsTableTableManager
                 notes: notes,
                 createdAt: createdAt,
                 completedAt: completedAt,
+                reviewStatus: reviewStatus,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
