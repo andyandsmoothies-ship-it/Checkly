@@ -6,11 +6,31 @@ class AdminApiService {
 
   AdminApiService(this._dio);
 
-  /// GET /admin/users — list all users with profile+role.
-  Future<List<Map<String, dynamic>>> getUsers() async {
-    final response = await _dio.get('/admin/users');
-    final list = response.data as List<dynamic>;
+  /// GET /admin/users — list all users with profile+role (paginated).
+  Future<List<Map<String, dynamic>>> getUsers({
+    String? search,
+    int page = 1,
+    int pageSize = 50,
+  }) async {
+    final params = <String, dynamic>{'page': page, 'pageSize': pageSize};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+
+    final response = await _dio.get('/admin/users', queryParameters: params);
+    final data = response.data as Map<String, dynamic>;
+    final list = data['items'] as List<dynamic>;
     return list.cast<Map<String, dynamic>>();
+  }
+
+  /// GET /admin/users — returns raw paginated envelope { items, total, page, pageSize }.
+  Future<Map<String, dynamic>> getUsersRaw({
+    int page = 1,
+    int pageSize = 50,
+  }) async {
+    final response = await _dio.get(
+      '/admin/users',
+      queryParameters: {'page': page, 'pageSize': pageSize},
+    );
+    return response.data as Map<String, dynamic>;
   }
 
   /// PUT /admin/users/{id} — update user role, store, or area.

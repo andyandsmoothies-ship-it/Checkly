@@ -33,6 +33,7 @@ public static class ListUsers
             return TypedResults.Forbid();
 
         var roleFilter = httpContext.Request.Query["role"].FirstOrDefault();
+        var search = httpContext.Request.Query["search"].FirstOrDefault();
 
         var query = from p in db.Profiles.AsNoTracking()
                     join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
@@ -41,8 +42,21 @@ public static class ListUsers
         if (!string.IsNullOrEmpty(roleFilter))
             query = query.Where(x => x.r.Role == roleFilter);
 
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(x =>
+                (x.p.FullName != null && x.p.FullName.Contains(search)) ||
+                (x.p.Email != null && x.p.Email.Contains(search)));
+
+        // Pagination (defaults: page 1, 50 items, max 100)
+        var page = int.TryParse(httpContext.Request.Query["page"], out var pg) ? Math.Max(1, pg) : 1;
+        var pageSize = int.TryParse(httpContext.Request.Query["pageSize"], out var ps) ? Math.Clamp(ps, 1, 100) : 50;
+
+        var total = await query.CountAsync(ct);
+
         var users = await query
             .OrderBy(x => x.p.FullName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(x => new UserDto(
                 x.p.Id,
                 x.p.FullName,
@@ -55,6 +69,6 @@ public static class ListUsers
                 x.p.CreatedAt))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(users);
+        return TypedResults.Ok(new { items = users, total, page, pageSize });
     }
 }

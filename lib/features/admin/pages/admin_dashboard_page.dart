@@ -35,12 +35,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   Future<void> _loadCounts() async {
     try {
-      final users = await _di<AdminApiService>().getUsers();
+      final usersResponse = await _di<AdminApiService>().getUsersRaw(
+        pageSize: 1,
+      );
       final stores = await _di<StoreApiService>().getStores();
       final templates = await _di<TemplateApiService>().getTemplates();
       if (mounted) {
         setState(() {
-          _userCount = users.length;
+          _userCount = usersResponse['total'] as int? ?? 0;
           _storeCount = stores.length;
           _templateCount = templates.length;
         });

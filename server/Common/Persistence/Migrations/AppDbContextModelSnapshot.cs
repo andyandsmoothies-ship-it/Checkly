@@ -127,9 +127,11 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("AnswerId");
 
-                    b.HasIndex("StoreId");
+                    b.HasIndex("Deadline");
 
                     b.HasIndex("SubmissionId");
+
+                    b.HasIndex("StoreId", "Status");
 
                     b.ToTable("action_plans", (string)null);
                 });
@@ -181,6 +183,12 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("text")
                         .HasColumnName("photo_url");
+
+                    b.Property<int>("RepeatedFaults")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("repeated_faults");
 
                     b.Property<Guid?>("SubmissionId")
                         .HasColumnType("uuid")
@@ -323,6 +331,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<string>("Metadata")
                         .HasColumnType("jsonb")
                         .HasColumnName("metadata");
+
+                    b.Property<decimal?>("MinusImpact")
+                        .HasColumnType("numeric")
+                        .HasColumnName("minus_impact");
 
                     b.Property<int>("OrderIndex")
                         .ValueGeneratedOnAdd()
@@ -467,12 +479,15 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId", "CreatedAt");
+
                     b.ToTable("notifications", (string)null);
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Profile", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -564,6 +579,11 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AreaCode");
+
+                    b.HasIndex("IsActive")
+                        .HasFilter("is_active = true");
+
                     b.ToTable("stores", (string)null);
                 });
 
@@ -621,6 +641,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("gps_verified_at");
 
+                    b.Property<string>("IdempotencyKey")
+                        .HasColumnType("text")
+                        .HasColumnName("idempotency_key");
+
                     b.Property<string>("Notes")
                         .HasColumnType("text")
                         .HasColumnName("notes");
@@ -676,11 +700,70 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuditorId");
+
+                    b.HasIndex("CreatedAt")
+                        .IsDescending();
+
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique()
+                        .HasFilter("idempotency_key IS NOT NULL");
+
                     b.HasIndex("StoreId");
 
                     b.HasIndex("TemplateId");
 
+                    b.HasIndex("Status", "ReviewStatus");
+
                     b.ToTable("submissions", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SystemLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("action");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("category");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("info")
+                        .HasColumnName("level");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text")
+                        .HasColumnName("message");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("text")
+                        .HasColumnName("path");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("system_logs", (string)null);
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Template", b =>
@@ -710,6 +793,12 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("is_active");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.Property<string>("ScoringLogicConfig")
                         .HasColumnType("jsonb")
@@ -974,12 +1063,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Profile", b =>
                 {
-                    b.HasOne("Checkly.Api.Common.Persistence.Entities.AppUser", null)
-                        .WithOne("Profile")
-                        .HasForeignKey("Checkly.Api.Common.Persistence.Entities.Profile", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
                         .WithMany("Profiles")
                         .HasForeignKey("StoreId")
@@ -1068,11 +1151,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Answer", b =>
                 {
                     b.Navigation("ActionPlans");
-                });
-
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.AppUser", b =>
-                {
-                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Criterion", b =>

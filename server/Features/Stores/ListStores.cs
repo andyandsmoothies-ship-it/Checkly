@@ -8,11 +8,21 @@ namespace Checkly.Api.Features.Stores;
 /// </summary>
 public static class ListStores
 {
-    public static async Task<IResult> HandleAsync(AppDbContext db, CancellationToken ct)
+    public static async Task<IResult> HandleAsync(
+        AppDbContext db,
+        HttpContext httpContext,
+        CancellationToken ct)
     {
-        var stores = await db.Stores
-            .Where(s => s.IsActive == true)
+        var search = httpContext.Request.Query["search"].FirstOrDefault();
+
+        var query = db.Stores.Where(s => s.IsActive == true);
+
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(s => s.Name.Contains(search) || (s.AreaCode != null && s.AreaCode.Contains(search)));
+
+        var stores = await query
             .OrderBy(s => s.Name)
+            .Take(50)
             .Select(s => new StoreDto(
                 s.Id, s.Name, s.Address, s.AreaCode,
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))

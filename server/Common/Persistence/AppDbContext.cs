@@ -59,6 +59,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
             e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+            // Performance indexes
+            e.HasIndex(x => x.AreaCode);
+            e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
         });
     }
 
@@ -223,6 +227,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .IsUnique()
                 .HasFilter("idempotency_key IS NOT NULL");
 
+            // Performance indexes
+            e.HasIndex(x => x.AuditorId);
+            e.HasIndex(x => x.CreatedAt).IsDescending();
+            e.HasIndex(x => new { x.Status, x.ReviewStatus });
+
             e.HasOne(x => x.Template)
                 .WithMany(t => t.Submissions)
                 .HasForeignKey(x => x.TemplateId)
@@ -316,6 +325,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithMany(s => s.ActionPlans)
                 .HasForeignKey(x => x.StoreId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Performance indexes
+            e.HasIndex(x => new { x.StoreId, x.Status });
+            e.HasIndex(x => x.Deadline);
         });
     }
 
@@ -334,6 +347,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.ActionUrl).HasColumnName("action_url");
             e.Property(x => x.Metadata).HasColumnName("metadata").HasColumnType("jsonb");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            // Performance indexes
+            e.HasIndex(x => new { x.UserId, x.CreatedAt });
         });
     }
 

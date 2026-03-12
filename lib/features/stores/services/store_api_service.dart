@@ -8,9 +8,12 @@ class StoreApiService {
 
   StoreApiService(this._dio);
 
-  /// GET /stores — returns list of [StoreDto].
-  Future<List<StoreDto>> getStores() async {
-    final response = await _dio.get('/stores');
+  /// GET /stores — returns list of [StoreDto] (with optional search).
+  Future<List<StoreDto>> getStores({String? search}) async {
+    final params = <String, dynamic>{};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+
+    final response = await _dio.get('/stores', queryParameters: params);
     final list = response.data as List<dynamic>;
     return list
         .map((j) => StoreDto.fromJson(j as Map<String, dynamic>))
