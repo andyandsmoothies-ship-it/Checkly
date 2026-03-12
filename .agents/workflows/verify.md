@@ -10,6 +10,7 @@ description: System Impact Audit for architectural changes.
 
 ## Phase 1: Context & Side Effect Audit
 <strict-instruction>
+**Skill Discovery**: Derive 2-3 keywords from the changes being verified. Use `grep_search` on `.agents/skills/` to find any relevant verification, testing, or code-review skills. Load the top 1-2 `SKILL.md` files.
 **Action**: Consult `.agents/rules/` to proactively check your recent code changes for unintended side effects (e.g., framework state loss, missing locks, or illegal ghost imports).
 **Semi-Formal Reasoning Checklist**: You must explicitly write down what the code modifies, trace the exact execution path of the modified code line-by-line, and prove your conclusion with specific evidence from the local files. Do not skip reading the actual source files and assuming behavior based on names.
 </strict-instruction>
@@ -22,6 +23,6 @@ You MUST wait for the command to finish and explicitly parse the terminal output
 
 ## Phase 3: Final Certification
 <strict-instruction>
-**Skill Discovery**: Scan the `.agents/skills/` directory and invoke any relevant verification, testing, or code-review checklist skills for the final audit.
+**Skill Refresh**: The concern has shifted from execution to assessment. Re-scan `.agents/skills/` for any broad code-review, security, or quality-gate skills that weren't loaded in Phase 1. Load 1-2 if relevant.
 **Deliverable**: Output a `walkthrough.md` report (or update the existing one) to prove that the system is stable and verified.
 </strict-instruction>

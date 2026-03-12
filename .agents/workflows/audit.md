@@ -20,12 +20,13 @@ This workflow is triggered periodically (e.g., weekly) or on-demand to perform g
 
 ### Phase 1: Scope Definition & Skill Discovery
 Before running any checks, you must load the specific skills required to evaluate the current health of the codebase.
-- **Action**: Use `grep_search` in `.agents/skills` to find relevant auditing skills. Specifically, look for skills related to `health-check`, `de-sloppify`, `security-scan`, or `convention-learner`.
-- **Action**: Use the `view_file` tool to load the instructions from the relevant `SKILL.md` files into your context.
+- **Action**: Use `grep_search` in `.agents/skills/` to find relevant auditing skills. Search for keywords like "health", "audit", "cleanup", "security", "convention", or "code-review".
+- **Action**: Use the `view_file` tool to load the instructions from the top 1-2 most relevant `SKILL.md` files into your context.
 - **Requirement**: You must explicitly list which auditing skills you are applying for this run.
 
 ### Phase 2: The Deep Scan
 Execute a comprehensive scan of the repository based on the loaded skills. You are hunting for "AI Slop" — code that works but deviates from the established architectural invariants.
+- **Skill Refresh**: The concern has shifted from discovery to code analysis. Re-scan `.agents/skills/` for skills matching the specific issue patterns you're finding (e.g., dead code, formatting, security). Load 1-2 if relevant.
 1. **Dead Code & Unused Assets**: Scan for files, functions, or dependencies that are imported but never used.
 2. **Architectural Drift**: Verify that the layer boundaries (e.g., Types -> Config -> Repo -> Service -> Runtime -> UI) have not been violated.
 3. **Stale Documentation**: Compare the `AGENTS.md` and any core `docs/` against the actual codebase. Flag anything that is outdated.

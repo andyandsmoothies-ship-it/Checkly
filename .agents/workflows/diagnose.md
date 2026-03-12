@@ -21,12 +21,13 @@ You MUST NOT guess the root cause of an error.
 
 ## Phase 2: Skill & Rule Discovery
 <strict-instruction>
-- **Action**: Derive 2-3 keywords from the error symptom. Use the `grep_search` tool in the `.agents/skills/` directory to load any specialized debugging skills (e.g., `systematic-debugging`, `error-analysis`).
+- **Action**: Derive 2-3 keywords from the error symptom. Use `grep_search` in `.agents/skills/` to find any specialized debugging or error-analysis skills matching those keywords. Load the top 1-2 most relevant `SKILL.md` files.
 - **Action**: Consult the `.agents/rules/` directory for project-specific sensitivities that might explain the failure (e.g., locking issues, state management). 
 </strict-instruction>
 
 ## Phase 3: Resolution Plan
 <strict-instruction>
+- **Skill Refresh**: If the root cause points to a different domain than the symptom (e.g., symptom was UI but root cause is a database issue), re-scan `.agents/skills/` for skills matching the root cause domain. Load 1-2 if relevant.
 - **Action**: Output a `failure_report_[topic].md` artifact detailing the Root Cause, the explicit trace that proves it, and the proposed fix. Do not make code changes directly in this workflow without user approval.
 </strict-instruction>
 

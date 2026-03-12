@@ -11,11 +11,12 @@ description: Generates Gherkin Specs and Test Fixtures with Red-Green-Refactor E
 
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
-- **Skill Discovery**: You must proactively identify the correct testing skills without user prompting. Derive testing keywords based on the feature context, use `grep_search` on `.agents/skills/`, and load ONLY the most relevant testing/planning `SKILL.md` file (e.g., testing, tdd).
+- **Skill Discovery**: Derive 2-3 keywords from the feature context (e.g., "scoring" → testing, validation). Use `grep_search` on `.agents/skills/` to find the most relevant testing or planning `SKILL.md` file. Load ONLY the top 1-2. Declare which skills were loaded.
 - **Action**: Identify the focus area and consult relevant project workspace rules in `.agents/rules/` to confirm technical constraints.
 
 ## Phase 2: SDET Execution (Test Implementation)
 - **Requirement**: Translate business requirements into strict testing scenarios AND failing test code.
+- **Skill Refresh**: The concern has shifted from discovery to test authoring. Re-scan `.agents/skills/` for skills matching the specific testing framework or patterns needed (e.g., integration testing, mocking). Load 1-2 if relevant.
 - **Rule (Anti-Hallucination)**: Every single Gherkin scenario MUST include a comment citing the exact line or rule from `.agents/rules/` or the User's prompt that justifies its existence. If you cannot cite a business source for the test case, you are hallucinating it and must delete it.
 - **Rule (No-Code Mandate)**: Sentinel CANNOT write or modify production code. Sentinel MUST write the test code (Unit Tests, Integration Tests) that proves the production code is either missing or failing.
 - **Action**: Generate formal Gherkin scenarios (Given/When/Then) with citations, then write the corresponding test fixtures in the project's testing framework. Ensure the tests fail (RED) because the feature is not implemented yet.
