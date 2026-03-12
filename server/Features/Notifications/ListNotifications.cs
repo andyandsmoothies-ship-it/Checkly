@@ -27,6 +27,7 @@ public static class ListNotifications
 
         var notifications = await query
             .OrderByDescending(n => n.CreatedAt)
+            .Take(100)
             .Select(n => new NotificationDto(
                 n.Id, n.UserId, n.Type, n.Title, n.Message,
                 n.ReadAt, n.ActionUrl, n.Metadata, n.CreatedAt))

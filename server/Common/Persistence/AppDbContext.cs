@@ -385,6 +385,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Path).HasColumnName("path");
             e.Property(x => x.Level).HasColumnName("level").HasDefaultValue("info");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            // Performance index
+            e.HasIndex(x => x.CreatedAt).IsDescending();
         });
     }
 }

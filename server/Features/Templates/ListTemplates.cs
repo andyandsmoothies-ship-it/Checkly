@@ -13,6 +13,7 @@ public static class ListTemplates
         var templates = await db.Templates
             .Where(t => t.IsActive)
             .OrderBy(t => t.Title)
+            .Take(200)
             .Select(t => new TemplateDto(
                 t.Id, t.Title, t.Description, t.Type, t.Version,
                 t.IsActive, t.CreatedAt, t.UpdatedAt))

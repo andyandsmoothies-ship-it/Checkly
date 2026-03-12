@@ -763,6 +763,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt")
+                        .IsDescending();
+
                     b.ToTable("system_logs", (string)null);
                 });
 
