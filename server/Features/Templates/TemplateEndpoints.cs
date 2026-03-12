@@ -25,6 +25,14 @@ public static class TemplateEndpoints
             .WithName("DeleteTemplate")
             .RequireAuthorization("AdminOnly");
 
+        group.MapDelete("/{templateId}/groups/{groupId}", DeleteGroup.HandleAsync)
+            .WithName("DeleteGroup")
+            .RequireAuthorization("AdminOnly");
+
+        group.MapDelete("/{templateId}/criteria/{criterionId}", DeleteCriterion.HandleAsync)
+            .WithName("DeleteCriterion")
+            .RequireAuthorization("AdminOnly");
+
         // Delta sync endpoint
         var syncGroup = app.MapGroup("/api/sync")
             .WithTags("Sync")

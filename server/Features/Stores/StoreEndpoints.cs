@@ -16,5 +16,9 @@ public static class StoreEndpoints
 
         group.MapGet("/{id:guid}/dashboard", GetStoreDashboard.HandleAsync)
             .WithName("GetStoreDashboard");
+
+        group.MapDelete("/{id:guid}", DeleteStore.HandleAsync)
+            .WithName("DeleteStore")
+            .RequireAuthorization("AdminOnly");
     }
 }

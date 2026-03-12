@@ -175,6 +175,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         });
     }
 
+    /// <summary>
+    /// Configures the Submission entity mapping.
+    /// WARNING: Never add a hard-delete endpoint for submissions.
+    /// Submissions are immutable audit records — soft-delete is not applicable.
+    /// </summary>
     private static void ConfigureSubmission(ModelBuilder mb)
     {
         mb.Entity<Submission>(e =>
@@ -256,6 +261,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         });
     }
 
+    /// <summary>
+    /// Configures the ActionPlan entity mapping.
+    /// WARNING: Never add a hard-delete endpoint for action plans.
+    /// Action plans are compliance records — they must be preserved for audit trails.
+    /// </summary>
     private static void ConfigureActionPlan(ModelBuilder mb)
     {
         mb.Entity<ActionPlan>(e =>
