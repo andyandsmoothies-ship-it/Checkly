@@ -1,13 +1,13 @@
 ---
 name: ATDD Workflow
-description: Generates Gherkin Specs and Test Fixtures with Red-Green-Refactor Execution.
+description: Acceptance Test-Driven Development — defines acceptance tests before implementation begins.
 ---
 
 # Workflow: /atdd
 
 > [!NOTE]
-> This is the **Test-Driven Architecture** workflow — used to strictly define behavior for complex/high-risk features before coding begins.
-> It sits between `/research` and `/implement`.
+> This is the **Acceptance Test-Driven Development (ATDD)** workflow — used to define acceptance tests for complex/high-risk features before coding begins.
+> It sits between `/analysis` and `/implement`. Do NOT confuse with TDD (unit tests during coding) — ATDD defines WHAT the feature must do at the acceptance level; TDD proves HOW the internal code works.
 
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).

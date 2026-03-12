@@ -95,6 +95,7 @@ class ProfilePage extends StatelessWidget {
           icon: Icons.admin_panel_settings,
           label: 'Admin Dashboard',
           description: 'Manage users and approvals',
+          route: '/admin/dashboard',
         ),
       );
     }
@@ -104,6 +105,7 @@ class ProfilePage extends StatelessWidget {
           icon: Icons.map_outlined,
           label: 'My Region',
           description: 'View stores in your area',
+          route: '/analytics',
         ),
       );
     }
@@ -113,6 +115,7 @@ class ProfilePage extends StatelessWidget {
           icon: Icons.store,
           label: 'My Store',
           description: 'View your store details',
+          route: '/analytics',
         ),
       );
     }
@@ -123,6 +126,7 @@ class ProfilePage extends StatelessWidget {
         icon: Icons.notifications_outlined,
         label: 'Notifications',
         description: 'View all notifications',
+        route: '/activity',
       ),
       _MenuItem(
         icon: Icons.help_outline,
@@ -300,11 +304,13 @@ class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final String description;
+  final String? route;
 
   const _MenuItem({
     required this.icon,
     required this.label,
     required this.description,
+    this.route,
   });
 
   @override
@@ -332,7 +338,15 @@ class _MenuItem extends StatelessWidget {
           Icons.chevron_right,
           color: theme.colorScheme.onSurfaceVariant,
         ),
-        onTap: () {}, // TODO: Wire navigation in future batches
+        onTap: () {
+          if (route != null) {
+            context.push(route!);
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Coming soon')));
+          }
+        },
       ),
     );
   }
