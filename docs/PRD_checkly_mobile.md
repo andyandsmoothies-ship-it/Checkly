@@ -114,9 +114,14 @@ flowchart LR
 
 | Requirement | Detail |
 |-------------|--------|
-| **Templates** | CRUD with nested sections (groups) and criteria |
-| **Stores** | CRUD with address, GPS coordinates, area code, soft delete |
-| **Users** | Create users, assign roles, link to stores/areas |
+| **Templates** | CRUD with nested sections (groups) and criteria. **Soft-delete** (`IsActive = false`) |
+| **Groups / Criteria** | Managed within templates. **Soft-delete** — historical submissions retain answers linked to deactivated criteria |
+| **Stores** | CRUD with address, GPS coordinates, area code. **Soft-delete** (`IsActive = false`) |
+| **Users** | Create users, assign roles, link to stores/areas. **Ban** (LockoutEnd) instead of delete |
+| **Submissions** | **Never delete** — core business record, status transitions only |
+| **Action Plans** | **Never delete** — workflow record with evidence, status transitions only |
+| **Notifications** | Hard-delete OK — auto-purged after 90-day retention |
+| **System Logs** | Hard-delete OK — auto-purged after 90-day retention |
 
 ---
 
@@ -194,20 +199,20 @@ Submissions and action plans store **denormalized snapshots** of names/titles at
 server/
   Features/
     Auth/           → Login.cs, Register.cs
-    Templates/      → ListTemplates.cs, CreateTemplate.cs, DeleteTemplate.cs
+    Templates/      → ListTemplates.cs, CreateTemplate.cs, DeleteTemplate.cs, DeleteGroup.cs, DeleteCriterion.cs
     Submissions/    → CreateSubmission.cs, GetSubmission.cs, ReviewSubmission.cs
     ActionPlans/    → ListActionPlans.cs, CreateActionPlan.cs, UpdateActionPlan.cs
     Photos/         → UploadPhoto.cs, GetPhoto.cs
     Notifications/  → ListNotifications.cs, MarkRead.cs
     Admin/          → ListUsers.cs, UpdateUser.cs, BanUser.cs, TransferStoreManager.cs, ListSystemLogs.cs
     Analytics/      → GetAnalytics.cs
-    Stores/         → ListStores.cs, GetStoreDashboard.cs
+    Stores/         → ListStores.cs, GetStoreDashboard.cs, DeleteStore.cs
     Sync/           → SyncEndpoints.cs (delta sync per entity)
   Common/
     Persistence/    → AppDbContext.cs, entity configs
     Auth/           → JwtService.cs, authorization policies
     Scoring/        → ScoringVerifier.cs
-    Services/       → ReminderService.cs (IHostedService — deadline + schedule reminders)
+    Services/       → ReminderService.cs (IHostedService — deadline + schedule reminders + 90-day data retention cleanup)
   Program.cs
 ```
 
@@ -266,6 +271,7 @@ flowchart TD
 | **Localization** | UTF-8 throughout (Vietnamese character support) |
 | **Deployment** | Single Windows Server hosts API + PostgreSQL + file storage |
 | **Lifecycle (C2)** | 4-tier app lifecycle recovery: <5min no-op, 5min-12h auth check, 12h-7d full resync, >7d force re-login |
+| **Data retention** | Notifications and system logs auto-purged after 90 days |
 | **Rejected exclusion (C8)** | Rejected audits excluded from all dashboard metrics and analytics |
 
 ---
@@ -340,6 +346,7 @@ flowchart TD
 | Phase 0 Analysis + Micro-Specs | [analysis_phase0_backend.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/analysis_phase0_backend.md) |
 | PWA→Flutter Parity Audit | [research_pwa_flutter_parity.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_pwa_flutter_parity.md) |
 | Batch 6 Analysis | [analysis_batch6_polish.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/analysis_batch6_polish.md) |
+| ERD & Delete Strategy | [research_erd_delete_strategy.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_erd_delete_strategy.md) |
 | UAT Test Cases | [uat_test_cases.md](file:///C:/Users/HP/.gemini/antigravity/brain/2653279f-659a-487a-9f3c-bfe41a3b674d/uat_test_cases.md.resolved) |
 | Web Admin Research | [research_web_admin_enterprise.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_web_admin_enterprise.md) |
 | Scoring Engine KI | [scoring_engine.md](file:///C:/Users/HP/.gemini/antigravity/knowledge/unified_scoring_and_audit_logic/artifacts/scoring_engine.md) |
