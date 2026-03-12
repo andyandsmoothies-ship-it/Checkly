@@ -16,10 +16,17 @@ class SubmissionApiService {
     return SubmissionDto.fromJson(response.data as Map<String, dynamic>);
   }
 
-  /// GET /submissions — returns list of [SubmissionDto].
-  Future<List<SubmissionDto>> getSubmissions() async {
-    final response = await _dio.get('/submissions');
-    final list = response.data as List<dynamic>;
+  /// GET /submissions — returns list of [SubmissionDto] (paginated).
+  Future<List<SubmissionDto>> getSubmissions({
+    int page = 1,
+    int pageSize = 50,
+  }) async {
+    final response = await _dio.get(
+      '/submissions',
+      queryParameters: {'page': page, 'pageSize': pageSize},
+    );
+    final data = response.data as Map<String, dynamic>;
+    final list = data['items'] as List<dynamic>;
     return list
         .map((j) => SubmissionDto.fromJson(j as Map<String, dynamic>))
         .toList();

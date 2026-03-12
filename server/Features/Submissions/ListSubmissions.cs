@@ -13,6 +13,7 @@ public static class ListSubmissions
     public static async Task<IResult> HandleAsync(
         ClaimsPrincipal user,
         AppDbContext db,
+        HttpContext httpContext,
         CancellationToken ct)
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -66,8 +67,16 @@ public static class ListSubmissions
                 break;
         }
 
+        // Pagination (defaults: page 1, 50 items, max 100)
+        var page = int.TryParse(httpContext.Request.Query["page"], out var p) ? Math.Max(1, p) : 1;
+        var pageSize = int.TryParse(httpContext.Request.Query["pageSize"], out var ps) ? Math.Clamp(ps, 1, 100) : 50;
+
+        var total = await query.CountAsync(ct);
+
         var submissions = await query
             .OrderByDescending(s => s.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(s => new SubmissionDto(
                 s.Id, s.TemplateId, s.TemplateTitle,
                 s.StoreId, s.StoreName, s.AuditorId,
@@ -76,6 +85,6 @@ public static class ListSubmissions
                 s.CreatedAt, s.CompletedAt))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(submissions);
+        return TypedResults.Ok(new { items = submissions, total, page, pageSize });
     }
 }

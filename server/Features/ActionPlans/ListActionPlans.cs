@@ -13,6 +13,7 @@ public static class ListActionPlans
     public static async Task<IResult> HandleAsync(
         ClaimsPrincipal user,
         AppDbContext db,
+        HttpContext httpContext,
         CancellationToken ct)
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -32,11 +33,19 @@ public static class ListActionPlans
                 query = query.Where(ap => ap.StoreManagerId == userId);
         }
 
+        // Pagination (defaults: page 1, 50 items, max 100)
+        var page = int.TryParse(httpContext.Request.Query["page"], out var p) ? Math.Max(1, p) : 1;
+        var pageSize = int.TryParse(httpContext.Request.Query["pageSize"], out var ps) ? Math.Clamp(ps, 1, 100) : 50;
+
+        var total = await query.CountAsync(ct);
+
         var plans = await query
             .OrderByDescending(ap => ap.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(ap => CreateActionPlan.ToDto(ap))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(plans);
+        return TypedResults.Ok(new { items = plans, total, page, pageSize });
     }
 }
