@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -85,6 +86,6 @@ public static class ListSubmissions
                 s.CreatedAt, s.CompletedAt))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(new { items = submissions, total, page, pageSize });
+        return TypedResults.Ok(new PagedResult<SubmissionDto>(submissions, total, page, pageSize));
     }
 }

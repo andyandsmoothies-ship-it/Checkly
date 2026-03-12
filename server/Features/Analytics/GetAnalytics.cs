@@ -66,19 +66,15 @@ public static class GetAnalytics
         var trend = await query
             .Where(s => s.CreatedAt >= sixMonthsAgo && s.TotalScore.HasValue)
             .GroupBy(s => new { s.CreatedAt.Year, s.CreatedAt.Month })
-            .Select(g => new
-            {
-                month = g.Key.Year + "-" + g.Key.Month.ToString().PadLeft(2, '0'),
-                avgScore = Math.Round((double)g.Average(s => s.TotalScore!.Value), 1),
-                count = g.Count()
-            })
-            .OrderBy(t => t.month)
+            .Select(g => new TrendPoint(
+                g.Key.Year + "-" + g.Key.Month.ToString().PadLeft(2, '0'),
+                Math.Round((double)g.Average(s => s.TotalScore!.Value), 1),
+                g.Count()))
+            .OrderBy(t => t.Month)
             .ToListAsync(ct);
 
-        return TypedResults.Ok(new
-        {
-            kpis = new { totalAudits, avgScore, openAPs, overdueAPs, completionRate },
-            trend
-        });
+        return TypedResults.Ok(new AnalyticsResponse(
+            new AnalyticsKpis(totalAudits, avgScore, openAPs, overdueAPs, completionRate),
+            trend));
     }
 }

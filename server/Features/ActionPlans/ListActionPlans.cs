@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,6 +47,6 @@ public static class ListActionPlans
             .Select(ap => CreateActionPlan.ToDto(ap))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(new { items = plans, total, page, pageSize });
+        return TypedResults.Ok(new PagedResult<ActionPlanDto>(plans, total, page, pageSize));
     }
 }

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,16 +11,6 @@ namespace Checkly.Api.Features.Admin;
 /// </summary>
 public static class ListUsers
 {
-    public record UserDto(
-        Guid Id,
-        string? FullName,
-        string? Email,
-        string? AvatarUrl,
-        string Role,
-        Guid? StoreId,
-        string? AreaCode,
-        bool IsLocked,
-        DateTimeOffset CreatedAt);
 
     public static async Task<IResult> HandleAsync(
         ClaimsPrincipal user,
@@ -69,6 +60,6 @@ public static class ListUsers
                 x.p.CreatedAt))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(new { items = users, total, page, pageSize });
+        return TypedResults.Ok(new PagedResult<UserDto>(users, total, page, pageSize));
     }
 }

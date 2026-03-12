@@ -60,6 +60,6 @@ public static class BanUser
 
         await db.SaveChangesAsync(ct);
 
-        return TypedResults.Ok(new { id, isBanned = request.IsBanned });
+        return TypedResults.Ok(new BanUserResponse(id, request.IsBanned));
     }
 }
