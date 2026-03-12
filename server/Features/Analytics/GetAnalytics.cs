@@ -43,35 +43,37 @@ public static class GetAnalytics
             query = query.Where(s => s.TemplateId.HasValue && templateIds.Contains(s.TemplateId.Value));
         }
 
-        var submissions = await query.ToListAsync(ct);
+        // ── KPIs (SQL scalar queries — zero rows loaded into memory) ──
+        var totalAudits = await query.CountAsync(ct);
 
-        // KPIs
-        var totalAudits = submissions.Count;
-        var avgScore = submissions.Count > 0
-            ? Math.Round((double)submissions.Where(s => s.TotalScore.HasValue).Average(s => (double)s.TotalScore!.Value), 1)
+        var scoredQuery = query.Where(s => s.TotalScore.HasValue);
+        var scoredCount = await scoredQuery.CountAsync(ct);
+        var avgScore = scoredCount > 0
+            ? Math.Round((double)await scoredQuery.AverageAsync(s => s.TotalScore!.Value, ct), 1)
+            : 0.0;
+
+        var completedCount = await query.CountAsync(s => s.CompletedAt.HasValue, ct);
+        var completionRate = totalAudits > 0
+            ? Math.Round((double)completedCount / totalAudits * 100, 1)
             : 0.0;
 
         var openAPs = await db.ActionPlans.CountAsync(ap => ap.Status == "open", ct);
         var overdueAPs = await db.ActionPlans.CountAsync(
             ap => ap.Status == "open" && ap.Deadline.HasValue && ap.Deadline < DateTimeOffset.UtcNow, ct);
 
-        var completionRate = totalAudits > 0
-            ? Math.Round((double)submissions.Count(s => s.CompletedAt.HasValue) / totalAudits * 100, 1)
-            : 0.0;
-
-        // 6-month trend (monthly avg scores)
+        // ── 6-month trend (SQL GroupBy — returns max 6 rows, not 100K) ──
         var sixMonthsAgo = DateTimeOffset.UtcNow.AddMonths(-6);
-        var trend = submissions
+        var trend = await query
             .Where(s => s.CreatedAt >= sixMonthsAgo && s.TotalScore.HasValue)
             .GroupBy(s => new { s.CreatedAt.Year, s.CreatedAt.Month })
             .Select(g => new
             {
-                month = $"{g.Key.Year}-{g.Key.Month:D2}",
-                avgScore = Math.Round(g.Average(s => (double)s.TotalScore!.Value), 1),
+                month = g.Key.Year + "-" + g.Key.Month.ToString().PadLeft(2, '0'),
+                avgScore = Math.Round((double)g.Average(s => s.TotalScore!.Value), 1),
                 count = g.Count()
             })
             .OrderBy(t => t.month)
-            .ToList();
+            .ToListAsync(ct);
 
         return TypedResults.Ok(new
         {

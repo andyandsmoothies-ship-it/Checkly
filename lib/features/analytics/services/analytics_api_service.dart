@@ -15,7 +15,7 @@ class AnalyticsApiService {
   }) async {
     final params = <String, dynamic>{};
     if (storeId != null) params['storeId'] = storeId;
-    if (areaCode != null) params['areaCode'] = areaCode;
+    if (areaCode != null) params['area'] = areaCode;
     if (startDate != null) params['startDate'] = startDate;
     if (endDate != null) params['endDate'] = endDate;
 

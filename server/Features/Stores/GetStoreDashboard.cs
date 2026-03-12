@@ -36,8 +36,9 @@ public static class GetStoreDashboard
             })
             .ToListAsync(ct);
 
-        var avgScore = submissions.Count > 0
-            ? Math.Round(submissions.Where(s => s.TotalScore.HasValue).Average(s => (double)s.TotalScore!.Value), 1)
+        var scored = submissions.Where(s => s.TotalScore.HasValue).ToList();
+        var avgScore = scored.Count > 0
+            ? Math.Round(scored.Average(s => (double)s.TotalScore!.Value), 1)
             : 0.0;
 
         var openAPs = await db.ActionPlans
