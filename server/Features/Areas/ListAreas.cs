@@ -4,17 +4,28 @@ using Microsoft.EntityFrameworkCore;
 namespace Checkly.Api.Features.Areas;
 
 /// <summary>
-/// GET /api/areas — list all areas. Any authenticated user can call.
+/// GET /api/areas — list areas. Active-only by default.
+/// Pass ?includeInactive=true for admin use cases.
 /// </summary>
 public static class ListAreas
 {
     public static async Task<IResult> HandleAsync(
+        HttpContext httpContext,
         AppDbContext db,
         CancellationToken ct)
     {
-        var areas = await db.Areas
-            .AsNoTracking()
+        var includeInactive = string.Equals(
+            httpContext.Request.Query["includeInactive"].FirstOrDefault(),
+            "true", StringComparison.OrdinalIgnoreCase);
+
+        var query = db.Areas.AsNoTracking();
+
+        if (!includeInactive)
+            query = query.Where(a => a.IsActive);
+
+        var areas = await query
             .OrderBy(a => a.Name)
+            .Take(100)
             .Select(a => new AreaDto(a.Id, a.Name, a.Code, a.IsActive, a.CreatedAt))
             .ToListAsync(ct);
 

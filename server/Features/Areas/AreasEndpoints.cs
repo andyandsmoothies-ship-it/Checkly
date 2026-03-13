@@ -11,6 +11,7 @@ public static class AreasEndpoints
             .RequireAuthorization();
 
         group.MapGet("/", ListAreas.HandleAsync);
+        group.MapGet("/{id:guid}", GetArea.HandleAsync);
         group.MapPost("/", CreateArea.HandleAsync);
         group.MapPut("/{id:guid}", UpdateArea.HandleAsync);
     }
