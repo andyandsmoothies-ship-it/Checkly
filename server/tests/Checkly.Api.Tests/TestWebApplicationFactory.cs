@@ -1,7 +1,10 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Persistence.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,8 +49,50 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.EnsureDeleted();
             db.Database.EnsureCreated();
+
+            // Seed a bootstrap admin so tests can create admin users via the API
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+            var adminUser = new AppUser
+            {
+                Id = Guid.NewGuid(),
+                UserName = "bootstrap@admin.test",
+                Email = "bootstrap@admin.test"
+            };
+            userManager.CreateAsync(adminUser, "Bootstrap123!@").GetAwaiter().GetResult();
+            db.Profiles.Add(new Profile
+            {
+                Id = adminUser.Id,
+                FullName = "Bootstrap Admin",
+                Email = "bootstrap@admin.test",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            });
+            db.AppUserRoles.Add(new UserRole
+            {
+                Id = Guid.NewGuid(),
+                UserId = adminUser.Id,
+                Role = "admin",
+                CreatedAt = DateTimeOffset.UtcNow
+            });
+            db.SaveChanges();
+
             _dbInitialized = true;
         }
+    }
+
+    /// <summary>
+    /// Returns a valid admin JWT by logging in as the seeded bootstrap admin.
+    /// </summary>
+    public async Task<string> LoginBootstrapAdminAsync(HttpClient client)
+    {
+        var response = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = "bootstrap@admin.test",
+            password = "Bootstrap123!@"
+        });
+        response.EnsureSuccessStatusCode();
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        return json.GetProperty("token").GetString()!;
     }
 
     public async Task<(string Token, Guid UserId)> RegisterUserAsync(

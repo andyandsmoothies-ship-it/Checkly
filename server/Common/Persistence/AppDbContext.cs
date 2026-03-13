@@ -25,6 +25,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ActionPlan> ActionPlans => Set<ActionPlan>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<SystemLog> SystemLogs => Set<SystemLog>();
+    public DbSet<Area> Areas => Set<Area>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,6 +43,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureActionPlan(modelBuilder);
         ConfigureNotification(modelBuilder);
         ConfigureSystemLog(modelBuilder);
+        ConfigureArea(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -388,6 +390,22 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
             // Performance index
             e.HasIndex(x => x.CreatedAt).IsDescending();
+        });
+    }
+    private static void ConfigureArea(ModelBuilder mb)
+    {
+        mb.Entity<Area>(e =>
+        {
+            e.ToTable("areas");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.Name).HasColumnName("name").IsRequired();
+            e.Property(x => x.Code).HasColumnName("code").IsRequired();
+            e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+
+            e.HasIndex(x => x.Code).IsUnique();
         });
     }
 }

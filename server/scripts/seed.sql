@@ -14,12 +14,15 @@ WHERE user_id = (SELECT "Id" FROM "AspNetUsers" WHERE "Email" = 'admin@checkly.l
 -- Step 2: Sample Stores (for UAT testing)
 -- ============================================================
 INSERT INTO stores (id, name, address, area_code, is_active, created_at, updated_at)
-VALUES
-  (gen_random_uuid(), 'Cửa hàng Quận 1',     '123 Nguyễn Huệ, Q.1, TP.HCM',     'Q1', true, NOW(), NOW()),
-  (gen_random_uuid(), 'Cửa hàng Quận 7',     '456 Nguyễn Thị Thập, Q.7, TP.HCM', 'Q7', true, NOW(), NOW()),
-  (gen_random_uuid(), 'Cửa hàng Bình Thạnh', '789 Điện Biên Phủ, Bình Thạnh',    'BT', true, NOW(), NOW()),
-  (gen_random_uuid(), 'Cửa hàng Thủ Đức',    '321 Võ Văn Ngân, Thủ Đức',         'TD', true, NOW(), NOW()),
-  (gen_random_uuid(), 'Cửa hàng Gò Vấp',     '654 Quang Trung, Gò Vấp',          'GV', true, NOW(), NOW());
+SELECT gen_random_uuid(), v.name, v.address, v.area_code, true, NOW(), NOW()
+FROM (VALUES
+  ('Cửa hàng Quận 1',     '123 Nguyễn Huệ, Q.1, TP.HCM',     'Q1'),
+  ('Cửa hàng Quận 7',     '456 Nguyễn Thị Thập, Q.7, TP.HCM', 'Q7'),
+  ('Cửa hàng Bình Thạnh', '789 Điện Biên Phủ, Bình Thạnh',    'BT'),
+  ('Cửa hàng Thủ Đức',    '321 Võ Văn Ngân, Thủ Đức',         'TD'),
+  ('Cửa hàng Gò Vấp',     '654 Quang Trung, Gò Vấp',          'GV')
+) AS v(name, address, area_code)
+WHERE NOT EXISTS (SELECT 1 FROM stores s WHERE s.name = v.name);
 
 -- ============================================================
 -- Step 3: Sample Template - Food Safety Audit
