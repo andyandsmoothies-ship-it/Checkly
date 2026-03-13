@@ -65,6 +65,8 @@ class CachedStores extends Table {
   TextColumn get name => text()();
   TextColumn get address => text().nullable()();
   TextColumn get areaCode => text().nullable()();
+  TextColumn get areaId => text().nullable()();
+  TextColumn get areaName => text().nullable()();
   RealColumn get gpsLat => real().nullable()();
   RealColumn get gpsLng => real().nullable()();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();

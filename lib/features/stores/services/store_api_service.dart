@@ -24,13 +24,13 @@ class StoreApiService {
   Future<Map<String, dynamic>> createStore({
     required String name,
     String? address,
-    String? areaCode,
+    String? areaId,
     double? gpsLat,
     double? gpsLng,
   }) async {
     final body = <String, dynamic>{'name': name};
     if (address != null) body['address'] = address;
-    if (areaCode != null) body['areaCode'] = areaCode;
+    if (areaId != null) body['areaId'] = areaId;
     if (gpsLat != null) body['gpsLat'] = gpsLat;
     if (gpsLng != null) body['gpsLng'] = gpsLng;
 
@@ -43,13 +43,13 @@ class StoreApiService {
     String id, {
     String? name,
     String? address,
-    String? areaCode,
+    String? areaId,
     bool? isActive,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
     if (address != null) body['address'] = address;
-    if (areaCode != null) body['areaCode'] = areaCode;
+    if (areaId != null) body['areaId'] = areaId;
     if (isActive != null) body['isActive'] = isActive;
 
     final response = await _dio.put('/stores/$id', data: body);
