@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/manager/auth_manager.dart';
 import '../../features/auth/model/auth_state.dart';
 import '../../features/auth/pages/login_page.dart';
+import '../../features/auth/pages/access_pending_page.dart';
 import '../../features/templates/pages/template_list_page.dart';
 import '../../features/templates/pages/template_detail_page.dart';
 import '../../features/stores/pages/store_selector_page.dart';
@@ -34,6 +35,10 @@ final appRouter = GoRouter(
   routes: [
     // ---------- Auth ----------
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+    GoRoute(
+      path: '/access-pending',
+      builder: (context, state) => const AccessPendingPage(),
+    ),
 
     // ---------- Shell (bottom nav — 5 tabs) ----------
     ShellRoute(
@@ -63,6 +68,10 @@ final appRouter = GoRouter(
     ),
 
     // ---------- Detail routes (no bottom nav) ----------
+    GoRoute(
+      path: '/templates/new',
+      builder: (context, state) => const TemplateBuilderPage(templateId: ''),
+    ),
     GoRoute(
       path: '/templates/:id',
       builder: (context, state) =>
@@ -143,13 +152,30 @@ String? _authRedirect(BuildContext context, GoRouterState state) {
   final isOnLogin = state.matchedLocation == '/login';
 
   if (auth.authState.value == AuthState.loading) return null;
-  if (!isAuthenticated && !isOnLogin) return '/login';
-  if (isAuthenticated && isOnLogin) return '/home';
+  if (!isAuthenticated &&
+      !isOnLogin &&
+      state.matchedLocation != '/access-pending') {
+    return '/login';
+  }
+  if (isAuthenticated && isOnLogin) {
+    // No-role guard: users without a valid role see Access Pending
+    final role = auth.currentUser?.role;
+    if (role == null || role.isEmpty) return '/access-pending';
+    return '/home';
+  }
 
   // Admin role guard: non-admin users cannot access /admin/* routes
   if (isAuthenticated && state.matchedLocation.startsWith('/admin')) {
     final role = auth.currentUser?.role;
     if (role != 'admin') return '/home';
+  }
+
+  // No-role guard on all app routes (except /access-pending and /login)
+  if (isAuthenticated &&
+      state.matchedLocation != '/access-pending' &&
+      state.matchedLocation != '/login') {
+    final role = auth.currentUser?.role;
+    if (role == null || role.isEmpty) return '/access-pending';
   }
 
   return null;
