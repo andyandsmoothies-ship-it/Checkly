@@ -539,6 +539,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("area_code");
 
+                    b.Property<Guid?>("AreaId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("area_id");
+
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text")
                         .HasColumnName("avatar_url");
@@ -569,6 +573,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AreaId");
+
                     b.HasIndex("StoreId");
 
                     b.ToTable("profiles", (string)null);
@@ -589,6 +595,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<string>("AreaCode")
                         .HasColumnType("text")
                         .HasColumnName("area_code");
+
+                    b.Property<Guid?>("AreaId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("area_id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -624,6 +634,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AreaCode");
+
+                    b.HasIndex("AreaId");
 
                     b.HasIndex("IsActive")
                         .HasFilter("is_active = true");
@@ -1110,12 +1122,29 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Profile", b =>
                 {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Area", "Area")
+                        .WithMany("Profiles")
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
                         .WithMany("Profiles")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.Navigation("Area");
+
                     b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Store", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Area", "Area")
+                        .WithMany("Stores")
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Area");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Submission", b =>
@@ -1198,6 +1227,13 @@ namespace Checkly.Api.Common.Persistence.Migrations
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Answer", b =>
                 {
                     b.Navigation("ActionPlans");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Area", b =>
+                {
+                    b.Navigation("Profiles");
+
+                    b.Navigation("Stores");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Criterion", b =>

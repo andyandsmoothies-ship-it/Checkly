@@ -56,11 +56,18 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Name).HasColumnName("name").IsRequired();
             e.Property(x => x.Address).HasColumnName("address");
             e.Property(x => x.AreaCode).HasColumnName("area_code");
+            e.Property(x => x.AreaId).HasColumnName("area_id");
             e.Property(x => x.GpsLat).HasColumnName("gps_lat");
             e.Property(x => x.GpsLng).HasColumnName("gps_lng");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
             e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+
+            // FK: Store → Area
+            e.HasOne(x => x.Area)
+                .WithMany(a => a.Stores)
+                .HasForeignKey(x => x.AreaId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Performance indexes
             e.HasIndex(x => x.AreaCode);
@@ -80,12 +87,19 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.AvatarUrl).HasColumnName("avatar_url");
             e.Property(x => x.StoreId).HasColumnName("store_id");
             e.Property(x => x.AreaCode).HasColumnName("area_code");
+            e.Property(x => x.AreaId).HasColumnName("area_id");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
 
             e.HasOne(x => x.Store)
                 .WithMany(s => s.Profiles)
                 .HasForeignKey(x => x.StoreId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // FK: Profile → Area
+            e.HasOne(x => x.Area)
+                .WithMany(a => a.Profiles)
+                .HasForeignKey(x => x.AreaId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
     }

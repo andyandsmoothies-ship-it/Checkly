@@ -10,6 +10,7 @@ public sealed class Store
     public string Name { get; set; } = string.Empty;
     public string? Address { get; set; }
     public string? AreaCode { get; set; }
+    public Guid? AreaId { get; set; }
     public decimal? GpsLat { get; set; }
     public decimal? GpsLng { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
@@ -17,6 +18,7 @@ public sealed class Store
     public bool? IsActive { get; set; }
 
     // Navigation properties
+    public Area? Area { get; set; }
     public ICollection<Profile> Profiles { get; set; } = [];
     public ICollection<Submission> Submissions { get; set; } = [];
     public ICollection<ActionPlan> ActionPlans { get; set; } = [];

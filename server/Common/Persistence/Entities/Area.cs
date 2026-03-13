@@ -8,4 +8,8 @@ public sealed class Area
     public bool IsActive { get; set; } = true;
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
+
+    // Navigation collections
+    public ICollection<Store> Stores { get; set; } = [];
+    public ICollection<Profile> Profiles { get; set; } = [];
 }
