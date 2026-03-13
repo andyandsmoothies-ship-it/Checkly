@@ -11,7 +11,6 @@ public sealed class Profile
     public string? Email { get; set; }
     public string? AvatarUrl { get; set; }
     public Guid? StoreId { get; set; }
-    public string? AreaCode { get; set; }
     public Guid? AreaId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }

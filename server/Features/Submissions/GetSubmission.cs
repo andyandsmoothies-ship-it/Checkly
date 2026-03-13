@@ -67,8 +67,8 @@ public static class GetSubmission
     {
         if (storeId is null) return false;
         var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == userId, ct);
-        if (profile?.AreaCode is null) return false;
+        if (profile?.AreaId is null) return false;
         var store = await db.Stores.AsNoTracking().FirstOrDefaultAsync(s => s.Id == storeId, ct);
-        return store?.AreaCode == profile.AreaCode;
+        return store?.AreaId == profile.AreaId;
     }
 }

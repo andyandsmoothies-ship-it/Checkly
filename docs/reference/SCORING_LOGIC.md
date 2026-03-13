@@ -108,8 +108,8 @@ Only 5 area codes are allowed: `North`, `South`, `Central`, `East`, `West`.
 - **Enforced at**: Edge Function (`createUser`), `admin_update_user` RPC, UI (store selector hides occupied stores).
 
 ### 1 Area Manager per Area
-- Each area code can have at most **1 user** with role `area_manager` assigned to it (`profiles.area_code`).
-- **Enforced at**: Edge Function (`createUser`), `admin_update_user` RPC, UI (area selector hides occupied areas).
+- Each area (managed entity in `areas` table) can have at most **1 user** with role `area_manager` assigned to it via FK (`profiles.area_id` → `areas.id`).
+- **Enforced at**: `RoleAssignmentGuard.FindExistingAreaManager` (Guid `areaId`), `PUT /api/admin/users/{id}`, UI (area selector hides occupied areas).
 
 ### Technical References
 - **Edge Function**: [admin-api/index.ts](file:///c:/Users/HP/Documents/GitHub/checkly-smart/supabase/functions/admin-api/index.ts) — `createUser()` checks SM + AM conflicts before profile creation.

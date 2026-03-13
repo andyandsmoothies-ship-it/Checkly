@@ -116,7 +116,7 @@ flowchart LR
 |-------------|--------|
 | **Templates** | CRUD with nested sections (groups) and criteria. **Soft-delete** (`IsActive = false`) |
 | **Groups / Criteria** | Managed within templates. **Soft-delete** — historical submissions retain answers linked to deactivated criteria |
-| **Stores** | CRUD with address, GPS coordinates, area code. **Soft-delete** (`IsActive = false`) |
+| **Stores** | CRUD with address, GPS coordinates, area assignment (FK to `areas`). **Soft-delete** (`IsActive = false`) |
 | **Users** | Create users, assign roles, link to stores/areas. **Ban** (LockoutEnd) instead of delete |
 | **Submissions** | **Never delete** — core business record, status transitions only |
 | **Action Plans** | **Never delete** — workflow record with evidence, status transitions only |
@@ -153,15 +153,16 @@ erDiagram
 
 | Entity | Rows (Supabase) | Key Fields |
 |--------|-----------------|------------|
-| `profiles` | 45 | full_name, email, store_id, area_code |
+| `profiles` | 45 | full_name, email, store_id, area_id (FK → areas) |
 | `user_roles` | 43 | user_id, role (enum: admin/auditor/SM/AM) |
-| `stores` | 37 | name, address, area_code, gps_lat/lng, is_active |
+| `stores` | 37 | name, address, area_id (FK → areas), gps_lat/lng, is_active |
 | `templates` | 16 | title, type, scoring_logic_config (JSONB), version |
 | `groups` | 107 | template_id, parent_id (self-ref), title, weight, order_index |
 | `criteria` | 98 | group_id, label, input_type, is_ccp, is_risk, points_weight |
 | `submissions` | 62 | template_id, store_id, auditor_id, total_score, status, GPS, snapshots |
 | `answers` | 55 | submission_id, criteria_id, value, numeric_value, photo_url |
 | `action_plans` | 55 | submission_id, answer_id, store_id, status, deadline |
+| `areas` | — | name, code (unique), is_active |
 | `notifications` | 163 | user_id, type, title, message, read_at |
 
 ### 4.3 Snapshot Fields

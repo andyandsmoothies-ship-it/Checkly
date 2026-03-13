@@ -26,7 +26,7 @@ public static class ListStores
             .OrderBy(s => s.Name)
             .Take(50)
             .Select(s => new StoreDto(
-                s.Id, s.Name, s.Address, s.AreaCode,
+                s.Id, s.Name, s.Address, s.AreaId,
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))
             .ToListAsync(ct);
 

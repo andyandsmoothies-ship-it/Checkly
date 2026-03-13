@@ -55,7 +55,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
             e.Property(x => x.Name).HasColumnName("name").IsRequired();
             e.Property(x => x.Address).HasColumnName("address");
-            e.Property(x => x.AreaCode).HasColumnName("area_code");
             e.Property(x => x.AreaId).HasColumnName("area_id");
             e.Property(x => x.GpsLat).HasColumnName("gps_lat");
             e.Property(x => x.GpsLng).HasColumnName("gps_lng");
@@ -70,7 +69,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .OnDelete(DeleteBehavior.SetNull);
 
             // Performance indexes
-            e.HasIndex(x => x.AreaCode);
             e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
         });
     }
@@ -86,7 +84,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Email).HasColumnName("email");
             e.Property(x => x.AvatarUrl).HasColumnName("avatar_url");
             e.Property(x => x.StoreId).HasColumnName("store_id");
-            e.Property(x => x.AreaCode).HasColumnName("area_code");
             e.Property(x => x.AreaId).HasColumnName("area_id");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");

@@ -535,10 +535,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("AreaCode")
-                        .HasColumnType("text")
-                        .HasColumnName("area_code");
-
                     b.Property<Guid?>("AreaId")
                         .HasColumnType("uuid")
                         .HasColumnName("area_id");
@@ -592,10 +588,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("address");
 
-                    b.Property<string>("AreaCode")
-                        .HasColumnType("text")
-                        .HasColumnName("area_code");
-
                     b.Property<Guid?>("AreaId")
                         .HasColumnType("uuid")
                         .HasColumnName("area_id");
@@ -632,8 +624,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasDefaultValueSql("now()");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AreaCode");
 
                     b.HasIndex("AreaId");
 

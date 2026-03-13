@@ -8,9 +8,8 @@ namespace Checkly.Api.Tests;
 /// <summary>
 /// ATDD: Areas Entity — Slice 2 (Data Migration).
 /// Tests verify that Store and Profile entities have AreaId FK,
-/// the FK relationship works, null handling is correct, and
-/// area_code columns are preserved.
-/// Tests will FAIL (RED) until the entity model changes are implemented.
+/// the FK relationship works, and null handling is correct.
+/// Updated for Slice 5: area_code columns have been dropped.
 /// </summary>
 public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
 {
@@ -49,8 +48,7 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Store AC1 {_runId}",
-            AreaCode = "test-region",
-            AreaId = area.Id,  // ← This property must exist on Store
+            AreaId = area.Id,
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
@@ -60,7 +58,7 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
 
         // Verify FK relationship via Include
         var loaded = await db.Stores
-            .Include(s => s.Area)  // ← Navigation property must exist
+            .Include(s => s.Area)
             .FirstOrDefaultAsync(s => s.Id == store.Id);
 
         Assert.NotNull(loaded);
@@ -97,8 +95,7 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
             Id = profileId,
             FullName = $"Test User {_runId}",
             Email = $"profile-ac2-{_runId}@test.test",
-            AreaCode = "profile-region",
-            AreaId = area.Id,  // ← This property must exist on Profile
+            AreaId = area.Id,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -107,7 +104,7 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
 
         // Verify FK
         var loaded = await db.Profiles
-            .Include(p => p.Area)  // ← Navigation property must exist
+            .Include(p => p.Area)
             .FirstOrDefaultAsync(p => p.Id == profileId);
 
         Assert.NotNull(loaded);
@@ -116,11 +113,11 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(area.Name, loaded.Area!.Name);
     }
 
-    // ─── AC3: Null area_code → null AreaId ───
+    // ─── AC3: Null AreaId handled correctly ───
     // Citation: analysis_areas_entity.md:205
 
     [Fact]
-    public async Task Store_With_Null_AreaCode_Has_Null_AreaId()
+    public async Task Store_With_No_Area_Has_Null_AreaId()
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -129,7 +126,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"No-Area Store {_runId}",
-            AreaCode = null,
             // AreaId intentionally not set → should be null
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -140,32 +136,19 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
 
         var loaded = await db.Stores.FindAsync(store.Id);
         Assert.NotNull(loaded);
-        Assert.Null(loaded!.AreaCode);
-        Assert.Null(loaded.AreaId);  // ← AreaId property must exist and be null
+        Assert.Null(loaded!.AreaId);
     }
 
-    // ─── AC4: area_code columns still exist ───
-    // Citation: analysis_areas_entity.md:206
+    // ─── AC4: area_code columns have been dropped (Slice 5) ───
+    // Original: tested area_code columns still exist
+    // Updated: area_code columns dropped in DropAreaCodeColumns migration
 
     [Fact]
-    public async Task AreaCode_Columns_Still_Exist_In_Schema()
+    public async Task AreaId_FK_Works_Without_AreaCode_Column()
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Verify stores.area_code column exists by querying it
-        var storeCount = await db.Stores
-            .Where(s => s.AreaCode != null || s.AreaCode == null)
-            .CountAsync();
-        Assert.True(storeCount >= 0); // Just proves the column exists in the query
-
-        // Verify profiles.area_code column exists
-        var profileCount = await db.Profiles
-            .Where(p => p.AreaCode != null || p.AreaCode == null)
-            .CountAsync();
-        Assert.True(profileCount >= 0);
-
-        // Also verify we can write to area_code alongside area_id
         var area = new Area
         {
             Id = Guid.NewGuid(),
@@ -181,8 +164,7 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Compat Store {_runId}",
-            AreaCode = "compat-old",   // Old column
-            AreaId = area.Id,           // New FK column
+            AreaId = area.Id,
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
@@ -190,38 +172,39 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         db.Stores.Add(store);
         await db.SaveChangesAsync();
 
-        var loaded = await db.Stores.FindAsync(store.Id);
-        Assert.Equal("compat-old", loaded!.AreaCode);  // Old column preserved
-        Assert.Equal(area.Id, loaded.AreaId);           // New FK works
+        var loaded = await db.Stores
+            .Include(s => s.Area)
+            .FirstOrDefaultAsync(s => s.Id == store.Id);
+        Assert.Equal(area.Id, loaded!.AreaId);
+        Assert.Equal(area.Name, loaded.Area!.Name);
     }
 
-    // ─── AC5: Mixed-case area_codes mapped to same area ───
+    // ─── AC5: Multiple stores can point to same area ───
     // Citation: analysis_areas_entity.md:207
 
     [Fact]
-    public async Task Mixed_Case_AreaCodes_Map_To_Same_Area()
+    public async Task Multiple_Stores_Can_Point_To_Same_Area()
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // Create single area with normalized code
+        // Create single area
         var area = new Area
         {
             Id = Guid.NewGuid(),
             Name = $"North {_runId}",
-            Code = $"north-{_runId}",   // normalized (lowercase)
+            Code = $"north-{_runId}",
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
         db.Areas.Add(area);
 
-        // Create two stores with different casing in area_code but same AreaId
+        // Create two stores both pointing to the same area
         var store1 = new Store
         {
             Id = Guid.NewGuid(),
             Name = $"North Store 1 {_runId}",
-            AreaCode = "North",         // uppercase N
             AreaId = area.Id,
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -231,7 +214,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"North Store 2 {_runId}",
-            AreaCode = "north",         // lowercase n
             AreaId = area.Id,
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -246,6 +228,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
 
         Assert.Equal(area.Id, loaded1!.AreaId);
         Assert.Equal(area.Id, loaded2!.AreaId);
-        Assert.Equal(loaded1.AreaId, loaded2.AreaId);  // Same area
+        Assert.Equal(loaded1.AreaId, loaded2.AreaId);
     }
 }

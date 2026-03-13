@@ -55,7 +55,7 @@ public static class ListUsers
                 x.p.AvatarUrl,
                 x.r.Role,
                 x.p.StoreId,
-                x.p.AreaCode,
+                x.p.AreaId,
                 false, // LockoutEnd check deferred — not a direct Profile field
                 x.p.CreatedAt))
             .ToListAsync(ct);

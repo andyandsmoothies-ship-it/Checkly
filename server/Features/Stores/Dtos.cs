@@ -7,7 +7,7 @@ public sealed record StoreDto(
     Guid Id,
     string Name,
     string? Address,
-    string? AreaCode,
+    Guid? AreaId,
     decimal? GpsLat,
     decimal? GpsLng,
     bool? IsActive,

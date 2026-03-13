@@ -33,7 +33,6 @@ public static class CreateStore
             Name = request.Name.Trim(),
             Address = request.Address?.Trim(),
             AreaId = request.AreaId,
-            AreaCode = area?.Code, // backward compat
             GpsLat = request.GpsLat,
             GpsLng = request.GpsLng,
             IsActive = true,

@@ -1,17 +1,18 @@
 using Checkly.Api.Common.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Stores;
 
 /// <summary>
 /// PUT /api/stores/{id} — update store metadata (AdminOnly).
-/// Updates mutable fields: Name, Address, AreaCode, GpsLat, GpsLng, IsActive.
+/// Updates mutable fields: Name, Address, AreaId, GpsLat, GpsLng, IsActive.
 /// </summary>
 public static class UpdateStore
 {
     public record Request(
         string? Name,
         string? Address,
-        string? AreaCode,
+        Guid? AreaId,
         decimal? GpsLat,
         decimal? GpsLng,
         bool? IsActive);
@@ -26,8 +27,8 @@ public static class UpdateStore
             store.Name = request.Name.Trim();
         if (request.Address != null)
             store.Address = request.Address.Trim();
-        if (request.AreaCode != null)
-            store.AreaCode = request.AreaCode.Trim();
+        if (request.AreaId.HasValue)
+            store.AreaId = request.AreaId;
         if (request.GpsLat.HasValue)
             store.GpsLat = request.GpsLat;
         if (request.GpsLng.HasValue)
@@ -38,12 +39,22 @@ public static class UpdateStore
         store.UpdatedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync();
 
+        // Look up area name for response
+        string? areaName = null;
+        if (store.AreaId.HasValue)
+        {
+            var area = await db.Areas.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == store.AreaId.Value);
+            areaName = area?.Name;
+        }
+
         return Results.Ok(new
         {
             id = store.Id,
             name = store.Name,
             address = store.Address,
-            areaCode = store.AreaCode,
+            areaId = store.AreaId,
+            areaName,
             isActive = store.IsActive,
         });
     }

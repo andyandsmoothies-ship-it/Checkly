@@ -16,7 +16,6 @@ public static class GetAnalytics
         CancellationToken ct)
     {
         var storeId = httpContext.Request.Query["storeId"].FirstOrDefault();
-        var area = httpContext.Request.Query["area"].FirstOrDefault();
         var type = httpContext.Request.Query["type"].FirstOrDefault();
 
         var query = db.Submissions.AsNoTracking()
@@ -25,10 +24,11 @@ public static class GetAnalytics
         if (!string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out var sid))
             query = query.Where(s => s.StoreId == sid);
 
-        if (!string.IsNullOrEmpty(area))
+        var areaIdStr = httpContext.Request.Query["areaId"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(areaIdStr) && Guid.TryParse(areaIdStr, out var areaIdParsed))
         {
             var storeIds = await db.Stores.AsNoTracking()
-                .Where(st => st.AreaCode == area)
+                .Where(st => st.AreaId == areaIdParsed)
                 .Select(st => st.Id)
                 .ToListAsync(ct);
             query = query.Where(s => s.StoreId.HasValue && storeIds.Contains(s.StoreId.Value));
