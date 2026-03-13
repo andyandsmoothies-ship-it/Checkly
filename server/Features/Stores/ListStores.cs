@@ -18,7 +18,9 @@ public static class ListStores
         var query = db.Stores.Where(s => s.IsActive == true);
 
         if (!string.IsNullOrEmpty(search))
-            query = query.Where(s => s.Name.Contains(search) || (s.AreaCode != null && s.AreaCode.Contains(search)));
+            query = query.Where(s =>
+                s.Name.Contains(search) ||
+                (s.Area != null && s.Area.Name.Contains(search)));
 
         var stores = await query
             .OrderBy(s => s.Name)

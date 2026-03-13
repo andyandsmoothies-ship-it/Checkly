@@ -1,5 +1,6 @@
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Stores;
 
@@ -11,7 +12,7 @@ public static class CreateStore
     public record Request(
         string Name,
         string? Address,
-        string? AreaCode,
+        Guid? AreaId,
         decimal? GpsLat,
         decimal? GpsLng);
 
@@ -20,13 +21,19 @@ public static class CreateStore
         if (string.IsNullOrWhiteSpace(request.Name))
             return Results.BadRequest(new { error = "Store name is required" });
 
+        // Look up area for backward compat AreaCode + response areaName
+        Area? area = null;
+        if (request.AreaId.HasValue)
+            area = await db.Areas.AsNoTracking().FirstOrDefaultAsync(a => a.Id == request.AreaId.Value);
+
         var now = DateTimeOffset.UtcNow;
         var store = new Store
         {
             Id = Guid.NewGuid(),
             Name = request.Name.Trim(),
             Address = request.Address?.Trim(),
-            AreaCode = request.AreaCode?.Trim(),
+            AreaId = request.AreaId,
+            AreaCode = area?.Code, // backward compat
             GpsLat = request.GpsLat,
             GpsLng = request.GpsLng,
             IsActive = true,
@@ -42,7 +49,8 @@ public static class CreateStore
             id = store.Id,
             name = store.Name,
             address = store.Address,
-            areaCode = store.AreaCode,
+            areaId = store.AreaId,
+            areaName = area?.Name,
         });
     }
 }

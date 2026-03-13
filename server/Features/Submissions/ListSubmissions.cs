@@ -49,10 +49,10 @@ public static class ListSubmissions
                 var areaProfile = await db.Profiles
                     .AsNoTracking()
                     .FirstOrDefaultAsync(p => p.Id == userId, ct);
-                if (areaProfile?.AreaCode != null)
+                if (areaProfile?.AreaId != null)
                 {
                     var storeIds = await db.Stores
-                        .Where(s => s.AreaCode == areaProfile.AreaCode)
+                        .Where(s => s.AreaId == areaProfile.AreaId)
                         .Select(s => s.Id)
                         .ToListAsync(ct);
                     query = query.Where(s => storeIds.Contains(s.StoreId!.Value));

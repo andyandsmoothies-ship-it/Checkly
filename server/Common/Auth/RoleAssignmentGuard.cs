@@ -36,11 +36,11 @@ public static class RoleAssignmentGuard
     /// Returns the existing AM's profile ID if one exists, null otherwise.
     /// </summary>
     public static async Task<Guid?> FindExistingAreaManager(
-        AppDbContext db, string areaCode, Guid? excludeUserId, CancellationToken ct)
+        AppDbContext db, Guid areaId, Guid? excludeUserId, CancellationToken ct)
     {
         var existing = await db.Profiles
             .AsNoTracking()
-            .Where(p => p.AreaCode == areaCode)
+            .Where(p => p.AreaId == areaId)
             .Join(db.AppUserRoles,
                   p => p.Id,
                   r => r.UserId,

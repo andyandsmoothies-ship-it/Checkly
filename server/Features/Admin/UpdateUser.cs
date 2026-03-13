@@ -12,7 +12,7 @@ namespace Checkly.Api.Features.Admin;
 /// </summary>
 public static class UpdateUser
 {
-    public record Request(string? Role, Guid? StoreId, string? AreaCode);
+    public record Request(string? Role, Guid? StoreId, Guid? AreaId);
 
     private static readonly HashSet<string> ValidRoles = ["admin", "auditor", "store_manager", "area_manager"];
 
@@ -56,10 +56,10 @@ public static class UpdateUser
         }
 
         // S10: 1 AM per area
-        if (effectiveRole == "area_manager" && !string.IsNullOrEmpty(request.AreaCode))
+        if (effectiveRole == "area_manager" && request.AreaId.HasValue)
         {
             var existingAm = await RoleAssignmentGuard.FindExistingAreaManager(
-                db, request.AreaCode, id, ct);
+                db, request.AreaId.Value, id, ct);
             if (existingAm.HasValue)
                 return TypedResults.Conflict(new
                 {
@@ -84,8 +84,8 @@ public static class UpdateUser
             profile.StoreId = request.StoreId;
         }
 
-        if (request.AreaCode != null)
-            profile.AreaCode = request.AreaCode;
+        if (request.AreaId.HasValue)
+            profile.AreaId = request.AreaId;
 
         profile.UpdatedAt = DateTimeOffset.UtcNow;
 
@@ -110,7 +110,7 @@ public static class UpdateUser
             id = profile.Id,
             role = userRole.Role,
             storeId = profile.StoreId,
-            areaCode = profile.AreaCode,
+            areaId = profile.AreaId,
         });
     }
 }
