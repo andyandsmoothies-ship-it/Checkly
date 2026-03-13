@@ -131,13 +131,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 icon: Icons.people,
                 title: 'User Management',
                 subtitle: 'Manage auditors & managers',
-                onTap: () => context.push('/admin/approvals'),
+                onTap: () => context.push('/admin/users'),
               ),
               _MenuItem(
                 icon: Icons.store,
                 title: 'Store Management',
                 subtitle: 'Manage store locations',
-                onTap: () => context.push('/admin/dashboard'),
+                onTap: () => context.push('/admin/stores'),
               ),
               _MenuItem(
                 icon: Icons.assignment,
@@ -149,11 +149,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 icon: Icons.warning_amber,
                 title: 'System Logs',
                 subtitle: 'Monitor application events',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('System logs — coming soon')),
-                  );
-                },
+                onTap: () => context.push('/admin/logs'),
               ),
               _MenuItem(
                 icon: Icons.bar_chart,

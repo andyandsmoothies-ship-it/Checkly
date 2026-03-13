@@ -16,6 +16,9 @@ import '../../features/action_plans/pages/action_plan_detail_page.dart';
 import '../../features/profile/pages/profile_page.dart';
 import '../../features/admin/pages/admin_dashboard_page.dart';
 import '../../features/admin/pages/audit_approval_page.dart';
+import '../../features/admin/pages/user_management_page.dart';
+import '../../features/admin/pages/store_management_page.dart';
+import '../../features/admin/pages/system_logs_page.dart';
 import '../../features/profile/pages/activity_history_page.dart';
 import '../../features/analytics/pages/analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
@@ -94,6 +97,18 @@ final appRouter = GoRouter(
       builder: (context, state) => const AuditApprovalPage(),
     ),
     GoRoute(
+      path: '/admin/users',
+      builder: (context, state) => const UserManagementPage(),
+    ),
+    GoRoute(
+      path: '/admin/stores',
+      builder: (context, state) => const StoreManagementPage(),
+    ),
+    GoRoute(
+      path: '/admin/logs',
+      builder: (context, state) => const SystemLogsPage(),
+    ),
+    GoRoute(
       path: '/activity',
       builder: (context, state) => const ActivityHistoryPage(),
     ),
@@ -120,6 +135,8 @@ final appRouter = GoRouter(
 );
 
 /// Auth redirect guard.
+/// Redirects unauthenticated users to /login.
+/// Redirects non-admin users away from /admin/* routes to /home.
 String? _authRedirect(BuildContext context, GoRouterState state) {
   final auth = _di<AuthManager>();
   final isAuthenticated = auth.authState.value == AuthState.authenticated;
@@ -128,6 +145,12 @@ String? _authRedirect(BuildContext context, GoRouterState state) {
   if (auth.authState.value == AuthState.loading) return null;
   if (!isAuthenticated && !isOnLogin) return '/login';
   if (isAuthenticated && isOnLogin) return '/home';
+
+  // Admin role guard: non-admin users cannot access /admin/* routes
+  if (isAuthenticated && state.matchedLocation.startsWith('/admin')) {
+    final role = auth.currentUser?.role;
+    if (role != 'admin') return '/home';
+  }
 
   return null;
 }
