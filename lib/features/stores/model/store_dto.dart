@@ -4,7 +4,7 @@ class StoreDto {
   final String id;
   final String name;
   final String? address;
-  final String? areaCode; // deprecated, kept for backward compat
+
   final String? areaId;
   final String? areaName;
   final double? gpsLat;
@@ -16,7 +16,7 @@ class StoreDto {
     required this.id,
     required this.name,
     this.address,
-    this.areaCode,
+
     this.areaId,
     this.areaName,
     this.gpsLat,
@@ -29,7 +29,7 @@ class StoreDto {
     id: json['id'] as String,
     name: json['name'] as String,
     address: json['address'] as String?,
-    areaCode: json['areaCode'] as String?,
+
     areaId: json['areaId'] as String?,
     areaName: json['areaName'] as String?,
     gpsLat: (json['gpsLat'] as num?)?.toDouble(),

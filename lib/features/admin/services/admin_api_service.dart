@@ -38,12 +38,12 @@ class AdminApiService {
     String id, {
     String? role,
     String? storeId,
-    String? areaCode,
+    String? areaId,
   }) async {
     final body = <String, dynamic>{};
     if (role != null) body['role'] = role;
     if (storeId != null) body['storeId'] = storeId;
-    if (areaCode != null) body['areaCode'] = areaCode;
+    if (areaId != null) body['areaId'] = areaId;
 
     final response = await _dio.put('/admin/users/$id', data: body);
     return response.data as Map<String, dynamic>;

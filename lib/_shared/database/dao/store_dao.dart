@@ -31,7 +31,7 @@ class StoreDao {
     id: row.id,
     name: row.name,
     address: row.address,
-    areaCode: row.areaCode,
+
     areaId: row.areaId,
     areaName: row.areaName,
     gpsLat: row.gpsLat,
@@ -45,7 +45,7 @@ class StoreDao {
         id: dto.id,
         name: dto.name,
         address: Value(dto.address),
-        areaCode: Value(dto.areaCode),
+
         areaId: Value(dto.areaId),
         areaName: Value(dto.areaName),
         gpsLat: Value(dto.gpsLat),

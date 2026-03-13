@@ -2102,17 +2102,6 @@ class $CachedStoresTable extends CachedStores
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _areaCodeMeta = const VerificationMeta(
-    'areaCode',
-  );
-  @override
-  late final GeneratedColumn<String> areaCode = GeneratedColumn<String>(
-    'area_code',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _areaIdMeta = const VerificationMeta('areaId');
   @override
   late final GeneratedColumn<String> areaId = GeneratedColumn<String>(
@@ -2193,7 +2182,6 @@ class $CachedStoresTable extends CachedStores
     id,
     name,
     address,
-    areaCode,
     areaId,
     areaName,
     gpsLat,
@@ -2231,12 +2219,6 @@ class $CachedStoresTable extends CachedStores
       context.handle(
         _addressMeta,
         address.isAcceptableOrUnknown(data['address']!, _addressMeta),
-      );
-    }
-    if (data.containsKey('area_code')) {
-      context.handle(
-        _areaCodeMeta,
-        areaCode.isAcceptableOrUnknown(data['area_code']!, _areaCodeMeta),
       );
     }
     if (data.containsKey('area_id')) {
@@ -2306,10 +2288,6 @@ class $CachedStoresTable extends CachedStores
         DriftSqlType.string,
         data['${effectivePrefix}address'],
       ),
-      areaCode: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}area_code'],
-      ),
       areaId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}area_id'],
@@ -2351,7 +2329,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
   final String id;
   final String name;
   final String? address;
-  final String? areaCode;
   final String? areaId;
   final String? areaName;
   final double? gpsLat;
@@ -2363,7 +2340,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     required this.id,
     required this.name,
     this.address,
-    this.areaCode,
     this.areaId,
     this.areaName,
     this.gpsLat,
@@ -2379,9 +2355,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || address != null) {
       map['address'] = Variable<String>(address);
-    }
-    if (!nullToAbsent || areaCode != null) {
-      map['area_code'] = Variable<String>(areaCode);
     }
     if (!nullToAbsent || areaId != null) {
       map['area_id'] = Variable<String>(areaId);
@@ -2408,9 +2381,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       address: address == null && nullToAbsent
           ? const Value.absent()
           : Value(address),
-      areaCode: areaCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(areaCode),
       areaId: areaId == null && nullToAbsent
           ? const Value.absent()
           : Value(areaId),
@@ -2438,7 +2408,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       address: serializer.fromJson<String?>(json['address']),
-      areaCode: serializer.fromJson<String?>(json['areaCode']),
       areaId: serializer.fromJson<String?>(json['areaId']),
       areaName: serializer.fromJson<String?>(json['areaName']),
       gpsLat: serializer.fromJson<double?>(json['gpsLat']),
@@ -2455,7 +2424,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'address': serializer.toJson<String?>(address),
-      'areaCode': serializer.toJson<String?>(areaCode),
       'areaId': serializer.toJson<String?>(areaId),
       'areaName': serializer.toJson<String?>(areaName),
       'gpsLat': serializer.toJson<double?>(gpsLat),
@@ -2470,7 +2438,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     String? id,
     String? name,
     Value<String?> address = const Value.absent(),
-    Value<String?> areaCode = const Value.absent(),
     Value<String?> areaId = const Value.absent(),
     Value<String?> areaName = const Value.absent(),
     Value<double?> gpsLat = const Value.absent(),
@@ -2482,7 +2449,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     id: id ?? this.id,
     name: name ?? this.name,
     address: address.present ? address.value : this.address,
-    areaCode: areaCode.present ? areaCode.value : this.areaCode,
     areaId: areaId.present ? areaId.value : this.areaId,
     areaName: areaName.present ? areaName.value : this.areaName,
     gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
@@ -2496,7 +2462,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       address: data.address.present ? data.address.value : this.address,
-      areaCode: data.areaCode.present ? data.areaCode.value : this.areaCode,
       areaId: data.areaId.present ? data.areaId.value : this.areaId,
       areaName: data.areaName.present ? data.areaName.value : this.areaName,
       gpsLat: data.gpsLat.present ? data.gpsLat.value : this.gpsLat,
@@ -2513,7 +2478,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
-          ..write('areaCode: $areaCode, ')
           ..write('areaId: $areaId, ')
           ..write('areaName: $areaName, ')
           ..write('gpsLat: $gpsLat, ')
@@ -2530,7 +2494,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     id,
     name,
     address,
-    areaCode,
     areaId,
     areaName,
     gpsLat,
@@ -2546,7 +2509,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
           other.id == this.id &&
           other.name == this.name &&
           other.address == this.address &&
-          other.areaCode == this.areaCode &&
           other.areaId == this.areaId &&
           other.areaName == this.areaName &&
           other.gpsLat == this.gpsLat &&
@@ -2560,7 +2522,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
   final Value<String> id;
   final Value<String> name;
   final Value<String?> address;
-  final Value<String?> areaCode;
   final Value<String?> areaId;
   final Value<String?> areaName;
   final Value<double?> gpsLat;
@@ -2573,7 +2534,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.address = const Value.absent(),
-    this.areaCode = const Value.absent(),
     this.areaId = const Value.absent(),
     this.areaName = const Value.absent(),
     this.gpsLat = const Value.absent(),
@@ -2587,7 +2547,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     required String id,
     required String name,
     this.address = const Value.absent(),
-    this.areaCode = const Value.absent(),
     this.areaId = const Value.absent(),
     this.areaName = const Value.absent(),
     this.gpsLat = const Value.absent(),
@@ -2604,7 +2563,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? address,
-    Expression<String>? areaCode,
     Expression<String>? areaId,
     Expression<String>? areaName,
     Expression<double>? gpsLat,
@@ -2618,7 +2576,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (address != null) 'address': address,
-      if (areaCode != null) 'area_code': areaCode,
       if (areaId != null) 'area_id': areaId,
       if (areaName != null) 'area_name': areaName,
       if (gpsLat != null) 'gps_lat': gpsLat,
@@ -2634,7 +2591,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     Value<String>? id,
     Value<String>? name,
     Value<String?>? address,
-    Value<String?>? areaCode,
     Value<String?>? areaId,
     Value<String?>? areaName,
     Value<double?>? gpsLat,
@@ -2648,7 +2604,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
       id: id ?? this.id,
       name: name ?? this.name,
       address: address ?? this.address,
-      areaCode: areaCode ?? this.areaCode,
       areaId: areaId ?? this.areaId,
       areaName: areaName ?? this.areaName,
       gpsLat: gpsLat ?? this.gpsLat,
@@ -2671,9 +2626,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     }
     if (address.present) {
       map['address'] = Variable<String>(address.value);
-    }
-    if (areaCode.present) {
-      map['area_code'] = Variable<String>(areaCode.value);
     }
     if (areaId.present) {
       map['area_id'] = Variable<String>(areaId.value);
@@ -2708,7 +2660,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
-          ..write('areaCode: $areaCode, ')
           ..write('areaId: $areaId, ')
           ..write('areaName: $areaName, ')
           ..write('gpsLat: $gpsLat, ')
@@ -8565,7 +8516,6 @@ typedef $$CachedStoresTableCreateCompanionBuilder =
       required String id,
       required String name,
       Value<String?> address,
-      Value<String?> areaCode,
       Value<String?> areaId,
       Value<String?> areaName,
       Value<double?> gpsLat,
@@ -8580,7 +8530,6 @@ typedef $$CachedStoresTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> name,
       Value<String?> address,
-      Value<String?> areaCode,
       Value<String?> areaId,
       Value<String?> areaName,
       Value<double?> gpsLat,
@@ -8612,11 +8561,6 @@ class $$CachedStoresTableFilterComposer
 
   ColumnFilters<String> get address => $composableBuilder(
     column: $table.address,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get areaCode => $composableBuilder(
-    column: $table.areaCode,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8680,11 +8624,6 @@ class $$CachedStoresTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get areaCode => $composableBuilder(
-    column: $table.areaCode,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get areaId => $composableBuilder(
     column: $table.areaId,
     builder: (column) => ColumnOrderings(column),
@@ -8738,9 +8677,6 @@ class $$CachedStoresTableAnnotationComposer
 
   GeneratedColumn<String> get address =>
       $composableBuilder(column: $table.address, builder: (column) => column);
-
-  GeneratedColumn<String> get areaCode =>
-      $composableBuilder(column: $table.areaCode, builder: (column) => column);
 
   GeneratedColumn<String> get areaId =>
       $composableBuilder(column: $table.areaId, builder: (column) => column);
@@ -8798,7 +8734,6 @@ class $$CachedStoresTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> address = const Value.absent(),
-                Value<String?> areaCode = const Value.absent(),
                 Value<String?> areaId = const Value.absent(),
                 Value<String?> areaName = const Value.absent(),
                 Value<double?> gpsLat = const Value.absent(),
@@ -8811,7 +8746,6 @@ class $$CachedStoresTableTableManager
                 id: id,
                 name: name,
                 address: address,
-                areaCode: areaCode,
                 areaId: areaId,
                 areaName: areaName,
                 gpsLat: gpsLat,
@@ -8826,7 +8760,6 @@ class $$CachedStoresTableTableManager
                 required String id,
                 required String name,
                 Value<String?> address = const Value.absent(),
-                Value<String?> areaCode = const Value.absent(),
                 Value<String?> areaId = const Value.absent(),
                 Value<String?> areaName = const Value.absent(),
                 Value<double?> gpsLat = const Value.absent(),
@@ -8839,7 +8772,6 @@ class $$CachedStoresTableTableManager
                 id: id,
                 name: name,
                 address: address,
-                areaCode: areaCode,
                 areaId: areaId,
                 areaName: areaName,
                 gpsLat: gpsLat,

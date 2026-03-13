@@ -142,7 +142,7 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                         ),
                         subtitle: Text(
                           [
-                            if (store.areaCode != null) store.areaCode,
+                            if (store.areaName != null) store.areaName,
                             if (store.address != null) store.address,
                           ].join(' • '),
                           style: theme.textTheme.bodySmall?.copyWith(

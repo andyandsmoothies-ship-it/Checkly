@@ -21,7 +21,7 @@ public static class CreateStore
         if (string.IsNullOrWhiteSpace(request.Name))
             return Results.BadRequest(new { error = "Store name is required" });
 
-        // Look up area for backward compat AreaCode + response areaName
+        // Look up area to include areaName in the response
         Area? area = null;
         if (request.AreaId.HasValue)
             area = await db.Areas.AsNoTracking().FirstOrDefaultAsync(a => a.Id == request.AreaId.Value);

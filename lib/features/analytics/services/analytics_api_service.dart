@@ -9,13 +9,13 @@ class AnalyticsApiService {
   /// GET /analytics — returns aggregate analytics data.
   Future<Map<String, dynamic>> getAnalytics({
     String? storeId,
-    String? areaCode,
+    String? areaId,
     String? startDate,
     String? endDate,
   }) async {
     final params = <String, dynamic>{};
     if (storeId != null) params['storeId'] = storeId;
-    if (areaCode != null) params['area'] = areaCode;
+    if (areaId != null) params['areaId'] = areaId;
     if (startDate != null) params['startDate'] = startDate;
     if (endDate != null) params['endDate'] = endDate;
 

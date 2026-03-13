@@ -59,8 +59,10 @@ void main() {
 
       final dto = StoreDto.fromJson(json);
 
-      // Old field should still parse for backward compat
-      expect(dto.areaCode, equals('old-code'));
+      // Old areaCode field in JSON is ignored (field removed from DTO)
+      // Just verify it doesn't crash and core fields parse
+      expect(dto.id, equals('store-003'));
+      expect(dto.name, equals('Legacy Store'));
     });
   });
 
