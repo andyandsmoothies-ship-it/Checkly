@@ -2,11 +2,14 @@
 name: dependency-injection
 description: >
   Dependency injection patterns for .NET 10. Covers service lifetimes, keyed
-  services, the decorator pattern, factory pattern, and common DI pitfalls.
+  services, the decorator pattern, factory pattern, common DI pitfalls,
+  IServiceCollection extension method composition (Add* pattern for clean
+  Program.cs), convention-based registration with Scrutor, and testing with DI.
   Load this skill when registering services, resolving lifetime issues, designing
-  service composition, or when the user mentions "DI", "dependency injection",
-  "service registration", "AddScoped", "AddTransient", "AddSingleton", "keyed
-  services", "decorator", "Scrutor", "IServiceCollection", or "captive dependency".
+  service composition, organizing DI registrations, or when the user mentions
+  "DI", "dependency injection", "service registration", "AddScoped", "AddTransient",
+  "AddSingleton", "keyed services", "decorator", "Scrutor", "IServiceCollection",
+  "captive dependency", "Add* methods", "service extension", or "DI patterns".
 ---
 
 # Dependency Injection

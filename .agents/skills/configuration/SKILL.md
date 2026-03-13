@@ -2,12 +2,16 @@
 name: configuration
 description: >
   Configuration patterns for .NET 10 applications. Covers the Options pattern,
-  IOptionsSnapshot vs IOptions, secrets management, and environment-based
-  configuration.
+  IOptions vs IOptionsSnapshot vs IOptionsMonitor, secrets management,
+  environment-based configuration, IValidateOptions for complex validation,
+  Data Annotations validation, ValidateOnStart, PostConfigure, named options,
+  and fail-fast startup validation patterns.
   Load this skill when setting up application configuration, managing secrets,
-  binding configuration sections, or when the user mentions "configuration",
-  "appsettings", "Options pattern", "IOptions", "IOptionsSnapshot", "secrets",
-  "user secrets", "environment variables", "connection string", or "config binding".
+  binding configuration sections, implementing config validation, or when the user
+  mentions "configuration", "appsettings", "Options pattern", "IOptions",
+  "IOptionsSnapshot", "IOptionsMonitor", "IValidateOptions", "ValidateOnStart",
+  "secrets", "user secrets", "environment variables", "connection string",
+  "config binding", "named options", or "PostConfigure".
 ---
 
 # Configuration

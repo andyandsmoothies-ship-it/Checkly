@@ -1,13 +1,17 @@
 ---
 name: security-scan
 description: >
-  Deep security scanning for .NET applications across 6 layers: vulnerable packages,
-  secrets detection, OWASP code patterns, auth configuration, CORS policy, and
-  data protection. Produces severity-rated findings with specific remediation steps.
+  Comprehensive security scanning and auditing for .NET applications. Performs deep
+  6-layer code scanning (vulnerable packages, secrets detection, OWASP code patterns,
+  auth configuration, CORS policy, data protection) AND strategic security auditing
+  (threat modeling, DevSecOps pipeline review, compliance assessment for GDPR/HIPAA/SOC2,
+  incident response planning). Produces severity-rated findings with specific remediation.
   Load this skill when: "security scan", "security audit", "check for vulnerabilities",
   "find secrets", "OWASP", "auth review", "CORS check", "security review",
   "penetration test prep", "CVE check", "vulnerability scan", "hardcoded password",
-  "data protection", "security posture".
+  "data protection", "security posture", "threat model", "DevSecOps", "compliance",
+  "GDPR", "HIPAA", "SOC2", "incident response", "supply chain security".
+  Use PROACTIVELY for any security-related work.
 ---
 
 # Security Scan
