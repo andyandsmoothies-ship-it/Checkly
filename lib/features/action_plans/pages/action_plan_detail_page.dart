@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
+import '../widgets/action_timeline.dart';
 
 final _di = GetIt.instance;
 
@@ -43,7 +44,7 @@ class ActionPlanDetailPage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             children: [
               // ── Status Timeline ──
-              _StatusTimeline(status: plan.status),
+              ActionTimeline.fromStatus(plan.status),
               const SizedBox(height: 24),
 
               // ── Info Section ──
@@ -181,78 +182,6 @@ class ActionPlanDetailPage extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-// ── Status Timeline ──
-
-class _StatusTimeline extends StatelessWidget {
-  final String status;
-
-  const _StatusTimeline({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final steps = ['open', 'pending_verify', 'closed'];
-    final labels = ['Open', 'Pending Verify', 'Closed'];
-    final icons = [Icons.flag, Icons.hourglass_top, Icons.check_circle];
-    final currentIdx = steps.indexOf(status).clamp(0, 2);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: List.generate(steps.length * 2 - 1, (i) {
-            if (i.isOdd) {
-              // Connector line
-              final stepIdx = i ~/ 2;
-              final active = currentIdx > stepIdx;
-              return Expanded(
-                child: Container(
-                  height: 3,
-                  color: active
-                      ? AppTheme.success
-                      : theme.colorScheme.outlineVariant,
-                ),
-              );
-            }
-
-            final stepIdx = i ~/ 2;
-            final isComplete = currentIdx > stepIdx;
-            final isCurrent = currentIdx == stepIdx;
-            final color = isComplete
-                ? AppTheme.success
-                : isCurrent
-                ? theme.colorScheme.primary
-                : theme.colorScheme.outlineVariant;
-
-            return Column(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: color.withValues(alpha: 0.15),
-                    border: Border.all(color: color, width: 2),
-                  ),
-                  child: Icon(icons[stepIdx], size: 18, color: color),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  labels[stepIdx],
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: color,
-                    fontWeight: isCurrent ? FontWeight.bold : null,
-                  ),
-                ),
-              ],
-            );
-          }),
-        ),
-      ),
     );
   }
 }

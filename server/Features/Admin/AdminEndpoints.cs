@@ -15,11 +15,17 @@ public static class AdminEndpoints
         group.MapGet("/users", ListUsers.HandleAsync)
             .WithName("ListUsers");
 
+        group.MapPost("/users", CreateUser.HandleAsync)
+            .WithName("CreateUser");
+
         group.MapPut("/users/{id}", UpdateUser.HandleAsync)
             .WithName("UpdateUser");
 
         group.MapPost("/users/{id}/ban", BanUser.HandleAsync)
             .WithName("BanUser");
+
+        group.MapPost("/users/{id}/reset-password", ResetPassword.HandleAsync)
+            .WithName("ResetPassword");
 
         // S8: SM Transfer
         group.MapPost("/stores/{storeId}/transfer", TransferStoreManager.HandleAsync)

@@ -4,6 +4,7 @@ import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
 
 import '../widgets/trend_chart.dart';
+import '../widgets/category_heatmap.dart';
 
 /// 6C: Analytics page — 5 KPI cards + 6-month trend + filters.
 /// Data sourced from local CachedSubmissions (filtered by reviewStatus != rejected).
@@ -27,6 +28,9 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   // Trend data
   List<TrendPoint> _trend = [];
+
+  // Category heatmap data
+  List<CategoryScore> _categoryScores = [];
 
   @override
   void initState() {
@@ -81,6 +85,28 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       final avg = e.value.reduce((a, b) => a + b) / e.value.length;
       return TrendPoint(e.key, avg, e.value.length);
     }).toList()..sort((a, b) => a.month.compareTo(b.month));
+
+    // Category heatmap — group by template type
+    final templates = await _db.select(_db.cachedTemplates).get();
+    final templateTypeMap = <String, String>{};
+    for (final t in templates) {
+      templateTypeMap[t.id] = t.type;
+    }
+    final catScores = <String, List<double>>{};
+    for (final s in subs) {
+      final type = templateTypeMap[s.templateId];
+      if (type != null && s.totalScore != null) {
+        catScores.putIfAbsent(type, () => []).add(s.totalScore!);
+      }
+    }
+    _categoryScores = catScores.entries.map((e) {
+      final avg = e.value.reduce((a, b) => a + b) / e.value.length;
+      return CategoryScore(
+        name: e.key,
+        avgScore: avg,
+        auditCount: e.value.length,
+      );
+    }).toList();
 
     setState(() => _loading = false);
   }
@@ -142,9 +168,13 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   Text('6-Month Trend', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 12),
 
-                  // Simple trend bars (fl_chart dependency not added — using cards)
                   // Trend chart (fl_chart LineChart)
                   TrendChart(data: _trend),
+
+                  const SizedBox(height: 24),
+
+                  // Category heatmap
+                  CategoryHeatmap(categories: _categoryScores),
                 ],
               ),
             ),

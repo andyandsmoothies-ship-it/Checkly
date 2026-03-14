@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../manager/history_manager.dart';
@@ -91,6 +92,10 @@ class _HistoryPageState extends State<HistoryPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Audits')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/templates'),
+        child: const Icon(Icons.add),
+      ),
       body: ListenableBuilder(
         listenable: manager,
         builder: (context, _) {
