@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/warm_chip.dart';
 import '../manager/history_manager.dart';
 import '../model/submission_dto.dart';
 
@@ -26,8 +28,10 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
-    _di<HistoryManager>().loadHistory();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _di<HistoryManager>().loadHistory();
+    });
   }
 
   @override
@@ -148,28 +152,28 @@ class _HistoryPageState extends State<HistoryPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    _FilterChip(
+                    WarmChip(
                       label: 'All',
                       count: _countByStatus('all'),
                       selected: _filter == 'all',
                       onTap: () => setState(() => _filter = 'all'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'Draft',
                       count: _countByStatus('draft'),
                       selected: _filter == 'draft',
                       onTap: () => setState(() => _filter = 'draft'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'In Progress',
                       count: _countByStatus('in_progress'),
                       selected: _filter == 'in_progress',
                       onTap: () => setState(() => _filter = 'in_progress'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'Submitted',
                       count: _countByStatus('completed'),
                       selected: _filter == 'completed',
@@ -250,49 +254,6 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
-// ── Filter Chip ──
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final int count;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.count,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? theme.colorScheme.primary
-              : AppTheme.oatmeal.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          '$label ($count)',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: selected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ── Store Group (collapsible) ──
 
 class _StoreGroup extends StatelessWidget {
@@ -305,36 +266,42 @@ class _StoreGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return ExpansionTile(
-      initiallyExpanded: true,
-      tilePadding: EdgeInsets.zero,
-      title: Row(
-        children: [
-          Text(
-            storeName.toUpperCase(),
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              '${submissions.length}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: EdgeInsets.zero,
+        title: Row(
+          children: [
+            Text(
+              storeName.toUpperCase(),
+              style: AppFonts.displayStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.charcoal.withValues(alpha: 0.4),
+                letterSpacing: 3,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${submissions.length}',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        children: submissions.map((s) => _AuditCard(submission: s)).toList(),
       ),
-      children: submissions.map((s) => _AuditCard(submission: s)).toList(),
     );
   }
 }
@@ -363,24 +330,20 @@ class _AuditCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            // Score circle
+            // Score circle (Apothecary: primary/10 bg, no border)
             Container(
               width: 48,
               height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: color.withAlpha(20),
-                border: Border.all(color: color, width: 2),
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
               ),
               child: Center(
                 child: Text(
                   submission.totalScore != null
-                      ? '${submission.totalScore!.toStringAsFixed(0)}%'
+                      ? submission.totalScore!.toStringAsFixed(0)
                       : '—',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: color,
-                  ),
+                  style: AppFonts.serifStyle(fontSize: 16, color: color),
                 ),
               ),
             ),

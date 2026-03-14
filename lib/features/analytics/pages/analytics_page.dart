@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:checkly/_shared/database/app_database.dart';
+import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
+import 'package:checkly/_shared/theme/app_fonts.dart';
+import 'package:checkly/_shared/widgets/warm_chip.dart';
+import 'package:checkly/_shared/widgets/section_header.dart';
 import 'package:get_it/get_it.dart';
 
 import '../widgets/trend_chart.dart';
@@ -16,7 +20,7 @@ class AnalyticsPage extends StatefulWidget {
 }
 
 class _AnalyticsPageState extends State<AnalyticsPage> {
-  final _db = GetIt.I<AppDatabase>();
+  late final AppDatabase _db;
   bool _loading = true;
 
   // Filters
@@ -42,6 +46,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   @override
   void initState() {
     super.initState();
+    _db = GetIt.I<DatabaseService>().db;
     _loadData();
   }
 
@@ -237,9 +242,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _DateChip(
+                        WarmChip(
                           label: 'All Time',
-                          value: 'all',
                           selected: _dateRange == 'all',
                           onTap: () {
                             _dateRange = 'all';
@@ -248,9 +252,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           },
                         ),
                         const SizedBox(width: 8),
-                        _DateChip(
+                        WarmChip(
                           label: '30 Days',
-                          value: '30',
                           selected: _dateRange == '30',
                           onTap: () {
                             _dateRange = '30';
@@ -259,9 +262,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           },
                         ),
                         const SizedBox(width: 8),
-                        _DateChip(
+                        WarmChip(
                           label: '90 Days',
-                          value: '90',
                           selected: _dateRange == '90',
                           onTap: () {
                             _dateRange = '90';
@@ -270,9 +272,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           },
                         ),
                         const SizedBox(width: 8),
-                        _DateChip(
+                        WarmChip(
                           label: '6 Months',
-                          value: '180',
                           selected: _dateRange == '180',
                           onTap: () {
                             _dateRange = '180';
@@ -294,31 +295,31 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         icon: Icons.assignment,
                         label: 'Total Audits',
                         value: '$_totalAudits',
-                        color: theme.colorScheme.primary,
+                        accentColor: theme.colorScheme.primary,
                       ),
                       _KpiCard(
                         icon: Icons.speed,
                         label: 'Avg Score',
                         value: '${_avgScore.toStringAsFixed(1)}%',
-                        color: AppTheme.success,
+                        accentColor: AppTheme.success,
                       ),
                       _KpiCard(
                         icon: Icons.pending_actions,
                         label: 'Open APs',
                         value: '$_openAPs',
-                        color: AppTheme.warning,
+                        accentColor: AppTheme.warning,
                       ),
                       _KpiCard(
                         icon: Icons.warning_amber,
                         label: 'Overdue',
                         value: '$_overdueAPs',
-                        color: Colors.red,
+                        accentColor: Colors.red,
                       ),
                       _KpiCard(
                         icon: Icons.check_circle,
                         label: 'Completion',
                         value: '${_completionRate.toStringAsFixed(1)}%',
-                        color: AppTheme.info,
+                        accentColor: AppTheme.info,
                       ),
                     ],
                   ),
@@ -326,8 +327,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   const SizedBox(height: 24),
 
                   // Trend section header
-                  Text('6-Month Trend', style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 12),
+                  const SectionHeader('6-MONTH TREND'),
 
                   // Trend chart (fl_chart LineChart)
                   TrendChart(data: _trend),
@@ -335,6 +335,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   const SizedBox(height: 24),
 
                   // Category heatmap
+                  const SectionHeader('CATEGORY PERFORMANCE'),
                   CategoryHeatmap(categories: _categoryScores),
                 ],
               ),
@@ -343,81 +344,53 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   }
 }
 
-class _DateChip extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _DateChip({
-    required this.label,
-    required this.value,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? theme.colorScheme.primary
-              : theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: selected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _KpiCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  final Color color;
+  final Color accentColor;
 
   const _KpiCard({
     required this.icon,
     required this.label,
     required this.value,
-    required this.color,
+    required this.accentColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: (MediaQuery.sizeOf(context).width - 40) / 2,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: accentColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.3)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: accentColor, size: 18),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: AppFonts.serifStyle(
+                fontSize: 28,
+                color: AppTheme.charcoal,
               ),
-              Text(label, style: Theme.of(context).textTheme.bodySmall),
-            ],
-          ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label.toUpperCase(),
+              style: AppFonts.displayStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.charcoal.withValues(alpha: 0.5),
+                letterSpacing: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );

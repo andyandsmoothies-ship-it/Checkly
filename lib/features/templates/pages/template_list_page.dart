@@ -5,10 +5,24 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/warm_chip.dart';
 import '../manager/template_manager.dart';
 import '../model/template_dto.dart';
 
 final _di = GetIt.instance;
+
+/// Template type labels matching PWA TemplateCard constants.
+const kTemplateTypeLabels = <String, String>{
+  'qc': 'QUALITY CONTROL',
+  'training': 'TRAINING',
+  'general': 'GENERAL',
+  'checklist': 'CHECKLIST',
+  'safety': 'SAFETY',
+};
+
+/// Display order for template types.
+const _typeOrder = ['qc', 'training', 'general', 'checklist', 'safety'];
 
 /// Template list page — search, filter tabs, and FAB.
 /// Matches PWA spec: search bar, Published/Draft tabs, template cards.
@@ -26,7 +40,9 @@ class _TemplateListPageState extends State<TemplateListPage> {
   @override
   void initState() {
     super.initState();
-    _di<TemplateManager>().loadTemplates();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _di<TemplateManager>().loadTemplates();
+    });
   }
 
   List<TemplateDto> get _filtered {
@@ -53,6 +69,23 @@ class _TemplateListPageState extends State<TemplateListPage> {
     }
 
     return items;
+  }
+
+  /// Groups filtered templates by type, respecting _typeOrder.
+  Map<String, List<TemplateDto>> get _groupedByType {
+    final items = _filtered;
+    final groups = <String, List<TemplateDto>>{};
+    for (final t in items) {
+      groups.putIfAbsent(t.type, () => []).add(t);
+    }
+    // Sort keys by _typeOrder, unknowns at end
+    final sortedKeys = groups.keys.toList()
+      ..sort((a, b) {
+        final ia = _typeOrder.indexOf(a);
+        final ib = _typeOrder.indexOf(b);
+        return (ia == -1 ? 999 : ia).compareTo(ib == -1 ? 999 : ib);
+      });
+    return {for (final k in sortedKeys) k: groups[k]!};
   }
 
   int _countByFilter(String filter) {
@@ -124,21 +157,21 @@ class _TemplateListPageState extends State<TemplateListPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    _FilterChip(
+                    WarmChip(
                       label: 'All',
                       count: _countByFilter('all'),
                       selected: _filter == 'all',
                       onTap: () => setState(() => _filter = 'all'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'Published',
                       count: _countByFilter('published'),
                       selected: _filter == 'published',
                       onTap: () => setState(() => _filter = 'published'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'Draft',
                       count: _countByFilter('draft'),
                       selected: _filter == 'draft',
@@ -149,7 +182,7 @@ class _TemplateListPageState extends State<TemplateListPage> {
               ),
               const SizedBox(height: 8),
 
-              // Template list
+              // Grouped template list
               Expanded(
                 child: _filtered.isEmpty
                     ? Center(
@@ -171,11 +204,21 @@ class _TemplateListPageState extends State<TemplateListPage> {
                       )
                     : RefreshIndicator(
                         onRefresh: () => manager.loadTemplates(),
-                        child: ListView.builder(
+                        child: ListView(
                           padding: const EdgeInsets.all(16),
-                          itemCount: _filtered.length,
-                          itemBuilder: (context, index) =>
-                              _TemplateCard(template: _filtered[index]),
+                          children: _groupedByType.entries.map((entry) {
+                            final type = entry.key;
+                            final templates = entry.value;
+                            final label =
+                                kTemplateTypeLabels[type] ?? type.toUpperCase();
+                            return _TypeSection(
+                              label: label,
+                              count: templates.length,
+                              children: templates
+                                  .map((t) => _TemplateCard(template: t))
+                                  .toList(),
+                            );
+                          }).toList(),
                         ),
                       ),
               ),
@@ -187,44 +230,58 @@ class _TemplateListPageState extends State<TemplateListPage> {
   }
 }
 
-// ── Filter Chip ──
+// ── Type Section (collapsible group) ──
 
-class _FilterChip extends StatelessWidget {
+class _TypeSection extends StatelessWidget {
   final String label;
   final int count;
-  final bool selected;
-  final VoidCallback onTap;
+  final List<Widget> children;
 
-  const _FilterChip({
+  const _TypeSection({
     required this.label,
     required this.count,
-    required this.selected,
-    required this.onTap,
+    required this.children,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? theme.colorScheme.primary
-              : AppTheme.oatmeal.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(20),
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: EdgeInsets.zero,
+        title: Row(
+          children: [
+            Text(
+              label,
+              style: AppFonts.displayStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.charcoal.withValues(alpha: 0.4),
+                letterSpacing: 3,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '$count',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
-        child: Text(
-          '$label ($count)',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: selected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        children: children,
       ),
     );
   }
@@ -312,9 +369,90 @@ class _TemplateCard extends StatelessWidget {
                 ),
               ),
 
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurfaceVariant,
+              // Context menu
+              PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.more_vert,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                onSelected: (action) {
+                  switch (action) {
+                    case 'start':
+                      context.push('/audit/new?templateId=${template.id}');
+                    case 'edit':
+                      context.push('/templates/edit/${template.id}');
+                    case 'duplicate':
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Duplicate — coming soon'),
+                        ),
+                      );
+                    case 'delete':
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete Template'),
+                          content: Text(
+                            'Delete "${template.title}"? This cannot be undone.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Cancel'),
+                            ),
+                            FilledButton(
+                              onPressed: () {
+                                Navigator.pop(ctx);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Delete — coming soon'),
+                                  ),
+                                );
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      );
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'start',
+                    child: ListTile(
+                      leading: Icon(Icons.play_arrow),
+                      title: Text('Quick Start'),
+                      dense: true,
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: ListTile(
+                      leading: Icon(Icons.edit),
+                      title: Text('Edit'),
+                      dense: true,
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'duplicate',
+                    child: ListTile(
+                      leading: Icon(Icons.copy),
+                      title: Text('Duplicate'),
+                      dense: true,
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: ListTile(
+                      leading: Icon(Icons.delete_outline, color: Colors.red),
+                      title: Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      dense: true,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

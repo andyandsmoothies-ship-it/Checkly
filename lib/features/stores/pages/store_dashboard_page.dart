@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:checkly/_shared/database/app_database.dart';
+import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
 
@@ -13,7 +14,7 @@ class StoreDashboardPage extends StatefulWidget {
 }
 
 class _StoreDashboardPageState extends State<StoreDashboardPage> {
-  final _db = GetIt.I<AppDatabase>();
+  late final AppDatabase _db;
   bool _loading = true;
 
   String _storeName = '';
@@ -24,6 +25,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
   @override
   void initState() {
     super.initState();
+    _db = GetIt.I<DatabaseService>().db;
     _loadData();
   }
 

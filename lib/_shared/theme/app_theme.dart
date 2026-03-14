@@ -1,36 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
 
 /// Checkly design system — "Apothecary" Editorial Utilitarian aesthetic.
 ///
-/// Primary: #4CAE4F (Muted Green)
-/// Display font: Manrope | Serif accent: Lora
-/// Light bg: Warm Cream #F9F7F2 | Dark bg: Deep Forest #151D15
+/// Color constants are defined in [AppColors].
+/// Typography helpers are in [AppFonts].
+/// This file builds ThemeData from those primitives.
 class AppTheme {
   AppTheme._();
 
-  // ---------- Color Tokens ----------
-  static const _primarySeed = Color(0xFF4CAE4F); // Muted Green
-  static const _destructive = Color(0xFFEF4444);
-  static const _success = Color(0xFF16A34A);
-  static const _warning = Color(0xFFF59E0B);
-  static const _info = Color(0xFF0EA5E9);
-
-  // ---------- Apothecary Palette ----------
-  static const oatmeal = Color(0xFFE8E2D6);
-  static const softPeach = Color(0xFFF5E6DA);
-  static const sageGray = Color(0xFFD1D9D1);
-  static const warmCream = Color(0xFFF9F7F2);
-  static const charcoal = Color(0xFF2D312E);
-  static const deepForest = Color(0xFF151D15);
+  // ── Re-exports for backward compatibility ──
+  // Pages can use AppTheme.oatmeal or AppColors.oatmeal interchangeably.
+  static const oatmeal = AppColors.oatmeal;
+  static const softPeach = AppColors.softPeach;
+  static const sageGray = AppColors.sageGray;
+  static const warmCream = AppColors.warmCream;
+  static const charcoal = AppColors.charcoal;
+  static const deepForest = AppColors.deepForest;
+  static const success = AppColors.success;
+  static const warning = AppColors.warning;
+  static const info = AppColors.info;
 
   // ---------- Light Theme ----------
   static ThemeData get light {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: _primarySeed,
+      seedColor: AppColors.primarySeed,
       brightness: Brightness.light,
-      error: _destructive,
-      surface: warmCream,
+      error: AppColors.destructive,
+      surface: AppColors.warmCream,
     );
 
     return _buildTheme(colorScheme);
@@ -39,10 +37,10 @@ class AppTheme {
   // ---------- Dark Theme ----------
   static ThemeData get dark {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: _primarySeed,
+      seedColor: AppColors.primarySeed,
       brightness: Brightness.dark,
-      error: _destructive,
-      surface: deepForest,
+      error: AppColors.destructive,
+      surface: AppColors.deepForest,
     );
 
     return _buildTheme(colorScheme);
@@ -77,7 +75,7 @@ class AppTheme {
             : colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: sageGray.withValues(alpha: 0.5)),
+          side: BorderSide(color: AppColors.sageGray.withValues(alpha: 0.5)),
         ),
       ),
 
@@ -110,7 +108,9 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: sageGray.withValues(alpha: 0.5)),
+          borderSide: BorderSide(
+            color: AppColors.sageGray.withValues(alpha: 0.5),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -131,16 +131,16 @@ class AppTheme {
 
       // Chip — warm oatmeal accents
       chipTheme: ChipThemeData(
-        backgroundColor: oatmeal.withValues(alpha: 0.5),
+        backgroundColor: AppColors.oatmeal.withValues(alpha: 0.5),
         selectedColor: colorScheme.primary.withValues(alpha: 0.15),
         labelStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: sageGray.withValues(alpha: 0.3)),
+          side: BorderSide(color: AppColors.sageGray.withValues(alpha: 0.3)),
         ),
       ),
 
-      // Bottom navigation — styled via custom widget, but keep base config
+      // Bottom navigation — styled via custom widget
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -155,9 +155,4 @@ class AppTheme {
       ),
     );
   }
-
-  // ---------- Extension Colors ----------
-  static const success = _success;
-  static const warning = _warning;
-  static const info = _info;
 }

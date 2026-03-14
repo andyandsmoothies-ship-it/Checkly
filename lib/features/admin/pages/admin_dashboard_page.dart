@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/section_header.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../templates/services/template_api_service.dart';
@@ -29,8 +31,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   void initState() {
     super.initState();
     _manager = _di<DashboardManager>();
-    _manager.loadStats();
-    _loadCounts();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _manager.loadStats();
+      _loadCounts();
+    });
   }
 
   Future<void> _loadCounts() async {
@@ -71,13 +75,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             padding: const EdgeInsets.all(16),
             children: [
               // Subtitle
-              Text(
-                'System management',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SectionHeader('SYSTEM MANAGEMENT'),
 
               // Stats grid (2×2)
               Row(
@@ -182,36 +180,36 @@ class _AdminStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = Theme.of(context); // ignore: unused_local_variable
 
-    return Card(
-      color: filled ? color : null,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Icon(icon, color: filled ? Colors.white : color, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: filled ? Colors.white : color,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: filled ? AppTheme.softPeach : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: filled
+            ? null
+            : Border.all(color: AppTheme.sageGray.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: AppFonts.serifStyle(fontSize: 28, color: AppTheme.charcoal),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: AppFonts.displayStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.charcoal.withValues(alpha: 0.5),
+              letterSpacing: 0.5,
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: filled
-                    ? Colors.white.withValues(alpha: 0.8)
-                    : theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

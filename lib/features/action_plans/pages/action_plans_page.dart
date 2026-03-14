@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/warm_chip.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
 
@@ -100,28 +102,28 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    _FilterChip(
+                    WarmChip(
                       label: 'All',
                       count: _countByStatus('all'),
                       selected: _filter == 'all',
                       onTap: () => setState(() => _filter = 'all'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'Open',
                       count: _countByStatus('open'),
                       selected: _filter == 'open',
                       onTap: () => setState(() => _filter = 'open'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'Verify',
                       count: _countByStatus('pending_verify'),
                       selected: _filter == 'pending_verify',
                       onTap: () => setState(() => _filter = 'pending_verify'),
                     ),
                     const SizedBox(width: 8),
-                    _FilterChip(
+                    WarmChip(
                       label: 'Done',
                       count: _countByStatus('closed'),
                       selected: _filter == 'closed',
@@ -168,49 +170,6 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
   }
 }
 
-// ── Filter Chip ──
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final int count;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.count,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? theme.colorScheme.primary
-              : AppTheme.oatmeal.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          '$label ($count)',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: selected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ── Store Group (collapsible) ──
 
 class _StoreGroup extends StatelessWidget {
@@ -228,38 +187,46 @@ class _StoreGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return ExpansionTile(
-      initiallyExpanded: true,
-      tilePadding: EdgeInsets.zero,
-      title: Row(
-        children: [
-          Text(
-            storeName.toUpperCase(),
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              '${plans.length}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: EdgeInsets.zero,
+        title: Row(
+          children: [
+            Text(
+              storeName.toUpperCase(),
+              style: AppFonts.displayStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.charcoal.withValues(alpha: 0.4),
+                letterSpacing: 3,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${plans.length}',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        children: plans
+            .map(
+              (plan) => _ActionPlanCard(plan: plan, onTap: () => onTap(plan)),
+            )
+            .toList(),
       ),
-      children: plans
-          .map((plan) => _ActionPlanCard(plan: plan, onTap: () => onTap(plan)))
-          .toList(),
     );
   }
 }

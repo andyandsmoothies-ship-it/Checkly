@@ -23,7 +23,9 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
   @override
   void initState() {
     super.initState();
-    _di<TemplateManager>().loadTemplateTree(widget.templateId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _di<TemplateManager>().loadTemplateTree(widget.templateId);
+    });
   }
 
   @override

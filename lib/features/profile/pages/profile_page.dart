@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../auth/manager/auth_manager.dart';
 import '../../../_shared/theme/theme_manager.dart';
+import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_fonts.dart';
 
 final _di = GetIt.instance;
 
@@ -168,11 +170,11 @@ class _ProfileCard extends StatelessWidget {
     final theme = Theme.of(context);
     final roleColor = _roleColor(role, theme);
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.warmCream,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
+        border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.5)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -192,8 +194,9 @@ class _ProfileCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               email,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+              style: AppFonts.serifStyle(
+                fontSize: 18,
+                color: AppTheme.charcoal,
               ),
             ),
             const SizedBox(height: 8),
@@ -270,8 +273,11 @@ class _StatsRow extends StatelessWidget {
     );
   }
 
-  Widget _divider(ThemeData theme) =>
-      Container(width: 1, height: 40, color: theme.colorScheme.outlineVariant);
+  Widget _divider(ThemeData theme) => Container(
+    width: 1,
+    height: 40,
+    color: AppTheme.sageGray.withValues(alpha: 0.5),
+  );
 }
 
 class _StatColumn extends StatelessWidget {
@@ -328,12 +334,12 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 1),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppTheme.sageGray.withValues(alpha: 0.3)),
+        ),
       ),
       child: ListTile(
         leading: Icon(icon, color: theme.colorScheme.primary),

@@ -7,6 +7,8 @@ import '../../../_shared/widgets/checkly_fab.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/section_header.dart';
+import '../../../_shared/widgets/stat_block.dart';
 import '../../../_shared/database/database_service.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/dashboard_manager.dart';
@@ -30,7 +32,9 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     _manager = _di<DashboardManager>();
-    _manager.loadStats();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _manager.loadStats();
+    });
   }
 
   Future<void> _openCategoryDrawer(String categoryType) async {
@@ -177,76 +181,18 @@ class _DashboardPageState extends State<DashboardPage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    // Large softPeach block (h-40)
                     Expanded(
-                      child: Container(
-                        height: 160,
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: AppTheme.softPeach,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${stats.pendingActionPlanCount}',
-                              style: AppFonts.serifStyle(
-                                fontSize: 36,
-                                color: AppTheme.charcoal,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Open Action Plans',
-                              style: AppFonts.displayStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppTheme.charcoal.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: StatBlock(
+                        value: '${stats.pendingActionPlanCount}',
+                        label: 'Open Action Plans',
                       ),
                     ),
                     const SizedBox(width: 16),
-                    // Narrow white block with sage border (h-32)
                     SizedBox(
                       width: 128,
-                      height: 128,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: AppTheme.sageGray.withValues(alpha: 0.5),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${stats.recentAuditCount}',
-                              style: AppFonts.serifStyle(
-                                fontSize: 24,
-                                color: AppTheme.charcoal,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'AUDITS',
-                              style: AppFonts.displayStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                color: AppTheme.charcoal.withValues(alpha: 0.6),
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: StatBlock.compact(
+                        value: '${stats.recentAuditCount}',
+                        label: 'Audits',
                       ),
                     ),
                   ],
@@ -254,16 +200,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 32),
 
                 // ── Recent Scans Section Header ──
-                Text(
-                  'RECENT SCANS',
-                  style: AppFonts.displayStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.charcoal.withValues(alpha: 0.4),
-                    letterSpacing: 3,
-                  ),
-                ),
-                const SizedBox(height: 16),
+                const SectionHeader('RECENT SCANS'),
 
                 // ── Per-Template Sections ──
                 ...stats.templateCategories.map(

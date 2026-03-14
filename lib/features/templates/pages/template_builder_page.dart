@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:checkly/_shared/database/app_database.dart';
+import 'package:checkly/_shared/database/database_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// 6C: Template Builder — metadata form + scoring rule toggles + section/criteria list (read-only).
@@ -12,7 +13,15 @@ class TemplateBuilderPage extends StatefulWidget {
 }
 
 class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
-  final _db = GetIt.I<AppDatabase>();
+  late final AppDatabase _db;
+
+  @override
+  void initState() {
+    super.initState();
+    _db = GetIt.I<DatabaseService>().db;
+    _loadData();
+  }
+
   bool _loading = true;
 
   CachedTemplate? _template;
@@ -20,12 +29,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
   // Scoring rule toggles
   bool _progressiveRepeatPenalty = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
 
   Future<void> _loadData() async {
     final templates = await _db.select(_db.cachedTemplates).get();
