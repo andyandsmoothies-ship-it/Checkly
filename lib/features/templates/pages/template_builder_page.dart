@@ -112,23 +112,36 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     });
   }
 
-  List<GroupDto> _buildGroups() {
-    return _sections.asMap().entries.map((e) {
+  List<GroupDto> _buildGroupsRecursive(List<_EditableGroup> groups) {
+    return groups.asMap().entries.map((e) {
       final i = e.key;
       final s = e.value;
+      // Build metadata JSON for sub-section fields
+      String? metadata;
+      if (s.maxPointsCtrl.text.isNotEmpty ||
+          s.minusPerFaultCtrl.text.isNotEmpty) {
+        metadata = json.encode({
+          if (s.maxPointsCtrl.text.isNotEmpty)
+            'subsection_max_points': double.tryParse(s.maxPointsCtrl.text),
+          if (s.minusPerFaultCtrl.text.isNotEmpty)
+            'minus_per_fault': double.tryParse(s.minusPerFaultCtrl.text),
+        });
+      }
       return GroupDto(
         id: s.id,
         title: s.titleCtrl.text,
         description: s.descCtrl.text.isEmpty ? null : s.descCtrl.text,
         weight: double.tryParse(s.weightCtrl.text),
         orderIndex: i,
-        children: const [],
+        metadata: metadata,
+        children: _buildGroupsRecursive(s.subSections),
         criteria: s.criteria.asMap().entries.map((ce) {
           final ci = ce.key;
           final c = ce.value;
           return CriterionDto(
             id: c.id,
             label: c.labelCtrl.text,
+            description: c.descCtrl.text.isEmpty ? null : c.descCtrl.text,
             inputType: c.inputType,
             pointsWeight: double.tryParse(c.pointsCtrl.text),
             isCcp: c.isCcp,
@@ -139,6 +152,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       );
     }).toList();
   }
+
+  List<GroupDto> _buildGroups() => _buildGroupsRecursive(_sections);
 
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
@@ -224,16 +239,29 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     });
   }
 
-  void _addCriterion(int sectionIndex) {
+  void _addSubSection(int sectionIndex) {
     setState(() {
-      _sections[sectionIndex].criteria.add(_EditableCriterion());
+      _sections[sectionIndex].subSections.add(_EditableGroup());
     });
   }
 
-  void _removeCriterion(int sectionIndex, int criterionIndex) {
+  void _removeSubSection(int sectionIndex, int subIndex) {
     setState(() {
-      _sections[sectionIndex].criteria[criterionIndex].dispose();
-      _sections[sectionIndex].criteria.removeAt(criterionIndex);
+      _sections[sectionIndex].subSections[subIndex].dispose();
+      _sections[sectionIndex].subSections.removeAt(subIndex);
+    });
+  }
+
+  void _addCriterionToGroup(_EditableGroup group) {
+    setState(() {
+      group.criteria.add(_EditableCriterion());
+    });
+  }
+
+  void _removeCriterionFromGroup(_EditableGroup group, int criterionIndex) {
+    setState(() {
+      group.criteria[criterionIndex].dispose();
+      group.criteria.removeAt(criterionIndex);
     });
   }
 
@@ -340,9 +368,16 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                     return _SectionEditor(
                       index: i,
                       section: section,
+                      depth: 0,
+                      densityEnabled: _weightedDensity,
+                      ccpEnabled: _ccpOverride,
+                      riskEnabled: _riskOverride,
                       onRemoveSection: () => _removeSection(i),
-                      onAddCriterion: () => _addCriterion(i),
-                      onRemoveCriterion: (ci) => _removeCriterion(i, ci),
+                      onAddCriterion: () => _addCriterionToGroup(section),
+                      onRemoveCriterion: (ci) =>
+                          _removeCriterionFromGroup(section, ci),
+                      onAddSubSection: () => _addSubSection(i),
+                      onRemoveSubSection: (si) => _removeSubSection(i, si),
                       onChanged: () => setState(() {}),
                     );
                   }),
@@ -363,33 +398,84 @@ class _EditableGroup {
   final TextEditingController titleCtrl;
   final TextEditingController descCtrl;
   final TextEditingController weightCtrl;
+  final TextEditingController maxPointsCtrl;
+  final TextEditingController minusPerFaultCtrl;
   List<_EditableCriterion> criteria;
+  List<_EditableGroup> subSections;
 
   _EditableGroup({
     this.id = '',
     String title = '',
     String description = '',
     String weight = '',
+    String maxPoints = '',
+    String minusPerFault = '',
     List<_EditableCriterion>? criteria,
+    List<_EditableGroup>? subSections,
   }) : titleCtrl = TextEditingController(text: title),
        descCtrl = TextEditingController(text: description),
        weightCtrl = TextEditingController(text: weight),
-       criteria = criteria ?? [];
+       maxPointsCtrl = TextEditingController(text: maxPoints),
+       minusPerFaultCtrl = TextEditingController(text: minusPerFault),
+       criteria = criteria ?? [],
+       subSections = subSections ?? [];
 
-  factory _EditableGroup.fromDto(GroupDto dto) => _EditableGroup(
-    id: dto.id,
-    title: dto.title,
-    description: dto.description ?? '',
-    weight: dto.weight?.toString() ?? '',
-    criteria: dto.criteria.map((c) => _EditableCriterion.fromDto(c)).toList(),
-  );
+  factory _EditableGroup.fromDto(GroupDto dto) {
+    // Parse metadata for sub-section fields
+    String maxPts = '';
+    String minusPf = '';
+    if (dto.metadata != null && dto.metadata!.isNotEmpty) {
+      try {
+        final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
+        if (meta['subsection_max_points'] != null) {
+          maxPts = meta['subsection_max_points'].toString();
+        }
+        if (meta['minus_per_fault'] != null) {
+          minusPf = meta['minus_per_fault'].toString();
+        }
+      } catch (_) {}
+    }
+    return _EditableGroup(
+      id: dto.id,
+      title: dto.title,
+      description: dto.description ?? '',
+      weight: dto.weight?.toString() ?? '',
+      maxPoints: maxPts,
+      minusPerFault: minusPf,
+      criteria: dto.criteria.map((c) => _EditableCriterion.fromDto(c)).toList(),
+      subSections: dto.children.map((g) => _EditableGroup.fromDto(g)).toList(),
+    );
+  }
+
+  /// Recursive count of sub-sections.
+  int countSubs() {
+    var count = subSections.length;
+    for (final s in subSections) {
+      count += s.countSubs();
+    }
+    return count;
+  }
+
+  /// Recursive count of criteria.
+  int countCriteria() {
+    var count = criteria.length;
+    for (final s in subSections) {
+      count += s.countCriteria();
+    }
+    return count;
+  }
 
   void dispose() {
     titleCtrl.dispose();
     descCtrl.dispose();
     weightCtrl.dispose();
+    maxPointsCtrl.dispose();
+    minusPerFaultCtrl.dispose();
     for (final c in criteria) {
       c.dispose();
+    }
+    for (final s in subSections) {
+      s.dispose();
     }
   }
 }
@@ -397,6 +483,7 @@ class _EditableGroup {
 class _EditableCriterion {
   final String id;
   final TextEditingController labelCtrl;
+  final TextEditingController descCtrl;
   final TextEditingController pointsCtrl;
   String inputType;
   bool isCcp;
@@ -405,16 +492,19 @@ class _EditableCriterion {
   _EditableCriterion({
     this.id = '',
     String label = '',
+    String description = '',
     String points = '',
-    this.inputType = 'pass_fail',
+    this.inputType = 'numeric',
     this.isCcp = false,
     this.isRisk = false,
   }) : labelCtrl = TextEditingController(text: label),
+       descCtrl = TextEditingController(text: description),
        pointsCtrl = TextEditingController(text: points);
 
   factory _EditableCriterion.fromDto(CriterionDto dto) => _EditableCriterion(
     id: dto.id,
     label: dto.label,
+    description: dto.description ?? '',
     points: dto.pointsWeight?.toString() ?? '',
     inputType: dto.inputType,
     isCcp: dto.isCcp,
@@ -423,6 +513,7 @@ class _EditableCriterion {
 
   void dispose() {
     labelCtrl.dispose();
+    descCtrl.dispose();
     pointsCtrl.dispose();
   }
 }
@@ -662,32 +753,61 @@ class _ScoringRulesCard extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AC-7: SECTION EDITOR
+// AC-7: SECTION EDITOR — recursive, supports sub-sections (Gap 1)
 // ═══════════════════════════════════════════════════════════════
 
 class _SectionEditor extends StatelessWidget {
   final int index;
   final _EditableGroup section;
+  final int depth;
+  final bool densityEnabled;
+  final bool ccpEnabled;
+  final bool riskEnabled;
   final VoidCallback onRemoveSection;
   final VoidCallback onAddCriterion;
   final ValueChanged<int> onRemoveCriterion;
+  final VoidCallback? onAddSubSection;
+  final ValueChanged<int>? onRemoveSubSection;
   final VoidCallback onChanged;
 
   const _SectionEditor({
     required this.index,
     required this.section,
+    this.depth = 0,
+    this.densityEnabled = true,
+    this.ccpEnabled = false,
+    this.riskEnabled = false,
     required this.onRemoveSection,
     required this.onAddCriterion,
     required this.onRemoveCriterion,
+    this.onAddSubSection,
+    this.onRemoveSubSection,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isRoot = depth == 0;
+
+    // Gap 6: count badge
+    final subCount = section.countSubs();
+    final critCount = section.countCriteria();
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(
+        bottom: 12,
+        left: isRoot ? 0 : 16, // Gap 1: indent sub-sections
+      ),
+      shape: isRoot
+          ? null
+          : RoundedRectangleBorder(
+              side: BorderSide(
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
@@ -699,17 +819,42 @@ class _SectionEditor extends StatelessWidget {
           ),
           title: Row(
             children: [
+              // Gap 9: Inline editable title in header
               Expanded(
-                child: Text(
-                  section.titleCtrl.text.isEmpty
-                      ? 'Section ${index + 1}'
-                      : section.titleCtrl.text,
+                child: TextField(
+                  controller: section.titleCtrl,
+                  decoration: InputDecoration(
+                    hintText: isRoot
+                        ? 'Section ${index + 1}'
+                        : 'Sub-section ${index + 1}',
+                    isDense: true,
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
+                  onChanged: (_) => onChanged(),
                 ),
               ),
-              if (section.weightCtrl.text.isNotEmpty)
+              // Gap 6: count badge (XS • YC)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppTheme.sageGray.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${subCount}S • ${critCount}C',
+                  style: AppFonts.serifStyle(
+                    fontSize: 10,
+                    color: AppTheme.charcoal.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              // Gap 7: conditional weight badge
+              if (densityEnabled && section.weightCtrl.text.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -734,35 +879,52 @@ class _SectionEditor extends StatelessWidget {
             onPressed: onRemoveSection,
           ),
           children: [
-            // Title & Weight
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    controller: section.titleCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Section Title',
-                      isDense: true,
-                    ),
-                    onChanged: (_) => onChanged(),
+            // Gap 7: Weight field only when density ON
+            if (densityEnabled)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: TextFormField(
+                  controller: section.weightCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Weight %',
+                    isDense: true,
                   ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => onChanged(),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: section.weightCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Weight %',
-                      isDense: true,
+              ),
+
+            // Gap 2: Sub-section metadata (depth > 0)
+            if (!isRoot) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: section.maxPointsCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Max Points',
+                        isDense: true,
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (_) => onChanged(),
                     ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (_) => onChanged(),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      controller: section.minusPerFaultCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Minus / Fault',
+                        isDense: true,
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (_) => onChanged(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
 
             // Criteria list
             ...section.criteria.asMap().entries.map((e) {
@@ -770,6 +932,8 @@ class _SectionEditor extends StatelessWidget {
               final c = e.value;
               return _CriteriaEditor(
                 criterion: c,
+                ccpEnabled: ccpEnabled,
+                riskEnabled: riskEnabled,
                 onRemove: () => onRemoveCriterion(ci),
                 onChanged: onChanged,
               );
@@ -787,6 +951,45 @@ class _SectionEditor extends StatelessWidget {
                 ),
               ),
             ),
+
+            // Gap 1: Sub-sections
+            if (isRoot) ...[
+              const Divider(),
+              ...section.subSections.asMap().entries.map((e) {
+                final si = e.key;
+                final sub = e.value;
+                return _SectionEditor(
+                  index: si,
+                  section: sub,
+                  depth: depth + 1,
+                  densityEnabled: densityEnabled,
+                  ccpEnabled: ccpEnabled,
+                  riskEnabled: riskEnabled,
+                  onRemoveSection: () => onRemoveSubSection?.call(si),
+                  onAddCriterion: () {
+                    sub.criteria.add(_EditableCriterion());
+                    onChanged();
+                  },
+                  onRemoveCriterion: (ci) {
+                    sub.criteria[ci].dispose();
+                    sub.criteria.removeAt(ci);
+                    onChanged();
+                  },
+                  onChanged: onChanged,
+                );
+              }),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: onAddSubSection,
+                  icon: const Icon(Icons.subdirectory_arrow_right, size: 14),
+                  label: const Text('Add Sub-Section'),
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -795,119 +998,254 @@ class _SectionEditor extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AC-7: CRITERIA EDITOR (inline row)
+// CRITERIA EDITOR — tap to open bottom sheet (Gap 5)
 // ═══════════════════════════════════════════════════════════════
 
 class _CriteriaEditor extends StatelessWidget {
   final _EditableCriterion criterion;
+  final bool ccpEnabled;
+  final bool riskEnabled;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
 
   const _CriteriaEditor({
     required this.criterion,
+    this.ccpEnabled = false,
+    this.riskEnabled = false,
     required this.onRemove,
     required this.onChanged,
   });
 
+  void _openDrawer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Edit Criterion',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Label
+              TextFormField(
+                controller: criterion.labelCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Criterion Label',
+                  isDense: true,
+                ),
+                onChanged: (_) => onChanged(),
+              ),
+              const SizedBox(height: 16),
+
+              // Gap 3: Description
+              TextFormField(
+                controller: criterion.descCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Standard / Requirement Details',
+                  isDense: true,
+                ),
+                maxLines: 3,
+                onChanged: (_) => onChanged(),
+              ),
+              const SizedBox(height: 16),
+
+              // Points
+              TextFormField(
+                controller: criterion.pointsCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Points Weight',
+                  isDense: true,
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (_) => onChanged(),
+              ),
+              const SizedBox(height: 16),
+
+              // Gap 8: CCP / RISK toggles
+              Row(
+                children: [
+                  _ToggleBadge(
+                    label: 'CCP',
+                    active: criterion.isCcp,
+                    enabled: ccpEnabled,
+                    onTap: () {
+                      criterion.isCcp = !criterion.isCcp;
+                      onChanged();
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  _ToggleBadge(
+                    label: 'RISK',
+                    active: criterion.isRisk,
+                    enabled: riskEnabled,
+                    onTap: () {
+                      criterion.isRisk = !criterion.isRisk;
+                      onChanged();
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Delete
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    onRemove();
+                  },
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  label: const Text(
+                    'Remove Criterion',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          // Label
-          Expanded(
-            flex: 3,
-            child: TextFormField(
-              controller: criterion.labelCtrl,
-              decoration: const InputDecoration(
-                hintText: 'Criterion label',
-                isDense: true,
+      child: InkWell(
+        onTap: () => _openDrawer(context),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.drag_indicator, size: 16, color: Colors.grey),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  criterion.labelCtrl.text.isEmpty
+                      ? 'Untitled criterion'
+                      : criterion.labelCtrl.text,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: criterion.labelCtrl.text.isEmpty
+                        ? theme.colorScheme.onSurfaceVariant
+                        : null,
+                  ),
+                ),
               ),
-              style: const TextStyle(fontSize: 13),
-              onChanged: (_) => onChanged(),
-            ),
+              if (criterion.pointsCtrl.text.isNotEmpty) ...[
+                const SizedBox(width: 4),
+                Text(
+                  '${criterion.pointsCtrl.text}pt',
+                  style: AppFonts.serifStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+              if (criterion.isCcp) ...[
+                const SizedBox(width: 4),
+                _ToggleBadge(
+                  label: 'CCP',
+                  active: true,
+                  enabled: ccpEnabled,
+                  onTap: () {},
+                ),
+              ],
+              if (criterion.isRisk) ...[
+                const SizedBox(width: 4),
+                _ToggleBadge(
+                  label: 'RISK',
+                  active: true,
+                  enabled: riskEnabled,
+                  onTap: () {},
+                ),
+              ],
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+            ],
           ),
-          const SizedBox(width: 8),
-          // Points
-          SizedBox(
-            width: 50,
-            child: TextFormField(
-              controller: criterion.pointsCtrl,
-              decoration: const InputDecoration(hintText: 'Pts', isDense: true),
-              keyboardType: TextInputType.number,
-              style: const TextStyle(fontSize: 13),
-              onChanged: (_) => onChanged(),
-            ),
-          ),
-          const SizedBox(width: 4),
-          // CCP badge
-          _ToggleBadge(
-            label: 'CCP',
-            active: criterion.isCcp,
-            onTap: () {
-              criterion.isCcp = !criterion.isCcp;
-              onChanged();
-            },
-          ),
-          const SizedBox(width: 4),
-          // RISK badge
-          _ToggleBadge(
-            label: 'RISK',
-            active: criterion.isRisk,
-            onTap: () {
-              criterion.isRisk = !criterion.isRisk;
-              onChanged();
-            },
-          ),
-          // Delete
-          IconButton(
-            icon: const Icon(Icons.close, size: 16),
-            onPressed: onRemove,
-            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-            padding: EdgeInsets.zero,
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
 /// Small toggle badge for CCP/RISK flags on criteria.
+/// Gap 8: supports `enabled` flag — greyed out when template-level toggle is OFF.
 class _ToggleBadge extends StatelessWidget {
   final String label;
   final bool active;
+  final bool enabled;
   final VoidCallback onTap;
 
   const _ToggleBadge({
     required this.label,
     required this.active,
+    this.enabled = true,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveActive = active && enabled;
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        decoration: BoxDecoration(
-          color: active
-              ? AppTheme.warning.withValues(alpha: 0.2)
-              : AppTheme.sageGray.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: active
-                ? AppTheme.warning
-                : AppTheme.sageGray.withValues(alpha: 0.5),
+      onTap: enabled ? onTap : null,
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.4,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: effectiveActive
+                ? AppTheme.warning.withValues(alpha: 0.2)
+                : AppTheme.sageGray.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: effectiveActive
+                  ? AppTheme.warning
+                  : AppTheme.sageGray.withValues(alpha: 0.5),
+            ),
           ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-            color: active ? AppTheme.warning : AppTheme.sageGray,
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: effectiveActive ? AppTheme.warning : AppTheme.sageGray,
+            ),
           ),
         ),
       ),
