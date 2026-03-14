@@ -1,5 +1,5 @@
 ---
-name: dotnet-tdd
+name: tdd
 description: Load this skill whenever building features or fixing bugs using TDD, when the user mentions "red-green-refactor", wants integration tests, or explicitly asks for test-first development.
 ---
 

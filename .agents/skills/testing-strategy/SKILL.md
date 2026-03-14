@@ -1,5 +1,5 @@
 ---
-name: dotnet-testing-strategy
+name: testing-strategy
 description: >
   Load this skill whenever asked to write or review tests in .NET!
   Provides the mandatory testing strategy for .NET 10 applications, including xUnit v3,
