@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Checkly (Windows)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define=API_BASE_URL=http://localhost:5288/api"
+      ]
+    },
+    {
+      "name": "Checkly (Android)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define=API_BASE_URL=http://192.168.1.27:5288/api"
+      ]
+    }
+  ]
+}

@@ -239,6 +239,21 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       label: const Text('Save Changes'),
                     ),
                   ),
+                  const SizedBox(height: 12),
+
+                  // Reset Password button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _showResetPasswordDialog(
+                        ctx,
+                        user['id'] as String,
+                        user['fullName'] as String? ?? 'this user',
+                      ),
+                      icon: const Icon(Icons.lock_reset),
+                      label: const Text('Reset Password'),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -281,12 +296,374 @@ class _UserManagementPageState extends State<UserManagementPage> {
     }
   }
 
+  void _showResetPasswordDialog(
+    BuildContext sheetCtx,
+    String userId,
+    String userName,
+  ) {
+    final passCtrl = TextEditingController();
+    String? passError;
+
+    showDialog(
+      context: sheetCtx,
+      builder: (dlgCtx) {
+        return StatefulBuilder(
+          builder: (dlgCtx, setDlgState) {
+            return AlertDialog(
+              title: Text('Reset Password'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Set a new password for $userName'),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: passCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock),
+                      errorText: passError,
+                      helperText: passError == null
+                          ? 'Min 8 chars: uppercase, digit, special char'
+                          : null,
+                    ),
+                    onChanged: (_) {
+                      if (passError != null)
+                        setDlgState(() => passError = null);
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dlgCtx).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    final pass = passCtrl.text;
+                    if (pass.isEmpty) {
+                      setDlgState(() => passError = 'Password is required');
+                      return;
+                    }
+                    try {
+                      await _di<AdminApiService>().resetPassword(userId, pass);
+                      if (context.mounted) {
+                        Navigator.of(dlgCtx).pop(); // Close dialog
+                        Navigator.of(sheetCtx).pop(); // Close edit sheet
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Password reset successfully'),
+                            backgroundColor: AppTheme.success,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      String? msg;
+                      if (e is DioException) {
+                        final data = e.response?.data;
+                        msg = data is Map
+                            ? data['message']?.toString()
+                            : data?.toString() ?? e.message;
+                      } else {
+                        msg = e.toString();
+                      }
+                      setDlgState(() => passError = msg);
+                    }
+                  },
+                  child: const Text('Reset'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showCreateUserSheet() {
+    final nameCtrl = TextEditingController();
+    final emailCtrl = TextEditingController();
+    final passCtrl = TextEditingController();
+    String selectedRole = 'auditor';
+    String? selectedStoreId;
+    String? selectedAreaId;
+    bool isSubmitting = false;
+    String? nameError;
+    String? emailError;
+    String? passwordError;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Create New User',
+                      style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    TextField(
+                      controller: nameCtrl,
+                      decoration: InputDecoration(
+                        labelText: 'Full Name',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.person),
+                        errorText: nameError,
+                      ),
+                      textCapitalization: TextCapitalization.words,
+                      onChanged: (_) {
+                        if (nameError != null)
+                          setSheetState(() => nameError = null);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: emailCtrl,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.email),
+                        errorText: emailError,
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (_) {
+                        if (emailError != null)
+                          setSheetState(() => emailError = null);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: passCtrl,
+                      decoration: InputDecoration(
+                        labelText: 'Temporary Password',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock),
+                        errorText: passwordError,
+                        helperText: passwordError == null
+                            ? 'Min 8 chars: uppercase, digit, special char'
+                            : null,
+                      ),
+                      obscureText: true,
+                      onChanged: (_) {
+                        if (passwordError != null)
+                          setSheetState(() => passwordError = null);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    DropdownButtonFormField<String>(
+                      value: selectedRole,
+                      decoration: const InputDecoration(
+                        labelText: 'Role',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'auditor',
+                          child: Text('Auditor'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'store_manager',
+                          child: Text('Store Manager'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'area_manager',
+                          child: Text('Area Manager'),
+                        ),
+                        DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                      ],
+                      onChanged: (v) =>
+                          setSheetState(() => selectedRole = v ?? 'auditor'),
+                    ),
+                    const SizedBox(height: 12),
+
+                    DropdownButtonFormField<String>(
+                      value: selectedStoreId,
+                      decoration: const InputDecoration(
+                        labelText: 'Assigned Store (optional)',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('— None —'),
+                        ),
+                        ..._stores.map(
+                          (s) => DropdownMenuItem(
+                            value: s['id'] as String,
+                            child: Text(s['name'] as String),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) =>
+                          setSheetState(() => selectedStoreId = v),
+                    ),
+                    const SizedBox(height: 12),
+
+                    DropdownButtonFormField<String>(
+                      value: selectedAreaId,
+                      decoration: const InputDecoration(
+                        labelText: 'Assigned Area (optional)',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('— None —'),
+                        ),
+                        ..._areas.map(
+                          (a) => DropdownMenuItem(
+                            value: a['id'] as String,
+                            child: Text(a['name'] as String),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) => setSheetState(() => selectedAreaId = v),
+                    ),
+                    const SizedBox(height: 20),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: isSubmitting
+                            ? null
+                            : () async {
+                                final name = nameCtrl.text.trim();
+                                final email = emailCtrl.text.trim();
+                                final pass = passCtrl.text;
+
+                                // Client-side required field validation
+                                String? nErr;
+                                String? eErr;
+                                String? pErr;
+                                if (name.isEmpty)
+                                  nErr = 'Full name is required';
+                                if (email.isEmpty) eErr = 'Email is required';
+                                if (pass.isEmpty) pErr = 'Password is required';
+
+                                if (nErr != null ||
+                                    eErr != null ||
+                                    pErr != null) {
+                                  setSheetState(() {
+                                    nameError = nErr;
+                                    emailError = eErr;
+                                    passwordError = pErr;
+                                  });
+                                  return;
+                                }
+
+                                setSheetState(() {
+                                  isSubmitting = true;
+                                  nameError = null;
+                                  emailError = null;
+                                  passwordError = null;
+                                });
+
+                                try {
+                                  await _di<AdminApiService>().createUser(
+                                    email: email,
+                                    password: pass,
+                                    fullName: name,
+                                    role: selectedRole,
+                                    storeId: selectedStoreId,
+                                    areaId: selectedAreaId,
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.of(ctx).pop();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'User created successfully',
+                                        ),
+                                        backgroundColor: AppTheme.success,
+                                      ),
+                                    );
+                                    _loadData();
+                                  }
+                                } catch (e) {
+                                  String? serverMsg;
+                                  int? statusCode;
+                                  if (e is DioException) {
+                                    statusCode = e.response?.statusCode;
+                                    final data = e.response?.data;
+                                    serverMsg = data is Map
+                                        ? data['message']?.toString()
+                                        : data?.toString() ?? e.message;
+                                  } else {
+                                    serverMsg = e.toString();
+                                  }
+
+                                  // Route error to the correct field
+                                  final msg = serverMsg?.toLowerCase() ?? '';
+                                  setSheetState(() {
+                                    isSubmitting = false;
+                                    if (statusCode == 409 ||
+                                        msg.contains('email')) {
+                                      emailError = serverMsg;
+                                    } else if (msg.contains('password')) {
+                                      passwordError = serverMsg;
+                                    } else {
+                                      // Fallback: show under password as last field
+                                      passwordError = serverMsg;
+                                    }
+                                  });
+                                }
+                              },
+                        icon: isSubmitting
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.person_add),
+                        label: Text(
+                          isSubmitting ? 'Creating...' : 'Create User',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('User Management')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showCreateUserSheet,
+        icon: const Icon(Icons.person_add),
+        label: const Text('Add User'),
+      ),
       body: Column(
         children: [
           // Search bar

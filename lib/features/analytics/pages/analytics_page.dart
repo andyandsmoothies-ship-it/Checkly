@@ -19,6 +19,13 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   final _db = GetIt.I<AppDatabase>();
   bool _loading = true;
 
+  // Filters
+  String? _selectedStore;
+  String? _selectedType;
+  String _dateRange = 'all'; // all, 30, 90, 180
+  List<String> _storeNames = [];
+  List<String> _templateTypes = [];
+
   // KPIs
   int _totalAudits = 0;
   double _avgScore = 0;
@@ -40,9 +47,39 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   Future<void> _loadData() async {
     final allSubs = await _db.select(_db.cachedSubmissions).get();
-    final subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
+    var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
 
+    // Build filter options from all data (before filtering)
+    _storeNames = subs.map((s) => s.storeName ?? 'Unknown').toSet().toList()
+      ..sort();
+    final templates = await _db.select(_db.cachedTemplates).get();
+    _templateTypes = templates.map((t) => t.type).toSet().toList()..sort();
+    final templateTypeMap = <String, String>{};
+    for (final t in templates) {
+      templateTypeMap[t.id] = t.type;
+    }
+
+    // Apply store filter
+    if (_selectedStore != null) {
+      subs = subs.where((s) => s.storeName == _selectedStore).toList();
+    }
+
+    // Apply type filter
+    if (_selectedType != null) {
+      final typeTemplateIds = templates
+          .where((t) => t.type == _selectedType)
+          .map((t) => t.id)
+          .toSet();
+      subs = subs.where((s) => typeTemplateIds.contains(s.templateId)).toList();
+    }
+
+    // Apply date range filter
     final now = DateTime.now();
+    if (_dateRange != 'all') {
+      final days = int.parse(_dateRange);
+      final cutoff = now.subtract(Duration(days: days));
+      subs = subs.where((s) => s.createdAt.isAfter(cutoff)).toList();
+    }
 
     _totalAudits = subs.length;
     final scored = subs.where((s) => s.totalScore != null).toList();
@@ -87,11 +124,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     }).toList()..sort((a, b) => a.month.compareTo(b.month));
 
     // Category heatmap — group by template type
-    final templates = await _db.select(_db.cachedTemplates).get();
-    final templateTypeMap = <String, String>{};
-    for (final t in templates) {
-      templateTypeMap[t.id] = t.type;
-    }
     final catScores = <String, List<double>>{};
     for (final s in subs) {
       final type = templateTypeMap[s.templateId];
@@ -124,6 +156,135 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  // ── Filter Dropdowns ──
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      // Store filter
+                      SizedBox(
+                        width: (MediaQuery.sizeOf(context).width - 40) / 2,
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedStore,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Store',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                          ),
+                          items: [
+                            const DropdownMenuItem(
+                              value: null,
+                              child: Text('All Stores'),
+                            ),
+                            ..._storeNames.map(
+                              (s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s, overflow: TextOverflow.ellipsis),
+                              ),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            _selectedStore = v;
+                            setState(() => _loading = true);
+                            _loadData();
+                          },
+                        ),
+                      ),
+                      // Type filter
+                      SizedBox(
+                        width: (MediaQuery.sizeOf(context).width - 40) / 2,
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedType,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Type',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                          ),
+                          items: [
+                            const DropdownMenuItem(
+                              value: null,
+                              child: Text('All Types'),
+                            ),
+                            ..._templateTypes.map(
+                              (t) => DropdownMenuItem(
+                                value: t,
+                                child: Text(t, overflow: TextOverflow.ellipsis),
+                              ),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            _selectedType = v;
+                            setState(() => _loading = true);
+                            _loadData();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Date range chips
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _DateChip(
+                          label: 'All Time',
+                          value: 'all',
+                          selected: _dateRange == 'all',
+                          onTap: () {
+                            _dateRange = 'all';
+                            setState(() => _loading = true);
+                            _loadData();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        _DateChip(
+                          label: '30 Days',
+                          value: '30',
+                          selected: _dateRange == '30',
+                          onTap: () {
+                            _dateRange = '30';
+                            setState(() => _loading = true);
+                            _loadData();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        _DateChip(
+                          label: '90 Days',
+                          value: '90',
+                          selected: _dateRange == '90',
+                          onTap: () {
+                            _dateRange = '90';
+                            setState(() => _loading = true);
+                            _loadData();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        _DateChip(
+                          label: '6 Months',
+                          value: '180',
+                          selected: _dateRange == '180',
+                          onTap: () {
+                            _dateRange = '180';
+                            setState(() => _loading = true);
+                            _loadData();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
                   // KPI Grid
                   Wrap(
                     spacing: 8,
@@ -178,6 +339,46 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+class _DateChip extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _DateChip({
+    required this.label,
+    required this.value,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: selected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }

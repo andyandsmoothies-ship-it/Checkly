@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 /// Defaults to Android emulator localhost mapping for development.
 const String _defaultBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
-  defaultValue: 'http://10.0.2.2:5288/api',
+  defaultValue: 'http://localhost:5288/api',
 );
 
 /// Creates a configured [Dio] instance with JSON defaults and logging.

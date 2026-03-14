@@ -182,6 +182,57 @@ Adapt this template to the specific project's test infrastructure. The goal is t
 
 ---
 
+## Gate 6: Full-Stack Coverage Audit
+
+When a slice spans **multiple technology layers** (e.g., server C# endpoint + Flutter Dart UI), Sentinel MUST write tests on **every layer** that the slice touches. A server-only test suite for a full-stack feature is incomplete — the Builder can implement the backend and skip the frontend (or vice versa) without any test catching it.
+
+### Rule: Layer Parity
+
+For each slice in the specs artifact, classify the layers involved:
+
+| Layer | Example Test |
+|-------|-------------|
+| **Server** (C#) | Integration test hitting the HTTP endpoint via `TestWebApplicationFactory` |
+| **Client** (Flutter) | Widget existence test — verify the widget/page renders, the button exists, or the API service method compiles |
+| **Client** (React/PWA) | Component render test or E2E test |
+
+If a slice touches **N layers**, Sentinel must produce tests for **all N layers**.
+
+### Why This Matters
+
+**Incident**: Slice 2 (CreateUser) specified both `CreateUser.cs` [NEW] and `user_management_page.dart` [MODIFY] with a FAB + form. ATDD only wrote server integration tests (`AdminUserManagementTests.cs`). The Builder implemented the server endpoint but never added the Flutter FAB — and all 7 ATDD tests passed GREEN. The missing UI was only caught during manual device testing.
+
+### Minimum Client-Side Tests
+
+Client tests don't need full widget tree rendering. At minimum, verify **compilation + existence**:
+
+```dart
+// Flutter: verify widget exists and API method compiles
+test('CreateUser FAB exists on UserManagementPage', () {
+  // Widget class is importable (compile gate)
+  expect(UserManagementPage, isNotNull);
+  // API service has the method (compile gate)
+  expect(AdminApiService, isNotNull);
+});
+```
+
+```csharp
+// If the client is a Blazor/React app, verify the component file exists
+// or the API client method compiles
+```
+
+For higher confidence, use `tester.pumpWidget()` to verify the FAB renders:
+
+```dart
+testWidgets('UserManagement has Add User FAB', (tester) async {
+  await tester.pumpWidget(MaterialApp(home: UserManagementPage()));
+  expect(find.byType(FloatingActionButton), findsOneWidget);
+  expect(find.text('Add User'), findsOneWidget);
+});
+```
+
+---
+
 ## Quick Reference Checklist
 
 Use this as a final pre-handoff gate. Every box must be checked:
@@ -191,5 +242,7 @@ Use this as a final pre-handoff gate. Every box must be checked:
 - [ ] **Gate 3**: Smoke Gate table is complete with zero `Infra`/`Ambiguous` failures
 - [ ] **Gate 4**: Deferred ACs use `Skip` attribute, not comments
 - [ ] **Gate 5**: Infrastructure Map is included in specs artifact
+- [ ] **Gate 6**: Full-stack slices have tests on **every layer** (server + client)
 
 Only after all gates pass should Sentinel proceed to Phase 3 (Handoff).
+

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/database/database_service.dart';
+import '../../auth/manager/auth_manager.dart';
 import '../manager/dashboard_manager.dart';
 import '../../notifications/widgets/notification_bell.dart';
 import '../widgets/tactical_history_drawer.dart';
@@ -71,9 +72,30 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final auth = _di<AuthManager>();
+    final role = auth.currentUser?.role ?? 'auditor';
+    final roleLabel = switch (role) {
+      'admin' => 'Administrator',
+      'auditor' => 'Auditor',
+      'store_manager' => 'Store Manager',
+      'area_manager' => 'Area Manager',
+      _ => role,
+    };
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mission Control'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Mission Control'),
+            Text(
+              roleLabel,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
         actions: const [NotificationBell()],
       ),
       floatingActionButton: FloatingActionButton(

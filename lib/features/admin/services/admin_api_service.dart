@@ -86,4 +86,34 @@ class AdminApiService {
     final list = response.data as List<dynamic>;
     return list.cast<Map<String, dynamic>>();
   }
+
+  /// POST /admin/users — create a new user (admin only).
+  Future<Map<String, dynamic>> createUser({
+    required String email,
+    required String password,
+    required String fullName,
+    required String role,
+    String? storeId,
+    String? areaId,
+  }) async {
+    final body = <String, dynamic>{
+      'email': email,
+      'password': password,
+      'fullName': fullName,
+      'role': role,
+    };
+    if (storeId != null) body['storeId'] = storeId;
+    if (areaId != null) body['areaId'] = areaId;
+
+    final response = await _dio.post('/admin/users', data: body);
+    return response.data as Map<String, dynamic>;
+  }
+
+  /// POST /admin/users/{id}/reset-password — admin resets a user's password.
+  Future<void> resetPassword(String userId, String newPassword) async {
+    await _dio.post(
+      '/admin/users/$userId/reset-password',
+      data: {'newPassword': newPassword},
+    );
+  }
 }

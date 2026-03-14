@@ -1,14 +1,14 @@
 # Checkly Mobile — Dev Setup Guide
 
-> A step-by-step guide to run the backend API and deploy the Flutter app to your Android phone for testing.
+> A step-by-step guide to run the backend API and deploy the Flutter app to your Android phone **or Windows desktop** for testing.
 
 ## Prerequisites (One-Time Setup)
 
 - ✅ Flutter SDK installed (`flutter --version`)
 - ✅ .NET SDK installed (`dotnet --version`)
 - ✅ PostgreSQL running on port 5432 (database: `checkly`)
-- ✅ Android phone with **USB Debugging** enabled
-- ✅ ADB in your PATH (already done permanently)
+- ✅ **For Android**: Phone with USB Debugging enabled + ADB in PATH
+- ✅ **For Windows Desktop**: Visual Studio with "Desktop development with C++" workload
 
 ---
 
@@ -86,6 +86,42 @@ flutter run -d R9HT10C5NSM --dart-define=API_BASE_URL=http://192.168.1.27:5288/a
 
 ---
 
+## Alternative: Run on Windows Desktop (No Phone Needed)
+
+If you don't have an Android phone connected, you can run the app as a native Windows application.
+
+### One-Time Setup
+
+```powershell
+flutter config --enable-windows-desktop
+flutter create --platforms=windows .
+```
+
+> This generates the `windows/` folder. You only need to do this once.
+
+### Run
+
+```powershell
+cd c:\Users\HP\Documents\GitHub\Checkly
+flutter run -d windows --dart-define=API_BASE_URL=http://localhost:5288/api
+```
+
+> Since the app runs on the same machine as the backend, use `localhost` instead of your LAN IP.
+
+### Limitations
+
+| Feature | Works on Windows? |
+|---------|:-:|
+| UI / Navigation / Forms | ✅ |
+| HTTP / API calls | ✅ |
+| Local storage / SQLite | ✅ |
+| Camera / GPS / Biometrics | ❌ |
+| Push notifications | ❌ |
+
+For camera/GPS-dependent flows, use the Android phone path (Steps 1-4 above).
+
+---
+
 ## Quick Reference (Copy-Paste)
 
 Once you've done the setup before, here's the cheat sheet:
@@ -95,9 +131,13 @@ Once you've done the setup before, here's the cheat sheet:
 cd c:\Users\HP\Documents\GitHub\Checkly\server
 dotnet run --urls "http://0.0.0.0:5288"
 
-# Terminal 2 — Deploy Flutter app
+# Terminal 2 — Option A: Android phone
 cd c:\Users\HP\Documents\GitHub\Checkly
 flutter run -d R9HT10C5NSM --dart-define=API_BASE_URL=http://192.168.1.27:5288/api
+
+# Terminal 2 — Option B: Windows desktop (no phone needed)
+cd c:\Users\HP\Documents\GitHub\Checkly
+flutter run -d windows --dart-define=API_BASE_URL=http://localhost:5288/api
 ```
 
 ---

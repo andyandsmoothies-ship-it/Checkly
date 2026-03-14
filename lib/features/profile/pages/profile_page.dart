@@ -123,10 +123,21 @@ class ProfilePage extends StatelessWidget {
     // Common items
     items.addAll(const [
       _MenuItem(
+        icon: Icons.history,
+        label: 'My Activity',
+        description: 'View your recent actions',
+        route: '/activity',
+      ),
+      _MenuItem(
         icon: Icons.notifications_outlined,
         label: 'Notifications',
         description: 'View all notifications',
         route: '/activity',
+      ),
+      _MenuItem(
+        icon: Icons.menu_book_outlined,
+        label: 'Documentation',
+        description: 'Guides and user manuals',
       ),
       _MenuItem(
         icon: Icons.help_outline,
