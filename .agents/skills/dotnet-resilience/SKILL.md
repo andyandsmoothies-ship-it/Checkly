@@ -1,5 +1,5 @@
 ---
-name: resilience
+name: dotnet-resilience
 description: >
   Resilience patterns for .NET 10 applications using Polly v8.
   Covers retry, circuit breaker, timeout, fallback, rate limiter, hedging,

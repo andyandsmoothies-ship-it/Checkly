@@ -1,3 +1,8 @@
+---
+name: shaping
+description: Iterate on both the problem and the solution before committing to implementation. Use the Requirements → Shapes → Fit Check workflow to evaluate solution options against constraints. Load this skill when the user mentions "shaping", "fit check", "requirements vs shapes", "decision matrix", or needs to compare alternative solutions before coding.
+---
+
 # Shaping
 
 ## Philosophy

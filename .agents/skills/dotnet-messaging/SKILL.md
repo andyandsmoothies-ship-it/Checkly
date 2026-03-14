@@ -1,5 +1,5 @@
 ---
-name: messaging
+name: dotnet-messaging
 description: >
   Asynchronous messaging patterns for .NET applications. Covers Wolverine and
   MassTransit, outbox pattern, saga and choreography, and broker configuration

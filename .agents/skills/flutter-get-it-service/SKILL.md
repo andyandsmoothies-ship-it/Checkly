@@ -1,5 +1,5 @@
 ---
-name: get-it-expert
+name: flutter-get-it-service
 description: Expert guidance on get_it service locator and dependency injection for Flutter/Dart. Covers registration (singleton, factory, lazy, async), scopes with shadowing, async initialization with init() pattern, retrieval, testing with scope-based mocking, and production patterns. Use when working with get_it, dependency injection, service registration, scopes, or async initialization.
 metadata:
   author: flutter-it

@@ -1,5 +1,5 @@
 ---
-name: logging
+name: dotnet-logging
 description: >
   Observability for .NET 10 applications. Covers Serilog structured logging,
   OpenTelemetry traces and metrics, health checks, and correlation IDs.

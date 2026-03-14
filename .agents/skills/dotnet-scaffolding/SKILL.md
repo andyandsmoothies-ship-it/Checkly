@@ -1,5 +1,5 @@
 ---
-name: scaffolding
+name: dotnet-scaffolding
 description: >
   Code scaffolding patterns for .NET 10 features, entities, and tests.
   Generates complete feature slices, entities with EF Core configuration,

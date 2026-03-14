@@ -1,5 +1,5 @@
 ---
-name: flutter-architecture-expert
+name: flutter-architecture
 description: Architecture guidance for Flutter apps using the flutter_it construction set (get_it, watch_it, command_it, listen_it). Covers Pragmatic Flutter Architecture (PFA) with Services/Managers/Views, feature-based project structure, manager pattern, proxy pattern with optimistic updates and override fields, DataRepository with reference counting, scoped services, widget granularity, testing, and best practices. Use when designing app architecture, structuring Flutter projects, implementing managers or proxies, or planning feature organization.
 metadata:
   author: flutter-it

@@ -1,5 +1,5 @@
 ---
-name: configuration
+name: dotnet-configuration
 description: >
   Configuration patterns for .NET 10 applications. Covers the Options pattern,
   IOptions vs IOptionsSnapshot vs IOptionsMonitor, secrets management,
