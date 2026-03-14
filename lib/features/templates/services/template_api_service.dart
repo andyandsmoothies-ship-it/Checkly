@@ -77,6 +77,7 @@ class TemplateApiService {
     double? maxDeductionPoints,
     int? orderIndex,
     String? parentId,
+    String? metadata,
   }) async {
     final body = <String, dynamic>{'title': title};
     if (description != null) body['description'] = description;
@@ -86,6 +87,7 @@ class TemplateApiService {
     }
     if (orderIndex != null) body['orderIndex'] = orderIndex;
     if (parentId != null) body['parentId'] = parentId;
+    if (metadata != null) body['metadata'] = metadata;
 
     final response = await _dio.post(
       '/templates/$templateId/groups',
@@ -102,12 +104,14 @@ class TemplateApiService {
     String? description,
     double? weight,
     int? orderIndex,
+    String? metadata,
   }) async {
     final body = <String, dynamic>{};
     if (title != null) body['title'] = title;
     if (description != null) body['description'] = description;
     if (weight != null) body['weight'] = weight;
     if (orderIndex != null) body['orderIndex'] = orderIndex;
+    if (metadata != null) body['metadata'] = metadata;
 
     final response = await _dio.put(
       '/templates/$templateId/groups/$groupId',

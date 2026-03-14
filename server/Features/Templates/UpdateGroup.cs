@@ -12,7 +12,8 @@ public static class UpdateGroup
         string? Description,
         decimal? Weight,
         decimal? MaxDeductionPoints,
-        int? OrderIndex);
+        int? OrderIndex,
+        string? Metadata);
 
     public static async Task<IResult> HandleAsync(
         Guid templateId,
@@ -37,6 +38,8 @@ public static class UpdateGroup
             group.MaxDeductionPoints = request.MaxDeductionPoints;
         if (request.OrderIndex.HasValue)
             group.OrderIndex = request.OrderIndex.Value;
+        if (request.Metadata != null)
+            group.Metadata = request.Metadata;
 
         group.UpdatedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync();

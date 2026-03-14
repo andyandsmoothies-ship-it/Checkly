@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -47,6 +48,10 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
   // Sections (mutable list for editing)
   List<_EditableGroup> _sections = [];
+
+  // Deletion tracking — IDs of removed groups/criteria to delete on save
+  final List<String> _deletedGroupIds = [];
+  final List<String> _deletedCriteriaIds = [];
 
   @override
   void initState() {
@@ -144,7 +149,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             id: c.id,
             label: c.labelCtrl.text,
             description: c.descCtrl.text.isEmpty ? null : c.descCtrl.text,
-            inputType: c.inputType,
+            inputType: 'numeric', // Forced for Unified Penalty Model
             pointsWeight: double.tryParse(c.pointsCtrl.text),
             isCcp: c.isCcp,
             isRisk: c.isRisk,
@@ -197,8 +202,26 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
     setState(() => _saving = true);
     try {
+      // 1. Process deletions first (criteria before groups)
+      final templateId = _isNew ? null : widget.templateId;
+      if (templateId != null) {
+        for (final cId in _deletedCriteriaIds) {
+          try {
+            await _manager.deleteCriterion(templateId, cId);
+          } catch (_) {} // Ignore already-deleted
+        }
+        for (final gId in _deletedGroupIds) {
+          try {
+            await _manager.deleteGroup(templateId, gId);
+          } catch (_) {} // Ignore already-deleted
+        }
+      }
+      _deletedCriteriaIds.clear();
+      _deletedGroupIds.clear();
+
+      // 2. Save template + groups
       await _manager.saveTemplate(
-        id: _isNew ? null : widget.templateId,
+        id: templateId,
         title: _titleCtrl.text.trim(),
         type: _type,
         description: _descCtrl.text.trim().isEmpty
@@ -232,9 +255,14 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     setState(() {
       _sections.add(_EditableGroup());
     });
+    // Auto-scroll to the new section after frame renders
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // The new section is at the bottom of the ScrollView
+    });
   }
 
   void _removeSection(int index) {
+    _collectDeletionIds(_sections[index]);
     setState(() {
       _sections[index].dispose();
       _sections.removeAt(index);
@@ -248,6 +276,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   }
 
   void _removeSubSection(int sectionIndex, int subIndex) {
+    _collectDeletionIds(_sections[sectionIndex].subSections[subIndex]);
     setState(() {
       _sections[sectionIndex].subSections[subIndex].dispose();
       _sections[sectionIndex].subSections.removeAt(subIndex);
@@ -261,10 +290,23 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   }
 
   void _removeCriterionFromGroup(_EditableGroup group, int criterionIndex) {
+    final c = group.criteria[criterionIndex];
+    if (c.id.isNotEmpty) _deletedCriteriaIds.add(c.id);
     setState(() {
-      group.criteria[criterionIndex].dispose();
+      c.dispose();
       group.criteria.removeAt(criterionIndex);
     });
+  }
+
+  /// Recursively collect IDs of a group and all its children/criteria for deletion.
+  void _collectDeletionIds(_EditableGroup group) {
+    if (group.id.isNotEmpty) _deletedGroupIds.add(group.id);
+    for (final c in group.criteria) {
+      if (c.id.isNotEmpty) _deletedCriteriaIds.add(c.id);
+    }
+    for (final sub in group.subSections) {
+      _collectDeletionIds(sub);
+    }
   }
 
   // ── Computed values ──
@@ -371,6 +413,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                       index: i,
                       section: section,
                       depth: 0,
+                      templateType: _type,
                       densityEnabled: _weightedDensity,
                       ccpEnabled: _ccpOverride,
                       riskEnabled: _riskOverride,
@@ -694,6 +737,7 @@ class _ScoringRulesCard extends StatelessWidget {
                       ),
                     ),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onEditingComplete: () {
                       final v = int.tryParse(deadlineCtrl.text) ?? 7;
                       deadlineCtrl.text = v.clamp(1, 90).toString();
@@ -730,6 +774,7 @@ class _ScoringRulesCard extends StatelessWidget {
                       ),
                     ),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onEditingComplete: () {
                       final v = int.tryParse(reminderCtrl.text) ?? 2;
                       reminderCtrl.text = v.clamp(1, 30).toString();
@@ -762,6 +807,7 @@ class _SectionEditor extends StatelessWidget {
   final int index;
   final _EditableGroup section;
   final int depth;
+  final String templateType;
   final bool densityEnabled;
   final bool ccpEnabled;
   final bool riskEnabled;
@@ -776,6 +822,7 @@ class _SectionEditor extends StatelessWidget {
     required this.index,
     required this.section,
     this.depth = 0,
+    this.templateType = 'qc',
     this.densityEnabled = true,
     this.ccpEnabled = false,
     this.riskEnabled = false,
@@ -839,39 +886,75 @@ class _SectionEditor extends StatelessWidget {
                   onChanged: (_) => onChanged(),
                 ),
               ),
-              // Gap 6: count badge (XS • YC)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppTheme.sageGray.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${subCount}S • ${critCount}C',
-                  style: AppFonts.serifStyle(
-                    fontSize: 10,
-                    color: AppTheme.charcoal.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              // Gap 7: conditional weight badge
-              if (densityEnabled && section.weightCtrl.text.isNotEmpty)
+              // Gap 6: count badge (XS • YC) — root sections only
+              if (isRoot)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.sageGray.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${subCount}S • ${critCount}C',
+                    style: AppFonts.serifStyle(
+                      fontSize: 10,
+                      color: AppTheme.charcoal.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              const SizedBox(width: 4),
+              // Inline editable weight input in header (PWA parity)
+              if (densityEnabled && isRoot)
+                Container(
+                  width: 64,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${section.weightCtrl.text}%',
-                    style: AppFonts.serifStyle(
-                      fontSize: 12,
-                      color: theme.colorScheme.primary,
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
                     ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: section.weightCtrl,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          style: AppFonts.serifStyle(
+                            fontSize: 12,
+                            color: theme.colorScheme.primary,
+                          ),
+                          decoration: const InputDecoration(
+                            hintText: '0',
+                            isDense: true,
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          onTap: () =>
+                              section.weightCtrl.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset: section.weightCtrl.text.length,
+                              ),
+                          onChanged: (_) => onChanged(),
+                        ),
+                      ),
+                      Text(
+                        '%',
+                        style: AppFonts.serifStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
             ],
@@ -881,23 +964,8 @@ class _SectionEditor extends StatelessWidget {
             onPressed: onRemoveSection,
           ),
           children: [
-            // Gap 7: Weight field only when density ON
-            if (densityEnabled)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: TextFormField(
-                  controller: section.weightCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Weight %',
-                    isDense: true,
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (_) => onChanged(),
-                ),
-              ),
-
-            // Gap 2: Sub-section metadata (depth > 0)
-            if (!isRoot) ...[
+            // Gap 2 + Rule 1: Sub-section metadata (QC or density ON, depth > 0)
+            if (!isRoot && (templateType == 'qc' || densityEnabled)) ...[
               Row(
                 children: [
                   Expanded(
@@ -934,6 +1002,7 @@ class _SectionEditor extends StatelessWidget {
               final c = e.value;
               return _CriteriaEditor(
                 criterion: c,
+                templateType: templateType,
                 ccpEnabled: ccpEnabled,
                 riskEnabled: riskEnabled,
                 onRemove: () => onRemoveCriterion(ci),
@@ -941,18 +1010,19 @@ class _SectionEditor extends StatelessWidget {
               );
             }),
 
-            // Add Criteria button
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: onAddCriterion,
-                icon: const Icon(Icons.add, size: 14),
-                label: const Text('Add Criteria'),
-                style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 12),
+            // Add Criteria button — Rule 2: hidden on QC root
+            if (templateType != 'qc' || !isRoot)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: onAddCriterion,
+                  icon: const Icon(Icons.add, size: 14),
+                  label: const Text('Add Criteria'),
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
                 ),
               ),
-            ),
 
             // Gap 1: Sub-sections
             if (isRoot) ...[
@@ -964,6 +1034,7 @@ class _SectionEditor extends StatelessWidget {
                   index: si,
                   section: sub,
                   depth: depth + 1,
+                  templateType: templateType,
                   densityEnabled: densityEnabled,
                   ccpEnabled: ccpEnabled,
                   riskEnabled: riskEnabled,
@@ -1005,6 +1076,7 @@ class _SectionEditor extends StatelessWidget {
 
 class _CriteriaEditor extends StatelessWidget {
   final _EditableCriterion criterion;
+  final String templateType;
   final bool ccpEnabled;
   final bool riskEnabled;
   final VoidCallback onRemove;
@@ -1012,6 +1084,7 @@ class _CriteriaEditor extends StatelessWidget {
 
   const _CriteriaEditor({
     required this.criterion,
+    this.templateType = 'qc',
     this.ccpEnabled = false,
     this.riskEnabled = false,
     required this.onRemove,
@@ -1067,8 +1140,10 @@ class _CriteriaEditor extends StatelessWidget {
               // Gap 3: Description
               TextFormField(
                 controller: criterion.descCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Standard / Requirement Details',
+                decoration: InputDecoration(
+                  labelText: templateType == 'qc'
+                      ? 'Standard / Requirement Details'
+                      : 'Description (optional)',
                   isDense: true,
                 ),
                 maxLines: 3,
@@ -1076,59 +1151,44 @@ class _CriteriaEditor extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Points
-              TextFormField(
-                controller: criterion.pointsCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Points Weight',
-                  isDense: true,
+              // Points — Rule 3: hidden for QC
+              if (templateType != 'qc') ...[
+                TextFormField(
+                  controller: criterion.pointsCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Points Weight',
+                    isDense: true,
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => onChanged(),
                 ),
-                keyboardType: TextInputType.number,
-                onChanged: (_) => onChanged(),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Gap 8: CCP / RISK toggles
-              Row(
-                children: [
-                  _ToggleBadge(
-                    label: 'CCP',
-                    active: criterion.isCcp,
-                    enabled: ccpEnabled,
-                    onTap: () {
-                      criterion.isCcp = !criterion.isCcp;
-                      onChanged();
-                    },
-                  ),
-                  const SizedBox(width: 12),
-                  _ToggleBadge(
-                    label: 'RISK',
-                    active: criterion.isRisk,
-                    enabled: riskEnabled,
-                    onTap: () {
-                      criterion.isRisk = !criterion.isRisk;
-                      onChanged();
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Delete
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    onRemove();
-                  },
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  label: const Text(
-                    'Remove Criterion',
-                    style: TextStyle(color: Colors.red),
-                  ),
+                // Gap 8: CCP / RISK toggles
+                Row(
+                  children: [
+                    _ToggleBadge(
+                      label: 'CCP',
+                      active: criterion.isCcp,
+                      enabled: ccpEnabled,
+                      onTap: () {
+                        criterion.isCcp = !criterion.isCcp;
+                        onChanged();
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    _ToggleBadge(
+                      label: 'RISK',
+                      active: criterion.isRisk,
+                      enabled: riskEnabled,
+                      onTap: () {
+                        criterion.isRisk = !criterion.isRisk;
+                        onChanged();
+                      },
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ],
           ),
         ),
@@ -1168,35 +1228,48 @@ class _CriteriaEditor extends StatelessWidget {
                   ),
                 ),
               ),
-              if (criterion.pointsCtrl.text.isNotEmpty) ...[
-                const SizedBox(width: 4),
-                Text(
-                  '${criterion.pointsCtrl.text}pt',
-                  style: AppFonts.serifStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.primary,
+              // Rule 3: points/badges hidden for QC
+              if (templateType != 'qc') ...[
+                if (criterion.pointsCtrl.text.isNotEmpty) ...[
+                  const SizedBox(width: 4),
+                  Text(
+                    '${criterion.pointsCtrl.text}pt',
+                    style: AppFonts.serifStyle(
+                      fontSize: 11,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
-                ),
+                ],
+                if (criterion.isCcp) ...[
+                  const SizedBox(width: 4),
+                  _ToggleBadge(
+                    label: 'CCP',
+                    active: true,
+                    enabled: ccpEnabled,
+                    onTap: () {},
+                  ),
+                ],
+                if (criterion.isRisk) ...[
+                  const SizedBox(width: 4),
+                  _ToggleBadge(
+                    label: 'RISK',
+                    active: true,
+                    enabled: riskEnabled,
+                    onTap: () {},
+                  ),
+                ],
               ],
-              if (criterion.isCcp) ...[
-                const SizedBox(width: 4),
-                _ToggleBadge(
-                  label: 'CCP',
-                  active: true,
-                  enabled: ccpEnabled,
-                  onTap: () {},
+              // Inline delete — PWA parity
+              IconButton(
+                onPressed: onRemove,
+                icon: Icon(
+                  Icons.delete_outline,
+                  size: 18,
+                  color: Colors.red.shade400,
                 ),
-              ],
-              if (criterion.isRisk) ...[
-                const SizedBox(width: 4),
-                _ToggleBadge(
-                  label: 'RISK',
-                  active: true,
-                  enabled: riskEnabled,
-                  onTap: () {},
-                ),
-              ],
-              const SizedBox(width: 4),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                padding: EdgeInsets.zero,
+              ),
               const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
             ],
           ),

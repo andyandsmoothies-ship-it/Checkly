@@ -81,7 +81,11 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
 
               // Sections
               ...tree.groups.map(
-                (group) => _GroupSection(group: group, depth: 0),
+                (group) => _GroupSection(
+                  group: group,
+                  depth: 0,
+                  templateType: tree.type,
+                ),
               ),
             ],
           );
@@ -95,8 +99,13 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
 class _GroupSection extends StatelessWidget {
   final GroupDto group;
   final int depth;
+  final String templateType;
 
-  const _GroupSection({required this.group, required this.depth});
+  const _GroupSection({
+    required this.group,
+    required this.depth,
+    required this.templateType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +126,7 @@ class _GroupSection extends StatelessWidget {
                 ),
               ),
             ),
-            if (group.weight != null)
+            if (group.weight != null && depth == 0)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
@@ -136,11 +145,17 @@ class _GroupSection extends StatelessWidget {
         ),
         children: [
           // Criteria
-          ...group.criteria.map((c) => _CriterionTile(criterion: c)),
+          ...group.criteria.map(
+            (c) => _CriterionTile(criterion: c, templateType: templateType),
+          ),
 
           // Nested subsections
           ...group.children.map(
-            (g) => _GroupSection(group: g, depth: depth + 1),
+            (g) => _GroupSection(
+              group: g,
+              depth: depth + 1,
+              templateType: templateType,
+            ),
           ),
         ],
       ),
@@ -151,39 +166,50 @@ class _GroupSection extends StatelessWidget {
 /// Criterion tile showing label, input type, and CCP/RISK flags.
 class _CriterionTile extends StatelessWidget {
   final CriterionDto criterion;
+  final String templateType;
 
-  const _CriterionTile({required this.criterion});
+  const _CriterionTile({required this.criterion, required this.templateType});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isQC = templateType == 'qc';
 
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24),
       title: Text(criterion.label, style: theme.textTheme.bodyMedium),
-      subtitle: Row(
-        children: [
-          _InputTypeBadge(inputType: criterion.inputType),
-          if (criterion.isCcp) ...[
-            const SizedBox(width: 6),
-            _FlagBadge(label: 'CCP', color: AppTheme.warning),
-          ],
-          if (criterion.isRisk) ...[
-            const SizedBox(width: 6),
-            _FlagBadge(label: 'RISK', color: theme.colorScheme.error),
-          ],
-          if (criterion.pointsWeight != null) ...[
-            const SizedBox(width: 6),
-            Text(
-              '${criterion.pointsWeight!.toStringAsFixed(1)} pts',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+      subtitle: isQC
+          ? (criterion.description != null && criterion.description!.isNotEmpty
+                ? Text(
+                    criterion.description!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  )
+                : null)
+          : Row(
+              children: [
+                _InputTypeBadge(inputType: criterion.inputType),
+                if (criterion.isCcp) ...[
+                  const SizedBox(width: 6),
+                  _FlagBadge(label: 'CCP', color: AppTheme.warning),
+                ],
+                if (criterion.isRisk) ...[
+                  const SizedBox(width: 6),
+                  _FlagBadge(label: 'RISK', color: theme.colorScheme.error),
+                ],
+                if (criterion.pointsWeight != null) ...[
+                  const SizedBox(width: 6),
+                  Text(
+                    '${criterion.pointsWeight!.toStringAsFixed(1)} pts',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ],
-      ),
     );
   }
 }

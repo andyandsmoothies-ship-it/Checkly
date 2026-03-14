@@ -19,9 +19,12 @@ class TemplateDao {
     return rows.map(_rowToTemplateDto).toList();
   }
 
-  /// Upsert a batch of templates (full replace).
+  /// Full replace of cached templates (delete stale + insert fresh).
   Future<void> upsertTemplates(List<TemplateDto> templates) async {
     await _db.batch((b) {
+      // Clear stale entries that the server no longer returns
+      b.deleteWhere(_db.cachedTemplates, (_) => const Constant(true));
+      // Insert fresh list
       b.insertAllOnConflictUpdate(
         _db.cachedTemplates,
         templates.map(_templateToCompanion).toList(),

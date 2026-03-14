@@ -14,7 +14,8 @@ public static class CreateGroup
         decimal? Weight,
         decimal? MaxDeductionPoints,
         int? OrderIndex,
-        Guid? ParentId);
+        Guid? ParentId,
+        string? Metadata);
 
     public static async Task<IResult> HandleAsync(
         Guid templateId,
@@ -40,6 +41,7 @@ public static class CreateGroup
             MaxDeductionPoints = request.MaxDeductionPoints,
             OrderIndex = request.OrderIndex ?? 0,
             ParentId = request.ParentId,
+            Metadata = request.Metadata,
             IsActive = true,
             CreatedAt = now,
             UpdatedAt = now,

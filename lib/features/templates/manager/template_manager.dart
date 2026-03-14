@@ -176,6 +176,7 @@ class TemplateManager extends ChangeNotifier {
         maxDeductionPoints: group.maxDeductionPoints,
         orderIndex: orderIndex,
         parentId: parentId,
+        metadata: group.metadata,
       );
       groupId = result['id'] as String;
     } else {
@@ -187,6 +188,7 @@ class TemplateManager extends ChangeNotifier {
         description: group.description,
         weight: group.weight,
         orderIndex: orderIndex,
+        metadata: group.metadata,
       );
       groupId = group.id;
     }
@@ -232,5 +234,15 @@ class TemplateManager extends ChangeNotifier {
     await _api.deleteTemplate(id);
     templates.value = templates.value.where((t) => t.id != id).toList();
     notifyListeners();
+  }
+
+  // ---------- Delete group ----------
+  Future<void> deleteGroup(String templateId, String groupId) async {
+    await _api.deleteGroup(templateId, groupId);
+  }
+
+  // ---------- Delete criterion ----------
+  Future<void> deleteCriterion(String templateId, String criterionId) async {
+    await _api.deleteCriterion(templateId, criterionId);
   }
 }
