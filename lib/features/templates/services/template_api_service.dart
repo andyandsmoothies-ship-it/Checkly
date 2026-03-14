@@ -25,6 +25,22 @@ class TemplateApiService {
 
   // ── Template Mutations ──────────────────────────────────────
 
+  /// POST /templates — create a new template.
+  Future<Map<String, dynamic>> createTemplate({
+    required String title,
+    required String type,
+    String? description,
+    String? scoringLogicConfig,
+  }) async {
+    final body = <String, dynamic>{'title': title, 'type': type};
+    if (description != null) body['description'] = description;
+    if (scoringLogicConfig != null) {
+      body['scoringLogicConfig'] = scoringLogicConfig;
+    }
+    final response = await _dio.post('/templates', data: body);
+    return response.data as Map<String, dynamic>;
+  }
+
   /// PUT /templates/{id} — update template metadata.
   Future<Map<String, dynamic>> updateTemplate(
     String id, {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 
 import '_shared/router/app_router.dart';
@@ -36,6 +37,13 @@ class ChecklyApp extends StatelessWidget {
         darkTheme: AppTheme.dark,
         themeMode: themeManager.themeMode,
         routerConfig: appRouter,
+        locale: const Locale('vi', 'VN'),
+        supportedLocales: const [Locale('vi', 'VN'), Locale('en', 'US')],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
       ),
     );
   }

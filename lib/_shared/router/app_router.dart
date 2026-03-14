@@ -73,7 +73,12 @@ final appRouter = GoRouter(
     // ---------- Detail routes (no bottom nav) ----------
     GoRoute(
       path: '/templates/new',
-      builder: (context, state) => const TemplateBuilderPage(templateId: ''),
+      builder: (context, state) => const TemplateBuilderPage(templateId: 'new'),
+    ),
+    GoRoute(
+      path: '/templates/edit/:id',
+      builder: (context, state) =>
+          TemplateBuilderPage(templateId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: '/notifications',

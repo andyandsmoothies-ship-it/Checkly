@@ -12,17 +12,26 @@ import '../model/template_dto.dart';
 
 final _di = GetIt.instance;
 
+/// Returns a human-readable relative time string (e.g. "2 hours ago").
+String _timeAgo(DateTime dt) {
+  final diff = DateTime.now().difference(dt);
+  if (diff.inMinutes < 1) return 'just now';
+  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+  if (diff.inHours < 24) return '${diff.inHours}h ago';
+  if (diff.inDays < 30) return '${diff.inDays}d ago';
+  if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mo ago';
+  return '${(diff.inDays / 365).floor()}y ago';
+}
+
 /// Template type labels matching PWA TemplateCard constants.
 const kTemplateTypeLabels = <String, String>{
   'qc': 'QUALITY CONTROL',
   'training': 'TRAINING',
   'general': 'GENERAL',
-  'checklist': 'CHECKLIST',
-  'safety': 'SAFETY',
 };
 
 /// Display order for template types.
-const _typeOrder = ['qc', 'training', 'general', 'checklist', 'safety'];
+const _typeOrder = ['qc', 'training', 'general'];
 
 /// Template list page — search, filter tabs, and FAB.
 /// Matches PWA spec: search bar, Published/Draft tabs, template cards.
@@ -72,9 +81,13 @@ class _TemplateListPageState extends State<TemplateListPage> {
   }
 
   /// Groups filtered templates by type, respecting _typeOrder.
+  /// Always includes all types from _typeOrder even if empty (Fix 4).
   Map<String, List<TemplateDto>> get _groupedByType {
     final items = _filtered;
-    final groups = <String, List<TemplateDto>>{};
+    // Seed with all known types so empty sections appear
+    final groups = <String, List<TemplateDto>>{
+      for (final type in _typeOrder) type: [],
+    };
     for (final t in items) {
       groups.putIfAbsent(t.type, () => []).add(t);
     }
@@ -182,45 +195,28 @@ class _TemplateListPageState extends State<TemplateListPage> {
               ),
               const SizedBox(height: 8),
 
-              // Grouped template list
+              // Grouped template list — always shows all type sections (Fix 4)
               Expanded(
-                child: _filtered.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.assignment_outlined,
-                              size: 48,
-                              color: theme.colorScheme.onSurface.withAlpha(80),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No templates found',
-                              style: theme.textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: () => manager.loadTemplates(),
-                        child: ListView(
-                          padding: const EdgeInsets.all(16),
-                          children: _groupedByType.entries.map((entry) {
-                            final type = entry.key;
-                            final templates = entry.value;
-                            final label =
-                                kTemplateTypeLabels[type] ?? type.toUpperCase();
-                            return _TypeSection(
-                              label: label,
-                              count: templates.length,
-                              children: templates
-                                  .map((t) => _TemplateCard(template: t))
-                                  .toList(),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                child: RefreshIndicator(
+                  onRefresh: () => manager.loadTemplates(),
+                  child: ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: _groupedByType.entries.map((entry) {
+                      final type = entry.key;
+                      final templates = entry.value;
+                      final label =
+                          kTemplateTypeLabels[type] ?? type.toUpperCase();
+                      return _TypeSection(
+                        label: label,
+                        count: templates.length,
+                        initiallyExpanded: templates.isNotEmpty,
+                        children: templates
+                            .map((t) => _TemplateCard(template: t))
+                            .toList(),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
             ],
           );
@@ -235,11 +231,13 @@ class _TemplateListPageState extends State<TemplateListPage> {
 class _TypeSection extends StatelessWidget {
   final String label;
   final int count;
+  final bool initiallyExpanded;
   final List<Widget> children;
 
   const _TypeSection({
     required this.label,
     required this.count,
+    this.initiallyExpanded = true,
     required this.children,
   });
 
@@ -250,7 +248,7 @@ class _TypeSection extends StatelessWidget {
     return Theme(
       data: theme.copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
-        initiallyExpanded: true,
+        initiallyExpanded: initiallyExpanded,
         tilePadding: EdgeInsets.zero,
         childrenPadding: EdgeInsets.zero,
         title: Row(
@@ -365,6 +363,17 @@ class _TemplateCard extends StatelessWidget {
                         ],
                       ],
                     ),
+                    // Updated time (Fix 2)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Updated ${_timeAgo(template.updatedAt)}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -401,13 +410,28 @@ class _TemplateCard extends StatelessWidget {
                               child: const Text('Cancel'),
                             ),
                             FilledButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.pop(ctx);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Delete — coming soon'),
-                                  ),
-                                );
+                                try {
+                                  await _di<TemplateManager>().deleteTemplate(
+                                    template.id,
+                                  );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Template deleted'),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Failed to delete: $e'),
+                                      ),
+                                    );
+                                  }
+                                }
                               },
                               child: const Text('Delete'),
                             ),
