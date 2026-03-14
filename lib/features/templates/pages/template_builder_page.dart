@@ -53,7 +53,9 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     super.initState();
     _manager = _di<TemplateManager>();
     if (!_isNew) {
-      _loadExistingTemplate();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadExistingTemplate();
+      });
     } else {
       _loading = false;
     }
