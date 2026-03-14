@@ -143,9 +143,39 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Template title is required')),
+        const SnackBar(content: Text('Please enter a template title')),
       );
       return;
+    }
+
+    // Rule 1: Must have at least one section
+    if (_sections.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Add at least one section')));
+      return;
+    }
+
+    // Rules 2 & 3: Density validation (only when weighted density enabled)
+    if (_weightedDensity) {
+      if (_sections.any(
+        (s) => (double.tryParse(s.weightCtrl.text) ?? 0) <= 0,
+      )) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('All sections must have a weight greater than 0%'),
+          ),
+        );
+        return;
+      }
+      if ((_totalDensity - 100).abs() > 0.01) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Section weights must sum to exactly 100%'),
+          ),
+        );
+        return;
+      }
     }
 
     setState(() => _saving = true);
@@ -235,6 +265,11 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       bottomNavigationBar: _TemplateFooter(
         totalPoints: _totalPoints,
         totalDensity: _totalDensity,
+        densityEnabled: _weightedDensity,
+        canSave:
+            _titleCtrl.text.trim().isNotEmpty &&
+            _sections.isNotEmpty &&
+            (!_weightedDensity || (_totalDensity - 100).abs() < 0.01),
         saving: _saving,
         onSave: _save,
       ),
@@ -566,6 +601,10 @@ class _ScoringRulesCard extends StatelessWidget {
                       ),
                     ),
                     keyboardType: TextInputType.number,
+                    onEditingComplete: () {
+                      final v = int.tryParse(deadlineCtrl.text) ?? 7;
+                      deadlineCtrl.text = v.clamp(1, 90).toString();
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -598,6 +637,10 @@ class _ScoringRulesCard extends StatelessWidget {
                       ),
                     ),
                     keyboardType: TextInputType.number,
+                    onEditingComplete: () {
+                      final v = int.tryParse(reminderCtrl.text) ?? 2;
+                      reminderCtrl.text = v.clamp(1, 30).toString();
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -879,12 +922,16 @@ class _ToggleBadge extends StatelessWidget {
 class _TemplateFooter extends StatelessWidget {
   final int totalPoints;
   final double totalDensity;
+  final bool densityEnabled;
+  final bool canSave;
   final bool saving;
   final VoidCallback onSave;
 
   const _TemplateFooter({
     required this.totalPoints,
     required this.totalDensity,
+    required this.densityEnabled,
+    required this.canSave,
     required this.saving,
     required this.onSave,
   });
@@ -919,30 +966,35 @@ class _TemplateFooter extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            // Density badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: totalDensity == 100
-                    ? AppTheme.success.withValues(alpha: 0.15)
-                    : AppTheme.softPeach,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '${totalDensity.toStringAsFixed(1)}%',
-                style: AppFonts.serifStyle(
-                  fontSize: 14,
-                  color: totalDensity == 100
-                      ? AppTheme.success
-                      : AppTheme.charcoal,
+            // Density badge — only shown when density enabled (Rule 6)
+            if (densityEnabled) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: (totalDensity - 100).abs() < 0.01
+                      ? AppTheme.success.withValues(alpha: 0.15)
+                      : AppTheme.softPeach,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${totalDensity.toStringAsFixed(1)}%',
+                  style: AppFonts.serifStyle(
+                    fontSize: 14,
+                    color: (totalDensity - 100).abs() < 0.01
+                        ? AppTheme.success
+                        : AppTheme.charcoal,
+                  ),
                 ),
               ),
-            ),
+            ],
             const Spacer(),
-            // Save button
+            // Save button — disabled when canSave is false (Rule 1)
             FilledButton.icon(
-              onPressed: saving ? null : onSave,
+              onPressed: (saving || !canSave) ? null : onSave,
               icon: saving
                   ? const SizedBox(
                       width: 16,
