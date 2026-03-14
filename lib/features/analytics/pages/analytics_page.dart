@@ -3,6 +3,8 @@ import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
 
+import '../widgets/trend_chart.dart';
+
 /// 6C: Analytics page — 5 KPI cards + 6-month trend + filters.
 /// Data sourced from local CachedSubmissions (filtered by reviewStatus != rejected).
 class AnalyticsPage extends StatefulWidget {
@@ -24,7 +26,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   double _completionRate = 0;
 
   // Trend data
-  List<_TrendPoint> _trend = [];
+  List<TrendPoint> _trend = [];
 
   @override
   void initState() {
@@ -77,7 +79,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
     _trend = grouped.entries.map((e) {
       final avg = e.value.reduce((a, b) => a + b) / e.value.length;
-      return _TrendPoint(e.key, avg, e.value.length);
+      return TrendPoint(e.key, avg, e.value.length);
     }).toList()..sort((a, b) => a.month.compareTo(b.month));
 
     setState(() => _loading = false);
@@ -141,15 +143,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   const SizedBox(height: 12),
 
                   // Simple trend bars (fl_chart dependency not added — using cards)
-                  if (_trend.isEmpty)
-                    const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(24),
-                        child: Text('No trend data available yet.'),
-                      ),
-                    )
-                  else
-                    ..._trend.map((t) => _TrendBar(point: t)),
+                  // Trend chart (fl_chart LineChart)
+                  TrendChart(data: _trend),
                 ],
               ),
             ),
@@ -196,52 +191,4 @@ class _KpiCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _TrendBar extends StatelessWidget {
-  final _TrendPoint point;
-  const _TrendBar({required this.point});
-
-  @override
-  Widget build(BuildContext context) {
-    final pct = (point.avgScore / 100).clamp(0.0, 1.0);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 60,
-            child: Text(
-              point.month,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-          Expanded(
-            child: LinearProgressIndicator(
-              value: pct,
-              minHeight: 16,
-              borderRadius: BorderRadius.circular(4),
-              color: pct > 0.8
-                  ? AppTheme.success
-                  : pct > 0.6
-                  ? AppTheme.warning
-                  : Colors.red,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '${point.avgScore.toStringAsFixed(1)}%',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TrendPoint {
-  final String month;
-  final double avgScore;
-  final int count;
-  _TrendPoint(this.month, this.avgScore, this.count);
 }

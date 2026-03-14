@@ -30,4 +30,9 @@ class NotificationApiService {
   Future<void> markAsRead(String id) async {
     await _dio.post('/notifications/$id/read');
   }
+
+  /// POST /notifications/read-all — marks all notifications as read.
+  Future<void> markAllRead() async {
+    await _dio.post('/notifications/read-all');
+  }
 }

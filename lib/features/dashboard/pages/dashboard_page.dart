@@ -4,7 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/database/database_service.dart';
 import '../manager/dashboard_manager.dart';
+import '../../notifications/widgets/notification_bell.dart';
+import '../widgets/tactical_history_drawer.dart';
 
 final _di = GetIt.instance;
 
@@ -26,6 +29,44 @@ class _DashboardPageState extends State<DashboardPage> {
     _manager.loadStats();
   }
 
+  Future<void> _openCategoryDrawer(String categoryType) async {
+    final db = _di<DatabaseService>().db;
+
+    // Find template IDs matching this category type
+    final templates = await db.select(db.cachedTemplates).get();
+    final catTemplateIds = templates
+        .where((t) => t.type == categoryType)
+        .map((t) => t.id)
+        .toSet();
+
+    // Query last 10 submissions for those templates
+    final allSubs = await db.select(db.cachedSubmissions).get();
+    final filtered =
+        allSubs.where((s) => catTemplateIds.contains(s.templateId)).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    final auditMaps = filtered
+        .take(10)
+        .map(
+          (s) => <String, dynamic>{
+            'id': s.id,
+            'storeName': s.storeName ?? 'Unknown Store',
+            'totalScore': s.totalScore,
+            'status': s.status,
+            'createdAt': s.createdAt.toIso8601String(),
+          },
+        )
+        .toList();
+
+    if (mounted) {
+      TacticalHistoryDrawer.show(
+        context,
+        categoryName: categoryType,
+        audits: auditMaps,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -33,22 +74,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mission Control'),
-        actions: [
-          ListenableBuilder(
-            listenable: _manager,
-            builder: (context, _) {
-              final count = _manager.stats.unreadNotificationCount;
-              return IconButton(
-                onPressed: () {},
-                icon: Badge(
-                  isLabelVisible: count > 0,
-                  label: Text(count > 9 ? '9+' : '$count'),
-                  child: const Icon(Icons.notifications_outlined),
-                ),
-              );
-            },
-          ),
-        ],
+        actions: const [NotificationBell()],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/templates'),
@@ -112,7 +138,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 ...stats.templateCategories.map(
                   (cat) => Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: _TemplateCategorySection(category: cat),
+                    child: GestureDetector(
+                      onTap: () => _openCategoryDrawer(cat.type),
+                      child: _TemplateCategorySection(category: cat),
+                    ),
                   ),
                 ),
 

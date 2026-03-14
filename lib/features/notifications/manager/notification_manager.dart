@@ -101,6 +101,30 @@ class NotificationManager extends ChangeNotifier {
     }
   }
 
+  /// Mark all notifications as read — updates cache and sends to server.
+  Future<void> markAllRead() async {
+    final now = DateTime.now();
+
+    // 1. Update all unread in cache
+    final unread = notifications.value.where((n) => !n.isRead).toList();
+    for (final n in unread) {
+      await _dao.markAsRead(n.id, now);
+    }
+
+    // 2. Update in-memory state
+    final updated = await _dao.getAllNotifications();
+    notifications.value = updated;
+    _unreadCount = 0;
+    notifyListeners();
+
+    // 3. Sync to server
+    try {
+      await _api.markAllRead();
+    } catch (_) {
+      // Offline — local state already updated
+    }
+  }
+
   // ---------- Real-time push ----------
 
   /// Called when a SignalR push delivers a new notification.

@@ -28,6 +28,7 @@ class AuditFormPage extends StatefulWidget {
 
 class _AuditFormPageState extends State<AuditFormPage> {
   bool _isLoading = true;
+  int _currentSection = 0;
 
   @override
   void initState() {
@@ -82,32 +83,36 @@ class _AuditFormPageState extends State<AuditFormPage> {
               // Live score HUD
               _ScoreHud(score: manager.liveScore),
 
-              // Sections
+              // Current section only
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-                  itemCount: template.groups.length,
-                  itemBuilder: (context, i) =>
-                      _SectionCard(group: template.groups[i], manager: manager),
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  children: [
+                    if (template.groups.isNotEmpty &&
+                        _currentSection < template.groups.length)
+                      _SectionCard(
+                        group: template.groups[_currentSection],
+                        manager: manager,
+                      ),
+                  ],
                 ),
               ),
             ],
           ),
 
-          // Submit FAB
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: manager.isSubmitting ? null : () => _onSubmit(manager),
-            icon: manager.isSubmitting
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.send),
-            label: Text(manager.isSubmitting ? 'Submitting...' : 'Submit'),
+          // Sticky section navigation bar (AC3-4)
+          bottomNavigationBar: _SectionNavBar(
+            currentSection: _currentSection,
+            totalSections: template.groups.length,
+            allAnswered: _allCriteriaAnswered(manager, template),
+            isSubmitting: manager.isSubmitting,
+            onPrev: _currentSection > 0
+                ? () => setState(() => _currentSection--)
+                : null,
+            onNext: _currentSection < template.groups.length - 1
+                ? () => setState(() => _currentSection++)
+                : null,
+            onSubmit: () => _onSubmit(manager),
           ),
         );
       },
@@ -158,6 +163,26 @@ class _AuditFormPageState extends State<AuditFormPage> {
         );
       }
     }
+  }
+
+  /// Check if all criteria in all groups have been answered.
+  bool _allCriteriaAnswered(AuditManager manager, TemplateTreeDto template) {
+    for (final group in template.groups) {
+      if (!_groupAllAnswered(manager, group)) return false;
+    }
+    return true;
+  }
+
+  bool _groupAllAnswered(AuditManager manager, GroupDto group) {
+    for (final c in group.criteria) {
+      final answer = manager.answers[c.id];
+      if (answer == null) return false;
+      if (answer.value == null && answer.numericValue == null) return false;
+    }
+    for (final child in group.children) {
+      if (!_groupAllAnswered(manager, child)) return false;
+    }
+    return true;
   }
 }
 
@@ -489,6 +514,107 @@ class _NumericInputState extends State<_NumericInput> {
           visualDensity: VisualDensity.compact,
         ),
       ],
+    );
+  }
+}
+
+// ============================================================
+// Section Navigation Bar (AC3-4)
+// ============================================================
+
+class _SectionNavBar extends StatelessWidget {
+  final int currentSection;
+  final int totalSections;
+  final bool allAnswered;
+  final bool isSubmitting;
+  final VoidCallback? onPrev;
+  final VoidCallback? onNext;
+  final VoidCallback onSubmit;
+
+  const _SectionNavBar({
+    required this.currentSection,
+    required this.totalSections,
+    required this.allAnswered,
+    required this.isSubmitting,
+    required this.onPrev,
+    required this.onNext,
+    required this.onSubmit,
+  });
+
+  bool get _isLastSection => currentSection >= totalSections - 1;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            // Prev button
+            FilledButton.tonal(
+              onPressed: onPrev,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [Icon(Icons.chevron_left, size: 18), Text('Prev')],
+              ),
+            ),
+
+            const Spacer(),
+
+            // Section progress counter
+            Text(
+              '${currentSection + 1} / $totalSections',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+
+            const Spacer(),
+
+            // Next or Submit button
+            if (_isLastSection)
+              FilledButton(
+                onPressed: allAnswered && !isSubmitting ? onSubmit : null,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isSubmitting)
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    else
+                      const Icon(Icons.send, size: 18),
+                    const SizedBox(width: 6),
+                    Text(isSubmitting ? 'Submitting...' : 'Submit'),
+                  ],
+                ),
+              )
+            else
+              FilledButton(
+                onPressed: onNext,
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [Text('Next'), Icon(Icons.chevron_right, size: 18)],
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

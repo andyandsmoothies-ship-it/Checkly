@@ -24,6 +24,7 @@ import '../../features/profile/pages/activity_history_page.dart';
 import '../../features/analytics/pages/analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
 import '../../features/templates/pages/template_builder_page.dart';
+import '../../features/notifications/pages/notification_drawer_page.dart';
 
 final _di = GetIt.instance;
 
@@ -71,6 +72,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/templates/new',
       builder: (context, state) => const TemplateBuilderPage(templateId: ''),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const NotificationDrawerPage(),
     ),
     GoRoute(
       path: '/templates/:id',

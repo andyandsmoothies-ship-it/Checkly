@@ -1,8 +1,8 @@
 # Checkly Mobile — Comprehensive UAT Test Suite
-> **Version**: 1.0 (Phase UAT) | **Date**: 2026-03-13 | **Platform**: Android (APK)
+> **Version**: 1.1 (Phase UAT) | **Date**: 2026-03-13 | **Platform**: Android (APK)
 > **Pre-requisite**: Server running on local LAN IP, device connected via USB/Wi-Fi.
 
-This is the master User Acceptance Testing (UAT) document for the entire Checkly Mobile application, covering the 13 core modules and 90+ test cases necessary for production sign-off.
+This is the master User Acceptance Testing (UAT) document for the entire Checkly Mobile application, covering the 13 core modules and 100+ test cases necessary for production sign-off.
 
 ---
 
@@ -27,6 +27,9 @@ This is the master User Acceptance Testing (UAT) document for the entire Checkly
 | 2.1 | Bottom Nav Switching | Tap through Home, Audits, Action Plans, Profile | Instant switching. Active state highlighted. | [ ] |
 | 2.2 | Keyboard Padding | Focus a text input on a deeply scrolled page | UI scrolls up so input is not hidden by keyboard. | [ ] |
 | 2.3 | Global Scroll Restoration | Scroll down a list -> Navigate away -> Go back | List restores exact scroll position. | [ ] |
+| 2.4 | Admin Route Guard | Login as Auditor -> Navigate to `/admin/dashboard` | Redirected to `/home`. Admin pages are not accessible. | [ ] |
+| 2.5 | Access Pending Redirect | Login as user with no role assigned | Redirected to Access Pending page, not Dashboard. | [ ] |
+| 2.6 | Admin Nav Items | Login as Admin -> Open Admin Dashboard | All 5 menu items (Users, Stores, Approvals, Logs, Areas) navigate correctly. | [ ] |
 
 ## Module 3: Store & Area Selector
 **Focus**: Selecting the audit context (Updated for Areas Entity).
@@ -45,6 +48,7 @@ This is the master User Acceptance Testing (UAT) document for the entire Checkly
 | 4.1 | Template List | Tap "Start Audit" on Dashboard | Shows all `IsActive=true` templates. | [ ] |
 | 4.2 | Inactive Templates | Admin deactivates a template on server -> Pull to refresh | Template disappears from New Audit list. | [ ] |
 | 4.3 | Audit Initialization | Select Template -> Select Store | Audit form loads instantly with 0% initial score. | [ ] |
+| 4.4 | New Template Route | Navigate to `/templates/new` | Opens Template Builder with empty template (no crash). | [ ] |
 
 ## Module 5: Audit Form Execution
 **Focus**: Collapsible sections, answering criteria, and form validation.
@@ -125,7 +129,7 @@ This is the master User Acceptance Testing (UAT) document for the entire Checkly
 | 11.5| Local 48h Reminder (S6)| AP deadline < 48 hours | Background service triggers a local warning notification. | [ ] |
 
 ## Module 12: Admin Reference Data & System Logs
-**Focus**: User management safety, soft deletes, and audit trails.
+**Focus**: User management, store management, system logs, soft deletes, and audit trails.
 
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
@@ -133,6 +137,20 @@ This is the master User Acceptance Testing (UAT) document for the entire Checkly
 | 12.2| Store Manager Conflict | Assign SM to a store that already has one (S9)| Old SM is unassigned. New SM takes over. | [ ] |
 | 12.3| Soft Delete Guarantee | Admin deactivates a Store | Historical audits for that store still render perfectly. | [ ] |
 | 12.4| Action Trace Logging | Perform Admin action (e.g., Delete user) | S12: Action written to System Logs with Trace ID. | [ ] |
+| **12.5**| **User List** | Admin -> User Management | Shows paginated user list with name, email, role badge, status. | [ ] |
+| 12.6| User Search | Type a name/email in search field | List filters in real-time. | [ ] |
+| 12.7| Edit User Role | Tap user -> Change role dropdown -> Save | Role updates. Badge changes immediately. | [ ] |
+| 12.8| Area/Store Assignment | Edit user -> Select Area from dropdown -> Save | Area dropdown loads dynamically from `GET /api/areas` (not hardcoded). | [ ] |
+| 12.9| Ban/Unban User | Tap Ban toggle on a user | User status changes. Banned user cannot login. | [ ] |
+| 12.10| Self-Ban Prevention | Admin views own user entry | Ban button is disabled/hidden for current user. | [ ] |
+| **12.11**| **Store List** | Admin -> Store Management | Shows store list with name, area, active status. | [ ] |
+| 12.12| Create Store | Tap FAB -> Fill name, address, select area from dropdown -> Save | Store created. Appears in list. Area from `GET /api/areas`. | [ ] |
+| 12.13| Edit Store | Tap store -> Modify name/address/area -> Save | Store updated. Changes reflected immediately. | [ ] |
+| 12.14| Deactivate Store | Toggle IsActive off for a store | Store shows as inactive. Historical audits preserved (12.3). | [ ] |
+| 12.15| Transfer Store Manager | Tap Transfer SM -> Select new user -> Confirm | New SM assigned. Old SM unassigned. | [ ] |
+| **12.16**| **System Logs List** | Admin -> System Logs | Shows log entries with timestamp, level badge, category, message. | [ ] |
+| 12.17| Log Level Filter | Filter by ERROR level | Only error-level logs shown. | [ ] |
+| 12.18| Log Detail View | Tap a log entry | Bottom sheet shows full log detail (trace ID, metadata). | [ ] |
 
 ## Module 13: Dashboard & Analytics
 **Focus**: KPI logic, charting, and role-based filtering.
