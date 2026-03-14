@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/widgets/checkly_fab.dart';
+
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/database/database_service.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/dashboard_manager.dart';
@@ -72,35 +75,10 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final auth = _di<AuthManager>();
-    final role = auth.currentUser?.role ?? 'auditor';
-    final roleLabel = switch (role) {
-      'admin' => 'Administrator',
-      'auditor' => 'Auditor',
-      'store_manager' => 'Store Manager',
-      'area_manager' => 'Area Manager',
-      _ => role,
-    };
-
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Mission Control'),
-            Text(
-              roleLabel,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-        actions: const [NotificationBell()],
-      ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: ChecklyFab(
+        label: 'AUDIT',
         onPressed: () => context.push('/templates'),
-        child: const Icon(Icons.add),
       ),
       body: ListenableBuilder(
         listenable: _manager,
@@ -110,51 +88,182 @@ class _DashboardPageState extends State<DashboardPage> {
           }
 
           final stats = _manager.stats;
+          final progress = stats.monthlyTotal > 0
+              ? (stats.monthlyCompleted / stats.monthlyTotal).clamp(0.0, 1.0)
+              : 0.0;
+          final percentage = (progress * 100).toStringAsFixed(0);
 
           return RefreshIndicator(
             onRefresh: _manager.loadStats,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
               children: [
-                // ── Hero Card ──
-                _HeroCard(
-                  completed: stats.monthlyCompleted,
-                  total: stats.monthlyTotal,
-                ),
-                const SizedBox(height: 20),
-
-                // ── Quick Stats Row ──
+                // ── Apothecary Header ──
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: _QuickStat(
-                        icon: Icons.pending_actions,
-                        label: 'Action Plans',
-                        value: '${stats.pendingActionPlanCount}',
-                        color: AppTheme.warning,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _greeting(),
+                            style: AppFonts.serifStyle(
+                              fontSize: 30,
+                              color: AppTheme.charcoal,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'MISSION CONTROL',
+                            style: AppFonts.displayStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppTheme.charcoal.withValues(alpha: 0.6),
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _QuickStat(
-                        icon: Icons.warning_amber,
-                        label: 'Overdue',
-                        value: '${stats.overdueActionPlanCount}',
-                        color: theme.colorScheme.error,
+                    const NotificationBell(),
+                  ],
+                ),
+
+                // ── Circular Progress Ring ──
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: Center(
+                    child: SizedBox(
+                      width: 192,
+                      height: 192,
+                      child: CustomPaint(
+                        painter: _ProgressRingPainter(
+                          progress: progress,
+                          trackColor: AppTheme.sageGray.withValues(alpha: 0.3),
+                          progressColor: theme.colorScheme.primary,
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '$percentage%',
+                                style: AppFonts.serifStyle(
+                                  fontSize: 48,
+                                  color: AppTheme.charcoal,
+                                ),
+                              ),
+                              Text(
+                                'SCORE',
+                                style: AppFonts.displayStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.charcoal.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                  letterSpacing: 3,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                  ),
+                ),
+
+                // ── Asymmetric Stats ──
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Large softPeach block (h-40)
                     Expanded(
-                      child: _QuickStat(
-                        icon: Icons.notifications_active,
-                        label: 'Unread',
-                        value: '${stats.unreadNotificationCount}',
-                        color: AppTheme.info,
+                      child: Container(
+                        height: 160,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: AppTheme.softPeach,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${stats.pendingActionPlanCount}',
+                              style: AppFonts.serifStyle(
+                                fontSize: 36,
+                                color: AppTheme.charcoal,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Open Action Plans',
+                              style: AppFonts.displayStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppTheme.charcoal.withValues(alpha: 0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Narrow white block with sage border (h-32)
+                    SizedBox(
+                      width: 128,
+                      height: 128,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppTheme.sageGray.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${stats.recentAuditCount}',
+                              style: AppFonts.serifStyle(
+                                fontSize: 24,
+                                color: AppTheme.charcoal,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'AUDITS',
+                              style: AppFonts.displayStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                color: AppTheme.charcoal.withValues(alpha: 0.6),
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
+
+                // ── Recent Scans Section Header ──
+                Text(
+                  'RECENT SCANS',
+                  style: AppFonts.displayStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.charcoal.withValues(alpha: 0.4),
+                    letterSpacing: 3,
+                  ),
+                ),
+                const SizedBox(height: 16),
 
                 // ── Per-Template Sections ──
                 ...stats.templateCategories.map(
@@ -190,145 +299,48 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-}
 
-// ── Hero Card (Monthly Progress Gauge) ──
-
-class _HeroCard extends StatelessWidget {
-  final int completed;
-  final int total;
-
-  const _HeroCard({required this.completed, required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final progress = total > 0 ? (completed / total).clamp(0.0, 1.0) : 0.0;
-    final percentage = (progress * 100).toStringAsFixed(0);
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.primary.withValues(alpha: 0.8),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            'MONTHLY PLAN PROGRESS',
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.8),
-              fontWeight: FontWeight.w700,
-              letterSpacing: 2,
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Circular gauge
-          SizedBox(
-            width: 100,
-            height: 100,
-            child: CustomPaint(
-              painter: _GaugePainter(progress: progress),
-              child: Center(
-                child: Text(
-                  '$percentage%',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Bottom row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _CountBadge(label: 'COMPLETED', value: '$completed'),
-              Container(
-                width: 1,
-                height: 24,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                color: Colors.white.withValues(alpha: 0.3),
-              ),
-              _CountBadge(label: 'TOTAL', value: '$total'),
-            ],
-          ),
-        ],
-      ),
-    );
+  String _greeting() {
+    final hour = DateTime.now().hour;
+    final name = _di<AuthManager>().currentUser?.email.split('@').first ?? '';
+    final timeGreeting = hour < 12
+        ? 'Good Morning'
+        : hour < 18
+        ? 'Good Afternoon'
+        : 'Good Evening';
+    return name.isNotEmpty ? '$timeGreeting, $name' : timeGreeting;
   }
 }
 
-class _CountBadge extends StatelessWidget {
-  final String label;
-  final String value;
-  const _CountBadge({required this.label, required this.value});
+// ── Progress Ring Painter (Apothecary) ──
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      children: [
-        Text(
-          value,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: Colors.white.withValues(alpha: 0.7),
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _GaugePainter extends CustomPainter {
+class _ProgressRingPainter extends CustomPainter {
   final double progress;
-  _GaugePainter({required this.progress});
+  final Color trackColor;
+  final Color progressColor;
+
+  _ProgressRingPainter({
+    required this.progress,
+    required this.trackColor,
+    required this.progressColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 6;
+    final radius = size.width / 2 - 4;
 
-    // Background arc
-    final bgPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.2)
-      ..strokeWidth = 8
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    canvas.drawCircle(center, radius, bgPaint);
+    // Track ring
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, radius, trackPaint);
 
     // Progress arc
-    final fgPaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 8
+    final progressPaint = Paint()
+      ..color = progressColor
+      ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
     canvas.drawArc(
@@ -336,61 +348,13 @@ class _GaugePainter extends CustomPainter {
       -math.pi / 2,
       2 * math.pi * progress,
       false,
-      fgPaint,
+      progressPaint,
     );
   }
 
   @override
-  bool shouldRepaint(covariant _GaugePainter oldDelegate) =>
+  bool shouldRepaint(covariant _ProgressRingPainter oldDelegate) =>
       oldDelegate.progress != progress;
-}
-
-// ── Quick Stat ──
-
-class _QuickStat extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  const _QuickStat({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 // ── Template Category Section ──

@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/widgets/checkly_fab.dart';
+
 import '../../../_shared/theme/app_theme.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/services/store_api_service.dart';
@@ -659,10 +661,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('User Management')),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: ChecklyFab(
+        label: 'ADD',
+        icon: Icons.person_add,
         onPressed: _showCreateUserSheet,
-        icon: const Icon(Icons.person_add),
-        label: const Text('Add User'),
       ),
       body: Column(
         children: [

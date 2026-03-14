@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/widgets/checkly_fab.dart';
+
+import '../../../_shared/theme/app_theme.dart';
 import '../manager/template_manager.dart';
 import '../model/template_dto.dart';
 
@@ -67,10 +70,9 @@ class _TemplateListPageState extends State<TemplateListPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Templates')),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: ChecklyFab(
+        label: 'CREATE',
         onPressed: () => context.push('/templates/new'),
-        icon: const Icon(Icons.add),
-        label: const Text('Create'),
       ),
       body: ListenableBuilder(
         listenable: manager,
@@ -211,7 +213,7 @@ class _FilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? theme.colorScheme.primary
-              : theme.colorScheme.surfaceContainerHighest,
+              : AppTheme.oatmeal.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -291,13 +293,13 @@ class _TemplateCard extends StatelessWidget {
                               vertical: 1,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.orange.withAlpha(30),
+                              color: AppTheme.softPeach,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               'DRAFT',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: Colors.orange.shade700,
+                                color: AppTheme.charcoal.withValues(alpha: 0.7),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10,
                               ),

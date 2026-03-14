@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Checkly design system — Material 3 theme based on DESIGN_SYSTEM.md.
+/// Checkly design system — "Apothecary" Editorial Utilitarian aesthetic.
 ///
-/// Primary: hsl(221, 83%, 53%) ≈ #3B82F6
-/// Font: Plus Jakarta Sans (Google Fonts)
+/// Primary: #4CAE4F (Muted Green)
+/// Display font: Manrope | Serif accent: Lora
+/// Light bg: Warm Cream #F9F7F2 | Dark bg: Deep Forest #151D15
 class AppTheme {
   AppTheme._();
 
-  // ---------- Color Tokens (from DESIGN_SYSTEM.md) ----------
-  static const _primarySeed = Color(0xFF3B82F6); // hsl(221, 83%, 53%)
-  static const _destructive = Color(0xFFEF4444); // hsl(0, 84%, 60%)
-  static const _success = Color(0xFF16A34A); // hsl(142, 76%, 36%)
-  static const _warning = Color(0xFFF59E0B); // hsl(38, 92%, 50%)
-  static const _info = Color(0xFF0EA5E9); // hsl(199, 89%, 48%)
+  // ---------- Color Tokens ----------
+  static const _primarySeed = Color(0xFF4CAE4F); // Muted Green
+  static const _destructive = Color(0xFFEF4444);
+  static const _success = Color(0xFF16A34A);
+  static const _warning = Color(0xFFF59E0B);
+  static const _info = Color(0xFF0EA5E9);
+
+  // ---------- Apothecary Palette ----------
+  static const oatmeal = Color(0xFFE8E2D6);
+  static const softPeach = Color(0xFFF5E6DA);
+  static const sageGray = Color(0xFFD1D9D1);
+  static const warmCream = Color(0xFFF9F7F2);
+  static const charcoal = Color(0xFF2D312E);
+  static const deepForest = Color(0xFF151D15);
 
   // ---------- Light Theme ----------
   static ThemeData get light {
@@ -21,6 +30,7 @@ class AppTheme {
       seedColor: _primarySeed,
       brightness: Brightness.light,
       error: _destructive,
+      surface: warmCream,
     );
 
     return _buildTheme(colorScheme);
@@ -32,13 +42,14 @@ class AppTheme {
       seedColor: _primarySeed,
       brightness: Brightness.dark,
       error: _destructive,
+      surface: deepForest,
     );
 
     return _buildTheme(colorScheme);
   }
 
   static ThemeData _buildTheme(ColorScheme colorScheme) {
-    final textTheme = GoogleFonts.plusJakartaSansTextTheme();
+    final textTheme = GoogleFonts.manropeTextTheme();
 
     return ThemeData(
       useMaterial3: true,
@@ -58,12 +69,15 @@ class AppTheme {
         ),
       ),
 
-      // Cards
+      // Cards — sage gray border at 50% opacity
       cardTheme: CardThemeData(
         elevation: 0,
+        color: colorScheme.brightness == Brightness.light
+            ? Colors.white
+            : colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: colorScheme.outlineVariant.withAlpha(80)),
+          side: BorderSide(color: sageGray.withValues(alpha: 0.5)),
         ),
       ),
 
@@ -96,7 +110,7 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.outlineVariant),
+          borderSide: BorderSide(color: sageGray.withValues(alpha: 0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -108,26 +122,41 @@ class AppTheme {
         ),
       ),
 
-      // FAB
+      // FAB — circular shape
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: const CircleBorder(),
       ),
 
-      // Bottom navigation
+      // Chip — warm oatmeal accents
+      chipTheme: ChipThemeData(
+        backgroundColor: oatmeal.withValues(alpha: 0.5),
+        selectedColor: colorScheme.primary.withValues(alpha: 0.15),
+        labelStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: sageGray.withValues(alpha: 0.3)),
+        ),
+      ),
+
+      // Bottom navigation — styled via custom widget, but keep base config
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
-        backgroundColor: colorScheme.surface,
-        indicatorColor: colorScheme.primaryContainer,
+        backgroundColor: Colors.transparent,
+        indicatorColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.all(
-          textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+          textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 10,
+            letterSpacing: -0.5,
+          ),
         ),
       ),
     );
   }
 
-  // ---------- Extension Colors (semantic, not in ColorScheme) ----------
+  // ---------- Extension Colors ----------
   static const success = _success;
   static const warning = _warning;
   static const info = _info;

@@ -194,7 +194,7 @@ class _FilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? theme.colorScheme.primary
-              : theme.colorScheme.surfaceContainerHighest,
+              : AppTheme.oatmeal.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(

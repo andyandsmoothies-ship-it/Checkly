@@ -1,9 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/manager/auth_manager.dart';
 import '../../features/auth/model/auth_state.dart';
+import '../theme/app_theme.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/auth/pages/access_pending_page.dart';
 import '../../features/templates/pages/template_list_page.dart';
@@ -208,47 +210,101 @@ class _MainShell extends StatelessWidget {
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: currentIndex,
-        onDestinationSelected: (index) {
-          switch (index) {
-            case 0:
-              context.go('/home');
-            case 1:
-              context.go('/audits');
-            case 2:
-              context.go('/actions');
-            case 3:
-              context.go('/templates');
-            case 4:
-              context.go('/profile');
-          }
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+      extendBody: true,
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            height: 96,
+            decoration: BoxDecoration(
+              color: Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.8),
+              border: Border(
+                top: BorderSide(
+                  color: AppTheme.sageGray.withValues(alpha: 0.2),
+                ),
+              ),
+            ),
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _NavItem(
+                  icon: Icons.grid_view,
+                  label: 'HOME',
+                  isActive: currentIndex == 0,
+                  onTap: () => context.go('/home'),
+                ),
+                _NavItem(
+                  icon: Icons.assignment,
+                  label: 'AUDITS',
+                  isActive: currentIndex == 1,
+                  onTap: () => context.go('/audits'),
+                ),
+                _NavItem(
+                  icon: Icons.fact_check,
+                  label: 'PLANS',
+                  isActive: currentIndex == 2,
+                  onTap: () => context.go('/actions'),
+                ),
+                _NavItem(
+                  icon: Icons.description_outlined,
+                  label: 'TEMPLATES',
+                  isActive: currentIndex == 3,
+                  onTap: () => context.go('/templates'),
+                ),
+                _NavItem(
+                  icon: Icons.account_circle,
+                  label: 'PROFILE',
+                  isActive: currentIndex == 4,
+                  onTap: () => context.go('/profile'),
+                ),
+              ],
+            ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.assignment_turned_in_outlined),
-            selectedIcon: Icon(Icons.assignment_turned_in),
-            label: 'Audits',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.checklist_outlined),
-            selectedIcon: Icon(Icons.checklist),
-            label: 'Actions',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.description_outlined),
-            selectedIcon: Icon(Icons.description),
-            label: 'Templates',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive
+        ? AppTheme.charcoal
+        : AppTheme.charcoal.withValues(alpha: 0.4);
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 24, color: color),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: -0.5,
+            ),
           ),
         ],
       ),

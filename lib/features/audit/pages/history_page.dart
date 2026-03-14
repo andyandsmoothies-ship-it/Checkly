@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/widgets/checkly_fab.dart';
+
 import '../../../_shared/theme/app_theme.dart';
 import '../manager/history_manager.dart';
 import '../model/submission_dto.dart';
@@ -92,9 +94,9 @@ class _HistoryPageState extends State<HistoryPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Audits')),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: ChecklyFab(
+        label: 'AUDIT',
         onPressed: () => context.push('/templates'),
-        child: const Icon(Icons.add),
       ),
       body: ListenableBuilder(
         listenable: manager,
@@ -274,7 +276,7 @@ class _FilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? theme.colorScheme.primary
-              : theme.colorScheme.surfaceContainerHighest,
+              : AppTheme.oatmeal.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -414,7 +416,7 @@ class _AuditCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: submission.status == 'completed'
                     ? AppTheme.success.withAlpha(20)
-                    : theme.colorScheme.surfaceContainerHighest,
+                    : AppTheme.oatmeal.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
