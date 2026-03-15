@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/database/database_service.dart';
@@ -31,6 +32,13 @@ class TemplateManager extends ChangeNotifier {
   final isLoading = ValueNotifier<bool>(false);
   String? error;
   DateTime? lastRefreshed;
+
+  /// Defers notifyListeners to after the current frame if we're mid-build.
+  void _safeNotify() {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
+  }
 
   // ---------- Load list (cache-first) ----------
   Future<void> loadTemplates() async {
@@ -73,7 +81,7 @@ class TemplateManager extends ChangeNotifier {
   Future<void> loadTemplateTree(String id) async {
     isLoading.value = true;
     error = null;
-    notifyListeners();
+    _safeNotify();
 
     try {
       // 1. Try Drift cache first
@@ -174,6 +182,7 @@ class TemplateManager extends ChangeNotifier {
         description: group.description,
         weight: group.weight,
         maxDeductionPoints: group.maxDeductionPoints,
+        minusPerFault: group.minusPerFault,
         orderIndex: orderIndex,
         parentId: parentId,
         metadata: group.metadata,
@@ -187,6 +196,8 @@ class TemplateManager extends ChangeNotifier {
         title: group.title,
         description: group.description,
         weight: group.weight,
+        maxDeductionPoints: group.maxDeductionPoints,
+        minusPerFault: group.minusPerFault,
         orderIndex: orderIndex,
         metadata: group.metadata,
       );

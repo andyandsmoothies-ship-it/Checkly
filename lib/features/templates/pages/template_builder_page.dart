@@ -139,6 +139,9 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
         title: s.titleCtrl.text,
         description: s.descCtrl.text.isEmpty ? null : s.descCtrl.text,
         weight: double.tryParse(s.weightCtrl.text),
+        // Dual-write: column fields + metadata JSON for PWA backward compat
+        maxDeductionPoints: double.tryParse(s.maxPointsCtrl.text),
+        minusPerFault: double.tryParse(s.minusPerFaultCtrl.text),
         orderIndex: i,
         metadata: metadata,
         children: _buildGroupsRecursive(s.subSections),

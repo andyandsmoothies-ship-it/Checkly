@@ -24,7 +24,12 @@ class AuditAnswer {
   double? numericValue; // fault count
   String? note;
   String? photoUrl;
-  bool isRepeatedError;
+  int repeatedFaultCount;
+  bool isCcp;
+  bool isRisk;
+
+  /// Derived from repeatedFaultCount for backward compatibility.
+  bool get isRepeatedError => repeatedFaultCount > 0;
 
   AuditAnswer({
     required this.criteriaId,
@@ -32,7 +37,9 @@ class AuditAnswer {
     this.numericValue,
     this.note,
     this.photoUrl,
-    this.isRepeatedError = false,
+    this.repeatedFaultCount = 0,
+    this.isCcp = false,
+    this.isRisk = false,
   });
 
   /// Converts to submission API payload.
@@ -84,6 +91,9 @@ class AuditManager extends ChangeNotifier {
   double _liveScore = 100.0;
   double get liveScore => _liveScore;
 
+  Map<String, SectionScore> _sectionScores = {};
+  Map<String, SectionScore> get sectionScores => _sectionScores;
+
   bool _isSubmitting = false;
   bool get isSubmitting => _isSubmitting;
 
@@ -121,12 +131,17 @@ class AuditManager extends ChangeNotifier {
       _initGroupAnswers(group);
     }
 
+    _recalculateScore();
     notifyListeners();
   }
 
   void _initGroupAnswers(GroupDto group) {
     for (final criterion in group.criteria) {
-      _answers[criterion.id] = AuditAnswer(criteriaId: criterion.id);
+      _answers[criterion.id] = AuditAnswer(
+        criteriaId: criterion.id,
+        isCcp: false,
+        isRisk: false,
+      );
     }
     for (final child in group.children) {
       _initGroupAnswers(child);
@@ -151,7 +166,32 @@ class AuditManager extends ChangeNotifier {
   }
 
   void setRepeatedError(String criteriaId, bool value) {
-    _answers[criteriaId]?.isRepeatedError = value;
+    _answers[criteriaId]?.repeatedFaultCount = value ? 1 : 0;
+    notifyListeners();
+  }
+
+  void setRepeatedFaultCount(String criteriaId, int count) {
+    final a = _answers[criteriaId];
+    if (a != null) {
+      a.repeatedFaultCount = count < 0 ? 0 : count;
+      notifyListeners();
+    }
+  }
+
+  void setPhotoUrl(String criteriaId, String? url) {
+    _answers[criteriaId]?.photoUrl = url;
+    notifyListeners();
+  }
+
+  void setCcp(String criteriaId, bool value) {
+    _answers[criteriaId]?.isCcp = value;
+    _recalculateScore();
+    notifyListeners();
+  }
+
+  void setRisk(String criteriaId, bool value) {
+    _answers[criteriaId]?.isRisk = value;
+    _recalculateScore();
     notifyListeners();
   }
 
@@ -170,28 +210,49 @@ class AuditManager extends ChangeNotifier {
     if (_template == null) return;
 
     final sections = _template!.groups.map((g) {
-      final criteria = _flattenCriteria(g);
+      // Top-level criteria (flat)
+      final flatCriteria = g.criteria.map((c) {
+        return CriterionInput(
+          id: c.id,
+          groupId: g.id,
+          pointsWeight: c.pointsWeight ?? 0,
+          isCcp: c.isCcp,
+          isRisk: c.isRisk,
+        );
+      }).toList();
+
+      // Subsections (child groups)
+      final subsections = g.children.map((sub) {
+        // Flatten criteria inside subsection in case of deeper nesting
+        final subCriteria = _flattenCriteria(sub).map((c) {
+          return CriterionInput(
+            id: c.id,
+            groupId: sub.id,
+            pointsWeight: c.pointsWeight ?? 0,
+            isCcp: c.isCcp,
+            isRisk: c.isRisk,
+          );
+        }).toList();
+
+        return SubsectionInput(
+          id: sub.id,
+          title: sub.title,
+          maxPoints: _metaDouble(sub.metadata, 'subsection_max_points'),
+          criteria: subCriteria,
+        );
+      }).toList();
+
       return SectionInput(
         id: g.id,
         weight: g.weight ?? 0,
         maxDeductionPoints: g.maxDeductionPoints,
-        criteria: criteria
-            .map(
-              (c) => CriterionInput(
-                id: c.id,
-                groupId: g.id,
-                pointsWeight: c.pointsWeight ?? 0,
-                isCcp: c.isCcp,
-                isRisk: c.isRisk,
-              ),
-            )
-            .toList(),
+        subsections: subsections,
+        criteria: flatCriteria,
       );
     }).toList();
 
     final scoringAnswers = _answers.values
         .map((a) {
-          // For pass/fail: non_conform implies 1 fault
           double? numFaults = a.numericValue;
           if (numFaults == null && a.value == 'non_conform') {
             numFaults = 1;
@@ -201,14 +262,21 @@ class AuditManager extends ChangeNotifier {
             criteriaId: a.criteriaId,
             numericValue: numFaults,
             value: a.value,
+            repeatedFaults: a.repeatedFaultCount,
+            isCcp: a.isCcp,
+            isRisk: a.isRisk,
           );
         })
-        .where((a) => a.numericValue != null || a.value != null)
+        .where(
+          (a) =>
+              a.numericValue != null || a.value != null || a.isCcp || a.isRisk,
+        )
         .toList();
 
     final input = ScoringInput(sections: sections, answers: scoringAnswers);
     final result = ScoringEngine.calculate(input);
     _liveScore = result.totalScore;
+    _sectionScores = result.sectionScores;
   }
 
   List<CriterionDto> _flattenCriteria(GroupDto group) {
@@ -217,6 +285,17 @@ class AuditManager extends ChangeNotifier {
       result.addAll(_flattenCriteria(child));
     }
     return result;
+  }
+
+  /// Extracts a double field from a group's metadata JSON string.
+  double _metaDouble(String? metadata, String key) {
+    if (metadata == null || metadata.isEmpty) return 0;
+    try {
+      final map = jsonDecode(metadata) as Map<String, dynamic>;
+      return (map[key] as num?)?.toDouble() ?? 0;
+    } catch (_) {
+      return 0;
+    }
   }
 
   // ---------- Section scores JSON ----------

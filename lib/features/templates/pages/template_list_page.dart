@@ -389,7 +389,7 @@ class _TemplateCard extends StatelessWidget {
                 onSelected: (action) {
                   switch (action) {
                     case 'start':
-                      context.push('/audit/new?templateId=${template.id}');
+                      context.push('/stores/select?templateId=${template.id}');
                     case 'edit':
                       context.push('/templates/edit/${template.id}');
                     case 'duplicate':

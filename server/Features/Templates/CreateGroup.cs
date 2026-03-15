@@ -13,6 +13,7 @@ public static class CreateGroup
         string? Description,
         decimal? Weight,
         decimal? MaxDeductionPoints,
+        decimal? MinusPerFault,
         int? OrderIndex,
         Guid? ParentId,
         string? Metadata);
@@ -39,6 +40,7 @@ public static class CreateGroup
             Description = request.Description?.Trim(),
             Weight = request.Weight ?? 1.0m,
             MaxDeductionPoints = request.MaxDeductionPoints,
+            MinusPerFault = request.MinusPerFault,
             OrderIndex = request.OrderIndex ?? 0,
             ParentId = request.ParentId,
             Metadata = request.Metadata,

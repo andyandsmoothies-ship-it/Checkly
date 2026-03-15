@@ -31,15 +31,38 @@ void main() {
   // ================================================================
   ScoringInput parseVector(Map<String, dynamic> vector) {
     final sections = (vector['sections'] as List).map((s) {
-      final criteria = (s['criteria'] as List).map((c) {
-        return CriterionInput(
-          id: c['id'] as String,
-          groupId: c['groupId'] as String,
-          pointsWeight: (c['pointsWeight'] as num).toDouble(),
-          isCcp: c['isCcp'] as bool,
-          isRisk: c['isRisk'] as bool,
-        );
-      }).toList();
+      final criteria =
+          (s['criteria'] as List?)?.map((c) {
+            return CriterionInput(
+              id: c['id'] as String,
+              groupId: c['groupId'] as String,
+              pointsWeight: (c['pointsWeight'] as num).toDouble(),
+              isCcp: c['isCcp'] as bool,
+              isRisk: c['isRisk'] as bool,
+            );
+          }).toList() ??
+          [];
+
+      final subsections =
+          (s['subsections'] as List?)?.map((sub) {
+            final subCriteria = (sub['criteria'] as List).map((c) {
+              return CriterionInput(
+                id: c['id'] as String,
+                groupId: c['groupId'] as String,
+                pointsWeight: (c['pointsWeight'] as num).toDouble(),
+                isCcp: c['isCcp'] as bool,
+                isRisk: c['isRisk'] as bool,
+              );
+            }).toList();
+
+            return SubsectionInput(
+              id: sub['id'] as String,
+              title: sub['title'] as String,
+              maxPoints: (sub['maxPoints'] as num).toDouble(),
+              criteria: subCriteria,
+            );
+          }).toList() ??
+          [];
 
       return SectionInput(
         id: s['id'] as String,
@@ -47,6 +70,7 @@ void main() {
         maxDeductionPoints: s['maxDeductionPoints'] != null
             ? (s['maxDeductionPoints'] as num).toDouble()
             : null,
+        subsections: subsections,
         criteria: criteria,
       );
     }).toList();
@@ -154,7 +178,6 @@ void main() {
 
   // ================================================================
   // Scenario 8: conform does NOT trigger fault → 100%
-  // Source: C# ScoringVerifierTests.cs lines 124-138
   // ================================================================
   test('V08: conform → no fault → 100%', () {
     final v = vectors.firstWhere((v) => v['id'] == 'V08_conform_no_fault');
@@ -188,5 +211,16 @@ void main() {
     final result = ScoringEngine.calculate(input);
 
     expect(result.totalScore, closeTo(0.00, 0.01));
+  });
+
+  // ================================================================
+  // Scenario 11: Subsection cap
+  // ================================================================
+  test('V11: Subsection cap limits deductions independently', () {
+    final v = vectors.firstWhere((v) => v['id'] == 'V11_subsection_cap');
+    final input = parseVector(v);
+    final result = ScoringEngine.calculate(input);
+
+    expect(result.totalScore, closeTo(50.00, 0.01));
   });
 }

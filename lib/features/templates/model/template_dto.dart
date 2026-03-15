@@ -85,6 +85,7 @@ class GroupDto {
   final String? description;
   final double? weight;
   final double? maxDeductionPoints;
+  final double? minusPerFault;
   final int orderIndex;
   final String? metadata;
   final List<GroupDto> children;
@@ -96,6 +97,7 @@ class GroupDto {
     this.description,
     this.weight,
     this.maxDeductionPoints,
+    this.minusPerFault,
     required this.orderIndex,
     this.metadata,
     required this.children,
@@ -108,6 +110,7 @@ class GroupDto {
     description: json['description'] as String?,
     weight: (json['weight'] as num?)?.toDouble(),
     maxDeductionPoints: (json['maxDeductionPoints'] as num?)?.toDouble(),
+    minusPerFault: (json['minusPerFault'] as num?)?.toDouble(),
     orderIndex: json['orderIndex'] as int,
     metadata: json['metadata'] as String?,
     children:

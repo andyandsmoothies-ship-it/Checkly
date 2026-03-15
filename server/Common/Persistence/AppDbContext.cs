@@ -152,6 +152,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Description).HasColumnName("description");
             e.Property(x => x.Weight).HasColumnName("weight").HasDefaultValue(1.0m);
             e.Property(x => x.MaxDeductionPoints).HasColumnName("max_deduction_points");
+            e.Property(x => x.MinusPerFault).HasColumnName("minus_per_fault");
             e.Property(x => x.OrderIndex).HasColumnName("order_index").HasDefaultValue(0);
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");

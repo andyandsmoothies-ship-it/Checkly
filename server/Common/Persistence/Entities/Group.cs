@@ -13,6 +13,7 @@ public sealed class Group
     public string? Description { get; set; }
     public decimal? Weight { get; set; }
     public decimal? MaxDeductionPoints { get; set; }
+    public decimal? MinusPerFault { get; set; }
     public int OrderIndex { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }

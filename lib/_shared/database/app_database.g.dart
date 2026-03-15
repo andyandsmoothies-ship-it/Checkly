@@ -644,6 +644,17 @@ class $CachedGroupsTable extends CachedGroups
         type: DriftSqlType.double,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _minusPerFaultMeta = const VerificationMeta(
+    'minusPerFault',
+  );
+  @override
+  late final GeneratedColumn<double> minusPerFault = GeneratedColumn<double>(
+    'minus_per_fault',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _orderIndexMeta = const VerificationMeta(
     'orderIndex',
   );
@@ -723,6 +734,7 @@ class $CachedGroupsTable extends CachedGroups
     description,
     weight,
     maxDeductionPoints,
+    minusPerFault,
     orderIndex,
     parentId,
     metadata,
@@ -784,6 +796,15 @@ class $CachedGroupsTable extends CachedGroups
         maxDeductionPoints.isAcceptableOrUnknown(
           data['max_deduction_points']!,
           _maxDeductionPointsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('minus_per_fault')) {
+      context.handle(
+        _minusPerFaultMeta,
+        minusPerFault.isAcceptableOrUnknown(
+          data['minus_per_fault']!,
+          _minusPerFaultMeta,
         ),
       );
     }
@@ -860,6 +881,10 @@ class $CachedGroupsTable extends CachedGroups
         DriftSqlType.double,
         data['${effectivePrefix}max_deduction_points'],
       ),
+      minusPerFault: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}minus_per_fault'],
+      ),
       orderIndex: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}order_index'],
@@ -900,6 +925,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
   final String? description;
   final double? weight;
   final double? maxDeductionPoints;
+  final double? minusPerFault;
   final int orderIndex;
   final String? parentId;
   final String? metadata;
@@ -913,6 +939,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     this.description,
     this.weight,
     this.maxDeductionPoints,
+    this.minusPerFault,
     required this.orderIndex,
     this.parentId,
     this.metadata,
@@ -934,6 +961,9 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     }
     if (!nullToAbsent || maxDeductionPoints != null) {
       map['max_deduction_points'] = Variable<double>(maxDeductionPoints);
+    }
+    if (!nullToAbsent || minusPerFault != null) {
+      map['minus_per_fault'] = Variable<double>(minusPerFault);
     }
     map['order_index'] = Variable<int>(orderIndex);
     if (!nullToAbsent || parentId != null) {
@@ -962,6 +992,9 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
       maxDeductionPoints: maxDeductionPoints == null && nullToAbsent
           ? const Value.absent()
           : Value(maxDeductionPoints),
+      minusPerFault: minusPerFault == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minusPerFault),
       orderIndex: Value(orderIndex),
       parentId: parentId == null && nullToAbsent
           ? const Value.absent()
@@ -989,6 +1022,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
       maxDeductionPoints: serializer.fromJson<double?>(
         json['maxDeductionPoints'],
       ),
+      minusPerFault: serializer.fromJson<double?>(json['minusPerFault']),
       orderIndex: serializer.fromJson<int>(json['orderIndex']),
       parentId: serializer.fromJson<String?>(json['parentId']),
       metadata: serializer.fromJson<String?>(json['metadata']),
@@ -1007,6 +1041,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
       'description': serializer.toJson<String?>(description),
       'weight': serializer.toJson<double?>(weight),
       'maxDeductionPoints': serializer.toJson<double?>(maxDeductionPoints),
+      'minusPerFault': serializer.toJson<double?>(minusPerFault),
       'orderIndex': serializer.toJson<int>(orderIndex),
       'parentId': serializer.toJson<String?>(parentId),
       'metadata': serializer.toJson<String?>(metadata),
@@ -1023,6 +1058,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     Value<String?> description = const Value.absent(),
     Value<double?> weight = const Value.absent(),
     Value<double?> maxDeductionPoints = const Value.absent(),
+    Value<double?> minusPerFault = const Value.absent(),
     int? orderIndex,
     Value<String?> parentId = const Value.absent(),
     Value<String?> metadata = const Value.absent(),
@@ -1038,6 +1074,9 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     maxDeductionPoints: maxDeductionPoints.present
         ? maxDeductionPoints.value
         : this.maxDeductionPoints,
+    minusPerFault: minusPerFault.present
+        ? minusPerFault.value
+        : this.minusPerFault,
     orderIndex: orderIndex ?? this.orderIndex,
     parentId: parentId.present ? parentId.value : this.parentId,
     metadata: metadata.present ? metadata.value : this.metadata,
@@ -1059,6 +1098,9 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
       maxDeductionPoints: data.maxDeductionPoints.present
           ? data.maxDeductionPoints.value
           : this.maxDeductionPoints,
+      minusPerFault: data.minusPerFault.present
+          ? data.minusPerFault.value
+          : this.minusPerFault,
       orderIndex: data.orderIndex.present
           ? data.orderIndex.value
           : this.orderIndex,
@@ -1079,6 +1121,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
           ..write('description: $description, ')
           ..write('weight: $weight, ')
           ..write('maxDeductionPoints: $maxDeductionPoints, ')
+          ..write('minusPerFault: $minusPerFault, ')
           ..write('orderIndex: $orderIndex, ')
           ..write('parentId: $parentId, ')
           ..write('metadata: $metadata, ')
@@ -1097,6 +1140,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     description,
     weight,
     maxDeductionPoints,
+    minusPerFault,
     orderIndex,
     parentId,
     metadata,
@@ -1114,6 +1158,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
           other.description == this.description &&
           other.weight == this.weight &&
           other.maxDeductionPoints == this.maxDeductionPoints &&
+          other.minusPerFault == this.minusPerFault &&
           other.orderIndex == this.orderIndex &&
           other.parentId == this.parentId &&
           other.metadata == this.metadata &&
@@ -1129,6 +1174,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
   final Value<String?> description;
   final Value<double?> weight;
   final Value<double?> maxDeductionPoints;
+  final Value<double?> minusPerFault;
   final Value<int> orderIndex;
   final Value<String?> parentId;
   final Value<String?> metadata;
@@ -1143,6 +1189,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     this.description = const Value.absent(),
     this.weight = const Value.absent(),
     this.maxDeductionPoints = const Value.absent(),
+    this.minusPerFault = const Value.absent(),
     this.orderIndex = const Value.absent(),
     this.parentId = const Value.absent(),
     this.metadata = const Value.absent(),
@@ -1158,6 +1205,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     this.description = const Value.absent(),
     this.weight = const Value.absent(),
     this.maxDeductionPoints = const Value.absent(),
+    this.minusPerFault = const Value.absent(),
     this.orderIndex = const Value.absent(),
     this.parentId = const Value.absent(),
     this.metadata = const Value.absent(),
@@ -1177,6 +1225,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     Expression<String>? description,
     Expression<double>? weight,
     Expression<double>? maxDeductionPoints,
+    Expression<double>? minusPerFault,
     Expression<int>? orderIndex,
     Expression<String>? parentId,
     Expression<String>? metadata,
@@ -1193,6 +1242,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
       if (weight != null) 'weight': weight,
       if (maxDeductionPoints != null)
         'max_deduction_points': maxDeductionPoints,
+      if (minusPerFault != null) 'minus_per_fault': minusPerFault,
       if (orderIndex != null) 'order_index': orderIndex,
       if (parentId != null) 'parent_id': parentId,
       if (metadata != null) 'metadata': metadata,
@@ -1210,6 +1260,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     Value<String?>? description,
     Value<double?>? weight,
     Value<double?>? maxDeductionPoints,
+    Value<double?>? minusPerFault,
     Value<int>? orderIndex,
     Value<String?>? parentId,
     Value<String?>? metadata,
@@ -1225,6 +1276,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
       description: description ?? this.description,
       weight: weight ?? this.weight,
       maxDeductionPoints: maxDeductionPoints ?? this.maxDeductionPoints,
+      minusPerFault: minusPerFault ?? this.minusPerFault,
       orderIndex: orderIndex ?? this.orderIndex,
       parentId: parentId ?? this.parentId,
       metadata: metadata ?? this.metadata,
@@ -1255,6 +1307,9 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     }
     if (maxDeductionPoints.present) {
       map['max_deduction_points'] = Variable<double>(maxDeductionPoints.value);
+    }
+    if (minusPerFault.present) {
+      map['minus_per_fault'] = Variable<double>(minusPerFault.value);
     }
     if (orderIndex.present) {
       map['order_index'] = Variable<int>(orderIndex.value);
@@ -1289,6 +1344,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
           ..write('description: $description, ')
           ..write('weight: $weight, ')
           ..write('maxDeductionPoints: $maxDeductionPoints, ')
+          ..write('minusPerFault: $minusPerFault, ')
           ..write('orderIndex: $orderIndex, ')
           ..write('parentId: $parentId, ')
           ..write('metadata: $metadata, ')
@@ -7474,6 +7530,7 @@ typedef $$CachedGroupsTableCreateCompanionBuilder =
       Value<String?> description,
       Value<double?> weight,
       Value<double?> maxDeductionPoints,
+      Value<double?> minusPerFault,
       Value<int> orderIndex,
       Value<String?> parentId,
       Value<String?> metadata,
@@ -7490,6 +7547,7 @@ typedef $$CachedGroupsTableUpdateCompanionBuilder =
       Value<String?> description,
       Value<double?> weight,
       Value<double?> maxDeductionPoints,
+      Value<double?> minusPerFault,
       Value<int> orderIndex,
       Value<String?> parentId,
       Value<String?> metadata,
@@ -7575,6 +7633,11 @@ class $$CachedGroupsTableFilterComposer
 
   ColumnFilters<double> get maxDeductionPoints => $composableBuilder(
     column: $table.maxDeductionPoints,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get minusPerFault => $composableBuilder(
+    column: $table.minusPerFault,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7691,6 +7754,11 @@ class $$CachedGroupsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get minusPerFault => $composableBuilder(
+    column: $table.minusPerFault,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get orderIndex => $composableBuilder(
     column: $table.orderIndex,
     builder: (column) => ColumnOrderings(column),
@@ -7770,6 +7838,11 @@ class $$CachedGroupsTableAnnotationComposer
 
   GeneratedColumn<double> get maxDeductionPoints => $composableBuilder(
     column: $table.maxDeductionPoints,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get minusPerFault => $composableBuilder(
+    column: $table.minusPerFault,
     builder: (column) => column,
   );
 
@@ -7876,6 +7949,7 @@ class $$CachedGroupsTableTableManager
                 Value<String?> description = const Value.absent(),
                 Value<double?> weight = const Value.absent(),
                 Value<double?> maxDeductionPoints = const Value.absent(),
+                Value<double?> minusPerFault = const Value.absent(),
                 Value<int> orderIndex = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
                 Value<String?> metadata = const Value.absent(),
@@ -7890,6 +7964,7 @@ class $$CachedGroupsTableTableManager
                 description: description,
                 weight: weight,
                 maxDeductionPoints: maxDeductionPoints,
+                minusPerFault: minusPerFault,
                 orderIndex: orderIndex,
                 parentId: parentId,
                 metadata: metadata,
@@ -7906,6 +7981,7 @@ class $$CachedGroupsTableTableManager
                 Value<String?> description = const Value.absent(),
                 Value<double?> weight = const Value.absent(),
                 Value<double?> maxDeductionPoints = const Value.absent(),
+                Value<double?> minusPerFault = const Value.absent(),
                 Value<int> orderIndex = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
                 Value<String?> metadata = const Value.absent(),
@@ -7920,6 +7996,7 @@ class $$CachedGroupsTableTableManager
                 description: description,
                 weight: weight,
                 maxDeductionPoints: maxDeductionPoints,
+                minusPerFault: minusPerFault,
                 orderIndex: orderIndex,
                 parentId: parentId,
                 metadata: metadata,

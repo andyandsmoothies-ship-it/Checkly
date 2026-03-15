@@ -75,6 +75,7 @@ class TemplateApiService {
     String? description,
     double? weight,
     double? maxDeductionPoints,
+    double? minusPerFault,
     int? orderIndex,
     String? parentId,
     String? metadata,
@@ -85,6 +86,7 @@ class TemplateApiService {
     if (maxDeductionPoints != null) {
       body['maxDeductionPoints'] = maxDeductionPoints;
     }
+    if (minusPerFault != null) body['minusPerFault'] = minusPerFault;
     if (orderIndex != null) body['orderIndex'] = orderIndex;
     if (parentId != null) body['parentId'] = parentId;
     if (metadata != null) body['metadata'] = metadata;
@@ -103,6 +105,8 @@ class TemplateApiService {
     String? title,
     String? description,
     double? weight,
+    double? maxDeductionPoints,
+    double? minusPerFault,
     int? orderIndex,
     String? metadata,
   }) async {
@@ -110,6 +114,10 @@ class TemplateApiService {
     if (title != null) body['title'] = title;
     if (description != null) body['description'] = description;
     if (weight != null) body['weight'] = weight;
+    if (maxDeductionPoints != null) {
+      body['maxDeductionPoints'] = maxDeductionPoints;
+    }
+    if (minusPerFault != null) body['minusPerFault'] = minusPerFault;
     if (orderIndex != null) body['orderIndex'] = orderIndex;
     if (metadata != null) body['metadata'] = metadata;
 

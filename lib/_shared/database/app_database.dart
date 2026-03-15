@@ -37,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -48,6 +48,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         await m.addColumn(cachedStores, cachedStores.areaId);
         await m.addColumn(cachedStores, cachedStores.areaName);
+      }
+      if (from < 3) {
+        await m.addColumn(cachedGroups, cachedGroups.minusPerFault);
       }
     },
   );

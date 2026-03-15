@@ -24,6 +24,7 @@ public static class SyncTemplates
         string? Description,
         decimal? Weight,
         decimal? MaxDeductionPoints,
+        decimal? MinusPerFault,
         int OrderIndex,
         string? Metadata,
         bool IsActive,
@@ -45,7 +46,7 @@ public static class SyncTemplates
             .Where(g => g.UpdatedAt > since)
             .Select(g => new SyncGroupDto(
                 g.Id, g.TemplateId, g.ParentId, g.Title, g.Description,
-                g.Weight, g.MaxDeductionPoints, g.OrderIndex, g.Metadata,
+                g.Weight, g.MaxDeductionPoints, g.MinusPerFault, g.OrderIndex, g.Metadata,
                 g.IsActive, g.UpdatedAt))
             .ToListAsync(ct);
 

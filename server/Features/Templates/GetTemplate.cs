@@ -49,7 +49,7 @@ public static class GetTemplate
         return allGroups
             .Where(g => g.ParentId == parentId)
             .Select(g => new GroupDto(
-                g.Id, g.Title, g.Description, g.Weight, g.MaxDeductionPoints,
+                g.Id, g.Title, g.Description, g.Weight, g.MaxDeductionPoints, g.MinusPerFault,
                 g.OrderIndex, g.Metadata,
                 BuildGroupTree(allGroups, g.Id),
                 g.Criteria.Select(c => new CriterionDto(

@@ -12,6 +12,7 @@ public static class UpdateGroup
         string? Description,
         decimal? Weight,
         decimal? MaxDeductionPoints,
+        decimal? MinusPerFault,
         int? OrderIndex,
         string? Metadata);
 
@@ -36,6 +37,8 @@ public static class UpdateGroup
             group.Weight = request.Weight;
         if (request.MaxDeductionPoints.HasValue)
             group.MaxDeductionPoints = request.MaxDeductionPoints;
+        if (request.MinusPerFault.HasValue)
+            group.MinusPerFault = request.MinusPerFault;
         if (request.OrderIndex.HasValue)
             group.OrderIndex = request.OrderIndex.Value;
         if (request.Metadata != null)

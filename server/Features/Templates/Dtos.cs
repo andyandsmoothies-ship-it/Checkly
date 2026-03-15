@@ -31,6 +31,7 @@ public sealed record GroupDto(
     string? Description,
     decimal? Weight,
     decimal? MaxDeductionPoints,
+    decimal? MinusPerFault,
     int OrderIndex,
     string? Metadata,
     List<GroupDto> Children,

@@ -28,6 +28,7 @@ class CachedGroups extends Table {
   TextColumn get description => text().nullable()();
   RealColumn get weight => real().nullable()();
   RealColumn get maxDeductionPoints => real().nullable()();
+  RealColumn get minusPerFault => real().nullable()();
   IntColumn get orderIndex => integer().withDefault(const Constant(0))();
   TextColumn get parentId => text().nullable()();
   TextColumn get metadata => text().nullable()();

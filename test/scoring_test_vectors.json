@@ -354,6 +354,68 @@
                 }
             ],
             "expectedScore": 0.00
+        },
+        {
+            "id": "V11_subsection_cap",
+            "description": "Subsection cap limits deductions independently",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "subsections": [
+                        {
+                            "id": "sub1",
+                            "title": "Sub 1",
+                            "maxPoints": 10,
+                            "criteria": [
+                                {
+                                    "id": "c1",
+                                    "groupId": "sub1",
+                                    "pointsWeight": 8,
+                                    "isCcp": false,
+                                    "isRisk": false
+                                },
+                                {
+                                    "id": "c2",
+                                    "groupId": "sub1",
+                                    "pointsWeight": 5,
+                                    "isCcp": false,
+                                    "isRisk": false
+                                }
+                            ]
+                        },
+                        {
+                            "id": "sub2",
+                            "title": "Sub 2",
+                            "maxPoints": 10,
+                            "criteria": [
+                                {
+                                    "id": "c3",
+                                    "groupId": "sub2",
+                                    "pointsWeight": 5,
+                                    "isCcp": false,
+                                    "isRisk": false
+                                }
+                            ]
+                        }
+                    ],
+                    "criteria": []
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 50.00
         }
     ]
 }
