@@ -85,6 +85,10 @@ class SubmissionDto {
   final double? totalScore;
   final String? sectionScores;
   final String? notes;
+  final String? reviewStatus;
+  final String? approvedBy;
+  final String? approverName;
+  final DateTime? approvedAt;
   final DateTime createdAt;
   final DateTime? completedAt;
   final DateTime? scheduledAt;
@@ -101,6 +105,10 @@ class SubmissionDto {
     this.totalScore,
     this.sectionScores,
     this.notes,
+    this.reviewStatus,
+    this.approvedBy,
+    this.approverName,
+    this.approvedAt,
     required this.createdAt,
     this.completedAt,
     this.scheduledAt,
@@ -124,6 +132,12 @@ class SubmissionDto {
     totalScore: (json['totalScore'] as num?)?.toDouble(),
     sectionScores: json['sectionScores'] as String?,
     notes: json['notes'] as String?,
+    reviewStatus: json['reviewStatus'] as String?,
+    approvedBy: json['approvedBy'] as String?,
+    approverName: json['approverName'] as String?,
+    approvedAt: json['approvedAt'] != null
+        ? DateTime.parse(json['approvedAt'] as String)
+        : null,
     createdAt: DateTime.parse(json['createdAt'] as String),
     completedAt: json['completedAt'] != null
         ? DateTime.parse(json['completedAt'] as String)

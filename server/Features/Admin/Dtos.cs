@@ -9,7 +9,9 @@ public sealed record UserDto(
     string? AvatarUrl,
     string Role,
     Guid? StoreId,
+    string? StoreName,
     Guid? AreaId,
+    string? AreaName,
     bool IsLocked,
     DateTimeOffset CreatedAt);
 

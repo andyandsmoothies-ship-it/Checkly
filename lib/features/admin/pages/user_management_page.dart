@@ -134,10 +134,22 @@ class _UserManagementPageState extends State<UserManagementPage> {
     }
   }
 
-  void _showEditSheet(Map<String, dynamic> user) {
+  void _showEditSheet(Map<String, dynamic> user) async {
     String? selectedRole = user['role'] as String?;
     String? selectedStoreId = user['storeId'] as String?;
     String? selectedAreaId = user['areaId'] as String?;
+    final userId = user['id'] as String;
+
+    // Load SM-assignable stores (active + unoccupied, plus this user's own)
+    List<Map<String, dynamic>> assignableStores = [];
+    if (selectedRole == 'store_manager') {
+      assignableStores = await _loadStores(
+        assignableAs: 'store_manager',
+        exceptUser: userId,
+      );
+    }
+
+    if (!mounted) return;
 
     showModalBottomSheet(
       context: context,
@@ -194,24 +206,37 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         child: Text('Area Manager'),
                       ),
                     ],
-                    onChanged: (v) => setSheetState(() {
-                      selectedRole = v;
-                      if (v == 'admin' || v == 'auditor') {
-                        selectedStoreId = null;
-                        selectedAreaId = null;
-                      } else if (v == 'store_manager') {
-                        selectedAreaId = null;
-                      } else if (v == 'area_manager') {
-                        selectedStoreId = null;
+                    onChanged: (v) async {
+                      // Reload assignable stores when switching to SM
+                      if (v == 'store_manager' &&
+                          selectedRole != 'store_manager') {
+                        assignableStores = await _loadStores(
+                          assignableAs: 'store_manager',
+                          exceptUser: userId,
+                        );
                       }
-                    }),
+                      setSheetState(() {
+                        selectedRole = v;
+                        if (v == 'admin' || v == 'auditor') {
+                          selectedStoreId = null;
+                          selectedAreaId = null;
+                        } else if (v == 'store_manager') {
+                          selectedAreaId = null;
+                        } else if (v == 'area_manager') {
+                          selectedStoreId = null;
+                        }
+                      });
+                    },
                   ),
 
                   // Store dropdown (only for store_manager)
                   if (selectedRole == 'store_manager') ...[
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _stores.any((s) => s['id'] == selectedStoreId)
+                      value:
+                          assignableStores.any(
+                            (s) => s['id'] == selectedStoreId,
+                          )
                           ? selectedStoreId
                           : null,
                       borderRadius: BorderRadius.circular(12),
@@ -224,7 +249,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           value: null,
                           child: Text('— None —'),
                         ),
-                        ..._stores.map(
+                        ...assignableStores.map(
                           (s) => DropdownMenuItem(
                             value: s['id'] as String,
                             child: Text(s['name'] as String),
@@ -431,6 +456,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     String selectedRole = 'auditor';
     String? selectedStoreId;
     String? selectedAreaId;
+    List<Map<String, dynamic>> assignableStores = [];
     bool isSubmitting = false;
     String? nameError;
     String? emailError;
@@ -535,17 +561,26 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         ),
                         DropdownMenuItem(value: 'admin', child: Text('Admin')),
                       ],
-                      onChanged: (v) => setSheetState(() {
-                        selectedRole = v ?? 'auditor';
-                        if (v == 'admin' || v == 'auditor') {
-                          selectedStoreId = null;
-                          selectedAreaId = null;
-                        } else if (v == 'store_manager') {
-                          selectedAreaId = null;
-                        } else if (v == 'area_manager') {
-                          selectedStoreId = null;
+                      onChanged: (v) async {
+                        // Load assignable stores when switching to SM
+                        if (v == 'store_manager' &&
+                            selectedRole != 'store_manager') {
+                          assignableStores = await _loadStores(
+                            assignableAs: 'store_manager',
+                          );
                         }
-                      }),
+                        setSheetState(() {
+                          selectedRole = v ?? 'auditor';
+                          if (v == 'admin' || v == 'auditor') {
+                            selectedStoreId = null;
+                            selectedAreaId = null;
+                          } else if (v == 'store_manager') {
+                            selectedAreaId = null;
+                          } else if (v == 'area_manager') {
+                            selectedStoreId = null;
+                          }
+                        });
+                      },
                     ),
 
                     // Store dropdown (only for store_manager)
@@ -563,7 +598,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                             value: null,
                             child: Text('— None —'),
                           ),
-                          ..._stores.map(
+                          ...assignableStores.map(
                             (s) => DropdownMenuItem(
                               value: s['id'] as String,
                               child: Text(s['name'] as String),
@@ -982,6 +1017,51 @@ class _UserCard extends StatelessWidget {
                         ],
                       ],
                     ),
+                    // Assignment info
+                    if (user['storeName'] != null) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.store,
+                            size: 13,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              user['storeName'] as String,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (user['areaName'] != null) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.map_outlined,
+                            size: 13,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              user['areaName'] as String,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

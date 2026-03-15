@@ -67,4 +67,16 @@ class SubmissionApiService {
     );
     return (response.data as Map<String, dynamic>)['url'] as String;
   }
+
+  /// PUT /submissions/{id}/review — approve, reject, or flag an audit.
+  Future<Map<String, dynamic>> reviewSubmission(
+    String id, {
+    required String status,
+  }) async {
+    final response = await _dio.put(
+      '/submissions/$id/review',
+      data: {'status': status},
+    );
+    return response.data as Map<String, dynamic>;
+  }
 }

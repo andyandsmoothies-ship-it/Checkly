@@ -32,7 +32,11 @@ public static class ListUsers
                     join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
                     join u in db.Users.AsNoTracking() on p.Id equals u.Id into userJoin
                     from u in userJoin.DefaultIfEmpty()
-                    select new { p, r, u };
+                    join s in db.Stores.AsNoTracking() on p.StoreId equals s.Id into storeJoin
+                    from s in storeJoin.DefaultIfEmpty()
+                    join a in db.Areas.AsNoTracking() on p.AreaId equals a.Id into areaJoin
+                    from a in areaJoin.DefaultIfEmpty()
+                    select new { p, r, u, s, a };
 
         if (!string.IsNullOrEmpty(roleFilter))
             query = query.Where(x => x.r.Role == roleFilter);
@@ -59,7 +63,9 @@ public static class ListUsers
                 x.p.AvatarUrl,
                 x.r.Role,
                 x.p.StoreId,
+                x.s != null ? x.s.Name : null,
                 x.p.AreaId,
+                x.a != null ? x.a.Name : null,
                 x.u != null && x.u.LockoutEnd != null && x.u.LockoutEnd > now,
                 x.p.CreatedAt))
             .ToListAsync(ct);

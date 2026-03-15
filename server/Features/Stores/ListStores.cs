@@ -45,11 +45,19 @@ public static class ListStores
             query = query.Where(s => !takenStoreIds.Contains(s.Id));
         }
 
+        // Subquery: SM name per store
+        var smLookup = db.Profiles
+            .Join(db.AppUserRoles, p => p.Id, r => r.UserId,
+                  (p, r) => new { p.StoreId, p.FullName, r.Role })
+            .Where(x => x.Role == "store_manager" && x.StoreId != null);
+
         var stores = await query
             .OrderBy(s => s.Name)
             .Take(50)
             .Select(s => new StoreDto(
                 s.Id, s.Name, s.Address, s.AreaId,
+                s.Area != null ? s.Area.Name : null,
+                smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))
             .ToListAsync(ct);
 

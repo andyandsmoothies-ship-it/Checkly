@@ -607,6 +607,31 @@ class _StoreCard extends StatelessWidget {
                 ),
               ],
 
+              // Manager name (if assigned)
+              if (store.managerName != null &&
+                  store.managerName!.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      size: 14,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        'SM: ${store.managerName!}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
               // Action buttons row
               const SizedBox(height: 8),
               Row(

@@ -8,6 +8,8 @@ public sealed record StoreDto(
     string Name,
     string? Address,
     Guid? AreaId,
+    string? AreaName,
+    string? ManagerName,
     decimal? GpsLat,
     decimal? GpsLng,
     bool? IsActive,

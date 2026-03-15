@@ -7,6 +7,7 @@ class StoreDto {
 
   final String? areaId;
   final String? areaName;
+  final String? managerName;
   final double? gpsLat;
   final double? gpsLng;
   final bool? isActive;
@@ -19,6 +20,7 @@ class StoreDto {
 
     this.areaId,
     this.areaName,
+    this.managerName,
     this.gpsLat,
     this.gpsLng,
     this.isActive,
@@ -32,6 +34,7 @@ class StoreDto {
 
     areaId: json['areaId'] as String?,
     areaName: json['areaName'] as String?,
+    managerName: json['managerName'] as String?,
     gpsLat: (json['gpsLat'] as num?)?.toDouble(),
     gpsLng: (json['gpsLng'] as num?)?.toDouble(),
     isActive: json['isActive'] as bool?,
