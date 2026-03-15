@@ -2,16 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/widgets/checkly_fab.dart';
-
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/warm_chip.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/services/store_api_service.dart';
 import '../services/admin_api_service.dart';
 
 final _di = GetIt.instance;
 
-/// Admin: User Management — list, search, edit role/store/area, ban/unban.
+/// Admin: User Management — list, search, edit role/store/area, deactivate/reactivate.
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
 
@@ -26,6 +25,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
   List<Map<String, dynamic>> _stores = [];
   bool _isLoading = true;
   String? _error;
+  String _selectedRole = 'all';
+
+  static const _roleTabs = [
+    ('all', 'All'),
+    ('admin', 'Admin'),
+    ('auditor', 'Auditor'),
+    ('area_manager', 'Area Mgr'),
+    ('store_manager', 'Store Mgr'),
+  ];
 
   String get _currentUserId => _di<AuthManager>().currentUser?.userId ?? '';
 
@@ -99,13 +107,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(ban ? 'User banned' : 'User unbanned'),
+            content: Text(ban ? 'User deactivated' : 'User reactivated'),
             backgroundColor: ban ? Colors.red : AppTheme.success,
           ),
         );
         _loadData();
       }
-    } catch (e) {
+    } on DioException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
@@ -154,6 +162,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   // Role dropdown
                   DropdownButtonFormField<String>(
                     value: selectedRole,
+                    borderRadius: BorderRadius.circular(12),
                     decoration: const InputDecoration(
                       labelText: 'Role',
                       border: OutlineInputBorder(),
@@ -182,6 +191,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     value: _stores.any((s) => s['id'] == selectedStoreId)
                         ? selectedStoreId
                         : null,
+                    borderRadius: BorderRadius.circular(12),
                     decoration: const InputDecoration(
                       labelText: 'Assigned Store',
                       border: OutlineInputBorder(),
@@ -207,6 +217,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     value: _areas.any((a) => a['id'] == selectedAreaId)
                         ? selectedAreaId
                         : null,
+                    borderRadius: BorderRadius.circular(12),
                     decoration: const InputDecoration(
                       labelText: 'Assigned Area',
                       border: OutlineInputBorder(),
@@ -475,6 +486,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
                     DropdownButtonFormField<String>(
                       value: selectedRole,
+                      borderRadius: BorderRadius.circular(12),
                       decoration: const InputDecoration(
                         labelText: 'Role',
                         border: OutlineInputBorder(),
@@ -501,6 +513,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
                     DropdownButtonFormField<String>(
                       value: selectedStoreId,
+                      borderRadius: BorderRadius.circular(12),
                       decoration: const InputDecoration(
                         labelText: 'Assigned Store (optional)',
                         border: OutlineInputBorder(),
@@ -524,6 +537,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
                     DropdownButtonFormField<String>(
                       value: selectedAreaId,
+                      borderRadius: BorderRadius.circular(12),
                       decoration: const InputDecoration(
                         labelText: 'Assigned Area (optional)',
                         border: OutlineInputBorder(),
@@ -661,10 +675,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('User Management')),
-      floatingActionButton: ChecklyFab(
-        label: 'ADD',
-        icon: Icons.person_add,
+      floatingActionButton: FloatingActionButton(
         onPressed: _showCreateUserSheet,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.person_add),
       ),
       body: Column(
         children: [
@@ -690,6 +704,29 @@ class _UserManagementPageState extends State<UserManagementPage> {
               ),
               onSubmitted: _onSearch,
               textInputAction: TextInputAction.search,
+            ),
+          ),
+
+          // Role tabs
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Row(
+              children: _roleTabs.map((tab) {
+                final (role, label) = tab;
+                final count = role == 'all'
+                    ? _users.length
+                    : _users.where((u) => u['role'] == role).length;
+                final isSelected = _selectedRole == role;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: WarmChip(
+                    label: '$label ($count)',
+                    selected: isSelected,
+                    onTap: () => setState(() => _selectedRole = role),
+                  ),
+                );
+              }).toList(),
             ),
           ),
 
@@ -721,7 +758,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ),
       );
     }
-    if (_users.isEmpty) {
+    // Apply client-side role filter
+    final filtered = _selectedRole == 'all'
+        ? _users
+        : _users.where((u) => u['role'] == _selectedRole).toList();
+
+    if (filtered.isEmpty) {
       return const Center(
         child: Text('No users found', style: TextStyle(color: Colors.grey)),
       );
@@ -731,12 +773,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
       onRefresh: _loadData,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _users.length,
+        itemCount: filtered.length,
         itemBuilder: (context, index) => _UserCard(
-          user: _users[index],
-          isSelf: _users[index]['id'] == _currentUserId,
-          onTap: () => _showEditSheet(_users[index]),
-          onBanToggle: (ban) => _banUser(_users[index], ban),
+          user: filtered[index],
+          isSelf: filtered[index]['id'] == _currentUserId,
+          onTap: () => _showEditSheet(filtered[index]),
+          onBanToggle: (ban) => _banUser(filtered[index], ban),
         ),
       ),
     );
@@ -885,7 +927,7 @@ class _UserCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              'Banned',
+                              'Inactive',
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: Colors.red,
                                 fontWeight: FontWeight.w600,
@@ -899,14 +941,14 @@ class _UserCard extends StatelessWidget {
                 ),
               ),
 
-              // Ban toggle (disabled for self)
+              // Deactivate toggle (disabled for self)
               if (!isSelf)
                 IconButton(
                   icon: Icon(
                     isLocked ? Icons.lock_open : Icons.block,
                     color: isLocked ? AppTheme.success : Colors.red,
                   ),
-                  tooltip: isLocked ? 'Unban user' : 'Ban user',
+                  tooltip: isLocked ? 'Reactivate user' : 'Deactivate user',
                   onPressed: () => onBanToggle(!isLocked),
                 ),
 

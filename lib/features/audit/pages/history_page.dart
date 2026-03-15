@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/checkly_fab.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../../admin/pages/schedule_audit_page.dart';
 import '../../auth/manager/auth_manager.dart';
@@ -121,6 +122,7 @@ class _HistoryPageState extends State<HistoryPage> {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -161,7 +163,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Audits')),
-      floatingActionButton: _AuditSpeedDial(
+      floatingActionButton: ChecklyFab(
         isAdmin: _di<AuthManager>().currentUser?.role == 'admin',
         onNewAudit: () => context.push('/templates'),
         onAssignTask: () => _showScheduleSheet(context),
@@ -593,69 +595,5 @@ class _AuditCard extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
-  }
-}
-
-// ── Speed-Dial FAB ──
-
-class _AuditSpeedDial extends StatelessWidget {
-  final bool isAdmin;
-  final VoidCallback onNewAudit;
-  final VoidCallback onAssignTask;
-
-  const _AuditSpeedDial({
-    required this.isAdmin,
-    required this.onNewAudit,
-    required this.onAssignTask,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        if (value == 'new') onNewAudit();
-        if (value == 'assign') onAssignTask();
-      },
-      offset: const Offset(0, -120),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      itemBuilder: (_) => [
-        PopupMenuItem(
-          value: 'new',
-          child: Row(
-            children: [
-              Icon(
-                Icons.assignment_outlined,
-                size: 20,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(width: 12),
-              const Text('Start New Audit'),
-            ],
-          ),
-        ),
-        if (isAdmin)
-          PopupMenuItem(
-            value: 'assign',
-            child: Row(
-              children: [
-                Icon(
-                  Icons.person_add_outlined,
-                  size: 20,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(width: 12),
-                const Text('Assign Task'),
-              ],
-            ),
-          ),
-      ],
-      child: FloatingActionButton(
-        onPressed: () {}, // Empty — PopupMenuButton handles interaction
-        backgroundColor: theme.colorScheme.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-    );
   }
 }

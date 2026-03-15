@@ -23,3 +23,9 @@ A web app that reads voucher codes from XLSX and sends them to employees via ema
 | 9 | Email Delivery | **CID Image Embedding:** Never use base64 data URIs for images (like Barcodes) in emails because most clients block them. Generate barcodes in-memory, attach as `LinkedResources` with a `ContentId`, and reference via `<img src="cid:...">`. |
 | 10 | Architecture | **Event Handler Lookup Pattern:** When handling a Singleton event (`OnBatchProgressChanged`), NEVER use a filtered query (`GetActiveJob`) to find the event's subject. Use the event key for direct lookup (`GetJob(key)`). A filtered query can miss state changes (e.g., `IsCompleted`) that were applied before the event fired, causing a race condition. |
 
+## Project: Checkly (Flutter Mobile App)
+
+| # | Category | Description |
+|---|----------|-------------|
+| 1 | Layout | **Nested Scaffold + FAB invisibility:** `_MainShell` (ShellRoute) wraps pages in a Scaffold with `extendBody: true` and a 96px bottom nav bar. Child pages (DashboardPage, HistoryPage) have their OWN inner Scaffold. Any `floatingActionButton` in the inner Scaffold MUST have `Padding(bottom: 80)` or it renders behind the nav bar and is invisible. |
+| 2 | Gesture | **FloatingActionButton inside PopupMenuButton:** Do NOT wrap a `FloatingActionButton(onPressed: ...)` inside `PopupMenuButton.child`. The FAB's InkResponse absorbs tap events, preventing PopupMenuButton from firing. Use `showMenu()` programmatically from the FAB's `onPressed` instead. |

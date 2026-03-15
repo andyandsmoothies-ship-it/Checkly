@@ -6,6 +6,7 @@ import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../audit/model/submission_dto.dart';
 import '../../audit/services/submission_api_service.dart';
+import '../../auth/manager/auth_manager.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../templates/services/template_api_service.dart';
 import '../services/admin_api_service.dart';
@@ -40,11 +41,15 @@ class ScheduleAuditForm extends StatefulWidget {
 }
 
 class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
-  // Data sources
+  // Data sources — master lists (role-filtered, but not cross-filtered)
   List<Map<String, dynamic>> _templates = [];
+  List<Map<String, dynamic>> _allStores = [];
+  List<Map<String, dynamic>> _allAuditors = [];
+  bool _isLoadingData = true;
+
+  // Displayed lists — cross-filtered based on the other dropdown's selection
   List<Map<String, dynamic>> _stores = [];
   List<Map<String, dynamic>> _auditors = [];
-  bool _isLoadingData = true;
 
   // Form state
   String? _selectedTemplateId;
@@ -76,26 +81,64 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
       final users = results[2] as List<Map<String, dynamic>>;
 
       if (mounted) {
+        // Determine current user's role and area for filtering
+        final currentUserId = _di<AuthManager>().currentUser?.userId;
+        final currentUserRole =
+            _di<AuthManager>().currentUser?.role ?? 'auditor';
+        Map<String, dynamic>? currentUserRecord;
+        if (currentUserId != null) {
+          currentUserRecord = users.cast<Map<String, dynamic>?>().firstWhere(
+            (u) => u?['id'] == currentUserId,
+            orElse: () => null,
+          );
+        }
+        final myAreaId = currentUserRecord?['areaId'] as String?;
+
+        // Build template list
+        final templateList = templates
+            .map(
+              (t) => {
+                'id': (t is Map) ? t['id'] : t.id,
+                'title': (t is Map) ? t['title'] : t.title,
+              },
+            )
+            .toList();
+
+        // Build store list (with areaId for filtering)
+        var storeList = stores
+            .map(
+              (s) => {
+                'id': (s is Map) ? s['id'] : s.id,
+                'name': (s is Map) ? s['name'] : s.name,
+                'areaId': (s is Map) ? s['areaId'] : null,
+              },
+            )
+            .toList();
+
+        // Base auditor filter: only auditors and admins (keep areaId)
+        var auditorList = users
+            .where((u) => u['role'] == 'auditor' || u['role'] == 'admin')
+            .toList();
+
+        // Role-based filtering for area_manager
+        if (currentUserRole == 'area_manager' && myAreaId != null) {
+          storeList = storeList.where((s) => s['areaId'] == myAreaId).toList();
+          auditorList = auditorList
+              .where((u) => u['areaId'] == myAreaId || u['areaId'] == null)
+              .toList();
+        } else if (currentUserRole == 'area_manager' && myAreaId == null) {
+          // Safety: AM with no area sees nothing
+          storeList = [];
+          auditorList = [];
+        }
+
         setState(() {
-          _templates = templates
-              .map(
-                (t) => {
-                  'id': (t is Map) ? t['id'] : t.id,
-                  'title': (t is Map) ? t['title'] : t.title,
-                },
-              )
-              .toList();
-          _stores = stores
-              .map(
-                (s) => {
-                  'id': (s is Map) ? s['id'] : s.id,
-                  'name': (s is Map) ? s['name'] : s.name,
-                },
-              )
-              .toList();
-          _auditors = users
-              .where((u) => u['role'] == 'auditor' || u['role'] == 'admin')
-              .toList();
+          _templates = templateList;
+          _allStores = storeList;
+          _allAuditors = auditorList;
+          // Initially show all (no cross-filter yet)
+          _stores = List.from(_allStores);
+          _auditors = List.from(_allAuditors);
           _isLoadingData = false;
         });
       }
@@ -107,6 +150,70 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         ).showSnackBar(SnackBar(content: Text('Failed to load data: $e')));
       }
     }
+  }
+
+  /// Recompute displayed lists based on current selections.
+  void _applyCrossFilter() {
+    setState(() {
+      if (_selectedStoreId != null) {
+        // Find the selected store's areaId
+        final store = _allStores.firstWhere(
+          (s) => s['id'] == _selectedStoreId,
+          orElse: () => <String, dynamic>{},
+        );
+        final storeAreaId = store['areaId'] as String?;
+
+        if (storeAreaId != null) {
+          _auditors = _allAuditors
+              .where((u) => u['areaId'] == storeAreaId || u['areaId'] == null)
+              .toList();
+        } else {
+          _auditors = List.from(_allAuditors);
+        }
+      } else {
+        _auditors = List.from(_allAuditors);
+      }
+
+      if (_selectedAuditorId != null) {
+        // Find the selected auditor's areaId
+        final auditor = _allAuditors.firstWhere(
+          (u) => u['id'] == _selectedAuditorId,
+          orElse: () => <String, dynamic>{},
+        );
+        final auditorAreaId = auditor['areaId'] as String?;
+
+        if (auditorAreaId != null) {
+          _stores = _allStores
+              .where((s) => s['areaId'] == auditorAreaId)
+              .toList();
+        } else {
+          // Floating auditor (no area) — show all stores
+          _stores = List.from(_allStores);
+        }
+      } else {
+        _stores = List.from(_allStores);
+      }
+
+      // Clear selection if it's no longer in the filtered list
+      if (_selectedStoreId != null &&
+          !_stores.any((s) => s['id'] == _selectedStoreId)) {
+        _selectedStoreId = null;
+      }
+      if (_selectedAuditorId != null &&
+          !_auditors.any((u) => u['id'] == _selectedAuditorId)) {
+        _selectedAuditorId = null;
+      }
+    });
+  }
+
+  void _onStoreChanged(String? v) {
+    _selectedStoreId = v;
+    _applyCrossFilter();
+  }
+
+  void _onAuditorChanged(String? v) {
+    _selectedAuditorId = v;
+    _applyCrossFilter();
   }
 
   Future<void> _pickDate() async {
@@ -224,7 +331,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
                 ),
               )
               .toList(),
-          onChanged: (v) => setState(() => _selectedStoreId = v),
+          onChanged: _onStoreChanged,
         ),
         const SizedBox(height: 12),
 
@@ -247,7 +354,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
                 ),
               )
               .toList(),
-          onChanged: (v) => setState(() => _selectedAuditorId = v),
+          onChanged: _onAuditorChanged,
         ),
         const SizedBox(height: 12),
 
@@ -390,6 +497,7 @@ class _DropdownCard extends StatelessWidget {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               initialValue: value,
+              borderRadius: BorderRadius.circular(12),
               decoration: InputDecoration(
                 hintText: hint,
                 contentPadding: const EdgeInsets.symmetric(

@@ -178,6 +178,24 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       return;
     }
 
+    // Rule 1b: All sections/sub-sections must have a title
+    bool hasEmptyTitle(List<_EditableGroup> groups) {
+      for (final g in groups) {
+        if (g.titleCtrl.text.trim().isEmpty) return true;
+        if (hasEmptyTitle(g.subSections)) return true;
+      }
+      return false;
+    }
+
+    if (hasEmptyTitle(_sections)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('All sections and sub-sections must have a title'),
+        ),
+      );
+      return;
+    }
+
     // Rules 2 & 3: Density validation (only when weighted density enabled)
     if (_weightedDensity) {
       if (_sections.any(
@@ -612,8 +630,9 @@ class _MetadataFormCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              initialValue: _templateTypes.contains(type) ? type : 'qc',
+              value: _templateTypes.contains(type) ? type : 'qc',
               decoration: const InputDecoration(labelText: 'Template Type'),
+              borderRadius: BorderRadius.circular(12),
               items: _templateTypes
                   .map(
                     (t) => DropdownMenuItem(
@@ -679,7 +698,7 @@ class _ScoringRulesCard extends StatelessWidget {
             SwitchListTile(
               title: const Text('CCP Override'),
               subtitle: const Text(
-                'Critical Control Point failures immediately flag the audit',
+                'Any criteria marked CCP that fails will zero out its entire section.',
               ),
               value: ccpOverride,
               onChanged: onCcpChanged,
@@ -688,7 +707,7 @@ class _ScoringRulesCard extends StatelessWidget {
             SwitchListTile(
               title: const Text('RISK Override'),
               subtitle: const Text(
-                'Risk-flagged criteria apply penalty multipliers',
+                'Any criteria marked RISK that fails will zero out the entire audit.',
               ),
               value: riskOverride,
               onChanged: onRiskChanged,
@@ -697,7 +716,7 @@ class _ScoringRulesCard extends StatelessWidget {
             SwitchListTile(
               title: const Text('Weighted Density'),
               subtitle: const Text(
-                'Section weights affect overall score proportionally',
+                'Each section contributes to the total based on its assigned weight (must sum to 100%).',
               ),
               value: weightedDensity,
               onChanged: onDensityChanged,
@@ -706,7 +725,7 @@ class _ScoringRulesCard extends StatelessWidget {
             SwitchListTile(
               title: const Text('Confirm Correct'),
               subtitle: const Text(
-                'Require explicit confirmation of passing items',
+                'Auditor must tap "Correct" to confirm each passing criteria before submitting.',
               ),
               value: confirmCorrect,
               onChanged: onCorrectChanged,
@@ -715,7 +734,7 @@ class _ScoringRulesCard extends StatelessWidget {
             SwitchListTile(
               title: const Text('Progressive Repeat Penalty'),
               subtitle: const Text(
-                'n² escalation for repeated faults across audits',
+                'OFF: deduction = repeats × rate. ON: deduction = repeats² × rate (harsher for more repeats).',
               ),
               value: progressiveRepeat,
               onChanged: onProgressiveChanged,

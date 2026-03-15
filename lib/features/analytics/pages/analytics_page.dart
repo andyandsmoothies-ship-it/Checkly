@@ -172,6 +172,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         child: DropdownButtonFormField<String>(
                           value: _selectedStore,
                           isExpanded: true,
+                          borderRadius: BorderRadius.circular(12),
                           decoration: const InputDecoration(
                             labelText: 'Store',
                             isDense: true,
@@ -206,6 +207,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         child: DropdownButtonFormField<String>(
                           value: _selectedType,
                           isExpanded: true,
+                          borderRadius: BorderRadius.circular(12),
                           decoration: const InputDecoration(
                             labelText: 'Type',
                             isDense: true,

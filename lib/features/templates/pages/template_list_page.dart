@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../_shared/widgets/checkly_fab.dart';
-
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
@@ -116,9 +114,13 @@ class _TemplateListPageState extends State<TemplateListPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Templates')),
-      floatingActionButton: ChecklyFab(
-        label: 'CREATE',
-        onPressed: () => context.push('/templates/new'),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80),
+        child: FloatingActionButton(
+          onPressed: () => context.push('/templates/new'),
+          shape: const CircleBorder(),
+          child: const Icon(Icons.add),
+        ),
       ),
       body: ListenableBuilder(
         listenable: manager,

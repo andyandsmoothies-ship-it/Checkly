@@ -2,8 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/widgets/checkly_fab.dart';
-
 import '../../../_shared/theme/app_theme.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../stores/model/store_dto.dart';
@@ -131,6 +129,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                       value: _areas.any((a) => a['id'] == selectedAreaId)
                           ? selectedAreaId
                           : null,
+                      borderRadius: BorderRadius.circular(12),
                       decoration: const InputDecoration(
                         labelText: 'Area',
                         border: OutlineInputBorder(),
@@ -357,9 +356,10 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Store Management')),
-      floatingActionButton: ChecklyFab(
-        label: 'ADD',
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _showStoreForm(),
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add),
       ),
       body: _buildBody(),
     );

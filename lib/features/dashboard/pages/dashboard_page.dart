@@ -4,13 +4,14 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/widgets/checkly_fab.dart';
+import '../../admin/pages/schedule_audit_page.dart';
+import '../../auth/manager/auth_manager.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../../_shared/widgets/stat_block.dart';
 import '../../../_shared/database/database_service.dart';
-import '../../auth/manager/auth_manager.dart';
 import '../manager/dashboard_manager.dart';
 import '../../notifications/widgets/notification_bell.dart';
 import '../widgets/tactical_history_drawer.dart';
@@ -75,14 +76,53 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  void _showScheduleSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => FractionallySizedBox(
+        heightFactor: 0.9,
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Text(
+              'Assign Task',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(context)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
       floatingActionButton: ChecklyFab(
-        label: 'AUDIT',
-        onPressed: () => context.push('/templates'),
+        isAdmin: GetIt.instance<AuthManager>().currentUser?.role == 'admin',
+        onNewAudit: () => context.push('/templates'),
+        onAssignTask: () => _showScheduleSheet(context),
       ),
       body: ListenableBuilder(
         listenable: _manager,

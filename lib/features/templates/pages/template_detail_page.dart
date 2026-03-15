@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/widgets/checkly_fab.dart';
+
 import '../manager/template_manager.dart';
 import '../model/template_dto.dart';
 
@@ -41,11 +41,11 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Template Detail')),
-      floatingActionButton: ChecklyFab(
-        label: 'START',
-        icon: Icons.play_arrow,
+      floatingActionButton: FloatingActionButton(
         onPressed: () =>
             context.push('/stores/select?templateId=${widget.templateId}'),
+        shape: const CircleBorder(),
+        child: const Icon(Icons.play_arrow),
       ),
       body: ListenableBuilder(
         listenable: manager,

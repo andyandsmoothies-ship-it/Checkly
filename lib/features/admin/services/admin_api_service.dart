@@ -57,7 +57,7 @@ class AdminApiService {
   }) async {
     final response = await _dio.post(
       '/admin/users/$id/ban',
-      data: {'ban': ban, 'durationDays': durationDays},
+      data: {'isBanned': ban},
     );
     return response.data as Map<String, dynamic>;
   }

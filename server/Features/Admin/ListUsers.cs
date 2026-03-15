@@ -26,9 +26,13 @@ public static class ListUsers
         var roleFilter = httpContext.Request.Query["role"].FirstOrDefault();
         var search = httpContext.Request.Query["search"].FirstOrDefault();
 
+        var now = DateTimeOffset.UtcNow;
+
         var query = from p in db.Profiles.AsNoTracking()
                     join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
-                    select new { p, r };
+                    join u in db.Users.AsNoTracking() on p.Id equals u.Id into userJoin
+                    from u in userJoin.DefaultIfEmpty()
+                    select new { p, r, u };
 
         if (!string.IsNullOrEmpty(roleFilter))
             query = query.Where(x => x.r.Role == roleFilter);
@@ -56,7 +60,7 @@ public static class ListUsers
                 x.r.Role,
                 x.p.StoreId,
                 x.p.AreaId,
-                false, // LockoutEnd check deferred — not a direct Profile field
+                x.u != null && x.u.LockoutEnd != null && x.u.LockoutEnd > now,
                 x.p.CreatedAt))
             .ToListAsync(ct);
 
