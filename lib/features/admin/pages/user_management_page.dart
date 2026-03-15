@@ -90,10 +90,22 @@ class _UserManagementPageState extends State<UserManagementPage> {
     return list.cast<Map<String, dynamic>>();
   }
 
-  Future<List<Map<String, dynamic>>> _loadStores() async {
-    final stores = await _di<StoreApiService>().getStores();
+  Future<List<Map<String, dynamic>>> _loadStores({
+    String? assignableAs,
+    String? exceptUser,
+  }) async {
+    final stores = await _di<StoreApiService>().getStores(
+      assignableAs: assignableAs,
+      exceptUser: exceptUser,
+    );
     return stores
-        .map((s) => <String, dynamic>{'id': s.id, 'name': s.name})
+        .map(
+          (s) => <String, dynamic>{
+            'id': s.id,
+            'name': s.name,
+            'isActive': s.isActive,
+          },
+        )
         .toList();
   }
 
@@ -241,12 +253,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           value: null,
                           child: Text('— None —'),
                         ),
-                        ..._areas.map(
-                          (a) => DropdownMenuItem(
-                            value: a['id'] as String,
-                            child: Text(a['name'] as String),
-                          ),
-                        ),
+                        ..._areas
+                            .where((a) => a['isActive'] == true)
+                            .map(
+                              (a) => DropdownMenuItem(
+                                value: a['id'] as String,
+                                child: Text(a['name'] as String),
+                              ),
+                            ),
                       ],
                       onChanged: (v) => setSheetState(() => selectedAreaId = v),
                     ),

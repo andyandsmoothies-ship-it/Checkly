@@ -148,12 +148,14 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                             value: null,
                             child: Text('— None —'),
                           ),
-                          ..._areas.map(
-                            (a) => DropdownMenuItem(
-                              value: a['id'] as String,
-                              child: Text(a['name'] as String),
-                            ),
-                          ),
+                          ..._areas
+                              .where((a) => a['isActive'] == true)
+                              .map(
+                                (a) => DropdownMenuItem(
+                                  value: a['id'] as String,
+                                  child: Text(a['name'] as String),
+                                ),
+                              ),
                         ],
                         onChanged: (v) =>
                             setSheetState(() => selectedAreaId = v),
@@ -306,6 +308,8 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
           name: name,
           address: address?.isNotEmpty == true ? address : null,
           areaId: areaId,
+          gpsLat: gpsLat,
+          gpsLng: gpsLng,
         );
       } else {
         await _di<StoreApiService>().createStore(

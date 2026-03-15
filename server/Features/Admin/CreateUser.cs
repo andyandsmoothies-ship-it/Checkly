@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Admin;
 
@@ -52,7 +54,39 @@ public static class CreateUser
             return TypedResults.BadRequest(new { message = errors });
         }
 
-        // 5. Create Profile
+        // 5. Assignment guards (S9/S10)
+        if (request.Role == "store_manager" && request.StoreId.HasValue)
+        {
+            var store = await db.Stores.AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == request.StoreId.Value, ct);
+            if (store is null)
+                return TypedResults.BadRequest(new { message = "Store not found" });
+            if (store.IsActive != true)
+                return TypedResults.BadRequest(new { message = "Cannot assign to inactive store" });
+
+            var existingSm = await RoleAssignmentGuard.FindExistingStoreManager(
+                db, request.StoreId.Value, null, ct);
+            if (existingSm.HasValue)
+                return TypedResults.Conflict(new
+                {
+                    error = "Store already has a store manager assigned",
+                    existingManagerId = existingSm.Value
+                });
+        }
+
+        if (request.Role == "area_manager" && request.AreaId.HasValue)
+        {
+            var existingAm = await RoleAssignmentGuard.FindExistingAreaManager(
+                db, request.AreaId.Value, null, ct);
+            if (existingAm.HasValue)
+                return TypedResults.Conflict(new
+                {
+                    error = "Area already has an area manager assigned",
+                    existingManagerId = existingAm.Value
+                });
+        }
+
+        // 6. Create Profile
         var profile = new Profile
         {
             Id = appUser.Id,

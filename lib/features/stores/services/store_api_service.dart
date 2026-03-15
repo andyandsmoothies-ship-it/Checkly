@@ -8,10 +8,18 @@ class StoreApiService {
 
   StoreApiService(this._dio);
 
-  /// GET /stores — returns list of [StoreDto] (with optional search).
-  Future<List<StoreDto>> getStores({String? search}) async {
+  /// GET /stores — returns list of [StoreDto].
+  /// [assignableAs] — 'store_manager' to get only unoccupied active stores.
+  /// [exceptUser] — userId to exclude from "occupied" check (for edit forms).
+  Future<List<StoreDto>> getStores({
+    String? search,
+    String? assignableAs,
+    String? exceptUser,
+  }) async {
     final params = <String, dynamic>{};
     if (search != null && search.isNotEmpty) params['search'] = search;
+    if (assignableAs != null) params['assignable_as'] = assignableAs;
+    if (exceptUser != null) params['except_user'] = exceptUser;
 
     final response = await _dio.get('/stores', queryParameters: params);
     final list = response.data as List<dynamic>;
