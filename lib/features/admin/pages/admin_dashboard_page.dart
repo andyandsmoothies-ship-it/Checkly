@@ -138,6 +138,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 onTap: () => context.push('/admin/stores'),
               ),
               _MenuItem(
+                icon: Icons.map_outlined,
+                title: 'Area Management',
+                subtitle: 'Manage geographic areas',
+                onTap: () => context.push('/admin/areas'),
+              ),
+              _MenuItem(
                 icon: Icons.assignment,
                 title: 'Audit Approvals',
                 subtitle: 'Review submitted audits',

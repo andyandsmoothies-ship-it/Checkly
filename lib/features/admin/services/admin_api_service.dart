@@ -116,4 +116,42 @@ class AdminApiService {
       data: {'newPassword': newPassword},
     );
   }
+
+  // ── Area API ──
+
+  /// GET /areas — list areas (optionally include inactive).
+  Future<List<Map<String, dynamic>>> getAreas({
+    bool includeInactive = false,
+  }) async {
+    final params = <String, dynamic>{};
+    if (includeInactive) params['includeInactive'] = 'true';
+    final response = await _dio.get('/areas', queryParameters: params);
+    final list = response.data as List<dynamic>;
+    return list.cast<Map<String, dynamic>>();
+  }
+
+  /// POST /areas — create a new area (admin only).
+  Future<Map<String, dynamic>> createArea({
+    required String name,
+    required String code,
+  }) async {
+    final response = await _dio.post(
+      '/areas',
+      data: {'name': name, 'code': code},
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
+  /// PUT /areas/{id} — update an area (admin only).
+  Future<Map<String, dynamic>> updateArea(
+    String id, {
+    String? name,
+    bool? isActive,
+  }) async {
+    final body = <String, dynamic>{};
+    if (name != null) body['name'] = name;
+    if (isActive != null) body['isActive'] = isActive;
+    final response = await _dio.put('/areas/$id', data: body);
+    return response.data as Map<String, dynamic>;
+  }
 }

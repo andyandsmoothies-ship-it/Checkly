@@ -27,7 +27,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile'), centerTitle: true),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
           // ── Profile Card ──
           _ProfileCard(initials: initials, email: email, role: role),
