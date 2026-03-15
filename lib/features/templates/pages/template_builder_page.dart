@@ -311,13 +311,17 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
   // ── Computed values ──
   int get _totalPoints {
-    var pts = 0;
-    for (final s in _sections) {
-      for (final c in s.criteria) {
-        pts += (double.tryParse(c.pointsCtrl.text) ?? 0).toInt();
+    int sumMaxPoints(List<_EditableGroup> groups) {
+      var pts = 0;
+      for (final g in groups) {
+        final mp = double.tryParse(g.maxPointsCtrl.text) ?? 0;
+        pts += mp.toInt();
+        pts += sumMaxPoints(g.subSections);
       }
+      return pts;
     }
-    return pts;
+
+    return sumMaxPoints(_sections);
   }
 
   double get _totalDensity {

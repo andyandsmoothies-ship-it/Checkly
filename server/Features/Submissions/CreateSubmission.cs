@@ -36,7 +36,7 @@ public static class CreateSubmission
                     existing.StoreId, existing.StoreName, existing.AuditorId,
                     existing.AuditorName, existing.Status, existing.TotalScore,
                     existing.SectionScores, existing.Notes,
-                    existing.CreatedAt, existing.CompletedAt));
+                    existing.CreatedAt, existing.CompletedAt, existing.ScheduledAt));
             }
         }
 
@@ -207,6 +207,6 @@ public static class CreateSubmission
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,
-            submission.CreatedAt, submission.CompletedAt));
+            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt));
     }
 }

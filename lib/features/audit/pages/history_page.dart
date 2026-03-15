@@ -22,7 +22,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   String _search = '';
-  String _filter = 'all'; // all, draft, in_progress, completed, overdue
+  String _filter = 'all'; // all, todo, doing, submitted, overdue
   final _scrollController = ScrollController();
 
   @override
@@ -56,9 +56,22 @@ class _HistoryPageState extends State<HistoryPage> {
     final manager = _di<HistoryManager>();
     var items = manager.submissions.value;
 
-    // Filter by status
-    if (_filter != 'all') {
-      items = items.where((s) => s.status == _filter).toList();
+    // Filter by status tab (matching PWA TAB_STATUS_MAP)
+    switch (_filter) {
+      case 'todo':
+        items = items
+            .where((s) => s.status == 'scheduled' && !s.isOverdue)
+            .toList();
+        break;
+      case 'doing':
+        items = items.where((s) => s.status == 'draft').toList();
+        break;
+      case 'submitted':
+        items = items.where((s) => s.status == 'completed').toList();
+        break;
+      case 'overdue':
+        items = items.where((s) => s.isOverdue).toList();
+        break;
     }
 
     // Filter by search
@@ -85,10 +98,22 @@ class _HistoryPageState extends State<HistoryPage> {
     return map;
   }
 
-  int _countByStatus(String status) {
+  int _countByStatus(String filter) {
     final all = _di<HistoryManager>().submissions.value;
-    if (status == 'all') return all.length;
-    return all.where((s) => s.status == status).length;
+    switch (filter) {
+      case 'all':
+        return all.length;
+      case 'todo':
+        return all.where((s) => s.status == 'scheduled' && !s.isOverdue).length;
+      case 'doing':
+        return all.where((s) => s.status == 'draft').length;
+      case 'submitted':
+        return all.where((s) => s.status == 'completed').length;
+      case 'overdue':
+        return all.where((s) => s.isOverdue).length;
+      default:
+        return 0;
+    }
   }
 
   @override
@@ -160,24 +185,31 @@ class _HistoryPageState extends State<HistoryPage> {
                     ),
                     const SizedBox(width: 8),
                     WarmChip(
-                      label: 'Draft',
-                      count: _countByStatus('draft'),
-                      selected: _filter == 'draft',
-                      onTap: () => setState(() => _filter = 'draft'),
+                      label: 'Todo',
+                      count: _countByStatus('todo'),
+                      selected: _filter == 'todo',
+                      onTap: () => setState(() => _filter = 'todo'),
                     ),
                     const SizedBox(width: 8),
                     WarmChip(
-                      label: 'In Progress',
-                      count: _countByStatus('in_progress'),
-                      selected: _filter == 'in_progress',
-                      onTap: () => setState(() => _filter = 'in_progress'),
+                      label: 'Doing',
+                      count: _countByStatus('doing'),
+                      selected: _filter == 'doing',
+                      onTap: () => setState(() => _filter = 'doing'),
                     ),
                     const SizedBox(width: 8),
                     WarmChip(
                       label: 'Submitted',
-                      count: _countByStatus('completed'),
-                      selected: _filter == 'completed',
-                      onTap: () => setState(() => _filter = 'completed'),
+                      count: _countByStatus('submitted'),
+                      selected: _filter == 'submitted',
+                      onTap: () => setState(() => _filter = 'submitted'),
+                    ),
+                    const SizedBox(width: 8),
+                    WarmChip(
+                      label: 'Overdue',
+                      count: _countByStatus('overdue'),
+                      selected: _filter == 'overdue',
+                      onTap: () => setState(() => _filter = 'overdue'),
                     ),
                   ],
                 ),

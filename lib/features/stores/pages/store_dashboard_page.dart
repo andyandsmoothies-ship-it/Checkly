@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/database_service.dart';
+import 'package:checkly/_shared/theme/app_fonts.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:get_it/get_it.dart';
 
 /// 6C: Store Dashboard — single-store detail with audit history and AP summary.
+///
+/// Apothecary design: flat sage-bordered cards, serif accent numbers,
+/// Manrope labels, warm cream background.
 class StoreDashboardPage extends StatefulWidget {
   final String storeId;
   const StoreDashboardPage({super.key, required this.storeId});
@@ -68,6 +72,12 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
     setState(() => _loading = false);
   }
 
+  Color _scoreColor(double score) {
+    if (score >= 80) return AppTheme.success;
+    if (score >= 60) return AppTheme.warning;
+    return Colors.red;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -79,84 +89,144 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Score gauge card
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Average Score',
-                          style: theme.textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${_avgScore.toStringAsFixed(1)}%',
-                          style: theme.textTheme.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: _avgScore >= 80
-                                ? AppTheme.success
-                                : _avgScore >= 60
-                                ? AppTheme.warning
-                                : Colors.red,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _MetricChip(
-                              label: 'Audits',
-                              value: '${_recentAudits.length}',
-                              icon: Icons.assignment,
-                            ),
-                            const SizedBox(width: 16),
-                            _MetricChip(
-                              label: 'Open APs',
-                              value: '$_openAPs',
-                              icon: Icons.pending_actions,
-                            ),
-                          ],
-                        ),
-                      ],
+                // ── Score overview card ──
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppTheme.sageGray.withValues(alpha: 0.3),
                     ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Average Score',
+                        style: AppFonts.displayStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.charcoal.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${_avgScore.toStringAsFixed(1)}%',
+                        style: AppFonts.serifStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w700,
+                          color: _scoreColor(_avgScore),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _MetricChip(
+                            label: 'Audits',
+                            value: '${_recentAudits.length}',
+                            icon: Icons.assignment_outlined,
+                          ),
+                          const SizedBox(width: 20),
+                          _MetricChip(
+                            label: 'Open APs',
+                            value: '$_openAPs',
+                            icon: Icons.pending_actions_outlined,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
-                Text('Recent Audits', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
+                const SizedBox(height: 24),
 
+                // ── Recent Audits header ──
+                Text(
+                  'RECENT AUDITS',
+                  style: AppFonts.displayStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.charcoal.withValues(alpha: 0.4),
+                    letterSpacing: 3,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // ── Audit list ──
                 if (_recentAudits.isEmpty)
-                  const Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text('No audits found for this store.'),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppTheme.sageGray.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'No audits found for this store.',
+                        style: AppFonts.displayStyle(
+                          fontSize: 14,
+                          color: AppTheme.charcoal.withValues(alpha: 0.5),
+                        ),
+                      ),
                     ),
                   )
                 else
                   ...List.generate(_recentAudits.length, (i) {
                     final s = _recentAudits[i];
-                    return Card(
+                    final score = s.totalScore ?? 0;
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.sageGray.withValues(alpha: 0.3),
+                        ),
+                      ),
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: (s.totalScore ?? 0) >= 80
-                              ? AppTheme.success.withValues(alpha: 0.2)
-                              : Colors.red.withValues(alpha: 0.2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        leading: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: _scoreColor(score).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          alignment: Alignment.center,
                           child: Text(
-                            '${(s.totalScore ?? 0).toStringAsFixed(0)}%',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: (s.totalScore ?? 0) >= 80
-                                  ? AppTheme.success
-                                  : Colors.red,
+                            '${score.toStringAsFixed(0)}%',
+                            style: AppFonts.serifStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: _scoreColor(score),
                             ),
                           ),
                         ),
-                        title: Text(s.templateTitle ?? 'Audit'),
+                        title: Text(
+                          s.templateTitle ?? 'Audit',
+                          style: AppFonts.displayStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.charcoal,
+                          ),
+                        ),
                         subtitle: Text(
                           '${s.auditorName ?? 'Unknown'} • ${_formatDate(s.createdAt)}',
+                          style: AppFonts.displayStyle(
+                            fontSize: 12,
+                            color: AppTheme.charcoal.withValues(alpha: 0.5),
+                          ),
                         ),
                       ),
                     );
@@ -171,6 +241,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
   }
 }
 
+/// Metric chip with icon + label — Apothecary style.
 class _MetricChip extends StatelessWidget {
   final String label;
   final String value;
@@ -187,13 +258,15 @@ class _MetricChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        Icon(icon, size: 16, color: AppTheme.sageGray),
+        const SizedBox(width: 6),
+        Text(
+          '$value $label',
+          style: AppFonts.displayStyle(
+            fontSize: 13,
+            color: AppTheme.charcoal.withValues(alpha: 0.6),
+          ),
         ),
-        const SizedBox(width: 4),
-        Text('$value $label', style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }

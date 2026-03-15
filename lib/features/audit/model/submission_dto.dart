@@ -81,6 +81,7 @@ class SubmissionDto {
   final String? notes;
   final DateTime createdAt;
   final DateTime? completedAt;
+  final DateTime? scheduledAt;
 
   const SubmissionDto({
     required this.id,
@@ -96,7 +97,14 @@ class SubmissionDto {
     this.notes,
     required this.createdAt,
     this.completedAt,
+    this.scheduledAt,
   });
+
+  /// Whether this audit is overdue (scheduled but past its date).
+  bool get isOverdue =>
+      status == 'scheduled' &&
+      scheduledAt != null &&
+      scheduledAt!.isBefore(DateTime.now());
 
   factory SubmissionDto.fromJson(Map<String, dynamic> json) => SubmissionDto(
     id: json['id'] as String,
@@ -113,6 +121,9 @@ class SubmissionDto {
     createdAt: DateTime.parse(json['createdAt'] as String),
     completedAt: json['completedAt'] != null
         ? DateTime.parse(json['completedAt'] as String)
+        : null,
+    scheduledAt: json['scheduledAt'] != null
+        ? DateTime.parse(json['scheduledAt'] as String)
         : null,
   );
 }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/theme/app_theme.dart';
 import '../manager/store_manager.dart';
 
 final _di = GetIt.instance;
@@ -121,23 +123,42 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                   itemCount: stores.length,
                   itemBuilder: (context, index) {
                     final store = stores[index];
-                    return Card(
+                    return Container(
                       margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.sageGray.withValues(alpha: 0.3),
+                        ),
+                      ),
                       child: ListTile(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        leading: CircleAvatar(
-                          backgroundColor: theme.colorScheme.primaryContainer,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        leading: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           child: Icon(
-                            Icons.store,
+                            Icons.store_outlined,
                             color: theme.colorScheme.primary,
+                            size: 22,
                           ),
                         ),
                         title: Text(
                           store.name,
-                          style: theme.textTheme.titleSmall?.copyWith(
+                          style: AppFonts.displayStyle(
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
+                            color: AppTheme.charcoal,
                           ),
                         ),
                         subtitle: Text(
@@ -145,13 +166,18 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                             if (store.areaName != null) store.areaName,
                             if (store.address != null) store.address,
                           ].join(' • '),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                          style: AppFonts.displayStyle(
+                            fontSize: 12,
+                            color: AppTheme.charcoal.withValues(alpha: 0.5),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        trailing: const Icon(Icons.chevron_right),
+                        trailing: Icon(
+                          Icons.chevron_right,
+                          color: AppTheme.sageGray,
+                          size: 20,
+                        ),
                         onTap: () {
                           context.push(
                             '/audit?templateId=${widget.templateId}&storeId=${store.id}',

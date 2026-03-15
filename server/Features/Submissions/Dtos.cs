@@ -35,7 +35,8 @@ public sealed record SubmissionDto(
     string? SectionScores,
     string? Notes,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? CompletedAt);
+    DateTimeOffset? CompletedAt,
+    DateTimeOffset? ScheduledAt);
 
 public sealed record SubmissionDetailDto(
     Guid Id,
