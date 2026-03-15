@@ -189,15 +189,17 @@ class _AuditFormPageState extends State<AuditFormPage> {
   bool _isConfirmRequired(TemplateTreeDto template) {
     if (template.scoringLogicConfig == null ||
         template.scoringLogicConfig!.isEmpty) {
-      return true;
+      return false;
     }
     try {
       final config =
           json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
+      // Read from top-level (Flutter) or features map (legacy)
+      if (config['confirmCorrect'] == true) return true;
       final features = config['features'] as Map<String, dynamic>?;
-      return features?['confirm_required'] != false;
+      return features?['confirm_required'] == true;
     } catch (_) {
-      return true;
+      return false;
     }
   }
 
@@ -368,6 +370,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
         }
 
         final allAnswered = _allCriteriaAnswered(manager, template);
+        final confirmRequired = _isConfirmRequired(template);
 
         return Scaffold(
           appBar: AppBar(
@@ -393,6 +396,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
                         group: template.groups[_currentSection],
                         manager: manager,
                         depth: 0,
+                        confirmRequired: confirmRequired,
                       ),
                   ],
                 ),
@@ -518,11 +522,13 @@ class _SectionCard extends StatelessWidget {
   final GroupDto group;
   final AuditManager manager;
   final int depth;
+  final bool confirmRequired;
 
   const _SectionCard({
     required this.group,
     required this.manager,
     this.depth = 0,
+    this.confirmRequired = false,
   });
 
   @override
@@ -606,12 +612,21 @@ class _SectionCard extends StatelessWidget {
         ),
         children: [
           ...group.criteria.map(
-            (c) => _CriterionTile(criterion: c, manager: manager),
+            (c) => _CriterionTile(
+              criterion: c,
+              manager: manager,
+              confirmRequired: confirmRequired,
+            ),
           ),
           ...group.children.map(
             (g) => Padding(
               padding: const EdgeInsets.only(left: 12),
-              child: _SectionCard(group: g, manager: manager, depth: depth + 1),
+              child: _SectionCard(
+                group: g,
+                manager: manager,
+                depth: depth + 1,
+                confirmRequired: confirmRequired,
+              ),
             ),
           ),
         ],
@@ -627,8 +642,13 @@ class _SectionCard extends StatelessWidget {
 class _CriterionTile extends StatefulWidget {
   final CriterionDto criterion;
   final AuditManager manager;
+  final bool confirmRequired;
 
-  const _CriterionTile({required this.criterion, required this.manager});
+  const _CriterionTile({
+    required this.criterion,
+    required this.manager,
+    this.confirmRequired = false,
+  });
 
   @override
   State<_CriterionTile> createState() => _CriterionTileState();
@@ -670,13 +690,70 @@ class _CriterionTileState extends State<_CriterionTile> {
                   widget.manager.setAnswer(widget.criterion.id, value: v),
             )
           else
-            _NumericInput(
-              value: answer?.numericValue,
-              onChanged: (v) => widget.manager.setAnswer(
-                widget.criterion.id,
-                numericValue: v,
+            // Faults + Repeats on same row, identical style
+            Row(
+              children: [
+                _NumericInput(
+                  label: 'Faults:',
+                  value: answer?.numericValue,
+                  onChanged: (v) => widget.manager.setAnswer(
+                    widget.criterion.id,
+                    numericValue: v,
+                  ),
+                ),
+                const Spacer(),
+                _NumericInput(
+                  label: 'Repeats:',
+                  value: (answer?.repeatedFaultCount ?? 0).toDouble(),
+                  activeColor: (answer?.repeatedFaultCount ?? 0) > 0
+                      ? AppTheme.warning
+                      : null,
+                  onChanged: (v) => widget.manager.setRepeatedFaultCount(
+                    widget.criterion.id,
+                    v.toInt(),
+                  ),
+                ),
+              ],
+            ),
+
+          // Confirm Correct button (only when confirmRequired is ON)
+          if (widget.confirmRequired && !hasFaults) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: answer?.value == 'conform'
+                    ? null
+                    : () => widget.manager.setAnswer(
+                        widget.criterion.id,
+                        value: 'conform',
+                      ),
+                icon: Icon(
+                  answer?.value == 'conform'
+                      ? Icons.check_circle
+                      : Icons.check_circle_outline,
+                  size: 18,
+                ),
+                label: Text(
+                  answer?.value == 'conform'
+                      ? 'Standard Verified'
+                      : 'Confirm Correct',
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: answer?.value == 'conform'
+                      ? AppTheme.success
+                      : theme.colorScheme.surfaceContainerHighest,
+                  foregroundColor: answer?.value == 'conform'
+                      ? Colors.white
+                      : theme.colorScheme.onSurfaceVariant,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
             ),
+          ],
 
           const SizedBox(height: 8),
 
@@ -719,7 +796,7 @@ class _CriterionTileState extends State<_CriterionTile> {
 
           const SizedBox(height: 8),
 
-          // Action row: Note / Photo / Repeat
+          // Action row: Note / Photo
           Wrap(
             spacing: 6,
             runSpacing: 6,
@@ -740,26 +817,6 @@ class _CriterionTileState extends State<_CriterionTile> {
                 active: answer?.photoUrl != null,
                 onTap: () => _pickPhoto(context),
               ),
-
-              // Repeated faults stepper (Gap 7)
-              if (isNonConform || hasFaults) ...[
-                const SizedBox(width: 8),
-                _ToggleChip(
-                  label: 'Repeat',
-                  icon: Icons.repeat,
-                  color: (answer?.repeatedFaultCount ?? 0) > 0
-                      ? AppTheme.warning
-                      : theme.colorScheme.onSurfaceVariant,
-                  active: (answer?.repeatedFaultCount ?? 0) > 0,
-                ),
-                _RepeatStepper(
-                  count: answer?.repeatedFaultCount ?? 0,
-                  onChanged: (c) => widget.manager.setRepeatedFaultCount(
-                    widget.criterion.id,
-                    c,
-                  ),
-                ),
-              ],
             ],
           ),
 
@@ -934,51 +991,7 @@ class _CcpRiskButton extends StatelessWidget {
   }
 }
 
-/// Toggle chip for CCP/RISK status indicators.
-class _ToggleChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final bool active;
-
-  const _ToggleChip({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.active,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: active ? color.withAlpha(25) : Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: active ? color.withAlpha(120) : Colors.grey.withAlpha(60),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: active ? color : Colors.grey),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: active ? color : Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Tappable action chip for Note/Photo/Repeat toggles.
+/// Tappable action chip for Note/Photo toggles.
 class _ActionChip extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -1036,48 +1049,6 @@ class _ActionChip extends StatelessWidget {
 }
 
 // ============================================================
-// Repeat stepper (Gap 7)
-// ============================================================
-
-class _RepeatStepper extends StatelessWidget {
-  final int count;
-  final ValueChanged<int> onChanged;
-
-  const _RepeatStepper({required this.count, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: count > 0 ? () => onChanged(count - 1) : null,
-          icon: const Icon(Icons.remove, size: 16),
-          visualDensity: VisualDensity.compact,
-          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-          padding: EdgeInsets.zero,
-        ),
-        Text(
-          '$count',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-            color: count > 0 ? AppTheme.warning : null,
-          ),
-        ),
-        IconButton(
-          onPressed: () => onChanged(count + 1),
-          icon: const Icon(Icons.add, size: 16),
-          visualDensity: VisualDensity.compact,
-          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-          padding: EdgeInsets.zero,
-        ),
-      ],
-    );
-  }
-}
-
-// ============================================================
 // Input widgets
 // ============================================================
 
@@ -1110,10 +1081,17 @@ class _PassFailInput extends StatelessWidget {
 }
 
 class _NumericInput extends StatefulWidget {
+  final String label;
   final double? value;
+  final Color? activeColor;
   final ValueChanged<double> onChanged;
 
-  const _NumericInput({this.value, required this.onChanged});
+  const _NumericInput({
+    this.label = 'Faults:',
+    this.value,
+    this.activeColor,
+    required this.onChanged,
+  });
 
   @override
   State<_NumericInput> createState() => _NumericInputState();
@@ -1137,16 +1115,21 @@ class _NumericInputState extends State<_NumericInput> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isActive = _count > 0;
+    final textColor = isActive && widget.activeColor != null
+        ? widget.activeColor!
+        : null;
 
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Faults:',
+          widget.label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+            color: textColor ?? theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         IconButton.filledTonal(
           onPressed: _count > 0
               ? () {
@@ -1158,11 +1141,12 @@ class _NumericInputState extends State<_NumericInput> {
           visualDensity: VisualDensity.compact,
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             _count.toInt().toString(),
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
+              color: textColor,
             ),
           ),
         ),
