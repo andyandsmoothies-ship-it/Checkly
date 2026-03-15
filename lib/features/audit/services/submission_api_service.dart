@@ -38,6 +38,24 @@ class SubmissionApiService {
     return SubmissionDetailDto.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// PUT /submissions/{id} — update submission (e.g. scheduled → draft).
+  Future<SubmissionDto> updateSubmission(
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    final response = await _dio.put('/submissions/$id', data: body);
+    return SubmissionDto.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  /// PUT /submissions/{id}/finalize — atomic draft → completed.
+  Future<SubmissionDto> finalizeSubmission(
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    final response = await _dio.put('/submissions/$id/finalize', data: body);
+    return SubmissionDto.fromJson(response.data as Map<String, dynamic>);
+  }
+
   /// POST /photos/upload — multipart upload
   Future<String> uploadPhoto(String submissionId, String filePath) async {
     final formData = FormData.fromMap({

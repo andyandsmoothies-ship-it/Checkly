@@ -22,6 +22,7 @@ import '../../features/admin/pages/audit_approval_page.dart';
 import '../../features/admin/pages/user_management_page.dart';
 import '../../features/admin/pages/store_management_page.dart';
 import '../../features/admin/pages/system_logs_page.dart';
+import '../../features/admin/pages/schedule_audit_page.dart';
 import '../../features/profile/pages/activity_history_page.dart';
 import '../../features/analytics/pages/analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
@@ -128,6 +129,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/admin/logs',
       builder: (context, state) => const SystemLogsPage(),
+    ),
+    GoRoute(
+      path: '/admin/schedule',
+      builder: (context, state) => const ScheduleAuditPage(),
     ),
     GoRoute(
       path: '/activity',

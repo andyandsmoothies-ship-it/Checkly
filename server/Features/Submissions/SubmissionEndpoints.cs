@@ -20,7 +20,13 @@ public static class SubmissionEndpoints
         group.MapGet("/{id}", GetSubmission.HandleAsync)
             .WithName("GetSubmission");
 
+        group.MapPut("/{id}", UpdateSubmission.HandleAsync)
+            .WithName("UpdateSubmission");
+
         group.MapPut("/{id}/review", ReviewSubmission.HandleAsync)
             .WithName("ReviewSubmission");
+
+        group.MapPut("/{id}/finalize", FinalizeSubmission.HandleAsync)
+            .WithName("FinalizeSubmission");
     }
 }

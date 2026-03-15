@@ -155,6 +155,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 subtitle: 'View performance data',
                 onTap: () => context.push('/analytics'),
               ),
+              _MenuItem(
+                icon: Icons.event_note,
+                title: 'Schedule Audit',
+                subtitle: 'Delegate audits to auditors',
+                onTap: () => context.push('/admin/schedule'),
+              ),
             ],
           );
         },

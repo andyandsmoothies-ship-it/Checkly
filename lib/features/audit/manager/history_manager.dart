@@ -92,4 +92,21 @@ class HistoryManager extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // ---------- Start Scheduled Audit (scheduled → draft) ----------
+  Future<SubmissionDto> startScheduledAudit(String submissionId) async {
+    final updated = await _api.updateSubmission(submissionId, {
+      'status': 'draft',
+    });
+
+    // Update local list
+    final list = List<SubmissionDto>.from(submissions.value);
+    final idx = list.indexWhere((s) => s.id == submissionId);
+    if (idx >= 0) {
+      list[idx] = updated;
+      submissions.value = list;
+    }
+    notifyListeners();
+    return updated;
+  }
 }

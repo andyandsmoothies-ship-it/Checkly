@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../_shared/widgets/checkly_fab.dart';
-
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
+import '../../admin/pages/schedule_audit_page.dart';
+import '../../auth/manager/auth_manager.dart';
 import '../manager/history_manager.dart';
 import '../model/submission_dto.dart';
 
@@ -116,6 +116,44 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
+  void _showScheduleSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => FractionallySizedBox(
+        heightFactor: 0.9,
+        child: Column(
+          children: [
+            // Drag handle
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Text(
+              'Assign Task',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(context)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -123,9 +161,10 @@ class _HistoryPageState extends State<HistoryPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Audits')),
-      floatingActionButton: ChecklyFab(
-        label: 'AUDIT',
-        onPressed: () => context.push('/templates'),
+      floatingActionButton: _AuditSpeedDial(
+        isAdmin: _di<AuthManager>().currentUser?.role == 'admin',
+        onNewAudit: () => context.push('/templates'),
+        onAssignTask: () => _showScheduleSheet(context),
       ),
       body: ListenableBuilder(
         listenable: manager,
@@ -246,6 +285,38 @@ class _HistoryPageState extends State<HistoryPage> {
                               (entry) => _StoreGroup(
                                 storeName: entry.key,
                                 submissions: entry.value,
+                                onStartAudit: (submission) async {
+                                  try {
+                                    await manager.startScheduledAudit(
+                                      submission.id,
+                                    );
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Audit started — draft created',
+                                          ),
+                                        ),
+                                      );
+                                      setState(() {});
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Failed to start: $e'),
+                                          backgroundColor: Theme.of(
+                                            context,
+                                          ).colorScheme.error,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
                               ),
                             ),
                             if (manager.isLoadingMore)
@@ -291,8 +362,13 @@ class _HistoryPageState extends State<HistoryPage> {
 class _StoreGroup extends StatelessWidget {
   final String storeName;
   final List<SubmissionDto> submissions;
+  final void Function(SubmissionDto)? onStartAudit;
 
-  const _StoreGroup({required this.storeName, required this.submissions});
+  const _StoreGroup({
+    required this.storeName,
+    required this.submissions,
+    this.onStartAudit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -332,7 +408,16 @@ class _StoreGroup extends StatelessWidget {
             ),
           ],
         ),
-        children: submissions.map((s) => _AuditCard(submission: s)).toList(),
+        children: submissions
+            .map(
+              (s) => _AuditCard(
+                submission: s,
+                onStartAudit: s.status == 'scheduled' && !s.isOverdue
+                    ? () => onStartAudit?.call(s)
+                    : null,
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -342,7 +427,8 @@ class _StoreGroup extends StatelessWidget {
 
 class _AuditCard extends StatelessWidget {
   final SubmissionDto submission;
-  const _AuditCard({required this.submission});
+  final VoidCallback? onStartAudit;
+  const _AuditCard({required this.submission, this.onStartAudit});
 
   Color _scoreColor(double? score, ThemeData theme) {
     if (score == null) return theme.colorScheme.onSurfaceVariant;
@@ -354,6 +440,9 @@ class _AuditCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isOverdue = submission.isOverdue;
+    final isScheduled = submission.status == 'scheduled' && !isOverdue;
+    final isDraft = submission.status == 'draft';
     final color = _scoreColor(submission.totalScore, theme);
 
     return Card(
@@ -362,21 +451,41 @@ class _AuditCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            // Score circle (Apothecary: primary/10 bg, no border)
+            // Score circle or status icon
             Container(
               width: 48,
               height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                color: isOverdue
+                    ? theme.colorScheme.error.withValues(alpha: 0.1)
+                    : isScheduled
+                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                    : isDraft
+                    ? AppTheme.warning.withValues(alpha: 0.1)
+                    : theme.colorScheme.primary.withValues(alpha: 0.1),
               ),
               child: Center(
-                child: Text(
-                  submission.totalScore != null
-                      ? submission.totalScore!.toStringAsFixed(0)
-                      : '—',
-                  style: AppFonts.serifStyle(fontSize: 16, color: color),
-                ),
+                child: isOverdue
+                    ? Icon(
+                        Icons.warning_amber_rounded,
+                        size: 22,
+                        color: theme.colorScheme.error,
+                      )
+                    : isScheduled
+                    ? Icon(
+                        Icons.schedule,
+                        size: 22,
+                        color: theme.colorScheme.primary,
+                      )
+                    : isDraft
+                    ? Icon(Icons.edit_note, size: 22, color: AppTheme.warning)
+                    : Text(
+                        submission.totalScore != null
+                            ? submission.totalScore!.toStringAsFixed(0)
+                            : '—',
+                        style: AppFonts.serifStyle(fontSize: 16, color: color),
+                      ),
               ),
             ),
             const SizedBox(width: 12),
@@ -396,35 +505,87 @@ class _AuditCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatDate(submission.completedAt ?? submission.createdAt),
+                    isScheduled || isOverdue
+                        ? 'Scheduled: ${_formatDate(submission.scheduledAt ?? submission.createdAt)}'
+                        : _formatDate(
+                            submission.completedAt ?? submission.createdAt,
+                          ),
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: isOverdue
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
 
-            // Status badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: submission.status == 'completed'
-                    ? AppTheme.success.withAlpha(20)
-                    : AppTheme.oatmeal.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                submission.status.toUpperCase(),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: submission.status == 'completed'
-                      ? AppTheme.success
-                      : theme.colorScheme.onSurfaceVariant,
+            // Action: Start Audit button OR status badge
+            if (isScheduled && onStartAudit != null) ...[
+              FilledButton.tonal(
+                onPressed: onStartAudit,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Start',
+                  style: AppFonts.displayStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
+            ] else ...[
+              _statusBadge(theme),
+            ],
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statusBadge(ThemeData theme) {
+    final isOverdue = submission.isOverdue;
+    final status = isOverdue ? 'EXPIRED' : submission.status.toUpperCase();
+
+    Color bg;
+    Color fg;
+    if (isOverdue) {
+      bg = theme.colorScheme.error.withAlpha(20);
+      fg = theme.colorScheme.error;
+    } else {
+      switch (submission.status) {
+        case 'completed':
+          bg = AppTheme.success.withAlpha(20);
+          fg = AppTheme.success;
+        case 'draft':
+          bg = AppTheme.warning.withAlpha(20);
+          fg = AppTheme.warning;
+        case 'scheduled':
+          bg = theme.colorScheme.primary.withAlpha(20);
+          fg = theme.colorScheme.primary;
+        default:
+          bg = AppTheme.oatmeal.withValues(alpha: 0.5);
+          fg = theme.colorScheme.onSurfaceVariant;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        status,
+        style: theme.textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: fg,
         ),
       ),
     );
@@ -432,5 +593,69 @@ class _AuditCard extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+}
+
+// ── Speed-Dial FAB ──
+
+class _AuditSpeedDial extends StatelessWidget {
+  final bool isAdmin;
+  final VoidCallback onNewAudit;
+  final VoidCallback onAssignTask;
+
+  const _AuditSpeedDial({
+    required this.isAdmin,
+    required this.onNewAudit,
+    required this.onAssignTask,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        if (value == 'new') onNewAudit();
+        if (value == 'assign') onAssignTask();
+      },
+      offset: const Offset(0, -120),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          value: 'new',
+          child: Row(
+            children: [
+              Icon(
+                Icons.assignment_outlined,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              const Text('Start New Audit'),
+            ],
+          ),
+        ),
+        if (isAdmin)
+          PopupMenuItem(
+            value: 'assign',
+            child: Row(
+              children: [
+                Icon(
+                  Icons.person_add_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 12),
+                const Text('Assign Task'),
+              ],
+            ),
+          ),
+      ],
+      child: FloatingActionButton(
+        onPressed: () {}, // Empty — PopupMenuButton handles interaction
+        backgroundColor: theme.colorScheme.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
   }
 }

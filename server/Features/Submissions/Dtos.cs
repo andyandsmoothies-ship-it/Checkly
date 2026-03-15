@@ -6,13 +6,15 @@ namespace Checkly.Api.Features.Submissions;
 public sealed record CreateSubmissionRequest(
     Guid TemplateId,
     Guid StoreId,
-    decimal ClientScore,
+    decimal? ClientScore,
     string? SectionScores,
     string? Notes,
     decimal? GpsLat,
     decimal? GpsLng,
-    List<AnswerInput> Answers,
-    string? IdempotencyKey = null);
+    List<AnswerInput>? Answers,
+    string? IdempotencyKey = null,
+    string? Status = null,
+    DateTimeOffset? ScheduledAt = null);
 
 public sealed record AnswerInput(
     Guid CriteriaId,

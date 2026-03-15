@@ -5,36 +5,42 @@
 class CreateSubmissionRequest {
   final String templateId;
   final String storeId;
-  final double clientScore;
+  final double? clientScore;
   final String? sectionScores;
   final String? notes;
   final double? gpsLat;
   final double? gpsLng;
-  final List<SubmissionAnswerInput> answers;
+  final List<SubmissionAnswerInput>? answers;
   final String? idempotencyKey;
+  final String? status;
+  final DateTime? scheduledAt;
 
   const CreateSubmissionRequest({
     required this.templateId,
     required this.storeId,
-    required this.clientScore,
+    this.clientScore,
     this.sectionScores,
     this.notes,
     this.gpsLat,
     this.gpsLng,
-    required this.answers,
+    this.answers,
     this.idempotencyKey,
+    this.status,
+    this.scheduledAt,
   });
 
   Map<String, dynamic> toJson() => {
     'templateId': templateId,
     'storeId': storeId,
-    'clientScore': clientScore,
+    if (clientScore != null) 'clientScore': clientScore,
     'sectionScores': sectionScores,
     'notes': notes,
     'gpsLat': gpsLat,
     'gpsLng': gpsLng,
-    'answers': answers.map((a) => a.toJson()).toList(),
+    if (answers != null) 'answers': answers!.map((a) => a.toJson()).toList(),
     'idempotencyKey': idempotencyKey,
+    if (status != null) 'status': status,
+    if (scheduledAt != null) 'scheduledAt': scheduledAt!.toIso8601String(),
   };
 }
 

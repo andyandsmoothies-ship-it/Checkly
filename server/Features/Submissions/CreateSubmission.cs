@@ -8,10 +8,15 @@ namespace Checkly.Api.Features.Submissions;
 
 /// <summary>
 /// POST /api/submissions — creates submission + answers in one transaction.
-/// Snapshots auditor/store/template names. Verifies score server-side.
+/// Supports two modes:
+///   - status=draft  → creates a draft submission (no score, no answers)
+///   - status=completed (or omitted) → full submission with scoring verification
 /// </summary>
 public static class CreateSubmission
 {
+    private static readonly HashSet<string> ValidStatuses = new(StringComparer.OrdinalIgnoreCase)
+        { "draft", "completed", "scheduled" };
+
     public static async Task<IResult> HandleAsync(
         CreateSubmissionRequest request,
         ClaimsPrincipal user,
@@ -21,6 +26,14 @@ public static class CreateSubmission
         CancellationToken ct)
     {
         var auditorId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        // Determine mode
+        var requestedStatus = request.Status?.ToLowerInvariant() ?? "completed";
+        if (!ValidStatuses.Contains(requestedStatus))
+            return TypedResults.BadRequest(new { error = $"Invalid status: '{request.Status}'. Must be draft, scheduled, or completed." });
+
+        var isDraft = requestedStatus == "draft";
+        var isScheduled = requestedStatus == "scheduled";
 
         // Idempotency check — if key already used, return existing submission
         if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
@@ -40,7 +53,16 @@ public static class CreateSubmission
             }
         }
 
-        // Load template + groups + criteria for scoring verification
+        // Validate: completed submissions MUST have score + answers
+        if (!isDraft && !isScheduled)
+        {
+            if (request.ClientScore is null)
+                return TypedResults.BadRequest(new { error = "ClientScore is required for completed submissions" });
+            if (request.Answers is null || request.Answers.Count == 0)
+                return TypedResults.BadRequest(new { error = "Answers are required for completed submissions" });
+        }
+
+        // Load template (always needed for snapshot)
         var template = await db.Templates
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == request.TemplateId, ct);
@@ -61,44 +83,49 @@ public static class CreateSubmission
         if (store.IsActive == false)
             return TypedResults.BadRequest(new { error = "Store is deactivated" });
 
-        // Load groups + criteria for this template
-        var groups = await db.Groups
-            .AsNoTracking()
-            .Where(g => g.TemplateId == request.TemplateId && g.IsActive)
-            .ToListAsync(ct);
+        // Scoring verification — only for completed submissions
+        List<Group> groups = [];
+        List<Criterion> criteria = [];
+        decimal? serverScore = null;
 
-        var groupIds = groups.Select(g => g.Id).ToList();
-        var criteria = await db.Criteria
-            .AsNoTracking()
-            .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
-            .ToListAsync(ct);
-
-        // Build temporary answers for scoring
-        var tempAnswers = request.Answers.Select(a => new Answer
+        if (!isDraft && !isScheduled)
         {
-            CriteriaId = a.CriteriaId,
-            NumericValue = a.NumericValue,
-            Value = a.Value
-        }).ToList();
+            groups = await db.Groups
+                .AsNoTracking()
+                .Where(g => g.TemplateId == request.TemplateId && g.IsActive)
+                .ToListAsync(ct);
 
-        // Verify score
-        var verification = scorer.Verify(request.ClientScore, tempAnswers, groups, criteria);
+            var groupIds = groups.Select(g => g.Id).ToList();
+            criteria = await db.Criteria
+                .AsNoTracking()
+                .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
+                .ToListAsync(ct);
 
-        // S5: Score verification mode — enforce (reject) or observe (log only)
-        var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
-        if (!verification.IsValid)
-        {
-            if (scoreMode == "enforce")
+            var tempAnswers = request.Answers!.Select(a => new Answer
             {
-                return TypedResults.BadRequest(new
+                CriteriaId = a.CriteriaId,
+                NumericValue = a.NumericValue,
+                Value = a.Value
+            }).ToList();
+
+            var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria);
+
+            var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
+            if (!verification.IsValid)
+            {
+                if (scoreMode == "enforce")
                 {
-                    error = "Score verification failed",
-                    clientScore = request.ClientScore,
-                    serverScore = verification.ServerScore,
-                    reason = verification.Reason
-                });
+                    return TypedResults.BadRequest(new
+                    {
+                        error = "Score verification failed",
+                        clientScore = request.ClientScore,
+                        serverScore = verification.ServerScore,
+                        reason = verification.Reason
+                    });
+                }
             }
-            // Observe mode: log mismatch but allow submission with server score
+
+            serverScore = verification.ServerScore;
         }
 
         // Snapshot auditor info
@@ -114,15 +141,16 @@ public static class CreateSubmission
             TemplateId = request.TemplateId,
             StoreId = request.StoreId,
             AuditorId = auditorId,
-            Status = "completed",
-            TotalScore = verification.ServerScore,
+            Status = requestedStatus,
+            TotalScore = serverScore,
             SectionScores = request.SectionScores,
             Notes = request.Notes,
             GpsLat = request.GpsLat,
             GpsLng = request.GpsLng,
             GpsVerifiedAt = request.GpsLat.HasValue ? now : null,
-            CompletedAt = now,
-            StartedAt = now,
+            CompletedAt = (isDraft || isScheduled) ? null : now,
+            StartedAt = isDraft ? now : (isScheduled ? null : now),
+            ScheduledAt = request.ScheduledAt,
             CreatedAt = now,
             UpdatedAt = now,
             // Snapshot fields
@@ -133,73 +161,78 @@ public static class CreateSubmission
             IdempotencyKey = request.IdempotencyKey
         };
 
-        // Create answers
-        var answers = request.Answers.Select(a => new Answer
-        {
-            Id = Guid.NewGuid(),
-            SubmissionId = submission.Id,
-            CriteriaId = a.CriteriaId,
-            Value = a.Value,
-            NumericValue = a.NumericValue,
-            Note = a.Note,
-            PhotoUrl = a.PhotoUrl,
-            IsRepeatedError = a.IsRepeatedError,
-            CriteriaLabel = criteria.FirstOrDefault(c => c.Id == a.CriteriaId)?.Label,
-            CreatedAt = now,
-            UpdatedAt = now
-        }).ToList();
-
-        // Single transaction
         db.Submissions.Add(submission);
-        db.Answers.AddRange(answers);
-        await db.SaveChangesAsync(ct);
 
-        // --- S1: Auto-create action plans for failed answers ---
-        var failedAnswers = answers.Where(a => a.Value == "non_conform").ToList();
-
-        if (failedAnswers.Count > 0)
+        // Create answers — only for completed submissions
+        if (!isDraft && !isScheduled && request.Answers is not null)
         {
-            // Idempotency: skip if APs already exist for this submission
-            var existingAPs = await db.ActionPlans
-                .AnyAsync(ap => ap.SubmissionId == submission.Id, ct);
-
-            if (!existingAPs)
+            var answers = request.Answers.Select(a => new Answer
             {
-                // Look up current SM for this store (live lookup per CORE_WORKFLOWS L103)
-                var smProfile = await db.Profiles
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.StoreId == store.Id, ct);
+                Id = Guid.NewGuid(),
+                SubmissionId = submission.Id,
+                CriteriaId = a.CriteriaId,
+                Value = a.Value,
+                NumericValue = a.NumericValue,
+                Note = a.Note,
+                PhotoUrl = a.PhotoUrl,
+                IsRepeatedError = a.IsRepeatedError,
+                CriteriaLabel = criteria.FirstOrDefault(c => c.Id == a.CriteriaId)?.Label,
+                CreatedAt = now,
+                UpdatedAt = now
+            }).ToList();
 
-                // Deadline: default 7 days
-                var deadline = now.AddDays(7);
+            db.Answers.AddRange(answers);
+            await db.SaveChangesAsync(ct);
 
-                foreach (var fail in failedAnswers)
+            // --- S1: Auto-create action plans for failed answers ---
+            var failedAnswers = answers.Where(a => a.Value == "non_conform").ToList();
+
+            if (failedAnswers.Count > 0)
+            {
+                var existingAPs = await db.ActionPlans
+                    .AnyAsync(ap => ap.SubmissionId == submission.Id, ct);
+
+                if (!existingAPs)
                 {
-                    var criterion = criteria.FirstOrDefault(c => c.Id == fail.CriteriaId);
-                    var group = criterion != null
-                        ? groups.FirstOrDefault(g => g.Id == criterion.GroupId)
-                        : null;
+                    var smProfile = await db.Profiles
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(p => p.StoreId == store.Id, ct);
 
-                    db.ActionPlans.Add(new ActionPlan
+                    var deadline = now.AddDays(7);
+
+                    foreach (var fail in failedAnswers)
                     {
-                        Id = Guid.NewGuid(),
-                        SubmissionId = submission.Id,
-                        AnswerId = fail.Id,
-                        StoreId = submission.StoreId,
-                        StoreManagerId = smProfile?.Id,
-                        CriteriaLabel = criterion?.Label ?? "",
-                        GroupTitle = group?.Title ?? "",
-                        Status = "open",
-                        Deadline = deadline,
-                        StoreName = store.Name,
-                        StoreManagerName = smProfile?.FullName,
-                        CreatedAt = now,
-                        UpdatedAt = now
-                    });
-                }
+                        var criterion = criteria.FirstOrDefault(c => c.Id == fail.CriteriaId);
+                        var group = criterion != null
+                            ? groups.FirstOrDefault(g => g.Id == criterion.GroupId)
+                            : null;
 
-                await db.SaveChangesAsync(ct);
+                        db.ActionPlans.Add(new ActionPlan
+                        {
+                            Id = Guid.NewGuid(),
+                            SubmissionId = submission.Id,
+                            AnswerId = fail.Id,
+                            StoreId = submission.StoreId,
+                            StoreManagerId = smProfile?.Id,
+                            CriteriaLabel = criterion?.Label ?? "",
+                            GroupTitle = group?.Title ?? "",
+                            Status = "open",
+                            Deadline = deadline,
+                            StoreName = store.Name,
+                            StoreManagerName = smProfile?.FullName,
+                            CreatedAt = now,
+                            UpdatedAt = now
+                        });
+                    }
+
+                    await db.SaveChangesAsync(ct);
+                }
             }
+        }
+        else
+        {
+            // Draft or scheduled — just save the submission (no answers)
+            await db.SaveChangesAsync(ct);
         }
 
         return TypedResults.Created($"/api/submissions/{submission.Id}", new SubmissionDto(
