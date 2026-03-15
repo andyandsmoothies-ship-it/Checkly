@@ -11,7 +11,7 @@ namespace Checkly.Api.Features.Areas;
 /// </summary>
 public static class CreateArea
 {
-    public record Request(string Name, string Code);
+    public record Request(string Name, string? Description);
 
     public static async Task<IResult> HandleAsync(
         Request request,
@@ -24,17 +24,17 @@ public static class CreateArea
         if (callerRole != "admin")
             return TypedResults.Forbid();
 
-        // Duplicate code check
-        var codeNormalized = request.Code.Trim().ToLowerInvariant();
-        var exists = await db.Areas.AnyAsync(a => a.Code == codeNormalized, ct);
+        // Duplicate name check
+        var nameNormalized = request.Name.Trim().ToLowerInvariant();
+        var exists = await db.Areas.AnyAsync(a => a.Name.ToLower() == nameNormalized, ct);
         if (exists)
-            return TypedResults.Conflict(new { error = "Area code already exists" });
+            return TypedResults.Conflict(new { error = "Area name already exists" });
 
         var area = new Area
         {
             Id = Guid.NewGuid(),
             Name = request.Name.Trim(),
-            Code = codeNormalized,
+            Description = request.Description?.Trim(),
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
@@ -45,6 +45,6 @@ public static class CreateArea
 
         return TypedResults.Created(
             $"/api/areas/{area.Id}",
-            new AreaDto(area.Id, area.Name, area.Code, area.IsActive, area.CreatedAt));
+            new AreaDto(area.Id, area.Name, area.Description, area.IsActive, area.CreatedAt));
     }
 }

@@ -4,6 +4,6 @@ namespace Checkly.Api.Features.Areas;
 public sealed record AreaDto(
     Guid Id,
     string Name,
-    string Code,
+    string? Description,
     bool IsActive,
     DateTimeOffset CreatedAt);

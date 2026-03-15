@@ -26,7 +26,7 @@ public static class ListAreas
         var areas = await query
             .OrderBy(a => a.Name)
             .Take(100)
-            .Select(a => new AreaDto(a.Id, a.Name, a.Code, a.IsActive, a.CreatedAt))
+            .Select(a => new AreaDto(a.Id, a.Name, a.Description, a.IsActive, a.CreatedAt))
             .ToListAsync(ct);
 
         return TypedResults.Ok(areas);

@@ -9,7 +9,7 @@ namespace Checkly.Api.Features.Areas;
 /// </summary>
 public static class UpdateArea
 {
-    public record Request(string? Name, bool? IsActive);
+    public record Request(string? Name, string? Description, bool? IsActive);
 
     public static async Task<IResult> HandleAsync(
         Guid id,
@@ -30,6 +30,9 @@ public static class UpdateArea
         if (request.Name != null)
             area.Name = request.Name.Trim();
 
+        if (request.Description != null)
+            area.Description = request.Description.Trim();
+
         if (request.IsActive.HasValue)
             area.IsActive = request.IsActive.Value;
 
@@ -38,6 +41,6 @@ public static class UpdateArea
         await db.SaveChangesAsync(ct);
 
         return TypedResults.Ok(
-            new AreaDto(area.Id, area.Name, area.Code, area.IsActive, area.CreatedAt));
+            new AreaDto(area.Id, area.Name, area.Description, area.IsActive, area.CreatedAt));
     }
 }

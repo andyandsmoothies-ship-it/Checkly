@@ -133,12 +133,11 @@ class AdminApiService {
   /// POST /areas — create a new area (admin only).
   Future<Map<String, dynamic>> createArea({
     required String name,
-    required String code,
+    String? description,
   }) async {
-    final response = await _dio.post(
-      '/areas',
-      data: {'name': name, 'code': code},
-    );
+    final body = <String, dynamic>{'name': name};
+    if (description != null) body['description'] = description;
+    final response = await _dio.post('/areas', data: body);
     return response.data as Map<String, dynamic>;
   }
 
@@ -146,10 +145,12 @@ class AdminApiService {
   Future<Map<String, dynamic>> updateArea(
     String id, {
     String? name,
+    String? description,
     bool? isActive,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
+    if (description != null) body['description'] = description;
     if (isActive != null) body['isActive'] = isActive;
     final response = await _dio.put('/areas/$id', data: body);
     return response.data as Map<String, dynamic>;

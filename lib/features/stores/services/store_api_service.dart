@@ -44,12 +44,16 @@ class StoreApiService {
     String? name,
     String? address,
     String? areaId,
+    double? gpsLat,
+    double? gpsLng,
     bool? isActive,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
     if (address != null) body['address'] = address;
     if (areaId != null) body['areaId'] = areaId;
+    if (gpsLat != null) body['gpsLat'] = gpsLat;
+    if (gpsLng != null) body['gpsLng'] = gpsLng;
     if (isActive != null) body['isActive'] = isActive;
 
     final response = await _dio.put('/stores/$id', data: body);

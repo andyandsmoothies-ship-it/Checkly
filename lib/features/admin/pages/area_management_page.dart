@@ -68,8 +68,8 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
     } else {
       _filtered = _areas.where((a) {
         final name = (a['name'] as String? ?? '').toLowerCase();
-        final code = (a['code'] as String? ?? '').toLowerCase();
-        return name.contains(query) || code.contains(query);
+        final desc = (a['description'] as String? ?? '').toLowerCase();
+        return name.contains(query) || desc.contains(query);
       }).toList();
     }
   }
@@ -105,7 +105,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
 
   void _showCreateSheet() {
     final nameCtrl = TextEditingController();
-    final codeCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
 
     showModalBottomSheet(
       context: context,
@@ -136,7 +136,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
             TextField(
               controller: nameCtrl,
               decoration: const InputDecoration(
-                labelText: 'Area Name',
+                labelText: 'Area Name *',
                 hintText: 'e.g. Mekong Delta',
                 border: OutlineInputBorder(),
               ),
@@ -144,29 +144,30 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
             ),
             const SizedBox(height: 12),
             TextField(
-              controller: codeCtrl,
+              controller: descCtrl,
               decoration: const InputDecoration(
-                labelText: 'Area Code',
-                hintText: 'e.g. MKD',
+                labelText: 'Description',
+                hintText: 'Optional description of this area',
                 border: OutlineInputBorder(),
               ),
-              textCapitalization: TextCapitalization.characters,
+              maxLines: 2,
+              textCapitalization: TextCapitalization.sentences,
             ),
             const SizedBox(height: 20),
             FilledButton(
               onPressed: () async {
                 final name = nameCtrl.text.trim();
-                final code = codeCtrl.text.trim();
-                if (name.isEmpty || code.isEmpty) {
+                final desc = descCtrl.text.trim();
+                if (name.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Name and code are required')),
+                    const SnackBar(content: Text('Area name is required')),
                   );
                   return;
                 }
                 try {
                   await _di<AdminApiService>().createArea(
                     name: name,
-                    code: code,
+                    description: desc.isNotEmpty ? desc : null,
                   );
                   if (mounted) {
                     Navigator.pop(ctx);
@@ -201,6 +202,9 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
 
   void _showEditSheet(Map<String, dynamic> area) {
     final nameCtrl = TextEditingController(text: area['name'] as String? ?? '');
+    final descCtrl = TextEditingController(
+      text: area['description'] as String? ?? '',
+    );
 
     showModalBottomSheet(
       context: context,
@@ -227,26 +231,30 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Code: ${area['code']}',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
             const SizedBox(height: 20),
             TextField(
               controller: nameCtrl,
               decoration: const InputDecoration(
-                labelText: 'Area Name',
+                labelText: 'Area Name *',
                 border: OutlineInputBorder(),
               ),
               textCapitalization: TextCapitalization.words,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: descCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+              textCapitalization: TextCapitalization.sentences,
             ),
             const SizedBox(height: 20),
             FilledButton(
               onPressed: () async {
                 final name = nameCtrl.text.trim();
+                final desc = descCtrl.text.trim();
                 if (name.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Name is required')),
@@ -257,6 +265,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                   await _di<AdminApiService>().updateArea(
                     area['id'] as String,
                     name: name,
+                    description: desc,
                   );
                   if (mounted) {
                     Navigator.pop(ctx);
@@ -415,7 +424,7 @@ class _AreaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final name = area['name'] as String? ?? 'Unnamed';
-    final code = area['code'] as String? ?? '';
+    final description = area['description'] as String? ?? '';
     final isActive = area['isActive'] as bool? ?? true;
 
     return Card(
@@ -457,39 +466,25 @@ class _AreaCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            name,
-                            style: AppFonts.displayStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withAlpha(15),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            code,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      name,
+                      style: AppFonts.displayStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
+                    if (description.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        description,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                     const SizedBox(height: 4),
                     Row(
                       children: [

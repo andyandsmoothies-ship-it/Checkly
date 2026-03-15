@@ -182,60 +182,75 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         child: Text('Area Manager'),
                       ),
                     ],
-                    onChanged: (v) => setSheetState(() => selectedRole = v),
+                    onChanged: (v) => setSheetState(() {
+                      selectedRole = v;
+                      if (v == 'admin' || v == 'auditor') {
+                        selectedStoreId = null;
+                        selectedAreaId = null;
+                      } else if (v == 'store_manager') {
+                        selectedAreaId = null;
+                      } else if (v == 'area_manager') {
+                        selectedStoreId = null;
+                      }
+                    }),
                   ),
-                  const SizedBox(height: 12),
 
-                  // Store dropdown (relevant for SM)
-                  DropdownButtonFormField<String>(
-                    value: _stores.any((s) => s['id'] == selectedStoreId)
-                        ? selectedStoreId
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                    decoration: const InputDecoration(
-                      labelText: 'Assigned Store',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('— None —'),
+                  // Store dropdown (only for store_manager)
+                  if (selectedRole == 'store_manager') ...[
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: _stores.any((s) => s['id'] == selectedStoreId)
+                          ? selectedStoreId
+                          : null,
+                      borderRadius: BorderRadius.circular(12),
+                      decoration: const InputDecoration(
+                        labelText: 'Assigned Store',
+                        border: OutlineInputBorder(),
                       ),
-                      ..._stores.map(
-                        (s) => DropdownMenuItem(
-                          value: s['id'] as String,
-                          child: Text(s['name'] as String),
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('— None —'),
                         ),
-                      ),
-                    ],
-                    onChanged: (v) => setSheetState(() => selectedStoreId = v),
-                  ),
-                  const SizedBox(height: 12),
+                        ..._stores.map(
+                          (s) => DropdownMenuItem(
+                            value: s['id'] as String,
+                            child: Text(s['name'] as String),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) =>
+                          setSheetState(() => selectedStoreId = v),
+                    ),
+                  ],
 
-                  // Area dropdown (relevant for AM)
-                  DropdownButtonFormField<String>(
-                    value: _areas.any((a) => a['id'] == selectedAreaId)
-                        ? selectedAreaId
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                    decoration: const InputDecoration(
-                      labelText: 'Assigned Area',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('— None —'),
+                  // Area dropdown (only for area_manager)
+                  if (selectedRole == 'area_manager') ...[
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: _areas.any((a) => a['id'] == selectedAreaId)
+                          ? selectedAreaId
+                          : null,
+                      borderRadius: BorderRadius.circular(12),
+                      decoration: const InputDecoration(
+                        labelText: 'Assigned Area',
+                        border: OutlineInputBorder(),
                       ),
-                      ..._areas.map(
-                        (a) => DropdownMenuItem(
-                          value: a['id'] as String,
-                          child: Text(a['name'] as String),
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('— None —'),
                         ),
-                      ),
-                    ],
-                    onChanged: (v) => setSheetState(() => selectedAreaId = v),
-                  ),
+                        ..._areas.map(
+                          (a) => DropdownMenuItem(
+                            value: a['id'] as String,
+                            child: Text(a['name'] as String),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) => setSheetState(() => selectedAreaId = v),
+                    ),
+                  ],
                   const SizedBox(height: 20),
 
                   // Save button
@@ -506,56 +521,72 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         ),
                         DropdownMenuItem(value: 'admin', child: Text('Admin')),
                       ],
-                      onChanged: (v) =>
-                          setSheetState(() => selectedRole = v ?? 'auditor'),
+                      onChanged: (v) => setSheetState(() {
+                        selectedRole = v ?? 'auditor';
+                        if (v == 'admin' || v == 'auditor') {
+                          selectedStoreId = null;
+                          selectedAreaId = null;
+                        } else if (v == 'store_manager') {
+                          selectedAreaId = null;
+                        } else if (v == 'area_manager') {
+                          selectedStoreId = null;
+                        }
+                      }),
                     ),
-                    const SizedBox(height: 12),
 
-                    DropdownButtonFormField<String>(
-                      value: selectedStoreId,
-                      borderRadius: BorderRadius.circular(12),
-                      decoration: const InputDecoration(
-                        labelText: 'Assigned Store (optional)',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        const DropdownMenuItem(
-                          value: null,
-                          child: Text('— None —'),
+                    // Store dropdown (only for store_manager)
+                    if (selectedRole == 'store_manager') ...[
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: selectedStoreId,
+                        borderRadius: BorderRadius.circular(12),
+                        decoration: const InputDecoration(
+                          labelText: 'Assigned Store',
+                          border: OutlineInputBorder(),
                         ),
-                        ..._stores.map(
-                          (s) => DropdownMenuItem(
-                            value: s['id'] as String,
-                            child: Text(s['name'] as String),
+                        items: [
+                          const DropdownMenuItem(
+                            value: null,
+                            child: Text('— None —'),
                           ),
-                        ),
-                      ],
-                      onChanged: (v) =>
-                          setSheetState(() => selectedStoreId = v),
-                    ),
-                    const SizedBox(height: 12),
+                          ..._stores.map(
+                            (s) => DropdownMenuItem(
+                              value: s['id'] as String,
+                              child: Text(s['name'] as String),
+                            ),
+                          ),
+                        ],
+                        onChanged: (v) =>
+                            setSheetState(() => selectedStoreId = v),
+                      ),
+                    ],
 
-                    DropdownButtonFormField<String>(
-                      value: selectedAreaId,
-                      borderRadius: BorderRadius.circular(12),
-                      decoration: const InputDecoration(
-                        labelText: 'Assigned Area (optional)',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        const DropdownMenuItem(
-                          value: null,
-                          child: Text('— None —'),
+                    // Area dropdown (only for area_manager)
+                    if (selectedRole == 'area_manager') ...[
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: selectedAreaId,
+                        borderRadius: BorderRadius.circular(12),
+                        decoration: const InputDecoration(
+                          labelText: 'Assigned Area',
+                          border: OutlineInputBorder(),
                         ),
-                        ..._areas.map(
-                          (a) => DropdownMenuItem(
-                            value: a['id'] as String,
-                            child: Text(a['name'] as String),
+                        items: [
+                          const DropdownMenuItem(
+                            value: null,
+                            child: Text('— None —'),
                           ),
-                        ),
-                      ],
-                      onChanged: (v) => setSheetState(() => selectedAreaId = v),
-                    ),
+                          ..._areas.map(
+                            (a) => DropdownMenuItem(
+                              value: a['id'] as String,
+                              child: Text(a['name'] as String),
+                            ),
+                          ),
+                        ],
+                        onChanged: (v) =>
+                            setSheetState(() => selectedAreaId = v),
+                      ),
+                    ],
                     const SizedBox(height: 20),
 
                     SizedBox(
