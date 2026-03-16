@@ -203,6 +203,48 @@ class _AuditFormPageState extends State<AuditFormPage> {
     }
   }
 
+  bool _isCcpEnabled(TemplateTreeDto template) {
+    if (template.scoringLogicConfig == null ||
+        template.scoringLogicConfig!.isEmpty) {
+      return true;
+    }
+    try {
+      final config =
+          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
+      if (config.containsKey('ccpOverride')) {
+        return config['ccpOverride'] == true;
+      }
+      final features = config['features'] as Map<String, dynamic>?;
+      if (features != null && features.containsKey('ccp_enabled')) {
+        return features['ccp_enabled'] == true;
+      }
+      return true; // default true if not specified
+    } catch (_) {
+      return true;
+    }
+  }
+
+  bool _isRiskEnabled(TemplateTreeDto template) {
+    if (template.scoringLogicConfig == null ||
+        template.scoringLogicConfig!.isEmpty) {
+      return true;
+    }
+    try {
+      final config =
+          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
+      if (config.containsKey('riskOverride')) {
+        return config['riskOverride'] == true;
+      }
+      final features = config['features'] as Map<String, dynamic>?;
+      if (features != null && features.containsKey('risk_enabled')) {
+        return features['risk_enabled'] == true;
+      }
+      return true; // default true if not specified
+    } catch (_) {
+      return true;
+    }
+  }
+
   Future<void> _onSubmit(AuditManager manager) async {
     final template = manager.template!;
     final answered = _totalAnswered(manager, template);
@@ -371,6 +413,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
         final allAnswered = _allCriteriaAnswered(manager, template);
         final confirmRequired = _isConfirmRequired(template);
+        final ccpEnabled = _isCcpEnabled(template);
+        final riskEnabled = _isRiskEnabled(template);
 
         return Scaffold(
           appBar: AppBar(
@@ -397,6 +441,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
                         manager: manager,
                         depth: 0,
                         confirmRequired: confirmRequired,
+                        ccpEnabled: ccpEnabled,
+                        riskEnabled: riskEnabled,
                       ),
                   ],
                 ),
@@ -523,12 +569,16 @@ class _SectionCard extends StatelessWidget {
   final AuditManager manager;
   final int depth;
   final bool confirmRequired;
+  final bool ccpEnabled;
+  final bool riskEnabled;
 
   const _SectionCard({
     required this.group,
     required this.manager,
     this.depth = 0,
     this.confirmRequired = false,
+    this.ccpEnabled = true,
+    this.riskEnabled = true,
   });
 
   @override
@@ -612,10 +662,12 @@ class _SectionCard extends StatelessWidget {
         ),
         children: [
           ...group.criteria.map(
-            (c) => _CriterionTile(
+            (c) => _CriterionRow(
               criterion: c,
               manager: manager,
               confirmRequired: confirmRequired,
+              ccpEnabled: ccpEnabled,
+              riskEnabled: riskEnabled,
             ),
           ),
           ...group.children.map(
@@ -626,6 +678,8 @@ class _SectionCard extends StatelessWidget {
                 manager: manager,
                 depth: depth + 1,
                 confirmRequired: confirmRequired,
+                ccpEnabled: ccpEnabled,
+                riskEnabled: riskEnabled,
               ),
             ),
           ),
@@ -636,264 +690,443 @@ class _SectionCard extends StatelessWidget {
 }
 
 // ============================================================
-// Criterion Tile — answer input (Slice 3: enriched)
+// Criterion Row — compact list item (Bottom Sheet pattern)
 // ============================================================
 
-class _CriterionTile extends StatefulWidget {
+class _CriterionRow extends StatelessWidget {
   final CriterionDto criterion;
   final AuditManager manager;
   final bool confirmRequired;
+  final bool ccpEnabled;
+  final bool riskEnabled;
 
-  const _CriterionTile({
+  const _CriterionRow({
     required this.criterion,
     required this.manager,
     this.confirmRequired = false,
+    this.ccpEnabled = true,
+    this.riskEnabled = true,
   });
-
-  @override
-  State<_CriterionTile> createState() => _CriterionTileState();
-}
-
-class _CriterionTileState extends State<_CriterionTile> {
-  bool _showNote = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final answer = widget.manager.answers[widget.criterion.id];
-    final isNonConform = answer?.value == 'non_conform';
-    final hasFaults = (answer?.numericValue ?? 0) > 0;
+    final answer = manager.answers[criterion.id];
+    final faults = (answer?.numericValue ?? 0).toInt();
+    final repeats = answer?.repeatedFaultCount ?? 0;
+    final isCcp = answer?.isCcp ?? false;
+    final isRisk = answer?.isRisk ?? false;
     final hasNote = answer?.note != null && answer!.note!.isNotEmpty;
+    final hasPhoto = answer?.photoUrl != null;
+    final isConfirmed = answer?.value == 'conform';
+    final isNonConform = answer?.value == 'non_conform';
 
-    // Auto-expand note on non-conform or faults
-    final noteVisible = _showNote || isNonConform || hasFaults || hasNote;
+    // Determine overall status
+    final bool isAnswered =
+        answer?.value != null || (answer?.numericValue != null);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Label
-          Text(
-            widget.criterion.label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // Input based on type
-          if (widget.criterion.inputType == 'pass_fail')
-            _PassFailInput(
-              value: answer?.value,
-              onChanged: (v) =>
-                  widget.manager.setAnswer(widget.criterion.id, value: v),
-            )
-          else
-            // Faults + Repeats on same row, identical style
-            Row(
-              children: [
-                _NumericInput(
-                  label: 'Faults:',
-                  value: answer?.numericValue,
-                  onChanged: (v) => widget.manager.setAnswer(
-                    widget.criterion.id,
-                    numericValue: v,
-                  ),
-                ),
-                const Spacer(),
-                _NumericInput(
-                  label: 'Repeats:',
-                  value: (answer?.repeatedFaultCount ?? 0).toDouble(),
-                  activeColor: (answer?.repeatedFaultCount ?? 0) > 0
-                      ? AppTheme.warning
-                      : null,
-                  onChanged: (v) => widget.manager.setRepeatedFaultCount(
-                    widget.criterion.id,
-                    v.toInt(),
-                  ),
-                ),
-              ],
-            ),
-
-          // Confirm Correct button (only when confirmRequired is ON)
-          if (widget.confirmRequired && !hasFaults) ...[
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: answer?.value == 'conform'
-                    ? null
-                    : () => widget.manager.setAnswer(
-                        widget.criterion.id,
-                        value: 'conform',
-                      ),
-                icon: Icon(
-                  answer?.value == 'conform'
-                      ? Icons.check_circle
-                      : Icons.check_circle_outline,
-                  size: 18,
-                ),
-                label: Text(
-                  answer?.value == 'conform'
-                      ? 'Standard Verified'
-                      : 'Confirm Correct',
-                ),
-                style: FilledButton.styleFrom(
-                  backgroundColor: answer?.value == 'conform'
-                      ? AppTheme.success
-                      : theme.colorScheme.surfaceContainerHighest,
-                  foregroundColor: answer?.value == 'conform'
-                      ? Colors.white
-                      : theme.colorScheme.onSurfaceVariant,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-          ],
-
-          const SizedBox(height: 8),
-
-          // CCP / RISK toggle buttons (PWA-style prominent)
-          Row(
-            children: [
-              Expanded(
-                child: _CcpRiskButton(
-                  label: 'CCP',
-                  icon: Icons.shield,
-                  active: answer?.isCcp ?? false,
-                  activeColor: theme.colorScheme.error,
-                  onTap: () {
-                    final newVal = !(answer?.isCcp ?? false);
-                    widget.manager.setCcp(widget.criterion.id, newVal);
-                    setState(() {
-                      if (newVal) _showNote = true;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _CcpRiskButton(
-                  label: 'RISK',
-                  icon: Icons.warning_amber_rounded,
-                  active: answer?.isRisk ?? false,
-                  activeColor: AppTheme.warning,
-                  onTap: () {
-                    final newVal = !(answer?.isRisk ?? false);
-                    widget.manager.setRisk(widget.criterion.id, newVal);
-                    setState(() {
-                      if (newVal) _showNote = true;
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 8),
-
-          // Action row: Note / Photo
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              // Note toggle
-              _ActionChip(
-                icon: Icons.notes,
-                label: 'Note',
-                active: noteVisible,
-                onTap: () => setState(() => _showNote = !_showNote),
-              ),
-
-              // Photo capture
-              _ActionChip(
-                icon: Icons.camera_alt_outlined,
-                label: answer?.photoUrl != null ? 'Photo ✓' : 'Photo',
-                active: answer?.photoUrl != null,
-                onTap: () => _pickPhoto(context),
-              ),
-            ],
-          ),
-
-          // Note field (expandable)
-          if (noteVisible) ...[
-            const SizedBox(height: 8),
-            TextFormField(
-              initialValue: answer?.note,
-              decoration: InputDecoration(
-                hintText: 'Add note...',
-                isDense: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-              ),
-              maxLines: 2,
-              style: theme.textTheme.bodySmall,
-              onChanged: (v) => widget.manager.setNote(widget.criterion.id, v),
-            ),
-          ],
-
-          // Photo preview thumbnail
-          if (answer?.photoUrl != null) ...[
-            const SizedBox(height: 8),
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.file(
-                    File(answer!.photoUrl!),
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, e, s) => Container(
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.broken_image_outlined, size: 24),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: GestureDetector(
-                    onTap: () =>
-                        widget.manager.setPhotoUrl(widget.criterion.id, null),
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-
-          const SizedBox(height: 4),
-          const Divider(),
-        ],
+    return InkWell(
+      onTap: () => _showCriterionSheet(
+        context,
+        criterion: criterion,
+        manager: manager,
+        confirmRequired: confirmRequired,
+        ccpEnabled: ccpEnabled,
+        riskEnabled: riskEnabled,
       ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            // Leading status icon
+            Icon(
+              isConfirmed || (isAnswered && faults == 0 && !isNonConform)
+                  ? Icons.check_circle
+                  : faults > 0 || isNonConform
+                  ? Icons.error_outline
+                  : Icons.radio_button_unchecked,
+              size: 20,
+              color: isConfirmed || (isAnswered && faults == 0 && !isNonConform)
+                  ? AppTheme.success
+                  : faults > 0 || isNonConform
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.outlineVariant,
+            ),
+            const SizedBox(width: 12),
+
+            // Label
+            Expanded(
+              child: Text(
+                criterion.label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+
+            // Status badges (compact)
+            Wrap(
+              spacing: 4,
+              children: [
+                if (faults > 0)
+                  _StatusBadge(
+                    label: 'F:$faults',
+                    color: theme.colorScheme.error,
+                  ),
+                if (repeats > 0)
+                  _StatusBadge(label: 'R:$repeats', color: AppTheme.warning),
+                if (isCcp)
+                  _StatusBadge(label: 'CCP', color: theme.colorScheme.error),
+                if (isRisk)
+                  _StatusBadge(label: 'RISK', color: AppTheme.warning),
+                if (hasNote)
+                  Icon(Icons.notes, size: 16, color: theme.colorScheme.primary),
+                if (hasPhoto)
+                  Icon(
+                    Icons.camera_alt,
+                    size: 16,
+                    color: theme.colorScheme.primary,
+                  ),
+              ],
+            ),
+
+            const SizedBox(width: 4),
+            Icon(
+              Icons.chevron_right,
+              size: 20,
+              color: theme.colorScheme.outlineVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Small colored badge for status indicators on the compact row.
+class _StatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _StatusBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// Criterion Bottom Sheet — full editing controls
+// ============================================================
+
+Future<void> _showCriterionSheet(
+  BuildContext context, {
+  required CriterionDto criterion,
+  required AuditManager manager,
+  required bool confirmRequired,
+  required bool ccpEnabled,
+  required bool riskEnabled,
+}) {
+  return showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (sheetCtx) {
+      return ListenableBuilder(
+        listenable: manager,
+        builder: (ctx, _) {
+          final theme = Theme.of(ctx);
+          final answer = manager.answers[criterion.id];
+          final hasFaults = (answer?.numericValue ?? 0) > 0;
+
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Drag handle
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.outlineVariant,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+
+                      // Title
+                      Text(
+                        criterion.label,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Input based on type
+                      if (criterion.inputType == 'pass_fail')
+                        _PassFailInput(
+                          value: answer?.value,
+                          onChanged: (v) =>
+                              manager.setAnswer(criterion.id, value: v),
+                        )
+                      else ...[
+                        // Faults + Repeats on same row
+                        Row(
+                          children: [
+                            _NumericInput(
+                              label: 'Faults:',
+                              value: answer?.numericValue,
+                              onChanged: (v) => manager.setAnswer(
+                                criterion.id,
+                                numericValue: v,
+                              ),
+                            ),
+                            const Spacer(),
+                            _NumericInput(
+                              label: 'Repeats:',
+                              value: (answer?.repeatedFaultCount ?? 0)
+                                  .toDouble(),
+                              activeColor: (answer?.repeatedFaultCount ?? 0) > 0
+                                  ? AppTheme.warning
+                                  : null,
+                              onChanged: (v) => manager.setRepeatedFaultCount(
+                                criterion.id,
+                                v.toInt(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+
+                      // Confirm Correct button
+                      if (confirmRequired && !hasFaults) ...[
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: answer?.value == 'conform'
+                                ? null
+                                : () => manager.setAnswer(
+                                    criterion.id,
+                                    value: 'conform',
+                                  ),
+                            icon: Icon(
+                              answer?.value == 'conform'
+                                  ? Icons.check_circle
+                                  : Icons.check_circle_outline,
+                              size: 18,
+                            ),
+                            label: Text(
+                              answer?.value == 'conform'
+                                  ? 'Standard Verified'
+                                  : 'Confirm Correct',
+                            ),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: answer?.value == 'conform'
+                                  ? AppTheme.success
+                                  : theme.colorScheme.surfaceContainerHighest,
+                              foregroundColor: answer?.value == 'conform'
+                                  ? Colors.white
+                                  : theme.colorScheme.onSurfaceVariant,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      // CCP / RISK toggle buttons
+                      if (ccpEnabled || riskEnabled) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            if (ccpEnabled)
+                              Expanded(
+                                child: _CcpRiskButton(
+                                  label: 'CCP',
+                                  icon: Icons.shield,
+                                  active: answer?.isCcp ?? false,
+                                  activeColor: theme.colorScheme.error,
+                                  onTap: () {
+                                    final newVal = !(answer?.isCcp ?? false);
+                                    manager.setCcp(criterion.id, newVal);
+                                  },
+                                ),
+                              ),
+                            if (ccpEnabled && riskEnabled)
+                              const SizedBox(width: 8),
+                            if (riskEnabled)
+                              Expanded(
+                                child: _CcpRiskButton(
+                                  label: 'RISK',
+                                  icon: Icons.warning_amber_rounded,
+                                  active: answer?.isRisk ?? false,
+                                  activeColor: AppTheme.warning,
+                                  onTap: () {
+                                    final newVal = !(answer?.isRisk ?? false);
+                                    manager.setRisk(criterion.id, newVal);
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 12),
+
+                      // Note field
+                      TextFormField(
+                        initialValue: answer?.note,
+                        decoration: InputDecoration(
+                          labelText: 'Note',
+                          hintText: 'Add note...',
+                          prefixIcon: const Icon(Icons.notes, size: 20),
+                          isDense: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
+                        ),
+                        maxLines: 3,
+                        style: theme.textTheme.bodySmall,
+                        onChanged: (v) => manager.setNote(criterion.id, v),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Photo button + preview
+                      _PhotoSection(criterion: criterion, manager: manager),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+/// Photo capture button and preview for the bottom sheet.
+class _PhotoSection extends StatelessWidget {
+  final CriterionDto criterion;
+  final AuditManager manager;
+
+  const _PhotoSection({required this.criterion, required this.manager});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final answer = manager.answers[criterion.id];
+    final hasPhoto = answer?.photoUrl != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _pickPhoto(context),
+            icon: Icon(
+              hasPhoto ? Icons.camera_alt : Icons.camera_alt_outlined,
+              size: 18,
+            ),
+            label: Text(hasPhoto ? 'Change Photo' : 'Add Photo'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+        if (hasPhoto) ...[
+          const SizedBox(height: 8),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  File(answer!.photoUrl!),
+                  height: 140,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, e, s) => Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.broken_image_outlined, size: 24),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: GestureDetector(
+                  onTap: () => manager.setPhotoUrl(criterion.id, null),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 
@@ -929,7 +1162,7 @@ class _CriterionTileState extends State<_CriterionTile> {
     );
     if (image == null) return;
 
-    widget.manager.setPhotoUrl(widget.criterion.id, image.path);
+    manager.setPhotoUrl(criterion.id, image.path);
   }
 }
 
@@ -985,63 +1218,6 @@ class _CcpRiskButton extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Tappable action chip for Note/Photo toggles.
-class _ActionChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  const _ActionChip({
-    required this.icon,
-    required this.label,
-    required this.active,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = active
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: active
-              ? theme.colorScheme.primaryContainer.withAlpha(120)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: active
-                ? theme.colorScheme.primary.withAlpha(80)
-                : theme.colorScheme.outlineVariant,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: color),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-            ),
-          ],
         ),
       ),
     );

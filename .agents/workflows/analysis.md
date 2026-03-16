@@ -37,6 +37,12 @@ description: Precision Analysis Workflow for System Architecture.
 
 ## Phase 5: Task Routing & Handoff
 - **Action**: Based on the `analysis_[topic].md`, categorize the task and break it down for the user.
+
   - **Track A - Tiny Tasks (e.g., typo fixes, color changes)**: Advise the user that `/analysis` was overkill and they should take these directly to `/implement` in the future. Output a 1-sentence `implementation_plan.md`.
-  - **Track B - Small/Medium Tasks (Low/Medium complexity)**: Slicing is not needed. Generate a single `implementation_plan.md` outlining the technical specs required for implementation, mapping securely to the analysis document. Instruct the user to hand it directly to `/implement` (No ATDD required).
-  - **Track C - Large Tasks (Crosses all layers, high complexity, new epic)**: You MUST vertically slice the feature. Search `.agents/skills/` for any slicing or use-case decomposition skill and invoke it to ensure your slices are structurally sound. Output the main `analysis_[topic].md` artifact, and then explicitly list out independent, sequential "Micro-Specs". Instruct the user to execute these slices one by one through the full `/atdd` -> `/implement` -> `/verify` pipeline.
+
+  - **Track B - Small/Medium Tasks (Low/Medium complexity)**: Slicing is not needed. Load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and generate a single `implementation_plan.md` using a **lightweight subset** of its template — include only: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE] tags), Database/Schema Changes (if any), API Contracts (if any), and Verification Plan. **Omit** non-functional requirements, phased timelines, and rate limiting sections. Instruct the user to hand it directly to `/implement` (No ATDD required).
+
+  - **Track C - Large Tasks (Crosses all layers, high complexity, new epic)**: This track requires two sequential steps:
+    1. **Step 1 — Slice**: You MUST vertically slice the feature FIRST. Search `.agents/skills/` for the `use-case-slicing` skill and invoke it to ensure your slices are structurally sound (End-to-End, UI down to DB). List the slices in the `analysis_[topic].md` artifact.
+    2. **Step 2 — Per-Slice Tech Spec**: For EACH slice, you MUST load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and use its template to generate a dedicated specification document: `spec_[slice_name].md`. Each spec MUST include: Executive Summary, Functional Requirements with acceptance criteria, Database Schema changes, API Contracts, and a Verification Plan.
+    3. **Handoff**: Present the list of spec documents to the user. Instruct them to execute each slice one by one through the full `/atdd` -> `/implement` -> `/verify` pipeline.
