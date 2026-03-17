@@ -4,6 +4,9 @@ import 'dart:math';
 // Data Models — match the test file's expected API exactly.
 // ============================================================
 
+/// Scoring mode for the template.
+enum ScoringMode { penalty, accumulation, checklist }
+
 /// A single criterion (question) in a section.
 class CriterionInput {
   final String id;
@@ -79,11 +82,13 @@ class ScoringInput {
   final List<SectionInput> sections;
   final List<AnswerInput> answers;
   final bool progressiveRepeatPenalty; // C3: enable n² repeat penalty
+  final ScoringMode scoringMode; // NEW: explicit scoring mode
 
   const ScoringInput({
     required this.sections,
     required this.answers,
     this.progressiveRepeatPenalty = false,
+    this.scoringMode = ScoringMode.penalty, // backward compat
   });
 }
 
@@ -125,29 +130,19 @@ class ScoringResult {
 }
 
 // ============================================================
-// Scoring Engine — Dart port of PWA scoringEngine.ts.
-//
-// Algorithm (5 rules, executed in order):
-// 1. Fault detection: numericValue > 0 OR value == "non_conform"
-// 2. RISK override: any RISK criterion with faults → 0%
-// 3. Weighted mode: Σ(sectionAfter/sectionBefore × weight/100) × 100
-// 4. CCP override: section with CCP fault → section ratio = 0
-// 5. Checklist fallback: max(0, 100 - Σ(all deductions))
+// Scoring Engine — supports Penalty, Accumulation, Checklist.
 //
 // CCP/RISK flags come from BOTH template criteria AND answer overrides.
 // ============================================================
 class ScoringEngine {
-  /// Calculates the audit score.
+  /// Calculates the audit score based on the scoring mode.
   static ScoringResult calculate(ScoringInput input) {
     final answerMap = <String, AnswerInput>{};
     for (final a in input.answers) {
       answerMap[a.criteriaId] = a;
     }
 
-    final sectionScores = <String, SectionScore>{};
-
     // --- Check RISK at answer OR template level ---
-    // RISK triggers even when just toggled (no faults required) - user requested
     bool hasRiskFailure = false;
     for (final section in input.sections) {
       final allCriteria = [
@@ -170,7 +165,29 @@ class ScoringEngine {
       }
     }
 
-    // --- Determine mode ---
+    // --- Dispatch to mode-specific calculator ---
+    switch (input.scoringMode) {
+      case ScoringMode.penalty:
+        return _calculatePenalty(input, answerMap, hasRiskFailure);
+      case ScoringMode.accumulation:
+        return _calculateAccumulation(input, answerMap, hasRiskFailure);
+      case ScoringMode.checklist:
+        return _calculateChecklist(input, answerMap, hasRiskFailure);
+    }
+  }
+
+  // ── Penalty Mode (Top-Down) ──────────────────────────────
+  // Algorithm: Start at max, subtract faults.
+  // Weighted: Σ(sectionAfter/sectionBefore × weight) × 100
+  // CCP: section with CCP fault → section ratio = 0
+  // Checklist fallback when totalWeight == 0
+  static ScoringResult _calculatePenalty(
+    ScoringInput input,
+    Map<String, AnswerInput> answerMap,
+    bool hasRiskFailure,
+  ) {
+    final sectionScores = <String, SectionScore>{};
+
     final totalWeight = input.sections.fold<double>(
       0.0,
       (sum, s) => sum + s.weight,
@@ -178,11 +195,9 @@ class ScoringEngine {
     final isWeighted = totalWeight > 0;
 
     if (isWeighted) {
-      // Weighted mode with CCP, per-section scores
       final sectionResults = <({double ratio, double weight})>[];
 
       for (final section in input.sections) {
-        // CCP/RISK check across all criteria in section (flat + nested)
         final allCriteria = [
           ...section.criteria,
           ...section.subsections.expand((sub) => sub.criteria),
@@ -192,25 +207,18 @@ class ScoringEngine {
         bool riskInSection = false;
         for (final c in allCriteria) {
           final answer = answerMap[c.id];
-
           final isAnswerCcp = answer?.isCcp ?? false;
           final isAnswerRisk = answer?.isRisk ?? false;
-
           final hasFaults =
               answer != null &&
               ((answer.numericValue ?? 0) > 0 ||
                   answer.value?.toLowerCase() == 'non_conform' ||
                   answer.repeatedFaults > 0);
-
           final isTemplateCcp = c.isCcp && hasFaults;
           final isTemplateRisk = c.isRisk && hasFaults;
 
-          if (isAnswerCcp || isTemplateCcp) {
-            ccpTriggered = true;
-          }
-          if (isAnswerRisk || isTemplateRisk) {
-            riskInSection = true;
-          }
+          if (isAnswerCcp || isTemplateCcp) ccpTriggered = true;
+          if (isAnswerRisk || isTemplateRisk) riskInSection = true;
         }
 
         double sectionBefore = 0.0;
@@ -219,7 +227,6 @@ class ScoringEngine {
         // Process subsections (3-level hierarchy)
         for (final sub in section.subsections) {
           sectionBefore += sub.maxPoints;
-
           if (sub.maxPoints == 0) continue;
 
           var subDeductions = sub.criteria.fold<double>(
@@ -228,8 +235,6 @@ class ScoringEngine {
                 sum +
                 _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
           );
-
-          // Subsection cap
           subDeductions = min(subDeductions, sub.maxPoints);
           sectionDeductions += subDeductions;
         }
@@ -248,8 +253,6 @@ class ScoringEngine {
                 sum +
                 _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
           );
-
-          // Section-level cap for flat criteria (if provided)
           if (section.maxDeductionPoints != null) {
             flatDeductions = min(flatDeductions, section.maxDeductionPoints!);
           }
@@ -296,22 +299,120 @@ class ScoringEngine {
         hasRiskFailure: hasRiskFailure,
       );
     } else {
-      // Checklist fallback
-      final allCriteria = input.sections.expand(
-        (s) => [...s.criteria, ...s.subsections.expand((sub) => sub.criteria)],
-      );
-
-      final totalDeductions = allCriteria.fold<double>(
-        0.0,
-        (sum, c) =>
-            sum + _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
-      );
-      final score = max(0.0, 100.0 - totalDeductions);
-      return ScoringResult(
-        totalScore: hasRiskFailure ? 0.0 : _round2(score),
-        hasRiskFailure: hasRiskFailure,
-      );
+      // No weights → checklist fallback (backward compat)
+      return _calculateChecklist(input, answerMap, hasRiskFailure);
     }
+  }
+
+  // ── Accumulation Mode (Zero-to-Top) ──────────────────────
+  // Algorithm: Start at 0, earn points for correct answers.
+  // Score = (totalEarned / totalPossible) × 100
+  // CCP: if triggered, section earned = 0
+  // RISK: if triggered, total = 0
+  static ScoringResult _calculateAccumulation(
+    ScoringInput input,
+    Map<String, AnswerInput> answerMap,
+    bool hasRiskFailure,
+  ) {
+    final sectionScores = <String, SectionScore>{};
+    double totalPossible = 0.0;
+    double totalEarned = 0.0;
+
+    for (final section in input.sections) {
+      final allCriteria = [
+        ...section.criteria,
+        ...section.subsections.expand((sub) => sub.criteria),
+      ];
+
+      // CCP check
+      bool ccpTriggered = false;
+      bool riskInSection = false;
+      for (final c in allCriteria) {
+        final answer = answerMap[c.id];
+        final isAnswerCcp = answer?.isCcp ?? false;
+        final isAnswerRisk = answer?.isRisk ?? false;
+        final hasFaults =
+            answer != null &&
+            ((answer.numericValue ?? 0) > 0 ||
+                answer.value?.toLowerCase() == 'non_conform' ||
+                answer.repeatedFaults > 0);
+        final isTemplateCcp = c.isCcp && hasFaults;
+        final isTemplateRisk = c.isRisk && hasFaults;
+
+        if (isAnswerCcp || isTemplateCcp) ccpTriggered = true;
+        if (isAnswerRisk || isTemplateRisk) riskInSection = true;
+      }
+
+      // Sum points possible and earned
+      double sectionPossible = 0.0;
+      double sectionEarned = 0.0;
+
+      for (final c in allCriteria) {
+        sectionPossible += c.pointsWeight;
+        final answer = answerMap[c.id];
+        if (answer == null) continue;
+
+        // Correct = no faults AND not non_conform
+        final faults = answer.numericValue ?? 0;
+        final isNonConform = answer.value?.toLowerCase() == 'non_conform';
+        if (faults == 0 && !isNonConform && answer.repeatedFaults == 0) {
+          sectionEarned += c.pointsWeight;
+        }
+      }
+
+      totalPossible += sectionPossible;
+
+      if (ccpTriggered) {
+        sectionEarned = 0.0;
+      }
+      totalEarned += sectionEarned;
+
+      if (sectionPossible > 0) {
+        sectionScores[section.id] = SectionScore(
+          sectionId: section.id,
+          maxPoints: sectionPossible,
+          deductions: sectionPossible - sectionEarned,
+          score: sectionEarned,
+          hasCcpFailure: ccpTriggered,
+          hasRiskFailure: riskInSection,
+        );
+      }
+    }
+
+    final score = totalPossible > 0
+        ? (totalEarned / totalPossible) * 100.0
+        : 100.0;
+    final totalScore = hasRiskFailure ? 0.0 : _round2(score);
+
+    return ScoringResult(
+      totalScore: totalScore,
+      sectionScores: sectionScores,
+      hasRiskFailure: hasRiskFailure,
+    );
+  }
+
+  // ── Checklist Mode (Pass/Fail Ratio) ─────────────────────
+  // Algorithm: max(0, 100 - Σ(all deductions))
+  // No weights, no sections — just raw deductions from 100.
+  static ScoringResult _calculateChecklist(
+    ScoringInput input,
+    Map<String, AnswerInput> answerMap,
+    bool hasRiskFailure,
+  ) {
+    final allCriteria = input.sections.expand(
+      (s) => [...s.criteria, ...s.subsections.expand((sub) => sub.criteria)],
+    );
+
+    final totalDeductions = allCriteria.fold<double>(
+      0.0,
+      (sum, c) =>
+          sum + _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
+    );
+    final score = max(0.0, 100.0 - totalDeductions);
+    return ScoringResult(
+      totalScore: hasRiskFailure ? 0.0 : _round2(score),
+      hasRiskFailure: hasRiskFailure,
+    );
   }
 
   /// Calculates deduction for a criterion.

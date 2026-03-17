@@ -223,4 +223,163 @@ void main() {
 
     expect(result.totalScore, closeTo(50.00, 0.01));
   });
+
+  // ================================================================
+  // Scenario 12: Accumulation mode — 2/3 correct → 66.67%
+  // ================================================================
+  test('V12: Accumulation mode — 2 of 3 correct → 66.67%', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 0,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+            ),
+            CriterionInput(
+              id: 'c3',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        AnswerInput(criteriaId: 'c1', numericValue: 0), // correct
+        AnswerInput(criteriaId: 'c2', numericValue: 0), // correct
+        AnswerInput(criteriaId: 'c3', numericValue: 1), // fault
+      ],
+      scoringMode: ScoringMode.accumulation,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, closeTo(66.67, 0.01));
+  });
+
+  // ================================================================
+  // Scenario 13: Accumulation + CCP fail → section = 0
+  // ================================================================
+  test('V13: Accumulation + CCP fail → section earned = 0', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 0,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: true,
+              isRisk: false,
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        AnswerInput(criteriaId: 'c1', numericValue: 1), // CCP fail
+        AnswerInput(criteriaId: 'c2', numericValue: 0), // correct
+      ],
+      scoringMode: ScoringMode.accumulation,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, closeTo(0.00, 0.01));
+    expect(result.sectionScores['s1']!.hasCcpFailure, true);
+  });
+
+  // ================================================================
+  // Scenario 14: Checklist mode — 4/5 correct → 80%
+  // ================================================================
+  test('V14: Checklist mode — raw deduction → 80%', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 0,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 4,
+              isCcp: false,
+              isRisk: false,
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 4,
+              isCcp: false,
+              isRisk: false,
+            ),
+            CriterionInput(
+              id: 'c3',
+              groupId: 's1',
+              pointsWeight: 4,
+              isCcp: false,
+              isRisk: false,
+            ),
+            CriterionInput(
+              id: 'c4',
+              groupId: 's1',
+              pointsWeight: 4,
+              isCcp: false,
+              isRisk: false,
+            ),
+            CriterionInput(
+              id: 'c5',
+              groupId: 's1',
+              pointsWeight: 4,
+              isCcp: false,
+              isRisk: false,
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        AnswerInput(criteriaId: 'c1', numericValue: 0),
+        AnswerInput(criteriaId: 'c2', numericValue: 0),
+        AnswerInput(criteriaId: 'c3', numericValue: 0),
+        AnswerInput(criteriaId: 'c4', numericValue: 0),
+        AnswerInput(
+          criteriaId: 'c5',
+          numericValue: 5,
+        ), // 5 faults × 4 pts = 20 deduction
+      ],
+      scoringMode: ScoringMode.checklist,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, closeTo(80.00, 0.01));
+  });
+
+  // ================================================================
+  // Scenario 15: Backward compat — no scoringMode → defaults to penalty
+  // ================================================================
+  test('V15: No scoringMode defaults to penalty (backward compat)', () {
+    // Uses V01 vectors which are penalty mode — same as default
+    final v = vectors.firstWhere((v) => v['id'] == 'V01_weighted_no_faults');
+    final input = parseVector(v);
+    // parseVector does NOT set scoringMode, so it defaults to penalty
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, closeTo(100.00, 0.01));
+  });
 }

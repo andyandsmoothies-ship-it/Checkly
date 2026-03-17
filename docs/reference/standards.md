@@ -13,11 +13,33 @@ description: Engineering standards — architecture, security, and verification 
 - **Additive Logic**: All code changes must be isolated. If a shared component is modified, you must prove that all existing props and data types remain supported.
 - **Conflict Prevention**: Deleting code not directly related to the current task is strictly forbidden without explicit Director approval.
 
-### Feature-Sliced Design (FSD) Compliance
+### Feature-Sliced Design (FSD) Compliance — PWA
 - **Rule**: Follow the strictly defined layers: `shared` -> `entities` -> `features` -> `widgets` -> `pages` -> `app`.
 - **Rule**: Cross-entity imports are FORBIDDEN. Entities must be isolated if possible, or orchestrated via `features`.
 
-### Service Layer Pattern (MANDATORY)
+### Flutter Mobile Architecture
+- **Pattern**: Feature-folder structure under `lib/features/[feature]/`
+- **Sub-folders**: `pages/`, `manager/`, `model/`, `services/`, `widgets/`
+- **State**: Manager classes extend `ChangeNotifier`, registered via `GetIt`
+- **Navigation**: GoRouter declarative routing
+- **DI**: GetIt service locator (singleton managers, scoped services)
+- **Build**: `flutter analyze` + `flutter test` must pass before handoff
+
+#### Flutter Feature Structure
+```
+lib/features/[feature]/
+├── manager/        # ChangeNotifier state management
+│   └── [feature]_manager.dart
+├── model/          # DTOs and data classes
+│   └── [feature]_dto.dart
+├── pages/          # Route-level widgets
+│   └── [feature]_page.dart
+├── services/       # API calls and business logic
+│   └── [feature]_api_service.dart
+└── widgets/        # Feature-specific reusable widgets
+```
+
+### Service Layer Pattern (MANDATORY) — PWA
 - **Philosophy**: Hooks manage State; Services manage Data.
 - **Rule**: Direct `supabase` calls are FORBIDDEN in Hooks and Components.
 - **Action**: Always encapsulate raw queries and RPCs in `src/entities/[entity]/api/[Service].ts`.

@@ -13,6 +13,7 @@ import '../../stores/manager/store_manager.dart';
 import '../../templates/manager/template_manager.dart';
 import '../../templates/model/template_dto.dart';
 import '../manager/audit_manager.dart';
+import '../../../_shared/services/scoring_engine.dart';
 
 final _di = GetIt.instance;
 
@@ -427,7 +428,10 @@ class _AuditFormPageState extends State<AuditFormPage> {
           body: Column(
             children: [
               // Live score HUD
-              _ScoreHud(score: manager.liveScore),
+              _ScoreHud(
+                score: manager.liveScore,
+                sectionScores: manager.sectionScores,
+              ),
 
               // Current section only
               Expanded(
@@ -483,7 +487,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
 class _ScoreHud extends StatelessWidget {
   final double score;
-  const _ScoreHud({required this.score});
+  final Map<String, SectionScore> sectionScores;
+  const _ScoreHud({required this.score, required this.sectionScores});
 
   Color _scoreColor(ThemeData theme) {
     if (score >= 80) return AppTheme.success;
@@ -495,6 +500,16 @@ class _ScoreHud extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = _scoreColor(theme);
+
+    // Calculate total points from section scores
+    final totalMax = sectionScores.values.fold(
+      0.0,
+      (sum, s) => sum + s.maxPoints,
+    );
+    final totalEarned = sectionScores.values.fold(
+      0.0,
+      (sum, s) => sum + s.score,
+    );
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -518,7 +533,7 @@ class _ScoreHud extends StatelessWidget {
                 ),
               ),
               Text(
-                '${score.toStringAsFixed(2)}%',
+                '${totalEarned.toStringAsFixed(0)} / ${totalMax.toStringAsFixed(0)} pts',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: color,
@@ -893,6 +908,16 @@ Future<void> _showCriterionSheet(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                      if (criterion.description != null &&
+                          criterion.description!.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          criterion.description!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 16),
 
                       // Input based on type
@@ -937,33 +962,51 @@ Future<void> _showCriterionSheet(
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton.icon(
-                            onPressed: answer?.value == 'conform'
-                                ? null
-                                : () => manager.setAnswer(
-                                    criterion.id,
-                                    value: 'conform',
-                                  ),
+                            onPressed: () {
+                              if (answer?.value == 'conform') {
+                                manager.clearAnswerValue(criterion.id);
+                              } else {
+                                manager.setAnswer(
+                                  criterion.id,
+                                  value: 'conform',
+                                );
+                              }
+                            },
                             icon: Icon(
                               answer?.value == 'conform'
                                   ? Icons.check_circle
                                   : Icons.check_circle_outline,
-                              size: 18,
+                              size: 20,
                             ),
                             label: Text(
                               answer?.value == 'conform'
                                   ? 'Standard Verified'
                                   : 'Confirm Correct',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                                letterSpacing: 0.3,
+                              ),
                             ),
                             style: FilledButton.styleFrom(
                               backgroundColor: answer?.value == 'conform'
                                   ? AppTheme.success
-                                  : theme.colorScheme.surfaceContainerHighest,
+                                  : theme.colorScheme.primaryContainer,
                               foregroundColor: answer?.value == 'conform'
                                   ? Colors.white
-                                  : theme.colorScheme.onSurfaceVariant,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                  : theme.colorScheme.primary,
+                              disabledBackgroundColor: AppTheme.success,
+                              disabledForegroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              elevation: answer?.value == 'conform' ? 0 : 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(16),
+                                side: BorderSide(
+                                  color: answer?.value == 'conform'
+                                      ? Colors.transparent
+                                      : theme.colorScheme.primary.withAlpha(40),
+                                  width: 1,
+                                ),
                               ),
                             ),
                           ),

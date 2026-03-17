@@ -1,6 +1,9 @@
 # Checkly Penalty-based Scoring System (Unified Penalty Model)
 
-This document describes the technical implementation and business rules for the **Deduction (Penalty) Mode** scoring logic, which is the unified standard for all template types (QC, Training, General) in Checkly Smart.
+This document describes the technical implementation and business rules for the **Deduction (Penalty) Mode** scoring logic, which is the unified standard for all template types (QC, Training, General) in Checkly.
+
+> [!NOTE]
+> As of 2026-03-17, **template type is a pure filter tag**. All features (Points, CCP, RISK, Confirm Correct, Weighted Density, Progressive Repeat) are universally available regardless of type. The `templateType == 'qc'` conditional logic has been fully removed.
 
 ## 1. Hierarchy & Structure
 
@@ -69,12 +72,27 @@ The live HUD in the Audit Form displays "Points Earned / Points Possible".
 > [!IMPORTANT]
 > **Unified Mode Enforcement**: All templates are forced to `scoring_type: 'penalty'`. Accumulation-based scoring (Standard Mode) is deprecated to ensure a consistent UX where every audit starts at a perfect score.
 
+### Confirm Correct (Toggle)
+When the template scoring config has `confirm_correct: true`:
+- Auditor must tap **"Confirm Correct"** on each passing criteria before submitting
+- The button is a **toggle** — tapping again reverts to unconfirmed state
+- Confirmed state shows solid green; unconfirmed shows a primary-themed outline
+
 
 ## 5. Technical Implementation
-- **Source Code**: [scoringEngine.ts](file:///c:/Users/HP/Documents/GitHub/checkly-smart/src/lib/scoringEngine.ts)
-- **Hook**: [useAuditScoring.ts](file:///c:/Users/HP/Documents/GitHub/checkly-smart/src/hooks/useAuditScoring.ts)
-- **Database Persistence**: [finalize_audit RPC](file:///c:/Users/HP/Documents/GitHub/checkly-smart/supabase/migrations/20260220_score_verification_enforce.sql)
-- **Server Verification**: [verify-score Edge Function](file:///c:/Users/HP/Documents/GitHub/checkly-smart/supabase/functions/verify-score/index.ts) — re-computes score server-side
+
+### Flutter Mobile (Primary)
+- **Scoring Engine**: `lib/features/audit/services/scoring_engine.dart`
+- **Audit Manager**: `lib/features/audit/manager/audit_manager.dart`
+- **Audit Form Page**: `lib/features/audit/pages/audit_form_page.dart`
+- **Template Builder**: `lib/features/templates/pages/template_builder_page.dart`
+- **Template Detail**: `lib/features/templates/pages/template_detail_page.dart`
+
+### PWA (Legacy Reference)
+- **Source Code**: `src/lib/scoringEngine.ts`
+- **Hook**: `src/hooks/useAuditScoring.ts`
+- **Database Persistence**: `finalize_audit` RPC
+- **Server Verification**: `verify-score` Edge Function
 
 ### Score Verification (Phase 2: Enforce)
 
@@ -97,11 +115,10 @@ The `finalize_audit` RPC includes **synchronous server-side score verification**
 These rules govern how users are assigned to stores and areas.
 
 ### Valid Areas
-Only 5 area codes are allowed: `North`, `South`, `Central`, `East`, `West`.
+Areas are managed entities stored in the `areas` table with `id`, `name`, and `description` fields.
 
-> [!IMPORTANT]
-> These areas are currently hardcoded in `UserManagement.tsx` and `StoreManagement.tsx`.
-> If you add/remove areas in the future, update BOTH files.
+> [!NOTE]
+> Areas are now managed dynamically via the Admin API (`/api/areas`). The previous hardcoded 5-area restriction has been removed.
 
 ### 1 Store Manager per Store
 - Each store (`stores.id`) can have at most **1 user** with role `store_manager` assigned to it (`profiles.store_id`).

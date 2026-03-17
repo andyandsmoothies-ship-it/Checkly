@@ -38,6 +38,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   String _type = 'qc';
 
   // Scoring rules
+  String _scoringMode = 'penalty'; // 'penalty' | 'accumulation' | 'checklist'
   bool _ccpOverride = false;
   bool _riskOverride = false;
   bool _weightedDensity = false;
@@ -95,6 +96,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
           _weightedDensity = config['weightedDensity'] == true;
           _confirmCorrect = config['confirmCorrect'] == true;
           _progressiveRepeat = config['progressiveRepeat'] == true;
+          _scoringMode = (config['scoringMode'] as String?) ?? 'penalty';
           if (config['deadlineDays'] != null) {
             _deadlineCtrl.text = config['deadlineDays'].toString();
           }
@@ -109,6 +111,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
   String _buildScoringConfig() {
     return json.encode({
+      'scoringMode': _scoringMode,
       'ccpOverride': _ccpOverride,
       'riskOverride': _riskOverride,
       'weightedDensity': _weightedDensity,
@@ -387,6 +390,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
                 // ── Scoring Rules Card (AC-6) ──
                 _ScoringRulesCard(
+                  scoringMode: _scoringMode,
                   ccpOverride: _ccpOverride,
                   riskOverride: _riskOverride,
                   weightedDensity: _weightedDensity,
@@ -394,6 +398,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                   progressiveRepeat: _progressiveRepeat,
                   deadlineCtrl: _deadlineCtrl,
                   reminderCtrl: _reminderCtrl,
+                  onScoringModeChanged: (v) =>
+                      setState(() => _scoringMode = v ?? _scoringMode),
                   onCcpChanged: (v) => setState(() => _ccpOverride = v),
                   onRiskChanged: (v) => setState(() => _riskOverride = v),
                   onDensityChanged: (v) => setState(() => _weightedDensity = v),
@@ -438,7 +444,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                       index: i,
                       section: section,
                       depth: 0,
-                      templateType: _type,
+
                       densityEnabled: _weightedDensity,
                       ccpEnabled: _ccpOverride,
                       riskEnabled: _riskOverride,
@@ -658,6 +664,7 @@ class _MetadataFormCard extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════
 
 class _ScoringRulesCard extends StatelessWidget {
+  final String scoringMode;
   final bool ccpOverride;
   final bool riskOverride;
   final bool weightedDensity;
@@ -665,6 +672,7 @@ class _ScoringRulesCard extends StatelessWidget {
   final bool progressiveRepeat;
   final TextEditingController deadlineCtrl;
   final TextEditingController reminderCtrl;
+  final ValueChanged<String?> onScoringModeChanged;
   final ValueChanged<bool> onCcpChanged;
   final ValueChanged<bool> onRiskChanged;
   final ValueChanged<bool> onDensityChanged;
@@ -672,6 +680,7 @@ class _ScoringRulesCard extends StatelessWidget {
   final ValueChanged<bool> onProgressiveChanged;
 
   const _ScoringRulesCard({
+    required this.scoringMode,
     required this.ccpOverride,
     required this.riskOverride,
     required this.weightedDensity,
@@ -679,6 +688,7 @@ class _ScoringRulesCard extends StatelessWidget {
     required this.progressiveRepeat,
     required this.deadlineCtrl,
     required this.reminderCtrl,
+    required this.onScoringModeChanged,
     required this.onCcpChanged,
     required this.onRiskChanged,
     required this.onDensityChanged,
@@ -694,10 +704,49 @@ class _ScoringRulesCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SectionHeader('SCORING RULES'),
-            const SizedBox(height: 12),
+            // ── GROUP 1: SCORING FORMULA ──
+            const SectionHeader('SCORING FORMULA'),
+            const SizedBox(height: 4),
+            DropdownButtonFormField<String>(
+              value: scoringMode,
+              decoration: const InputDecoration(
+                labelText: 'Scoring Mode',
+                isDense: true,
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: 'penalty',
+                  child: Text('Penalty (Top-Down)'),
+                ),
+                DropdownMenuItem(
+                  value: 'accumulation',
+                  child: Text('Accumulation (Zero-to-Top)'),
+                ),
+                DropdownMenuItem(
+                  value: 'checklist',
+                  child: Text('Checklist (Pass/Fail)'),
+                ),
+              ],
+              onChanged: onScoringModeChanged,
+            ),
+            const SizedBox(height: 8),
+            // Weighted Density — hidden for Checklist mode
+            if (scoringMode != 'checklist')
+              SwitchListTile(
+                title: const Text('Weighted Density'),
+                subtitle: const Text(
+                  'Each section contributes to the total based on its assigned weight (must sum to 100%).',
+                ),
+                value: weightedDensity,
+                onChanged: onDensityChanged,
+                contentPadding: EdgeInsets.zero,
+              ),
 
-            // 5 toggles
+            const Divider(height: 24),
+
+            // ── GROUP 2: CRITICAL FAILURE RULES ──
+            const SectionHeader('CRITICAL FAILURE RULES'),
+            const SizedBox(height: 4),
             SwitchListTile(
               title: const Text('CCP Override'),
               subtitle: const Text(
@@ -717,14 +766,20 @@ class _ScoringRulesCard extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
             ),
             SwitchListTile(
-              title: const Text('Weighted Density'),
+              title: const Text('Progressive Repeat Penalty'),
               subtitle: const Text(
-                'Each section contributes to the total based on its assigned weight (must sum to 100%).',
+                'OFF: deduction = repeats × rate. ON: deduction = repeats² × rate (harsher for more repeats).',
               ),
-              value: weightedDensity,
-              onChanged: onDensityChanged,
+              value: progressiveRepeat,
+              onChanged: onProgressiveChanged,
               contentPadding: EdgeInsets.zero,
             ),
+
+            const Divider(height: 24),
+
+            // ── GROUP 3: AUDIT BEHAVIOR ──
+            const SectionHeader('AUDIT BEHAVIOR'),
+            const SizedBox(height: 4),
             SwitchListTile(
               title: const Text('Confirm Correct'),
               subtitle: const Text(
@@ -732,15 +787,6 @@ class _ScoringRulesCard extends StatelessWidget {
               ),
               value: confirmCorrect,
               onChanged: onCorrectChanged,
-              contentPadding: EdgeInsets.zero,
-            ),
-            SwitchListTile(
-              title: const Text('Progressive Repeat Penalty'),
-              subtitle: const Text(
-                'OFF: deduction = repeats × rate. ON: deduction = repeats² × rate (harsher for more repeats).',
-              ),
-              value: progressiveRepeat,
-              onChanged: onProgressiveChanged,
               contentPadding: EdgeInsets.zero,
             ),
 
@@ -833,7 +879,7 @@ class _SectionEditor extends StatelessWidget {
   final int index;
   final _EditableGroup section;
   final int depth;
-  final String templateType;
+
   final bool densityEnabled;
   final bool ccpEnabled;
   final bool riskEnabled;
@@ -848,7 +894,7 @@ class _SectionEditor extends StatelessWidget {
     required this.index,
     required this.section,
     this.depth = 0,
-    this.templateType = 'qc',
+
     this.densityEnabled = true,
     this.ccpEnabled = false,
     this.riskEnabled = false,
@@ -990,8 +1036,8 @@ class _SectionEditor extends StatelessWidget {
             onPressed: onRemoveSection,
           ),
           children: [
-            // Gap 2 + Rule 1: Sub-section metadata (QC or density ON, depth > 0)
-            if (!isRoot && (templateType == 'qc' || densityEnabled)) ...[
+            // Sub-section metadata (non-root sections always show Max Points)
+            if (!isRoot) ...[
               Row(
                 children: [
                   Expanded(
@@ -1028,7 +1074,7 @@ class _SectionEditor extends StatelessWidget {
               final c = e.value;
               return _CriteriaEditor(
                 criterion: c,
-                templateType: templateType,
+
                 ccpEnabled: ccpEnabled,
                 riskEnabled: riskEnabled,
                 onRemove: () => onRemoveCriterion(ci),
@@ -1036,8 +1082,8 @@ class _SectionEditor extends StatelessWidget {
               );
             }),
 
-            // Add Criteria button — Rule 2: hidden on QC root
-            if (templateType != 'qc' || !isRoot)
+            // Add Criteria — hidden if root already has sub-sections
+            if (isRoot && section.subSections.isEmpty || !isRoot)
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
@@ -1060,7 +1106,7 @@ class _SectionEditor extends StatelessWidget {
                   index: si,
                   section: sub,
                   depth: depth + 1,
-                  templateType: templateType,
+
                   densityEnabled: densityEnabled,
                   ccpEnabled: ccpEnabled,
                   riskEnabled: riskEnabled,
@@ -1077,17 +1123,18 @@ class _SectionEditor extends StatelessWidget {
                   onChanged: onChanged,
                 );
               }),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: onAddSubSection,
-                  icon: const Icon(Icons.subdirectory_arrow_right, size: 14),
-                  label: const Text('Add Sub-Section'),
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 12),
+              if (section.criteria.isEmpty)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: onAddSubSection,
+                    icon: const Icon(Icons.subdirectory_arrow_right, size: 14),
+                    label: const Text('Add Sub-Section'),
+                    style: TextButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 12),
+                    ),
                   ),
                 ),
-              ),
             ],
           ],
         ),
@@ -1102,7 +1149,7 @@ class _SectionEditor extends StatelessWidget {
 
 class _CriteriaEditor extends StatelessWidget {
   final _EditableCriterion criterion;
-  final String templateType;
+
   final bool ccpEnabled;
   final bool riskEnabled;
   final VoidCallback onRemove;
@@ -1110,7 +1157,7 @@ class _CriteriaEditor extends StatelessWidget {
 
   const _CriteriaEditor({
     required this.criterion,
-    this.templateType = 'qc',
+
     this.ccpEnabled = false,
     this.riskEnabled = false,
     required this.onRemove,
@@ -1167,9 +1214,7 @@ class _CriteriaEditor extends StatelessWidget {
               TextFormField(
                 controller: criterion.descCtrl,
                 decoration: InputDecoration(
-                  labelText: templateType == 'qc'
-                      ? 'Standard / Requirement Details'
-                      : 'Description (optional)',
+                  labelText: 'Description (optional)',
                   isDense: true,
                 ),
                 maxLines: 3,
@@ -1177,44 +1222,42 @@ class _CriteriaEditor extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Points — Rule 3: hidden for QC
-              if (templateType != 'qc') ...[
-                TextFormField(
-                  controller: criterion.pointsCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Points Weight',
-                    isDense: true,
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (_) => onChanged(),
+              // Points weight + CCP/RISK (always visible)
+              TextFormField(
+                controller: criterion.pointsCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Points Weight',
+                  isDense: true,
                 ),
-                const SizedBox(height: 16),
+                keyboardType: TextInputType.number,
+                onChanged: (_) => onChanged(),
+              ),
+              const SizedBox(height: 16),
 
-                // Gap 8: CCP / RISK toggles
-                Row(
-                  children: [
-                    _ToggleBadge(
-                      label: 'CCP',
-                      active: criterion.isCcp,
-                      enabled: ccpEnabled,
-                      onTap: () {
-                        criterion.isCcp = !criterion.isCcp;
-                        onChanged();
-                      },
-                    ),
-                    const SizedBox(width: 12),
-                    _ToggleBadge(
-                      label: 'RISK',
-                      active: criterion.isRisk,
-                      enabled: riskEnabled,
-                      onTap: () {
-                        criterion.isRisk = !criterion.isRisk;
-                        onChanged();
-                      },
-                    ),
-                  ],
-                ),
-              ],
+              // Gap 8: CCP / RISK toggles
+              Row(
+                children: [
+                  _ToggleBadge(
+                    label: 'CCP',
+                    active: criterion.isCcp,
+                    enabled: ccpEnabled,
+                    onTap: () {
+                      criterion.isCcp = !criterion.isCcp;
+                      onChanged();
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  _ToggleBadge(
+                    label: 'RISK',
+                    active: criterion.isRisk,
+                    enabled: riskEnabled,
+                    onTap: () {
+                      criterion.isRisk = !criterion.isRisk;
+                      onChanged();
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -1254,37 +1297,36 @@ class _CriteriaEditor extends StatelessWidget {
                   ),
                 ),
               ),
-              // Rule 3: points/badges hidden for QC
-              if (templateType != 'qc') ...[
-                if (criterion.pointsCtrl.text.isNotEmpty) ...[
-                  const SizedBox(width: 4),
-                  Text(
-                    '${criterion.pointsCtrl.text}pt',
-                    style: AppFonts.serifStyle(
-                      fontSize: 11,
-                      color: theme.colorScheme.primary,
-                    ),
+              // Points/CCP/RISK badges (always visible)
+              if (criterion.pointsCtrl.text.isNotEmpty) ...[
+                const SizedBox(width: 4),
+                Text(
+                  '${criterion.pointsCtrl.text}pt',
+                  style: AppFonts.serifStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.primary,
                   ),
-                ],
-                if (criterion.isCcp) ...[
-                  const SizedBox(width: 4),
-                  _ToggleBadge(
-                    label: 'CCP',
-                    active: true,
-                    enabled: ccpEnabled,
-                    onTap: () {},
-                  ),
-                ],
-                if (criterion.isRisk) ...[
-                  const SizedBox(width: 4),
-                  _ToggleBadge(
-                    label: 'RISK',
-                    active: true,
-                    enabled: riskEnabled,
-                    onTap: () {},
-                  ),
-                ],
+                ),
               ],
+              if (criterion.isCcp) ...[
+                const SizedBox(width: 4),
+                _ToggleBadge(
+                  label: 'CCP',
+                  active: true,
+                  enabled: ccpEnabled,
+                  onTap: () {},
+                ),
+              ],
+              if (criterion.isRisk) ...[
+                const SizedBox(width: 4),
+                _ToggleBadge(
+                  label: 'RISK',
+                  active: true,
+                  enabled: riskEnabled,
+                  onTap: () {},
+                ),
+              ],
+
               // Inline delete — PWA parity
               IconButton(
                 onPressed: onRemove,

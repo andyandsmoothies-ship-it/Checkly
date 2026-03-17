@@ -73,11 +73,7 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
 
               // 2. Section cards
               ...tree.groups.map(
-                (group) => _SectionCard(
-                  group: group,
-                  depth: 0,
-                  templateType: tree.type,
-                ),
+                (group) => _SectionCard(group: group, depth: 0),
               ),
             ],
           );
@@ -292,13 +288,8 @@ class _StatChip extends StatelessWidget {
 class _SectionCard extends StatelessWidget {
   final GroupDto group;
   final int depth;
-  final String templateType;
 
-  const _SectionCard({
-    required this.group,
-    required this.depth,
-    required this.templateType,
-  });
+  const _SectionCard({required this.group, required this.depth});
 
   @override
   Widget build(BuildContext context) {
@@ -392,9 +383,7 @@ class _SectionCard extends StatelessWidget {
           ),
           children: [
             // Criteria rows
-            ...group.criteria.map(
-              (c) => _CriterionRow(criterion: c, templateType: templateType),
-            ),
+            ...group.criteria.map((c) => _CriterionRow(criterion: c)),
 
             // Nested sub-sections
             if (group.children.isNotEmpty)
@@ -402,13 +391,7 @@ class _SectionCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 4),
                 child: Column(
                   children: group.children
-                      .map(
-                        (g) => _SectionCard(
-                          group: g,
-                          depth: depth + 1,
-                          templateType: templateType,
-                        ),
-                      )
+                      .map((g) => _SectionCard(group: g, depth: depth + 1))
                       .toList(),
                 ),
               ),
@@ -425,14 +408,12 @@ class _SectionCard extends StatelessWidget {
 
 class _CriterionRow extends StatelessWidget {
   final CriterionDto criterion;
-  final String templateType;
 
-  const _CriterionRow({required this.criterion, required this.templateType});
+  const _CriterionRow({required this.criterion});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isQC = templateType == 'qc';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -465,8 +446,8 @@ class _CriterionRow extends StatelessWidget {
                 ),
               ),
 
-              // Points (non-QC only)
-              if (!isQC && criterion.pointsWeight != null) ...[
+              // Points badge
+              if (criterion.pointsWeight != null) ...[
                 const SizedBox(width: 8),
                 Text(
                   '${criterion.pointsWeight!.toStringAsFixed(1)} pts',

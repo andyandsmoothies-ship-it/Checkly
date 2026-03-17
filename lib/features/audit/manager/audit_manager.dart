@@ -160,6 +160,14 @@ class AuditManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearAnswerValue(String criteriaId) {
+    if (_answers[criteriaId] != null) {
+      _answers[criteriaId]!.value = null;
+      _recalculateScore();
+      notifyListeners();
+    }
+  }
+
   void setNote(String criteriaId, String note) {
     _answers[criteriaId]?.note = note;
     notifyListeners();
@@ -273,10 +281,40 @@ class AuditManager extends ChangeNotifier {
         )
         .toList();
 
-    final input = ScoringInput(sections: sections, answers: scoringAnswers);
+    final input = ScoringInput(
+      sections: sections,
+      answers: scoringAnswers,
+      scoringMode: _parseScoringMode(_template!.scoringLogicConfig),
+      progressiveRepeatPenalty: _parseBoolConfig(
+        _template!.scoringLogicConfig,
+        'progressiveRepeat',
+      ),
+    );
     final result = ScoringEngine.calculate(input);
     _liveScore = result.totalScore;
     _sectionScores = result.sectionScores;
+  }
+
+  /// Reads scoringMode from the template's scoringLogicConfig JSON.
+  static ScoringMode _parseScoringMode(String? configJson) {
+    if (configJson == null || configJson.isEmpty) return ScoringMode.penalty;
+    try {
+      final config = json.decode(configJson) as Map<String, dynamic>;
+      final mode = config['scoringMode'] as String?;
+      if (mode == 'accumulation') return ScoringMode.accumulation;
+      if (mode == 'checklist') return ScoringMode.checklist;
+    } catch (_) {}
+    return ScoringMode.penalty;
+  }
+
+  /// Reads a boolean field from the scoring config JSON.
+  static bool _parseBoolConfig(String? configJson, String key) {
+    if (configJson == null || configJson.isEmpty) return false;
+    try {
+      final config = json.decode(configJson) as Map<String, dynamic>;
+      return config[key] == true;
+    } catch (_) {}
+    return false;
   }
 
   List<CriterionDto> _flattenCriteria(GroupDto group) {

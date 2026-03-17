@@ -382,6 +382,7 @@ class _TemplateCard extends StatelessWidget {
 
               // Context menu
               PopupMenuButton<String>(
+                tooltip: '',
                 icon: Icon(
                   Icons.more_vert,
                   color: theme.colorScheme.onSurfaceVariant,

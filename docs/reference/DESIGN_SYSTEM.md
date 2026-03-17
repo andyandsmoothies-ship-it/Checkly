@@ -1,6 +1,39 @@
 # UDAT Design System
 
-> Single source of truth for the UDAT PWA design system.
+> Design system reference for both the PWA and Flutter mobile app.
+
+---
+
+## Flutter Mobile Design System
+
+> Stack: Flutter · Material 3 · GetIt · GoRouter
+
+### Theme (AppTheme)
+- **Source**: `lib/_shared/theme/app_theme.dart`
+- **Palette**: Warm neutral tones — `charcoal`, `sageGray`, `softPeach`, `parchment`
+- **Status Colors**: `success` (green), `warning` (amber), `error` (red)
+- **Scoring Colors**: Traffic light — `≥90 → success`, `≥70 → warning`, `<70 → error`
+
+### Typography (AppFonts)
+- **Source**: `lib/_shared/theme/app_fonts.dart`
+- **Display**: Serif style for headings and scores
+- **Body**: System default Material 3 typography
+
+### Key UI Patterns
+
+| Pattern | Description | Source |
+|:--------|:------------|:-------|
+| **Criteria Bottom Sheet** | Tap a criterion row → opens modal bottom sheet with full editing controls | `audit_form_page.dart` |
+| **Live Score HUD** | Sticky points display (`earned / max pts`) with circular progress | `_ScoreHud` widget |
+| **Status Badges** | Color-coded chips on criterion rows (pass/fail/pending) | `_StatusBadge` widget |
+| **Confirm Correct Toggle** | Primary-colored button, toggles between "Confirm Correct" and "Standard Verified" | `_showCriterionSheet` |
+| **Scoring Rules Card** | 3 groups: Scoring Formula → Critical Failure Rules → Audit Behavior | `_ScoringRulesCard` |
+| **Layout Locking** | Root sections commit to flat criteria OR sub-sections, never both | `_SectionEditor` |
+
+---
+
+## PWA Design System (Legacy Reference)
+
 > Stack: React · Tailwind CSS · shadcn/ui · Plus Jakarta Sans
 
 ---

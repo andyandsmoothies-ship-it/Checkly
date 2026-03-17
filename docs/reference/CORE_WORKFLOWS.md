@@ -2,6 +2,9 @@
 
 > This document defines the canonical state machines for Audits and Action Plans, including UI mappings and role contexts.
 
+> [!NOTE]
+> **Platform**: Flutter mobile (`lib/features/audit/`) is the primary client. PWA (`checkly-smart/`) references below are legacy. Server API is ASP.NET Core 10 (`server/`).
+
 ---
 
 ## 1. Audit Lifecycle (Primary)
