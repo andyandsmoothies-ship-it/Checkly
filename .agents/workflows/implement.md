@@ -52,4 +52,9 @@ description: The Core Builder Implementation Workflow.
 
 ## Phase 5: Handoff & Verification
 - **Action**: Stop any running development servers (using `send_command_input` with `Terminate: true` if applicable) to release file locks. Then, run the project's standard build and test commands (e.g., `npm run build`, `dotnet build`, `make test`) to verify absolutely no compilation or syntax errors.
+- **Walkthrough**: Create or update `walkthrough.md`. It MUST include a **Verification Handoff** section with concrete, numbered test scenarios. Each scenario must have:
+  - **Steps**: Exact user actions to reproduce (e.g., "Open template → set mode to Penalty → create audit → add 1 fault")
+  - **Expected**: Observable correct behavior (e.g., "Score starts at 100% and decreases")
+  - **Blast radius**: Any related features the QA agent should regression-test
+  This section is the contract between the Builder and the QA agent running `/verify`. If the QA agent cannot determine what "correct" looks like from the walkthrough alone, the handoff has failed.
 - **Skill Refresh (Final)**: Scan `.agents/skills/` for any verification or code-review checklist skill and invoke it for final audit before handoff. Alternatively, recommend the user run `/verify` for comprehensive checks.
