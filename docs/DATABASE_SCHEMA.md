@@ -72,9 +72,7 @@ Physical store locations where audits are conducted.
 ---
 
 ### `areas`
-**Rows**: 0 (migration pending) | **Soft Delete**: `is_active = false`
-
-> ⚠️ **Note**: This table exists in the EF migration but may not yet be applied to your local database. Run `dotnet ef database update` to create it.
+**Rows**: 0 | **Soft Delete**: `is_active = false`
 
 Geographic regions for grouping stores and assigning Area Managers.
 
@@ -82,7 +80,7 @@ Geographic regions for grouping stores and assigning Area Managers.
 |--------|------|---------|
 | `id` | UUID (PK) | Unique area ID |
 | `name` | text | Display name (e.g., "Miền Bắc") |
-| `code` | text (unique) | Short code, lowercase normalized (e.g., "north") |
+| `description` | text? | Optional description of the area |
 | `is_active` | boolean | Soft delete flag |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last update |
@@ -101,7 +99,7 @@ Audit templates define the structure of an audit (what to check).
 | `type` | text? | Category: `qc`, `training`, `general` |
 | `is_active` | boolean | Soft delete flag |
 | `version` | integer | Concurrency control (optimistic locking) |
-| `scoring_logic_config` | jsonb? | Scoring rules: weights, CCP/RISK flags, progressive repeat config |
+| `scoring_logic_config` | jsonb? | Scoring rules: mode (penalty/accumulation/checklist), density flags, and repeat config |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last update |
 
@@ -136,13 +134,14 @@ Individual checklist items within a group that auditors evaluate.
 | `id` | UUID (PK) | Unique criteria ID |
 | `group_id` | UUID (FK → groups) | Parent group/section |
 | `label` | text | Question text (e.g., "Floor cleanliness maintained?") |
-| `input_type` | text | `pass_fail`, `numeric`, or `na` |
+| `input_type` | text | `pass_fail`, `numeric`, or `scale` (Maturity Matrix) |
 | `is_ccp` | boolean | Critical Control Point — fail = section score → 0% |
 | `is_risk` | boolean | RISK item — fail = entire audit score → 0% |
 | `points_weight` | decimal? | Deduction weight for standard scoring |
 | `minus_per_fault` | decimal? | Deduction per fault for numeric input |
 | `minus_impact` | decimal? | C4 override: uses this instead of `points_weight` |
 | `order_index` | integer | Display order within group |
+| `metadata` | jsonb? | Extra UI config like `scaleOptions` for Scale inputs |
 | `is_active` | boolean | Soft delete flag |
 
 ---

@@ -66,7 +66,7 @@ flowchart LR
 | **Template selection** | Browse available templates, filtered by type (QC / Training / General) |
 | **Store selection** | List all active stores with GPS verification |
 | **Section-by-section form** | Collapsible sections matching template → groups → criteria hierarchy |
-| **Criteria input** | Pass/Fail, Numeric (fault count), N/A — per criteria type |
+| **Criteria input** | Pass/Fail, Numeric (fault count), Scale (Maturity Matrix) — per criteria type |
 | **Photo capture** | Attach photo evidence to any criteria answer |
 | **Real-time scoring** | Score calculated locally as auditor fills in answers |
 | **GPS verification** | Capture lat/lng at submission time to prove on-site presence |
@@ -77,12 +77,11 @@ flowchart LR
 
 | Requirement | Detail |
 |-------------|--------|
-| **Model** | Unified Deduction (Penalty-First): start at 100%, deduct for faults |
-| **Formula** | `Final = Σ(section_after / section_before × section_weight) × 100` |
-| **CCP trigger** | Critical Control Point failure → entire section score = 0% |
+| **Modes** | Unified Extensible Engine: Penalty (Top-Down), Accumulation (Zero-to-Top), Checklist (Flat Deduction) |
+| **Logic Config** | Scoring mode and advanced rules stored in `scoring_logic_config` JSONB field |
+| **CCP trigger** | Critical Control Point failure → entire section earned = 0 |
 | **RISK trigger** | RISK item failure → entire audit score = 0% |
-| **Weighted density** | Optional: sections weighted by percentage (must sum to 100%) |
-| **Checklist fallback** | No weights defined → `100 - Σ(raw deductions)` |
+| **Weighted density** | Penalty/Accumulation only: sections weighted by percentage (must sum to 100%) |
 | **C3 Progressive repeat** | Optional per template: `deduction = repeatedFaults² × minusPerFault` (quadratic escalation) |
 | **C4 minus_impact** | Per-criteria override: uses `minus_impact` field instead of `points_weight` for deduction |
 | **Server verification** | Server recalculates score on submission; configurable mode (enforce/observe) via `appsettings.json` |
@@ -158,7 +157,7 @@ erDiagram
 | `stores` | 37 | name, address, area_id (FK → areas), gps_lat/lng, is_active |
 | `templates` | 16 | title, type, scoring_logic_config (JSONB), version |
 | `groups` | 107 | template_id, parent_id (self-ref), title, weight, order_index |
-| `criteria` | 98 | group_id, label, input_type, is_ccp, is_risk, points_weight |
+| `criteria` | 98 | group_id, label, input_type, metadata (scale options), is_ccp, is_risk, points_weight |
 | `submissions` | 62 | template_id, store_id, auditor_id, total_score, status, GPS, snapshots |
 | `answers` | 55 | submission_id, criteria_id, value, numeric_value, photo_url |
 | `action_plans` | 55 | submission_id, answer_id, store_id, status, deadline |
@@ -308,13 +307,14 @@ flowchart TD
 | **Batch 3** | Action Plans + Audits — AP list/detail, audits list redesign, dashboard hero | ✅ Done |
 | **Batch 4** | Role Features — S4 review disposition, S9/S10 constraints, C7 role filtering, admin dashboard | ✅ Done |
 | **Batch 5** | Admin CRUD — User/store management, SM transfer (S8), audit trail (S12), activity history | ✅ Done |
-| **Batch 6** | Analytics + Polish — Scoring edge cases (C3+C4), reminders (S6+S7), analytics, template builder, lifecycle (C2), polish | ✅ Done |
+| **Batch 6** | Analytics + Polish — Scoring edge cases (C3+C4), reminders (S6+S7), lifecycle (C2) | ✅ Done |
+| **Batch 7** | Scoring Engine & Builder — Generic builder layout, 3 scoring modes, Scale input (Maturity Matrix) | ✅ Done |
 
 ### Future Phases
 
 | Phase | Name | Scope | Estimated Effort |
 |-------|------|-------|-----------------|
-| **UAT** | User Acceptance Testing | 90+ test cases across 13 modules (see UAT doc) | 1-2 weeks |
+| **UAT** | User Acceptance Testing | 120+ test cases across 14 modules (see UAT doc) | 1-2 weeks |
 | **Deploy** | Production Deployment | APK build, server deployment, data migration | 1 week |
 | **Web Portal** | Admin + AM Web Dashboard | Responsive Flutter Web layout for admin and area manager desktop use | 2-3 weeks |
 
