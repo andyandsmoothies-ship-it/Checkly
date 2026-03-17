@@ -29,6 +29,8 @@
 | **Confirm Correct Toggle** | Primary-colored button, toggles between "Confirm Correct" and "Standard Verified" | `_showCriterionSheet` |
 | **Scoring Rules Card** | 3 groups: Scoring Formula → Critical Failure Rules → Audit Behavior | `_ScoringRulesCard` |
 | **Layout Locking** | Root sections commit to flat criteria OR sub-sections, never both | `_SectionEditor` |
+| **Scale Input** | Radio-tile selector for gradient maturity criteria (e.g., Poor=0/Good=5/Excellent=10) | `_ScaleInput` |
+| **Input Type Badge** | Colored badge on collapsed criterion row showing SCALE or P/F type | `_CriteriaEditor.build()` |
 
 ---
 

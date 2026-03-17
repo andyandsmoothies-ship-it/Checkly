@@ -23,10 +23,15 @@ description: The Core Builder Implementation Workflow.
 - **Rule Inventory**: Match the task to modular workspace rules in `.agents/rules/`.
 
 ## Phase 2: Planning (THE GATE)
-- **Instruction**: Check if an `implementation_plan.md` already exists in your `brain/` folder (from an Architect or QA workflow).
-    - **If YES**: Read it, audit it against `.agents/rules/`, and request permission to begin coding.
-    - **If NO**: Generate a new `implementation_plan.md` outlining the required files, logic, and dependencies. Request approval via `notify_user` before coding.
-- **Plan Audit**: Ensure the plan completely adheres to all workspace rules in `.agents/rules/`.
+- **Instruction**: Check if an `implementation_plan.md` already exists in your `brain/` folder (from a prior `/analysis` workflow).
+    - **If YES**: Read it and run the **Plan Quality Checklist** below. If ALL pass → request permission to begin coding. If ANY fail → **stop** and tell the user which items are missing. Recommend they re-run `/analysis` or provide the missing details.
+    - **If NO**: Load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and generate a new `implementation_plan.md` using a lightweight subset of its template. Request approval via `notify_user` before coding.
+- **Plan Quality Checklist** (mandatory for both paths):
+  - [ ] **Goal**: Has a clear 1-paragraph goal statement?
+  - [ ] **File Changes**: Lists specific files with [NEW]/[MODIFY]/[DELETE] tags?
+  - [ ] **Data Changes**: Covers DB/Schema/migration changes (or explicitly states N/A)?
+  - [ ] **Blast Radius**: Identifies which existing features could break?
+  - [ ] **Verification**: Has concrete test commands or manual verification steps?
 
 ## Phase 3: Coding (Builder Execution)
 - **Instruction**: Put on your "Senior Developer" hat. You MUST implement changes following this exact sequence:

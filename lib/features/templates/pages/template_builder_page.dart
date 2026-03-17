@@ -155,11 +155,14 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             id: c.id,
             label: c.labelCtrl.text,
             description: c.descCtrl.text.isEmpty ? null : c.descCtrl.text,
-            inputType: 'numeric', // Forced for Unified Penalty Model
+            inputType: c.inputType,
             pointsWeight: double.tryParse(c.pointsCtrl.text),
             isCcp: c.isCcp,
             isRisk: c.isRisk,
             orderIndex: ci,
+            metadata: c.inputType == 'scale' && c.scaleOptions.isNotEmpty
+                ? json.encode({'scaleOptions': c.scaleOptions})
+                : null,
           );
         }).toList(),
       );
@@ -197,6 +200,26 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('All sections and sub-sections must have a title'),
+        ),
+      );
+      return;
+    }
+
+    // Validate scale criteria have at least 2 options
+    bool hasInvalidScale(List<_EditableGroup> groups) {
+      for (final g in groups) {
+        for (final c in g.criteria) {
+          if (c.inputType == 'scale' && c.scaleOptions.length < 2) return true;
+        }
+        if (hasInvalidScale(g.subSections)) return true;
+      }
+      return false;
+    }
+
+    if (hasInvalidScale(_sections)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Scale criteria must have at least 2 options'),
         ),
       );
       return;
@@ -564,6 +587,7 @@ class _EditableCriterion {
   String inputType;
   bool isCcp;
   bool isRisk;
+  List<Map<String, dynamic>> scaleOptions;
 
   _EditableCriterion({
     this.id = '',
@@ -573,19 +597,35 @@ class _EditableCriterion {
     this.inputType = 'numeric',
     this.isCcp = false,
     this.isRisk = false,
+    List<Map<String, dynamic>>? scaleOptions,
   }) : labelCtrl = TextEditingController(text: label),
        descCtrl = TextEditingController(text: description),
-       pointsCtrl = TextEditingController(text: points);
+       pointsCtrl = TextEditingController(text: points),
+       scaleOptions = scaleOptions ?? [];
 
-  factory _EditableCriterion.fromDto(CriterionDto dto) => _EditableCriterion(
-    id: dto.id,
-    label: dto.label,
-    description: dto.description ?? '',
-    points: dto.pointsWeight?.toString() ?? '',
-    inputType: dto.inputType,
-    isCcp: dto.isCcp,
-    isRisk: dto.isRisk,
-  );
+  factory _EditableCriterion.fromDto(CriterionDto dto) {
+    List<Map<String, dynamic>> options = [];
+    if (dto.metadata != null && dto.inputType == 'scale') {
+      try {
+        final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
+        options =
+            (meta['scaleOptions'] as List?)
+                ?.map((e) => Map<String, dynamic>.from(e as Map))
+                .toList() ??
+            [];
+      } catch (_) {}
+    }
+    return _EditableCriterion(
+      id: dto.id,
+      label: dto.label,
+      description: dto.description ?? '',
+      points: dto.pointsWeight?.toString() ?? '',
+      inputType: dto.inputType,
+      isCcp: dto.isCcp,
+      isRisk: dto.isRisk,
+      scaleOptions: options,
+    );
+  }
 
   void dispose() {
     labelCtrl.dispose();
@@ -1222,16 +1262,162 @@ class _CriteriaEditor extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Points weight + CCP/RISK (always visible)
-              TextFormField(
-                controller: criterion.pointsCtrl,
+              // Input Type selector
+              DropdownButtonFormField<String>(
+                value: criterion.inputType,
                 decoration: const InputDecoration(
-                  labelText: 'Points Weight',
+                  labelText: 'Input Type',
                   isDense: true,
                 ),
-                keyboardType: TextInputType.number,
-                onChanged: (_) => onChanged(),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'numeric',
+                    child: Text('Numeric (Faults)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'pass_fail',
+                    child: Text('Pass / Fail'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'scale',
+                    child: Text('Scale (Maturity)'),
+                  ),
+                ],
+                onChanged: (v) {
+                  criterion.inputType = v ?? criterion.inputType;
+                  onChanged();
+                  Navigator.pop(ctx);
+                  // Reopen to refresh UI with new inputType
+                  Future.microtask(() {
+                    if (context.mounted) _openDrawer(context);
+                  });
+                },
               ),
+              const SizedBox(height: 16),
+
+              // Scale Options editor (only for scale type)
+              if (criterion.inputType == 'scale') ...[
+                const Text(
+                  'Scale Options',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                ...criterion.scaleOptions.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final opt = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: TextFormField(
+                            initialValue: opt['label'] as String? ?? '',
+                            decoration: InputDecoration(
+                              labelText: 'Label ${idx + 1}',
+                              isDense: true,
+                            ),
+                            onChanged: (v) {
+                              criterion.scaleOptions[idx]['label'] = v;
+                              onChanged();
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            initialValue:
+                                (opt['points'] as num?)?.toString() ?? '0',
+                            decoration: const InputDecoration(
+                              labelText: 'Pts',
+                              isDense: true,
+                            ),
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              criterion.scaleOptions[idx]['points'] =
+                                  double.tryParse(v) ?? 0;
+                              // Auto-sync pointsWeight to highest
+                              final maxPts = criterion.scaleOptions
+                                  .fold<double>(
+                                    0,
+                                    (m, o) =>
+                                        (o['points'] as num? ?? 0).toDouble() >
+                                            m
+                                        ? (o['points'] as num).toDouble()
+                                        : m,
+                                  );
+                              criterion.pointsCtrl.text = maxPts
+                                  .toStringAsFixed(0);
+                              onChanged();
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.remove_circle_outline,
+                            size: 18,
+                            color: Colors.red.shade400,
+                          ),
+                          onPressed: () {
+                            criterion.scaleOptions.removeAt(idx);
+                            onChanged();
+                            Navigator.pop(ctx);
+                            Future.microtask(() {
+                              if (context.mounted) _openDrawer(context);
+                            });
+                          },
+                          constraints: const BoxConstraints(
+                            minWidth: 32,
+                            minHeight: 32,
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                TextButton.icon(
+                  onPressed: () {
+                    criterion.scaleOptions.add({'label': '', 'points': 0});
+                    onChanged();
+                    Navigator.pop(ctx);
+                    Future.microtask(() {
+                      if (context.mounted) _openDrawer(context);
+                    });
+                  },
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('Add Option'),
+                ),
+                const SizedBox(height: 8),
+              ],
+
+              // Points weight (auto-managed for scale, manual for others)
+              if (criterion.inputType != 'scale')
+                TextFormField(
+                  controller: criterion.pointsCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Points Weight',
+                    isDense: true,
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => onChanged(),
+                )
+              else
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Points Weight'),
+                  trailing: Text(
+                    criterion.pointsCtrl.text.isEmpty
+                        ? '0'
+                        : criterion.pointsCtrl.text,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: const Text('Auto-set from highest scale option'),
+                ),
               const SizedBox(height: 16),
 
               // Gap 8: CCP / RISK toggles
@@ -1324,6 +1510,49 @@ class _CriteriaEditor extends StatelessWidget {
                   active: true,
                   enabled: riskEnabled,
                   onTap: () {},
+                ),
+              ],
+              // Input type badge (non-numeric types)
+              if (criterion.inputType == 'scale') ...[
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'SCALE',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.onTertiaryContainer,
+                    ),
+                  ),
+                ),
+              ],
+              if (criterion.inputType == 'pass_fail') ...[
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'P/F',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.onSecondaryContainer,
+                    ),
+                  ),
                 ),
               ],
 
