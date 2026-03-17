@@ -305,7 +305,9 @@ class AuditManager extends ChangeNotifier {
       final mode = config['scoringMode'] as String?;
       if (mode == 'accumulation') return ScoringMode.accumulation;
       if (mode == 'checklist') return ScoringMode.checklist;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Parse scoringMode: $e');
+    }
     return ScoringMode.penalty;
   }
 
@@ -315,7 +317,9 @@ class AuditManager extends ChangeNotifier {
     try {
       final config = json.decode(configJson) as Map<String, dynamic>;
       return config[key] == true;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Parse config[$key]: $e');
+    }
     return false;
   }
 

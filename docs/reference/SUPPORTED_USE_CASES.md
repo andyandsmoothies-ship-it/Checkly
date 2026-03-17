@@ -102,8 +102,8 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 2. **Hierarchy:** 3-Level (Department → Process Area → Individual Capability).
 3. **Criteria Input Type:** `Pass / Fail` (see limitation below).
 
-> [!CAUTION]
-> **Scale input type + Accumulation has a known scoring gap.** The engine currently treats `numericValue` as fault count, not earned points, so Scale criteria with partial credit (e.g., "Good = 5pts") will score incorrectly. Use Pass/Fail input type with Accumulation until the engine fix is applied. See [Engine Fix Required](#engine-fix-required) below.
+> [!TIP]
+> **Scale input fully supported.** Both the client-side scoring engine and the server-side `FinalizeSubmission` verifier correctly handle `inputType: "scale"` in Accumulation mode. Scale criteria award partial credit based on the selected option's `numericValue`. Verified by client test V16 and server `ScoringVerifier` backward-compatible dispatch.
 
 ---
 
@@ -146,30 +146,14 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 
 ---
 
-## Engine Fix Required
+## ✅ Resolved: Scale Scoring (Client + Server)
 
-### Accumulation + Scale Partial Credit Bug
+| Component | Fix | Verified |
+|-----------|-----|----------|
+| **Client** (`scoring_engine.dart`) | `_calculateAccumulation()` branches on `inputType == 'scale'` to treat `numericValue` as earned points | Test V16 |
+| **Server** (`ScoringVerifier.cs`) | `VerifyAccumulation()` mirrors client logic — `inputType == "scale"` → `numericValue` as earned points | `dotnet build` ✅ |
+| **Server** (`FinalizeSubmission.cs`) | Parses `scoringMode` from `template.ScoringLogicConfig` JSON, passes to `scorer.Verify()` | Backward-compatible default: `"penalty"` |
 
-**Problem:** When a Scale criterion sets `numericValue: 5` (meaning "earned 5 points"), the Accumulation engine misreads it as "5 faults" and awards 0 points.
+> [!NOTE]
+> Source: [Sentinel Audit Findings #3 and #5](file:///C:/Users/HP/.gemini/antigravity/brain/1625bb51-f67a-4822-aaa2-2998d745d964/audit_infra_report_20260317.md.resolved) — both resolved.
 
-**Root Cause:** [_calculateAccumulation()](file:///c:/Users/HP/Documents/GitHub/Checkly/lib/_shared/services/scoring_engine.dart#L312-393) line 356-360 checks `faults == 0` to award full points. Scale's `numericValue` (earned) is indistinguishable from Numeric's `numericValue` (faults).
-
-**Impact:** Use Cases using Accumulation + Scale (Performance Reviews, ISO Maturity) will produce incorrect scores.
-
-**Fix:** Update `_calculateAccumulation()` to check the criterion's `inputType`. If `scale`, treat `numericValue` as earned points directly instead of checking for zero faults.
-
-```dart
-// Current (broken for scale):
-if (faults == 0 && !isNonConform && answer.repeatedFaults == 0) {
-  sectionEarned += c.pointsWeight;
-}
-
-// Fixed:
-if (c.inputType == 'scale' && answer.numericValue != null) {
-  sectionEarned += answer.numericValue!;  // Use selected option's points
-} else if (faults == 0 && !isNonConform && answer.repeatedFaults == 0) {
-  sectionEarned += c.pointsWeight;  // Binary: full or nothing
-}
-```
-
-**Requires:** Adding `inputType` field to `CriterionInput` model in `scoring_engine.dart`.

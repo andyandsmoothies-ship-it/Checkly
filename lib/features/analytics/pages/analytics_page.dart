@@ -170,7 +170,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       SizedBox(
                         width: (MediaQuery.sizeOf(context).width - 40) / 2,
                         child: DropdownButtonFormField<String>(
-                          value: _selectedStore,
+                          initialValue: _selectedStore,
                           isExpanded: true,
                           borderRadius: BorderRadius.circular(12),
                           decoration: const InputDecoration(
@@ -205,7 +205,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       SizedBox(
                         width: (MediaQuery.sizeOf(context).width - 40) / 2,
                         child: DropdownButtonFormField<String>(
-                          value: _selectedType,
+                          initialValue: _selectedType,
                           isExpanded: true,
                           borderRadius: BorderRadius.circular(12),
                           decoration: const InputDecoration(

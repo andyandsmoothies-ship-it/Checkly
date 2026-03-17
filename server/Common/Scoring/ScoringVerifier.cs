@@ -3,8 +3,8 @@ using Checkly.Api.Common.Persistence.Entities;
 namespace Checkly.Api.Common.Scoring;
 
 /// <summary>
-/// Server-side scoring verifier — C# port of the Unified Penalty-First algorithm.
-/// Recalculates the audit score and compares to the client-submitted value.
+/// Server-side scoring verifier — C# port of the Flutter scoring engine.
+/// Supports Penalty (weighted + checklist fallback), Accumulation, and Checklist modes.
 /// Tolerance: |client - server| must be <= 0.01.
 /// </summary>
 public sealed class ScoringVerifier
@@ -21,7 +21,8 @@ public sealed class ScoringVerifier
         IReadOnlyList<Answer> answers,
         IReadOnlyList<Group> groups,
         IReadOnlyList<Criterion> criteria,
-        bool progressiveRepeatPenalty = false)
+        bool progressiveRepeatPenalty = false,
+        string scoringMode = "penalty")
     {
         // Check for RISK — any RISK criteria with faults → total score = 0
         var riskTriggered = criteria
@@ -34,45 +35,47 @@ public sealed class ScoringVerifier
             return new VerificationResult(
                 Math.Abs(clientScore - serverScore) <= Tolerance,
                 serverScore,
-                riskTriggered ? "RISK criteria triggered — total score forced to 0%" : null);
+                "RISK criteria triggered — total score forced to 0%");
         }
 
-        // Get root groups (sections) — ParentId == null
-        var rootGroups = groups.Where(g => g.ParentId == null).ToList();
+        return scoringMode switch
+        {
+            "accumulation" => VerifyAccumulation(clientScore, answers, groups, criteria),
+            "checklist" => VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty),
+            _ => VerifyPenalty(clientScore, answers, groups, criteria, progressiveRepeatPenalty),
+        };
+    }
 
-        // Check if weighted density is active (all roots have weight > 0 and sum ~100)
+    private VerificationResult VerifyPenalty(
+        decimal clientScore,
+        IReadOnlyList<Answer> answers,
+        IReadOnlyList<Group> groups,
+        IReadOnlyList<Criterion> criteria,
+        bool progressiveRepeatPenalty)
+    {
+        var rootGroups = groups.Where(g => g.ParentId == null).ToList();
         var totalWeight = rootGroups.Sum(g => g.Weight ?? 0);
         var isWeighted = totalWeight > 0;
 
         if (isWeighted)
         {
-            // Weighted penalty mode: sum((sectionAfter / sectionBefore) * sectionWeight)
             var finalScore = 0m;
-
             foreach (var section in rootGroups)
             {
                 var sectionCriteria = GetCriteriaForGroup(section.Id, groups, criteria);
                 var ccpTriggered = sectionCriteria.Any(c => c.IsCcp && HasFaults(c, answers));
-
-                if (ccpTriggered)
-                {
-                    // CCP: section score = 0, contributes 0 to weighted total
-                    continue;
-                }
+                if (ccpTriggered) continue;
 
                 var sectionBefore = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
                 if (sectionBefore == 0) continue;
 
                 var sectionDeductions = sectionCriteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
-
-                // Cap deductions at MaxDeductionPoints if set (per SCORING_LOGIC.md)
                 if (section.MaxDeductionPoints.HasValue)
                     sectionDeductions = Math.Min(sectionDeductions, section.MaxDeductionPoints.Value);
 
                 var sectionAfter = Math.Max(0, sectionBefore - sectionDeductions);
                 var sectionRatio = sectionAfter / sectionBefore;
                 var sectionWeight = (section.Weight ?? 0) / totalWeight;
-
                 finalScore += sectionRatio * sectionWeight;
             }
 
@@ -84,19 +87,83 @@ public sealed class ScoringVerifier
         }
         else
         {
-            // Checklist fallback: (totalPoints - deductions) / totalPoints * 100
-            var totalPoints = criteria.Sum(c => c.PointsWeight ?? 0);
-            if (totalPoints == 0)
-                return new VerificationResult(clientScore == 100, 100, null);
-
-            var totalDeductions = criteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
-            var serverScore = Math.Max(0, (totalPoints - totalDeductions) / totalPoints * 100);
-
-            return new VerificationResult(
-                Math.Abs(clientScore - serverScore) <= Tolerance,
-                Math.Round(serverScore, 2),
-                null);
+            return VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty);
         }
+    }
+
+    private VerificationResult VerifyChecklist(
+        decimal clientScore,
+        IReadOnlyList<Answer> answers,
+        IReadOnlyList<Criterion> criteria,
+        bool progressiveRepeatPenalty)
+    {
+        var totalPoints = criteria.Sum(c => c.PointsWeight ?? 0);
+        if (totalPoints == 0)
+            return new VerificationResult(clientScore == 100, 100, null);
+
+        var totalDeductions = criteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
+        var serverScore = Math.Max(0, (totalPoints - totalDeductions) / totalPoints * 100);
+
+        return new VerificationResult(
+            Math.Abs(clientScore - serverScore) <= Tolerance,
+            Math.Round(serverScore, 2),
+            null);
+    }
+
+    private VerificationResult VerifyAccumulation(
+        decimal clientScore,
+        IReadOnlyList<Answer> answers,
+        IReadOnlyList<Group> groups,
+        IReadOnlyList<Criterion> criteria)
+    {
+        var rootGroups = groups.Where(g => g.ParentId == null).ToList();
+        decimal totalPossible = 0;
+        decimal totalEarned = 0;
+
+        foreach (var section in rootGroups)
+        {
+            var sectionCriteria = GetCriteriaForGroup(section.Id, groups, criteria);
+            var ccpTriggered = sectionCriteria.Any(c => c.IsCcp && HasFaults(c, answers));
+
+            var sectionPossible = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
+            var sectionEarned = 0m;
+
+            if (!ccpTriggered)
+            {
+                foreach (var c in sectionCriteria)
+                {
+                    var answer = answers.FirstOrDefault(a => a.CriteriaId == c.Id);
+                    if (answer is null) continue;
+
+                    if (string.Equals(c.InputType, "scale", StringComparison.OrdinalIgnoreCase)
+                        && answer.NumericValue.HasValue)
+                    {
+                        // Scale: numericValue IS earned points (partial credit)
+                        sectionEarned += answer.NumericValue.Value;
+                    }
+                    else
+                    {
+                        // Binary: full points if no faults
+                        var faults = answer.NumericValue ?? 0;
+                        var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
+                        if (faults == 0 && !isNonConform)
+                            sectionEarned += c.PointsWeight ?? 0;
+                    }
+                }
+            }
+
+            totalPossible += sectionPossible;
+            totalEarned += sectionEarned;
+        }
+
+        var serverScore = totalPossible > 0
+            ? totalEarned / totalPossible * 100
+            : 100m;
+
+        return new VerificationResult(
+            Math.Abs(clientScore - Math.Round(serverScore, 2)) <= Tolerance,
+            Math.Round(serverScore, 2),
+            null);
     }
 
     /// <summary>

@@ -39,7 +39,7 @@ public static class SyncTemplates
             .Where(t => t.UpdatedAt > since)
             .Select(t => new TemplateDto(
                 t.Id, t.Title, t.Description, t.Type, t.Version,
-                t.IsActive, t.CreatedAt, t.UpdatedAt))
+                t.ScoringLogicConfig, t.IsActive, t.CreatedAt, t.UpdatedAt))
             .ToListAsync(ct);
 
         var groups = await db.Groups

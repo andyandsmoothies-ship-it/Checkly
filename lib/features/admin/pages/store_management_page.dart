@@ -135,7 +135,8 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
 
                       // Area dropdown
                       DropdownButtonFormField<String>(
-                        value: _areas.any((a) => a['id'] == selectedAreaId)
+                        initialValue:
+                            _areas.any((a) => a['id'] == selectedAreaId)
                             ? selectedAreaId
                             : null,
                         borderRadius: BorderRadius.circular(12),

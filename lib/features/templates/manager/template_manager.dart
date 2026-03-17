@@ -105,6 +105,7 @@ class TemplateManager extends ChangeNotifier {
             description: fresh.description,
             type: fresh.type,
             version: fresh.version,
+            scoringLogicConfig: fresh.scoringLogicConfig,
             isActive: fresh.isActive,
             createdAt: fresh.createdAt,
             updatedAt: fresh.updatedAt,

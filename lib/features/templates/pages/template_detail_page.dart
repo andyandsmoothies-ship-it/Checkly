@@ -352,7 +352,9 @@ class _SectionCard extends StatelessWidget {
                             ),
                           );
                         }
-                      } catch (_) {}
+                      } catch (e) {
+                        debugPrint('Metadata display parse: $e');
+                      }
                       return const SizedBox.shrink();
                     },
                   ),

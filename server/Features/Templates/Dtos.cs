@@ -9,6 +9,7 @@ public sealed record TemplateDto(
     string? Description,
     string Type,
     int Version,
+    string? ScoringLogicConfig,
     bool IsActive,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);

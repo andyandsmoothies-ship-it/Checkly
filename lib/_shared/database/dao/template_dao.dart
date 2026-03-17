@@ -188,6 +188,7 @@ class TemplateDao {
     description: row.description,
     type: row.type,
     version: row.version,
+    scoringLogicConfig: row.scoringLogicConfig,
     isActive: row.isActive,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -201,7 +202,7 @@ class TemplateDao {
         type: dto.type,
         version: Value(dto.version),
         isActive: Value(dto.isActive),
-        scoringLogicConfig: const Value(null),
+        scoringLogicConfig: Value(dto.scoringLogicConfig),
         createdAt: dto.createdAt,
         updatedAt: dto.updatedAt,
       );

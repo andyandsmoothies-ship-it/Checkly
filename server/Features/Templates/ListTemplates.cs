@@ -16,7 +16,7 @@ public static class ListTemplates
             .Take(200)
             .Select(t => new TemplateDto(
                 t.Id, t.Title, t.Description, t.Type, t.Version,
-                t.IsActive, t.CreatedAt, t.UpdatedAt))
+                t.ScoringLogicConfig, t.IsActive, t.CreatedAt, t.UpdatedAt))
             .ToListAsync(ct);
 
         return TypedResults.Ok(templates);

@@ -68,7 +68,19 @@ public static class FinalizeSubmission
             .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
             .ToListAsync(ct);
 
-        // 4. Verify score
+        // 4. Verify score — parse scoring mode from template config
+        var scoringMode = "penalty";
+        if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
+        {
+            try
+            {
+                var configDoc = System.Text.Json.JsonDocument.Parse(template.ScoringLogicConfig);
+                if (configDoc.RootElement.TryGetProperty("scoringMode", out var modeElem))
+                    scoringMode = modeElem.GetString() ?? "penalty";
+            }
+            catch { /* malformed config → default to penalty */ }
+        }
+
         var tempAnswers = request.Answers.Select(a => new Answer
         {
             CriteriaId = a.CriteriaId,
@@ -76,7 +88,8 @@ public static class FinalizeSubmission
             Value = a.Value
         }).ToList();
 
-        var verification = scorer.Verify(request.ClientScore, tempAnswers, groups, criteria);
+        var verification = scorer.Verify(request.ClientScore, tempAnswers, groups, criteria,
+            scoringMode: scoringMode);
 
         var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid && scoreMode == "enforce")

@@ -8,6 +8,7 @@ class TemplateDto {
   final String? description;
   final String type;
   final int version;
+  final String? scoringLogicConfig;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -18,6 +19,7 @@ class TemplateDto {
     this.description,
     required this.type,
     required this.version,
+    this.scoringLogicConfig,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
@@ -29,6 +31,7 @@ class TemplateDto {
     description: json['description'] as String?,
     type: json['type'] as String,
     version: json['version'] as int,
+    scoringLogicConfig: json['scoringLogicConfig'] as String?,
     isActive: json['isActive'] as bool,
     createdAt: DateTime.parse(json['createdAt'] as String),
     updatedAt: DateTime.parse(json['updatedAt'] as String),

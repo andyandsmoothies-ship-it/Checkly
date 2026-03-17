@@ -38,6 +38,6 @@ public static class CreateTemplate
             $"/api/templates/{template.Id}",
             new TemplateDto(
                 template.Id, template.Title, template.Description, template.Type,
-                template.Version, template.IsActive, template.CreatedAt, template.UpdatedAt));
+                template.Version, template.ScoringLogicConfig, template.IsActive, template.CreatedAt, template.UpdatedAt));
     }
 }

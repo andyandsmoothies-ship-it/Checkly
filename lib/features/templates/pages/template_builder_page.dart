@@ -103,7 +103,9 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
           if (config['reminderDays'] != null) {
             _reminderCtrl.text = config['reminderDays'].toString();
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('ScoringLogicConfig parse error: $e');
+        }
       }
     }
     setState(() => _loading = false);
@@ -255,12 +257,16 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
         for (final cId in _deletedCriteriaIds) {
           try {
             await _manager.deleteCriterion(templateId, cId);
-          } catch (_) {} // Ignore already-deleted
+          } catch (e) {
+            debugPrint('Delete criterion $cId: $e');
+          } // Ignore already-deleted
         }
         for (final gId in _deletedGroupIds) {
           try {
             await _manager.deleteGroup(templateId, gId);
-          } catch (_) {} // Ignore already-deleted
+          } catch (e) {
+            debugPrint('Delete group $gId: $e');
+          } // Ignore already-deleted
         }
       }
       _deletedCriteriaIds.clear();
@@ -532,7 +538,9 @@ class _EditableGroup {
         if (meta['minus_per_fault'] != null) {
           minusPf = meta['minus_per_fault'].toString();
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Group metadata parse: $e');
+      }
     }
     return _EditableGroup(
       id: dto.id,
@@ -613,7 +621,9 @@ class _EditableCriterion {
                 ?.map((e) => Map<String, dynamic>.from(e as Map))
                 .toList() ??
             [];
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Criterion metadata parse: $e');
+      }
     }
     return _EditableCriterion(
       id: dto.id,
@@ -679,7 +689,7 @@ class _MetadataFormCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _templateTypes.contains(type) ? type : 'qc',
+              initialValue: _templateTypes.contains(type) ? type : 'qc',
               decoration: const InputDecoration(labelText: 'Template Type'),
               borderRadius: BorderRadius.circular(12),
               items: _templateTypes
@@ -748,7 +758,7 @@ class _ScoringRulesCard extends StatelessWidget {
             const SectionHeader('SCORING FORMULA'),
             const SizedBox(height: 4),
             DropdownButtonFormField<String>(
-              value: scoringMode,
+              initialValue: scoringMode,
               decoration: const InputDecoration(
                 labelText: 'Scoring Mode',
                 isDense: true,
@@ -1264,7 +1274,7 @@ class _CriteriaEditor extends StatelessWidget {
 
               // Input Type selector
               DropdownButtonFormField<String>(
-                value: criterion.inputType,
+                initialValue: criterion.inputType,
                 decoration: const InputDecoration(
                   labelText: 'Input Type',
                   isDense: true,

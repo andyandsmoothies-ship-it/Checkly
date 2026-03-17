@@ -22,7 +22,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
   final _searchController = TextEditingController();
   List<Map<String, dynamic>> _users = [];
   List<Map<String, dynamic>> _areas = [];
-  List<Map<String, dynamic>> _stores = [];
   bool _isLoading = true;
   String? _error;
   String _selectedRole = 'all';
@@ -61,17 +60,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
         search: search.isEmpty ? null : search,
       );
       final areasFuture = _loadAreas();
-      final storesFuture = _loadStores();
 
       final users = await usersFuture;
       final areas = await areasFuture;
-      final stores = await storesFuture;
 
       if (!mounted) return;
       setState(() {
         _users = users;
         _areas = areas;
-        _stores = stores;
         _isLoading = false;
       });
     } catch (e) {
@@ -185,7 +181,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
                   // Role dropdown
                   DropdownButtonFormField<String>(
-                    value: selectedRole,
+                    initialValue: selectedRole,
                     borderRadius: BorderRadius.circular(12),
                     decoration: const InputDecoration(
                       labelText: 'Role',
@@ -233,7 +229,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   if (selectedRole == 'store_manager') ...[
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value:
+                      initialValue:
                           assignableStores.any(
                             (s) => s['id'] == selectedStoreId,
                           )
@@ -265,7 +261,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   if (selectedRole == 'area_manager') ...[
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _areas.any((a) => a['id'] == selectedAreaId)
+                      initialValue: _areas.any((a) => a['id'] == selectedAreaId)
                           ? selectedAreaId
                           : null,
                       borderRadius: BorderRadius.circular(12),
@@ -396,8 +392,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           : null,
                     ),
                     onChanged: (_) {
-                      if (passError != null)
+                      if (passError != null) {
                         setDlgState(() => passError = null);
+                      }
                     },
                   ),
                 ],
@@ -498,8 +495,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       ),
                       textCapitalization: TextCapitalization.words,
                       onChanged: (_) {
-                        if (nameError != null)
+                        if (nameError != null) {
                           setSheetState(() => nameError = null);
+                        }
                       },
                     ),
                     const SizedBox(height: 12),
@@ -514,8 +512,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       ),
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (_) {
-                        if (emailError != null)
+                        if (emailError != null) {
                           setSheetState(() => emailError = null);
+                        }
                       },
                     ),
                     const SizedBox(height: 12),
@@ -533,14 +532,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       ),
                       obscureText: true,
                       onChanged: (_) {
-                        if (passwordError != null)
+                        if (passwordError != null) {
                           setSheetState(() => passwordError = null);
+                        }
                       },
                     ),
                     const SizedBox(height: 12),
 
                     DropdownButtonFormField<String>(
-                      value: selectedRole,
+                      initialValue: selectedRole,
                       borderRadius: BorderRadius.circular(12),
                       decoration: const InputDecoration(
                         labelText: 'Role',
@@ -587,7 +587,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     if (selectedRole == 'store_manager') ...[
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: selectedStoreId,
+                        initialValue: selectedStoreId,
                         borderRadius: BorderRadius.circular(12),
                         decoration: const InputDecoration(
                           labelText: 'Assigned Store',
@@ -614,7 +614,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     if (selectedRole == 'area_manager') ...[
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: selectedAreaId,
+                        initialValue: selectedAreaId,
                         borderRadius: BorderRadius.circular(12),
                         decoration: const InputDecoration(
                           labelText: 'Assigned Area',
@@ -652,8 +652,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                 String? nErr;
                                 String? eErr;
                                 String? pErr;
-                                if (name.isEmpty)
+                                if (name.isEmpty) {
                                   nErr = 'Full name is required';
+                                }
                                 if (email.isEmpty) eErr = 'Email is required';
                                 if (pass.isEmpty) pErr = 'Password is required';
 
