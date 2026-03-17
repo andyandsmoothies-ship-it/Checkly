@@ -382,4 +382,44 @@ void main() {
     final result = ScoringEngine.calculate(input);
     expect(result.totalScore, closeTo(100.00, 0.01));
   });
+
+  // ================================================================
+  // Scenario 16: Accumulation + Scale partial credit → 75%
+  // ================================================================
+  test('V16: Accumulation + Scale partial credit → 75%', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 100,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'scale',
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'scale',
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        AnswerInput(criteriaId: 'c1', numericValue: 5, value: 'Good'),
+        AnswerInput(criteriaId: 'c2', numericValue: 10, value: 'Excellent'),
+      ],
+      scoringMode: ScoringMode.accumulation,
+    );
+    final result = ScoringEngine.calculate(input);
+    // Earned 5 + 10 = 15 out of possible 10 + 10 = 20 → 75%
+    expect(result.totalScore, closeTo(75.00, 0.01));
+  });
 }

@@ -226,6 +226,7 @@ class AuditManager extends ChangeNotifier {
           pointsWeight: c.pointsWeight ?? 0,
           isCcp: c.isCcp,
           isRisk: c.isRisk,
+          inputType: c.inputType,
         );
       }).toList();
 
@@ -239,6 +240,7 @@ class AuditManager extends ChangeNotifier {
             pointsWeight: c.pointsWeight ?? 0,
             isCcp: c.isCcp,
             isRisk: c.isRisk,
+            inputType: c.inputType,
           );
         }).toList();
 

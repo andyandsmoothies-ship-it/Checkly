@@ -15,6 +15,7 @@ class CriterionInput {
   final bool isCcp;
   final bool isRisk;
   final double? minusImpact; // C4: overrides pointsWeight for deduction
+  final String inputType; // 'numeric', 'pass_fail', 'scale'
 
   const CriterionInput({
     required this.id,
@@ -23,6 +24,7 @@ class CriterionInput {
     required this.isCcp,
     required this.isRisk,
     this.minusImpact,
+    this.inputType = 'numeric',
   });
 }
 
@@ -353,10 +355,16 @@ class ScoringEngine {
         if (answer == null) continue;
 
         // Correct = no faults AND not non_conform
-        final faults = answer.numericValue ?? 0;
-        final isNonConform = answer.value?.toLowerCase() == 'non_conform';
-        if (faults == 0 && !isNonConform && answer.repeatedFaults == 0) {
-          sectionEarned += c.pointsWeight;
+        if (c.inputType == 'scale' && answer.numericValue != null) {
+          // Scale: numericValue IS the earned points (partial credit)
+          sectionEarned += answer.numericValue!;
+        } else {
+          // Binary: full points if no faults, 0 if any fault
+          final faults = answer.numericValue ?? 0;
+          final isNonConform = answer.value?.toLowerCase() == 'non_conform';
+          if (faults == 0 && !isNonConform && answer.repeatedFaults == 0) {
+            sectionEarned += c.pointsWeight;
+          }
         }
       }
 
