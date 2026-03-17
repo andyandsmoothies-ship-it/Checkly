@@ -29,6 +29,7 @@ import '../../features/analytics/pages/analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
 import '../../features/templates/pages/template_builder_page.dart';
 import '../../features/notifications/pages/notification_drawer_page.dart';
+import '../../features/audit/pages/survey_results_page.dart';
 
 final _di = GetIt.instance;
 
@@ -161,6 +162,11 @@ final appRouter = GoRouter(
       path: '/templates/:id/builder',
       builder: (context, state) =>
           TemplateBuilderPage(templateId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/survey-results/:templateId',
+      builder: (context, state) =>
+          SurveyResultsPage(templateId: state.pathParameters['templateId']!),
     ),
   ],
 );

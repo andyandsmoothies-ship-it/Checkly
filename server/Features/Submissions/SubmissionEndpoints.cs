@@ -17,6 +17,9 @@ public static class SubmissionEndpoints
         group.MapGet("/", ListSubmissions.HandleAsync)
             .WithName("ListSubmissions");
 
+        group.MapGet("/survey-results", GetSurveyResults.HandleAsync)
+            .WithName("GetSurveyResults");
+
         group.MapGet("/{id}", GetSubmission.HandleAsync)
             .WithName("GetSubmission");
 

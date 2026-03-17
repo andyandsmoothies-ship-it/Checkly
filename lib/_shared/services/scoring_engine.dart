@@ -5,7 +5,7 @@ import 'dart:math';
 // ============================================================
 
 /// Scoring mode for the template.
-enum ScoringMode { penalty, accumulation, checklist }
+enum ScoringMode { penalty, accumulation, checklist, survey }
 
 /// A single criterion (question) in a section.
 class CriterionInput {
@@ -116,7 +116,8 @@ class SectionScore {
 /// Result from the scoring engine.
 class ScoringResult {
   /// Total audit score 0.00 – 100.00, rounded to 2 decimal places.
-  final double totalScore;
+  /// Null when scoring mode is 'survey' (no-score data collection).
+  final double? totalScore;
 
   /// Per-section score breakdown.
   final Map<String, SectionScore> sectionScores;
@@ -132,13 +133,18 @@ class ScoringResult {
 }
 
 // ============================================================
-// Scoring Engine — supports Penalty, Accumulation, Checklist.
+// Scoring Engine — supports Penalty, Accumulation, Checklist, Survey.
 //
 // CCP/RISK flags come from BOTH template criteria AND answer overrides.
 // ============================================================
 class ScoringEngine {
   /// Calculates the audit score based on the scoring mode.
   static ScoringResult calculate(ScoringInput input) {
+    // Survey mode: no scoring at all — return immediately
+    if (input.scoringMode == ScoringMode.survey) {
+      return const ScoringResult(totalScore: null);
+    }
+
     final answerMap = <String, AnswerInput>{};
     for (final a in input.answers) {
       answerMap[a.criteriaId] = a;
@@ -175,6 +181,8 @@ class ScoringEngine {
         return _calculateAccumulation(input, answerMap, hasRiskFailure);
       case ScoringMode.checklist:
         return _calculateChecklist(input, answerMap, hasRiskFailure);
+      case ScoringMode.survey:
+        return const ScoringResult(totalScore: null); // unreachable
     }
   }
 

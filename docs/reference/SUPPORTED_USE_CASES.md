@@ -8,11 +8,12 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 
 | Feature | Options |
 |---------|---------|
-| **Scoring Modes** | Penalty (Top-Down), Accumulation (Zero-to-Top), Checklist (Flat Deduction) |
-| **Input Types** | Pass/Fail (Binary), Numeric (Fault counting + Repeats), Scale (Admin-defined gradient) |
+| **Scoring Modes** | Penalty (Top-Down), Accumulation (Zero-to-Top), Checklist (Flat Deduction), Survey (No Scoring) |
+| **Input Types** | Pass/Fail (Binary), Numeric (Fault counting + Repeats), Scale (Admin-defined gradient), Single Choice (Radio), Multi Choice (Checkbox) |
 | **Hierarchy** | 2-level (Section → Criteria) or 3-level (Section → Sub-section → Criteria) |
 | **Critical Failure** | CCP (Zeros the section), RISK (Zeros the entire audit) |
 | **Other Modifiers** | Progressive Repeat Penalty, Confirm Correct, Weighted Density |
+| **Analytics** | Survey Results — aggregated option distribution per question (admin-only) |
 
 ---
 
@@ -143,6 +144,38 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 1. **Scoring Mode:** `Checklist (Pass/Fail)`.
 2. **Criteria Input Type:** `Pass / Fail`.
 3. **Flags:** Apply `RISK` to every critical item (engine, brakes, lights). Any failure = immediate 0%.
+
+---
+
+## 🟣 SURVEY MODE (No Scoring)
+*Collect qualitative feedback without numerical scoring. Answers are aggregated into response analytics.*
+
+### 13. Employee Satisfaction Survey (HR)
+**Goal:** Gather anonymous feedback on workplace conditions, management, and culture.
+
+**Admin Setup Workflow:**
+1. **Scoring Mode:** Select `Survey (No Scoring)`.
+2. **Hierarchy:** 2-Level (Section: Work Environment → Criteria: "How satisfied are you with your workspace?").
+3. **Criteria Input Type:** `Single Choice (Radio)` — options like "Very Satisfied", "Satisfied", "Neutral", "Dissatisfied".
+4. **Result:** No score is calculated. Admin views aggregated response distribution via **Survey Results** page.
+
+### 14. Customer Feedback Form (Retail, F&B)
+**Goal:** Collect customer opinions across multiple service dimensions.
+
+**Admin Setup Workflow:**
+1. **Scoring Mode:** `Survey (No Scoring)`.
+2. **Hierarchy:** 2-Level (Section: Service → Criteria: "What aspects did you enjoy?").
+3. **Criteria Input Type:** `Multi Choice (Checkbox)` — options like "Friendly Staff", "Fast Service", "Clean Environment", "Good Value".
+4. **Analytics:** Admin navigates to Template Detail → **View Survey Results** to see option distribution with percentages.
+
+### 15. Post-Training Feedback (HR, Any Industry)
+**Goal:** Collect trainee reactions after a training session.
+
+**Admin Setup Workflow:**
+1. **Scoring Mode:** `Survey (No Scoring)`.
+2. **Criteria Input Type:** Mix of `Single Choice` (rating questions) and `Multi Choice` ("Which topics were most useful?").
+3. **Choice Options:** Configure 3-5 options per question in the Template Builder's "Choice Options" editor.
+4. **Expert Note:** Survey submissions appear on the History page with a purple **SURVEY** badge instead of a score. Points weight is hidden for choice-type criteria.
 
 ---
 

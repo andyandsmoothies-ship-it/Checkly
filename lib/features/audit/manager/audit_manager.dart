@@ -88,8 +88,8 @@ class AuditManager extends ChangeNotifier {
   final Map<String, AuditAnswer> _answers = {};
   Map<String, AuditAnswer> get answers => Map.unmodifiable(_answers);
 
-  double _liveScore = 100.0;
-  double get liveScore => _liveScore;
+  double? _liveScore = 100.0;
+  double? get liveScore => _liveScore;
 
   Map<String, SectionScore> _sectionScores = {};
   Map<String, SectionScore> get sectionScores => _sectionScores;
@@ -305,6 +305,7 @@ class AuditManager extends ChangeNotifier {
       final mode = config['scoringMode'] as String?;
       if (mode == 'accumulation') return ScoringMode.accumulation;
       if (mode == 'checklist') return ScoringMode.checklist;
+      if (mode == 'survey') return ScoringMode.survey;
     } catch (e) {
       debugPrint('Parse scoringMode: $e');
     }
@@ -404,7 +405,7 @@ class AuditManager extends ChangeNotifier {
           idempotencyKey: idempotencyKey,
           templateId: _template!.id,
           storeId: _storeId!,
-          clientScore: _liveScore,
+          clientScore: _liveScore ?? 0.0,
           sectionScores: Value(_buildSectionScoresJson()),
           notes: Value(_notes),
           gpsLat: Value(_gpsLat),

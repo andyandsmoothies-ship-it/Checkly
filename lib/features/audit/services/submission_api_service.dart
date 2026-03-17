@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../model/submission_dto.dart';
+import '../pages/survey_results_page.dart';
 
 /// API service for submission endpoints.
 class SubmissionApiService {
@@ -78,5 +79,17 @@ class SubmissionApiService {
       data: {'status': status},
     );
     return response.data as Map<String, dynamic>;
+  }
+
+  /// GET /submissions/survey-results?templateId=... — aggregated survey results.
+  Future<List<SurveyQuestionResult>> getSurveyResults(String templateId) async {
+    final response = await _dio.get(
+      '/submissions/survey-results',
+      queryParameters: {'templateId': templateId},
+    );
+    final list = response.data as List<dynamic>;
+    return list
+        .map((j) => SurveyQuestionResult.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
 }

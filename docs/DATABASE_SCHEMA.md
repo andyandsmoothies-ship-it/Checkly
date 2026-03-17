@@ -99,7 +99,7 @@ Audit templates define the structure of an audit (what to check).
 | `type` | text? | Category: `qc`, `training`, `general` |
 | `is_active` | boolean | Soft delete flag |
 | `version` | integer | Concurrency control (optimistic locking) |
-| `scoring_logic_config` | jsonb? | Scoring rules: mode (penalty/accumulation/checklist), density flags, and repeat config |
+| `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, and repeat config |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last update |
 
@@ -134,14 +134,14 @@ Individual checklist items within a group that auditors evaluate.
 | `id` | UUID (PK) | Unique criteria ID |
 | `group_id` | UUID (FK → groups) | Parent group/section |
 | `label` | text | Question text (e.g., "Floor cleanliness maintained?") |
-| `input_type` | text | `pass_fail`, `numeric`, or `scale` (Maturity Matrix) |
+| `input_type` | text | `pass_fail`, `numeric`, `scale`, `single_choice`, or `multi_choice` |
 | `is_ccp` | boolean | Critical Control Point — fail = section score → 0% |
 | `is_risk` | boolean | RISK item — fail = entire audit score → 0% |
 | `points_weight` | decimal? | Deduction weight for standard scoring |
 | `minus_per_fault` | decimal? | Deduction per fault for numeric input |
 | `minus_impact` | decimal? | C4 override: uses this instead of `points_weight` |
 | `order_index` | integer | Display order within group |
-| `metadata` | jsonb? | Extra UI config like `scaleOptions` for Scale inputs |
+| `metadata` | jsonb? | Extra UI config: `scaleOptions` for Scale, `{"options":[...]}` for Single/Multi Choice |
 | `is_active` | boolean | Soft delete flag |
 
 ---
@@ -183,7 +183,7 @@ Individual responses to each criteria within a submission.
 | `id` | UUID (PK) | Unique answer ID |
 | `submission_id` | UUID (FK → submissions) | Parent submission |
 | `criteria_id` | UUID (FK → criteria) | Which criteria this answers |
-| `value` | text? | `pass`, `fail`, or `na` |
+| `value` | text? | `pass`, `fail`, `na`, option label (single choice), or comma-separated labels (multi choice) |
 | `numeric_value` | decimal? | Fault count (for numeric criteria) |
 | `photo_url` | text? | Path to evidence photo |
 | `note` | text? | Auditor's comment |

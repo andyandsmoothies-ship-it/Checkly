@@ -1,6 +1,6 @@
-# Checkly Penalty-based Scoring System (Unified Penalty Model)
+# Checkly Scoring System
 
-This document describes the technical implementation and business rules for the **Deduction (Penalty) Mode** scoring logic, which is the unified standard for all template types (QC, Training, General) in Checkly.
+This document describes the technical implementation and business rules for all scoring modes in Checkly: **Penalty**, **Accumulation**, **Checklist**, and **Survey**.
 
 > [!NOTE]
 > As of 2026-03-17, **template type is a pure filter tag**. All features (Points, CCP, RISK, Confirm Correct, Weighted Density, Progressive Repeat) are universally available regardless of type. The `templateType == 'qc'` conditional logic has been fully removed.
@@ -70,7 +70,7 @@ The live HUD in the Audit Form displays "Points Earned / Points Possible".
 - **Points Earned**: `SUM(Section After)` (where `Section After` is forced to 0 if a CCP is present in that section).
 
 > [!IMPORTANT]
-> **Unified Mode Enforcement**: All templates are forced to `scoring_type: 'penalty'`. Accumulation-based scoring (Standard Mode) is deprecated to ensure a consistent UX where every audit starts at a perfect score.
+> **Multi-Mode Support**: Templates support four scoring modes via `scoring_logic_config.scoringMode`: `penalty` (default), `accumulation`, `checklist`, and `survey`. The mode determines how the scoring engine calculates the final score.
 
 ### Confirm Correct (Toggle)
 When the template scoring config has `confirm_correct: true`:
@@ -79,7 +79,19 @@ When the template scoring config has `confirm_correct: true`:
 - Confirmed state shows solid green; unconfirmed shows a primary-themed outline
 
 
-## 5. Technical Implementation
+## 5. Survey Mode (No Scoring)
+
+When `scoringMode == 'survey'`, the scoring engine skips all calculation — `totalScore` is `null`.
+
+- **No live score HUD** — the score display is hidden in the audit form
+- **Answers stored normally** — `Answer.Value` holds the selected option label (or comma-separated for multi-choice)
+- **Analytics endpoint**: `GET /api/submissions/survey-results?templateId={id}` — admin-only, aggregates option counts per criterion
+- **Choice input types**: `single_choice` (radio buttons) and `multi_choice` (checkboxes) — options stored in `criteria.metadata` as `{"options": ["A","B","C"]}`
+- **History badge**: Completed survey submissions show a purple **SURVEY** badge instead of a score
+
+---
+
+## 6. Technical Implementation
 
 ### Flutter Mobile (Primary)
 - **Scoring Engine**: `lib/features/audit/services/scoring_engine.dart`
@@ -87,6 +99,7 @@ When the template scoring config has `confirm_correct: true`:
 - **Audit Form Page**: `lib/features/audit/pages/audit_form_page.dart`
 - **Template Builder**: `lib/features/templates/pages/template_builder_page.dart`
 - **Template Detail**: `lib/features/templates/pages/template_detail_page.dart`
+- **Survey Results Page**: `lib/features/audit/pages/survey_results_page.dart`
 
 ### PWA (Legacy Reference)
 - **Source Code**: `src/lib/scoringEngine.ts`
@@ -110,7 +123,7 @@ The `finalize_audit` RPC includes **synchronous server-side score verification**
 
 ---
 
-## 6. Assignment Rules (SM / AM Constraints)
+## 7. Assignment Rules (SM / AM Constraints)
 
 These rules govern how users are assigned to stores and areas.
 
@@ -149,6 +162,6 @@ When replacing a Store Manager (SM), open action plans must be transferred atomi
 
 ---
 
-## 7. Action Plan Lifecycle
+## 8. Action Plan Lifecycle
 
 > For action plan creation rules, status transitions, notifications, deadlines, and dashboard metric impact, see [CORE_WORKFLOWS.md](./CORE_WORKFLOWS.md).

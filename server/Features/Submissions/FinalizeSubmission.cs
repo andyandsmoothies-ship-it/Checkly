@@ -106,7 +106,7 @@ public static class FinalizeSubmission
         // 5. Update submission
         var now = DateTimeOffset.UtcNow;
         submission.Status = "completed";
-        submission.TotalScore = verification.ServerScore;
+        submission.TotalScore = scoringMode == "survey" ? null : verification.ServerScore;
         submission.SectionScores = request.SectionScores;
         submission.Notes = request.Notes;
         submission.GpsLat = request.GpsLat;

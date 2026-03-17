@@ -186,6 +186,19 @@ class _OverviewCard extends StatelessWidget {
               _StatChip(icon: Icons.update, label: 'v${tree.version}'),
             ],
           ),
+
+          // Survey results button (survey mode only)
+          if (rules.contains('Survey Mode')) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => context.push('/survey-results/${tree.id}'),
+                icon: const Icon(Icons.poll_outlined, size: 18),
+                label: const Text('View Survey Results'),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -207,6 +220,14 @@ class _OverviewCard extends StatelessWidget {
     try {
       final map = json.decode(config) as Map<String, dynamic>;
       final rules = <String>[];
+      // Scoring mode badge (primary identifier)
+      final mode = map['scoringMode'] as String? ?? 'penalty';
+      rules.add(switch (mode) {
+        'accumulation' => 'Accumulation Mode',
+        'checklist' => 'Checklist Mode',
+        'survey' => 'Survey Mode',
+        _ => 'Penalty Mode',
+      });
       if (map['ccpOverride'] == true) rules.add('CCP Override');
       if (map['riskOverride'] == true) rules.add('Risk Multipliers');
       if (map['weightedDensity'] == true) rules.add('Weighted Density');

@@ -4,14 +4,14 @@ namespace Checkly.Api.Common.Scoring;
 
 /// <summary>
 /// Server-side scoring verifier — C# port of the Flutter scoring engine.
-/// Supports Penalty (weighted + checklist fallback), Accumulation, and Checklist modes.
+/// Supports Penalty (weighted + checklist fallback), Accumulation, Checklist, and Survey modes.
 /// Tolerance: |client - server| must be <= 0.01.
 /// </summary>
 public sealed class ScoringVerifier
 {
     private const decimal Tolerance = 0.01m;
 
-    public sealed record VerificationResult(bool IsValid, decimal ServerScore, string? Reason);
+    public sealed record VerificationResult(bool IsValid, decimal? ServerScore, string? Reason);
 
     /// <summary>
     /// Verifies the client-submitted score against a server-side recalculation.
@@ -42,6 +42,7 @@ public sealed class ScoringVerifier
         {
             "accumulation" => VerifyAccumulation(clientScore, answers, groups, criteria),
             "checklist" => VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty),
+            "survey" => new VerificationResult(true, null, "Survey mode — no scoring"),
             _ => VerifyPenalty(clientScore, answers, groups, criteria, progressiveRepeatPenalty),
         };
     }

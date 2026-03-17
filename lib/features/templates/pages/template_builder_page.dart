@@ -164,6 +164,10 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             orderIndex: ci,
             metadata: c.inputType == 'scale' && c.scaleOptions.isNotEmpty
                 ? json.encode({'scaleOptions': c.scaleOptions})
+                : (c.inputType == 'single_choice' ||
+                          c.inputType == 'multi_choice') &&
+                      c.choiceOptions.isNotEmpty
+                ? json.encode({'options': c.choiceOptions})
                 : null,
           );
         }).toList(),
@@ -222,6 +226,30 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Scale criteria must have at least 2 options'),
+        ),
+      );
+      return;
+    }
+
+    // Validate choice criteria have at least 2 options
+    bool hasInvalidChoice(List<_EditableGroup> groups) {
+      for (final g in groups) {
+        for (final c in g.criteria) {
+          if ((c.inputType == 'single_choice' ||
+                  c.inputType == 'multi_choice') &&
+              c.choiceOptions.length < 2) {
+            return true;
+          }
+        }
+        if (hasInvalidChoice(g.subSections)) return true;
+      }
+      return false;
+    }
+
+    if (hasInvalidChoice(_sections)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Choice criteria must have at least 2 options'),
         ),
       );
       return;
@@ -596,6 +624,7 @@ class _EditableCriterion {
   bool isCcp;
   bool isRisk;
   List<Map<String, dynamic>> scaleOptions;
+  List<String> choiceOptions;
 
   _EditableCriterion({
     this.id = '',
@@ -606,13 +635,16 @@ class _EditableCriterion {
     this.isCcp = false,
     this.isRisk = false,
     List<Map<String, dynamic>>? scaleOptions,
+    List<String>? choiceOptions,
   }) : labelCtrl = TextEditingController(text: label),
        descCtrl = TextEditingController(text: description),
        pointsCtrl = TextEditingController(text: points),
-       scaleOptions = scaleOptions ?? [];
+       scaleOptions = scaleOptions ?? [],
+       choiceOptions = choiceOptions ?? [];
 
   factory _EditableCriterion.fromDto(CriterionDto dto) {
     List<Map<String, dynamic>> options = [];
+    List<String> choices = [];
     if (dto.metadata != null && dto.inputType == 'scale') {
       try {
         final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
@@ -621,6 +653,14 @@ class _EditableCriterion {
                 ?.map((e) => Map<String, dynamic>.from(e as Map))
                 .toList() ??
             [];
+      } catch (e) {
+        debugPrint('Criterion metadata parse: $e');
+      }
+    } else if (dto.metadata != null &&
+        (dto.inputType == 'single_choice' || dto.inputType == 'multi_choice')) {
+      try {
+        final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
+        choices = (meta['options'] as List?)?.cast<String>() ?? [];
       } catch (e) {
         debugPrint('Criterion metadata parse: $e');
       }
@@ -634,6 +674,7 @@ class _EditableCriterion {
       isCcp: dto.isCcp,
       isRisk: dto.isRisk,
       scaleOptions: options,
+      choiceOptions: choices,
     );
   }
 
@@ -776,12 +817,16 @@ class _ScoringRulesCard extends StatelessWidget {
                   value: 'checklist',
                   child: Text('Checklist (Pass/Fail)'),
                 ),
+                DropdownMenuItem(
+                  value: 'survey',
+                  child: Text('Survey (No Scoring)'),
+                ),
               ],
               onChanged: onScoringModeChanged,
             ),
             const SizedBox(height: 8),
-            // Weighted Density — hidden for Checklist mode
-            if (scoringMode != 'checklist')
+            // Weighted Density — hidden for Checklist and Survey modes
+            if (scoringMode != 'checklist' && scoringMode != 'survey')
               SwitchListTile(
                 title: const Text('Weighted Density'),
                 subtitle: const Text(
@@ -1292,6 +1337,14 @@ class _CriteriaEditor extends StatelessWidget {
                     value: 'scale',
                     child: Text('Scale (Maturity)'),
                   ),
+                  DropdownMenuItem(
+                    value: 'single_choice',
+                    child: Text('Single Choice (Radio)'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'multi_choice',
+                    child: Text('Multi Choice (Checkbox)'),
+                  ),
                 ],
                 onChanged: (v) {
                   criterion.inputType = v ?? criterion.inputType;
@@ -1402,8 +1455,77 @@ class _CriteriaEditor extends StatelessWidget {
                 const SizedBox(height: 8),
               ],
 
-              // Points weight (auto-managed for scale, manual for others)
-              if (criterion.inputType != 'scale')
+              // Choice Options editor (for single_choice / multi_choice)
+              if (criterion.inputType == 'single_choice' ||
+                  criterion.inputType == 'multi_choice') ...[
+                const Text(
+                  'Choice Options',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                ...criterion.choiceOptions.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final label = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            initialValue: label,
+                            decoration: InputDecoration(
+                              labelText: 'Option ${idx + 1}',
+                              isDense: true,
+                            ),
+                            onChanged: (v) {
+                              criterion.choiceOptions[idx] = v;
+                              onChanged();
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.remove_circle_outline,
+                            size: 18,
+                            color: Colors.red.shade400,
+                          ),
+                          onPressed: () {
+                            criterion.choiceOptions.removeAt(idx);
+                            onChanged();
+                            Navigator.pop(ctx);
+                            Future.microtask(() {
+                              if (context.mounted) _openDrawer(context);
+                            });
+                          },
+                          constraints: const BoxConstraints(
+                            minWidth: 32,
+                            minHeight: 32,
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                TextButton.icon(
+                  onPressed: () {
+                    criterion.choiceOptions.add('');
+                    onChanged();
+                    Navigator.pop(ctx);
+                    Future.microtask(() {
+                      if (context.mounted) _openDrawer(context);
+                    });
+                  },
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('Add Option'),
+                ),
+                const SizedBox(height: 8),
+              ],
+
+              // Points weight (auto-managed for scale, hidden for choice, manual for others)
+              if (criterion.inputType != 'scale' &&
+                  criterion.inputType != 'single_choice' &&
+                  criterion.inputType != 'multi_choice')
                 TextFormField(
                   controller: criterion.pointsCtrl,
                   decoration: const InputDecoration(

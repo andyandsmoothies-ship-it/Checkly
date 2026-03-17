@@ -22,4 +22,4 @@ description: Architect's Strategic Research Workflow for System Architecture.
 ## Phase 3: Deliverable (The Handoff)
 - **Requirement**: Always output a structured artifact.
 - **Action**: Create a `concept_brief_[feature].md` or `research_[topic].md` artifact.
-- **Handoff**: If the idea is approved to be built, output a final `implementation_plan.md` artifact containing the proposed architecture and file changes, so the `/implement` Builder agent can take over seamlessly.
+- **Handoff**: If the research concludes the idea is viable, recommend the user run `/analysis` to produce a proper implementation plan. Do NOT generate an `implementation_plan.md` from this workflow — research lacks the system impact analysis and adversarial review required for a quality plan.

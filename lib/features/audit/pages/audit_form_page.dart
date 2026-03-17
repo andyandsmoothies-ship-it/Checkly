@@ -325,12 +325,14 @@ class _AuditFormPageState extends State<AuditFormPage> {
             Text('Criteria answered: $answered / $total'),
             const SizedBox(height: 4),
             Text(
-              'Score: ${manager.liveScore.toStringAsFixed(1)}%',
+              manager.liveScore != null
+                  ? 'Score: ${manager.liveScore!.toStringAsFixed(1)}%'
+                  : 'Survey — No Score',
               style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: manager.liveScore >= 80
+                color: manager.liveScore != null && manager.liveScore! >= 80
                     ? AppTheme.success
-                    : manager.liveScore >= 50
+                    : manager.liveScore != null && manager.liveScore! >= 50
                     ? AppTheme.warning
                     : Theme.of(ctx).colorScheme.error,
               ),
@@ -486,13 +488,14 @@ class _AuditFormPageState extends State<AuditFormPage> {
 // ============================================================
 
 class _ScoreHud extends StatelessWidget {
-  final double score;
+  final double? score;
   final Map<String, SectionScore> sectionScores;
   const _ScoreHud({required this.score, required this.sectionScores});
 
   Color _scoreColor(ThemeData theme) {
-    if (score >= 80) return AppTheme.success;
-    if (score >= 50) return AppTheme.warning;
+    if (score == null) return theme.colorScheme.primary;
+    if (score! >= 80) return AppTheme.success;
+    if (score! >= 50) return AppTheme.warning;
     return theme.colorScheme.error;
   }
 
@@ -533,7 +536,9 @@ class _ScoreHud extends StatelessWidget {
                 ),
               ),
               Text(
-                '${totalEarned.toStringAsFixed(0)} / ${totalMax.toStringAsFixed(0)} pts',
+                score != null
+                    ? '${totalEarned.toStringAsFixed(0)} / ${totalMax.toStringAsFixed(0)} pts'
+                    : 'Survey — No Score',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: color,
@@ -542,16 +547,17 @@ class _ScoreHud extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          SizedBox(
-            width: 52,
-            height: 52,
-            child: CircularProgressIndicator(
-              value: score / 100,
-              strokeWidth: 5,
-              color: color,
-              backgroundColor: color.withAlpha(30),
+          if (score != null)
+            SizedBox(
+              width: 52,
+              height: 52,
+              child: CircularProgressIndicator(
+                value: score! / 100,
+                strokeWidth: 5,
+                color: color,
+                backgroundColor: color.withAlpha(30),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -559,14 +565,14 @@ class _ScoreHud extends StatelessWidget {
 }
 
 class _ScoreChip extends StatelessWidget {
-  final double score;
+  final double? score;
   const _ScoreChip({required this.score});
 
   @override
   Widget build(BuildContext context) {
     return Chip(
       label: Text(
-        '${score.toStringAsFixed(1)}%',
+        score != null ? '${score!.toStringAsFixed(1)}%' : 'Survey',
         style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
       ),
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -937,6 +943,20 @@ Future<void> _showCriterionSheet(
                             numericValue: points,
                           ),
                         )
+                      else if (criterion.inputType == 'single_choice')
+                        _SingleChoiceInput(
+                          criterion: criterion,
+                          selectedValue: answer?.value,
+                          onChanged: (v) =>
+                              manager.setAnswer(criterion.id, value: v),
+                        )
+                      else if (criterion.inputType == 'multi_choice')
+                        _MultiChoiceInput(
+                          criterion: criterion,
+                          selectedValues: answer?.value,
+                          onChanged: (v) =>
+                              manager.setAnswer(criterion.id, value: v),
+                        )
                       else ...[
                         // Faults + Repeats on same row
                         Row(
@@ -1305,6 +1325,134 @@ class _PassFailInput extends StatelessWidget {
           theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
+    );
+  }
+}
+
+class _SingleChoiceInput extends StatelessWidget {
+  final CriterionDto criterion;
+  final String? selectedValue;
+  final ValueChanged<String> onChanged;
+
+  const _SingleChoiceInput({
+    required this.criterion,
+    required this.selectedValue,
+    required this.onChanged,
+  });
+
+  List<String> _parseOptions() {
+    if (criterion.metadata == null) return [];
+    try {
+      final meta = json.decode(criterion.metadata!) as Map<String, dynamic>;
+      return (meta['options'] as List?)?.cast<String>() ?? [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final options = _parseOptions();
+    if (options.isEmpty) {
+      return Text(
+        'No options configured for this criterion.',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.error,
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: options.map((opt) {
+        final isSelected = selectedValue == opt;
+        return InkWell(
+          onTap: () => onChanged(opt),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              children: [
+                Icon(
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  size: 22,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(opt)),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _MultiChoiceInput extends StatelessWidget {
+  final CriterionDto criterion;
+  final String? selectedValues; // comma-separated string
+  final ValueChanged<String> onChanged;
+
+  const _MultiChoiceInput({
+    required this.criterion,
+    required this.selectedValues,
+    required this.onChanged,
+  });
+
+  List<String> _parseOptions() {
+    if (criterion.metadata == null) return [];
+    try {
+      final meta = json.decode(criterion.metadata!) as Map<String, dynamic>;
+      return (meta['options'] as List?)?.cast<String>() ?? [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Set<String> _parseSelected() {
+    if (selectedValues == null || selectedValues!.isEmpty) return {};
+    return selectedValues!.split(',').map((s) => s.trim()).toSet();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final options = _parseOptions();
+    if (options.isEmpty) {
+      return Text(
+        'No options configured for this criterion.',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.error,
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
+    final selected = _parseSelected();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: options.map((opt) {
+        return CheckboxListTile(
+          title: Text(opt),
+          value: selected.contains(opt),
+          onChanged: (checked) {
+            final updated = Set<String>.from(selected);
+            if (checked == true) {
+              updated.add(opt);
+            } else {
+              updated.remove(opt);
+            }
+            onChanged(updated.join(', '));
+          },
+          dense: true,
+          contentPadding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
+          controlAffinity: ListTileControlAffinity.leading,
+        );
+      }).toList(),
     );
   }
 }

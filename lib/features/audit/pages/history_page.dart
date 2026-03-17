@@ -560,6 +560,25 @@ class _AuditCard extends StatelessWidget {
     if (isOverdue) {
       bg = theme.colorScheme.error.withAlpha(20);
       fg = theme.colorScheme.error;
+    } else if (submission.status == 'completed' &&
+        submission.totalScore == null) {
+      // Survey mode — no score
+      bg = theme.colorScheme.tertiary.withAlpha(20);
+      fg = theme.colorScheme.tertiary;
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          'SURVEY',
+          style: theme.textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: fg,
+          ),
+        ),
+      );
     } else {
       switch (submission.status) {
         case 'completed':
