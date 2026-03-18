@@ -216,6 +216,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.AuditorId).HasColumnName("auditor_id");
             e.Property(x => x.StoreId).HasColumnName("store_id");
             e.Property(x => x.Status).HasColumnName("status").HasDefaultValue("draft");
+            e.Property(x => x.ScoringMode).HasColumnName("scoring_mode").HasDefaultValue("penalty");
             e.Property(x => x.TotalScore).HasColumnName("total_score");
             e.Property(x => x.SectionScores).HasColumnName("section_scores").HasColumnType("jsonb");
             e.Property(x => x.GpsLat).HasColumnName("gps_lat");

@@ -7,7 +7,7 @@ namespace Checkly.Api.Features.Submissions;
 /// <summary>
 /// GET /api/submissions/survey-results?templateId={id}
 /// Returns aggregated answer distributions per criterion for survey-mode templates.
-/// Admin-only endpoint.
+/// Admin-only endpoint. Uses SQL GROUP BY for efficiency.
 /// </summary>
 public static class GetSurveyResults
 {
@@ -25,54 +25,82 @@ public static class GetSurveyResults
         if (string.IsNullOrEmpty(templateIdStr) || !Guid.TryParse(templateIdStr, out var templateId))
             return TypedResults.BadRequest(new { error = "templateId query parameter is required" });
 
-        // Load all completed submissions for this template with their answers
-        var answers = await db.Submissions
+        // SQL GROUP BY on answers — no in-memory loading
+        // Filter by scoring_mode instead of joining to templates
+        var grouped = await db.Answers
             .AsNoTracking()
-            .Where(s => s.TemplateId == templateId && s.Status == "completed")
-            .SelectMany(s => s.Answers)
-            .Select(a => new { a.CriteriaId, a.CriteriaLabel, a.Value })
+            .Where(a => a.Submission!.TemplateId == templateId
+                     && a.Submission.Status == "completed"
+                     && a.Submission.ScoringMode == "survey"
+                     && a.Value != null
+                     && a.Value != "")
+            .GroupBy(a => new { a.CriteriaId, a.CriteriaLabel, a.Value })
+            .Select(g => new
+            {
+                g.Key.CriteriaId,
+                g.Key.CriteriaLabel,
+                g.Key.Value,
+                Count = g.Count()
+            })
             .ToListAsync(ct);
 
-        if (answers.Count == 0)
+        if (grouped.Count == 0)
             return TypedResults.Ok(Array.Empty<object>());
 
-        // Group by criterion, then count each value
-        var results = answers
-            .GroupBy(a => new { a.CriteriaId, a.CriteriaLabel })
-            .Select(g =>
+        // Post-process: handle multi-choice comma-separated values in C#
+        // and aggregate into per-criterion results
+        var criterionMap = new Dictionary<Guid, CriterionAggregator>();
+
+        foreach (var row in grouped)
+        {
+            var key = row.CriteriaId ?? Guid.Empty;
+            if (!criterionMap.TryGetValue(key, out var agg))
             {
-                // For multi_choice, values are comma-separated — split them
-                var allValues = g
-                    .Where(a => !string.IsNullOrEmpty(a.Value))
-                    .SelectMany(a => a.Value!.Contains(',')
-                        ? a.Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                        : [a.Value])
-                    .ToList();
+                agg = new CriterionAggregator(row.CriteriaLabel ?? "Unknown");
+                criterionMap[key] = agg;
+            }
 
-                var totalResponses = g.Count();
-                var optionCounts = allValues
-                    .GroupBy(v => v)
-                    .Select(og => new
-                    {
-                        value = og.Key,
-                        count = og.Count(),
-                        percentage = totalResponses > 0
-                            ? Math.Round(og.Count() * 100.0 / totalResponses, 1)
-                            : 0.0
-                    })
-                    .OrderByDescending(o => o.count)
-                    .ToList();
+            // Split multi-choice comma-separated values
+            var values = row.Value!.Contains(',')
+                ? row.Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                : [row.Value];
 
-                return new
+            foreach (var v in values)
+            {
+                if (agg.OptionCounts.TryGetValue(v, out var existing))
+                    agg.OptionCounts[v] = existing + row.Count;
+                else
+                    agg.OptionCounts[v] = row.Count;
+            }
+
+            agg.TotalResponses += row.Count;
+        }
+
+        var results = criterionMap.Select(kv => new
+        {
+            criterionId = kv.Key,
+            label = kv.Value.Label,
+            totalResponses = kv.Value.TotalResponses,
+            options = kv.Value.OptionCounts
+                .Select(o => new
                 {
-                    criterionId = g.Key.CriteriaId,
-                    label = g.Key.CriteriaLabel ?? "Unknown",
-                    totalResponses,
-                    options = optionCounts
-                };
-            })
-            .ToList();
+                    value = o.Key,
+                    count = o.Value,
+                    percentage = kv.Value.TotalResponses > 0
+                        ? Math.Round(o.Value * 100.0 / kv.Value.TotalResponses, 1)
+                        : 0.0
+                })
+                .OrderByDescending(o => o.count)
+                .ToList()
+        }).ToList();
 
         return TypedResults.Ok(results);
+    }
+
+    private sealed class CriterionAggregator(string label)
+    {
+        public string Label { get; } = label;
+        public int TotalResponses { get; set; }
+        public Dictionary<string, int> OptionCounts { get; } = new();
     }
 }

@@ -147,6 +147,19 @@ public static class CreateSubmission
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == auditorId, ct);
 
+        // Parse scoring mode from template config (for all statuses — denormalized for analytics)
+        var submissionScoringMode = "penalty";
+        if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
+        {
+            try
+            {
+                var cfgDoc = System.Text.Json.JsonDocument.Parse(template.ScoringLogicConfig);
+                if (cfgDoc.RootElement.TryGetProperty("scoringMode", out var modeVal))
+                    submissionScoringMode = modeVal.GetString() ?? "penalty";
+            }
+            catch { /* malformed config → default to penalty */ }
+        }
+
         // Create submission
         var now = DateTimeOffset.UtcNow;
         var submission = new Submission
@@ -156,6 +169,7 @@ public static class CreateSubmission
             StoreId = request.StoreId,
             AuditorId = auditorId,
             Status = requestedStatus,
+            ScoringMode = submissionScoringMode,
             TotalScore = serverScore,
             SectionScores = request.SectionScores,
             Notes = request.Notes,

@@ -1,11 +1,12 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Analytics;
 
 /// <summary>
-/// GET /api/analytics — KPI cards + 6-month trend data with filters.
+/// GET /api/analytics — KPI cards + 6-month trend data + section breakdown with filters.
 /// </summary>
 public static class GetAnalytics
 {
@@ -17,6 +18,7 @@ public static class GetAnalytics
     {
         var storeId = httpContext.Request.Query["storeId"].FirstOrDefault();
         var type = httpContext.Request.Query["type"].FirstOrDefault();
+        var scoringModeFilter = httpContext.Request.Query["scoringMode"].FirstOrDefault();
 
         var query = db.Submissions.AsNoTracking()
             .Where(s => s.Status == "completed" && s.ReviewStatus != "rejected");
@@ -43,14 +45,22 @@ public static class GetAnalytics
             query = query.Where(s => s.TemplateId.HasValue && templateIds.Contains(s.TemplateId.Value));
         }
 
+        // Scoring mode filter (new)
+        if (!string.IsNullOrEmpty(scoringModeFilter))
+            query = query.Where(s => s.ScoringMode == scoringModeFilter);
+
         // ── KPIs (SQL scalar queries — zero rows loaded into memory) ──
         var totalAudits = await query.CountAsync(ct);
 
-        var scoredQuery = query.Where(s => s.TotalScore.HasValue);
+        // Scored submissions = non-survey with a TotalScore
+        var scoredQuery = query.Where(s => s.ScoringMode != "survey" && s.TotalScore.HasValue);
         var scoredCount = await scoredQuery.CountAsync(ct);
         var avgScore = scoredCount > 0
             ? Math.Round((double)await scoredQuery.AverageAsync(s => s.TotalScore!.Value, ct), 1)
             : 0.0;
+
+        // Survey count
+        var totalSurveys = await query.CountAsync(s => s.ScoringMode == "survey", ct);
 
         var completedCount = await query.CountAsync(s => s.CompletedAt.HasValue, ct);
         var completionRate = totalAudits > 0
@@ -73,8 +83,65 @@ public static class GetAnalytics
             .OrderBy(t => t.Month)
             .ToListAsync(ct);
 
+        // ── Section breakdown: parse SectionScores jsonb in C# ──
+        // Load only the jsonb column for scored submissions (lightweight)
+        var sectionScoresRaw = await query
+            .Where(s => s.ScoringMode != "survey" && s.SectionScores != null)
+            .Select(s => s.SectionScores!)
+            .ToListAsync(ct);
+
+        var sectionBreakdown = ParseSectionBreakdown(sectionScoresRaw);
+
         return TypedResults.Ok(new AnalyticsResponse(
-            new AnalyticsKpis(totalAudits, avgScore, openAPs, overdueAPs, completionRate),
-            trend));
+            new AnalyticsKpis(totalAudits, scoredCount, totalSurveys, avgScore, openAPs, overdueAPs, completionRate),
+            trend,
+            sectionBreakdown));
+    }
+
+    /// <summary>
+    /// Parses SectionScores JSON blobs and computes per-section average scores.
+    /// Expected format: { "SectionTitle": { "score": 82.1, "maxScore": 100 }, ... }
+    /// </summary>
+    private static List<SectionScore> ParseSectionBreakdown(List<string> rawJsonList)
+    {
+        var sectionData = new Dictionary<string, (double totalRatio, int count)>();
+
+        foreach (var raw in rawJsonList)
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(raw);
+                foreach (var prop in doc.RootElement.EnumerateObject())
+                {
+                    var sectionTitle = prop.Name;
+                    if (prop.Value.ValueKind != JsonValueKind.Object) continue;
+
+                    if (prop.Value.TryGetProperty("score", out var scoreElem) &&
+                        prop.Value.TryGetProperty("maxScore", out var maxElem))
+                    {
+                        var score = scoreElem.GetDouble();
+                        var maxScore = maxElem.GetDouble();
+                        var ratio = maxScore > 0 ? (score / maxScore) * 100.0 : 0.0;
+
+                        if (sectionData.TryGetValue(sectionTitle, out var existing))
+                            sectionData[sectionTitle] = (existing.totalRatio + ratio, existing.count + 1);
+                        else
+                            sectionData[sectionTitle] = (ratio, 1);
+                    }
+                }
+            }
+            catch
+            {
+                // Skip malformed JSON
+            }
+        }
+
+        return sectionData
+            .Select(kv => new SectionScore(
+                kv.Key,
+                Math.Round(kv.Value.totalRatio / kv.Value.count, 1),
+                kv.Value.count))
+            .OrderByDescending(s => s.Count)
+            .ToList();
     }
 }

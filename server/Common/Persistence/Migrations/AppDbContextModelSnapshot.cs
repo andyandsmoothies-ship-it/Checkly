@@ -433,6 +433,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("jsonb")
                         .HasColumnName("metadata");
 
+                    b.Property<decimal?>("MinusPerFault")
+                        .HasColumnType("numeric")
+                        .HasColumnName("minus_per_fault");
+
                     b.Property<int>("OrderIndex")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -698,6 +702,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<DateTimeOffset?>("ScheduledAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("scheduled_at");
+
+                    b.Property<string>("ScoringMode")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("SectionScores")
                         .HasColumnType("jsonb")

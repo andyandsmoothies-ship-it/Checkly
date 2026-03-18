@@ -13,6 +13,7 @@ public sealed class Submission
     public Guid? AuditorId { get; set; }
     public Guid? StoreId { get; set; }
     public string Status { get; set; } = "draft";
+    public string ScoringMode { get; set; } = "penalty";
     public decimal? TotalScore { get; set; }
     public string? SectionScores { get; set; }
     public decimal? GpsLat { get; set; }
