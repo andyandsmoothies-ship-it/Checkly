@@ -208,3 +208,20 @@ class SyncMeta extends Table {
   @override
   Set<Column> get primaryKey => {entityType};
 }
+
+// ============================================================
+// Draft Table (local auto-save for in-progress audits)
+// ============================================================
+
+/// Auto-saved audit draft answers.
+/// Key: "templateId:storeId:userId". Single row per draft.
+/// answersJson: JSON-serialized `Map<criterionId, AuditAnswer>`.
+class DraftAnswers extends Table {
+  TextColumn get draftKey => text()();
+  TextColumn get answersJson => text()();
+  TextColumn get notesJson => text().nullable()();
+  DateTimeColumn get savedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {draftKey};
+}

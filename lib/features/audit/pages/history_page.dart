@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/utils/score_utils.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
 import '../../../_shared/widgets/warm_chip.dart';
@@ -432,12 +433,7 @@ class _AuditCard extends StatelessWidget {
   final VoidCallback? onStartAudit;
   const _AuditCard({required this.submission, this.onStartAudit});
 
-  Color _scoreColor(double? score, ThemeData theme) {
-    if (score == null) return theme.colorScheme.onSurfaceVariant;
-    if (score >= 80) return AppTheme.success;
-    if (score >= 60) return AppTheme.warning;
-    return theme.colorScheme.error;
-  }
+  Color _scoreColor(double? score, ThemeData theme) => scoreColor(score, theme);
 
   @override
   Widget build(BuildContext context) {

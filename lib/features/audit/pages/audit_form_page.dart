@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/utils/score_utils.dart';
 import '../../../_shared/services/gps_service.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../stores/manager/store_manager.dart';
@@ -35,6 +36,7 @@ class AuditFormPage extends StatefulWidget {
 class _AuditFormPageState extends State<AuditFormPage> {
   bool _isLoading = true;
   int _currentSection = 0;
+  bool _hasChanges = false;
 
   @override
   void initState() {
@@ -48,10 +50,54 @@ class _AuditFormPageState extends State<AuditFormPage> {
     final tree = templateManager.selectedTemplate.value;
 
     if (tree != null) {
-      _di<AuditManager>().startAudit(tree, widget.storeId);
+      final manager = _di<AuditManager>();
+      await manager.startAudit(tree, widget.storeId);
+      manager.addListener(_onManagerChanged);
+
+      // Show resume dialog if draft exists
+      if (manager.hasDraft && mounted) {
+        final resume = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            title: const Text('Resume draft?'),
+            content: const Text(
+              'You have an unsaved draft for this audit. '
+              'Would you like to resume where you left off?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Discard'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Resume'),
+              ),
+            ],
+          ),
+        );
+        if (resume == true) {
+          manager.restoreDraft();
+        } else {
+          manager.discardDraft();
+        }
+      }
     }
 
     if (mounted) setState(() => _isLoading = false);
+  }
+
+  void _onManagerChanged() {
+    if (!_hasChanges && mounted) {
+      setState(() => _hasChanges = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _di<AuditManager>().removeListener(_onManagerChanged);
+    super.dispose();
   }
 
   // ── Progress helpers ──
@@ -297,7 +343,14 @@ class _AuditFormPageState extends State<AuditFormPage> {
         }
       }
     } catch (_) {
-      // GPS failure is non-blocking
+      // GPS failure is non-blocking — but user must know
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('📍 Location unavailable — submitting without GPS'),
+          ),
+        );
+      }
     }
 
     if (!mounted) return;
@@ -368,6 +421,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
     if (mounted) {
       if (manager.lastSubmission != null || manager.wasQueuedOffline) {
+        setState(() => _hasChanges = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -419,63 +473,122 @@ class _AuditFormPageState extends State<AuditFormPage> {
         final ccpEnabled = _isCcpEnabled(template);
         final riskEnabled = _isRiskEnabled(template);
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(template.title, overflow: TextOverflow.ellipsis),
-            actions: [
-              _ScoreChip(score: manager.liveScore),
-              const SizedBox(width: 8),
-            ],
-          ),
-          body: Column(
-            children: [
-              // Live score HUD
-              _ScoreHud(
-                score: manager.liveScore,
-                sectionScores: manager.sectionScores,
-              ),
-
-              // Current section only
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  children: [
-                    if (template.groups.isNotEmpty &&
-                        _currentSection < template.groups.length)
-                      _SectionCard(
-                        group: template.groups[_currentSection],
-                        manager: manager,
-                        depth: 0,
-                        confirmRequired: confirmRequired,
-                        ccpEnabled: ccpEnabled,
-                        riskEnabled: riskEnabled,
-                      ),
-                  ],
+        return PopScope(
+          canPop: !_hasChanges,
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) return;
+            final shouldLeave = await showDialog<bool>(
+              context: context,
+              builder: (_) => AlertDialog(
+                title: const Text('Leave audit?'),
+                content: const Text(
+                  'Your progress has not been submitted. '
+                  'Are you sure you want to leave?',
                 ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Stay'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Leave'),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+            if (shouldLeave == true && context.mounted) {
+              Navigator.pop(context);
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(template.title, overflow: TextOverflow.ellipsis),
+              actions: [
+                // Draft saved indicator
+                if (manager.draftSavedAt != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Chip(
+                      avatar: Icon(
+                        Icons.check_circle,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      label: const Text(
+                        'Saved',
+                        style: TextStyle(fontSize: 11),
+                      ),
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                    ),
+                  ),
+                _ScoreChip(score: manager.liveScore),
+                const SizedBox(width: 8),
+              ],
+            ),
+            body: Column(
+              children: [
+                // Live score HUD
+                _ScoreHud(
+                  score: manager.liveScore,
+                  sectionScores: manager.sectionScores,
+                ),
 
-          // Quick Jump FAB (Slice 2)
-          floatingActionButton: FloatingActionButton.small(
-            onPressed: () => _showQuickJump(manager, template),
-            tooltip: 'Jump to section',
-            child: const Icon(Icons.grid_view),
-          ),
+                // Current section only (F7: swipe gesture navigation)
+                Expanded(
+                  child: GestureDetector(
+                    onHorizontalDragEnd: (details) {
+                      if (details.primaryVelocity == null) return;
+                      if (details.primaryVelocity! < -200 &&
+                          _currentSection < template.groups.length - 1) {
+                        setState(() => _currentSection++);
+                      } else if (details.primaryVelocity! > 200 &&
+                          _currentSection > 0) {
+                        setState(() => _currentSection--);
+                      }
+                    },
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      children: [
+                        if (template.groups.isNotEmpty &&
+                            _currentSection < template.groups.length)
+                          _SectionCard(
+                            group: template.groups[_currentSection],
+                            manager: manager,
+                            depth: 0,
+                            confirmRequired: confirmRequired,
+                            ccpEnabled: ccpEnabled,
+                            riskEnabled: riskEnabled,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
-          // Sticky section navigation bar with always-visible Submit (Slice 1)
-          bottomNavigationBar: _SectionNavBar(
-            currentSection: _currentSection,
-            totalSections: template.groups.length,
-            allAnswered: allAnswered,
-            isSubmitting: manager.isSubmitting,
-            onPrev: _currentSection > 0
-                ? () => setState(() => _currentSection--)
-                : null,
-            onNext: _currentSection < template.groups.length - 1
-                ? () => setState(() => _currentSection++)
-                : null,
-            onSubmit: () => _onSubmit(manager),
+            // Quick Jump FAB (Slice 2)
+            floatingActionButton: FloatingActionButton.small(
+              onPressed: () => _showQuickJump(manager, template),
+              tooltip: 'Jump to section',
+              child: const Icon(Icons.grid_view),
+            ),
+
+            // Sticky section navigation bar with always-visible Submit (Slice 1)
+            bottomNavigationBar: _SectionNavBar(
+              currentSection: _currentSection,
+              totalSections: template.groups.length,
+              allAnswered: allAnswered,
+              isSubmitting: manager.isSubmitting,
+              onPrev: _currentSection > 0
+                  ? () => setState(() => _currentSection--)
+                  : null,
+              onNext: _currentSection < template.groups.length - 1
+                  ? () => setState(() => _currentSection++)
+                  : null,
+              onSubmit: () => _onSubmit(manager),
+            ),
           ),
         );
       },
@@ -492,12 +605,7 @@ class _ScoreHud extends StatelessWidget {
   final Map<String, SectionScore> sectionScores;
   const _ScoreHud({required this.score, required this.sectionScores});
 
-  Color _scoreColor(ThemeData theme) {
-    if (score == null) return theme.colorScheme.primary;
-    if (score! >= 80) return AppTheme.success;
-    if (score! >= 50) return AppTheme.warning;
-    return theme.colorScheme.error;
-  }
+  Color _scoreColor(ThemeData theme) => scoreColor(score, theme);
 
   @override
   Widget build(BuildContext context) {

@@ -128,7 +128,7 @@ class _DashboardPageState extends State<DashboardPage> {
         listenable: _manager,
         builder: (context, _) {
           if (_manager.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const _DashboardSkeleton();
           }
 
           final stats = _manager.stats;
@@ -525,6 +525,118 @@ class _StatCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Dashboard Loading Skeleton ──
+
+class _DashboardSkeleton extends StatelessWidget {
+  const _DashboardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
+      children: [
+        // Header shimmer
+        const _ShimmerBox(width: 200, height: 32),
+        const SizedBox(height: 8),
+        const _ShimmerBox(width: 140, height: 14),
+        const SizedBox(height: 32),
+
+        // Progress ring shimmer
+        Center(
+          child: Container(
+            width: 192,
+            height: 192,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.grey.shade200, width: 4),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _ShimmerBox(width: 80, height: 40),
+                  const SizedBox(height: 4),
+                  _ShimmerBox(width: 50, height: 12),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 32),
+
+        // Stats row shimmer
+        Row(
+          children: [
+            Expanded(child: _ShimmerBox(height: 72)),
+            const SizedBox(width: 16),
+            SizedBox(width: 128, child: _ShimmerBox(height: 72)),
+          ],
+        ),
+        const SizedBox(height: 32),
+
+        // Section header shimmer
+        const _ShimmerBox(width: 120, height: 14),
+        const SizedBox(height: 16),
+
+        // Category cards shimmer
+        _ShimmerBox(height: 100),
+        const SizedBox(height: 16),
+        _ShimmerBox(height: 100),
+      ],
+    );
+  }
+}
+
+class _ShimmerBox extends StatefulWidget {
+  final double? width;
+  final double height;
+
+  const _ShimmerBox({this.width, this.height = 16});
+
+  @override
+  State<_ShimmerBox> createState() => _ShimmerBoxState();
+}
+
+class _ShimmerBoxState extends State<_ShimmerBox>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final opacity =
+            0.15 +
+            0.15 * (0.5 + 0.5 * math.sin(_controller.value * 2 * math.pi));
+        return Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            color: Colors.grey.withValues(alpha: opacity),
+            borderRadius: BorderRadius.circular(8),
+          ),
+        );
+      },
     );
   }
 }

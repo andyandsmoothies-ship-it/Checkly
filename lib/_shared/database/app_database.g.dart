@@ -7092,6 +7092,332 @@ class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
   }
 }
 
+class $DraftAnswersTable extends DraftAnswers
+    with TableInfo<$DraftAnswersTable, DraftAnswer> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DraftAnswersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _draftKeyMeta = const VerificationMeta(
+    'draftKey',
+  );
+  @override
+  late final GeneratedColumn<String> draftKey = GeneratedColumn<String>(
+    'draft_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _answersJsonMeta = const VerificationMeta(
+    'answersJson',
+  );
+  @override
+  late final GeneratedColumn<String> answersJson = GeneratedColumn<String>(
+    'answers_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesJsonMeta = const VerificationMeta(
+    'notesJson',
+  );
+  @override
+  late final GeneratedColumn<String> notesJson = GeneratedColumn<String>(
+    'notes_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _savedAtMeta = const VerificationMeta(
+    'savedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> savedAt = GeneratedColumn<DateTime>(
+    'saved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    draftKey,
+    answersJson,
+    notesJson,
+    savedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'draft_answers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DraftAnswer> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('draft_key')) {
+      context.handle(
+        _draftKeyMeta,
+        draftKey.isAcceptableOrUnknown(data['draft_key']!, _draftKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_draftKeyMeta);
+    }
+    if (data.containsKey('answers_json')) {
+      context.handle(
+        _answersJsonMeta,
+        answersJson.isAcceptableOrUnknown(
+          data['answers_json']!,
+          _answersJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_answersJsonMeta);
+    }
+    if (data.containsKey('notes_json')) {
+      context.handle(
+        _notesJsonMeta,
+        notesJson.isAcceptableOrUnknown(data['notes_json']!, _notesJsonMeta),
+      );
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(
+        _savedAtMeta,
+        savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_savedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {draftKey};
+  @override
+  DraftAnswer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DraftAnswer(
+      draftKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}draft_key'],
+      )!,
+      answersJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}answers_json'],
+      )!,
+      notesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes_json'],
+      ),
+      savedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}saved_at'],
+      )!,
+    );
+  }
+
+  @override
+  $DraftAnswersTable createAlias(String alias) {
+    return $DraftAnswersTable(attachedDatabase, alias);
+  }
+}
+
+class DraftAnswer extends DataClass implements Insertable<DraftAnswer> {
+  final String draftKey;
+  final String answersJson;
+  final String? notesJson;
+  final DateTime savedAt;
+  const DraftAnswer({
+    required this.draftKey,
+    required this.answersJson,
+    this.notesJson,
+    required this.savedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['draft_key'] = Variable<String>(draftKey);
+    map['answers_json'] = Variable<String>(answersJson);
+    if (!nullToAbsent || notesJson != null) {
+      map['notes_json'] = Variable<String>(notesJson);
+    }
+    map['saved_at'] = Variable<DateTime>(savedAt);
+    return map;
+  }
+
+  DraftAnswersCompanion toCompanion(bool nullToAbsent) {
+    return DraftAnswersCompanion(
+      draftKey: Value(draftKey),
+      answersJson: Value(answersJson),
+      notesJson: notesJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notesJson),
+      savedAt: Value(savedAt),
+    );
+  }
+
+  factory DraftAnswer.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DraftAnswer(
+      draftKey: serializer.fromJson<String>(json['draftKey']),
+      answersJson: serializer.fromJson<String>(json['answersJson']),
+      notesJson: serializer.fromJson<String?>(json['notesJson']),
+      savedAt: serializer.fromJson<DateTime>(json['savedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'draftKey': serializer.toJson<String>(draftKey),
+      'answersJson': serializer.toJson<String>(answersJson),
+      'notesJson': serializer.toJson<String?>(notesJson),
+      'savedAt': serializer.toJson<DateTime>(savedAt),
+    };
+  }
+
+  DraftAnswer copyWith({
+    String? draftKey,
+    String? answersJson,
+    Value<String?> notesJson = const Value.absent(),
+    DateTime? savedAt,
+  }) => DraftAnswer(
+    draftKey: draftKey ?? this.draftKey,
+    answersJson: answersJson ?? this.answersJson,
+    notesJson: notesJson.present ? notesJson.value : this.notesJson,
+    savedAt: savedAt ?? this.savedAt,
+  );
+  DraftAnswer copyWithCompanion(DraftAnswersCompanion data) {
+    return DraftAnswer(
+      draftKey: data.draftKey.present ? data.draftKey.value : this.draftKey,
+      answersJson: data.answersJson.present
+          ? data.answersJson.value
+          : this.answersJson,
+      notesJson: data.notesJson.present ? data.notesJson.value : this.notesJson,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DraftAnswer(')
+          ..write('draftKey: $draftKey, ')
+          ..write('answersJson: $answersJson, ')
+          ..write('notesJson: $notesJson, ')
+          ..write('savedAt: $savedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(draftKey, answersJson, notesJson, savedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DraftAnswer &&
+          other.draftKey == this.draftKey &&
+          other.answersJson == this.answersJson &&
+          other.notesJson == this.notesJson &&
+          other.savedAt == this.savedAt);
+}
+
+class DraftAnswersCompanion extends UpdateCompanion<DraftAnswer> {
+  final Value<String> draftKey;
+  final Value<String> answersJson;
+  final Value<String?> notesJson;
+  final Value<DateTime> savedAt;
+  final Value<int> rowid;
+  const DraftAnswersCompanion({
+    this.draftKey = const Value.absent(),
+    this.answersJson = const Value.absent(),
+    this.notesJson = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DraftAnswersCompanion.insert({
+    required String draftKey,
+    required String answersJson,
+    this.notesJson = const Value.absent(),
+    required DateTime savedAt,
+    this.rowid = const Value.absent(),
+  }) : draftKey = Value(draftKey),
+       answersJson = Value(answersJson),
+       savedAt = Value(savedAt);
+  static Insertable<DraftAnswer> custom({
+    Expression<String>? draftKey,
+    Expression<String>? answersJson,
+    Expression<String>? notesJson,
+    Expression<DateTime>? savedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (draftKey != null) 'draft_key': draftKey,
+      if (answersJson != null) 'answers_json': answersJson,
+      if (notesJson != null) 'notes_json': notesJson,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DraftAnswersCompanion copyWith({
+    Value<String>? draftKey,
+    Value<String>? answersJson,
+    Value<String?>? notesJson,
+    Value<DateTime>? savedAt,
+    Value<int>? rowid,
+  }) {
+    return DraftAnswersCompanion(
+      draftKey: draftKey ?? this.draftKey,
+      answersJson: answersJson ?? this.answersJson,
+      notesJson: notesJson ?? this.notesJson,
+      savedAt: savedAt ?? this.savedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (draftKey.present) {
+      map['draft_key'] = Variable<String>(draftKey.value);
+    }
+    if (answersJson.present) {
+      map['answers_json'] = Variable<String>(answersJson.value);
+    }
+    if (notesJson.present) {
+      map['notes_json'] = Variable<String>(notesJson.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<DateTime>(savedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DraftAnswersCompanion(')
+          ..write('draftKey: $draftKey, ')
+          ..write('answersJson: $answersJson, ')
+          ..write('notesJson: $notesJson, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7112,6 +7438,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PendingAnswersTable pendingAnswers = $PendingAnswersTable(this);
   late final $PendingPhotosTable pendingPhotos = $PendingPhotosTable(this);
   late final $SyncMetaTable syncMeta = $SyncMetaTable(this);
+  late final $DraftAnswersTable draftAnswers = $DraftAnswersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7128,6 +7455,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pendingAnswers,
     pendingPhotos,
     syncMeta,
+    draftAnswers,
   ];
 }
 
@@ -11503,6 +11831,189 @@ typedef $$SyncMetaTableProcessedTableManager =
       SyncMetaData,
       PrefetchHooks Function()
     >;
+typedef $$DraftAnswersTableCreateCompanionBuilder =
+    DraftAnswersCompanion Function({
+      required String draftKey,
+      required String answersJson,
+      Value<String?> notesJson,
+      required DateTime savedAt,
+      Value<int> rowid,
+    });
+typedef $$DraftAnswersTableUpdateCompanionBuilder =
+    DraftAnswersCompanion Function({
+      Value<String> draftKey,
+      Value<String> answersJson,
+      Value<String?> notesJson,
+      Value<DateTime> savedAt,
+      Value<int> rowid,
+    });
+
+class $$DraftAnswersTableFilterComposer
+    extends Composer<_$AppDatabase, $DraftAnswersTable> {
+  $$DraftAnswersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get draftKey => $composableBuilder(
+    column: $table.draftKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get answersJson => $composableBuilder(
+    column: $table.answersJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notesJson => $composableBuilder(
+    column: $table.notesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DraftAnswersTableOrderingComposer
+    extends Composer<_$AppDatabase, $DraftAnswersTable> {
+  $$DraftAnswersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get draftKey => $composableBuilder(
+    column: $table.draftKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get answersJson => $composableBuilder(
+    column: $table.answersJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notesJson => $composableBuilder(
+    column: $table.notesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DraftAnswersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DraftAnswersTable> {
+  $$DraftAnswersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get draftKey =>
+      $composableBuilder(column: $table.draftKey, builder: (column) => column);
+
+  GeneratedColumn<String> get answersJson => $composableBuilder(
+    column: $table.answersJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notesJson =>
+      $composableBuilder(column: $table.notesJson, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+}
+
+class $$DraftAnswersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DraftAnswersTable,
+          DraftAnswer,
+          $$DraftAnswersTableFilterComposer,
+          $$DraftAnswersTableOrderingComposer,
+          $$DraftAnswersTableAnnotationComposer,
+          $$DraftAnswersTableCreateCompanionBuilder,
+          $$DraftAnswersTableUpdateCompanionBuilder,
+          (
+            DraftAnswer,
+            BaseReferences<_$AppDatabase, $DraftAnswersTable, DraftAnswer>,
+          ),
+          DraftAnswer,
+          PrefetchHooks Function()
+        > {
+  $$DraftAnswersTableTableManager(_$AppDatabase db, $DraftAnswersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DraftAnswersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DraftAnswersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DraftAnswersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> draftKey = const Value.absent(),
+                Value<String> answersJson = const Value.absent(),
+                Value<String?> notesJson = const Value.absent(),
+                Value<DateTime> savedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DraftAnswersCompanion(
+                draftKey: draftKey,
+                answersJson: answersJson,
+                notesJson: notesJson,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String draftKey,
+                required String answersJson,
+                Value<String?> notesJson = const Value.absent(),
+                required DateTime savedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => DraftAnswersCompanion.insert(
+                draftKey: draftKey,
+                answersJson: answersJson,
+                notesJson: notesJson,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DraftAnswersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DraftAnswersTable,
+      DraftAnswer,
+      $$DraftAnswersTableFilterComposer,
+      $$DraftAnswersTableOrderingComposer,
+      $$DraftAnswersTableAnnotationComposer,
+      $$DraftAnswersTableCreateCompanionBuilder,
+      $$DraftAnswersTableUpdateCompanionBuilder,
+      (
+        DraftAnswer,
+        BaseReferences<_$AppDatabase, $DraftAnswersTable, DraftAnswer>,
+      ),
+      DraftAnswer,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -11529,4 +12040,6 @@ class $AppDatabaseManager {
       $$PendingPhotosTableTableManager(_db, _db.pendingPhotos);
   $$SyncMetaTableTableManager get syncMeta =>
       $$SyncMetaTableTableManager(_db, _db.syncMeta);
+  $$DraftAnswersTableTableManager get draftAnswers =>
+      $$DraftAnswersTableTableManager(_db, _db.draftAnswers);
 }

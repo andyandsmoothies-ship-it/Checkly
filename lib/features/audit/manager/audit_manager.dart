@@ -6,12 +6,14 @@ import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../_shared/database/database_service.dart';
-import '../../../_shared/database/dao/outbox_dao.dart';
 import '../../../_shared/database/app_database.dart';
-import '../../../_shared/services/connectivity_service.dart';
-import '../../../_shared/services/scoring_engine.dart';
+import '../../../_shared/database/dao/outbox_dao.dart'; // Kept as it's used
+import '../../../_shared/services/connectivity_service.dart'; // Kept as it's used
+import '../../../_shared/services/scoring_engine.dart'; // Kept as it's used
+import '../../auth/manager/auth_manager.dart';
 import '../../templates/model/template_dto.dart';
 import '../model/submission_dto.dart';
+import '../services/draft_service.dart'; // Added
 import '../services/submission_api_service.dart';
 
 final _di = GetIt.instance;
@@ -42,6 +44,30 @@ class AuditAnswer {
     this.isRisk = false,
   });
 
+  /// Serializes to JSON-compatible map for draft storage.
+  Map<String, dynamic> toJson() => {
+    'criteriaId': criteriaId,
+    'value': value,
+    'numericValue': numericValue,
+    'note': note,
+    'photoUrl': photoUrl,
+    'repeatedFaultCount': repeatedFaultCount,
+    'isCcp': isCcp,
+    'isRisk': isRisk,
+  };
+
+  /// Restores from a JSON map (from draft storage).
+  factory AuditAnswer.fromJson(Map<String, dynamic> json) => AuditAnswer(
+    criteriaId: json['criteriaId'] as String,
+    value: json['value'] as String?,
+    numericValue: (json['numericValue'] as num?)?.toDouble(),
+    note: json['note'] as String?,
+    photoUrl: json['photoUrl'] as String?,
+    repeatedFaultCount: (json['repeatedFaultCount'] as int?) ?? 0,
+    isCcp: (json['isCcp'] as bool?) ?? false,
+    isRisk: (json['isRisk'] as bool?) ?? false,
+  );
+
   /// Converts to submission API payload.
   SubmissionAnswerInput toInput() => SubmissionAnswerInput(
     criteriaId: criteriaId,
@@ -68,9 +94,11 @@ class AuditManager extends ChangeNotifier {
     SubmissionApiService? api,
     OutboxDao? outbox,
     ConnectivityService? connectivity,
+    DraftService? draftService,
   }) : _api = api ?? _di<SubmissionApiService>() {
     final db = _di<DatabaseService>().db;
     _outbox = outbox ?? OutboxDao(db);
+    _draftService = draftService ?? DraftService();
     try {
       _connectivity = connectivity ?? _di<ConnectivityService>();
     } catch (_) {
@@ -113,8 +141,23 @@ class AuditManager extends ChangeNotifier {
   bool _wasQueuedOffline = false;
   bool get wasQueuedOffline => _wasQueuedOffline;
 
+  // ---------- Draft State ----------
+  late final DraftService _draftService;
+  String? _draftKey;
+  DraftData? _pendingDraft;
+  DateTime? _draftSavedAt;
+
+  /// True if a draft was found for this template+store+user combo.
+  bool get hasDraft => _pendingDraft != null;
+
+  /// Draft data to restore (set after startAudit if draft exists).
+  DraftData? get pendingDraft => _pendingDraft;
+
+  /// Last draft save timestamp (for UI indicator).
+  DateTime? get draftSavedAt => _draftSavedAt;
+
   // ---------- Init ----------
-  void startAudit(TemplateTreeDto template, String storeId) {
+  Future<void> startAudit(TemplateTreeDto template, String storeId) async {
     _template = template;
     _storeId = storeId;
     _answers.clear();
@@ -125,11 +168,22 @@ class AuditManager extends ChangeNotifier {
     _gpsLat = null;
     _gpsLng = null;
     _wasQueuedOffline = false;
+    _draftSavedAt = null;
 
     // Pre-populate answers for all criteria
     for (final group in template.groups) {
       _initGroupAnswers(group);
     }
+
+    // Compute draft key
+    String? userId;
+    try {
+      userId = _di<AuthManager>().currentUser?.userId;
+    } catch (_) {}
+    _draftKey = '${template.id}:$storeId:${userId ?? 'anon'}';
+
+    // Check for existing draft
+    _pendingDraft = await _draftService.loadDraft(_draftKey!);
 
     _recalculateScore();
     notifyListeners();
@@ -157,6 +211,7 @@ class AuditManager extends ChangeNotifier {
     if (numericValue != null) answer.numericValue = numericValue;
 
     _recalculateScore();
+    _scheduleDraftSave();
     notifyListeners();
   }
 
@@ -164,17 +219,20 @@ class AuditManager extends ChangeNotifier {
     if (_answers[criteriaId] != null) {
       _answers[criteriaId]!.value = null;
       _recalculateScore();
+      _scheduleDraftSave();
       notifyListeners();
     }
   }
 
   void setNote(String criteriaId, String note) {
     _answers[criteriaId]?.note = note;
+    _scheduleDraftSave();
     notifyListeners();
   }
 
   void setRepeatedError(String criteriaId, bool value) {
     _answers[criteriaId]?.repeatedFaultCount = value ? 1 : 0;
+    _scheduleDraftSave();
     notifyListeners();
   }
 
@@ -182,29 +240,34 @@ class AuditManager extends ChangeNotifier {
     final a = _answers[criteriaId];
     if (a != null) {
       a.repeatedFaultCount = count < 0 ? 0 : count;
+      _scheduleDraftSave();
       notifyListeners();
     }
   }
 
   void setPhotoUrl(String criteriaId, String? url) {
     _answers[criteriaId]?.photoUrl = url;
+    _scheduleDraftSave();
     notifyListeners();
   }
 
   void setCcp(String criteriaId, bool value) {
     _answers[criteriaId]?.isCcp = value;
     _recalculateScore();
+    _scheduleDraftSave();
     notifyListeners();
   }
 
   void setRisk(String criteriaId, bool value) {
     _answers[criteriaId]?.isRisk = value;
     _recalculateScore();
+    _scheduleDraftSave();
     notifyListeners();
   }
 
   void setNotes(String notes) {
     _notes = notes;
+    _scheduleDraftSave();
     notifyListeners();
   }
 
@@ -382,6 +445,58 @@ class AuditManager extends ChangeNotifier {
     return jsonEncode(sections);
   }
 
+  // ---------- Draft helpers ----------
+
+  /// Schedules a debounced draft save.
+  void _scheduleDraftSave() {
+    if (_draftKey == null) return;
+    final answersMap = _answers.map((k, v) => MapEntry(k, v.toJson()));
+    _draftService.scheduleSave(
+      draftKey: _draftKey!,
+      answersMap: answersMap,
+      notes: _notes,
+    );
+    _draftSavedAt = DateTime.now();
+  }
+
+  /// Restores answers from a loaded draft.
+  void restoreDraft() {
+    final draft = _pendingDraft;
+    if (draft == null) return;
+
+    for (final entry in draft.answersMap.entries) {
+      try {
+        final restored = AuditAnswer.fromJson(entry.value);
+        final existing = _answers[entry.key];
+        if (existing != null) {
+          existing.value = restored.value;
+          existing.numericValue = restored.numericValue;
+          existing.note = restored.note;
+          existing.photoUrl = restored.photoUrl;
+          existing.repeatedFaultCount = restored.repeatedFaultCount;
+          existing.isCcp = restored.isCcp;
+          existing.isRisk = restored.isRisk;
+        }
+      } catch (_) {
+        // Skip corrupted answers
+      }
+    }
+
+    if (draft.notes != null) _notes = draft.notes;
+    _pendingDraft = null;
+    _recalculateScore();
+    notifyListeners();
+  }
+
+  /// Discards the pending draft without restoring.
+  void discardDraft() {
+    if (_draftKey != null) {
+      _draftService.deleteDraft(_draftKey!);
+    }
+    _pendingDraft = null;
+    notifyListeners();
+  }
+
   // ---------- Submit (offline-first) ----------
   Future<void> submitAudit() async {
     if (_template == null || _storeId == null) return;
@@ -389,6 +504,8 @@ class AuditManager extends ChangeNotifier {
     _isSubmitting = true;
     _error = null;
     _wasQueuedOffline = false;
+    // Cancel any pending draft save before submit
+    _draftService.dispose();
     notifyListeners();
 
     try {
@@ -431,6 +548,12 @@ class AuditManager extends ChangeNotifier {
 
       await _outbox.insertAnswers(answerCompanions);
 
+      // 2.5. Delete draft now that submission is safely in outbox
+      if (_draftKey != null) {
+        await _draftService.deleteDraft(_draftKey!);
+        _draftSavedAt = null;
+      }
+
       // 3. If online, attempt immediate API submission
       final isOnline = _connectivity?.isOnline ?? true;
       if (isOnline) {
@@ -471,6 +594,7 @@ class AuditManager extends ChangeNotifier {
 
   // ---------- Reset ----------
   void reset() {
+    _draftService.dispose();
     _template = null;
     _storeId = null;
     _answers.clear();
@@ -481,6 +605,9 @@ class AuditManager extends ChangeNotifier {
     _gpsLat = null;
     _gpsLng = null;
     _wasQueuedOffline = false;
+    _draftKey = null;
+    _pendingDraft = null;
+    _draftSavedAt = null;
     notifyListeners();
   }
 }

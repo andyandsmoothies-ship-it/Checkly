@@ -3,6 +3,7 @@ import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/theme/app_fonts.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
+import 'package:checkly/_shared/utils/score_utils.dart';
 import 'package:get_it/get_it.dart';
 
 /// 6C: Store Dashboard — single-store detail with audit history and AP summary.
@@ -72,12 +73,6 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
     setState(() => _loading = false);
   }
 
-  Color _scoreColor(double score) {
-    if (score >= 80) return AppTheme.success;
-    if (score >= 60) return AppTheme.warning;
-    return Colors.red;
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -115,7 +110,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                         style: AppFonts.serifStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.w700,
-                          color: _scoreColor(_avgScore),
+                          color: scoreColor(_avgScore, Theme.of(context)),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -200,7 +195,10 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: _scoreColor(score).withValues(alpha: 0.12),
+                            color: scoreColor(
+                              score,
+                              Theme.of(context),
+                            ).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           alignment: Alignment.center,
@@ -209,7 +207,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                             style: AppFonts.serifStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: _scoreColor(score),
+                              color: scoreColor(score, Theme.of(context)),
                             ),
                           ),
                         ),

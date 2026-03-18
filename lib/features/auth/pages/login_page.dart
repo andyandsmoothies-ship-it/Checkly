@@ -61,8 +61,20 @@ class _LoginPageState extends State<LoginPage> {
     if (msg.contains('401') || msg.contains('Unauthorized')) {
       return 'Invalid email or password';
     }
+    if (msg.contains('403') || msg.contains('Forbidden')) {
+      return 'Your account is suspended. Contact admin.';
+    }
+    if (msg.contains('404') || msg.contains('Not Found')) {
+      return 'No account found with this email.';
+    }
+    if (msg.contains('429') || msg.contains('Too Many')) {
+      return 'Too many attempts. Try again later.';
+    }
     if (msg.contains('SocketException') || msg.contains('Connection')) {
       return 'Cannot connect to server. Check your network.';
+    }
+    if (msg.contains('Timeout') || msg.contains('TimeoutException')) {
+      return 'Server took too long. Try again.';
     }
     return 'Login failed. Please try again.';
   }
