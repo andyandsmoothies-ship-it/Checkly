@@ -86,7 +86,7 @@ When `scoringMode == 'survey'`, the scoring engine skips all calculation — `to
 - **No live score HUD** — the score display is hidden in the audit form
 - **Answers stored normally** — `Answer.Value` holds the selected option label (or comma-separated for multi-choice)
 - **Analytics endpoint**: `GET /api/submissions/survey-results?templateId={id}` — admin-only, aggregates option counts per criterion
-- **Choice input types**: `single_choice` (radio buttons) and `multi_choice` (checkboxes) — options stored in `criteria.metadata` as `{"options": ["A","B","C"]}`
+- **Choice input types**: `single_choice` (pick one) and `multi_choice` (select all that apply) — options stored in `criteria.metadata` as `{"options": ["A","B","C"]}`
 - **History badge**: Completed survey submissions show a purple **SURVEY** badge instead of a score
 
 ---

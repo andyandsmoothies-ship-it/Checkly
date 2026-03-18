@@ -66,11 +66,11 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 5.4 | Weighted Density Hidden | Set mode to Checklist | Weighted Density toggle is hidden. | [ ] |
 | 5.5 | Layout Locking — Flat | Add a criterion to an empty section | "Add Sub-Section" button disappears. Section locked to flat. | [ ] |
 | 5.6 | Layout Locking — Nested | Add a sub-section to an empty section | "Add Criteria" button at section level disappears. Locked to nested. | [ ] |
-| 5.7 | Input Type — Numeric | Add criterion → Input Type defaults to "Numeric" | Points Weight field is editable. | [ ] |
+| 5.7 | Input Type — Fault Count | Add criterion → Input Type defaults to "Fault Count" | Points Weight field is editable. | [ ] |
 | 5.8 | Input Type — Pass/Fail | Add criterion → Change to "Pass / Fail" | Points Weight field is editable. | [ ] |
-| 5.9 | Input Type — Scale | Add criterion → Change to "Scale (Matrix)" | Scale Options editor appears. Points Weight auto-calculated. | [ ] |
+| 5.9 | Input Type — Scored Choices | Add criterion → Change to "Scored Choices" | Scale Options editor appears. Points Weight auto-calculated. | [ ] |
 | 5.10 | Scale Options Editor | Add 4 options (Poor=0, Fair=2, Good=5, Excellent=10) | Options saved. Points Weight auto-set to 10. | [ ] |
-| 5.11 | Scale Validation | Set input type to Scale → Try to save with 0 or 1 options | Save blocked with SnackBar error: min 2 options. | [ ] |
+| 5.11 | Scored Choices Validation | Set input type to Scored Choices → Try to save with 0 or 1 options | Save blocked with SnackBar error: min 2 options. | [ ] |
 | 5.12 | CCP/RISK Badges | Enable CCP on a criterion → Collapse | CCP badge visible on collapsed row. | [ ] |
 | 5.13 | Edit Existing Template | Open saved template → Modify name → Save | Changes persisted. Score rules and criteria intact. | [ ] |
 
@@ -81,8 +81,8 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 |----|-----------|-----------------|-----------------|:---------:|
 | 6.1 | Section Collapse/Expand | Tap a section header | Toggles visibility of criteria inside. | [ ] |
 | 6.2 | Pass/Fail Input | Tap a criterion → Select "Non-Conform" | Bottom sheet shows Pass/Fail toggle. Score adjusts live. | [ ] |
-| 6.3 | Numeric Fault Input | Tap a numeric criterion → Enter "3" faults | Faults + Repeats row shown. Deduction calculated. | [ ] |
-| 6.4 | Scale Input | Tap a scale criterion | Radio chips appear (e.g., Poor/Fair/Good/Excellent). | [ ] |
+| 6.3 | Fault Count Input | Tap a fault count criterion → Enter "3" faults | Faults + Repeats row shown. Deduction calculated. | [ ] |
+| 6.4 | Scored Choices Input | Tap a scored choices criterion | Radio chips appear (e.g., Poor/Fair/Good/Excellent). | [ ] |
 | 6.5 | Scale Selection | Tap "Good (5)" on a scale criterion | Score updates. Value = "Good", numericValue = 5 stored. | [ ] |
 | 6.6 | Confirm Correct | Template has Confirm Correct enabled → No faults on item | "Confirm Correct" button shown. Must tap to verify. | [ ] |
 | 6.7 | Confirm Correct Toggle | Tap "Confirm Correct" → Tap again | Toggles between "Standard Verified" ↔ "Confirm Correct". | [ ] |

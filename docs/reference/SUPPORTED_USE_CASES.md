@@ -9,7 +9,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 | Feature | Options |
 |---------|---------|
 | **Scoring Modes** | Penalty (Top-Down), Accumulation (Zero-to-Top), Checklist (Flat Deduction), Survey (No Scoring) |
-| **Input Types** | Pass/Fail (Binary), Numeric (Fault counting + Repeats), Scale (Admin-defined gradient), Single Choice (Radio), Multi Choice (Checkbox) |
+| **Input Types** | Pass/Fail (e.g., Is the floor clean?), Fault Count (e.g., How many expired items?), Scored Choices (e.g., Poor/Fair/Good), Single Choice (e.g., Which shift?), Multi Choice (e.g., Select all that apply) |
 | **Hierarchy** | 2-level (Section → Criteria) or 3-level (Section → Sub-section → Criteria) |
 | **Critical Failure** | CCP (Zeros the section), RISK (Zeros the entire audit) |
 | **Other Modifiers** | Progressive Repeat Penalty, Confirm Correct, Weighted Density |
@@ -26,7 +26,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 **Admin Setup Workflow:**
 1. **Scoring Mode:** Select `Penalty (Top-Down)`.
 2. **Hierarchy:** 3-Level (e.g., Section: Kitchen → Sub-section: Fridge 1 → Criteria: Temp < 4°C).
-3. **Criteria Input Type:** `Numeric (Faults)` — auditor counts the number of faults found.
+3. **Criteria Input Type:** `Fault Count` — auditor counts the number of faults found.
 4. **Flags:**
    * Enable `CCP` on major health risks (e.g., pests, extreme temp). CCP triggered → Section score = 0.
    * Enable `RISK` on catastrophic failures (e.g., no running water). RISK triggered → Entire audit = 0%.
@@ -59,7 +59,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 
 **Admin Setup Workflow:**
 1. **Scoring Mode:** `Penalty (Top-Down)`.
-2. **Criteria Input Type:** `Numeric (Faults)` — auditor records deduction per observation.
+2. **Criteria Input Type:** `Fault Count` — auditor records deduction per observation.
 3. **Scoring Rules:** Enable `Weighted Density` (e.g., Service 40%, Food 35%, Ambiance 25%).
 
 ---
@@ -104,7 +104,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 3. **Criteria Input Type:** `Pass / Fail` (see limitation below).
 
 > [!TIP]
-> **Scale input fully supported.** Both the client-side scoring engine and the server-side `FinalizeSubmission` verifier correctly handle `inputType: "scale"` in Accumulation mode. Scale criteria award partial credit based on the selected option's `numericValue`. Verified by client test V16 and server `ScoringVerifier` backward-compatible dispatch.
+> **Scored Choices input fully supported.** Both the client-side scoring engine and the server-side `FinalizeSubmission` verifier correctly handle `inputType: "scale"` in Accumulation mode. Scored Choices criteria award partial credit based on the selected option's `numericValue`. Verified by client test V16 and server `ScoringVerifier` backward-compatible dispatch.
 
 ---
 
@@ -126,7 +126,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 
 **Admin Setup Workflow:**
 1. **Scoring Mode:** `Checklist (Pass/Fail)`.
-2. **Criteria Input Type:** `Numeric (Faults)` — use when they need to input a value (e.g., "Fridge Temperature").
+2. **Criteria Input Type:** `Fault Count` — use when they need to input a value (e.g., "Fridge Temperature").
 3. **Scoring Rules:** Enable `Confirm Correct` — forces the user to explicitly tap a "Standard Verified" button for every passing item, ensuring physical interaction with the checklist.
 
 ### 11. Safety Equipment Verification (Any Industry)
@@ -156,7 +156,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 **Admin Setup Workflow:**
 1. **Scoring Mode:** Select `Survey (No Scoring)`.
 2. **Hierarchy:** 2-Level (Section: Work Environment → Criteria: "How satisfied are you with your workspace?").
-3. **Criteria Input Type:** `Single Choice (Radio)` — options like "Very Satisfied", "Satisfied", "Neutral", "Dissatisfied".
+3. **Criteria Input Type:** `Single Choice` — options like "Very Satisfied", "Satisfied", "Neutral", "Dissatisfied".
 4. **Result:** No score is calculated. Admin views aggregated response distribution via **Survey Results** page.
 
 ### 14. Customer Feedback Form (Retail, F&B)
@@ -165,7 +165,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 **Admin Setup Workflow:**
 1. **Scoring Mode:** `Survey (No Scoring)`.
 2. **Hierarchy:** 2-Level (Section: Service → Criteria: "What aspects did you enjoy?").
-3. **Criteria Input Type:** `Multi Choice (Checkbox)` — options like "Friendly Staff", "Fast Service", "Clean Environment", "Good Value".
+3. **Criteria Input Type:** `Multi Choice` — options like "Friendly Staff", "Fast Service", "Clean Environment", "Good Value".
 4. **Analytics:** Admin navigates to Template Detail → **View Survey Results** to see option distribution with percentages.
 
 ### 15. Post-Training Feedback (HR, Any Industry)

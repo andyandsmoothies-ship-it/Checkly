@@ -66,7 +66,7 @@ flowchart LR
 | **Template selection** | Browse available templates, filtered by type (QC / Training / General) |
 | **Store selection** | List all active stores with GPS verification |
 | **Section-by-section form** | Collapsible sections matching template → groups → criteria hierarchy |
-| **Criteria input** | Pass/Fail, Numeric (fault count), Scale (Maturity Matrix) — per criteria type |
+| **Criteria input** | Pass/Fail, Fault Count, Scored Choices, Single Choice, Multi Choice — per criteria type |
 | **Photo capture** | Attach photo evidence to any criteria answer |
 | **Real-time scoring** | Score calculated locally as auditor fills in answers |
 | **GPS verification** | Capture lat/lng at submission time to prove on-site presence |
