@@ -25,4 +25,5 @@ public sealed class Template
     // Navigation properties
     public ICollection<Group> Groups { get; set; } = [];
     public ICollection<Submission> Submissions { get; set; } = [];
+    public ICollection<TemplateAssignment> Assignments { get; set; } = [];
 }

@@ -233,6 +233,52 @@ testWidgets('UserManagement has Add User FAB', (tester) async {
 
 ---
 
+## Gate 7: Meaningful Test Checklist
+
+Infrastructure gates (1-6) verify tests are *buildable*. This gate verifies tests are *meaningful*. AI agents commonly produce tests that pass all infrastructure checks but test nothing useful — asserting on data shapes, echoing input values back, or only testing happy paths.
+
+Before handoff, Sentinel must verify **every test** against these 5 checks:
+
+| # | Check | Question to Ask | 🚩 Flop Signal |
+|---|-------|-----------------|----------------|
+| 1 | **Behavior, Not Shape** | Does this test verify a *business rule* or *user-visible behavior*? | Test only checks property names, data types, or response structure |
+| 2 | **Survives Refactor** | Would this test pass if internals changed but behavior stayed the same? | Test asserts on DB column values, internal class names, or private state |
+| 3 | **Meaningful Assertion** | Does the assertion prove something *non-trivial* about the system? | `Assert.NotNull()`, `Assert.True(response.IsSuccessStatusCode)` without checking what was returned |
+| 4 | **Negative Cases Exist** | For each happy-path scenario, is there at least one negative or boundary case? | All tests are happy-path only — no 403, 404, or validation-error scenarios |
+| 5 | **Spec-Readable Name** | Does the test name read like a specification a non-engineer could understand? | `Test1`, `CreateStore_Works`, `ShouldReturnOk` |
+
+### Examples
+
+**Flop test** (passes Gate 1-6 but fails Gate 7):
+```csharp
+[Fact]
+public async Task CreateStore_Works()
+{
+    var response = await client.PostAsJsonAsync("/api/stores", new { Name = "Store 1" });
+    Assert.NotNull(response);  // ← Meaningless: every non-crashing call passes
+    var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+    Assert.Equal("Store 1", body.GetProperty("name").GetString()); // ← Shape: echoes input
+}
+```
+
+**Meaningful test** (passes Gate 7):
+```csharp
+[Fact]
+public async Task Auditor_Cannot_Create_Store()
+{
+    // Arrange — auditor role (not admin)
+    var client = await _factory.CreateAuthenticatedClient("auditor");
+
+    // Act — attempt to create a store
+    var response = await client.PostAsJsonAsync("/api/stores", new { Name = "Store 1", AreaId = areaId });
+
+    // Assert — business rule: only admins can create stores
+    Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+}
+```
+
+---
+
 ## Quick Reference Checklist
 
 Use this as a final pre-handoff gate. Every box must be checked:
@@ -243,6 +289,7 @@ Use this as a final pre-handoff gate. Every box must be checked:
 - [ ] **Gate 4**: Deferred ACs use `Skip` attribute, not comments
 - [ ] **Gate 5**: Infrastructure Map is included in specs artifact
 - [ ] **Gate 6**: Full-stack slices have tests on **every layer** (server + client)
+- [ ] **Gate 7**: Every test passes the Meaningful Test Checklist (behavior, not shape)
 
 Only after all gates pass should Sentinel proceed to Phase 3 (Handoff).
 

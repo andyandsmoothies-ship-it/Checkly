@@ -36,7 +36,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Test Region {_runId}",
-            Code = $"test-region-{_runId}",
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
@@ -81,7 +80,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Profile Region {_runId}",
-            Code = $"profile-region-{_runId}",
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
@@ -153,7 +151,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Compat Region {_runId}",
-            Code = $"compat-{_runId}",
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
@@ -193,7 +190,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"North {_runId}",
-            Code = $"north-{_runId}",
             IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,

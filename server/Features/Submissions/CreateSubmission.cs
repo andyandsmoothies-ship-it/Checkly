@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
+using Checkly.Api.Features.ActionPlans;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -213,8 +214,8 @@ public static class CreateSubmission
             db.Answers.AddRange(answers);
             await db.SaveChangesAsync(ct);
 
-            // --- S1: Auto-create action plans for failed answers ---
-            var failedAnswers = answers.Where(a => a.Value == "non_conform").ToList();
+            // --- S1: Auto-create action plans for triggered answers ---
+            var failedAnswers = ActionPlanEvaluator.GetTriggeredAnswers(answers, criteria);
 
             if (failedAnswers.Count > 0)
             {

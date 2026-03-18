@@ -22,6 +22,7 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 - **Rule (No-Code Mandate)**: Sentinel CANNOT write or modify production code. Sentinel MUST write the test code (Unit Tests, Integration Tests) that proves the production code is either missing or failing.
 - **Rule (Single Concern)**: Each test method tests exactly ONE acceptance criterion. If setup steps fail, they must fail with a clear message, not a raw exception. See `atdd-quality-gates` skill Gate 2 for details and examples.
 - **Rule (Max Chain ≤ 5)**: A test method must not contain more than 5 sequential HTTP calls or DB operations. Beyond this, split into separate tests or extract helpers. See `atdd-quality-gates` skill Gate 2 for rationale.
+- **Rule (Meaningful Tests)**: Every test must verify a *business behavior*, not a data shape. Tests that only echo input values, assert `NotNull`, or check response structure without verifying business rules are flops. See `atdd-quality-gates` skill Gate 7 for the full checklist and examples.
 - **Action**: Generate formal Gherkin scenarios (Given/When/Then) with citations, then write the corresponding test fixtures in the project's testing framework. Ensure the tests fail (RED) because the feature is not implemented yet.
 
 ### 2a. RED for the Right Reason (Smoke Gate)
@@ -39,9 +40,11 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 |-----------|--------|------|---------------|
 | ... | RED | ✅ Business / ❌ Infra | ... |
 
+**Step 3**: Run the **Meaningful Test Checklist** from `atdd-quality-gates` skill Gate 7 on every test. Verify behavior-not-shape, meaningful assertions, negative cases, and spec-readable names.
+
 **Gate verdict:**
-- ✅ All failures are `Business` → proceed to Phase 2b
-- ❌ Any `Infra` or `Ambiguous` failure → fix it, re-run, update the table
+- ✅ All failures are `Business` AND all tests pass Gate 7 → proceed to Phase 2b
+- ❌ Any `Infra`/`Ambiguous` failure OR Gate 7 flop → fix it, re-run, update the table
 
 ### 2b. Deferred Acceptance Criteria
 

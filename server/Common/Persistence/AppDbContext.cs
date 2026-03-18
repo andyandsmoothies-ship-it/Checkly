@@ -26,6 +26,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<SystemLog> SystemLogs => Set<SystemLog>();
     public DbSet<Area> Areas => Set<Area>();
+    public DbSet<UserGroup> UserGroups => Set<UserGroup>();
+    public DbSet<UserGroupMember> UserGroupMembers => Set<UserGroupMember>();
+    public DbSet<TemplateAssignment> TemplateAssignments => Set<TemplateAssignment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +47,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureNotification(modelBuilder);
         ConfigureSystemLog(modelBuilder);
         ConfigureArea(modelBuilder);
+        ConfigureUserGroup(modelBuilder);
+        ConfigureUserGroupMember(modelBuilder);
+        ConfigureTemplateAssignment(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -420,6 +426,70 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
 
+        });
+    }
+
+    private static void ConfigureUserGroup(ModelBuilder mb)
+    {
+        mb.Entity<UserGroup>(e =>
+        {
+            e.ToTable("user_groups");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.Name).HasColumnName("name").IsRequired();
+            e.Property(x => x.Description).HasColumnName("description");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+        });
+    }
+
+    private static void ConfigureUserGroupMember(ModelBuilder mb)
+    {
+        mb.Entity<UserGroupMember>(e =>
+        {
+            e.ToTable("user_group_members");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.UserGroupId).HasColumnName("user_group_id").IsRequired();
+            e.Property(x => x.ProfileId).HasColumnName("profile_id").IsRequired();
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            e.HasIndex(x => new { x.UserGroupId, x.ProfileId }).IsUnique();
+
+            e.HasOne(x => x.UserGroup)
+                .WithMany(g => g.Members)
+                .HasForeignKey(x => x.UserGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(x => x.Profile)
+                .WithMany()
+                .HasForeignKey(x => x.ProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureTemplateAssignment(ModelBuilder mb)
+    {
+        mb.Entity<TemplateAssignment>(e =>
+        {
+            e.ToTable("template_assignments");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.TemplateId).HasColumnName("template_id").IsRequired();
+            e.Property(x => x.UserGroupId).HasColumnName("user_group_id").IsRequired();
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            e.HasIndex(x => new { x.TemplateId, x.UserGroupId }).IsUnique();
+
+            e.HasOne(x => x.Template)
+                .WithMany(t => t.Assignments)
+                .HasForeignKey(x => x.TemplateId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(x => x.UserGroup)
+                .WithMany(g => g.Assignments)
+                .HasForeignKey(x => x.UserGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

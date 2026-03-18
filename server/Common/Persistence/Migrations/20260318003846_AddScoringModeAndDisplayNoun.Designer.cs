@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Checkly.Api.Common.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260317234349_AddScoringModeToSubmission")]
-    partial class AddScoringModeToSubmission
+    [Migration("20260318003846_AddScoringModeAndDisplayNoun")]
+    partial class AddScoringModeAndDisplayNoun
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -678,6 +678,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("DisplayNoun")
+                        .HasColumnType("text")
+                        .HasColumnName("display_noun");
+
                     b.Property<decimal?>("GpsLat")
                         .HasColumnType("numeric")
                         .HasColumnName("gps_lat");
@@ -708,7 +712,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.Property<string>("ScoringMode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("penalty")
+                        .HasColumnName("scoring_mode");
 
                     b.Property<string>("SectionScores")
                         .HasColumnType("jsonb")
@@ -843,6 +850,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text")
                         .HasColumnName("description");
+
+                    b.Property<string>("DisplayNoun")
+                        .HasColumnType("text")
+                        .HasColumnName("display_noun");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()

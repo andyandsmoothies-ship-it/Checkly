@@ -11,6 +11,7 @@ using Checkly.Api.Features.Submissions;
 using Checkly.Api.Features.Admin;
 using Checkly.Api.Features.Analytics;
 using Checkly.Api.Features.Areas;
+using Checkly.Api.Features.UserGroups;
 using Checkly.Api.Features.Templates;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
@@ -104,6 +105,7 @@ app.MapNotificationEndpoints();
 app.MapAdminEndpoints();
 app.MapAnalyticsEndpoints();
 app.MapAreaEndpoints();
+app.MapUserGroupEndpoints();
 
 app.Run();
 

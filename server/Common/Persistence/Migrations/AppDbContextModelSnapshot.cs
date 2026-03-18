@@ -895,6 +895,104 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("templates", (string)null);
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.TemplateAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("template_id");
+
+                    b.Property<Guid>("UserGroupId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_group_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserGroupId");
+
+                    b.HasIndex("TemplateId", "UserGroupId")
+                        .IsUnique();
+
+                    b.ToTable("template_assignments", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("user_groups", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserGroupMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("profile_id");
+
+                    b.Property<Guid>("UserGroupId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_group_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileId");
+
+                    b.HasIndex("UserGroupId", "ProfileId")
+                        .IsUnique();
+
+                    b.ToTable("user_group_members", (string)null);
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1169,6 +1267,44 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Template");
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.TemplateAssignment", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Template", "Template")
+                        .WithMany("Assignments")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.UserGroup", "UserGroup")
+                        .WithMany("Assignments")
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+
+                    b.Navigation("UserGroup");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserGroupMember", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.UserGroup", "UserGroup")
+                        .WithMany("Members")
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("UserGroup");
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserRole", b =>
                 {
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.AppUser", null)
@@ -1271,9 +1407,18 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Template", b =>
                 {
+                    b.Navigation("Assignments");
+
                     b.Navigation("Groups");
 
                     b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserGroup", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("Members");
                 });
 #pragma warning restore 612, 618
         }

@@ -17,16 +17,15 @@ Before ANY technical implementation, research, or audit, you MUST perform a ment
 Before ANY workflow response that involves analysis, design, or implementation:
 - [ ] Is this more than a 2-minute task? → Create `task_boundary`
 - [ ] Does the answer have >5 paragraphs or require design? → Create an artifact
-- [ ] **Skill Inventory**: Match the task to modular skills in `.agent/skills/`.
-- [ ] **Rules Conflict**: Confirm no existing logic in `project-governance.md`, `csharp-standards.md`, or `plugin-development.md` conflicts.
-- [ ] **Layer Check**: Identify target layer (Shell / Shared / Tool RCL) before planning.
-- [ ] **Tool-Specific Rules**: If modifying a specific tool, also check that tool's rules (e.g., `email-standards.md` for VoucherSender).
+- [ ] **Skill Inventory**: Match the task to modular skills in `.agents/skills/`.
+- [ ] **Rules Conflict**: Confirm no existing logic in `.agents/rules/platform-rules.md` or `.agents/rules/project-gotchas.md` conflicts.
+- [ ] **Layer Check**: Identify target layer (Server / Flutter / Shared) before planning.
 </pre-flight-check>
 
 ## Skill Inventory Protocol (STRICT)
 Before ANY technical implementation or research:
-1. **Discovery**: Match the task to available skills in `.agent/skills/` (e.g., `clean_coder`, `systematic-debugging`).
-2. **Invocation**: For project-specific business logic (C#, Excel, Email), refer to the Rules in `.agent/rules/`. For cross-project behaviors, refer to the Skills in `.agent/skills/`.
+1. **Discovery**: Match the task to available skills in `.agents/skills/` (e.g., `clean_coder`, `systematic-debugging`).
+2. **Invocation**: For project-specific business logic, refer to the Rules in `.agents/rules/`. For cross-project behaviors, refer to the Skills in `.agents/skills/`.
 3. **Task-Based Application**: Apply the patterns defined in the relevant Rule or Skill for the current task.
 
 ## Artifact Protocol
@@ -62,14 +61,14 @@ Agents MUST NOT dump test logs, build outputs, or scratchpad files (`build.txt`,
 ## Self-Maintenance & Governance
 
 ### Post-Task Reflection & Self-Curation (ALWAYS-ON)
-After completing any significant implementation, debug, or refactor, assess whether a new LESSON, GOTCHA, or PATTERN was discovered that must be preserved. 
+After completing any significant implementation, debug, or refactor, assess whether a new LESSON, GOTCHA, or PATTERN was discovered that must be preserved.
 
-1. **Target File**: Update `.agent/rules/project-gotchas.md`. Do NOT use `AGENTS.md`.
+1. **Target File**: Update `.agents/rules/project-gotchas.md`. Do NOT use `AGENTS.md`.
 2. **Curation Rules (Preventing Bloat)**:
-   - **DO ADD**: Highly specific, project-breaking quirks (e.g., "MudBlazor layout rendermode crashes", "JS Interop kills SignalR circuit").
-   - **DO ADD**: Architectural decisions that deviate from standard tutorials (e.g., "Use global Routes rendermode, not per-page").
+   - **DO ADD**: Highly specific, project-breaking quirks.
+   - **DO ADD**: Architectural decisions that deviate from standard tutorials.
    - **DO ADD**: Undocumented library bugs or workarounds specific to this stack.
-   - **DO NOT ADD**: Generic C# or Blazor knowledge (e.g., "How to use a standard for loop", "What DI is").
+   - **DO NOT ADD**: Generic C#, Dart, or Flutter knowledge.
    - **DO NOT ADD**: One-off typos or syntax errors that the compiler caught.
-   - **DO NOT ADD**: Features or business logic that are already documented in `platform-rules.md` or other specific rule files.
-3. **Self-Prune**: Before finishing, you MUST review the rest of `.agent/rules/project-gotchas.md`. Automatically consolidate duplicates, delete outdated/contradictory rules, and keep the file lean and highly dense with value.
+   - **DO NOT ADD**: Features or business logic already documented in `platform-rules.md`.
+3. **Self-Prune**: Before finishing, review `.agents/rules/project-gotchas.md`. Consolidate duplicates, delete outdated rules, keep the file lean.

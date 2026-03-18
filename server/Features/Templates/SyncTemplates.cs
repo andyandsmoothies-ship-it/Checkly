@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,9 @@ namespace Checkly.Api.Features.Templates;
 /// GET /api/sync/templates?since={ISO_timestamp}
 /// Returns templates, groups, and criteria modified after the given timestamp.
 /// Key endpoint for mobile offline-first delta sync.
+///
+/// Access control: non-admin users only see templates that are either
+/// unassigned (global) or assigned to a group they belong to.
 /// </summary>
 public static class SyncTemplates
 {
@@ -32,11 +36,31 @@ public static class SyncTemplates
 
     public static async Task<IResult> HandleAsync(
         DateTimeOffset since,
+        ClaimsPrincipal user,
         AppDbContext db,
         CancellationToken ct)
     {
-        var templates = await db.Templates
-            .Where(t => t.UpdatedAt > since)
+        var isAdmin = user.IsInRole("admin");
+
+        // Base query
+        var query = db.Templates.Where(t => t.UpdatedAt > since);
+
+        // Non-admin: filter by group membership
+        if (!isAdmin)
+        {
+            var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var userGroupIds = await db.UserGroupMembers
+                .Where(m => m.ProfileId == userId)
+                .Select(m => m.UserGroupId)
+                .ToListAsync(ct);
+
+            query = query.Where(t =>
+                !t.Assignments.Any() ||
+                t.Assignments.Any(a => userGroupIds.Contains(a.UserGroupId)));
+        }
+
+        var templates = await query
             .Select(t => new TemplateDto(
                 t.Id, t.Title, t.Description, t.Type, t.Version,
                 t.ScoringLogicConfig, t.DisplayNoun, t.IsActive, t.CreatedAt, t.UpdatedAt))

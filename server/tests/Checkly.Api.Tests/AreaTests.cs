@@ -7,7 +7,7 @@ namespace Checkly.Api.Tests;
 /// <summary>
 /// ATDD: Areas Entity — Slice 1 (CRUD API).
 /// These tests define the acceptance criteria for the Area entity.
-/// They will FAIL (RED) until the production code is implemented.
+/// Updated: area_code columns have been dropped; uniqueness is on Name.
 /// </summary>
 public class AreaTests : IClassFixture<TestWebApplicationFactory>
 {
@@ -53,24 +53,22 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
         var authClient = _factory.CreateAuthenticatedClient(adminToken);
         var response = await authClient.PostAsJsonAsync("/api/areas", new
         {
-            name = "Miền Bắc",
-            code = $"north-{_runId}"
+            name = $"Miền Bắc {_runId}"
         });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         Assert.True(json.TryGetProperty("id", out _));
-        Assert.Equal("Miền Bắc", json.GetProperty("name").GetString());
-        Assert.Equal($"north-{_runId}", json.GetProperty("code").GetString());
+        Assert.Equal($"Miền Bắc {_runId}", json.GetProperty("name").GetString());
         Assert.True(json.GetProperty("isActive").GetBoolean());
     }
 
-    // ─── AC3: Duplicate code returns 409 Conflict ───
-    // Citation: analysis_areas_entity.md:187
+    // ─── AC3: Duplicate name returns 409 Conflict ───
+    // Updated: uniqueness is now on Name (code column was dropped)
 
     [Fact]
-    public async Task Create_Area_With_Duplicate_Code_Returns_Conflict()
+    public async Task Create_Area_With_Duplicate_Name_Returns_Conflict()
     {
         var client = _factory.CreateClient();
         var bootstrapToken = await _factory.LoginBootstrapAdminAsync(client);
@@ -79,20 +77,18 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
             adminToken: bootstrapToken);
 
         var authClient = _factory.CreateAuthenticatedClient(adminToken);
-        var dupCode = $"south-{_runId}";
+        var dupName = $"Miền Nam {_runId}";
 
         // Create first area
         await authClient.PostAsJsonAsync("/api/areas", new
         {
-            name = "Miền Nam",
-            code = dupCode
+            name = dupName
         });
 
         // Attempt duplicate
         var response = await authClient.PostAsJsonAsync("/api/areas", new
         {
-            name = "Nam Bộ",
-            code = dupCode
+            name = dupName
         });
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
@@ -115,8 +111,7 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
         // Create area first
         var createResponse = await authClient.PostAsJsonAsync("/api/areas", new
         {
-            name = "Miền Trung",
-            code = $"central-{_runId}"
+            name = $"Miền Trung {_runId}"
         });
         var created = await createResponse.Content.ReadFromJsonAsync<JsonElement>();
         var areaId = created.GetProperty("id").GetString();
@@ -124,14 +119,14 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
         // Update it
         var updateResponse = await authClient.PutAsJsonAsync($"/api/areas/{areaId}", new
         {
-            name = "Miền Trung (cũ)",
+            name = $"Miền Trung (cũ) {_runId}",
             isActive = false
         });
 
         Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
 
         var updated = await updateResponse.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.Equal("Miền Trung (cũ)", updated.GetProperty("name").GetString());
+        Assert.Equal($"Miền Trung (cũ) {_runId}", updated.GetProperty("name").GetString());
         Assert.False(updated.GetProperty("isActive").GetBoolean());
     }
 
@@ -148,8 +143,7 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
         var authClient = _factory.CreateAuthenticatedClient(token);
         var response = await authClient.PostAsJsonAsync("/api/areas", new
         {
-            name = "Should Fail",
-            code = $"fail-{_runId}"
+            name = $"Should Fail {_runId}"
         });
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);

@@ -55,6 +55,11 @@ public static class TemplateEndpoints
             .WithName("DeleteCriterion")
             .RequireAuthorization("AdminOnly");
 
+        // Template assignments (access control)
+        group.MapPut("/{id}/assignments", UpdateAssignments.HandleAsync)
+            .WithName("UpdateTemplateAssignments")
+            .RequireAuthorization("AdminOnly");
+
         // Delta sync endpoint
         var syncGroup = app.MapGroup("/api/sync")
             .WithTags("Sync")
