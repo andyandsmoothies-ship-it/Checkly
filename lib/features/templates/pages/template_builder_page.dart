@@ -827,14 +827,13 @@ class _ScoringRulesCard extends StatelessWidget {
             const SizedBox(height: 8),
             // Weighted Density — hidden for Checklist and Survey modes
             if (scoringMode != 'checklist' && scoringMode != 'survey')
-              SwitchListTile(
-                title: const Text('Weighted Density'),
-                subtitle: const Text(
-                  'Each section contributes to the total based on its assigned weight (must sum to 100%).',
-                ),
+              _ExpandableSettingTile(
+                title: 'Weighted Density',
+                description:
+                    'Each section contributes to the total based on its '
+                    'assigned weight (must sum to 100%).',
                 value: weightedDensity,
                 onChanged: onDensityChanged,
-                contentPadding: EdgeInsets.zero,
               ),
 
             const Divider(height: 24),
@@ -842,32 +841,29 @@ class _ScoringRulesCard extends StatelessWidget {
             // ── GROUP 2: CRITICAL FAILURE RULES ──
             const SectionHeader('CRITICAL FAILURE RULES'),
             const SizedBox(height: 4),
-            SwitchListTile(
-              title: const Text('CCP Override'),
-              subtitle: const Text(
-                'Any criteria marked CCP that fails will zero out its entire section.',
-              ),
+            _ExpandableSettingTile(
+              title: 'CCP Override',
+              description:
+                  'Any criteria marked CCP that fails will zero out '
+                  'its entire section.',
               value: ccpOverride,
               onChanged: onCcpChanged,
-              contentPadding: EdgeInsets.zero,
             ),
-            SwitchListTile(
-              title: const Text('RISK Override'),
-              subtitle: const Text(
-                'Any criteria marked RISK that fails will zero out the entire audit.',
-              ),
+            _ExpandableSettingTile(
+              title: 'RISK Override',
+              description:
+                  'Any criteria marked RISK that fails will zero out '
+                  'the entire audit.',
               value: riskOverride,
               onChanged: onRiskChanged,
-              contentPadding: EdgeInsets.zero,
             ),
-            SwitchListTile(
-              title: const Text('Progressive Repeat Penalty'),
-              subtitle: const Text(
-                'OFF: deduction = repeats × rate. ON: deduction = repeats² × rate (harsher for more repeats).',
-              ),
+            _ExpandableSettingTile(
+              title: 'Progressive Repeat Penalty',
+              description:
+                  'OFF: deduction = repeats × rate. '
+                  'ON: deduction = repeats² × rate (harsher for more repeats).',
               value: progressiveRepeat,
               onChanged: onProgressiveChanged,
-              contentPadding: EdgeInsets.zero,
             ),
 
             const Divider(height: 24),
@@ -875,14 +871,13 @@ class _ScoringRulesCard extends StatelessWidget {
             // ── GROUP 3: AUDIT BEHAVIOR ──
             const SectionHeader('AUDIT BEHAVIOR'),
             const SizedBox(height: 4),
-            SwitchListTile(
-              title: const Text('Confirm Correct'),
-              subtitle: const Text(
-                'Auditor must tap "Correct" to confirm each passing criteria before submitting.',
-              ),
+            _ExpandableSettingTile(
+              title: 'Confirm Correct',
+              description:
+                  'Auditor must tap "Correct" to confirm each passing '
+                  'criteria before submitting.',
               value: confirmCorrect,
               onChanged: onCorrectChanged,
-              contentPadding: EdgeInsets.zero,
             ),
 
             const Divider(height: 24),
@@ -1852,6 +1847,102 @@ class _TemplateFooter extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXPANDABLE SETTING TILE (Accordion Pattern)
+// ═══════════════════════════════════════════════════════════════
+
+/// A setting row with title + switch, and a hidden description that
+/// expands on tap. Implements the "Pro Interface" accordion pattern.
+class _ExpandableSettingTile extends StatefulWidget {
+  final String title;
+  final String description;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  const _ExpandableSettingTile({
+    required this.title,
+    required this.description,
+    required this.value,
+    this.onChanged,
+  });
+
+  @override
+  State<_ExpandableSettingTile> createState() => _ExpandableSettingTileState();
+}
+
+class _ExpandableSettingTileState extends State<_ExpandableSettingTile> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Collapsed row: title + chevron + switch ──
+        InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                // Title + chevron
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(widget.title, style: theme.textTheme.bodyLarge),
+                      const SizedBox(width: 4),
+                      AnimatedRotation(
+                        turns: _expanded ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Icon(
+                          Icons.expand_more,
+                          size: 20,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Switch (always accessible)
+                Switch(value: widget.value, onChanged: widget.onChanged),
+              ],
+            ),
+          ),
+        ),
+
+        // ── Expanded description ──
+        AnimatedCrossFade(
+          firstChild: const SizedBox.shrink(),
+          secondChild: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 48, 12),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                widget.description,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ),
+          crossFadeState: _expanded
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 200),
+        ),
+      ],
     );
   }
 }

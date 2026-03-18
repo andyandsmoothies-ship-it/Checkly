@@ -202,7 +202,7 @@ class _TemplateListPageState extends State<TemplateListPage> {
                 child: RefreshIndicator(
                   onRefresh: () => manager.loadTemplates(),
                   child: ListView(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                     children: _groupedByType.entries.map((entry) {
                       final type = entry.key;
                       final templates = entry.value;
