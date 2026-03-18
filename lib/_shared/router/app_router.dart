@@ -55,11 +55,11 @@ final appRouter = GoRouter(
           builder: (context, state) => const DashboardPage(),
         ),
         GoRoute(
-          path: '/audits',
+          path: '/activity',
           builder: (context, state) => const HistoryPage(),
         ),
         GoRoute(
-          path: '/actions',
+          path: '/plans',
           builder: (context, state) => const ActionPlansPage(),
         ),
         GoRoute(
@@ -106,7 +106,7 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(
-      path: '/actions/:id',
+      path: '/plans/:id',
       builder: (context, state) =>
           ActionPlanDetailPage(actionPlanId: state.pathParameters['id']!),
     ),
@@ -145,8 +145,10 @@ final appRouter = GoRouter(
       builder: (context, state) => const ActivityHistoryPage(),
     ),
 
-    // Legacy redirect: /history → /audits
-    GoRoute(path: '/history', redirect: (_, _) => '/audits'),
+    // Legacy redirects: old routes → new routes
+    GoRoute(path: '/history', redirect: (_, _) => '/activity'),
+    GoRoute(path: '/audits', redirect: (_, _) => '/activity'),
+    GoRoute(path: '/actions', redirect: (_, _) => '/plans'),
 
     // ---------- 6C: Analytics + Store Dashboard + Template Builder ----------
     GoRoute(
@@ -217,8 +219,8 @@ class _MainShell extends StatelessWidget {
   const _MainShell({required this.child});
 
   static int _indexFromLocation(String location) {
-    if (location.startsWith('/audits')) return 1;
-    if (location.startsWith('/actions')) return 2;
+    if (location.startsWith('/activity')) return 1;
+    if (location.startsWith('/plans')) return 2;
     if (location.startsWith('/templates')) return 3;
     if (location.startsWith('/profile')) return 4;
     return 0; // /home
@@ -262,13 +264,13 @@ class _MainShell extends StatelessWidget {
                   icon: Icons.assignment,
                   label: 'ACTIVITY',
                   isActive: currentIndex == 1,
-                  onTap: () => context.go('/audits'),
+                  onTap: () => context.go('/activity'),
                 ),
                 _NavItem(
                   icon: Icons.fact_check,
                   label: 'PLANS',
                   isActive: currentIndex == 2,
-                  onTap: () => context.go('/actions'),
+                  onTap: () => context.go('/plans'),
                 ),
                 _NavItem(
                   icon: Icons.description_outlined,

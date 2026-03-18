@@ -159,8 +159,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             description: c.descCtrl.text.isEmpty ? null : c.descCtrl.text,
             inputType: c.inputType,
             pointsWeight: double.tryParse(c.pointsCtrl.text),
-            isCcp: c.isCcp,
-            isRisk: c.isRisk,
+            isCcp: false,
+            isRisk: false,
             orderIndex: ci,
             metadata: c.inputType == 'scale' && c.scaleOptions.isNotEmpty
                 ? json.encode({'scaleOptions': c.scaleOptions})
@@ -503,8 +503,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                       depth: 0,
 
                       densityEnabled: _weightedDensity,
-                      ccpEnabled: _ccpOverride,
-                      riskEnabled: _riskOverride,
                       onRemoveSection: () => _removeSection(i),
                       onAddCriterion: () => _addCriterionToGroup(section),
                       onRemoveCriterion: (ci) =>
@@ -621,8 +619,6 @@ class _EditableCriterion {
   final TextEditingController descCtrl;
   final TextEditingController pointsCtrl;
   String inputType;
-  bool isCcp;
-  bool isRisk;
   List<Map<String, dynamic>> scaleOptions;
   List<String> choiceOptions;
 
@@ -632,8 +628,6 @@ class _EditableCriterion {
     String description = '',
     String points = '',
     this.inputType = 'numeric',
-    this.isCcp = false,
-    this.isRisk = false,
     List<Map<String, dynamic>>? scaleOptions,
     List<String>? choiceOptions,
   }) : labelCtrl = TextEditingController(text: label),
@@ -671,8 +665,6 @@ class _EditableCriterion {
       description: dto.description ?? '',
       points: dto.pointsWeight?.toString() ?? '',
       inputType: dto.inputType,
-      isCcp: dto.isCcp,
-      isRisk: dto.isRisk,
       scaleOptions: options,
       choiceOptions: choices,
     );
@@ -971,8 +963,6 @@ class _SectionEditor extends StatelessWidget {
   final int depth;
 
   final bool densityEnabled;
-  final bool ccpEnabled;
-  final bool riskEnabled;
   final VoidCallback onRemoveSection;
   final VoidCallback onAddCriterion;
   final ValueChanged<int> onRemoveCriterion;
@@ -986,8 +976,6 @@ class _SectionEditor extends StatelessWidget {
     this.depth = 0,
 
     this.densityEnabled = true,
-    this.ccpEnabled = false,
-    this.riskEnabled = false,
     required this.onRemoveSection,
     required this.onAddCriterion,
     required this.onRemoveCriterion,
@@ -1038,6 +1026,13 @@ class _SectionEditor extends StatelessWidget {
                     hintText: isRoot
                         ? 'Section ${index + 1}'
                         : 'Sub-section ${index + 1}',
+                    hintStyle: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.38,
+                      ),
+                      fontStyle: FontStyle.italic,
+                    ),
                     isDense: true,
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
@@ -1165,8 +1160,6 @@ class _SectionEditor extends StatelessWidget {
               return _CriteriaEditor(
                 criterion: c,
 
-                ccpEnabled: ccpEnabled,
-                riskEnabled: riskEnabled,
                 onRemove: () => onRemoveCriterion(ci),
                 onChanged: onChanged,
               );
@@ -1198,8 +1191,7 @@ class _SectionEditor extends StatelessWidget {
                   depth: depth + 1,
 
                   densityEnabled: densityEnabled,
-                  ccpEnabled: ccpEnabled,
-                  riskEnabled: riskEnabled,
+
                   onRemoveSection: () => onRemoveSubSection?.call(si),
                   onAddCriterion: () {
                     sub.criteria.add(_EditableCriterion());
@@ -1240,338 +1232,339 @@ class _SectionEditor extends StatelessWidget {
 class _CriteriaEditor extends StatelessWidget {
   final _EditableCriterion criterion;
 
-  final bool ccpEnabled;
-  final bool riskEnabled;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
 
   const _CriteriaEditor({
     required this.criterion,
 
-    this.ccpEnabled = false,
-    this.riskEnabled = false,
     required this.onRemove,
     required this.onChanged,
   });
 
   void _openDrawer(BuildContext context) {
+    final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 20,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Edit Criterion',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(ctx),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Label
-              TextFormField(
-                controller: criterion.labelCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Criterion Label',
-                  isDense: true,
-                ),
-                onChanged: (_) => onChanged(),
-              ),
-              const SizedBox(height: 16),
-
-              // Gap 3: Description
-              TextFormField(
-                controller: criterion.descCtrl,
-                decoration: InputDecoration(
-                  labelText: 'Description (optional)',
-                  isDense: true,
-                ),
-                maxLines: 3,
-                onChanged: (_) => onChanged(),
-              ),
-              const SizedBox(height: 16),
-
-              // Input Type selector
-              DropdownButtonFormField<String>(
-                initialValue: criterion.inputType,
-                decoration: const InputDecoration(
-                  labelText: 'Input Type',
-                  isDense: true,
-                ),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'numeric',
-                    child: Text('Numeric (Faults)'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'pass_fail',
-                    child: Text('Pass / Fail'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'scale',
-                    child: Text('Scale (Maturity)'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'single_choice',
-                    child: Text('Single Choice (Radio)'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'multi_choice',
-                    child: Text('Multi Choice (Checkbox)'),
-                  ),
-                ],
-                onChanged: (v) {
-                  criterion.inputType = v ?? criterion.inputType;
-                  onChanged();
-                  Navigator.pop(ctx);
-                  // Reopen to refresh UI with new inputType
-                  Future.microtask(() {
-                    if (context.mounted) _openDrawer(context);
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Scale Options editor (only for scale type)
-              if (criterion.inputType == 'scale') ...[
-                const Text(
-                  'Scale Options',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                ...criterion.scaleOptions.asMap().entries.map((entry) {
-                  final idx = entry.key;
-                  final opt = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: TextFormField(
-                            initialValue: opt['label'] as String? ?? '',
-                            decoration: InputDecoration(
-                              labelText: 'Label ${idx + 1}',
-                              isDense: true,
-                            ),
-                            onChanged: (v) {
-                              criterion.scaleOptions[idx]['label'] = v;
-                              onChanged();
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          flex: 1,
-                          child: TextFormField(
-                            initialValue:
-                                (opt['points'] as num?)?.toString() ?? '0',
-                            decoration: const InputDecoration(
-                              labelText: 'Pts',
-                              isDense: true,
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (v) {
-                              criterion.scaleOptions[idx]['points'] =
-                                  double.tryParse(v) ?? 0;
-                              // Auto-sync pointsWeight to highest
-                              final maxPts = criterion.scaleOptions
-                                  .fold<double>(
-                                    0,
-                                    (m, o) =>
-                                        (o['points'] as num? ?? 0).toDouble() >
-                                            m
-                                        ? (o['points'] as num).toDouble()
-                                        : m,
-                                  );
-                              criterion.pointsCtrl.text = maxPts
-                                  .toStringAsFixed(0);
-                              onChanged();
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.remove_circle_outline,
-                            size: 18,
-                            color: Colors.red.shade400,
-                          ),
-                          onPressed: () {
-                            criterion.scaleOptions.removeAt(idx);
-                            onChanged();
-                            Navigator.pop(ctx);
-                            Future.microtask(() {
-                              if (context.mounted) _openDrawer(context);
-                            });
-                          },
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ],
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Edit Criterion',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  );
-                }),
-                TextButton.icon(
-                  onPressed: () {
-                    criterion.scaleOptions.add({'label': '', 'points': 0});
-                    onChanged();
-                    Navigator.pop(ctx);
-                    Future.microtask(() {
-                      if (context.mounted) _openDrawer(context);
-                    });
-                  },
-                  icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Add Option'),
-                ),
-                const SizedBox(height: 8),
-              ],
-
-              // Choice Options editor (for single_choice / multi_choice)
-              if (criterion.inputType == 'single_choice' ||
-                  criterion.inputType == 'multi_choice') ...[
-                const Text(
-                  'Choice Options',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                ...criterion.choiceOptions.asMap().entries.map((entry) {
-                  final idx = entry.key;
-                  final label = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: label,
-                            decoration: InputDecoration(
-                              labelText: 'Option ${idx + 1}',
-                              isDense: true,
-                            ),
-                            onChanged: (v) {
-                              criterion.choiceOptions[idx] = v;
-                              onChanged();
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.remove_circle_outline,
-                            size: 18,
-                            color: Colors.red.shade400,
-                          ),
-                          onPressed: () {
-                            criterion.choiceOptions.removeAt(idx);
-                            onChanged();
-                            Navigator.pop(ctx);
-                            Future.microtask(() {
-                              if (context.mounted) _openDrawer(context);
-                            });
-                          },
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ],
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(ctx),
                     ),
-                  );
-                }),
-                TextButton.icon(
-                  onPressed: () {
-                    criterion.choiceOptions.add('');
-                    onChanged();
-                    Navigator.pop(ctx);
-                    Future.microtask(() {
-                      if (context.mounted) _openDrawer(context);
-                    });
-                  },
-                  icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Add Option'),
+                  ],
                 ),
-                const SizedBox(height: 8),
-              ],
+                const SizedBox(height: 16),
 
-              // Points weight (auto-managed for scale, hidden for choice, manual for others)
-              if (criterion.inputType != 'scale' &&
-                  criterion.inputType != 'single_choice' &&
-                  criterion.inputType != 'multi_choice')
+                // Label
                 TextFormField(
-                  controller: criterion.pointsCtrl,
+                  controller: criterion.labelCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Points Weight',
+                    labelText: 'Criterion Label',
                     isDense: true,
                   ),
-                  keyboardType: TextInputType.number,
                   onChanged: (_) => onChanged(),
-                )
-              else
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Points Weight'),
-                  trailing: Text(
-                    criterion.pointsCtrl.text.isEmpty
-                        ? '0'
-                        : criterion.pointsCtrl.text,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                ),
+                const SizedBox(height: 16),
+
+                // Gap 3: Description
+                TextFormField(
+                  controller: criterion.descCtrl,
+                  decoration: InputDecoration(
+                    labelText: 'Description (optional)',
+                    isDense: true,
+                  ),
+                  maxLines: 3,
+                  onChanged: (_) => onChanged(),
+                ),
+                const SizedBox(height: 16),
+
+                // Input Type selector
+                DropdownButtonFormField<String>(
+                  initialValue: criterion.inputType,
+                  decoration: const InputDecoration(
+                    labelText: 'Input Type',
+                    helperText:
+                        'Determines how the auditor will grade this item',
+                    isDense: true,
+                  ),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'pass_fail',
+                      child: Text('Pass / Fail (e.g., Is the floor clean?)'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'numeric',
+                      child: Text(
+                        'Fault Count (e.g., How many expired items?)',
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'scale',
+                      child: Text('Scored Choices (e.g., Poor/Fair/Good)'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'single_choice',
+                      child: Text('Single Choice (e.g., Which shift?)'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'multi_choice',
+                      child: Text('Multi Choice (e.g., Select all that apply)'),
+                    ),
+                  ],
+                  onChanged: (v) {
+                    criterion.inputType = v ?? criterion.inputType;
+                    onChanged();
+                    Navigator.pop(ctx);
+                    // Reopen to refresh UI with new inputType
+                    Future.microtask(() {
+                      if (context.mounted) _openDrawer(context);
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Scale Options editor (only for scale type)
+                if (criterion.inputType == 'scale') ...[
+                  const Text(
+                    'Scale Options',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Define maturity levels and their respective points (e.g. 1=Poor, 5=Excellent)',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  subtitle: const Text('Auto-set from highest scale option'),
-                ),
-              const SizedBox(height: 16),
-
-              // Gap 8: CCP / RISK toggles
-              Row(
-                children: [
-                  _ToggleBadge(
-                    label: 'CCP',
-                    active: criterion.isCcp,
-                    enabled: ccpEnabled,
-                    onTap: () {
-                      criterion.isCcp = !criterion.isCcp;
+                  const SizedBox(height: 8),
+                  ...criterion.scaleOptions.asMap().entries.map((entry) {
+                    final idx = entry.key;
+                    final opt = entry.value;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: TextFormField(
+                              initialValue: opt['label'] as String? ?? '',
+                              decoration: InputDecoration(
+                                labelText: 'Label ${idx + 1}',
+                                isDense: true,
+                              ),
+                              onChanged: (v) {
+                                criterion.scaleOptions[idx]['label'] = v;
+                                onChanged();
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            flex: 1,
+                            child: TextFormField(
+                              initialValue:
+                                  (opt['points'] as num?)?.toString() ?? '0',
+                              decoration: const InputDecoration(
+                                labelText: 'Pts',
+                                isDense: true,
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (v) {
+                                criterion.scaleOptions[idx]['points'] =
+                                    double.tryParse(v) ?? 0;
+                                // Auto-sync pointsWeight to highest
+                                final maxPts = criterion.scaleOptions
+                                    .fold<double>(
+                                      0,
+                                      (m, o) =>
+                                          (o['points'] as num? ?? 0)
+                                                  .toDouble() >
+                                              m
+                                          ? (o['points'] as num).toDouble()
+                                          : m,
+                                    );
+                                criterion.pointsCtrl.text = maxPts
+                                    .toStringAsFixed(0);
+                                onChanged();
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.remove_circle_outline,
+                              size: 18,
+                              color: Colors.red.shade400,
+                            ),
+                            onPressed: () {
+                              criterion.scaleOptions.removeAt(idx);
+                              onChanged();
+                              Navigator.pop(ctx);
+                              Future.microtask(() {
+                                if (context.mounted) _openDrawer(context);
+                              });
+                            },
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  TextButton.icon(
+                    onPressed: () {
+                      criterion.scaleOptions.add({'label': '', 'points': 0});
                       onChanged();
+                      Navigator.pop(ctx);
+                      Future.microtask(() {
+                        if (context.mounted) _openDrawer(context);
+                      });
                     },
+                    icon: const Icon(Icons.add, size: 16),
+                    label: const Text('Add Option'),
                   ),
-                  const SizedBox(width: 12),
-                  _ToggleBadge(
-                    label: 'RISK',
-                    active: criterion.isRisk,
-                    enabled: riskEnabled,
-                    onTap: () {
-                      criterion.isRisk = !criterion.isRisk;
-                      onChanged();
-                    },
-                  ),
+                  const SizedBox(height: 8),
                 ],
-              ),
-            ],
+
+                // Choice Options editor (for single_choice / multi_choice)
+                if (criterion.inputType == 'single_choice' ||
+                    criterion.inputType == 'multi_choice') ...[
+                  const Text(
+                    'Choice Options',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'List the specific options the auditor can select from',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...criterion.choiceOptions.asMap().entries.map((entry) {
+                    final idx = entry.key;
+                    final label = entry.value;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: label,
+                              decoration: InputDecoration(
+                                labelText: 'Option ${idx + 1}',
+                                isDense: true,
+                              ),
+                              onChanged: (v) {
+                                criterion.choiceOptions[idx] = v;
+                                onChanged();
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.remove_circle_outline,
+                              size: 18,
+                              color: Colors.red.shade400,
+                            ),
+                            onPressed: () {
+                              criterion.choiceOptions.removeAt(idx);
+                              onChanged();
+                              Navigator.pop(ctx);
+                              Future.microtask(() {
+                                if (context.mounted) _openDrawer(context);
+                              });
+                            },
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  TextButton.icon(
+                    onPressed: () {
+                      criterion.choiceOptions.add('');
+                      onChanged();
+                      Navigator.pop(ctx);
+                      Future.microtask(() {
+                        if (context.mounted) _openDrawer(context);
+                      });
+                    },
+                    icon: const Icon(Icons.add, size: 16),
+                    label: const Text('Add Option'),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+
+                // Points weight:
+                //  - pass_fail / numeric: editable text field
+                //  - scale: read-only (auto-synced from highest option value)
+                //  - single_choice / multi_choice: HIDDEN (survey-only, no scoring)
+                if (criterion.inputType == 'single_choice' ||
+                    criterion.inputType == 'multi_choice')
+                  const SizedBox.shrink() // No points weight for survey inputs
+                else if (criterion.inputType == 'scale')
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Points Weight'),
+                    trailing: Text(
+                      criterion.pointsCtrl.text.isEmpty
+                          ? '0'
+                          : criterion.pointsCtrl.text,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    subtitle: const Text('Auto-set from highest scale option'),
+                  )
+                else
+                  TextFormField(
+                    controller: criterion.pointsCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Points Weight',
+                      helperText: 'Max score to award or multiplier for faults',
+                      isDense: true,
+                    ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (_) => onChanged(),
+                  ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
@@ -1607,6 +1600,9 @@ class _CriteriaEditor extends StatelessWidget {
                     color: criterion.labelCtrl.text.isEmpty
                         ? theme.colorScheme.onSurfaceVariant
                         : null,
+                    fontStyle: criterion.labelCtrl.text.isEmpty
+                        ? FontStyle.italic
+                        : FontStyle.normal,
                   ),
                 ),
               ),
@@ -1621,25 +1617,7 @@ class _CriteriaEditor extends StatelessWidget {
                   ),
                 ),
               ],
-              if (criterion.isCcp) ...[
-                const SizedBox(width: 4),
-                _ToggleBadge(
-                  label: 'CCP',
-                  active: true,
-                  enabled: ccpEnabled,
-                  onTap: () {},
-                ),
-              ],
-              if (criterion.isRisk) ...[
-                const SizedBox(width: 4),
-                _ToggleBadge(
-                  label: 'RISK',
-                  active: true,
-                  enabled: riskEnabled,
-                  onTap: () {},
-                ),
-              ],
-              // Input type badge (non-numeric types)
+              // Input type badge
               if (criterion.inputType == 'scale') ...[
                 const SizedBox(width: 4),
                 Container(
@@ -1652,7 +1630,7 @@ class _CriteriaEditor extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'SCALE',
+                    'LOW → HIGH',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
@@ -1673,11 +1651,74 @@ class _CriteriaEditor extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'P/F',
+                    'YES · NO',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
                       color: theme.colorScheme.onSecondaryContainer,
+                    ),
+                  ),
+                ),
+              ],
+              if (criterion.inputType == 'numeric') ...[
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade100,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '0 · 1 · 2',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.orange.shade900,
+                    ),
+                  ),
+                ),
+              ],
+              if (criterion.inputType == 'single_choice') ...[
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '1 OF N',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.purple.shade700,
+                    ),
+                  ),
+                ),
+              ],
+              if (criterion.inputType == 'multi_choice') ...[
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'N OF N',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.purple.shade700,
                     ),
                   ),
                 ),
@@ -1696,55 +1737,6 @@ class _CriteriaEditor extends StatelessWidget {
               ),
               const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Small toggle badge for CCP/RISK flags on criteria.
-/// Gap 8: supports `enabled` flag — greyed out when template-level toggle is OFF.
-class _ToggleBadge extends StatelessWidget {
-  final String label;
-  final bool active;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  const _ToggleBadge({
-    required this.label,
-    required this.active,
-    this.enabled = true,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveActive = active && enabled;
-    return GestureDetector(
-      onTap: enabled ? onTap : null,
-      child: Opacity(
-        opacity: enabled ? 1.0 : 0.4,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
-            color: effectiveActive
-                ? AppTheme.warning.withValues(alpha: 0.2)
-                : AppTheme.sageGray.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: effectiveActive
-                  ? AppTheme.warning
-                  : AppTheme.sageGray.withValues(alpha: 0.5),
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
-              color: effectiveActive ? AppTheme.warning : AppTheme.sageGray,
-            ),
           ),
         ),
       ),

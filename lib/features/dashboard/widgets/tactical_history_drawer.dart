@@ -96,7 +96,7 @@ class TacticalHistoryDrawer extends StatelessWidget {
                             Navigator.pop(context);
                             final id = audit['id'] as String?;
                             if (id != null) {
-                              context.push('/audits/$id');
+                              context.push('/activity/$id');
                             }
                           },
                         );

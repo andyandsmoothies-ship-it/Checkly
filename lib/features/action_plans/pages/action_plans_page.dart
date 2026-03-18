@@ -155,7 +155,7 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                                   storeName: entry.key,
                                   plans: entry.value,
                                   onTap: (plan) =>
-                                      context.push('/actions/${plan.id}'),
+                                      context.push('/plans/${plan.id}'),
                                 ),
                               )
                               .toList(),
