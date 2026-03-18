@@ -1,8 +1,8 @@
 # Checkly Mobile — Comprehensive UAT Test Suite
-> **Version**: 2.0 (Post Scoring Engine Extensibility) | **Date**: 2026-03-17 | **Platform**: Android (APK)
+> **Version**: 3.0 (Post Roles & Permissions) | **Date**: 2026-03-18 | **Platform**: Android (APK)
 > **Pre-requisite**: Server running on local LAN IP, device connected via USB/Wi-Fi.
 
-Master User Acceptance Testing (UAT) document for the Checkly Mobile application. Covers 14 core modules and 120+ test cases.
+Master User Acceptance Testing (UAT) document for the Checkly Mobile application. Covers 15 core modules and 130+ test cases.
 
 ---
 
@@ -45,12 +45,15 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
-| 4.1 | Template List | Tap "Start Audit" on Dashboard | Shows all `IsActive=true` templates. | [ ] |
-| 4.2 | Inactive Templates | Admin deactivates a template on server → Pull to refresh | Template disappears from New Audit list. | [ ] |
-| 4.3 | Penalty Audit Init | Select a **Penalty** template → Select Store | Audit form loads with **100%** initial score. | [ ] |
-| 4.4 | Accumulation Audit Init | Select an **Accumulation** template → Select Store | Audit form loads with **0%** initial score. | [ ] |
-| 4.5 | Checklist Audit Init | Select a **Checklist** template → Select Store | Audit form loads with **100%** initial score. | [ ] |
-| 4.6 | New Template Route | Navigate to `/templates/new` | Opens Template Builder with empty template (no crash). | [ ] |
+| 4.1 | Template List (Admin) | Login as Admin → Tap "Start Audit" | Shows **all** `IsActive=true` templates regardless of assignments. | [ ] |
+| 4.2 | Template List (Auditor, Unassigned) | Login as Auditor (no group) → Tap "Start Audit" | Shows only unassigned (global) templates. Assigned templates hidden. | [ ] |
+| 4.3 | Template List (Auditor, In Group) | Login as Auditor in "QC Team" group → Tap "Start Audit" | Shows unassigned templates + templates assigned to "QC Team". | [ ] |
+| 4.4 | Inactive Templates | Admin deactivates a template on server → Pull to refresh | Template disappears from New Audit list. | [ ] |
+| 4.5 | Penalty Audit Init | Select a **Penalty** template → Select Store | Audit form loads with **100%** initial score. | [ ] |
+| 4.6 | Accumulation Audit Init | Select an **Accumulation** template → Select Store | Audit form loads with **0%** initial score. | [ ] |
+| 4.7 | Checklist Audit Init | Select a **Checklist** template → Select Store | Audit form loads with **100%** initial score. | [ ] |
+| 4.8 | Survey Audit Init | Select a **Survey** template → Select Store | Audit form loads with no score display (survey mode). | [ ] |
+| 4.9 | New Template Route | Navigate to `/templates/new` | Opens Template Builder with empty template (no crash). | [ ] |
 
 ## Module 5: Template Builder (Admin)
 **Focus**: Creating and editing templates with the Generic Builder. **NEW in v2.0.**
@@ -58,7 +61,7 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
 | 5.1 | Create Template | Fill in name, type, description → Add 2 sections → Save | Template saved. Appears in template list. | [ ] |
-| 5.2 | Scoring Mode Dropdown | Open Scoring Rules → Change dropdown | Options: Penalty, Accumulation, Checklist. Selection saved. | [ ] |
+| 5.2 | Scoring Mode Dropdown | Open Scoring Rules → Change dropdown | Options: Penalty, Accumulation, Checklist, Survey. Selection saved. | [ ] |
 | 5.3 | Weighted Density Toggle | Set mode to Penalty → Toggle Weighted Density | Section weight fields appear. Sum must = 100%. | [ ] |
 | 5.4 | Weighted Density Hidden | Set mode to Checklist | Weighted Density toggle is hidden. | [ ] |
 | 5.5 | Layout Locking — Flat | Add a criterion to an empty section | "Add Sub-Section" button disappears. Section locked to flat. | [ ] |
@@ -160,12 +163,14 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
-| 11.1 | Auto-generation | Submit audit with 2 faults | 2 Open Action Plans automatically created for the store. | [ ] |
-| 11.2 | SM Root Cause Input | SM opens AP → Enters Root Cause & Correction → Submits | AP status shifts to `pending_verify`. | [ ] |
-| 11.3 | AM Verification | AM reviews `pending_verify` AP → Approves | AP status shifts to `closed`. | [ ] |
-| 11.4 | AM Rejection | AM reviews → Rejects with comment | AP status shifts back to `in_progress`. | [ ] |
-| 11.5 | SM Transfer | Admin moves SM to new store | New SM sees APs for new store. Old SM loses access. | [ ] |
-| 11.6 | Automatic Overdue | Change server clock past the AP 7-day deadline | AP status automatically transitions to `overdue`. | [ ] |
+| 11.1 | Auto-generation (Legacy) | Submit audit with 2 `pass_fail` Non-Conform faults | 2 Open Action Plans automatically created for the store. | [ ] |
+| 11.2 | Auto-generation (Custom Trigger) | Configure criterion with `actionPlanTrigger: {type: "value_equals", value: "fail"}` → Trigger it | Action Plan created for the triggered criterion. | [ ] |
+| 11.3 | AP Cap (Max 10) | Submit audit triggering 12 AP-eligible faults | Only 10 Action Plans created. No overflow. | [ ] |
+| 11.4 | SM Root Cause Input | SM opens AP → Enters Root Cause & Correction → Submits | AP status shifts to `pending_verify`. | [ ] |
+| 11.5 | AM Verification | AM reviews `pending_verify` AP → Approves | AP status shifts to `closed`. | [ ] |
+| 11.6 | AM Rejection | AM reviews → Rejects with comment | AP status shifts back to `in_progress`. | [ ] |
+| 11.7 | SM Transfer | Admin moves SM to new store | New SM sees APs for new store. Old SM loses access. | [ ] |
+| 11.8 | Automatic Overdue | Change server clock past the AP 7-day deadline | AP status automatically transitions to `overdue`. | [ ] |
 
 ## Module 12: Real-Time Notifications
 **Focus**: SignalR pushes, inbox, and background reminders.
@@ -212,6 +217,21 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 14.3 | Exclude Rejected | Auditor has an audit rejected by Admin | That audit's score completely removed from KPI average. | [ ] |
 | 14.4 | Trend Charts | Render line chart for past 30 days | UI draws smoothly. No overlapping axis labels. | [ ] |
 
+## Module 15: User Groups & Template Access Control
+**Focus**: Group-based template visibility, membership management. **NEW in v3.0.**
+
+| ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
+|----|-----------|-----------------|-----------------|:---------:|
+| 15.1 | Create User Group | Admin → POST `/api/user-groups` with name | Returns 201. Group visible in list. | [ ] |
+| 15.2 | List User Groups | Admin → GET `/api/user-groups` | Returns array of all groups with id, name, description. | [ ] |
+| 15.3 | Add Members | Admin → PUT `/api/user-groups/{id}/members` with profileIds | Members added. 200 OK. | [ ] |
+| 15.4 | Auditor Cannot Create Group | Auditor → POST `/api/user-groups` | Returns 403 Forbidden. | [ ] |
+| 15.5 | Assign Template to Group | Admin → PUT `/api/templates/{id}/assignments` with groupIds | Template restricted to group members. 200 OK. | [ ] |
+| 15.6 | Clear Assignments | Admin → PUT `/api/templates/{id}/assignments` with empty array | Template reverts to global (visible to all). | [ ] |
+| 15.7 | Sync Filtered (Member) | Auditor in group syncs → GET `/api/sync/templates` | Sees unassigned + group-assigned templates. | [ ] |
+| 15.8 | Sync Filtered (Non-Member) | Auditor NOT in group syncs | Does NOT see templates assigned to other groups. | [ ] |
+| 15.9 | Admin Sees All | Admin syncs | Sees ALL templates regardless of assignments. | [ ] |
+
 ---
 
 ## Final Sign-Off
@@ -226,4 +246,5 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | Photo & Offline (Mod 9-10) | [ ] Pass / [ ] Fail | |
 | Workflows (Mod 11-13) | [ ] Pass / [ ] Fail | |
 | Analytics (Mod 14) | [ ] Pass / [ ] Fail | |
+| User Groups & Access Control (Mod 15) | [ ] Pass / [ ] Fail | |
 | **Release Decision** | [ ] **APPROVED FOR PROD** | |

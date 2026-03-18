@@ -6,17 +6,17 @@
 
 ## Table Overview
 
-The Checkly database contains **19 tables** organized into 3 categories:
+The Checkly database contains **22 tables** organized into 3 categories:
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| **Business Domain** | 11 tables | Core audit workflow data |
+| **Business Domain** | 14 tables | Core audit workflow data |
 | **ASP.NET Identity** | 7 tables | Authentication & identity infrastructure |
 | **EF Core Internal** | 1 table | Migration tracking |
 
 ---
 
-## Business Domain Tables (11)
+## Business Domain Tables (14)
 
 ### `profiles`
 **Rows**: 7 | **Soft Delete**: No (ban via `AspNetUsers.LockoutEnd`)
@@ -96,10 +96,13 @@ Audit templates define the structure of an audit (what to check).
 |--------|------|---------|
 | `id` | UUID (PK) | Unique template ID |
 | `title` | text | Template name (e.g., "QC Monthly Audit") |
+| `description` | text? | Template description |
 | `type` | text? | Category: `qc`, `training`, `general` |
 | `is_active` | boolean | Soft delete flag |
 | `version` | integer | Concurrency control (optimistic locking) |
 | `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, and repeat config |
+| `display_noun` | text? | Custom terminology override (e.g., "Inspection" instead of default derived from scoring mode) |
+| `created_by` | UUID? (FK → AspNetUsers) | Admin who created the template |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last update |
 
@@ -116,8 +119,12 @@ Sections within a template. Supports nesting (subsections via `parent_id`).
 | `template_id` | UUID (FK → templates) | Parent template |
 | `parent_id` | UUID? (FK → groups, self-ref) | Parent group for subsections (null = top-level) |
 | `title` | text | Section title |
+| `description` | text? | Section description |
 | `weight` | decimal? | Section weight for weighted scoring (optional) |
+| `max_deduction_points` | decimal? | Cap on deductions within this section |
+| `minus_per_fault` | decimal? | Default deduction per fault for numeric criteria |
 | `order_index` | integer | Display order within parent |
+| `metadata` | jsonb? | Extra config (e.g., section-level scoring overrides) |
 | `is_active` | boolean | Soft delete flag |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last update |
@@ -157,15 +164,22 @@ A completed (or in-progress) audit execution.
 | `template_id` | UUID (FK → templates) | Which template was used |
 | `store_id` | UUID? (FK → stores) | Which store was audited |
 | `auditor_id` | UUID (FK → AspNetUsers) | Who performed the audit |
-| `total_score` | decimal? | Final calculated score (0-100) |
+| `total_score` | decimal? | Final calculated score (0-100). Null for survey mode |
+| `scoring_mode` | text | Scoring mode at submission time: `penalty`, `accumulation`, `checklist`, `survey` |
+| `section_scores` | jsonb? | Per-section score breakdown: `{"Section": {"score": 82, "maxScore": 100}}` |
 | `status` | text | `draft`, `completed`, `approved`, `rejected` |
 | `review_status` | text? | Admin/AM review disposition |
+| `notes` | text? | General notes on the submission |
 | `gps_lat` | decimal? | Auditor's GPS latitude at submission |
 | `gps_lng` | decimal? | Auditor's GPS longitude at submission |
 | `auditor_name` | text? | **Snapshot**: auditor's name at submission time |
+| `auditor_email` | text? | **Snapshot**: auditor's email at submission time |
 | `store_name` | text? | **Snapshot**: store's name at submission time |
 | `template_title` | text? | **Snapshot**: template's title at submission time |
-| `submitted_at` | timestamptz? | When the audit was submitted |
+| `display_noun` | text? | **Snapshot**: template's display noun at submission time |
+| `approver_name` | text? | **Snapshot**: approver's name at review time |
+| `scheduled_at` | timestamptz? | Scheduled audit date (null = immediate) |
+| `completed_at` | timestamptz? | When the audit was completed |
 | `created_at` | timestamptz | Draft creation time |
 | `updated_at` | timestamptz | Last update |
 
@@ -194,7 +208,9 @@ Individual responses to each criteria within a submission.
 ### `action_plans`
 **Rows**: 1 | **Never deleted** — workflow record
 
-Corrective actions auto-generated from failed criteria.
+Corrective actions auto-generated from criteria that trigger action plans.
+Trigger rules are configurable via `Criterion.Metadata.actionPlanTrigger`.
+Legacy: `pass_fail` criteria with `non_conform` answer. Max 10 per submission.
 
 | Column | Type | Purpose |
 |--------|------|---------|
@@ -253,6 +269,52 @@ Administrative audit trail for tracking admin actions.
 
 ---
 
+### `user_groups`
+**Rows**: 0
+
+Named groups of users for template-level access control.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique group ID |
+| `name` | text | Group name (e.g., "QC Auditors") |
+| `description` | text? | Optional description |
+| `created_at` | timestamptz | Record creation |
+| `updated_at` | timestamptz | Last update |
+
+---
+
+### `user_group_members`
+**Rows**: 0 | **Junction table**
+
+Links profiles to user groups. Unique constraint on `(user_group_id, profile_id)`.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique membership ID |
+| `user_group_id` | UUID (FK → user_groups) | Parent group |
+| `profile_id` | UUID (FK → profiles) | Member |
+| `created_at` | timestamptz | When member was added |
+
+---
+
+### `template_assignments`
+**Rows**: 0 | **Junction table**
+
+Links templates to user groups for access control. Unassigned templates are visible to all.
+Unique constraint on `(template_id, user_group_id)`.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique assignment ID |
+| `template_id` | UUID (FK → templates) | Template being restricted |
+| `user_group_id` | UUID (FK → user_groups) | Group that can see this template |
+| `created_at` | timestamptz | When assignment was created |
+
+> **Access Control Logic**: If a template has NO assignments → visible to all auditors. If it has assignments → only members of assigned groups (and admins) can see it.
+
+---
+
 ## ASP.NET Identity Tables (7)
 
 These are managed automatically by the ASP.NET Identity framework. You typically don't interact with them directly.
@@ -275,4 +337,4 @@ These are managed automatically by the ASP.NET Identity framework. You typically
 
 | Table | Purpose |
 |-------|---------|
-| `__EFMigrationsHistory` | Tracks which EF Core migrations have been applied. Contains 4 migration entries. |
+| `__EFMigrationsHistory` | Tracks which EF Core migrations have been applied. Contains 10 migration entries. |
