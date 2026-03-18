@@ -17,9 +17,9 @@ public static class UpdateStore
         decimal? GpsLng,
         bool? IsActive);
 
-    public static async Task<IResult> HandleAsync(Guid id, Request request, AppDbContext db)
+    public static async Task<IResult> HandleAsync(Guid id, Request request, AppDbContext db, CancellationToken ct)
     {
-        var store = await db.Stores.FindAsync(id);
+        var store = await db.Stores.FindAsync([id], ct);
         if (store is null)
             return Results.NotFound();
 
@@ -37,14 +37,14 @@ public static class UpdateStore
             store.IsActive = request.IsActive.Value;
 
         store.UpdatedAt = DateTimeOffset.UtcNow;
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(ct);
 
         // Look up area name for response
         string? areaName = null;
         if (store.AreaId.HasValue)
         {
             var area = await db.Areas.AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == store.AreaId.Value);
+                .FirstOrDefaultAsync(a => a.Id == store.AreaId.Value, ct);
             areaName = area?.Name;
         }
 

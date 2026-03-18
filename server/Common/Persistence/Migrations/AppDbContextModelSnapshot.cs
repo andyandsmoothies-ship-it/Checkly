@@ -811,11 +811,12 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("idempotency_key IS NOT NULL");
 
-                    b.HasIndex("StoreId");
-
-                    b.HasIndex("TemplateId");
-
                     b.HasIndex("Status", "ReviewStatus");
+
+                    b.HasIndex("StoreId", "CreatedAt")
+                        .IsDescending(false, true);
+
+                    b.HasIndex("TemplateId", "ScoringMode");
 
                     b.ToTable("submissions", (string)null);
                 });

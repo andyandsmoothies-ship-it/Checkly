@@ -15,9 +15,9 @@ public static class UpdateTemplate
         string? Type,
         string? ScoringLogicConfig);
 
-    public static async Task<IResult> HandleAsync(Guid id, Request request, AppDbContext db)
+    public static async Task<IResult> HandleAsync(Guid id, Request request, AppDbContext db, CancellationToken ct)
     {
-        var template = await db.Templates.FindAsync(id);
+        var template = await db.Templates.FindAsync([id], ct);
         if (template is null)
             return Results.NotFound();
 
@@ -38,7 +38,7 @@ public static class UpdateTemplate
 
         try
         {
-            await db.SaveChangesAsync();
+            await db.SaveChangesAsync(ct);
         }
         catch (DbUpdateConcurrencyException)
         {

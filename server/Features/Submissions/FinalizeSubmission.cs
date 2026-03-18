@@ -214,8 +214,8 @@ public static class FinalizeSubmission
                         Score = sectionScore,
                         MaxScore = sectionMax,
                         Ratio = sectionMax > 0 ? Math.Round(sectionScore / sectionMax, 4) : null,
-                        IsCcpFailed = false, // TODO: derive from group metadata
-                        Weight = null, // TODO: derive from group weight
+                        IsCcpFailed = false, // ISSUE: CCP flag derivation deferred — requires group-level is_ccp aggregation during section score explosion
+                        Weight = null, // ISSUE: Weight derivation deferred — requires matching SectionTitle to group.title for weight lookup
                         CreatedAt = now
                     });
                 }

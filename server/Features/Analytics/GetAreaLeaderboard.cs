@@ -32,6 +32,7 @@ public static class GetAreaLeaderboard
                 totalAudits30d = snap != null ? snap.TotalAudits30d : 0
             })
             .OrderByDescending(x => x.avgScore30d)
+            .Take(100)
             .ToListAsync(ct);
 
         return TypedResults.Ok(new { stores });

@@ -9,15 +9,15 @@ namespace Checkly.Api.Features.Stores;
 /// </summary>
 public static class DeleteStore
 {
-    public static async Task<IResult> HandleAsync(Guid id, AppDbContext db)
+    public static async Task<IResult> HandleAsync(Guid id, AppDbContext db, CancellationToken ct)
     {
-        var store = await db.Stores.FindAsync(id);
+        var store = await db.Stores.FindAsync([id], ct);
         if (store is null)
             return Results.NotFound();
 
         store.IsActive = false;
         store.UpdatedAt = DateTimeOffset.UtcNow;
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(ct);
         return Results.NoContent();
     }
 }

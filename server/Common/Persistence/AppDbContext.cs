@@ -258,6 +258,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.HasIndex(x => x.AuditorId);
             e.HasIndex(x => x.CreatedAt).IsDescending();
             e.HasIndex(x => new { x.Status, x.ReviewStatus });
+            e.HasIndex(x => new { x.StoreId, x.CreatedAt }).IsDescending(false, true);
+            e.HasIndex(x => new { x.TemplateId, x.ScoringMode });
 
             e.HasOne(x => x.Template)
                 .WithMany(t => t.Submissions)

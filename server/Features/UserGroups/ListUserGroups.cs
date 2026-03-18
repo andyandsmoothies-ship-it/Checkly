@@ -20,6 +20,7 @@ public static class ListUserGroups
                 name = g.Name,
                 description = g.Description
             })
+            .Take(200)
             .ToListAsync(ct);
 
         return TypedResults.Ok(groups);

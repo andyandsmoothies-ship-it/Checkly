@@ -15,43 +15,50 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 - **Skill Discovery**: Derive 2-3 keywords from the feature context (e.g., "scoring" → testing, validation). Use `grep_search` on `.agents/skills/` to find the most relevant testing or planning `SKILL.md` file. Load ONLY the top 1-2. Declare which skills were loaded.
 - **Action**: Identify the focus area and consult relevant project workspace rules in `.agents/rules/` to confirm technical constraints.
 
-## Phase 2: SDET Execution (Test Implementation)
-- **Requirement**: Translate business requirements into strict testing scenarios AND failing test code.
-- **Skill Refresh**: The concern has shifted from discovery to test authoring. Re-scan `.agents/skills/` for skills matching the specific testing framework or patterns needed (e.g., integration testing, mocking). Load 1-2 if relevant.
-- **Rule (Anti-Hallucination)**: Every single Gherkin scenario MUST include a comment citing the exact line or rule from `.agents/rules/` or the User's prompt that justifies its existence. If you cannot cite a business source for the test case, you are hallucinating it and must delete it.
-- **Rule (No-Code Mandate)**: Sentinel CANNOT write or modify production code. Sentinel MUST write the test code (Unit Tests, Integration Tests) that proves the production code is either missing or failing.
-- **Rule (Single Concern)**: Each test method tests exactly ONE acceptance criterion. If setup steps fail, they must fail with a clear message, not a raw exception. See `atdd-quality-gates` skill Gate 2 for details and examples.
-- **Rule (Max Chain ≤ 5)**: A test method must not contain more than 5 sequential HTTP calls or DB operations. Beyond this, split into separate tests or extract helpers. See `atdd-quality-gates` skill Gate 2 for rationale.
-- **Rule (Meaningful Tests)**: Every test must verify a *business behavior*, not a data shape. Tests that only echo input values, assert `NotNull`, or check response structure without verifying business rules are flops. See `atdd-quality-gates` skill Gate 7 for the full checklist and examples.
-- **Action**: Generate formal Gherkin scenarios (Given/When/Then) with citations, then write the corresponding test fixtures in the project's testing framework. Ensure the tests fail (RED) because the feature is not implemented yet.
+## Phase 2: SDET Execution
 
-### 2a. RED for the Right Reason (Smoke Gate)
+### 2a. Scenario Authoring (Write scenarios BEFORE code)
+
+- **Requirement**: Translate business requirements into formal Gherkin scenarios (Given/When/Then).
+- **Rule (Anti-Hallucination)**: Every scenario MUST include a comment citing the exact line or rule from `.agents/rules/` or the user's prompt that justifies its existence. If you cannot cite a business source, you are hallucinating it — delete it.
+- **Rule (Negative Coverage)**: For each happy-path scenario, write at least one negative or boundary case (e.g., wrong role → 403, missing field → 400, duplicate entry → 409).
+- **Rule (Spec-Readable Names)**: Scenario names must read like specifications a non-engineer can understand. Bad: `Test1`, `CreateStore_Works`. Good: `Auditor_Cannot_Delete_Template`, `Submission_With_Empty_Sections_Returns_ValidationError`.
+- **Checkpoint**: Present the Gherkin scenarios to the user via `notify_user` for approval BEFORE writing any test code. This is the "Three Amigos" validation — catch misunderstood requirements here, not after coding.
+
+### 2b. Test Implementation (One scenario at a time)
+
+- **Requirement**: For each approved scenario, write the corresponding test code. Iterate vertically — one scenario → one test → verify RED → next.
+- **Rule (No-Code Mandate)**: Sentinel CANNOT write or modify production code. Sentinel writes test code only.
+- **Rule (Single Concern)**: Each test method tests exactly ONE acceptance criterion. Extract setup into helper methods that fail with clear messages. See `atdd-quality-gates` skill Gate 2.
+- **Rule (Max Chain ≤ 5)**: A test must not contain more than 5 sequential HTTP calls or DB operations. See `atdd-quality-gates` skill Gate 2.
+- **Rule (Behavior, Not Shape)**: Each test must verify a *business rule* or *user-visible behavior* — not data types, property names, or echoed input values. See `atdd-quality-gates` skill Gate 7 for examples.
+- **Rule (Meaningful Assertions)**: Assertions must prove something non-trivial. `Assert.NotNull()` or `Assert.True(response.IsSuccessStatusCode)` without checking WHAT was returned are flops.
+- **Rule (Test Independence)**: Each test must set up its own state. Tests MUST NOT depend on execution order or side effects of other tests.
+- **Action**: Write each test, run it, confirm it fails RED for a business reason, then move to the next scenario.
+
+### 2c. Smoke Gate (RED for the Right Reason)
 
 > [!IMPORTANT]
-> **ATDD Handoff Quality Bar** — Before proceeding to Phase 3, the Sentinel MUST verify that every test fails for the **right reason**.
->
-> In ATDD there is a handoff boundary between the Sentinel (test author) and the Builder (implementer). If tests fail due to infrastructure issues (DB constraints, auth failures, serialization errors), the Builder wastes entire cycles debugging problems that belong to the test author.
+> Before proceeding to Phase 3, verify that every test fails for the **right reason** — because the feature doesn't exist yet, not because the test itself is broken.
 
-**Step 1**: Run the **Infrastructure Pre-Flight Checklist** from `atdd-quality-gates` skill Gate 1. Fix any failing checks before proceeding.
+**Step 1**: Run the **Infrastructure Pre-Flight Checklist** from `atdd-quality-gates` skill Gate 1. Fix any failing checks.
 
-**Step 2**: Run each test once and classify every failure using the **Smoke Gate Table** format from `atdd-quality-gates` skill Gate 3:
+**Step 2**: Run all tests and classify every failure using the **Smoke Gate Table** from `atdd-quality-gates` skill Gate 3:
 
 | Test Name | Status | Type | Error Summary |
 |-----------|--------|------|---------------|
 | ... | RED | ✅ Business / ❌ Infra | ... |
 
-**Step 3**: Run the **Meaningful Test Checklist** from `atdd-quality-gates` skill Gate 7 on every test. Verify behavior-not-shape, meaningful assertions, negative cases, and spec-readable names.
-
 **Gate verdict:**
-- ✅ All failures are `Business` AND all tests pass Gate 7 → proceed to Phase 2b
-- ❌ Any `Infra`/`Ambiguous` failure OR Gate 7 flop → fix it, re-run, update the table
+- ✅ All failures are `Business` → proceed to Phase 2d
+- ❌ Any `Infra` or `Ambiguous` failure → fix it, re-run, update the table
 
-### 2b. Deferred Acceptance Criteria
+### 2d. Deferred Acceptance Criteria
 
 If an AC **cannot be tested** due to a pre-existing bug or missing infrastructure, apply the **Skip-With-Reason Protocol** from `atdd-quality-gates` skill Gate 4. Never comment out tests — use `[Fact(Skip = "reason")]` (xUnit) or `it.skip()` (Vitest) so they remain visible in test reports.
 
 ## Phase 3: Deliverable (The Handoff)
 - **Requirement**: Output the failed test evidence and specifications.
-- **Action**: Create a `specs_[feature].md` artifact and commit the failing test code to the `Test` project.
-- **Infrastructure Map (MANDATORY)**: The specs artifact MUST include a Test Infrastructure Map section following the template from `atdd-quality-gates` skill Gate 5. This documents helper methods, seed data, auth tokens, expected response shapes, and known limitations so the Builder doesn't have to reverse-engineer the test setup.
-- **Handoff (CRITICAL)**: Generate an `implementation_plan.md` that instructs the `/implement` Builder agent to write ONLY the application production code required to make your tests turn GREEN. **If an `implementation_plan.md` already exists from a prior `/analysis` workflow, you MUST update it to prepend your strict ATDD testing constraints.**
+- **Action**: Create a `specs_[feature].md` artifact and commit the failing test code to the test project.
+- **Infrastructure Map (MANDATORY)**: The specs artifact MUST include a Test Infrastructure Map section following the template from `atdd-quality-gates` skill Gate 5.
+- **Handoff**: If an `implementation_plan.md` exists from a prior `/analysis` workflow, append a **Test Constraints** section listing the test names that must turn GREEN and any ATDD-specific requirements. If NO plan exists, do NOT generate one — recommend the user run `/analysis` first.

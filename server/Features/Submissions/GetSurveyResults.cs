@@ -42,6 +42,7 @@ public static class GetSurveyResults
                 g.Key.Value,
                 Count = g.Count()
             })
+            .Take(500)
             .ToListAsync(ct);
 
         if (grouped.Count == 0)

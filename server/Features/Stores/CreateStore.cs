@@ -16,7 +16,7 @@ public static class CreateStore
         decimal? GpsLat,
         decimal? GpsLng);
 
-    public static async Task<IResult> HandleAsync(Request request, AppDbContext db)
+    public static async Task<IResult> HandleAsync(Request request, AppDbContext db, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
             return Results.BadRequest(new { error = "Store name is required" });
@@ -24,7 +24,7 @@ public static class CreateStore
         // Look up area to include areaName in the response
         Area? area = null;
         if (request.AreaId.HasValue)
-            area = await db.Areas.AsNoTracking().FirstOrDefaultAsync(a => a.Id == request.AreaId.Value);
+            area = await db.Areas.AsNoTracking().FirstOrDefaultAsync(a => a.Id == request.AreaId.Value, ct);
 
         var now = DateTimeOffset.UtcNow;
         var store = new Store
@@ -41,7 +41,7 @@ public static class CreateStore
         };
 
         db.Stores.Add(store);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(ct);
 
         return Results.Created($"/api/stores/{store.Id}", new
         {
