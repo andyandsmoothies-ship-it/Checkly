@@ -123,7 +123,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _MetricChip(
-                            label: 'Audits',
+                            label: 'Activities',
                             value: '${_recentAudits.length}',
                             icon: Icons.assignment_outlined,
                           ),

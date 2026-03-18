@@ -115,6 +115,7 @@ public static class FinalizeSubmission
         submission.GpsVerifiedAt = request.GpsLat.HasValue ? now : null;
         submission.CompletedAt = now;
         submission.UpdatedAt = now;
+        submission.DisplayNoun = template.DisplayNoun;
 
         // 6. Delete any existing draft answers (if any) then create new
         var existingAnswers = await db.Answers
@@ -190,7 +191,7 @@ public static class FinalizeSubmission
         }
 
         return TypedResults.Ok(new SubmissionDto(
-            submission.Id, submission.TemplateId, submission.TemplateTitle,
+            submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,

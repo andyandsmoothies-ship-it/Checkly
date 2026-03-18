@@ -45,7 +45,7 @@ public static class CreateSubmission
             if (existing is not null)
             {
                 return TypedResults.Ok(new SubmissionDto(
-                    existing.Id, existing.TemplateId, existing.TemplateTitle,
+                    existing.Id, existing.TemplateId, existing.TemplateTitle, existing.DisplayNoun,
                     existing.StoreId, existing.StoreName, existing.AuditorId,
                     existing.AuditorName, existing.Status, existing.TotalScore,
                     existing.SectionScores, existing.Notes,
@@ -186,6 +186,7 @@ public static class CreateSubmission
             AuditorEmail = profile?.Email,
             StoreName = store.Name,
             TemplateTitle = template.Title,
+            DisplayNoun = template.DisplayNoun,
             IdempotencyKey = request.IdempotencyKey
         };
 
@@ -264,7 +265,7 @@ public static class CreateSubmission
         }
 
         return TypedResults.Created($"/api/submissions/{submission.Id}", new SubmissionDto(
-            submission.Id, submission.TemplateId, submission.TemplateTitle,
+            submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,

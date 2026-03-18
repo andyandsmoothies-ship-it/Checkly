@@ -42,7 +42,7 @@ public static class GetSubmission
             return TypedResults.Forbid();
 
         var dto = new SubmissionDetailDto(
-            submission.Id, submission.TemplateId, submission.TemplateTitle,
+            submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,

@@ -260,7 +260,7 @@ class _MainShell extends StatelessWidget {
                 ),
                 _NavItem(
                   icon: Icons.assignment,
-                  label: 'AUDITS',
+                  label: 'ACTIVITY',
                   isActive: currentIndex == 1,
                   onTap: () => context.go('/audits'),
                 ),

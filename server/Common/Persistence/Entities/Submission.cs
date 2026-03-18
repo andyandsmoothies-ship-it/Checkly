@@ -34,6 +34,7 @@ public sealed class Submission
     public string? AuditorEmail { get; set; }
     public string? StoreName { get; set; }
     public string? TemplateTitle { get; set; }
+    public string? DisplayNoun { get; set; }
     public string? ApproverName { get; set; }
     public string? ReviewStatus { get; set; }
 

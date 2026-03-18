@@ -24,6 +24,7 @@ public static class CreateTemplate
             Type = request.Type,
             Description = request.Description,
             ScoringLogicConfig = request.ScoringLogicConfig,
+            DisplayNoun = request.DisplayNoun,
             Version = 1,
             IsActive = true,
             CreatedBy = createdBy,
@@ -38,6 +39,6 @@ public static class CreateTemplate
             $"/api/templates/{template.Id}",
             new TemplateDto(
                 template.Id, template.Title, template.Description, template.Type,
-                template.Version, template.ScoringLogicConfig, template.IsActive, template.CreatedAt, template.UpdatedAt));
+                template.Version, template.ScoringLogicConfig, template.DisplayNoun, template.IsActive, template.CreatedAt, template.UpdatedAt));
     }
 }

@@ -17,8 +17,16 @@ public static class GetTemplate
             .Where(t => t.Id == id)
             .Select(t => new
             {
-                t.Id, t.Title, t.Description, t.Type, t.Version,
-                t.ScoringLogicConfig, t.IsActive, t.CreatedAt, t.UpdatedAt
+                t.Id,
+                t.Title,
+                t.Description,
+                t.Type,
+                t.Version,
+                t.ScoringLogicConfig,
+                t.DisplayNoun,
+                t.IsActive,
+                t.CreatedAt,
+                t.UpdatedAt
             })
             .FirstOrDefaultAsync(ct);
 
@@ -38,7 +46,7 @@ public static class GetTemplate
 
         var dto = new TemplateTreeDto(
             template.Id, template.Title, template.Description, template.Type,
-            template.Version, template.ScoringLogicConfig, template.IsActive,
+            template.Version, template.ScoringLogicConfig, template.DisplayNoun, template.IsActive,
             template.CreatedAt, template.UpdatedAt, tree);
 
         return TypedResults.Ok(dto);

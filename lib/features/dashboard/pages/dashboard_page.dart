@@ -232,7 +232,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       width: 128,
                       child: StatBlock.compact(
                         value: '${stats.recentAuditCount}',
-                        label: 'Audits',
+                        label: 'Activities',
                       ),
                     ),
                   ],

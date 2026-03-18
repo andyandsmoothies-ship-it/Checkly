@@ -13,6 +13,7 @@ public sealed class Template
     public string Type { get; set; } = string.Empty;
     public int Version { get; set; }
     public string? ScoringLogicConfig { get; set; }
+    public string? DisplayNoun { get; set; }
     public bool IsActive { get; set; }
     public Guid? CreatedBy { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

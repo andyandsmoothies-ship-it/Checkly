@@ -79,7 +79,7 @@ public static class ListSubmissions
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(s => new SubmissionDto(
-                s.Id, s.TemplateId, s.TemplateTitle,
+                s.Id, s.TemplateId, s.TemplateTitle, s.DisplayNoun,
                 s.StoreId, s.StoreName, s.AuditorId,
                 s.AuditorName, s.Status, s.TotalScore,
                 s.SectionScores, s.Notes,

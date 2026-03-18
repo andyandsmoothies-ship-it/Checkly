@@ -9,6 +9,7 @@ class TemplateDto {
   final String type;
   final int version;
   final String? scoringLogicConfig;
+  final String? displayNoun;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -20,6 +21,7 @@ class TemplateDto {
     required this.type,
     required this.version,
     this.scoringLogicConfig,
+    this.displayNoun,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
@@ -32,6 +34,7 @@ class TemplateDto {
     type: json['type'] as String,
     version: json['version'] as int,
     scoringLogicConfig: json['scoringLogicConfig'] as String?,
+    displayNoun: json['displayNoun'] as String?,
     isActive: json['isActive'] as bool,
     createdAt: DateTime.parse(json['createdAt'] as String),
     updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -46,6 +49,7 @@ class TemplateTreeDto {
   final String type;
   final int version;
   final String? scoringLogicConfig;
+  final String? displayNoun;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -58,6 +62,7 @@ class TemplateTreeDto {
     required this.type,
     required this.version,
     this.scoringLogicConfig,
+    this.displayNoun,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
@@ -72,6 +77,7 @@ class TemplateTreeDto {
         type: json['type'] as String,
         version: json['version'] as int,
         scoringLogicConfig: json['scoringLogicConfig'] as String?,
+        displayNoun: json['displayNoun'] as String?,
         isActive: json['isActive'] as bool,
         createdAt: DateTime.parse(json['createdAt'] as String),
         updatedAt: DateTime.parse(json['updatedAt'] as String),

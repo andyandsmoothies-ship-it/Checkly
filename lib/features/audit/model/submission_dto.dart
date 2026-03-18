@@ -77,6 +77,7 @@ class SubmissionDto {
   final String id;
   final String? templateId;
   final String? templateTitle;
+  final String? displayNoun;
   final String? storeId;
   final String? storeName;
   final String? auditorId;
@@ -97,6 +98,7 @@ class SubmissionDto {
     required this.id,
     this.templateId,
     this.templateTitle,
+    this.displayNoun,
     this.storeId,
     this.storeName,
     this.auditorId,
@@ -124,6 +126,7 @@ class SubmissionDto {
     id: json['id'] as String,
     templateId: json['templateId'] as String?,
     templateTitle: json['templateTitle'] as String?,
+    displayNoun: json['displayNoun'] as String?,
     storeId: json['storeId'] as String?,
     storeName: json['storeName'] as String?,
     auditorId: json['auditorId'] as String?,

@@ -126,6 +126,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Type).HasColumnName("type").IsRequired();
             e.Property(x => x.Version).HasColumnName("version").HasDefaultValue(1);
             e.Property(x => x.ScoringLogicConfig).HasColumnName("scoring_logic_config").HasColumnType("jsonb");
+            e.Property(x => x.DisplayNoun).HasColumnName("display_noun");
             e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
             e.Property(x => x.CreatedBy).HasColumnName("created_by");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
@@ -234,6 +235,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.AuditorEmail).HasColumnName("auditor_email");
             e.Property(x => x.StoreName).HasColumnName("store_name");
             e.Property(x => x.TemplateTitle).HasColumnName("template_title");
+            e.Property(x => x.DisplayNoun).HasColumnName("display_noun");
             e.Property(x => x.ApproverName).HasColumnName("approver_name");
             e.Property(x => x.ReviewStatus).HasColumnName("review_status");
             e.Property(x => x.IdempotencyKey).HasColumnName("idempotency_key");
