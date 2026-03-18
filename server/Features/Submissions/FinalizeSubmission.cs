@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
@@ -189,6 +190,89 @@ public static class FinalizeSubmission
 
                 await db.SaveChangesAsync(ct);
             }
+        }
+
+        // 8. Explode SectionScores JSON into relational rows (skip for survey mode)
+        if (scoringMode != "survey" && !string.IsNullOrEmpty(request.SectionScores))
+        {
+            try
+            {
+                var sectionsDoc = JsonDocument.Parse(request.SectionScores);
+                foreach (var prop in sectionsDoc.RootElement.EnumerateObject())
+                {
+                    var sectionTitle = prop.Name;
+                    var sectionScore = prop.Value.TryGetProperty("score", out var sc) ? sc.GetDecimal() : 0m;
+                    var sectionMax = prop.Value.TryGetProperty("maxScore", out var mx) ? mx.GetDecimal() : 0m;
+
+                    db.SubmissionSectionScores.Add(new SubmissionSectionScore
+                    {
+                        Id = Guid.NewGuid(),
+                        SubmissionId = submission.Id,
+                        StoreId = submission.StoreId,
+                        TemplateId = submission.TemplateId,
+                        SectionTitle = sectionTitle,
+                        Score = sectionScore,
+                        MaxScore = sectionMax,
+                        Ratio = sectionMax > 0 ? Math.Round(sectionScore / sectionMax, 4) : null,
+                        IsCcpFailed = false, // TODO: derive from group metadata
+                        Weight = null, // TODO: derive from group weight
+                        CreatedAt = now
+                    });
+                }
+
+                await db.SaveChangesAsync(ct);
+            }
+            catch (JsonException)
+            {
+                // Malformed JSON → skip section score rows silently
+            }
+        }
+
+        // 9. Upsert StoreAnalyticsSnapshot
+        if (submission.StoreId.HasValue)
+        {
+            var thirtyDaysAgo = now.AddDays(-30);
+            var storeIdVal = submission.StoreId.Value;
+
+            // Recalculate 30-day metrics from live data
+            var recentSubs = await db.Submissions
+                .Where(s => s.StoreId == storeIdVal
+                    && s.Status == "completed"
+                    && s.CompletedAt >= thirtyDaysAgo
+                    && s.TotalScore.HasValue)
+                .ToListAsync(ct);
+
+            var totalAudits = recentSubs.Count;
+            var avgScore = totalAudits > 0
+                ? Math.Round(recentSubs.Average(s => s.TotalScore!.Value), 1)
+                : 0m;
+
+            var openAPs = await db.ActionPlans
+                .CountAsync(ap => ap.StoreId == storeIdVal && ap.Status == "open", ct);
+            var overdueAPs = await db.ActionPlans
+                .CountAsync(ap => ap.StoreId == storeIdVal
+                    && ap.Status == "open"
+                    && ap.Deadline.HasValue
+                    && ap.Deadline < now, ct);
+
+            var snapshot = await db.StoreAnalyticsSnapshots
+                .FirstOrDefaultAsync(s => s.StoreId == storeIdVal, ct);
+
+            if (snapshot is null)
+            {
+                snapshot = new StoreAnalyticsSnapshot { StoreId = storeIdVal };
+                db.StoreAnalyticsSnapshots.Add(snapshot);
+            }
+
+            snapshot.AvgScore30d = avgScore;
+            snapshot.TotalAudits30d = totalAudits;
+            snapshot.OpenActionPlans = openAPs;
+            snapshot.OverdueActionPlans = overdueAPs;
+            snapshot.LastAuditScore = submission.TotalScore;
+            snapshot.LastAuditAt = submission.CompletedAt;
+            snapshot.UpdatedAt = now;
+
+            await db.SaveChangesAsync(ct);
         }
 
         return TypedResults.Ok(new SubmissionDto(

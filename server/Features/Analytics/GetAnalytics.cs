@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Text.Json;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -71,77 +70,53 @@ public static class GetAnalytics
         var overdueAPs = await db.ActionPlans.CountAsync(
             ap => ap.Status == "open" && ap.Deadline.HasValue && ap.Deadline < DateTimeOffset.UtcNow, ct);
 
-        // ── 6-month trend (SQL GroupBy — returns max 6 rows, not 100K) ──
+        // ── 6-month trend (GroupBy server-side, project in memory) ──
         var sixMonthsAgo = DateTimeOffset.UtcNow.AddMonths(-6);
-        var trend = await query
+        var trendRaw = await query
             .Where(s => s.CreatedAt >= sixMonthsAgo && s.TotalScore.HasValue)
             .GroupBy(s => new { s.CreatedAt.Year, s.CreatedAt.Month })
-            .Select(g => new TrendPoint(
-                g.Key.Year + "-" + g.Key.Month.ToString().PadLeft(2, '0'),
-                Math.Round((double)g.Average(s => s.TotalScore!.Value), 1),
-                g.Count()))
-            .OrderBy(t => t.Month)
+            .Select(g => new
+            {
+                g.Key.Year,
+                g.Key.Month,
+                AvgScore = g.Average(s => s.TotalScore!.Value),
+                Count = g.Count()
+            })
+            .OrderBy(x => x.Year).ThenBy(x => x.Month)
             .ToListAsync(ct);
 
-        // ── Section breakdown: parse SectionScores jsonb in C# ──
-        // Load only the jsonb column for scored submissions (lightweight)
-        var sectionScoresRaw = await query
-            .Where(s => s.ScoringMode != "survey" && s.SectionScores != null)
-            .Select(s => s.SectionScores!)
+        var trend = trendRaw
+            .Select(x => new TrendPoint(
+                $"{x.Year}-{x.Month:D2}",
+                Math.Round((double)x.AvgScore, 1),
+                x.Count))
+            .ToList();
+
+        // ── Section breakdown from relational table (GroupBy server, project in memory) ──
+        var sectionRaw = await db.SubmissionSectionScores
+            .AsNoTracking()
+            .Where(ss => ss.MaxScore > 0)
+            .GroupBy(ss => ss.SectionTitle)
+            .Select(g => new
+            {
+                Section = g.Key,
+                TotalScore = g.Sum(ss => ss.Score),
+                TotalMaxScore = g.Sum(ss => ss.MaxScore),
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.Count)
             .ToListAsync(ct);
 
-        var sectionBreakdown = ParseSectionBreakdown(sectionScoresRaw);
+        var sectionBreakdown = sectionRaw
+            .Select(x => new SectionScore(
+                x.Section,
+                Math.Round((double)x.TotalScore / (double)x.TotalMaxScore * 100.0, 1),
+                x.Count))
+            .ToList();
 
         return TypedResults.Ok(new AnalyticsResponse(
             new AnalyticsKpis(totalAudits, scoredCount, totalSurveys, avgScore, openAPs, overdueAPs, completionRate),
             trend,
             sectionBreakdown));
-    }
-
-    /// <summary>
-    /// Parses SectionScores JSON blobs and computes per-section average scores.
-    /// Expected format: { "SectionTitle": { "score": 82.1, "maxScore": 100 }, ... }
-    /// </summary>
-    private static List<SectionScore> ParseSectionBreakdown(List<string> rawJsonList)
-    {
-        var sectionData = new Dictionary<string, (double totalRatio, int count)>();
-
-        foreach (var raw in rawJsonList)
-        {
-            try
-            {
-                using var doc = JsonDocument.Parse(raw);
-                foreach (var prop in doc.RootElement.EnumerateObject())
-                {
-                    var sectionTitle = prop.Name;
-                    if (prop.Value.ValueKind != JsonValueKind.Object) continue;
-
-                    if (prop.Value.TryGetProperty("score", out var scoreElem) &&
-                        prop.Value.TryGetProperty("maxScore", out var maxElem))
-                    {
-                        var score = scoreElem.GetDouble();
-                        var maxScore = maxElem.GetDouble();
-                        var ratio = maxScore > 0 ? (score / maxScore) * 100.0 : 0.0;
-
-                        if (sectionData.TryGetValue(sectionTitle, out var existing))
-                            sectionData[sectionTitle] = (existing.totalRatio + ratio, existing.count + 1);
-                        else
-                            sectionData[sectionTitle] = (ratio, 1);
-                    }
-                }
-            }
-            catch
-            {
-                // Skip malformed JSON
-            }
-        }
-
-        return sectionData
-            .Select(kv => new SectionScore(
-                kv.Key,
-                Math.Round(kv.Value.totalRatio / kv.Value.count, 1),
-                kv.Value.count))
-            .OrderByDescending(s => s.Count)
-            .ToList();
     }
 }

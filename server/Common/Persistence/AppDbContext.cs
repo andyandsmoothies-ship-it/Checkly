@@ -29,6 +29,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<UserGroup> UserGroups => Set<UserGroup>();
     public DbSet<UserGroupMember> UserGroupMembers => Set<UserGroupMember>();
     public DbSet<TemplateAssignment> TemplateAssignments => Set<TemplateAssignment>();
+    public DbSet<SubmissionSectionScore> SubmissionSectionScores => Set<SubmissionSectionScore>();
+    public DbSet<StoreAnalyticsSnapshot> StoreAnalyticsSnapshots => Set<StoreAnalyticsSnapshot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,6 +52,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureUserGroup(modelBuilder);
         ConfigureUserGroupMember(modelBuilder);
         ConfigureTemplateAssignment(modelBuilder);
+        ConfigureSubmissionSectionScore(modelBuilder);
+        ConfigureStoreAnalyticsSnapshot(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -489,6 +493,57 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.HasOne(x => x.UserGroup)
                 .WithMany(g => g.Assignments)
                 .HasForeignKey(x => x.UserGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureSubmissionSectionScore(ModelBuilder mb)
+    {
+        mb.Entity<SubmissionSectionScore>(e =>
+        {
+            e.ToTable("submission_section_scores");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.SubmissionId).HasColumnName("submission_id").IsRequired();
+            e.Property(x => x.StoreId).HasColumnName("store_id");
+            e.Property(x => x.TemplateId).HasColumnName("template_id");
+            e.Property(x => x.SectionTitle).HasColumnName("section_title").IsRequired();
+            e.Property(x => x.Score).HasColumnName("score");
+            e.Property(x => x.MaxScore).HasColumnName("max_score");
+            e.Property(x => x.Ratio).HasColumnName("ratio");
+            e.Property(x => x.IsCcpFailed).HasColumnName("is_ccp_failed").HasDefaultValue(false);
+            e.Property(x => x.Weight).HasColumnName("weight");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            e.HasOne(x => x.Submission)
+                .WithMany()
+                .HasForeignKey(x => x.SubmissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Performance indexes
+            e.HasIndex(x => x.SubmissionId);
+            e.HasIndex(x => new { x.StoreId, x.SectionTitle });
+        });
+    }
+
+    private static void ConfigureStoreAnalyticsSnapshot(ModelBuilder mb)
+    {
+        mb.Entity<StoreAnalyticsSnapshot>(e =>
+        {
+            e.ToTable("store_analytics_snapshot");
+            e.HasKey(x => x.StoreId);
+            e.Property(x => x.StoreId).HasColumnName("store_id");
+            e.Property(x => x.AvgScore30d).HasColumnName("avg_score_30d");
+            e.Property(x => x.TotalAudits30d).HasColumnName("total_audits_30d");
+            e.Property(x => x.OpenActionPlans).HasColumnName("open_action_plans").HasDefaultValue(0);
+            e.Property(x => x.OverdueActionPlans).HasColumnName("overdue_action_plans").HasDefaultValue(0);
+            e.Property(x => x.LastAuditScore).HasColumnName("last_audit_score");
+            e.Property(x => x.LastAuditAt).HasColumnName("last_audit_at");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+
+            e.HasOne(x => x.Store)
+                .WithOne()
+                .HasForeignKey<StoreAnalyticsSnapshot>(x => x.StoreId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

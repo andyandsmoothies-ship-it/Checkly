@@ -44,6 +44,11 @@ public static class GetStoreDashboard
         var openAPs = await db.ActionPlans
             .CountAsync(ap => ap.StoreId == id && ap.Status == "open", ct);
 
+        // Fetch pre-computed snapshot (may not exist yet)
+        var snapshot = await db.StoreAnalyticsSnapshots
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.StoreId == id, ct);
+
         return TypedResults.Ok(new
         {
             store = new { store.Id, store.Name, store.Address, store.AreaId },
@@ -51,6 +56,10 @@ public static class GetStoreDashboard
             totalAudits = submissions.Count,
             openActionPlans = openAPs,
             recentAudits = submissions,
+            // Snapshot fields (S3.2)
+            avgScore30d = snapshot?.AvgScore30d ?? 0m,
+            lastAuditScore = snapshot?.LastAuditScore,
+            overdueActionPlans = snapshot?.OverdueActionPlans ?? 0,
         });
     }
 }

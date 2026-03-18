@@ -6,17 +6,17 @@
 
 ## Table Overview
 
-The Checkly database contains **22 tables** organized into 3 categories:
+The Checkly database contains **24 tables** organized into 3 categories:
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| **Business Domain** | 14 tables | Core audit workflow data |
+| **Business Domain** | 16 tables | Core audit workflow data |
 | **ASP.NET Identity** | 7 tables | Authentication & identity infrastructure |
 | **EF Core Internal** | 1 table | Migration tracking |
 
 ---
 
-## Business Domain Tables (14)
+## Business Domain Tables (16)
 
 ### `profiles`
 **Rows**: 7 | **Soft Delete**: No (ban via `AspNetUsers.LockoutEnd`)
@@ -229,6 +229,49 @@ Legacy: `pass_fail` criteria with `non_conform` answer. Max 10 per submission.
 | `store_manager_name` | text? | **Snapshot**: SM name |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last update |
+
+---
+
+### `submission_section_scores`
+**Rows**: dynamic | **Cascade delete** with submission
+
+Relational section scores exploded from `submissions.section_scores` JSONB on finalization. Enables efficient SQL GROUP BY for analytics section breakdown instead of parsing JSON blobs in C#.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique row ID |
+| `submission_id` | UUID (FK → submissions) | Parent submission |
+| `store_id` | UUID? | Denormalized store ID for filtering |
+| `template_id` | UUID? | Denormalized template ID for filtering |
+| `section_title` | text | Section name (e.g., "Food Safety") |
+| `score` | decimal | Achieved score in this section |
+| `max_score` | decimal | Maximum possible score |
+| `ratio` | decimal? | Pre-computed `score / max_score` |
+| `is_ccp_failed` | boolean | Whether a CCP criterion failed in this section |
+| `weight` | decimal? | Section weight from template config |
+| `created_at` | timestamptz | Row creation |
+
+**Indexes**: `(store_id, section_title)` composite, `submission_id`
+
+---
+
+### `store_analytics_snapshot`
+**Rows**: 1 per store | **Upserted** on submission finalization
+
+Pre-computed KPIs per store, refreshed with 30-day rolling metrics whenever a submission is finalized. Avoids expensive real-time aggregation queries.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `store_id` | UUID (PK, FK → stores) | Store identity (1:1 relationship) |
+| `avg_score_30d` | decimal | Rolling 30-day average score |
+| `total_audits_30d` | integer | Count of audits in last 30 days |
+| `open_action_plans` | integer | Currently open action plans |
+| `overdue_action_plans` | integer | Overdue action plans |
+| `last_audit_score` | decimal? | Score of the most recent audit |
+| `last_audit_at` | timestamptz? | Timestamp of the most recent audit |
+| `updated_at` | timestamptz | Last snapshot refresh |
+
+**Cascade**: Deletes when parent store is deleted.
 
 ---
 

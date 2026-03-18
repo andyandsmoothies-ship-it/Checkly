@@ -633,6 +633,51 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("stores", (string)null);
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.StoreAnalyticsSnapshot", b =>
+                {
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_id");
+
+                    b.Property<decimal>("AvgScore30d")
+                        .HasColumnType("numeric")
+                        .HasColumnName("avg_score_30d");
+
+                    b.Property<DateTimeOffset?>("LastAuditAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_audit_at");
+
+                    b.Property<decimal?>("LastAuditScore")
+                        .HasColumnType("numeric")
+                        .HasColumnName("last_audit_score");
+
+                    b.Property<int>("OpenActionPlans")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("open_action_plans");
+
+                    b.Property<int>("OverdueActionPlans")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("overdue_action_plans");
+
+                    b.Property<int>("TotalAudits30d")
+                        .HasColumnType("integer")
+                        .HasColumnName("total_audits_30d");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("StoreId");
+
+                    b.ToTable("store_analytics_snapshot", (string)null);
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Submission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -773,6 +818,68 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("Status", "ReviewStatus");
 
                     b.ToTable("submissions", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SubmissionSectionScore", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<bool>("IsCcpFailed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_ccp_failed");
+
+                    b.Property<decimal>("MaxScore")
+                        .HasColumnType("numeric")
+                        .HasColumnName("max_score");
+
+                    b.Property<decimal?>("Ratio")
+                        .HasColumnType("numeric")
+                        .HasColumnName("ratio");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("numeric")
+                        .HasColumnName("score");
+
+                    b.Property<string>("SectionTitle")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("section_title");
+
+                    b.Property<Guid?>("StoreId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_id");
+
+                    b.Property<Guid>("SubmissionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("submission_id");
+
+                    b.Property<Guid?>("TemplateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("template_id");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("numeric")
+                        .HasColumnName("weight");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubmissionId");
+
+                    b.HasIndex("StoreId", "SectionTitle");
+
+                    b.ToTable("submission_section_scores", (string)null);
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SystemLog", b =>
@@ -1250,6 +1357,17 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Area");
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.StoreAnalyticsSnapshot", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
+                        .WithOne()
+                        .HasForeignKey("Checkly.Api.Common.Persistence.Entities.StoreAnalyticsSnapshot", "StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Store");
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Submission", b =>
                 {
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
@@ -1265,6 +1383,17 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Store");
 
                     b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SubmissionSectionScore", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Submission", "Submission")
+                        .WithMany()
+                        .HasForeignKey("SubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submission");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.TemplateAssignment", b =>
