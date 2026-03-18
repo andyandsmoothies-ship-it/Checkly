@@ -26,8 +26,8 @@ Dio createDio({String? baseUrl}) {
   if (kDebugMode) {
     dio.interceptors.add(
       LogInterceptor(
-        requestBody: true,
-        responseBody: true,
+        requestBody: false,
+        responseBody: false,
         logPrint: (obj) => debugPrint('[DIO] $obj'),
       ),
     );
