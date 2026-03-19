@@ -64,7 +64,56 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       });
     } else {
       _loading = false;
+      // Intent-driven wizard: show blueprint selection for new templates
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showBlueprintModal();
+      });
     }
+  }
+
+  /// Show the blueprint selection modal and auto-configure on selection.
+  Future<void> _showBlueprintModal() async {
+    final selected = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const _BlueprintSelectionModal(),
+    );
+    if (selected == null || !mounted) return;
+
+    setState(() {
+      _scoringMode = selected;
+      // Reset all feature flags to mode-appropriate defaults
+      _ccpOverride = selected == 'penalty';
+      _riskOverride = selected == 'penalty';
+      _progressiveRepeat = false;
+      _confirmCorrect = false;
+      _weightedDensity = false;
+
+      // Smart scaffolding: inject 1 section + 1 criterion
+      final defaultInputType = _recommendedInputType(selected);
+      final sectionTitle = switch (selected) {
+        'survey' => 'General Feedback',
+        'checklist' => 'Checklist Items',
+        'accumulation' => 'Assessment Criteria',
+        _ => 'Inspection Items',
+      };
+      _sections = [
+        _EditableGroup(
+          title: sectionTitle,
+          criteria: [_EditableCriterion(inputType: defaultInputType)],
+        ),
+      ];
+    });
+  }
+
+  /// Returns the recommended input type for a given blueprint mode.
+  static String _recommendedInputType(String mode) {
+    return switch (mode) {
+      'survey' => 'single_choice',
+      'checklist' => 'pass_fail',
+      'accumulation' => 'scale',
+      _ => 'numeric', // penalty default
+    };
   }
 
   @override
@@ -250,6 +299,24 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Choice criteria must have at least 2 options'),
+        ),
+      );
+      return;
+    }
+
+    // V4: Every section must have at least one criterion
+    bool hasEmptySection(List<_EditableGroup> groups) {
+      for (final g in groups) {
+        if (g.criteria.isEmpty && g.subSections.isEmpty) return true;
+        if (hasEmptySection(g.subSections)) return true;
+      }
+      return false;
+    }
+
+    if (hasEmptySection(_sections)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Every section must have at least one criterion'),
         ),
       );
       return;
@@ -445,8 +512,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
                 const SizedBox(height: 16),
 
-                // ── Scoring Rules Card (AC-6) ──
-                _ScoringRulesCard(
+                // ── Advanced Settings Card (AC-6) ──
+                _AdvancedSettingsCard(
                   scoringMode: _scoringMode,
                   ccpOverride: _ccpOverride,
                   riskOverride: _riskOverride,
@@ -743,10 +810,10 @@ class _MetadataFormCard extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AC-6: SCORING RULES CARD
+// AC-6: ADVANCED SETTINGS CARD (Progressive Disclosure)
 // ═══════════════════════════════════════════════════════════════
 
-class _ScoringRulesCard extends StatelessWidget {
+class _AdvancedSettingsCard extends StatelessWidget {
   final String scoringMode;
   final bool ccpOverride;
   final bool riskOverride;
@@ -762,7 +829,7 @@ class _ScoringRulesCard extends StatelessWidget {
   final ValueChanged<bool> onCorrectChanged;
   final ValueChanged<bool> onProgressiveChanged;
 
-  const _ScoringRulesCard({
+  const _AdvancedSettingsCard({
     required this.scoringMode,
     required this.ccpOverride,
     required this.riskOverride,
@@ -779,17 +846,33 @@ class _ScoringRulesCard extends StatelessWidget {
     required this.onProgressiveChanged,
   });
 
+  bool get _isSurvey => scoringMode == 'survey';
+  bool get _isChecklist => scoringMode == 'checklist';
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          initiallyExpanded: false,
+          leading: Icon(
+            Icons.settings,
+            size: 20,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          title: Text(
+            'Advanced Settings',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           children: [
-            // ── GROUP 1: SCORING FORMULA ──
-            const SectionHeader('SCORING FORMULA'),
-            const SizedBox(height: 4),
+            // ── GROUP 1: SCORING MODE + SCHEDULING ──
             DropdownButtonFormField<String>(
               initialValue: scoringMode,
               decoration: const InputDecoration(
@@ -816,63 +899,7 @@ class _ScoringRulesCard extends StatelessWidget {
               ],
               onChanged: onScoringModeChanged,
             ),
-            const SizedBox(height: 8),
-            // Weighted Density — hidden for Checklist and Survey modes
-            if (scoringMode != 'checklist' && scoringMode != 'survey')
-              _ExpandableSettingTile(
-                title: 'Weighted Density',
-                description:
-                    'Each section contributes to the total based on its '
-                    'assigned weight (must sum to 100%).',
-                value: weightedDensity,
-                onChanged: onDensityChanged,
-              ),
-
-            const Divider(height: 24),
-
-            // ── GROUP 2: CRITICAL FAILURE RULES ──
-            const SectionHeader('CRITICAL FAILURE RULES'),
-            const SizedBox(height: 4),
-            _ExpandableSettingTile(
-              title: 'CCP Override',
-              description:
-                  'Any criteria marked CCP that fails will zero out '
-                  'its entire section.',
-              value: ccpOverride,
-              onChanged: onCcpChanged,
-            ),
-            _ExpandableSettingTile(
-              title: 'RISK Override',
-              description:
-                  'Any criteria marked RISK that fails will zero out '
-                  'the entire audit.',
-              value: riskOverride,
-              onChanged: onRiskChanged,
-            ),
-            _ExpandableSettingTile(
-              title: 'Progressive Repeat Penalty',
-              description:
-                  'OFF: deduction = repeats × rate. '
-                  'ON: deduction = repeats² × rate (harsher for more repeats).',
-              value: progressiveRepeat,
-              onChanged: onProgressiveChanged,
-            ),
-
-            const Divider(height: 24),
-
-            // ── GROUP 3: AUDIT BEHAVIOR ──
-            const SectionHeader('AUDIT BEHAVIOR'),
-            const SizedBox(height: 4),
-            _ExpandableSettingTile(
-              title: 'Confirm Correct',
-              description:
-                  'Auditor must tap "Correct" to confirm each passing '
-                  'criteria before submitting.',
-              value: confirmCorrect,
-              onChanged: onCorrectChanged,
-            ),
-
-            const Divider(height: 24),
+            const SizedBox(height: 16),
 
             // Action Plan Deadline
             Row(
@@ -903,9 +930,9 @@ class _ScoringRulesCard extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 4, bottom: 16),
+              padding: const EdgeInsets.only(top: 4, bottom: 12),
               child: Text(
-                'Number of days the store manager has to resolve each action plan (1–90).',
+                'Number of days to resolve each action plan (1–90).',
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
             ),
@@ -942,10 +969,130 @@ class _ScoringRulesCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Send a reminder notification to the store manager this many days before the deadline (1–30).',
+                'Reminder days before deadline (1–30).',
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
             ),
+
+            // ── GROUP 2: SCORING TOGGLES (mode-aware) ──
+            if (!_isSurvey) ...[
+              const Divider(height: 24),
+
+              // Amber warning banner
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.amber.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 18,
+                      color: Colors.amber.shade800,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'These settings affect how audits are scored. Change with care.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.amber.shade900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Weighted Density — hidden for Checklist
+              if (!_isChecklist)
+                _ExpandableSettingTile(
+                  title: 'Weighted Density',
+                  description:
+                      'Each section contributes to the total based on its '
+                      'assigned weight (must sum to 100%).',
+                  value: weightedDensity,
+                  onChanged: onDensityChanged,
+                ),
+
+              _ExpandableSettingTile(
+                title: 'CCP Override',
+                description:
+                    'Any criteria marked CCP that fails will zero out '
+                    'its entire section.',
+                value: ccpOverride,
+                onChanged: onCcpChanged,
+              ),
+              _ExpandableSettingTile(
+                title: 'RISK Override',
+                description:
+                    'Any criteria marked RISK that fails will zero out '
+                    'the entire audit.',
+                value: riskOverride,
+                onChanged: onRiskChanged,
+              ),
+
+              // Progressive Repeat — hidden for Checklist/Accumulation
+              if (!_isChecklist && scoringMode != 'accumulation')
+                _ExpandableSettingTile(
+                  title: 'Progressive Repeat Penalty',
+                  description:
+                      'OFF: deduction = repeats × rate. '
+                      'ON: deduction = repeats² × rate (harsher for more repeats).',
+                  value: progressiveRepeat,
+                  onChanged: onProgressiveChanged,
+                ),
+
+              _ExpandableSettingTile(
+                title: 'Confirm Correct',
+                description:
+                    'Auditor must tap "Correct" to confirm each passing '
+                    'criteria before submitting.',
+                value: confirmCorrect,
+                onChanged: onCorrectChanged,
+              ),
+            ],
+
+            // Survey mode info banner
+            if (_isSurvey)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(top: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer.withValues(
+                    alpha: 0.3,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Survey mode — responses are collected without scoring.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -1305,48 +1452,43 @@ class _CriteriaEditor extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Input Type selector
-                DropdownButtonFormField<String>(
-                  initialValue: criterion.inputType,
-                  decoration: const InputDecoration(
-                    labelText: 'Input Type',
-                    helperText:
-                        'Determines how the auditor will grade this item',
-                    isDense: true,
+                // Input Type selector — tap chip to open bottom sheet
+                Text(
+                  'Input Type',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'pass_fail',
-                      child: Text('Pass / Fail (e.g., Is the floor clean?)'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'numeric',
-                      child: Text(
-                        'Fault Count (e.g., How many expired items?)',
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      value: 'scale',
-                      child: Text('Scored Choices (e.g., Poor/Fair/Good)'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'single_choice',
-                      child: Text('Single Choice (e.g., Which shift?)'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'multi_choice',
-                      child: Text('Multi Choice (e.g., Select all that apply)'),
-                    ),
-                  ],
-                  onChanged: (v) {
-                    criterion.inputType = v ?? criterion.inputType;
-                    onChanged();
+                ),
+                const SizedBox(height: 4),
+                ActionChip(
+                  avatar: Icon(_inputTypeIcon(criterion.inputType), size: 18),
+                  label: Text(_inputTypeLabel(criterion.inputType)),
+                  onPressed: () async {
                     Navigator.pop(ctx);
-                    // Reopen to refresh UI with new inputType
-                    Future.microtask(() {
-                      if (context.mounted) _openDrawer(context);
-                    });
+                    final selected = await showModalBottomSheet<String>(
+                      context: context,
+                      isScrollControlled: true,
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.65,
+                      ),
+                      builder: (_) => _InputTypeBottomSheet(
+                        currentType: criterion.inputType,
+                      ),
+                    );
+                    if (selected != null && context.mounted) {
+                      criterion.inputType = selected;
+                      onChanged();
+                      _openDrawer(context);
+                    }
                   },
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Determines how the auditor will grade this item',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 11,
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -1835,6 +1977,351 @@ class _TemplateFooter extends StatelessWidget {
                     )
                   : const Icon(Icons.save),
               label: Text(saving ? 'Saving...' : 'Save Template'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BLUEPRINT SELECTION MODAL (Intent-Driven Wizard)
+// ═══════════════════════════════════════════════════════════════
+
+class _BlueprintSelectionModal extends StatelessWidget {
+  const _BlueprintSelectionModal();
+
+  static const _blueprints = [
+    (
+      mode: 'penalty',
+      icon: Icons.verified_outlined,
+      title: 'Compliance Audit',
+      subtitle: 'Start at 100% — deduct for faults found',
+      color: Color(0xFF1565C0),
+    ),
+    (
+      mode: 'accumulation',
+      icon: Icons.trending_up,
+      title: 'Training Assessment',
+      subtitle: 'Start at 0% — earn points for correct answers',
+      color: Color(0xFF2E7D32),
+    ),
+    (
+      mode: 'survey',
+      icon: Icons.forum_outlined,
+      title: 'Feedback Survey',
+      subtitle: 'Collect responses without scoring',
+      color: Color(0xFF7B1FA2),
+    ),
+    (
+      mode: 'checklist',
+      icon: Icons.checklist,
+      title: 'Custom Checklist',
+      subtitle: 'Simple pass/fail checks for daily tasks',
+      color: Color(0xFFE65100),
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+
+    return Dialog.fullscreen(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('What are you building?'),
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Choose a blueprint to get started with sensible defaults.',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: size.width > 600 ? 2 : 1,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: size.width > 600 ? 2.2 : 3.2,
+                    children: _blueprints.map((bp) {
+                      return _BlueprintCard(
+                        icon: bp.icon,
+                        title: bp.title,
+                        subtitle: bp.subtitle,
+                        color: bp.color,
+                        onTap: () => Navigator.pop(context, bp.mode),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BlueprintCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _BlueprintCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: color.withValues(alpha: 0.3), width: 1.5),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INPUT TYPE BOTTOM SHEET (Guided Input Selector)
+// ═══════════════════════════════════════════════════════════════
+
+/// Lookup helpers for input type display.
+IconData _inputTypeIcon(String type) => switch (type) {
+  'pass_fail' => Icons.check_circle_outline,
+  'numeric' => Icons.pin_outlined,
+  'scale' => Icons.linear_scale,
+  'single_choice' => Icons.radio_button_checked,
+  'multi_choice' => Icons.checklist,
+  _ => Icons.help_outline,
+};
+
+String _inputTypeLabel(String type) => switch (type) {
+  'pass_fail' => 'Pass / Fail',
+  'numeric' => 'Fault Count',
+  'scale' => 'Scored Choices',
+  'single_choice' => 'Single Choice',
+  'multi_choice' => 'Multi Choice',
+  _ => type,
+};
+
+class _InputTypeBottomSheet extends StatelessWidget {
+  final String currentType;
+
+  const _InputTypeBottomSheet({required this.currentType});
+
+  static const _types = [
+    (
+      value: 'pass_fail',
+      icon: Icons.check_circle_outline,
+      title: 'Pass / Fail',
+      desc: 'Binary check — e.g., "Is the floor clean?"',
+    ),
+    (
+      value: 'numeric',
+      icon: Icons.pin_outlined,
+      title: 'Fault Count',
+      desc: 'Count occurrences — e.g., "How many expired items?"',
+    ),
+    (
+      value: 'scale',
+      icon: Icons.linear_scale,
+      title: 'Scored Choices',
+      desc: 'Maturity scale — e.g., Poor / Fair / Good / Excellent',
+    ),
+    (
+      value: 'single_choice',
+      icon: Icons.radio_button_checked,
+      title: 'Single Choice',
+      desc: 'Pick one — e.g., "Which shift?"',
+    ),
+    (
+      value: 'multi_choice',
+      icon: Icons.checklist,
+      title: 'Multi Choice',
+      desc: 'Pick many — e.g., "Select all that apply"',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 32,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.4,
+                  ),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              'Select Input Type',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: ListView.separated(
+                itemCount: _types.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 4),
+                itemBuilder: (_, i) {
+                  final t = _types[i];
+                  final isSelected = t.value == currentType;
+
+                  return Card(
+                    elevation: 0,
+                    color: isSelected
+                        ? theme.colorScheme.primaryContainer.withValues(
+                            alpha: 0.4,
+                          )
+                        : null,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: isSelected
+                          ? BorderSide(
+                              color: theme.colorScheme.primary,
+                              width: 1.5,
+                            )
+                          : BorderSide(color: theme.colorScheme.outlineVariant),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => Navigator.pop(context, t.value),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              t.icon,
+                              size: 22,
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    t.title,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    t.desc,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(
+                                Icons.check_circle,
+                                color: theme.colorScheme.primary,
+                                size: 20,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
