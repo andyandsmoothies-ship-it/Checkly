@@ -8,6 +8,10 @@ description: Precision Analysis Workflow for System Architecture.
 > [!NOTE]
 > This is the **System & Business Analysis** workflow — used to evaluate solutions, analyze business logic, verify architecture feasibility, and identify edge cases before implementation. It is designed to produce production-grade Software Engineering Tech Specs.
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+// turbo
+3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
+<!-- HUD:END -->
 ## Phase 1: Analytical Setup
 - **Instruction**: Assume the role of an Expert System Analyst / Principal Software Engineer.
 - **Skill Discovery**: Derive 2-3 technical keywords from the feature scope. Use `grep_search` on `.agents/skills/` to find matches (by filename pattern or SKILL.md content). Load ONLY the top 1-2 most relevant analytical `SKILL.md` files. Declare which skills were loaded.

@@ -8,6 +8,10 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 > [!NOTE]
 > This workflow enforces systematic root cause analysis. No guessing is allowed.
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+// turbo
+3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
+<!-- HUD:END -->
 ## Phase 1: Symptom Isolation (NO GUESSING)
 <strict-instruction>
 You MUST NOT guess the root cause of an error.

@@ -9,6 +9,10 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > This is the **Acceptance Test-Driven Development (ATDD)** workflow — used to define acceptance tests for complex/high-risk features before coding begins.
 > It sits between `/analysis` and `/implement`. Do NOT confuse with TDD (unit tests during coding) — ATDD defines WHAT the feature must do at the acceptance level; TDD proves HOW the internal code works.
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+// turbo
+3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
+<!-- HUD:END -->
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
 - **Skill Loading (MANDATORY)**: Load the `atdd-quality-gates` skill from `.agents/skills/atdd-quality-gates/SKILL.md`. This skill contains the checklists, templates, and rules you must follow in Phase 2. Declare that it was loaded.

@@ -16,6 +16,10 @@ description: The Core Builder Implementation Workflow.
 1. If artifact needed → Create it FIRST (naming per `orchestration.md` § Artifact Naming Convention)
 2. If task needed → Set task_boundary FIRST
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+// turbo
+3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
+<!-- HUD:END -->
 ## Phase 1: Deep Discovery
 - **Instruction**: Identify the core files and package dependencies for this feature.
 - **Action**: Use the `view_file` tool to read the project configuration files (e.g., `package.json`, `.csproj`, `requirements.txt`, `go.mod`) to understand current project state.

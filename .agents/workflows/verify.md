@@ -8,6 +8,10 @@ description: System Impact Audit for architectural changes.
 > [!NOTE]
 > This workflow acts as the final gatekeeper before declaring a task finished.
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+// turbo
+3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
+<!-- HUD:END -->
 ## Phase 1: Context & Side Effect Audit
 <strict-instruction>
 **Skill Discovery**: Derive 2-3 keywords from the changes being verified. Use `grep_search` on `.agents/skills/` to find any relevant verification, testing, or code-review skills. Load the top 1-2 `SKILL.md` files.
