@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 
@@ -16,16 +17,18 @@ public static class CreateCriterion
         bool? IsCcp,
         bool? IsRisk,
         decimal? MinusImpact,
-        int? OrderIndex);
+        int? OrderIndex,
+        string? Metadata);
 
     public static async Task<IResult> HandleAsync(
         Guid templateId,
         Guid groupId,
         Request request,
-        AppDbContext db)
+        AppDbContext db,
+        CancellationToken ct)
     {
         // Verify group belongs to template and both are active
-        var group = await db.Groups.FindAsync(groupId);
+        var group = await db.Groups.FindAsync([groupId], ct);
         if (group is null || group.TemplateId != templateId || !group.IsActive)
             return Results.NotFound();
 
@@ -34,6 +37,13 @@ public static class CreateCriterion
 
         if (string.IsNullOrWhiteSpace(request.InputType))
             return Results.BadRequest(new { error = "Input type is required" });
+
+        // Choice criteria must have at least one option in metadata
+        if (request.InputType is "single_choice" or "multi_choice")
+        {
+            if (!HasValidOptions(request.Metadata))
+                return Results.BadRequest(new { error = "Choice criteria require at least one option in metadata" });
+        }
 
         var now = DateTimeOffset.UtcNow;
         var criterion = new Criterion
@@ -48,13 +58,14 @@ public static class CreateCriterion
             IsRisk = request.IsRisk ?? false,
             MinusImpact = request.MinusImpact,
             OrderIndex = request.OrderIndex ?? 0,
+            Metadata = request.Metadata,
             IsActive = true,
             CreatedAt = now,
             UpdatedAt = now,
         };
 
         db.Criteria.Add(criterion);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(ct);
 
         return Results.Created(
             $"/api/templates/{templateId}/criteria/{criterion.Id}",
@@ -65,5 +76,32 @@ public static class CreateCriterion
                 label = criterion.Label,
                 inputType = criterion.InputType,
             });
+    }
+
+    /// <summary>
+    /// Validates that metadata contains a non-empty "options" array.
+    /// Expected format: {"options": [{"label": "...", "value": "..."}, ...]}
+    /// </summary>
+    internal static bool HasValidOptions(string? metadata)
+    {
+        if (string.IsNullOrWhiteSpace(metadata))
+            return false;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(metadata);
+            if (doc.RootElement.TryGetProperty("options", out var options)
+                && options.ValueKind == JsonValueKind.Array
+                && options.GetArrayLength() > 0)
+            {
+                return true;
+            }
+        }
+        catch (JsonException)
+        {
+            // Invalid JSON — treat as no options
+        }
+
+        return false;
     }
 }

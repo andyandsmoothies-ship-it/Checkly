@@ -15,20 +15,22 @@ public static class UpdateCriterion
         bool? IsCcp,
         bool? IsRisk,
         decimal? MinusImpact,
-        int? OrderIndex);
+        int? OrderIndex,
+        string? Metadata);
 
     public static async Task<IResult> HandleAsync(
         Guid templateId,
         Guid criterionId,
         Request request,
-        AppDbContext db)
+        AppDbContext db,
+        CancellationToken ct)
     {
-        var criterion = await db.Criteria.FindAsync(criterionId);
+        var criterion = await db.Criteria.FindAsync([criterionId], ct);
         if (criterion is null)
             return Results.NotFound();
 
         // Verify criterion belongs to a group in this template
-        var group = await db.Groups.FindAsync(criterion.GroupId);
+        var group = await db.Groups.FindAsync([criterion.GroupId], ct);
         if (group is null || group.TemplateId != templateId)
             return Results.NotFound();
 
@@ -51,9 +53,19 @@ public static class UpdateCriterion
             criterion.MinusImpact = request.MinusImpact;
         if (request.OrderIndex.HasValue)
             criterion.OrderIndex = request.OrderIndex.Value;
+        if (request.Metadata != null)
+            criterion.Metadata = request.Metadata;
+
+        // Validate choice criteria have options after applying updates
+        var effectiveInputType = criterion.InputType;
+        if (effectiveInputType is "single_choice" or "multi_choice")
+        {
+            if (!CreateCriterion.HasValidOptions(criterion.Metadata))
+                return Results.BadRequest(new { error = "Choice criteria require at least one option in metadata" });
+        }
 
         criterion.UpdatedAt = DateTimeOffset.UtcNow;
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(ct);
 
         return Results.Ok(new
         {
