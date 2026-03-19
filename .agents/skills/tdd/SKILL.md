@@ -7,15 +7,30 @@ description: Load this skill whenever building features or fixing bugs using TDD
 
 ## Philosophy
 
-**Core principle**: Tests should verify behavior through public interfaces, not implementation details. Code can change entirely; tests shouldn't.
+**Core principle**: A TDD "test" is a **specification**, not a test. It's an example of how you expect to use the code you're about to write. You write the spec first (RED), kluge together just enough code to satisfy it (GREEN), then refactor until the code is high quality. The spec drives the design — hence "test-driven **design**."
 
-**Wishful Amnesia**: When writing a test, forget how the system works internally. Ask: "What does the consumer need?" — not "What can the system do?" This consumer-first perspective is what makes specs survive refactors.
+**Wishful Amnesia**: When writing a spec, forget how the system works internally. Ask: "What does the consumer need?" — not "What can the system do?" This consumer-first perspective is what makes specs survive refactors.
 
-**Good tests** are integration-style: they exercise real code paths through public APIs. They describe _what_ the system does, not _how_ it does it. A good test reads like a specification — "user can checkout with valid cart" tells you exactly what capability exists. These tests survive refactors because they don't care about internal structure.
+**Good specs** exercise real code paths through public APIs. They describe _what_ the system does, not _how_ it does it. A good spec reads like a requirement — "user can checkout with valid cart" tells you exactly what capability exists. These survive refactors because they don't care about internal structure.
 
-**Bad tests** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means (like querying a database directly instead of using the interface). The warning sign: your test breaks when you refactor, but behavior hasn't changed.
+**Bad specs** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means. The warning sign: your spec breaks when you refactor, but behavior hasn't changed.
 
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
+
+## Spec-Tests vs Unit Tests
+
+These are two different things that often happen at the same time. Don't confuse them.
+
+| | Spec-Test (drives TDD) | Unit Test (guards regressions) |
+|---|---|---|
+| **Purpose** | Specifies new behavior, drives the design forward | Covers corner cases, failure modes, edge cases |
+| **When written** | Before the code exists (RED phase) | After the code works (during or after REFACTOR) |
+| **Who writes it** | Human defines intent; AI implements the code | AI can help write these |
+| **Happy path?** | Usually yes — one clear usage example | No — boundary conditions, error paths |
+| **If from /atdd** | The Gherkin scenarios ARE your spec-tests — don't re-spec them | Add these after the spec-tests pass |
+
+> [!IMPORTANT]
+> When specs arrive from the `/atdd` workflow, they ARE the RED starting point. Do not re-specify what ATDD already defined — go straight to GREEN.
 
 ## Anti-Pattern: Horizontal Slices
 

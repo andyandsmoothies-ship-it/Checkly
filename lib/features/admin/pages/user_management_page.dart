@@ -413,16 +413,17 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     }
                     try {
                       await _di<AdminApiService>().resetPassword(userId, pass);
-                      if (context.mounted) {
+                      if (dlgCtx.mounted) {
                         Navigator.of(dlgCtx).pop(); // Close dialog
                         Navigator.of(sheetCtx).pop(); // Close edit sheet
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(dlgCtx).showSnackBar(
                           const SnackBar(
                             content: Text('Password reset successfully'),
                             backgroundColor: AppTheme.success,
                           ),
                         );
                       }
+                      if (mounted) _loadData();
                     } catch (e) {
                       String? msg;
                       if (e is DioException) {
@@ -685,9 +686,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                     storeId: selectedStoreId,
                                     areaId: selectedAreaId,
                                   );
-                                  if (context.mounted) {
+                                  if (ctx.mounted) {
                                     Navigator.of(ctx).pop();
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    ScaffoldMessenger.of(ctx).showSnackBar(
                                       const SnackBar(
                                         content: Text(
                                           'User created successfully',
@@ -695,8 +696,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                         backgroundColor: AppTheme.success,
                                       ),
                                     );
-                                    _loadData();
                                   }
+                                  if (mounted) _loadData();
                                 } catch (e) {
                                   String? serverMsg;
                                   int? statusCode;

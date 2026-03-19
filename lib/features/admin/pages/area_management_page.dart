@@ -169,9 +169,9 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                     name: name,
                     description: desc.isNotEmpty ? desc : null,
                   );
-                  if (mounted) {
+                  if (context.mounted) {
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    ScaffoldMessenger.of(ctx).showSnackBar(
                       SnackBar(
                         content: const Text('Area created'),
                         backgroundColor: AppTheme.success,
@@ -267,9 +267,9 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                     name: name,
                     description: desc,
                   );
-                  if (mounted) {
+                  if (context.mounted) {
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    ScaffoldMessenger.of(ctx).showSnackBar(
                       SnackBar(
                         content: const Text('Area updated'),
                         backgroundColor: AppTheme.success,

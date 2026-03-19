@@ -65,4 +65,5 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 - **Requirement**: Output the failed test evidence and specifications.
 - **Action**: Create a `specs_[feature].md` artifact and commit the failing test code to the test project.
 - **Infrastructure Map (MANDATORY)**: The specs artifact MUST include a Test Infrastructure Map section following the template from `atdd-quality-gates` skill Gate 5.
+- **Key Principle**: The Gherkin scenarios and failing tests produced by this workflow ARE the TDD spec-tests. The Builder's `/implement` workflow should treat them as the RED starting point — go straight to GREEN, do not re-specify.
 - **Handoff**: If an `implementation_plan.md` exists from a prior `/analysis` workflow, append a **Test Constraints** section listing the test names that must turn GREEN and any ATDD-specific requirements. If NO plan exists, do NOT generate one — recommend the user run `/analysis` first.
