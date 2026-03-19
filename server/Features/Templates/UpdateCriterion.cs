@@ -64,6 +64,13 @@ public static class UpdateCriterion
                 return Results.BadRequest(new { error = "Choice criteria require at least one option in metadata" });
         }
 
+        // Validate scale criteria have scale options after applying updates
+        if (effectiveInputType is "scale")
+        {
+            if (!CreateCriterion.HasValidScaleOptions(criterion.Metadata))
+                return Results.BadRequest(new { error = "Scale criteria require at least 2 scale options in metadata" });
+        }
+
         criterion.UpdatedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync(ct);
 

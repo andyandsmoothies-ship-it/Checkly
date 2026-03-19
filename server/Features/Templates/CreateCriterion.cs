@@ -45,6 +45,13 @@ public static class CreateCriterion
                 return Results.BadRequest(new { error = "Choice criteria require at least one option in metadata" });
         }
 
+        // Scale criteria must have at least 2 scale options in metadata
+        if (request.InputType is "scale")
+        {
+            if (!HasValidScaleOptions(request.Metadata))
+                return Results.BadRequest(new { error = "Scale criteria require at least 2 scale options in metadata" });
+        }
+
         var now = DateTimeOffset.UtcNow;
         var criterion = new Criterion
         {
@@ -100,6 +107,33 @@ public static class CreateCriterion
         catch (JsonException)
         {
             // Invalid JSON — treat as no options
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Validates that metadata contains a "scaleOptions" array with at least 2 entries.
+    /// Expected format: {"scaleOptions": [{"label": "Poor", "points": 0}, {"label": "Good", "points": 10}]}
+    /// </summary>
+    internal static bool HasValidScaleOptions(string? metadata)
+    {
+        if (string.IsNullOrWhiteSpace(metadata))
+            return false;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(metadata);
+            if (doc.RootElement.TryGetProperty("scaleOptions", out var scaleOptions)
+                && scaleOptions.ValueKind == JsonValueKind.Array
+                && scaleOptions.GetArrayLength() >= 2)
+            {
+                return true;
+            }
+        }
+        catch (JsonException)
+        {
+            // Invalid JSON — treat as no scale options
         }
 
         return false;
