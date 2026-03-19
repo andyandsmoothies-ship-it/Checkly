@@ -12,6 +12,9 @@ description: >
 
 # Container Publishing (No Dockerfile)
 
+> [!NOTE]
+> **Related skills:** For traditional Dockerfile multi-stage builds, see `docker`. This skill covers Dockerfile-less SDK container publishing.
+
 ## Core Principles
 
 1. **No Dockerfile needed** — The .NET 10 SDK builds OCI-compliant container images directly from `dotnet publish /t:PublishContainer`. No Dockerfile to write or maintain.

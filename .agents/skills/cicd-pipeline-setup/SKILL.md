@@ -7,18 +7,6 @@ description: >
 
 # CI/CD Pipeline Setup
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Build automated continuous integration and deployment pipelines that test code, build artifacts, run security checks, and deploy to multiple environments with minimal manual intervention.
-
 ## When to Use
 
 - Automated code testing and quality checks
@@ -72,27 +60,3 @@ Detailed implementations in the `references/` directory:
 | [GitLab CI Pipeline](references/gitlab-ci-pipeline.md) | GitLab CI Pipeline |
 | [Jenkins Pipeline](references/jenkins-pipeline.md) | Jenkins Pipeline |
 | [CI/CD Script](references/cicd-script.md) | CI/CD Script |
-
-## Best Practices
-
-### ✅ DO
-
-- Fail fast with early validation
-- Run tests in parallel when possible
-- Use caching for dependencies
-- Implement proper secret management
-- Gate production deployments with approval
-- Monitor and alert on pipeline failures
-- Use consistent environment configuration
-- Implement infrastructure as code
-
-### ❌ DON'T
-
-- Store credentials in pipeline configuration
-- Deploy without automated tests
-- Skip security scanning
-- Allow long-running pipelines
-- Mix staging and production pipelines
-- Ignore test failures
-- Deploy directly to main branch
-- Skip health checks after deployment

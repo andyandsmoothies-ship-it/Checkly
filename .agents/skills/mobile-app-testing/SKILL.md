@@ -8,18 +8,6 @@ description: >
 
 # Mobile App Testing
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement comprehensive testing strategies for mobile applications including unit tests, UI tests, integration tests, and performance testing.
-
 ## When to Use
 
 - Creating reliable mobile applications with test coverage
@@ -71,31 +59,3 @@ Detailed implementations in the `references/` directory:
 | [iOS Testing with XCTest](references/ios-testing-with-xctest.md) | iOS Testing with XCTest |
 | [Android Testing with Espresso](references/android-testing-with-espresso.md) | Android Testing with Espresso |
 | [Performance Testing](references/performance-testing.md) | Performance Testing |
-
-## Best Practices
-
-### ✅ DO
-
-- Write tests for business logic first
-- Use dependency injection for testability
-- Mock external API calls
-- Test both success and failure paths
-- Automate UI testing for critical flows
-- Run tests on real devices
-- Measure performance on target devices
-- Keep tests isolated and independent
-- Use meaningful test names
-- Maintain >80% code coverage
-
-### ❌ DON'T
-
-- Skip testing UI-critical flows
-- Use hardcoded test data
-- Ignore performance regressions
-- Test implementation details
-- Make tests flaky or unreliable
-- Skip testing on actual devices
-- Ignore accessibility testing
-- Create interdependent tests
-- Test without mocking APIs
-- Deploy untested code

@@ -8,17 +8,8 @@ description: >
 
 # Concurrency Patterns
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement safe concurrent code using proper synchronization primitives and patterns for parallel execution.
+> [!NOTE]
+> **Related skills:** For C#/.NET concurrency (async/await, Channels, Akka.NET), see `csharp-concurrency-patterns`. This skill covers language-agnostic patterns (TypeScript, Python, Go).
 
 ## When to Use
 
@@ -76,24 +67,3 @@ Detailed implementations in the `references/` directory:
 | [Python Threading Patterns](references/python-threading-patterns.md) | Python Threading Patterns |
 | [Async Patterns (Python asyncio)](references/async-patterns-python-asyncio.md) | Async Patterns (Python asyncio) |
 | [Go-Style Channels (Simulation)](references/go-style-channels-simulation.md) | Go-Style Channels (Simulation) |
-
-## Best Practices
-
-### ✅ DO
-
-- Use proper synchronization primitives
-- Limit concurrency to avoid resource exhaustion
-- Handle errors in concurrent operations
-- Use immutable data when possible
-- Test concurrent code thoroughly
-- Profile concurrent performance
-- Document thread-safety guarantees
-
-### ❌ DON'T
-
-- Share mutable state without synchronization
-- Use sleep/polling for coordination
-- Create unlimited threads/workers
-- Ignore race conditions
-- Block event loops in async code
-- Forget to clean up resources

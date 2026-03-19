@@ -8,18 +8,6 @@ description: >
 
 # Risk Assessment
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Risk assessment is a systematic process of identifying potential threats to project success and developing strategies to mitigate, avoid, or accept them.
-
 ## When to Use
 
 - Project initiation and planning phases
@@ -73,31 +61,3 @@ Detailed implementations in the `references/` directory:
 | [Risk Analysis Matrix](references/risk-analysis-matrix.md) | Risk Analysis Matrix |
 | [Risk Response Planning](references/risk-response-planning.md) | Risk Response Planning |
 | [Risk Monitoring & Control](references/risk-monitoring-control.md) | Risk Monitoring & Control |
-
-## Best Practices
-
-### ✅ DO
-
-- Identify risks early in project planning
-- Involve diverse team members in risk identification
-- Quantify risk impact when possible
-- Prioritize based on risk score and exposure
-- Develop specific mitigation plans
-- Assign clear risk ownership
-- Monitor triggers regularly
-- Review and update risk register monthly
-- Document lessons learned from realized risks
-- Communicate risks transparently to stakeholders
-
-### ❌ DON'T
-
-- Wait until problems occur to identify risks
-- Assume risks will not materialize
-- Treat all risks as equal priority
-- Plan mitigation without clear trigger conditions
-- Ignore early warning signs
-- Make risk management a one-time activity
-- Skip contingency planning for critical risks
-- Hide negative risks from stakeholders
-- Eliminate all risk (impossible and uneconomical)
-- Blame individuals for realized risks

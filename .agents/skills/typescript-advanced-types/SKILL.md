@@ -5,6 +5,9 @@ description: Master TypeScript's advanced type system including generics, condit
 
 # TypeScript Advanced Types
 
+> [!NOTE]
+> **Related skills:** For TypeScript architecture, enterprise patterns, and build configuration, see `typescript-pro`. This skill focuses on the advanced type system (generics, conditional types, mapped types).
+
 Comprehensive guidance for mastering TypeScript's advanced type system including generics, conditional types, mapped types, template literal types, and utility types for building robust, type-safe applications.
 
 ## Use this skill when

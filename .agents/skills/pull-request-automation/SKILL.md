@@ -7,18 +7,6 @@ description: >
 
 # Pull Request Automation
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement pull request automation to streamline code review processes, enforce quality standards, and reduce manual overhead through templated workflows and intelligent assignment rules.
-
 ## When to Use
 
 - Code review standardization
@@ -73,28 +61,3 @@ Detailed implementations in the `references/` directory:
 | [Bors: Merge Automation Configuration](references/bors-merge-automation-configuration.md) | Bors: Merge Automation Configuration, Conventional Commit Validation |
 | [PR Title Validation Workflow](references/pr-title-validation-workflow.md) | PR Title Validation Workflow |
 | [Code Coverage Requirement](references/code-coverage-requirement.md) | Code Coverage Requirement |
-
-## Best Practices
-
-### ✅ DO
-
-- Use PR templates for consistency
-- Require code reviews before merge
-- Enforce CI/CD checks pass
-- Auto-assign reviewers based on code ownership
-- Label PRs for organization
-- Validate commit messages
-- Use squash commits for cleaner history
-- Set minimum coverage requirements
-- Provide detailed PR descriptions
-
-### ❌ DON'T
-
-- Approve without reviewing code
-- Merge failing CI checks
-- Use vague PR titles
-- Skip automated checks
-- Merge to protected branches without review
-- Ignore code coverage drops
-- Force push to shared branches
-- Merge directly without PR

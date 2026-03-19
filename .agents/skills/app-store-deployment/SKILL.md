@@ -7,18 +7,6 @@ description: >
 
 # App Store Deployment
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Publish mobile applications to official app stores with proper code signing, versioning, testing, and submission procedures.
-
 ## When to Use
 
 - Publishing apps to App Store and Google Play
@@ -71,35 +59,3 @@ Detailed implementations in the `references/` directory:
 | [Version Management](references/version-management.md) | Version Management |
 | [Automated CI/CD with GitHub Actions](references/automated-cicd-with-github-actions.md) | Automated CI/CD with GitHub Actions |
 | [Pre-Deployment Checklist](references/pre-deployment-checklist.md) | Pre-Deployment Checklist |
-
-## Best Practices
-
-### ✅ DO
-
-- Use signed certificates and provisioning profiles
-- Automate builds with CI/CD
-- Test on real devices before submission
-- Keep version numbers consistent
-- Document deployment procedures
-- Use environment-specific configurations
-- Implement proper error tracking
-- Monitor app performance post-launch
-- Plan rollout strategy
-- Keep backup of signing materials
-- Test offline functionality
-- Maintain release notes
-
-### ❌ DON'T
-
-- Commit signing materials to git
-- Skip device testing
-- Release untested code
-- Ignore store policies
-- Use hardcoded API keys
-- Skip security reviews
-- Deploy without monitoring
-- Ignore crash reports
-- Make large version jumps
-- Use invalid certificates
-- Deploy without backups
-- Release during holidays

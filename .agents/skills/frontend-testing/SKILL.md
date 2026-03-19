@@ -8,18 +8,6 @@ description: >
 
 # Frontend Testing
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Build comprehensive test suites for frontend applications including unit tests, integration tests, and end-to-end tests with proper coverage and assertions.
-
 ## When to Use
 
 - Component testing
@@ -73,18 +61,3 @@ Detailed implementations in the `references/` directory:
 | [Vitest for Vue Testing](references/vitest-for-vue-testing.md) | Vitest for Vue Testing |
 | [Cypress E2E Testing](references/cypress-e2e-testing.md) | Cypress E2E Testing |
 | [Test Coverage Configuration](references/test-coverage-configuration.md) | Test Coverage Configuration |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

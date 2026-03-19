@@ -11,6 +11,9 @@ description: >
 
 # Logging & Observability
 
+> [!NOTE]
+> **Related skills:** For deep Serilog configuration (sinks, enrichers, expressions), see `serilog`. For OpenTelemetry traces and metrics, see `opentelemetry`. This skill is the high-level observability overview.
+
 ## Core Principles
 
 1. **Structured logging with Serilog** — Every log entry is a structured event with named properties, not a formatted string. This enables searching, filtering, and alerting.

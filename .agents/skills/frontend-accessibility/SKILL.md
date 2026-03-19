@@ -7,18 +7,6 @@ description: >
 
 # Frontend Accessibility
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Build accessible web applications following WCAG guidelines with semantic HTML, ARIA attributes, keyboard navigation, and screen reader support for inclusive user experiences.
-
 ## When to Use
 
 - Compliance with accessibility standards
@@ -71,18 +59,3 @@ Detailed implementations in the `references/` directory:
 | [Color Contrast and Visual Accessibility](references/color-contrast-and-visual-accessibility.md) | Color Contrast and Visual Accessibility |
 | [Screen Reader Announcements](references/screen-reader-announcements.md) | Screen Reader Announcements |
 | [Accessibility Testing](references/accessibility-testing.md) | Accessibility Testing |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

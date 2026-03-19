@@ -14,6 +14,9 @@ description: >
 
 # OpenTelemetry
 
+> [!NOTE]
+> **Related skills:** For Serilog structured logging, see `serilog`. For high-level observability overview (health checks, correlation IDs), see `dotnet-logging`. This skill covers OpenTelemetry traces, metrics, and OTLP export.
+
 ## Core Principles
 
 1. **Three pillars, one setup** — Configure traces, metrics, and logs through a single `AddOpenTelemetry()` call. Use `UseOtlpExporter()` for cross-cutting export to any OTLP-compatible backend.

@@ -7,18 +7,6 @@ description: >
 
 # Transaction Management
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement robust transaction management with ACID compliance, concurrency control, and error handling. Covers isolation levels, locking strategies, and deadlock resolution.
-
 ## When to Use
 
 - ACID transaction implementation
@@ -61,18 +49,3 @@ Detailed implementations in the `references/` directory:
 | [PostgreSQL Explicit Locking](references/postgresql-explicit-locking.md) | PostgreSQL Explicit Locking |
 | [MySQL Locking](references/mysql-locking.md) | MySQL Locking |
 | [Deadlock Prevention](references/deadlock-prevention.md) | **PostgreSQL - Deadlock Detection:** |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

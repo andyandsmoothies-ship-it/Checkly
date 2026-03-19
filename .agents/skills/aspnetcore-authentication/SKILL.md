@@ -12,6 +12,9 @@ description: >
 
 # Authentication & Authorization
 
+> [!NOTE]
+> **Related skills:** For Node.js/Python authentication, see `api-authentication`. This skill covers ASP.NET Core authentication and authorization.
+
 ## Core Principles
 
 1. **Use ASP.NET Identity for user management** — Don't build your own user store. Identity handles password hashing, lockout, two-factor, and email confirmation.

@@ -13,6 +13,9 @@ description: >
 
 # Serilog
 
+> [!NOTE]
+> **Related skills:** For .NET observability overview (logging + health checks + correlation IDs), see `dotnet-logging`. For OpenTelemetry traces and metrics, see `opentelemetry`. This skill is the deep-dive on Serilog configuration, sinks, enrichers, and expressions.
+
 ## Core Principles
 
 1. **Two-stage initialization** — Create a bootstrap logger for startup, then replace it with the full logger after DI is ready. This captures startup errors that would otherwise be lost.

@@ -8,18 +8,6 @@ description: >
 
 # Interaction Design
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Interaction design focuses on how users engage with systems, creating intuitive and delightful experiences through feedback and responsiveness.
-
 ## When to Use
 
 - Designing user flows and touchpoints
@@ -71,31 +59,3 @@ Detailed implementations in the `references/` directory:
 | [Animation & Transition Design](references/animation-transition-design.md) | Animation & Transition Design |
 | [Error Handling & Feedback](references/error-handling-feedback.md) | Error Handling & Feedback |
 | [Accessibility in Interactions](references/accessibility-in-interactions.md) | Accessibility in Interactions |
-
-## Best Practices
-
-### ✅ DO
-
-- Keep animations under 400ms
-- Provide clear visual feedback
-- Use animations to guide attention
-- Respect motion preferences
-- Make interactions reversible
-- Test with keyboard and screen readers
-- Provide multiple interaction methods
-- Design for touch and mouse
-- Use appropriate easing curves
-- Document interaction behavior
-
-### ❌ DON'T
-
-- Animate for decoration only
-- Use animations longer than 500ms
-- Ignore motion-sensitive users
-- Remove focus indicators
-- Trap users in modals
-- Use confusing animations
-- Animate everything
-- Ignore loading states
-- Forget error states
-- Skip accessibility testing

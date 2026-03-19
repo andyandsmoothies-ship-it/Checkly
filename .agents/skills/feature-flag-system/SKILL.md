@@ -8,18 +8,6 @@ description: >
 
 # Feature Flag System
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement feature flags to decouple deployment from release, enable gradual rollouts, A/B testing, and provide emergency kill switches.
-
 ## When to Use
 
 - Gradual feature rollouts
@@ -76,27 +64,3 @@ Detailed implementations in the `references/` directory:
 | [Feature Flag with Analytics](references/feature-flag-with-analytics.md) | Feature Flag with Analytics |
 | [LaunchDarkly-Style SDK](references/launchdarkly-style-sdk.md) | LaunchDarkly-Style SDK |
 | [Admin UI for Feature Flags](references/admin-ui-for-feature-flags.md) | Admin UI for Feature Flags |
-
-## Best Practices
-
-### ✅ DO
-
-- Use descriptive flag names
-- Document flag purpose and lifecycle
-- Implement gradual rollouts
-- Track flag evaluations
-- Clean up old flags regularly
-- Use feature flags for experiments
-- Implement kill switches for critical features
-- Test both enabled and disabled states
-- Use consistent hashing for stable rollouts
-- Provide admin UI for non-technical users
-
-### ❌ DON'T
-
-- Use flags for permanent configuration
-- Accumulate technical debt with old flags
-- Skip flag cleanup
-- Make flags too granular
-- Hard-code flag checks everywhere
-- Skip analytics and monitoring

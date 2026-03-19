@@ -8,18 +8,6 @@ description: >
 
 # KPI Dashboard Design
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Effective KPI dashboards make performance visible, enable data-driven decisions, and help teams align around shared goals.
-
 ## When to Use
 
 - Creating performance measurement systems
@@ -73,31 +61,3 @@ Detailed implementations in the `references/` directory:
 | [Dashboard Design](references/dashboard-design.md) | Dashboard Design |
 | [Dashboard Implementation](references/dashboard-implementation.md) | Dashboard Implementation |
 | [KPI Monitoring & Governance](references/kpi-monitoring-governance.md) | KPI Monitoring & Governance |
-
-## Best Practices
-
-### ✅ DO
-
-- Start with business goals, not data
-- Limit dashboards to 5-7 core metrics
-- Include both leading and lagging indicators
-- Assign clear metric ownership
-- Update dashboards regularly
-- Make drill-down available
-- Use visual hierarchy effectively
-- Test with actual users
-- Include context and benchmarks
-- Document metric definitions
-
-### ❌ DON'T
-
-- Create dashboards without clear purpose
-- Include too many metrics (analysis paralysis)
-- Forget about data quality
-- Build without stakeholder input
-- Use confusing visualizations
-- Leave dashboards stale
-- Ignore mobile viewing experience
-- Skip training on dashboard usage
-- Create metrics no one can influence
-- Change metrics frequently

@@ -9,6 +9,9 @@ metadata:
 ---
 You are a TypeScript expert specializing in advanced typing and enterprise-grade development.
 
+> [!NOTE]
+> **Related skills:** For deep-dive into advanced type system (generics, conditional types, mapped types), see `typescript-advanced-types`. This skill covers TypeScript architecture, patterns, and enterprise-grade practices.
+
 ## Use this skill when
 
 - Designing TypeScript architectures or shared types

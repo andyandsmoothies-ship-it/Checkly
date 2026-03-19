@@ -8,18 +8,6 @@ description: >
 
 # Cross-Platform Compatibility
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Comprehensive guide to writing code that works seamlessly across Windows, macOS, and Linux. Covers file path handling, environment detection, platform-specific features, and testing strategies.
-
 ## When to Use
 
 - Building applications for multiple operating systems
@@ -77,32 +65,3 @@ Detailed implementations in the `references/` directory:
 | [Testing Across Platforms](references/testing-across-platforms.md) | Testing Across Platforms |
 | [Character Encoding](references/character-encoding.md) | Character Encoding |
 | [Build Configuration](references/build-configuration.md) | Build Configuration |
-
-## Best Practices
-
-### ✅ DO
-
-- Use path.join() or path.resolve() for paths
-- Use os.EOL for line endings
-- Detect platform at runtime when needed
-- Test on all target platforms
-- Use optionalDependencies for platform-specific modules
-- Handle file permissions gracefully
-- Use shell escaping for user input
-- Normalize line endings in text files
-- Use UTF-8 encoding by default
-- Document platform-specific behavior
-- Provide fallbacks for platform-specific features
-- Use CI/CD to test on multiple platforms
-
-### ❌ DON'T
-
-- Hardcode file paths with backslashes or forward slashes
-- Assume Unix-only features (signals, permissions, symlinks)
-- Ignore Windows-specific quirks (drive letters, UNC paths)
-- Use platform-specific commands without fallbacks
-- Assume case-sensitive file systems
-- Forget about different line endings
-- Use platform-specific APIs without checking
-- Hardcode environment variable access patterns
-- Ignore character encoding issues

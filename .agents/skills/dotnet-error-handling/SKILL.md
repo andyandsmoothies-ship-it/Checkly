@@ -12,6 +12,9 @@ description: >
 
 # Error Handling
 
+> [!NOTE]
+> **Related skills:** For language-agnostic API error strategies, see `api-error-handling`. This skill covers .NET-specific error handling (Result pattern, ProblemDetails, FluentValidation).
+
 ## Core Principles
 
 1. **Use the Result pattern for expected failures** — Don't throw exceptions for things like "order not found" or "validation failed". These are expected outcomes, not exceptional conditions. See ADR-002.

@@ -1,6 +1,6 @@
 ---
 name: react-patterns
-description: Modern React patterns and principles. Hooks, composition, performance, TypeScript best practices.
+description: Modern React patterns and principles. Covers hooks (custom hooks, useEffect, useReducer), composition (compound components, render props), performance optimization (memoization, virtualization, code splitting), state management selection, React 19 patterns (useActionState, useOptimistic), TypeScript typing for React, and anti-patterns to avoid. Use when writing React components, reviewing React architecture, choosing state management, optimizing React performance, or applying modern React best practices.
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 

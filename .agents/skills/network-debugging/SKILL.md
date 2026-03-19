@@ -7,18 +7,6 @@ description: >
 
 # Network Debugging
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Network debugging identifies connectivity issues, latency problems, and data transmission errors that impact application performance.
-
 ## When to Use
 
 - Slow loading times
@@ -71,18 +59,3 @@ Detailed implementations in the `references/` directory:
 | [Common Network Issues](references/common-network-issues.md) | Common Network Issues |
 | [Debugging Tools & Techniques](references/debugging-tools-techniques.md) | Debugging Tools & Techniques |
 | [Checklist](references/checklist.md) | Checklist |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

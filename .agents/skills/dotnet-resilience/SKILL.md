@@ -12,6 +12,9 @@ description: >
 
 # Resilience
 
+> [!NOTE]
+> **Related skills:** For language-agnostic circuit breaker theory, see `circuit-breaker-pattern`. This skill covers .NET-specific Polly v8 resilience pipelines.
+
 ## Core Principles
 
 1. **Polly v8 resilience pipelines, not v7 policies** — Polly v8 replaced `Policy` with `ResiliencePipeline`. Never use `PolicyBuilder`, `Policy.Handle<>()`, or `ISyncPolicy`. The new API is composable, type-safe, and integrates natively with `IHttpClientFactory`.

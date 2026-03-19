@@ -1,5 +1,7 @@
 ---
 name: mobile-offline-support
+---
+name: mobile-offline-support
 description: >
   Implement offline-first mobile apps with local storage, sync strategies, and
   conflict resolution. Covers AsyncStorage, Realm, SQLite, and background sync
@@ -8,58 +10,34 @@ description: >
 
 # Mobile Offline Support
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Design offline-first mobile applications that provide seamless user experience regardless of connectivity.
-
 ## When to Use
 
-- Building apps that work without internet connection
-- Implementing seamless sync when connectivity returns
+- Building apps that must work without internet
+- Implementing sync-on-reconnect strategies
 - Handling data conflicts between device and server
-- Reducing server load with intelligent caching
-- Improving app responsiveness with local storage
+- Optimizing responsiveness with local-first reads
 
-## Quick Start
+## Decision Guide
 
-Minimal working example:
+| Scenario | Storage | Sync Strategy |
+|----------|---------|---------------|
+| Simple key-value cache | **AsyncStorage** | Stale-while-revalidate |
+| Structured data, complex queries | **SQLite / Drift** | Delta sync with timestamps |
+| Large datasets, relationships | **Realm** | Realm Sync (built-in) |
+| Documents / JSON blobs | **WatermelonDB** | Push-based with conflict resolution |
+| Binary files (photos, PDFs) | **File system + metadata in DB** | Upload queue with retry |
 
-```javascript
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from '@react-native-community/netinfo';
+### Conflict Resolution Strategies
 
-class StorageManager {
-  static async saveItems(items) {
-    try {
-      await AsyncStorage.setItem(
-        'items_cache',
-        JSON.stringify({ data: items, timestamp: Date.now() })
-      );
-    } catch (error) {
-      console.error('Failed to save items:', error);
-    }
-  }
+| Strategy | When to Use |
+|----------|------------|
+| **Last-write-wins** | Simple data, single-user editing |
+| **Server-wins** | Admin-controlled data, compliance scenarios |
+| **Client-wins** | Offline-first with user as authority |
+| **Merge** | Collaborative editing (complex, use CRDTs) |
+| **Manual resolution** | Business-critical data, show diff to user |
 
-  static async getItems() {
-    try {
-      const data = await AsyncStorage.getItem('items_cache');
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('Failed to retrieve items:', error);
-      return null;
-    }
-  }
-
-// ... (see reference guides for full implementation)
-```
+**Key insight:** Most apps need "last-write-wins" with a mutation queue. CRDTs and manual merge are rarely worth the complexity unless you have true multi-user collaboration.
 
 ## Reference Guides
 
@@ -70,31 +48,3 @@ Detailed implementations in the `references/` directory:
 | [React Native Offline Storage](references/react-native-offline-storage.md) | React Native Offline Storage |
 | [iOS Core Data Implementation](references/ios-core-data-implementation.md) | iOS Core Data Implementation |
 | [Android Room Database](references/android-room-database.md) | Android Room Database |
-
-## Best Practices
-
-### ✅ DO
-
-- Implement robust local storage
-- Use automatic sync when online
-- Provide visual feedback for offline status
-- Queue actions for later sync
-- Handle conflicts gracefully
-- Cache frequently accessed data
-- Implement proper error recovery
-- Test offline scenarios thoroughly
-- Use compression for large data
-- Monitor storage usage
-
-### ❌ DON'T
-
-- Assume constant connectivity
-- Sync large files frequently
-- Ignore storage limitations
-- Force unnecessary syncing
-- Lose data on offline mode
-- Store sensitive data unencrypted
-- Accumulate infinite queue items
-- Ignore sync failures silently
-- Sync in tight loops
-- Deploy without offline testing

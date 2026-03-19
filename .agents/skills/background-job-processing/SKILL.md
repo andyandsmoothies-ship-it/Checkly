@@ -1,6 +1,9 @@
 ---
 name: background-job-processing
 description: >
+---
+name: background-job-processing
+description: >
   Implement background job processing systems with task queues, workers,
   scheduling, and retry mechanisms. Use when handling long-running tasks,
   sending emails, generating reports, and processing large datasets
@@ -9,59 +12,36 @@ description: >
 
 # Background Job Processing
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Build robust background job processing systems with distributed task queues, worker pools, job scheduling, error handling, retry policies, and monitoring for efficient asynchronous task execution.
-
 ## When to Use
 
-- Handling long-running operations asynchronously
-- Sending emails in background
-- Generating reports or exports
-- Processing large datasets
-- Scheduling recurring tasks
-- Distributing compute-intensive operations
+- Long-running operations (report generation, data exports)
+- Email/notification sending
+- Scheduled recurring tasks (cron-style)
+- Processing large datasets in batches
+- Distributing compute-intensive work across workers
 
-## Quick Start
+## Decision Guide
 
-Minimal working example:
+| Stack | Library | Best For |
+|-------|---------|----------|
+| Python | **Celery + Redis** | Full-featured: scheduling, retries, monitoring, result backend |
+| Python | **Dramatiq + Redis** | Simpler API than Celery, better defaults |
+| Python | **RQ (Redis Queue)** | Simple jobs, lightweight, no Celery complexity |
+| Node.js | **BullMQ + Redis** | Production-grade: priority, rate limiting, repeatable jobs |
+| Node.js | **Agenda + MongoDB** | If you're already on MongoDB, avoid adding Redis |
+| .NET | **Hangfire** | Dashboard included, SQL Server or Redis backend |
+| .NET | **Wolverine** | If already using it for messaging (see `dotnet-messaging`) |
+| Ruby | **Sidekiq + Redis** | Industry standard for Rails, thread-based concurrency |
 
-```python
-# celery_app.py
-from celery import Celery
-from kombu import Exchange, Queue
-import os
+### Key Design Decisions
 
-app = Celery('myapp')
-
-# Configuration
-app.conf.update(
-    broker_url=os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
-    result_backend=os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
-    task_serializer='json',
-    accept_content=['json'],
-    result_serializer='json',
-    timezone='UTC',
-    enable_utc=True,
-    task_track_started=True,
-    task_time_limit=30 * 60,  # 30 minutes
-    task_soft_time_limit=25 * 60,  # 25 minutes
-    broker_connection_retry_on_startup=True,
-)
-
-# Queue configuration
-default_exchange = Exchange('tasks', type='direct')
-app.conf.task_queues = (
-// ... (see reference guides for full implementation)
-```
+| Question | Recommendation |
+|----------|---------------|
+| Retry on failure? | Yes — exponential backoff with max retries and dead-letter queue |
+| Need result of job? | Use result backend (Redis) only if needed — adds overhead |
+| Priority queues? | Use separate queues per priority, not a single queue with weights |
+| Job deduplication? | Use idempotency keys for non-idempotent operations |
+| Monitoring? | Flower (Celery), BullMQ Dashboard, Hangfire Dashboard |
 
 ## Reference Guides
 
@@ -74,31 +54,3 @@ Detailed implementations in the `references/` directory:
 | [Ruby with Sidekiq](references/ruby-with-sidekiq.md) | Ruby with Sidekiq |
 | [Job Retry and Error Handling](references/job-retry-and-error-handling.md) | Job Retry and Error Handling |
 | [Monitoring and Observability](references/monitoring-and-observability.md) | Monitoring and Observability |
-
-## Best Practices
-
-### ✅ DO
-
-- Use task timeouts to prevent hanging jobs
-- Implement retry logic with exponential backoff
-- Make tasks idempotent
-- Use job priorities for critical tasks
-- Monitor queue depths and job failures
-- Log job execution details
-- Clean up completed jobs
-- Set appropriate batch sizes for memory efficiency
-- Use dead-letter queues for failed jobs
-- Test jobs independently
-
-### ❌ DON'T
-
-- Use synchronous operations in async tasks
-- Ignore job failures
-- Make tasks dependent on external state
-- Use unbounded retries
-- Store large objects in job data
-- Forget to handle timeouts
-- Run jobs without monitoring
-- Use blocking operations in queues
-- Forget to track job progress
-- Mix unrelated operations in one job

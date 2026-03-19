@@ -45,21 +45,3 @@ Identify, diagnose, and fix memory issues to prevent out-of-memory crashes and o
 | `process.memoryUsage()` | Node.js | Quick RSS/heap checks |
 | `dotnet-dump` | .NET | Managed heap analysis |
 | `dotnet-counters` | .NET | Real-time GC/memory metrics |
-
-## Best Practices
-
-### ✅ DO
-- Remove event listeners when components unmount
-- Clear timers and intervals on cleanup
-- Use `WeakMap`/`WeakRef` for object caches
-- Set explicit cache size limits with eviction
-- Monitor memory in production with alerts
-- Profile regularly during development
-- Use `Span<T>` and `ArrayPool<T>` for .NET hot paths
-
-### ❌ DON'T
-- Hold references to large objects unnecessarily
-- Create unbounded caches without eviction
-- Ignore steady memory growth in production
-- Use `byte[]` when `Span<byte>` suffices (.NET)
-- Forget to clean up resources in `IDisposable`

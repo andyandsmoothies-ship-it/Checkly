@@ -8,17 +8,8 @@ description: >
 
 # Circuit Breaker Pattern
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement circuit breaker patterns to prevent cascading failures and provide graceful degradation when dependencies fail.
+> [!NOTE]
+> **Related skills:** For .NET Polly v8 resilience pipelines (retry, circuit breaker, timeout), see `dotnet-resilience`. This skill covers language-agnostic circuit breaker theory and patterns.
 
 ## When to Use
 
@@ -75,27 +66,3 @@ Detailed implementations in the `references/` directory:
 | [Opossum-Style Circuit Breaker (Node.js)](references/opossum-style-circuit-breaker-nodejs.md) | Opossum-Style Circuit Breaker (Node.js) |
 | [Python Circuit Breaker](references/python-circuit-breaker.md) | Python Circuit Breaker |
 | [Resilience4j-Style (Java)](references/resilience4j-style-java.md) | Resilience4j-Style (Java) |
-
-## Best Practices
-
-### ✅ DO
-
-- Use appropriate thresholds for your use case
-- Implement fallback mechanisms
-- Monitor circuit breaker states
-- Set reasonable timeouts
-- Use exponential backoff
-- Log state transitions
-- Alert on frequent trips
-- Test circuit breaker behavior
-- Use per-dependency breakers
-- Implement health checks
-
-### ❌ DON'T
-
-- Use same breaker for all dependencies
-- Set unrealistic thresholds
-- Skip fallback implementation
-- Ignore open circuit breakers
-- Use overly aggressive reset timeouts
-- Forget to monitor

@@ -12,6 +12,9 @@ description: >
 
 # Docker
 
+> [!NOTE]
+> **Related skills:** For Dockerfile-less containerization via `dotnet publish /t:PublishContainer`, see `container-publish`. This skill covers traditional Dockerfile multi-stage builds.
+
 ## Core Principles
 
 1. **Multi-stage builds always** — Separate build and runtime stages. Build in the SDK image, run in the ASP.NET runtime image.

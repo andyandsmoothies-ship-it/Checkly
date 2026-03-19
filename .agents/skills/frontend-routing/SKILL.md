@@ -8,18 +8,6 @@ description: >
 
 # Frontend Routing
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement client-side routing with navigation, lazy loading, protected routes, and state management for multi-page single-page applications.
-
 ## When to Use
 
 - Multi-page navigation
@@ -72,18 +60,3 @@ Detailed implementations in the `references/` directory:
 | [Angular Routing](references/angular-routing.md) | Angular Routing |
 | [Query Parameter Handling](references/query-parameter-handling.md) | Query Parameter Handling |
 | [Route Transition Effects](references/route-transition-effects.md) | Route Transition Effects |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

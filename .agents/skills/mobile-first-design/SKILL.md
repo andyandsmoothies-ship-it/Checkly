@@ -7,18 +7,6 @@ description: >
 
 # Mobile-First Design
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Mobile-first design prioritizes small screens as the starting point, ensuring core functionality works on all devices while leveraging larger screens for enhanced experience.
-
 ## When to Use
 
 - Web application design
@@ -70,31 +58,3 @@ Detailed implementations in the `references/` directory:
 | [Responsive Design Implementation](references/responsive-design-implementation.md) | Responsive Design Implementation |
 | [Mobile Performance](references/mobile-performance.md) | Mobile Performance |
 | [Progressive Enhancement](references/progressive-enhancement.md) | Progressive Enhancement |
-
-## Best Practices
-
-### ✅ DO
-
-- Design for smallest screen first
-- Test on real mobile devices
-- Use responsive images
-- Optimize for mobile performance
-- Make touch targets 44x44px minimum
-- Stack content vertically on mobile
-- Use hamburger menu on mobile
-- Hide non-essential content on mobile
-- Test with slow networks
-- Progressive enhancement approach
-
-### ❌ DON'T
-
-- Assume all mobile users have fast networks
-- Use desktop-only patterns on mobile
-- Ignore touch interaction needs
-- Make buttons too small
-- Forget about landscape orientation
-- Over-complicate mobile layout
-- Ignore mobile performance
-- Assume no keyboard (iPad users)
-- Skip mobile user testing
-- Forget about notches and safe areas

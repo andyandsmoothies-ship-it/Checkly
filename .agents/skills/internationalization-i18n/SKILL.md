@@ -9,18 +9,6 @@ description: >
 
 # Internationalization (i18n) & Localization
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Comprehensive guide to implementing internationalization and localization in applications. Covers message translation, pluralization, date/time/number formatting, RTL languages, and integration with popular i18n libraries.
-
 ## When to Use
 
 - Building multi-language applications
@@ -81,35 +69,3 @@ Detailed implementations in the `references/` directory:
 | [Translation Management](references/translation-management.md) | Translation Management |
 | [Locale Detection](references/locale-detection.md) | Locale Detection |
 | [Server-Side i18n](references/server-side-i18n.md) | Server-Side i18n |
-
-## Best Practices
-
-### ✅ DO
-
-- Extract all user-facing strings to translation files
-- Use ICU message format for complex messages
-- Support pluralization correctly for each language
-- Use locale-aware date/time/number formatting
-- Implement RTL support for Arabic, Hebrew, etc.
-- Provide fallback language (usually English)
-- Use namespaces to organize translations
-- Test with pseudo-localization (ääçćëńţś)
-- Store locale preference (cookie, localStorage)
-- Use professional translators for production
-- Implement translation management workflow
-- Support dynamic locale switching
-- Use translation memory tools
-
-### ❌ DON'T
-
-- Hardcode user-facing strings in code
-- Concatenate translated strings
-- Assume English grammar rules apply to all languages
-- Use generic plural forms (one/many) for all languages
-- Forget about text expansion (German is ~30% longer)
-- Store dates/times in locale-specific formats
-- Use flags to represent languages (flag ≠ language)
-- Translate technical terms without context
-- Mix translation keys with UI strings
-- Forget to translate alt text, titles, placeholders
-- Assume left-to-right layout

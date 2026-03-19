@@ -5,10 +5,6 @@ description: Comprehensive Flutter API reference guide covering widgets, Materia
 
 # Flutter API Reference Guide
 
-## Overview
-
-This skill provides comprehensive guidance on Flutter's API, covering all major libraries and packages in the Flutter SDK. Flutter is Google's UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase.
-
 ## Core Flutter Libraries
 
 ### Widgets (flutter/widgets.dart)

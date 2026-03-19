@@ -7,18 +7,6 @@ description: >
 
 # Mobile App Debugging
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Mobile app debugging addresses platform-specific issues, device hardware limitations, and mobile-specific network conditions.
-
 ## When to Use
 
 - App crashes on mobile
@@ -70,18 +58,3 @@ Detailed implementations in the `references/` directory:
 | [Android Debugging](references/android-debugging.md) | Android Debugging |
 | [Cross-Platform Issues](references/cross-platform-issues.md) | Cross-Platform Issues |
 | [Mobile Testing & Debugging Checklist](references/mobile-testing-debugging-checklist.md) | Mobile Testing & Debugging Checklist |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

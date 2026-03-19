@@ -11,6 +11,9 @@ description: >
 
 # Verification Loop
 
+> [!NOTE]
+> **Related skills:** For a post-implementation checklist (blast radius, structural integrity, manual testing handoff), see `verification-checklist`. This skill is the full 7-phase automated verification pipeline for .NET projects.
+
 ## Core Principles
 
 1. **Build is the minimum bar** — Never mark a task complete without a green `dotnet build`. If it doesn't compile, nothing else matters. A broken build wastes every subsequent phase's time.

@@ -8,18 +8,6 @@ description: >
 
 # Design Handoff
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Design handoff bridges design and development, ensuring developers have all information needed to implement designs accurately and efficiently.
-
 ## When to Use
 
 - Before development starts
@@ -70,31 +58,3 @@ Detailed implementations in the `references/` directory:
 | [Developer-Friendly Documentation](references/developer-friendly-documentation.md) | Developer-Friendly Documentation |
 | [Handoff Checklist](references/handoff-checklist.md) | Handoff Checklist |
 | [Design-Dev Collaboration](references/design-dev-collaboration.md) | Design-Dev Collaboration |
-
-## Best Practices
-
-### ✅ DO
-
-- Create comprehensive documentation
-- Export all assets and specifications
-- Document every component state
-- Include responsive variants
-- Explain design decisions
-- Provide developer-friendly specs
-- Use shared design tools
-- Schedule kickoff meeting
-- Make yourself available for questions
-- Review implementations and iterate
-
-### ❌ DON'T
-
-- Expect developers to guess
-- Leave responsive design to chance
-- Skip edge case documentation
-- Use unclear specifications
-- Disappear after handoff
-- Change designs mid-development without notification
-- Provide images instead of vector files
-- Ignore technical constraints
-- Miss performance considerations
-- Skip accessibility in handoff

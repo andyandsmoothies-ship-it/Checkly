@@ -1,4 +1,5 @@
 ---
+---
 name: frontend-state-management
 description: >
   Manage application state using Redux, MobX, Zustand, and Context API. Use when
@@ -7,58 +8,24 @@ description: >
 
 # Frontend State Management
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement scalable state management solutions using modern patterns and libraries to handle application state, side effects, and data flow across components.
-
 ## When to Use
 
-- Complex application state
-- Multiple components sharing state
-- Predictable state mutations
-- Time-travel debugging needs
-- Server state synchronization
+- Complex application state shared across many components
+- Predictable state mutations with time-travel debugging
+- Server state synchronization and caching
 
-## Quick Start
+## Decision Guide
 
-Minimal working example:
+| Scenario | Tool | Why |
+|----------|------|-----|
+| Simple shared state (theme, auth) | **Context API** | No extra dependency, built into React |
+| Medium app, few global states | **Zustand** | Tiny API, no boilerplate, hooks-based |
+| Large app, complex state graph | **Redux Toolkit** | Devtools, middleware, time-travel debugging |
+| Observable/reactive patterns | **MobX** | Auto-tracking, minimal boilerplate, OOP-friendly |
+| Server state (fetching, caching) | **TanStack Query** | Not a state manager — handles server state separately |
+| Form state | **React Hook Form** | Don't put form state in global store |
 
-```typescript
-// store/userSlice.ts
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-interface UserState {
-  items: User[];
-  loading: boolean;
-  error: string | null;
-}
-
-const initialState: UserState = {
-  items: [],
-  loading: false,
-  error: null
-};
-
-export const fetchUsers = createAsyncThunk(
-  'users/fetchUsers',
-  async (_, { rejectWithValue }) => {
-    try {
-// ... (see reference guides for full implementation)
-```
+**Key insight:** Most apps need both a *server state* tool (TanStack Query) and a *client state* tool (Zustand/Context). Putting everything in Redux is the most common mistake.
 
 ## Reference Guides
 
@@ -70,18 +37,3 @@ Detailed implementations in the `references/` directory:
 | [Zustand (Lightweight State Management)](references/zustand-lightweight-state-management.md) | Zustand (Lightweight State Management) |
 | [Context API + useReducer](references/context-api-usereducer.md) | Context API + useReducer |
 | [MobX (Observable State)](references/mobx-observable-state.md) | MobX (Observable State) |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

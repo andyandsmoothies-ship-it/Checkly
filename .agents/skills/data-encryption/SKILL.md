@@ -8,18 +8,6 @@ description: >
 
 # Data Encryption
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement robust encryption strategies for protecting sensitive data at rest and in transit using industry-standard cryptographic algorithms and key management practices.
-
 ## When to Use
 
 - Sensitive data storage
@@ -73,26 +61,3 @@ Detailed implementations in the `references/` directory:
 | [Python Cryptography Implementation](references/python-cryptography-implementation.md) | Python Cryptography Implementation |
 | [Database Encryption (PostgreSQL)](references/database-encryption-postgresql.md) | Database Encryption (PostgreSQL) |
 | [TLS/SSL Configuration](references/tlsssl-configuration.md) | TLS/SSL Configuration |
-
-## Best Practices
-
-### ✅ DO
-
-- Use AES-256-GCM for symmetric encryption
-- Use RSA-4096 or ECC for asymmetric encryption
-- Implement proper key rotation
-- Use secure key storage (HSM, KMS)
-- Salt and hash passwords
-- Use TLS 1.2+ for transit encryption
-- Implement key derivation (PBKDF2, Argon2)
-- Use authenticated encryption
-
-### ❌ DON'T
-
-- Roll your own crypto
-- Store keys in code
-- Use ECB mode
-- Use MD5 or SHA1
-- Reuse IVs/nonces
-- Use weak key lengths
-- Skip authentication tags

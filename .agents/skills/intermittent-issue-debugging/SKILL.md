@@ -7,18 +7,6 @@ description: >
 
 # Intermittent Issue Debugging
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Intermittent issues are the most difficult to debug because they don't occur consistently. Systematic approach and comprehensive monitoring are essential.
-
 ## When to Use
 
 - Sporadic errors in logs
@@ -71,18 +59,3 @@ Detailed implementations in the `references/` directory:
 | [Common Intermittent Issues](references/common-intermittent-issues.md) | Common Intermittent Issues |
 | [Systematic Investigation Process](references/systematic-investigation-process.md) | Systematic Investigation Process |
 | [Monitoring & Prevention](references/monitoring-prevention.md) | Monitoring & Prevention |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

@@ -6,6 +6,9 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Terminal
 
 # Verification Checklist
 
+> [!NOTE]
+> **Related skills:** For a full 7-phase automated .NET verification pipeline (build, diagnostics, anti-patterns, tests, security, format, diff), see `verification-loop`. This skill covers post-implementation blast radius analysis and manual testing handoff.
+
 > Invoke this skill after implementing code changes to validate correctness and safety.
 
 ## When to Use

@@ -8,17 +8,8 @@ description: >
 
 # API Authentication
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement comprehensive authentication strategies for APIs including JWT tokens, OAuth 2.0, API keys, and session management with proper security practices.
+> [!NOTE]
+> **Related skills:** For ASP.NET Core JWT/Identity/OIDC, see `aspnetcore-authentication`. This skill covers language-agnostic authentication patterns (Node.js, Python).
 
 ## When to Use
 
@@ -72,30 +63,3 @@ Detailed implementations in the `references/` directory:
 | [OAuth 2.0 Implementation](references/oauth-20-implementation.md) | OAuth 2.0 Implementation |
 | [API Key Authentication](references/api-key-authentication.md) | API Key Authentication |
 | [Python Authentication Implementation](references/python-authentication-implementation.md) | Python Authentication Implementation |
-
-## Best Practices
-
-### ✅ DO
-
-- Use HTTPS for all authentication
-- Store tokens securely (HttpOnly cookies)
-- Implement token refresh mechanism
-- Set appropriate token expiration times
-- Hash and salt passwords
-- Use strong secret keys
-- Validate tokens on every request
-- Implement rate limiting on auth endpoints
-- Log authentication attempts
-- Rotate secrets regularly
-
-### ❌ DON'T
-
-- Store passwords in plain text
-- Send tokens in URL parameters
-- Use weak secret keys
-- Store sensitive data in JWT payload
-- Ignore token expiration
-- Disable HTTPS in production
-- Log sensitive tokens
-- Reuse API keys across services
-- Store credentials in code

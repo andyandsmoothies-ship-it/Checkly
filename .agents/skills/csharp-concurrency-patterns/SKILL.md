@@ -6,6 +6,9 @@ invocable: false
 
 # .NET Concurrency: Choosing the Right Tool
 
+> [!NOTE]
+> **Related skills:** For TypeScript/Python/Go concurrency patterns, see `concurrency-patterns`. This skill covers .NET-specific concurrency (async/await, Channels, Akka.NET).
+
 ## When to Use This Skill
 
 Use this skill when:

@@ -8,18 +8,6 @@ description: >
 
 # Form Validation
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement comprehensive form validation including client-side validation, server-side synchronization, and real-time error feedback with TypeScript type safety.
-
 ## When to Use
 
 - User input validation
@@ -72,18 +60,3 @@ Detailed implementations in the `references/` directory:
 | [Vue Vee-Validate](references/vue-vee-validate.md) | Vue Vee-Validate |
 | [Custom Validator Hook](references/custom-validator-hook.md) | Custom Validator Hook |
 | [Server-Side Validation Integration](references/server-side-validation-integration.md) | Server-Side Validation Integration |
-
-## Best Practices
-
-### ✅ DO
-
-- Follow established patterns and conventions
-- Write clean, maintainable code
-- Add appropriate documentation
-- Test thoroughly before deploying
-
-### ❌ DON'T
-
-- Skip testing or validation
-- Ignore error handling
-- Hard-code configuration values

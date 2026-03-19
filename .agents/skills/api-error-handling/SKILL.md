@@ -10,13 +10,8 @@ description: >
 
 # API Error Handling
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
+> [!NOTE]
+> **Related skills:** For .NET Result pattern + ProblemDetails (RFC 9457), see `error-handling`. This skill covers language-agnostic API error strategies.
 
 ## Overview
 
@@ -82,28 +77,3 @@ Detailed implementations in the `references/` directory:
 | [Retry Strategies & Circuit Breaker](references/retry-strategies.md) | Exponential backoff, jitter, circuit breaker pattern |
 | [Monitoring & Tracking](references/monitoring-patterns.md) | Sentry integration, error rate metrics, `/metrics/errors` endpoint |
 | [Validation Patterns](references/validation-examples.md) | Input validation, schema guards, detecting bad responses before errors occur |
-
-## Best Practices
-
-### ✅ DO
-
-- Use a consistent error response format across all endpoints
-- Include `requestId` and `traceId` in every error for observability
-- Log 5xx errors at `ERROR` level; log 4xx at `WARN` level
-- Provide actionable error messages — tell the client what to fix
-- Use standard HTTP status codes (4xx client errors, 5xx server errors)
-- Implement retry with exponential backoff for transient failures
-- Use circuit breakers to prevent cascade failures
-- Validate inputs early and return all field errors at once
-- Monitor error rates and alert on anomalous spikes
-
-### ❌ DON'T
-
-- Expose stack traces or internal implementation details to clients
-- Return HTTP 200 for error responses
-- Silently swallow errors
-- Log sensitive data (passwords, tokens, PII)
-- Use vague messages like "Something went wrong"
-- Mix error handling logic with business logic
-- Retry non-idempotent operations or client errors (4xx)
-- Return different error shapes from different endpoints

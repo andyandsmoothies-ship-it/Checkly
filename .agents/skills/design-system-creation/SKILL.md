@@ -8,18 +8,6 @@ description: >
 
 # Design System Creation
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-A design system is a structured set of components, guidelines, and principles that ensure consistency, accelerate development, and improve product quality.
-
 ## When to Use
 
 - Multiple product interfaces or teams
@@ -73,31 +61,3 @@ Detailed implementations in the `references/` directory:
 | [Component Documentation](references/component-documentation.md) | Component Documentation |
 | [Design System Governance](references/design-system-governance.md) | Design System Governance |
 | [Design System Documentation](references/design-system-documentation.md) | Design System Documentation |
-
-## Best Practices
-
-### ✅ DO
-
-- Start with essential components
-- Document every component thoroughly
-- Include code examples
-- Test components across browsers
-- Include accessibility guidance
-- Version the design system
-- Have clear governance
-- Communicate updates proactively
-- Gather feedback from users
-- Maintain incrementally
-
-### ❌ DON'T
-
-- Create too many components initially
-- Skip documentation
-- Ignore accessibility
-- Make breaking changes without migration path
-- Allow inconsistent implementations
-- Ignore user feedback
-- Let design system stagnate
-- Create components without proven need
-- Make components too prescriptive
-- Ignore performance impact

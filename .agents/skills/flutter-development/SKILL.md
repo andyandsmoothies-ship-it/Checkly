@@ -8,17 +8,8 @@ description: >
 
 # Flutter Development
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Create high-performance, visually stunning mobile applications using Flutter with Dart language. Master widget composition, state management patterns, navigation, and API integration.
+> [!NOTE]
+> **Related skills:** For the Flutter widget API reference, see `flutter-api`. For PFA architecture (Services/Managers/Views with get_it), see `flutter-architecture`. This skill covers general Flutter development patterns (Provider/BLoC, navigation, material design).
 
 ## When to Use
 
@@ -70,31 +61,3 @@ Detailed implementations in the `references/` directory:
 | [Project Structure & Navigation](references/project-structure-navigation.md) | Project Structure & Navigation |
 | [State Management with Provider](references/state-management-with-provider.md) | State Management with Provider |
 | [Screens with Provider Integration](references/screens-with-provider-integration.md) | Screens with Provider Integration |
-
-## Best Practices
-
-### ✅ DO
-
-- Use widgets for every UI element
-- Implement proper state management
-- Use const constructors where possible
-- Dispose resources in state lifecycle
-- Test on multiple device sizes
-- Use meaningful widget names
-- Implement error handling
-- Use responsive design patterns
-- Test on both iOS and Android
-- Document custom widgets
-
-### ❌ DON'T
-
-- Build entire screens in build() method
-- Use setState for complex state logic
-- Make network calls in build()
-- Ignore platform differences
-- Create overly nested widget trees
-- Hardcode strings
-- Ignore performance warnings
-- Skip testing
-- Forget to handle edge cases
-- Deploy without thorough testing

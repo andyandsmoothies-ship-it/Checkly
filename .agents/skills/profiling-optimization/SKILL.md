@@ -8,18 +8,6 @@ description: >
 
 # Profiling & Optimization
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Profile code execution to identify performance bottlenecks and optimize critical paths using data-driven approaches.
-
 ## When to Use
 
 - Performance optimization
@@ -74,22 +62,3 @@ Detailed implementations in the `references/` directory:
 | [Benchmarking](references/benchmarking.md) | Benchmarking |
 | [Database Query Profiling](references/database-query-profiling.md) | Database Query Profiling |
 | [Flame Graph Generation](references/flame-graph-generation.md) | Flame Graph Generation |
-
-## Best Practices
-
-### ✅ DO
-
-- Profile before optimizing
-- Focus on hot paths
-- Measure impact of changes
-- Use production-like data
-- Consider memory vs speed tradeoffs
-- Document optimization rationale
-
-### ❌ DON'T
-
-- Optimize without profiling
-- Ignore readability for minor gains
-- Skip benchmarking
-- Optimize cold paths
-- Make changes without measurement

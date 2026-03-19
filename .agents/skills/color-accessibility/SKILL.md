@@ -8,18 +8,6 @@ description: >
 
 # Color Accessibility
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Accessible color design ensures all users, including those with color vision deficiency, can access and understand information.
-
 ## When to Use
 
 - Creating color palettes
@@ -72,31 +60,3 @@ Detailed implementations in the `references/` directory:
 | [Color Vision Deficiency Simulation](references/color-vision-deficiency-simulation.md) | Color Vision Deficiency Simulation |
 | [Accessible Color Usage](references/accessible-color-usage.md) | Accessible Color Usage |
 | [Testing & Validation](references/testing-validation.md) | Testing & Validation |
-
-## Best Practices
-
-### ✅ DO
-
-- Ensure 4.5:1 contrast minimum (WCAG AA)
-- Test with color blindness simulator
-- Use patterns or icons with color
-- Label states with text, not color alone
-- Test with real users with color blindness
-- Document color usage in design system
-- Choose accessible color palettes
-- Use sequential colors for ordered data
-- Validate all color combinations
-- Include focus indicators
-
-### ❌ DON'T
-
-- Use color alone to convey information
-- Create low-contrast text
-- Assume users see colors correctly
-- Use red-green combinations
-- Forget about focus states
-- Mix too many colors (>5-8)
-- Use pure red and pure green together
-- Skip contrast testing
-- Assume AA is sufficient (AAA better)
-- Ignore color blindness in testing

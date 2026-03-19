@@ -8,18 +8,6 @@ description: >
 
 # Push Notification Setup
 
-## Table of Contents
-
-- [Overview](#overview)
-- [When to Use](#when-to-use)
-- [Quick Start](#quick-start)
-- [Reference Guides](#reference-guides)
-- [Best Practices](#best-practices)
-
-## Overview
-
-Implement comprehensive push notification systems for iOS and Android applications using Firebase Cloud Messaging and native platform services.
-
 ## When to Use
 
 - Sending real-time notifications to users
@@ -71,32 +59,3 @@ Detailed implementations in the `references/` directory:
 | [iOS Native Setup with Swift](references/ios-native-setup-with-swift.md) | iOS Native Setup with Swift |
 | [Android Setup with Kotlin](references/android-setup-with-kotlin.md) | Android Setup with Kotlin |
 | [Flutter Implementation](references/flutter-implementation.md) | Flutter Implementation |
-
-## Best Practices
-
-### ✅ DO
-
-- Request permission before sending notifications
-- Implement token refresh handling
-- Use different notification channels by priority
-- Validate tokens regularly
-- Track notification delivery
-- Implement deep linking
-- Handle notifications in all app states
-- Use silent notifications for data sync
-- Store tokens securely on backend
-- Provide user notification preferences
-- Test on real devices
-
-### ❌ DON'T
-
-- Send excessive notifications
-- Send without permission
-- Store tokens insecurely
-- Ignore notification failures
-- Send sensitive data in payload
-- Use notifications for spam
-- Forget to handle background notifications
-- Make blocking calls in handlers
-- Send duplicate notifications
-- Ignore user preferences
