@@ -49,7 +49,8 @@ class AdvancedSettingsCard extends StatelessWidget {
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
           initiallyExpanded: false,
           leading: Icon(
             Icons.settings,

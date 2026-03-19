@@ -13,7 +13,7 @@ class SectionEditor extends StatelessWidget {
 
   final bool densityEnabled;
   final VoidCallback onRemoveSection;
-  final VoidCallback onAddCriterion;
+  final ValueChanged<String> onAddCriterion;
   final ValueChanged<int> onRemoveCriterion;
   final VoidCallback? onAddSubSection;
   final ValueChanged<int>? onRemoveSubSection;
@@ -215,17 +215,35 @@ class SectionEditor extends StatelessWidget {
               );
             }),
 
-            // Add Criteria — hidden if root already has sub-sections
+            // Quick-Add Input Chips — hidden if root has sub-sections
             if (isRoot && section.subSections.isEmpty || !isRoot)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: onAddCriterion,
-                  icon: const Icon(Icons.add, size: 14),
-                  label: const Text('Add Criteria'),
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 12),
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    _QuickAddChip(
+                      label: '+ Pass/Fail',
+                      icon: Icons.check_circle_outline,
+                      onTap: () => onAddCriterion('pass_fail'),
+                    ),
+                    _QuickAddChip(
+                      label: '+ Fault Count',
+                      icon: Icons.pin_outlined,
+                      onTap: () => onAddCriterion('numeric'),
+                    ),
+                    _QuickAddChip(
+                      label: '+ Scale',
+                      icon: Icons.linear_scale,
+                      onTap: () => onAddCriterion('scale'),
+                    ),
+                    _QuickAddChip(
+                      label: '+ Choice',
+                      icon: Icons.radio_button_checked,
+                      onTap: () => onAddCriterion('single_choice'),
+                    ),
+                  ],
                 ),
               ),
 
@@ -243,8 +261,8 @@ class SectionEditor extends StatelessWidget {
                   densityEnabled: densityEnabled,
 
                   onRemoveSection: () => onRemoveSubSection?.call(si),
-                  onAddCriterion: () {
-                    sub.criteria.add(EditableCriterion());
+                  onAddCriterion: (inputType) {
+                    sub.criteria.add(EditableCriterion(inputType: inputType));
                     onChanged();
                   },
                   onRemoveCriterion: (ci) {
@@ -271,6 +289,37 @@ class SectionEditor extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _QuickAddChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _QuickAddChip({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ActionChip(
+      avatar: Icon(icon, size: 14, color: theme.colorScheme.primary),
+      label: Text(
+        label,
+        style: TextStyle(fontSize: 11, color: theme.colorScheme.primary),
+      ),
+      backgroundColor: theme.colorScheme.primaryContainer.withValues(
+        alpha: 0.3,
+      ),
+      side: BorderSide.none,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.compact,
+      onPressed: onTap,
     );
   }
 }

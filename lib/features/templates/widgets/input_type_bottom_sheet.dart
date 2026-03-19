@@ -30,30 +30,40 @@ class InputTypeBottomSheet extends StatelessWidget {
       icon: Icons.check_circle_outline,
       title: 'Pass / Fail',
       desc: 'Binary check — e.g., "Is the floor clean?"',
+      helper:
+          'Auditor taps Pass or Fail. Fails trigger point deductions based on your scoring rules.',
     ),
     (
       value: 'numeric',
       icon: Icons.pin_outlined,
       title: 'Fault Count',
       desc: 'Count occurrences — e.g., "How many expired items?"',
+      helper:
+          'Auditor enters a number. Each fault multiplies the deduction rate you configure.',
     ),
     (
       value: 'scale',
       icon: Icons.linear_scale,
       title: 'Scored Choices',
       desc: 'Maturity scale — e.g., Poor / Fair / Good / Excellent',
+      helper:
+          'Auditor picks one option from a scored list. You assign different point values to each level.',
     ),
     (
       value: 'single_choice',
       icon: Icons.radio_button_checked,
       title: 'Single Choice',
       desc: 'Pick one — e.g., "Which shift?"',
+      helper:
+          'Auditor selects one option. No scoring impact — used for data collection and filtering.',
     ),
     (
       value: 'multi_choice',
       icon: Icons.checklist,
       title: 'Multi Choice',
       desc: 'Pick many — e.g., "Select all that apply"',
+      helper:
+          'Auditor selects multiple options. No scoring impact — used for multi-tag data collection.',
     ),
   ];
 
@@ -147,6 +157,18 @@ class InputTypeBottomSheet extends StatelessWidget {
                                       color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
+                                  if (isSelected) ...[
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      t.helper,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme.colorScheme.primary
+                                                .withValues(alpha: 0.8),
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
