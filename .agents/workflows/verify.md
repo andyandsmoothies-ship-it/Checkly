@@ -8,6 +8,14 @@ description: System Impact Audit for architectural changes.
 > [!NOTE]
 > This workflow acts as the final gatekeeper before declaring a task finished.
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+## Live Dashboard (Optional)
+// turbo
+```
+cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
+```
+> Launches the Agent HUD in a separate window to track task progress in real-time.
+<!-- HUD:END -->
 ## Phase 1: Context & Side Effect Audit
 <strict-instruction>
 **Skill Discovery**: Derive 2-3 keywords from the changes being verified. Use `grep_search` on `.agents/skills/` to find any relevant verification, testing, or code-review skills. Load the top 1-2 `SKILL.md` files.

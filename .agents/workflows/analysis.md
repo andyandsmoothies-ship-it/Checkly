@@ -8,6 +8,14 @@ description: Precision Analysis Workflow for System Architecture.
 > [!NOTE]
 > This is the **System & Business Analysis** workflow — used to evaluate solutions, analyze business logic, verify architecture feasibility, and identify edge cases before implementation. It is designed to produce production-grade Software Engineering Tech Specs.
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+## Live Dashboard (Optional)
+// turbo
+```
+cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
+```
+> Launches the Agent HUD in a separate window to track task progress in real-time.
+<!-- HUD:END -->
 ## Phase 1: Analytical Setup
 - **Instruction**: Assume the role of an Expert System Analyst / Principal Software Engineer.
 - **Skill Discovery**: Derive 2-3 technical keywords from the feature scope. Use `grep_search` on `.agents/skills/` to find matches (by filename pattern or SKILL.md content). Load ONLY the top 1-2 most relevant analytical `SKILL.md` files. Declare which skills were loaded.

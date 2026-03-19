@@ -16,6 +16,14 @@ description: The Core Builder Implementation Workflow.
 1. If artifact needed → Create it FIRST (naming per `orchestration.md` § Artifact Naming Convention)
 2. If task needed → Set task_boundary FIRST
 
+<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
+## Live Dashboard (Optional)
+// turbo
+```
+cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
+```
+> Launches the Agent HUD in a separate window to track task progress in real-time.
+<!-- HUD:END -->
 ## Phase 1: Deep Discovery
 - **Instruction**: Identify the core files and package dependencies for this feature.
 - **Action**: Use the `view_file` tool to read the project configuration files (e.g., `package.json`, `.csproj`, `requirements.txt`, `go.mod`) to understand current project state.
