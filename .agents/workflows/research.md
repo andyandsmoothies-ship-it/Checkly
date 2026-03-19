@@ -9,10 +9,6 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > This is the **Discovery & Architecture** workflow — used to explore new ideas or libraries before writing code.
 > Handoff usually goes to `/analysis` or directly to `/implement`.
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
-<!-- HUD:END -->
 ## Phase 1: Skill & Persona Alignment
 - **Instruction**: Assume the role of a Senior Architect.
 - **Skill Discovery**: Derive 2-3 technical keywords from the research topic. Use `grep_search` on `.agents/skills/` to find skills matching those keywords. Load ONLY the top 1-2 most relevant architectural `SKILL.md` files. Declare which skills were loaded.

@@ -8,10 +8,6 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 > [!NOTE]
 > This workflow enforces systematic root cause analysis. No guessing is allowed.
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
-<!-- HUD:END -->
 ## Phase 1: Symptom Isolation (NO GUESSING)
 <strict-instruction>
 You MUST NOT guess the root cause of an error.

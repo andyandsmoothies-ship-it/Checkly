@@ -18,10 +18,6 @@ This workflow is triggered **after major feature releases** or **before scaling*
 
 ## Process Overview
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
-<!-- HUD:END -->
 ### Phase 1: Scope Definition & Skill Discovery
 - **Action**: Use `grep_search` in `.agents/skills/` for keywords: "database", "performance", "security", "ef-core", "api-design", "migration", "index", "auth".
 - **Action**: Load the top 1-2 most relevant `SKILL.md` files.
