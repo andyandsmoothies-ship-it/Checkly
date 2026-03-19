@@ -10,12 +10,8 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > It sits between `/analysis` and `/implement`. Do NOT confuse with TDD (unit tests during coding) — ATDD defines WHAT the feature must do at the acceptance level; TDD proves HOW the internal code works.
 
 <!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-## Live Dashboard (Optional)
 // turbo
-```
-cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
-```
-> Launches the Agent HUD in a separate window to track task progress in real-time.
+3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
 <!-- HUD:END -->
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).

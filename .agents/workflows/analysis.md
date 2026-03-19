@@ -9,12 +9,8 @@ description: Precision Analysis Workflow for System Architecture.
 > This is the **System & Business Analysis** workflow — used to evaluate solutions, analyze business logic, verify architecture feasibility, and identify edge cases before implementation. It is designed to produce production-grade Software Engineering Tech Specs.
 
 <!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-## Live Dashboard (Optional)
 // turbo
-```
-cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
-```
-> Launches the Agent HUD in a separate window to track task progress in real-time.
+3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
 <!-- HUD:END -->
 ## Phase 1: Analytical Setup
 - **Instruction**: Assume the role of an Expert System Analyst / Principal Software Engineer.

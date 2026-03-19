@@ -17,12 +17,8 @@ description: The Core Builder Implementation Workflow.
 2. If task needed → Set task_boundary FIRST
 
 <!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-## Live Dashboard (Optional)
 // turbo
-```
-cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
-```
-> Launches the Agent HUD in a separate window to track task progress in real-time.
+3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
 <!-- HUD:END -->
 ## Phase 1: Deep Discovery
 - **Instruction**: Identify the core files and package dependencies for this feature.

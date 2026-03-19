@@ -19,12 +19,8 @@ This workflow is triggered **weekly** or on-demand to keep the codebase clean. F
 ## Process Overview
 
 <!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-## Live Dashboard (Optional)
 // turbo
-```
-cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
-```
-> Launches the Agent HUD in a separate window to track task progress in real-time.
+3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
 <!-- HUD:END -->
 ### Phase 1: Scope Definition & Skill Discovery
 - **Action**: Use `grep_search` in `.agents/skills/` for keywords: "health", "audit", "cleanup", "convention", "code-review", "de-sloppify".

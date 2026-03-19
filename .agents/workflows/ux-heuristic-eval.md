@@ -10,12 +10,8 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 > Based on the [NN/G guide](https://www.nngroup.com/articles/how-to-conduct-a-heuristic-evaluation/).
 
 <!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-## Live Dashboard (Optional)
 // turbo
-```
-cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"
-```
-> Launches the Agent HUD in a separate window to track task progress in real-time.
+3. **Launch Live Dashboard**: Run `cmd /c "start powershell -NoProfile -ExecutionPolicy Bypass -File .agents\tools\agent-hud.ps1"` to open the Agent HUD in a separate window for real-time task tracking.
 <!-- HUD:END -->
 ## Phase 1: Preparation
 - **Instruction**: Assume the role of a Senior UX Evaluator.
