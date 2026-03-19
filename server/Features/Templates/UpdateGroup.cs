@@ -1,4 +1,5 @@
 using Checkly.Api.Common.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Templates;
 
@@ -20,9 +21,10 @@ public static class UpdateGroup
         Guid templateId,
         Guid groupId,
         Request request,
-        AppDbContext db)
+        AppDbContext db,
+        CancellationToken ct)
     {
-        var group = await db.Groups.FindAsync(groupId);
+        var group = await db.Groups.FindAsync([groupId], ct);
         if (group is null || group.TemplateId != templateId)
             return Results.NotFound();
 
@@ -45,7 +47,10 @@ public static class UpdateGroup
             group.Metadata = request.Metadata;
 
         group.UpdatedAt = DateTimeOffset.UtcNow;
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(ct);
+
+        // Weight sum validation warning
+        string? weightWarning = await CreateGroup.ValidateWeightSum(db, templateId, ct);
 
         return Results.Ok(new
         {
@@ -53,6 +58,7 @@ public static class UpdateGroup
             title = group.Title,
             weight = group.Weight,
             orderIndex = group.OrderIndex,
+            weightWarning,
         });
     }
 }

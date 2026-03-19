@@ -772,7 +772,10 @@ class _SectionCard extends StatelessWidget {
               ),
               const SizedBox(width: 6),
             ],
-            if (depth == 0 && group.weight != null && group.weight! > 0)
+            if (depth == 0 &&
+                group.weight != null &&
+                group.weight! > 0 &&
+                manager.liveScore != null) // Hide weight in Survey mode
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
