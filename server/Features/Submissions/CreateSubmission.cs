@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
@@ -50,7 +51,8 @@ public static class CreateSubmission
                     existing.StoreId, existing.StoreName, existing.AuditorId,
                     existing.AuditorName, existing.Status, existing.TotalScore,
                     existing.SectionScores, existing.Notes,
-                    existing.CreatedAt, existing.CompletedAt, existing.ScheduledAt));
+                    existing.CreatedAt, existing.CompletedAt, existing.ScheduledAt,
+                    existing.TemplateVersion));
             }
         }
 
@@ -84,24 +86,58 @@ public static class CreateSubmission
         if (store.IsActive == false)
             return TypedResults.BadRequest(new { error = "Store is deactivated" });
 
+        // Load groups + criteria for ALL statuses (needed for snapshot)
+        var groups = await db.Groups
+            .AsNoTracking()
+            .Where(g => g.TemplateId == request.TemplateId && g.IsActive)
+            .ToListAsync(ct);
+
+        var groupIds = groups.Select(g => g.Id).ToList();
+        var criteria = await db.Criteria
+            .AsNoTracking()
+            .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
+            .ToListAsync(ct);
+
+        // Build template snapshot JSON
+        var snapshotModel = new TemplateSnapshotModel
+        {
+            SnapshotVersion = 1,
+            Title = template.Title,
+            Version = template.Version,
+            ScoringLogicConfig = template.ScoringLogicConfig,
+            DisplayNoun = template.DisplayNoun,
+            Groups = groups.Select(g => new SnapshotGroup
+            {
+                Id = g.Id,
+                Title = g.Title,
+                Weight = g.Weight,
+                MaxDeductionPoints = g.MaxDeductionPoints,
+                MinusPerFault = g.MinusPerFault,
+                OrderIndex = g.OrderIndex,
+                ParentId = g.ParentId,
+                Metadata = g.Metadata,
+                Criteria = criteria.Where(c => c.GroupId == g.Id).Select(c => new SnapshotCriterion
+                {
+                    Id = c.Id,
+                    GroupId = c.GroupId,
+                    Label = c.Label,
+                    InputType = c.InputType,
+                    PointsWeight = c.PointsWeight,
+                    IsCcp = c.IsCcp,
+                    IsRisk = c.IsRisk,
+                    MinusImpact = c.MinusImpact,
+                    OrderIndex = c.OrderIndex,
+                    Metadata = c.Metadata
+                }).ToList()
+            }).ToList()
+        };
+        var templateSnapshotJson = JsonSerializer.Serialize(snapshotModel);
+
         // Scoring verification — only for completed submissions
-        List<Group> groups = [];
-        List<Criterion> criteria = [];
         decimal? serverScore = null;
 
         if (!isDraft && !isScheduled)
         {
-            groups = await db.Groups
-                .AsNoTracking()
-                .Where(g => g.TemplateId == request.TemplateId && g.IsActive)
-                .ToListAsync(ct);
-
-            var groupIds = groups.Select(g => g.Id).ToList();
-            criteria = await db.Criteria
-                .AsNoTracking()
-                .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
-                .ToListAsync(ct);
-
             // Parse scoring mode from template config
             var scoringMode = "penalty";
             if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
@@ -188,7 +224,9 @@ public static class CreateSubmission
             StoreName = store.Name,
             TemplateTitle = template.Title,
             DisplayNoun = template.DisplayNoun,
-            IdempotencyKey = request.IdempotencyKey
+            IdempotencyKey = request.IdempotencyKey,
+            TemplateSnapshot = templateSnapshotJson,
+            TemplateVersion = template.Version
         };
 
         db.Submissions.Add(submission);
@@ -270,6 +308,7 @@ public static class CreateSubmission
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,
-            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt));
+            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
+            submission.TemplateVersion));
     }
 }

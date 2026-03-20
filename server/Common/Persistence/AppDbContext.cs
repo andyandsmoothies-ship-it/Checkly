@@ -249,6 +249,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.ApproverName).HasColumnName("approver_name");
             e.Property(x => x.ReviewStatus).HasColumnName("review_status");
             e.Property(x => x.IdempotencyKey).HasColumnName("idempotency_key");
+            e.Property(x => x.TemplateSnapshot).HasColumnName("template_snapshot").HasColumnType("jsonb");
+            e.Property(x => x.TemplateVersion).HasColumnName("template_version");
 
             e.HasIndex(x => x.IdempotencyKey)
                 .IsUnique()

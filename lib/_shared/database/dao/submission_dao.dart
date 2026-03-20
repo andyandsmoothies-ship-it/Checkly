@@ -43,6 +43,8 @@ class SubmissionDao {
     notes: row.notes,
     createdAt: row.createdAt,
     completedAt: row.completedAt,
+    templateSnapshot: row.templateSnapshot,
+    templateVersion: row.templateVersion,
   );
 
   CachedSubmissionsCompanion _dtoToCompanion(SubmissionDto dto) =>
@@ -60,5 +62,7 @@ class SubmissionDao {
         notes: Value(dto.notes),
         createdAt: dto.createdAt,
         completedAt: Value(dto.completedAt),
+        templateSnapshot: Value(dto.templateSnapshot),
+        templateVersion: Value(dto.templateVersion),
       );
 }

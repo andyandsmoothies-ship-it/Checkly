@@ -83,7 +83,8 @@ public static class ListSubmissions
                 s.StoreId, s.StoreName, s.AuditorId,
                 s.AuditorName, s.Status, s.TotalScore,
                 s.SectionScores, s.Notes,
-                s.CreatedAt, s.CompletedAt, s.ScheduledAt))
+                s.CreatedAt, s.CompletedAt, s.ScheduledAt,
+                s.TemplateVersion))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<SubmissionDto>(submissions, total, page, pageSize));

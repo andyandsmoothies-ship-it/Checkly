@@ -38,6 +38,10 @@ public sealed class Submission
     public string? ApproverName { get; set; }
     public string? ReviewStatus { get; set; }
 
+    // Template versioning — frozen template tree at submission creation
+    public string? TemplateSnapshot { get; set; }
+    public int? TemplateVersion { get; set; }
+
     // Navigation properties
     public Template? Template { get; set; }
     public Store? Store { get; set; }

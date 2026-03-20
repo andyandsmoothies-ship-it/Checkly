@@ -47,6 +47,15 @@ public static class UpdateGroup
             group.Metadata = request.Metadata;
 
         group.UpdatedAt = DateTimeOffset.UtcNow;
+
+        // Bump parent template version so new snapshots reflect this change
+        var template = await db.Templates.FindAsync([templateId], ct);
+        if (template is not null)
+        {
+            template.Version++;
+            template.UpdatedAt = group.UpdatedAt;
+        }
+
         await db.SaveChangesAsync(ct);
 
         // Weight sum validation warning

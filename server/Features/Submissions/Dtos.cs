@@ -39,7 +39,8 @@ public sealed record SubmissionDto(
     string? Notes,
     DateTimeOffset CreatedAt,
     DateTimeOffset? CompletedAt,
-    DateTimeOffset? ScheduledAt);
+    DateTimeOffset? ScheduledAt,
+    int? TemplateVersion = null);
 
 public sealed record SubmissionDetailDto(
     Guid Id,
@@ -58,7 +59,9 @@ public sealed record SubmissionDetailDto(
     decimal? GpsLng,
     DateTimeOffset CreatedAt,
     DateTimeOffset? CompletedAt,
-    List<AnswerDto> Answers);
+    List<AnswerDto> Answers,
+    string? TemplateSnapshot = null,
+    int? TemplateVersion = null);
 
 public sealed record AnswerDto(
     Guid Id,

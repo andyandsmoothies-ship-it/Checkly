@@ -94,6 +94,8 @@ class CachedSubmissions extends Table {
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get completedAt => dateTime().nullable()();
   TextColumn get reviewStatus => text().nullable()();
+  TextColumn get templateSnapshot => text().nullable()();
+  IntColumn get templateVersion => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

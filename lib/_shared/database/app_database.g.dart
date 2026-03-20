@@ -2883,6 +2883,28 @@ class $CachedSubmissionsTable extends CachedSubmissions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _templateSnapshotMeta = const VerificationMeta(
+    'templateSnapshot',
+  );
+  @override
+  late final GeneratedColumn<String> templateSnapshot = GeneratedColumn<String>(
+    'template_snapshot',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _templateVersionMeta = const VerificationMeta(
+    'templateVersion',
+  );
+  @override
+  late final GeneratedColumn<int> templateVersion = GeneratedColumn<int>(
+    'template_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2899,6 +2921,8 @@ class $CachedSubmissionsTable extends CachedSubmissions
     createdAt,
     completedAt,
     reviewStatus,
+    templateSnapshot,
+    templateVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3014,6 +3038,24 @@ class $CachedSubmissionsTable extends CachedSubmissions
         ),
       );
     }
+    if (data.containsKey('template_snapshot')) {
+      context.handle(
+        _templateSnapshotMeta,
+        templateSnapshot.isAcceptableOrUnknown(
+          data['template_snapshot']!,
+          _templateSnapshotMeta,
+        ),
+      );
+    }
+    if (data.containsKey('template_version')) {
+      context.handle(
+        _templateVersionMeta,
+        templateVersion.isAcceptableOrUnknown(
+          data['template_version']!,
+          _templateVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3079,6 +3121,14 @@ class $CachedSubmissionsTable extends CachedSubmissions
         DriftSqlType.string,
         data['${effectivePrefix}review_status'],
       ),
+      templateSnapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_snapshot'],
+      ),
+      templateVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}template_version'],
+      ),
     );
   }
 
@@ -3104,6 +3154,8 @@ class CachedSubmission extends DataClass
   final DateTime createdAt;
   final DateTime? completedAt;
   final String? reviewStatus;
+  final String? templateSnapshot;
+  final int? templateVersion;
   const CachedSubmission({
     required this.id,
     this.templateId,
@@ -3119,6 +3171,8 @@ class CachedSubmission extends DataClass
     required this.createdAt,
     this.completedAt,
     this.reviewStatus,
+    this.templateSnapshot,
+    this.templateVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3158,6 +3212,12 @@ class CachedSubmission extends DataClass
     }
     if (!nullToAbsent || reviewStatus != null) {
       map['review_status'] = Variable<String>(reviewStatus);
+    }
+    if (!nullToAbsent || templateSnapshot != null) {
+      map['template_snapshot'] = Variable<String>(templateSnapshot);
+    }
+    if (!nullToAbsent || templateVersion != null) {
+      map['template_version'] = Variable<int>(templateVersion);
     }
     return map;
   }
@@ -3200,6 +3260,12 @@ class CachedSubmission extends DataClass
       reviewStatus: reviewStatus == null && nullToAbsent
           ? const Value.absent()
           : Value(reviewStatus),
+      templateSnapshot: templateSnapshot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateSnapshot),
+      templateVersion: templateVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateVersion),
     );
   }
 
@@ -3223,6 +3289,8 @@ class CachedSubmission extends DataClass
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
       reviewStatus: serializer.fromJson<String?>(json['reviewStatus']),
+      templateSnapshot: serializer.fromJson<String?>(json['templateSnapshot']),
+      templateVersion: serializer.fromJson<int?>(json['templateVersion']),
     );
   }
   @override
@@ -3243,6 +3311,8 @@ class CachedSubmission extends DataClass
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'completedAt': serializer.toJson<DateTime?>(completedAt),
       'reviewStatus': serializer.toJson<String?>(reviewStatus),
+      'templateSnapshot': serializer.toJson<String?>(templateSnapshot),
+      'templateVersion': serializer.toJson<int?>(templateVersion),
     };
   }
 
@@ -3261,6 +3331,8 @@ class CachedSubmission extends DataClass
     DateTime? createdAt,
     Value<DateTime?> completedAt = const Value.absent(),
     Value<String?> reviewStatus = const Value.absent(),
+    Value<String?> templateSnapshot = const Value.absent(),
+    Value<int?> templateVersion = const Value.absent(),
   }) => CachedSubmission(
     id: id ?? this.id,
     templateId: templateId.present ? templateId.value : this.templateId,
@@ -3280,6 +3352,12 @@ class CachedSubmission extends DataClass
     createdAt: createdAt ?? this.createdAt,
     completedAt: completedAt.present ? completedAt.value : this.completedAt,
     reviewStatus: reviewStatus.present ? reviewStatus.value : this.reviewStatus,
+    templateSnapshot: templateSnapshot.present
+        ? templateSnapshot.value
+        : this.templateSnapshot,
+    templateVersion: templateVersion.present
+        ? templateVersion.value
+        : this.templateVersion,
   );
   CachedSubmission copyWithCompanion(CachedSubmissionsCompanion data) {
     return CachedSubmission(
@@ -3311,6 +3389,12 @@ class CachedSubmission extends DataClass
       reviewStatus: data.reviewStatus.present
           ? data.reviewStatus.value
           : this.reviewStatus,
+      templateSnapshot: data.templateSnapshot.present
+          ? data.templateSnapshot.value
+          : this.templateSnapshot,
+      templateVersion: data.templateVersion.present
+          ? data.templateVersion.value
+          : this.templateVersion,
     );
   }
 
@@ -3330,7 +3414,9 @@ class CachedSubmission extends DataClass
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
           ..write('completedAt: $completedAt, ')
-          ..write('reviewStatus: $reviewStatus')
+          ..write('reviewStatus: $reviewStatus, ')
+          ..write('templateSnapshot: $templateSnapshot, ')
+          ..write('templateVersion: $templateVersion')
           ..write(')'))
         .toString();
   }
@@ -3351,6 +3437,8 @@ class CachedSubmission extends DataClass
     createdAt,
     completedAt,
     reviewStatus,
+    templateSnapshot,
+    templateVersion,
   );
   @override
   bool operator ==(Object other) =>
@@ -3369,7 +3457,9 @@ class CachedSubmission extends DataClass
           other.notes == this.notes &&
           other.createdAt == this.createdAt &&
           other.completedAt == this.completedAt &&
-          other.reviewStatus == this.reviewStatus);
+          other.reviewStatus == this.reviewStatus &&
+          other.templateSnapshot == this.templateSnapshot &&
+          other.templateVersion == this.templateVersion);
 }
 
 class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
@@ -3387,6 +3477,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
   final Value<DateTime> createdAt;
   final Value<DateTime?> completedAt;
   final Value<String?> reviewStatus;
+  final Value<String?> templateSnapshot;
+  final Value<int?> templateVersion;
   final Value<int> rowid;
   const CachedSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -3403,6 +3495,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.createdAt = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.reviewStatus = const Value.absent(),
+    this.templateSnapshot = const Value.absent(),
+    this.templateVersion = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedSubmissionsCompanion.insert({
@@ -3420,6 +3514,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     required DateTime createdAt,
     this.completedAt = const Value.absent(),
     this.reviewStatus = const Value.absent(),
+    this.templateSnapshot = const Value.absent(),
+    this.templateVersion = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        status = Value(status),
@@ -3439,6 +3535,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Expression<DateTime>? createdAt,
     Expression<DateTime>? completedAt,
     Expression<String>? reviewStatus,
+    Expression<String>? templateSnapshot,
+    Expression<int>? templateVersion,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3456,6 +3554,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       if (createdAt != null) 'created_at': createdAt,
       if (completedAt != null) 'completed_at': completedAt,
       if (reviewStatus != null) 'review_status': reviewStatus,
+      if (templateSnapshot != null) 'template_snapshot': templateSnapshot,
+      if (templateVersion != null) 'template_version': templateVersion,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3475,6 +3575,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Value<DateTime>? createdAt,
     Value<DateTime?>? completedAt,
     Value<String?>? reviewStatus,
+    Value<String?>? templateSnapshot,
+    Value<int?>? templateVersion,
     Value<int>? rowid,
   }) {
     return CachedSubmissionsCompanion(
@@ -3492,6 +3594,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       createdAt: createdAt ?? this.createdAt,
       completedAt: completedAt ?? this.completedAt,
       reviewStatus: reviewStatus ?? this.reviewStatus,
+      templateSnapshot: templateSnapshot ?? this.templateSnapshot,
+      templateVersion: templateVersion ?? this.templateVersion,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3541,6 +3645,12 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     if (reviewStatus.present) {
       map['review_status'] = Variable<String>(reviewStatus.value);
     }
+    if (templateSnapshot.present) {
+      map['template_snapshot'] = Variable<String>(templateSnapshot.value);
+    }
+    if (templateVersion.present) {
+      map['template_version'] = Variable<int>(templateVersion.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3564,6 +3674,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
           ..write('createdAt: $createdAt, ')
           ..write('completedAt: $completedAt, ')
           ..write('reviewStatus: $reviewStatus, ')
+          ..write('templateSnapshot: $templateSnapshot, ')
+          ..write('templateVersion: $templateVersion, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9227,6 +9339,8 @@ typedef $$CachedSubmissionsTableCreateCompanionBuilder =
       required DateTime createdAt,
       Value<DateTime?> completedAt,
       Value<String?> reviewStatus,
+      Value<String?> templateSnapshot,
+      Value<int?> templateVersion,
       Value<int> rowid,
     });
 typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
@@ -9245,6 +9359,8 @@ typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime?> completedAt,
       Value<String?> reviewStatus,
+      Value<String?> templateSnapshot,
+      Value<int?> templateVersion,
       Value<int> rowid,
     });
 
@@ -9324,6 +9440,16 @@ class $$CachedSubmissionsTableFilterComposer
 
   ColumnFilters<String> get reviewStatus => $composableBuilder(
     column: $table.reviewStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templateSnapshot => $composableBuilder(
+    column: $table.templateSnapshot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get templateVersion => $composableBuilder(
+    column: $table.templateVersion,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -9406,6 +9532,16 @@ class $$CachedSubmissionsTableOrderingComposer
     column: $table.reviewStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get templateSnapshot => $composableBuilder(
+    column: $table.templateSnapshot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get templateVersion => $composableBuilder(
+    column: $table.templateVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedSubmissionsTableAnnotationComposer
@@ -9472,6 +9608,16 @@ class $$CachedSubmissionsTableAnnotationComposer
     column: $table.reviewStatus,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get templateSnapshot => $composableBuilder(
+    column: $table.templateSnapshot,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get templateVersion => $composableBuilder(
+    column: $table.templateVersion,
+    builder: (column) => column,
+  );
 }
 
 class $$CachedSubmissionsTableTableManager
@@ -9528,6 +9674,8 @@ class $$CachedSubmissionsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
                 Value<String?> reviewStatus = const Value.absent(),
+                Value<String?> templateSnapshot = const Value.absent(),
+                Value<int?> templateVersion = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion(
                 id: id,
@@ -9544,6 +9692,8 @@ class $$CachedSubmissionsTableTableManager
                 createdAt: createdAt,
                 completedAt: completedAt,
                 reviewStatus: reviewStatus,
+                templateSnapshot: templateSnapshot,
+                templateVersion: templateVersion,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9562,6 +9712,8 @@ class $$CachedSubmissionsTableTableManager
                 required DateTime createdAt,
                 Value<DateTime?> completedAt = const Value.absent(),
                 Value<String?> reviewStatus = const Value.absent(),
+                Value<String?> templateSnapshot = const Value.absent(),
+                Value<int?> templateVersion = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion.insert(
                 id: id,
@@ -9578,6 +9730,8 @@ class $$CachedSubmissionsTableTableManager
                 createdAt: createdAt,
                 completedAt: completedAt,
                 reviewStatus: reviewStatus,
+                templateSnapshot: templateSnapshot,
+                templateVersion: templateVersion,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

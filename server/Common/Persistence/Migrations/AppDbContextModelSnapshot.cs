@@ -786,9 +786,17 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("template_id");
 
+                    b.Property<string>("TemplateSnapshot")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("template_snapshot");
+
                     b.Property<string>("TemplateTitle")
                         .HasColumnType("text")
                         .HasColumnName("template_title");
+
+                    b.Property<int?>("TemplateVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("template_version");
 
                     b.Property<decimal?>("TotalScore")
                         .HasColumnType("numeric")

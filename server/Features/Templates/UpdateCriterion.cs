@@ -72,6 +72,15 @@ public static class UpdateCriterion
         }
 
         criterion.UpdatedAt = DateTimeOffset.UtcNow;
+
+        // Bump parent template version so new snapshots reflect this change
+        var parentTemplate = await db.Templates.FindAsync([templateId], ct);
+        if (parentTemplate is not null)
+        {
+            parentTemplate.Version++;
+            parentTemplate.UpdatedAt = criterion.UpdatedAt;
+        }
+
         await db.SaveChangesAsync(ct);
 
         return Results.Ok(new

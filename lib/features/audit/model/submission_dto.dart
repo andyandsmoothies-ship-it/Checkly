@@ -93,6 +93,8 @@ class SubmissionDto {
   final DateTime createdAt;
   final DateTime? completedAt;
   final DateTime? scheduledAt;
+  final String? templateSnapshot;
+  final int? templateVersion;
 
   const SubmissionDto({
     required this.id,
@@ -114,6 +116,8 @@ class SubmissionDto {
     required this.createdAt,
     this.completedAt,
     this.scheduledAt,
+    this.templateSnapshot,
+    this.templateVersion,
   });
 
   /// Whether this audit is overdue (scheduled but past its date).
@@ -148,6 +152,8 @@ class SubmissionDto {
     scheduledAt: json['scheduledAt'] != null
         ? DateTime.parse(json['scheduledAt'] as String)
         : null,
+    templateSnapshot: json['templateSnapshot'] as String?,
+    templateVersion: json['templateVersion'] as int?,
   );
 }
 
@@ -166,6 +172,8 @@ class SubmissionDetailDto {
   final DateTime createdAt;
   final DateTime? completedAt;
   final List<AnswerDto> answers;
+  final String? templateSnapshot;
+  final int? templateVersion;
 
   const SubmissionDetailDto({
     required this.id,
@@ -181,6 +189,8 @@ class SubmissionDetailDto {
     required this.createdAt,
     this.completedAt,
     required this.answers,
+    this.templateSnapshot,
+    this.templateVersion,
   });
 
   factory SubmissionDetailDto.fromJson(Map<String, dynamic> json) =>
@@ -202,6 +212,8 @@ class SubmissionDetailDto {
         answers: (json['answers'] as List<dynamic>)
             .map((a) => AnswerDto.fromJson(a as Map<String, dynamic>))
             .toList(),
+        templateSnapshot: json['templateSnapshot'] as String?,
+        templateVersion: json['templateVersion'] as int?,
       );
 }
 

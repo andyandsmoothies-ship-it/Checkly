@@ -51,32 +51,79 @@ public static class FinalizeSubmission
         if (request.Answers.Count == 0)
             return TypedResults.BadRequest(new { error = "Answers are required to finalize" });
 
-        // 3. Load template + groups + criteria for scoring
-        var template = await db.Templates
-            .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.Id == submission.TemplateId, ct);
+        // 3. Load template data — prefer snapshot, fallback to live DB
+        List<Group> groups;
+        List<Criterion> criteria;
+        string? scoringLogicConfig;
+        string? snapshotDisplayNoun;
 
-        if (template is null)
-            return TypedResults.BadRequest(new { error = "Template not found" });
+        if (!string.IsNullOrEmpty(submission.TemplateSnapshot))
+        {
+            // Snapshot path — deserialize frozen template tree
+            var snapshot = System.Text.Json.JsonSerializer.Deserialize<TemplateSnapshotModel>(submission.TemplateSnapshot)!;
+            scoringLogicConfig = snapshot.ScoringLogicConfig;
+            snapshotDisplayNoun = snapshot.DisplayNoun;
 
-        var groups = await db.Groups
-            .AsNoTracking()
-            .Where(g => g.TemplateId == submission.TemplateId && g.IsActive)
-            .ToListAsync(ct);
+            groups = snapshot.Groups.Select(g => new Group
+            {
+                Id = g.Id,
+                Title = g.Title,
+                Weight = g.Weight,
+                MaxDeductionPoints = g.MaxDeductionPoints,
+                MinusPerFault = g.MinusPerFault,
+                OrderIndex = g.OrderIndex,
+                ParentId = g.ParentId,
+                Metadata = g.Metadata,
+                IsActive = true
+            }).ToList();
 
-        var groupIds = groups.Select(g => g.Id).ToList();
-        var criteria = await db.Criteria
-            .AsNoTracking()
-            .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
-            .ToListAsync(ct);
+            criteria = snapshot.Groups.SelectMany(g => g.Criteria).Select(c => new Criterion
+            {
+                Id = c.Id,
+                GroupId = c.GroupId,
+                Label = c.Label,
+                InputType = c.InputType,
+                PointsWeight = c.PointsWeight,
+                IsCcp = c.IsCcp,
+                IsRisk = c.IsRisk,
+                MinusImpact = c.MinusImpact,
+                OrderIndex = c.OrderIndex,
+                Metadata = c.Metadata,
+                IsActive = true
+            }).ToList();
+        }
+        else
+        {
+            // Fallback — live DB reads for pre-migration drafts
+            var template = await db.Templates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == submission.TemplateId, ct);
+
+            if (template is null)
+                return TypedResults.BadRequest(new { error = "Template not found" });
+
+            scoringLogicConfig = template.ScoringLogicConfig;
+            snapshotDisplayNoun = template.DisplayNoun;
+
+            groups = await db.Groups
+                .AsNoTracking()
+                .Where(g => g.TemplateId == submission.TemplateId && g.IsActive)
+                .ToListAsync(ct);
+
+            var groupIds = groups.Select(g => g.Id).ToList();
+            criteria = await db.Criteria
+                .AsNoTracking()
+                .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
+                .ToListAsync(ct);
+        }
 
         // 4. Verify score — parse scoring mode from template config
         var scoringMode = "penalty";
-        if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
+        if (!string.IsNullOrEmpty(scoringLogicConfig))
         {
             try
             {
-                var configDoc = System.Text.Json.JsonDocument.Parse(template.ScoringLogicConfig);
+                var configDoc = System.Text.Json.JsonDocument.Parse(scoringLogicConfig);
                 if (configDoc.RootElement.TryGetProperty("scoringMode", out var modeElem))
                     scoringMode = modeElem.GetString() ?? "penalty";
             }
@@ -117,7 +164,7 @@ public static class FinalizeSubmission
         submission.GpsVerifiedAt = request.GpsLat.HasValue ? now : null;
         submission.CompletedAt = now;
         submission.UpdatedAt = now;
-        submission.DisplayNoun = template.DisplayNoun;
+        submission.DisplayNoun = snapshotDisplayNoun;
 
         // 6. Delete any existing draft answers (if any) then create new
         var existingAnswers = await db.Answers
@@ -280,6 +327,7 @@ public static class FinalizeSubmission
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,
-            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt));
+            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
+            submission.TemplateVersion));
     }
 }
