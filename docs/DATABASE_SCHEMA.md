@@ -99,7 +99,7 @@ Audit templates define the structure of an audit (what to check).
 | `description` | text? | Template description |
 | `type` | text? | Category: `qc`, `training`, `general` |
 | `is_active` | boolean | Soft delete flag |
-| `version` | integer | Concurrency control (optimistic locking) |
+| `version` | integer | Template version counter — incremented on every template/group/criterion update. Used for snapshot versioning |
 | `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, and repeat config |
 | `display_noun` | text? | Custom terminology override (e.g., "Inspection" instead of default derived from scoring mode) |
 | `created_by` | UUID? (FK → AspNetUsers) | Admin who created the template |
@@ -178,12 +178,16 @@ A completed (or in-progress) audit execution.
 | `template_title` | text? | **Snapshot**: template's title at submission time |
 | `display_noun` | text? | **Snapshot**: template's display noun at submission time |
 | `approver_name` | text? | **Snapshot**: approver's name at review time |
+| `template_snapshot` | jsonb? | **Snapshot**: frozen template tree (groups, criteria, scoring config) at audit creation. Used by scoring engine during finalization |
+| `template_version` | integer? | **Snapshot**: template version number when snapshot was taken |
 | `scheduled_at` | timestamptz? | Scheduled audit date (null = immediate) |
 | `completed_at` | timestamptz? | When the audit was completed |
 | `created_at` | timestamptz | Draft creation time |
 | `updated_at` | timestamptz | Last update |
 
 > **Snapshot Fields**: Denormalized copies of names at submission time. Ensures historical accuracy even if stores rename or users change.
+>
+> **Template Snapshot**: The `template_snapshot` column stores the full template structure (groups, criteria, scoring config) as JSON at audit creation time. This ensures audits are scored against the template version that existed when the audit started, even if an admin edits the template afterwards. The scoring engine reads from this snapshot during finalization, with a fallback to live DB for pre-migration drafts.
 
 ---
 
@@ -380,4 +384,4 @@ These are managed automatically by the ASP.NET Identity framework. You typically
 
 | Table | Purpose |
 |-------|---------|
-| `__EFMigrationsHistory` | Tracks which EF Core migrations have been applied. Contains 10 migration entries. |
+| `__EFMigrationsHistory` | Tracks which EF Core migrations have been applied. Contains 11 migration entries. |

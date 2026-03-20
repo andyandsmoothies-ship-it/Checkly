@@ -192,52 +192,9 @@ public static class FinalizeSubmission
         await db.SaveChangesAsync(ct);
 
         // 7. Auto-create action plans for triggered answers
-        var failedAnswers = ActionPlanEvaluator.GetTriggeredAnswers(answers, criteria);
-        if (failedAnswers.Count > 0)
-        {
-            var existingAPs = await db.ActionPlans
-                .AnyAsync(ap => ap.SubmissionId == submission.Id, ct);
-
-            if (!existingAPs)
-            {
-                var store = await db.Stores
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(s => s.Id == submission.StoreId, ct);
-
-                var smProfile = await db.Profiles
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.StoreId == submission.StoreId, ct);
-
-                var deadline = now.AddDays(7);
-
-                foreach (var fail in failedAnswers)
-                {
-                    var criterion = criteria.FirstOrDefault(c => c.Id == fail.CriteriaId);
-                    var group = criterion != null
-                        ? groups.FirstOrDefault(g => g.Id == criterion.GroupId)
-                        : null;
-
-                    db.ActionPlans.Add(new ActionPlan
-                    {
-                        Id = Guid.NewGuid(),
-                        SubmissionId = submission.Id,
-                        AnswerId = fail.Id,
-                        StoreId = submission.StoreId,
-                        StoreManagerId = smProfile?.Id,
-                        CriteriaLabel = criterion?.Label ?? "",
-                        GroupTitle = group?.Title ?? "",
-                        Status = "open",
-                        Deadline = deadline,
-                        StoreName = store?.Name,
-                        StoreManagerName = smProfile?.FullName,
-                        CreatedAt = now,
-                        UpdatedAt = now
-                    });
-                }
-
-                await db.SaveChangesAsync(ct);
-            }
-        }
+        await ActionPlanService.AutoCreateAsync(
+            submission.Id, submission.StoreId,
+            answers, criteria, groups, now, db, ct);
 
         // 8. Explode SectionScores JSON into relational rows (skip for survey mode)
         if (scoringMode != "survey" && !string.IsNullOrEmpty(request.SectionScores))

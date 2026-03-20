@@ -9,15 +9,16 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > This is the **Acceptance Test-Driven Development (ATDD)** workflow — used to define acceptance tests for complex/high-risk features before coding begins.
 > It sits between `/analysis` and `/implement`. Do NOT confuse with TDD (unit tests during coding) — ATDD defines WHAT the feature must do at the acceptance level; TDD proves HOW the internal code works.
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
-<!-- HUD:END -->
+
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
 - **Skill Loading (MANDATORY)**: Load the `atdd-quality-gates` skill from `.agents/skills/atdd-quality-gates/SKILL.md`. This skill contains the checklists, templates, and rules you must follow in Phase 2. Declare that it was loaded.
 - **Skill Discovery**: Derive 2-3 keywords from the feature context (e.g., "scoring" → testing, validation). Use `grep_search` on `.agents/skills/` to find the most relevant testing or planning `SKILL.md` file. Load ONLY the top 1-2. Declare which skills were loaded.
 - **Action**: Identify the focus area and consult relevant project workspace rules in `.agents/rules/` to confirm technical constraints.
+- **First Principles Check**: Before authoring scenarios, independently verify the upstream spec/analysis artifact:
+  1. Read the `analysis_[topic].md` or `spec_[slice].md` from the prior `/analysis` workflow.
+  2. Use `grep_search` / `view_file` to confirm entities, endpoints, or DB tables mentioned in the spec actually exist in the codebase.
+  3. If the spec references components that don't exist or have changed → flag the discrepancy to the user. Do not write tests against stale specs.
 
 ## Phase 2: SDET Execution
 

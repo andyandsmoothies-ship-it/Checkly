@@ -44,7 +44,7 @@
 
 | Requirement | Detail |
 |-------------|--------|
-| **Login** | Email + password → JWT token |
+| **Login** | Email + password → JWT token. Account locks after 5 failed attempts (15-min lockout) |
 | **Offline login** | Cached session allows offline access with last-known role |
 | **Role-based access** | 4 roles with hierarchical permissions (see §2) |
 | **Data isolation** | Store managers see only their store's data; area managers see their region |
@@ -86,6 +86,7 @@ flowchart LR
 | **C4 minus_impact** | Per-criteria override: uses `minus_impact` field instead of `points_weight` for deduction |
 | **Server verification** | Server recalculates score on submission; configurable mode (enforce/observe) via `appsettings.json` |
 | **Dart/C# lockstep** | Scoring engine implemented identically in both `scoring_engine.dart` and `ScoringVerifier.cs` |
+| **Template versioning** | Full template tree (groups, criteria, scoring config) is snapshotted as JSON at audit creation. Scoring uses this snapshot, not the live template, ensuring consistency even if the template is edited mid-audit |
 
 ### 3.4 Action Plans (Corrective Actions)
 
@@ -168,7 +169,7 @@ erDiagram
 
 Submissions and action plans store **denormalized snapshots** of names/titles at creation time. This ensures historical accuracy when stores rename or users change roles:
 
-- `submissions.auditor_name`, `store_name`, `template_title`
+- `submissions.auditor_name`, `store_name`, `template_title`, `template_snapshot` (full template tree as JSON), `template_version`
 - `action_plans.criteria_label`, `group_title`, `store_name`, `store_manager_name`
 
 ---
@@ -267,7 +268,7 @@ flowchart TD
 | **Photo handling** | Support up to 500MB of pending photo uploads; auto-cleanup after sync |
 | **Security** | JWT tokens with role claims; no sensitive data in local storage unencrypted |
 | **Data integrity** | Server-side score verification on every submission (configurable enforce/observe) |
-| **Concurrency** | Optimistic concurrency (RowVersion) for template edits |
+| **Concurrency** | Template version counter incremented on every edit; snapshot versioning for audit integrity |
 | **Localization** | UTF-8 throughout (Vietnamese character support) |
 | **Deployment** | Single Windows Server hosts API + PostgreSQL + file storage |
 | **Lifecycle (C2)** | 4-tier app lifecycle recovery: <5min no-op, 5min-12h auth check, 12h-7d full resync, >7d force re-login |

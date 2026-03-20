@@ -53,6 +53,8 @@ Endpoints are registered in `*Endpoints.cs` files using `MapGet`/`MapPost`/`MapP
 ### Snapshot Pattern (Denormalization)
 Submissions denormalize template/store/auditor data at creation time:
 - `TemplateTitle`, `StoreName`, `AuditorName`, `AuditorEmail`, `ApproverName`, `DisplayNoun`
+- `TemplateSnapshot` (jsonb) — frozen template tree (groups, criteria, scoring config) at audit creation
+- `TemplateVersion` — template version counter at snapshot time
 - This ensures history remains accurate even if the source entity is later modified or deleted.
 - **Always snapshot new denormalized fields in both `CreateSubmission` AND `FinalizeSubmission`.**
 
@@ -86,7 +88,8 @@ Four modes: `penalty` (default), `accumulation`, `checklist`, `survey`.
 
 | Concern | Standard |
 |:--------|:---------|
-| Auth | Supabase JWT → ASP.NET Identity claims |
+| Auth | ASP.NET Identity + JWT Bearer. `SignInManager` with lockout (5 attempts / 15 min) |
 | RBAC | `admin`, `auditor`, `store_manager`, `area_manager` |
+| CORS | Config-driven `Cors:AllowedOrigins` in appsettings. Middleware: `UseCors()` → `UseAuth()` |
 | IDOR | Every `GetSubmission`/`GetTemplate` checks role-based access |
-| Admin-only | Template CRUD, analytics, survey results |
+| Admin-only | Template CRUD, analytics, survey results. `RequireAuthorization("AdminOnly")` at route group |

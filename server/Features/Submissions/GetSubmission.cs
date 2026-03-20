@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,9 +18,6 @@ public static class GetSubmission
         AppDbContext db,
         CancellationToken ct)
     {
-        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
-
         var submission = await db.Submissions
             .AsNoTracking()
             .Include(s => s.Answers)
@@ -29,14 +27,8 @@ public static class GetSubmission
             return TypedResults.NotFound();
 
         // --- IDOR Protection: Verify the user has access to this submission ---
-        var hasAccess = role switch
-        {
-            "admin" => true,
-            "auditor" => submission.AuditorId == userId,
-            "store_manager" => await IsUserStore(userId, submission.StoreId, db, ct),
-            "area_manager" => await IsUserArea(userId, submission.StoreId, db, ct),
-            _ => false
-        };
+        var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
+            user, submission.StoreId, submission.AuditorId, db, ct);
 
         if (!hasAccess)
             return TypedResults.Forbid();
@@ -57,20 +49,5 @@ public static class GetSubmission
 
         return TypedResults.Ok(dto);
     }
-
-    private static async Task<bool> IsUserStore(Guid userId, Guid? storeId, AppDbContext db, CancellationToken ct)
-    {
-        if (storeId is null) return false;
-        var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == userId, ct);
-        return profile?.StoreId == storeId;
-    }
-
-    private static async Task<bool> IsUserArea(Guid userId, Guid? storeId, AppDbContext db, CancellationToken ct)
-    {
-        if (storeId is null) return false;
-        var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == userId, ct);
-        if (profile?.AreaId is null) return false;
-        var store = await db.Stores.AsNoTracking().FirstOrDefaultAsync(s => s.Id == storeId, ct);
-        return store?.AreaId == profile.AreaId;
-    }
 }
+

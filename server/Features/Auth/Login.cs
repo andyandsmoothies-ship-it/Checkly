@@ -17,6 +17,7 @@ public static class Login
 
     internal sealed class Handler(
         UserManager<AppUser> userManager,
+        SignInManager<AppUser> signInManager,
         AppDbContext db,
         TokenService tokenService)
     {
@@ -29,12 +30,17 @@ public static class Login
                 return TypedResults.Unauthorized();
             }
 
-            // Verify password
-            var validPassword = await userManager.CheckPasswordAsync(user, request.Password);
-            if (!validPassword)
-            {
+            // Verify password with lockout tracking
+            var result = await signInManager.CheckPasswordSignInAsync(
+                user, request.Password, lockoutOnFailure: true);
+
+            if (result.IsLockedOut)
+                return TypedResults.Problem(
+                    "Account locked due to multiple failed attempts. Try again in 15 minutes.",
+                    statusCode: 423);
+
+            if (!result.Succeeded)
                 return TypedResults.Unauthorized();
-            }
 
             // Get role from user_roles table
             var userRole = await db.AppUserRoles

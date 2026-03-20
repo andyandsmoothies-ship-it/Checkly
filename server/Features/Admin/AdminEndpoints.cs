@@ -9,7 +9,7 @@ public static class AdminEndpoints
     {
         var group = app.MapGroup("/api/admin")
             .WithTags("Admin")
-            .RequireAuthorization();
+            .RequireAuthorization("AdminOnly");
 
         // S11: User CRUD
         group.MapGet("/users", ListUsers.HandleAsync)

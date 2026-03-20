@@ -9,10 +9,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 > This is the **UX Heuristic Evaluation** workflow — a systematic review of UI screens against Jakob Nielsen's 10 Usability Heuristics to find usability and experience problems.
 > Based on the [NN/G guide](https://www.nngroup.com/articles/how-to-conduct-a-heuristic-evaluation/).
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
-<!-- HUD:END -->
+
 ## Phase 1: Preparation
 - **Instruction**: Assume the role of a Senior UX Evaluator.
 - **Skill**: Load the `ux-heuristic-evaluation` skill (`.agents/skills/ux-heuristic-evaluation/SKILL.md`). This is the primary reference for the 10 heuristics, severity scale, and evaluation protocol.

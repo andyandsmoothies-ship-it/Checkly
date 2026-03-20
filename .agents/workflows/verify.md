@@ -1,22 +1,23 @@
 ---
 name: Verification Workflow
-description: System Impact Audit for architectural changes.
+description: Verification gate for any upstream workflow — validates that analysis, research, implementation, or audit artifacts are correct, complete, and stable before declaring done.
 ---
 
 # Workflow: /verify
 
 > [!NOTE]
-> This workflow acts as the final gatekeeper before declaring a task finished.
+> This workflow is the **universal verification gate**. It can follow ANY upstream workflow — `/implement`, `/analysis`, `/research`, or `/audit-*`. Its job is to prove that the upstream output is correct, complete, and stable.
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
-<!-- HUD:END -->
+
 ## Phase 1: Context & Side Effect Audit
 <strict-instruction>
 **Skill Discovery**: Derive 2-3 keywords from the changes being verified. Use `grep_search` on `.agents/skills/` to find any relevant verification, testing, or code-review skills. Load the top 1-2 `SKILL.md` files.
 **Action**: Consult `.agents/rules/` to proactively check your recent code changes for unintended side effects (e.g., framework state loss, missing locks, or illegal ghost imports).
 **Semi-Formal Reasoning Checklist**: You must explicitly write down what the code modifies, trace the exact execution path of the modified code line-by-line, and prove your conclusion with specific evidence from the local files. Do not skip reading the actual source files and assuming behavior based on names.
+**First Principles Check**: Before running builds, verify that the *right thing* was produced:
+  1. Read the upstream artifact (`implementation_plan.md`, `analysis_[topic].md`, `concept_brief_[topic].md`, or `audit_*_report.md`).
+  2. For each acceptance criterion or finding, use `grep_search` / `view_file` to confirm it is addressed in the actual deliverable.
+  3. If any criterion is missing or contradicts the codebase → flag as a gap before declaring verification complete.
 </strict-instruction>
 
 ## Phase 2: CI Gate — Validation & Output Parsing
@@ -31,5 +32,5 @@ description: System Impact Audit for architectural changes.
 <strict-instruction>
 **Action**: If the build is green, treat this phase as a "Show" (Show and Tell) for knowledge sharing rather than a blocking gate.
 **Skill Refresh**: Re-scan `.agents/skills/` for any broad code-review or security skills to ensure no long-term debt was introduced.
-**Deliverable**: Update `walkthrough.md` with proof of stability (terminal logs, test summaries). This is for the human counterpart to see *what* was integrated, not to decide *if* it should be.
+**Deliverable**: Create `walkthrough_[topic]_[date-time].md` with proof of stability (terminal logs, test summaries). Use a unique name per verification to preserve history. This is for the human counterpart to see *what* was verified, not to decide *if* it should be.
 </strict-instruction>

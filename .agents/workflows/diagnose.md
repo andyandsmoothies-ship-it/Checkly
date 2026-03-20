@@ -8,10 +8,7 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 > [!NOTE]
 > This workflow enforces systematic root cause analysis. No guessing is allowed.
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
-<!-- HUD:END -->
+
 ## Phase 1: Symptom Isolation (NO GUESSING)
 <strict-instruction>
 You MUST NOT guess the root cause of an error.
@@ -25,7 +22,7 @@ You MUST NOT guess the root cause of an error.
 
 ## Phase 2: Skill & Rule Discovery
 <strict-instruction>
-- **Action**: Derive 2-3 keywords from the error symptom. Use `grep_search` in `.agents/skills/` to find any specialized debugging or error-analysis skills matching those keywords. Load the top 1-2 most relevant `SKILL.md` files.
+- **Action**: Derive 2-3 keywords from the error symptom (e.g., "first-principles", "ground-truth"). Use `grep_search` in `.agents/skills/` to find any specialized debugging or error-analysis skills matching those keywords. Load the top 1-2 most relevant `SKILL.md` files.
 - **Action**: Consult the `.agents/rules/` directory for project-specific sensitivities that might explain the failure (e.g., locking issues, state management). 
 </strict-instruction>
 

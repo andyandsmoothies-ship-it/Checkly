@@ -1,3 +1,4 @@
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,10 @@ public static class ListStores
         var exceptUser = httpContext.Request.Query["except_user"].FirstOrDefault();
 
         var query = db.Stores.AsQueryable();
+
+        // Default: only active stores (unless assignable_as filter handles its own IsActive check)
+        if (string.IsNullOrEmpty(assignableAs))
+            query = query.Where(s => s.IsActive == true);
 
         if (!string.IsNullOrEmpty(search))
             query = query.Where(s =>
@@ -51,9 +56,16 @@ public static class ListStores
                   (p, r) => new { p.StoreId, p.FullName, r.Role })
             .Where(x => x.Role == "store_manager" && x.StoreId != null);
 
+        // Pagination (defaults: page 1, 50 items, max 200)
+        var page = int.TryParse(httpContext.Request.Query["page"], out var pg) ? Math.Max(1, pg) : 1;
+        var pageSize = int.TryParse(httpContext.Request.Query["pageSize"], out var ps) ? Math.Clamp(ps, 1, 200) : 50;
+
+        var total = await query.CountAsync(ct);
+
         var stores = await query
             .OrderBy(s => s.Name)
-            .Take(50)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(s => new StoreDto(
                 s.Id, s.Name, s.Address, s.AreaId,
                 s.Area != null ? s.Area.Name : null,
@@ -61,6 +73,6 @@ public static class ListStores
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(stores);
+        return TypedResults.Ok(new PagedResult<StoreDto>(stores, total, page, pageSize));
     }
 }

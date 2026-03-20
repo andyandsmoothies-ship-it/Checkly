@@ -16,10 +16,7 @@ description: The Core Builder Implementation Workflow.
 1. If artifact needed → Create it FIRST (naming per `orchestration.md` § Artifact Naming Convention)
 2. If task needed → Set task_boundary FIRST
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
-<!-- HUD:END -->
+
 ## Phase 1: Deep Discovery
 - **Instruction**: Identify the core files and package dependencies for this feature.
 - **Action**: Use the `view_file` tool to read the project configuration files (e.g., `package.json`, `.csproj`, `requirements.txt`, `go.mod`) to understand current project state.
@@ -36,6 +33,10 @@ description: The Core Builder Implementation Workflow.
   - [ ] **Data Changes**: Covers DB/Schema/migration changes (or explicitly states N/A)?
   - [ ] **Blast Radius**: Identifies which existing features could break?
   - [ ] **Verification**: Has concrete test commands or manual verification steps?
+- **First Principles Check (Substance over Format)**: Do NOT trust the plan blindly. Independently verify it against the real codebase:
+  1. Use `grep_search` / `view_file` to confirm the files listed in the plan actually exist and match the described state.
+  2. Spot-check at least ONE blast radius claim — read the referenced file and verify the dependency exists.
+  3. If ANY claim contradicts the actual code → **STOP**. Flag the discrepancy to the user. Do not code against a stale plan.
 
 ## Phase 3: Coding (Builder Execution — Quality Built In)
 - **Instruction**: Put on your "Senior Developer" hat. Quality is built in during coding, not inspected out after.
@@ -60,11 +61,11 @@ description: The Core Builder Implementation Workflow.
 
   | Category | When | Action |
   |----------|------|--------|
-  | **Ship** | TDD green, blast radius = 0, trivial scope | Commit directly. Create a 1-line entry in `walkthrough.md`. |
-  | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough.md` as a "Show and Tell" for async knowledge sharing — not a gate. |
+  | **Ship** | TDD green, blast radius = 0, trivial scope | Commit directly. Create a 1-line entry in `walkthrough_[topic].md`. |
+  | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough_[topic].md` as a "Show and Tell" for async knowledge sharing — not a gate. |
   | **Ask** | Architectural change, new DB migration, security-sensitive | Use `notify_user` to request review BEFORE committing. Include numbered test scenarios with Steps, Expected, and Blast Radius. |
 
-- **Walkthrough** (for Show and Ask): Create or update `walkthrough.md` with a **Verification Handoff** section. Each scenario must have:
+- **Walkthrough** (for Show and Ask): Create `walkthrough_[topic].md` with a **Verification Handoff** section. Each scenario must have:
   - **Steps**: Exact user actions to reproduce
   - **Expected**: Observable correct behavior
   - **Blast radius**: Related features to regression-test

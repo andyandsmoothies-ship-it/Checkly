@@ -253,49 +253,9 @@ public static class CreateSubmission
             await db.SaveChangesAsync(ct);
 
             // --- S1: Auto-create action plans for triggered answers ---
-            var failedAnswers = ActionPlanEvaluator.GetTriggeredAnswers(answers, criteria);
-
-            if (failedAnswers.Count > 0)
-            {
-                var existingAPs = await db.ActionPlans
-                    .AnyAsync(ap => ap.SubmissionId == submission.Id, ct);
-
-                if (!existingAPs)
-                {
-                    var smProfile = await db.Profiles
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(p => p.StoreId == store.Id, ct);
-
-                    var deadline = now.AddDays(7);
-
-                    foreach (var fail in failedAnswers)
-                    {
-                        var criterion = criteria.FirstOrDefault(c => c.Id == fail.CriteriaId);
-                        var group = criterion != null
-                            ? groups.FirstOrDefault(g => g.Id == criterion.GroupId)
-                            : null;
-
-                        db.ActionPlans.Add(new ActionPlan
-                        {
-                            Id = Guid.NewGuid(),
-                            SubmissionId = submission.Id,
-                            AnswerId = fail.Id,
-                            StoreId = submission.StoreId,
-                            StoreManagerId = smProfile?.Id,
-                            CriteriaLabel = criterion?.Label ?? "",
-                            GroupTitle = group?.Title ?? "",
-                            Status = "open",
-                            Deadline = deadline,
-                            StoreName = store.Name,
-                            StoreManagerName = smProfile?.FullName,
-                            CreatedAt = now,
-                            UpdatedAt = now
-                        });
-                    }
-
-                    await db.SaveChangesAsync(ct);
-                }
-            }
+            await ActionPlanService.AutoCreateAsync(
+                submission.Id, submission.StoreId,
+                answers, criteria, groups, now, db, ct);
         }
         else
         {

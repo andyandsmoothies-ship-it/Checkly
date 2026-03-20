@@ -15,7 +15,7 @@ public static class PhotoEndpoints
             .WithName("UploadPhoto")
             .DisableAntiforgery();
 
-        group.MapGet("/{submissionId}/{fileName}", GetPhoto.Handle)
+        group.MapGet("/{submissionId}/{fileName}", GetPhoto.HandleAsync)
             .WithName("GetPhoto");
     }
 }

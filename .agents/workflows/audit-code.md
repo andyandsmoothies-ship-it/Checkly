@@ -18,10 +18,7 @@ This workflow is triggered **weekly** or on-demand to keep the codebase clean. F
 
 ## Process Overview
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
-<!-- HUD:END -->
+
 
 ### Phase 1: Scope Definition & Skill Discovery
 - **Action**: Derive 2-3 keywords from the audit scope (e.g., "cleanup", "health", "convention", "refactoring"). Search `.agents/skills/` for matching skills. Load the top 1-2 most relevant.
@@ -63,5 +60,5 @@ Synthesize findings into a structured audit report.
 - **Requirement**: For every issue, provide the specific fix command or code snippet.
 
 ### Phase 6: Deliverable
-- Output `audit_code_report_[date].md` artifact into the agent's `brain/` folder.
+- Output `audit_code_report_[date-time].md` artifact into the agent's `brain/` folder.
 - **Handoff**: Route all issues to `/implement` (code quality fixes are always Track B — mechanical).

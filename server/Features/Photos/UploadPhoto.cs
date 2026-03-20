@@ -1,18 +1,20 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
-using Checkly.Api.Common.Persistence.Entities;
 
 namespace Checkly.Api.Features.Photos;
 
 /// <summary>
 /// POST /api/photos/upload — saves photo to filesystem.
 /// Files stored at: data/photos/{submissionId}/{filename}
+/// IDOR: Validates caller can access the submission.
 /// </summary>
 public static class UploadPhoto
 {
     public static async Task<IResult> HandleAsync(
         Guid submissionId,
         IFormFile file,
+        ClaimsPrincipal user,
         AppDbContext db,
         IWebHostEnvironment env,
         CancellationToken ct)
@@ -23,6 +25,12 @@ public static class UploadPhoto
         var submission = await db.Submissions.FindAsync(submissionId);
         if (submission is null)
             return TypedResults.NotFound(new { error = "Submission not found" });
+
+        // IDOR: Verify the caller can access this submission
+        var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
+            user, submission.StoreId, submission.AuditorId, db, ct);
+        if (!hasAccess)
+            return TypedResults.Forbid();
 
         // Save to filesystem
         var photoDir = Path.Combine(env.ContentRootPath, "data", "photos", submissionId.ToString());

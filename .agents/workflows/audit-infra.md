@@ -18,10 +18,7 @@ This workflow is triggered **after major feature releases** or **before scaling*
 
 ## Process Overview
 
-<!-- HUD:START — Delete this block to remove the Live Dashboard from all workflows -->
-// turbo
-3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
-<!-- HUD:END -->
+
 ### Phase 1: Scope Definition & Skill Discovery
 - **Action**: Use `grep_search` in `.agents/skills/` for keywords: "database", "performance", "security", "ef-core", "api-design", "migration", "index", "auth".
 - **Action**: Load the top 1-2 most relevant `SKILL.md` files.
@@ -67,7 +64,7 @@ Synthesize findings into a structured audit report.
 - **Requirement**: For every issue, provide the specific fix, migration, or code snippet.
 
 ### Phase 6: Deliverable
-- Output `audit_infra_report_[date].md` artifact into the agent's `brain/` folder.
+- Output `audit_infra_report_[date-time].md` artifact into the agent's `brain/` folder.
 - **Handoff (Task Routing)**:
   - 🔴 **Critical** → route to `/analysis` first (may need design changes)
   - 🟡 **Warning** → route to `/implement` directly (known fix patterns)

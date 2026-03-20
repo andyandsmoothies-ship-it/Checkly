@@ -99,23 +99,20 @@ src/entities/[entity]/
 ### Core Principles
 - **Secure Coding**: Adopt a "deny-by-default" security posture.
 - **Least Privilege**: Services/Hooks must only access the minimum data required.
-- **Secrets Protocol**: NO hardcoded keys. Use environment variables exclusively.
-- **Validation**: Strict Zod validation for all inputs; sanitize all UI outputs.
+- **Secrets Protocol**: NO hardcoded keys. Use environment variables or user secrets exclusively.
 - **Error Handling**: Never leak server-side stack traces or internal schema details.
 
 ### OWASP Top 10 Adherence
-- **A01: Broken Access Control**: Verify RLS on every new table.
-- **A03: Injection**: Use parameterized Supabase filters; avoid raw SQL template strings.
-- **A01: Auth Failures**: Always use session-based authentication from `AuthProvider`.
+- **A01: Broken Access Control**: Admin endpoints use `RequireAuthorization("AdminOnly")` at the route group level. IDOR checks in every handler.
+- **A03: Injection**: Use EF Core LINQ or parameterized queries. Raw SQL with user input is forbidden.
+- **A05: Security Misconfiguration**: CORS policy is config-driven via `Cors:AllowedOrigins` in appsettings. Never use `AllowAnyOrigin()` with `AllowCredentials()`.
+- **A07: Auth Failures**: Login endpoint uses `SignInManager.CheckPasswordSignInAsync` with `lockoutOnFailure: true`. Account locks after 5 failed attempts for 15 minutes.
 
-### RLS Performance (MANDATORY)
-- **InitPlan Rule**: All RLS policies MUST use `(select auth.uid())` instead of bare `auth.uid()`. Same for `auth.role()`. This prevents per-row re-evaluation.
-- **Helper Functions**: Wrap args too — `has_role((select auth.uid()), ...)`, `get_user_store_id((select auth.uid()))`.
-- **FK Indexes**: Every new foreign key column MUST have a corresponding `CREATE INDEX`. All existing FKs are indexed as of 2026-02-20.
-
-### Database Integrity (Schema Reality)
-- **Constraint**: Never assume a column exists.
-- **Action**: Always `cat src/integrations/supabase/types.ts` before writing SQL.
+### Server Auth Configuration
+- **JWT**: ValidateIssuer, ValidateAudience, ValidateLifetime, ValidateIssuerSigningKey = `true`. ClockSkew = `Zero`.
+- **Lockout**: 5 attempts max, 15-min lockout, enabled for new users.
+- **CORS**: Middleware ordering: `UseCors()` → `UseAuthentication()` → `UseAuthorization()`.
+- **Policies**: `AdminOnly`, `AuditorAccess`, `StoreManagerAccess`, `AreaManagerAccess`.
 
 ---
 

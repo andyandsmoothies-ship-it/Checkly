@@ -12,7 +12,9 @@ public static class AreasEndpoints
 
         group.MapGet("/", ListAreas.HandleAsync);
         group.MapGet("/{id:guid}", GetArea.HandleAsync);
-        group.MapPost("/", CreateArea.HandleAsync);
-        group.MapPut("/{id:guid}", UpdateArea.HandleAsync);
+        group.MapPost("/", CreateArea.HandleAsync)
+            .RequireAuthorization("AdminOnly");
+        group.MapPut("/{id:guid}", UpdateArea.HandleAsync)
+            .RequireAuthorization("AdminOnly");
     }
 }

@@ -101,13 +101,21 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
             // Create stores: store1 in area1, store2 in area2
             var store1 = new Store
             {
-                Id = Guid.NewGuid(), Name = $"S1-{_runId}", AreaId = area1Id,
-                IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+                Id = Guid.NewGuid(),
+                Name = $"S1-{_runId}",
+                AreaId = area1Id,
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
             };
             var store2 = new Store
             {
-                Id = Guid.NewGuid(), Name = $"S2-{_runId}", AreaId = area2Id,
-                IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+                Id = Guid.NewGuid(),
+                Name = $"S2-{_runId}",
+                AreaId = area2Id,
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
             };
             db.Stores.AddRange(store1, store2);
 
@@ -115,15 +123,25 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
             db.Submissions.AddRange(
                 new Submission
                 {
-                    Id = Guid.NewGuid(), StoreId = store1.Id, StoreName = store1.Name,
-                    AuditorId = amUserId, AuditorName = "AM", Status = "completed",
-                    CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+                    Id = Guid.NewGuid(),
+                    StoreId = store1.Id,
+                    StoreName = store1.Name,
+                    AuditorId = amUserId,
+                    AuditorName = "AM",
+                    Status = "completed",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
                 },
                 new Submission
                 {
-                    Id = Guid.NewGuid(), StoreId = store2.Id, StoreName = store2.Name,
-                    AuditorId = amUserId, AuditorName = "AM", Status = "completed",
-                    CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+                    Id = Guid.NewGuid(),
+                    StoreId = store2.Id,
+                    StoreName = store2.Name,
+                    AuditorId = amUserId,
+                    AuditorName = "AM",
+                    Status = "completed",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
                 });
             await db.SaveChangesAsync();
         }
@@ -193,9 +211,10 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var stores = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var items = result.GetProperty("items");
         var hasMatch = false;
-        foreach (var store in stores.EnumerateArray())
+        foreach (var store in items.EnumerateArray())
         {
             if (store.GetProperty("name").GetString()!.Contains($"Hidden Store {_runId}"))
                 hasMatch = true;
