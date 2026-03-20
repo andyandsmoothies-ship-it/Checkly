@@ -105,3 +105,16 @@ Four modes: `penalty` (default), `accumulation`, `checklist`, `survey`.
 | IDOR | `SubmissionAccessGuard.CanAccessAsync()` for submissions and photos. Role-based: admin→all, auditor→owns, SM→store, AM→area |
 | Admin-only | Template CRUD, Area management (POST/PUT), analytics, survey results. `RequireAuthorization("AdminOnly")` at route group |
 | Photos | Upload and download enforce IDOR via `SubmissionAccessGuard`. Only submission owner/admin/SM/AM can access |
+
+## 5. Cross-Feature Governance
+
+### Entity Dependency Map (MANDATORY)
+- **File**: `docs/reference/entity-dependencies.md`
+- When adding a new feature that **reads, writes, or filters** a core entity (Store, Area, Template, Profile, Submission), you MUST update the dependency map with the new consumer.
+- When modifying deactivation/deletion logic, check the "Deactivation Impact" section for that entity.
+
+### Shared Guards & Services Pattern
+Cross-feature logic MUST be extracted into shared services in `Common/`:
+- **Guards** (`Common/` or `Common/Auth/`): Reusable validation that multiple features need (e.g., `SubmissionAccessGuard`, `RoleAssignmentGuard`)
+- **Services** (`Common/Services/`): Shared business logic called from multiple handlers (e.g., `AuditLogger`, `ActionPlanService`)
+- **Rule**: If the same validation or business logic appears in 2+ feature handlers, extract it into a shared guard or service.
