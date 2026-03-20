@@ -11,7 +11,8 @@ class TemplateApiService {
   /// GET /templates — returns list of [TemplateDto].
   Future<List<TemplateDto>> getTemplates() async {
     final response = await _dio.get('/templates');
-    final list = response.data as List<dynamic>;
+    final data = response.data as Map<String, dynamic>;
+    final list = data['items'] as List<dynamic>;
     return list
         .map((j) => TemplateDto.fromJson(j as Map<String, dynamic>))
         .toList();
