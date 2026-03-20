@@ -12,10 +12,10 @@ description: Precision Analysis Workflow for System Architecture.
 // turbo
 3. **Launch Live Web Dashboard**: Run cmd /c "start /b node .agents\tools\agent-web-hud.js" to launch the background server and open the UI in the browser.
 <!-- HUD:END -->
-## Phase 1: Analytical Setup
-- **Instruction**: Assume the role of an Expert System Analyst / Principal Software Engineer.
-- **Skill Discovery**: Derive 2-3 technical keywords from the feature scope. Use `grep_search` on `.agents/skills/` to find matches (by filename pattern or SKILL.md content). Load ONLY the top 1-2 most relevant analytical `SKILL.md` files. Declare which skills were loaded.
-- **Action**: Review the proposed solution, feature request, or existing component architecture thoroughly.
+## Phase 1: Technical Discovery & Reuse Audit
+- **Instruction**: Assume the role of a Principal Software Engineer. Your first job is to determine if we should build this at all or if it can be achieved by reusing/configuring existing code.
+- **Skill Discovery**: Derive 2-3 technical keywords from the feature scope. Use `grep_search` on `.agents/skills/` to find matches. Load ONLY the top 1-2 most relevant `SKILL.md` files. Declare which skills were loaded.
+- **Reuse vs. Build (CRITICAL)**: Use `grep_search` and `codebase_search` to determine if the requirement can be met by configuring or deleting existing components. If it can, skip to Phase 4 and recommend reuse/refactoring.
 
 ## Phase 2: Feasibility & System Impact Audit
 - **Instruction**: Evaluate the business logic and system impact against all workspace rules in `.agents/rules/`.

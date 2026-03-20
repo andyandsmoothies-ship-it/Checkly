@@ -37,13 +37,13 @@ description: The Core Builder Implementation Workflow.
   - [ ] **Blast Radius**: Identifies which existing features could break?
   - [ ] **Verification**: Has concrete test commands or manual verification steps?
 
-## Phase 3: Coding (Builder Execution)
-- **Instruction**: Put on your "Senior Developer" hat. You MUST implement changes following this exact sequence:
-  1. **ATDD Outer Loop Check (Conditional)**: If the QA/SDET provided failing integration/acceptance tests in the plan (from a prior `/atdd` workflow), review them. Your ultimate goal is to turn these GREEN. DO NOT modify the QA's test code. If no ATDD tests exist, proceed to build the feature standardly.
-  2. **TDD Inner Loop (MANDATORY)**: Before writing the production classes, search `.agents/skills/` for a TDD or test-first development skill and invoke it. Write granular failing unit tests for the internal components, then write the implementation to make them pass.
-  3. **Red-Green-Refactor Execution**: Repeat the TDD cycle until the feature is complete (and ATDD tests pass, if applicable).
-  4. **Skill Refresh**: If the coding concern has shifted (e.g., from API design to database work to UI), re-scan `.agents/skills/` for skills matching the current concern. Load 1-2 new skills, drop ones no longer relevant.
-  5. **Ghost Audit**: Perform a "Mental Check" for every import/using statement to ensure no restricted libraries are used.
+## Phase 3: Coding (Builder Execution — Quality Built In)
+- **Instruction**: Put on your "Senior Developer" hat. Quality is built in during coding, not inspected out after.
+  1. **ATDD Outer Loop Check (Conditional)**: If the QA/SDET provided failing acceptance tests (from a prior `/atdd` workflow), review them. Your goal is to turn these GREEN. DO NOT modify the QA's test code. If no ATDD tests exist, proceed standardly.
+  2. **TDD Inner Loop (MANDATORY)**: Search `.agents/skills/` for a TDD skill and invoke it. Write failing unit tests first, then write the implementation to make them pass.
+  3. **Red-Green-Refactor**: Repeat the TDD cycle until the feature is complete.
+  4. **Inline Quality Gate (per component)**: After each component reaches GREEN, immediately check it against the rules loaded in Phase 1 — architecture compliance, null handling, edge cases, import legality. Fix violations NOW, not in a post-hoc review phase. This replaces the "inspect after coding" antipattern.
+  5. **Skill Refresh**: If the concern shifts (e.g., API → DB → UI), re-scan `.agents/skills/` for matching skills. Load 1-2 new, drop irrelevant ones.
 
 ## Phase 4: Self-Review & Drift Check (N-Dimensional)
 - **Action**: Stop coding and assume the role of a Senior Reviewer.
@@ -54,11 +54,18 @@ description: The Core Builder Implementation Workflow.
   3. **Coverage**: Did your TDD Inner Loop tests actually cover the critical paths?
 - **Drift Check**: Did you edit files NOT listed in the `implementation_plan.md`? **Action:** Use the `run_command` tool with `git status` or `git diff` to verify the actual files changed. Re-read acceptance criteria. Fix any violations found during self-review before handoff.
 
-## Phase 5: Handoff & Verification
-- **Action**: Stop any running development servers (using `send_command_input` with `Terminate: true` if applicable) to release file locks. Then, run the project's standard build and test commands (e.g., `npm run build`, `dotnet build`, `make test`) to verify absolutely no compilation or syntax errors.
-- **Walkthrough**: Create or update `walkthrough.md`. It MUST include a **Verification Handoff** section with concrete, numbered test scenarios. Each scenario must have:
-  - **Steps**: Exact user actions to reproduce (e.g., "Open template → set mode to Penalty → create audit → add 1 fault")
-  - **Expected**: Observable correct behavior (e.g., "Score starts at 100% and decreases")
-  - **Blast radius**: Any related features the QA agent should regression-test
-  This section is the contract between the Builder and the QA agent running `/verify`. If the QA agent cannot determine what "correct" looks like from the walkthrough alone, the handoff has failed.
-- **Skill Refresh (Final)**: Scan `.agents/skills/` for any verification or code-review checklist skill and invoke it for final audit before handoff. Alternatively, recommend the user run `/verify` for comprehensive checks.
+## Phase 5: Integrate & Handoff (Ship / Show / Ask)
+- **Action**: Stop any running dev servers. Run the project's build and test commands to verify zero compilation errors.
+- **Classify** the change using Ship/Show/Ask (inspired by Trunk-Based Development):
+
+  | Category | When | Action |
+  |----------|------|--------|
+  | **Ship** | TDD green, blast radius = 0, trivial scope | Commit directly. Create a 1-line entry in `walkthrough.md`. |
+  | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough.md` as a "Show and Tell" for async knowledge sharing — not a gate. |
+  | **Ask** | Architectural change, new DB migration, security-sensitive | Use `notify_user` to request review BEFORE committing. Include numbered test scenarios with Steps, Expected, and Blast Radius. |
+
+- **Walkthrough** (for Show and Ask): Create or update `walkthrough.md` with a **Verification Handoff** section. Each scenario must have:
+  - **Steps**: Exact user actions to reproduce
+  - **Expected**: Observable correct behavior
+  - **Blast radius**: Related features to regression-test
+- **Drift Check**: Run `git status` / `git diff` to verify only planned files were changed. Fix any violations before handoff.

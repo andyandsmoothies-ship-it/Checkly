@@ -19,14 +19,17 @@ description: System Impact Audit for architectural changes.
 **Semi-Formal Reasoning Checklist**: You must explicitly write down what the code modifies, trace the exact execution path of the modified code line-by-line, and prove your conclusion with specific evidence from the local files. Do not skip reading the actual source files and assuming behavior based on names.
 </strict-instruction>
 
-## Phase 2: Execution & Output Parsing
+## Phase 2: CI Gate — Validation & Output Parsing
 <strict-instruction>
-**Action**: Stop any running development servers that might block the build. Use the `run_command` tool to execute the project's standard build and test commands (e.g., `npm run build`, `dotnet build`, `make test`).
-You MUST wait for the command to finish and explicitly parse the terminal output. If there are ANY red errors or warnings, you must automatically transition to the `/diagnose` workflow. Do not report success if the build fails.
+**Action**: Stop any running development servers. Run the project's standard build and test commands (e.g., `npm run build`, `dotnet build`, `make test`).
+**Pass/Fail Protocol**:
+- **PASS**: All tests green, zero warnings in build output. Proceed to Phase 3.
+- **FAIL**: Any error, test failure, or structural warning. **Action**: You MUST automatically transition to the `/diagnose` workflow. Do not ask for permission. Treat the failure as a regression to be fixed before retry.
 </strict-instruction>
 
-## Phase 3: Final Certification
+## Phase 3: Continuous Verification (Knowledge Sharing)
 <strict-instruction>
-**Skill Refresh**: The concern has shifted from execution to assessment. Re-scan `.agents/skills/` for any broad code-review, security, or quality-gate skills that weren't loaded in Phase 1. Load 1-2 if relevant.
-**Deliverable**: Output a `walkthrough.md` report (or update the existing one) to prove that the system is stable and verified.
+**Action**: If the build is green, treat this phase as a "Show" (Show and Tell) for knowledge sharing rather than a blocking gate.
+**Skill Refresh**: Re-scan `.agents/skills/` for any broad code-review or security skills to ensure no long-term debt was introduced.
+**Deliverable**: Update `walkthrough.md` with proof of stability (terminal logs, test summaries). This is for the human counterpart to see *what* was integrated, not to decide *if* it should be.
 </strict-instruction>
