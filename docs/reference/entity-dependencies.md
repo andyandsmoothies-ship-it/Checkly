@@ -81,6 +81,48 @@
 
 ---
 
+## Submission
+
+| Consumer | File | Relationship |
+|----------|------|-------------|
+| ListSubmissions | `Features/Submissions/ListSubmissions.cs` | Paginated list with role-scoped filtering (admin→all, auditor→owns, SM→store, AM→area) |
+| GetSubmission | `Features/Submissions/GetSubmission.cs` | IDOR-guarded detail view |
+| FinalizeSubmission | `Features/Submissions/FinalizeSubmission.cs` | Draft→completed transition, score verification, answer + action plan creation |
+| GetSurveyResults | `Features/Submissions/GetSurveyResults.cs` | Aggregates survey answers by criteria |
+| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Score trends, 6-month aggregation, top failures |
+| GetTopFailures | `Features/Analytics/GetTopFailures.cs` | Groups answers by criteria across submissions |
+| GetStoreDashboard | `Features/Stores/GetStoreDashboard.cs` | Recent audits, avg score, open APs for a store |
+| StoreAnalyticsSnapshot | `Features/Submissions/FinalizeSubmission.cs` | Upserts 30-day snapshot on finalize |
+| Photos | `Features/Photos/` | Photo upload/download scoped to submission |
+| ActionPlans | `Features/ActionPlans/` | Created from triggered answers on finalize |
+| Sync | `Features/Submissions/SyncTemplates.cs` | Template sync for offline submission creation |
+
+### Deletion Policy
+- **Never deleted** — submissions are immutable audit records
+- Status transitions: `draft` → `completed` (irreversible)
+- `ReviewStatus`: `pending` → `approved`/`rejected` (admin only)
+
+---
+
+## ActionPlan
+
+| Consumer | File | Relationship |
+|----------|------|-------------|
+| ActionPlanService | `Features/ActionPlans/ActionPlanService.cs` | Auto-created from triggered answers on finalize |
+| ListActionPlans | `Features/ActionPlans/ListActionPlans.cs` | Filtered by store, status, overdue |
+| UpdateActionPlan | `Features/ActionPlans/UpdateActionPlan.cs` | SM adds root cause, correction plan, evidence |
+| VerifyActionPlan | `Features/ActionPlans/VerifyActionPlan.cs` | Admin/AM closes action plan |
+| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Open/overdue counts per store |
+| GetStoreDashboard | `Features/Stores/GetStoreDashboard.cs` | Open AP count |
+| StoreAnalyticsSnapshot | Background refresh | Overdue AP count per store |
+| ReminderService | `Common/Services/ReminderService.cs` | Sends overdue AP notifications |
+
+### Deletion Policy
+- **Never deleted** — compliance records for audit trails
+- Status transitions: `open` → `closed` (with evidence)
+
+---
+
 ## Shared Guards & Services
 
 | Name | Location | Purpose | Used By |
