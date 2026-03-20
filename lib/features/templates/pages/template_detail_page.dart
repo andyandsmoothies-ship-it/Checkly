@@ -364,20 +364,38 @@ class _RichDescription extends StatelessWidget {
 
   List<InlineSpan> _parseLine(String text, ThemeData theme) {
     final spans = <InlineSpan>[];
+    String currentText = text;
 
-    // Pattern to catch words between stars *word* or leading word before "qua" (action)
-    // For this specific task, we'll keep it simple:
-    // 1. First word(s) before " " after bullet are likely the Action.
-    // 2. Words between * * are the options.
+    // Bold action (text before " qua ")
+    final quaIndex = currentText.indexOf(' qua ');
+    if (quaIndex != -1) {
+      final action = currentText.substring(0, quaIndex);
+      spans.add(
+        TextSpan(
+          text: action,
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+            color: AppTheme.charcoal,
+          ),
+        ),
+      );
+      currentText = currentText.substring(quaIndex);
+    }
 
-    final parts = text.split('*');
-    for (var i = 0; i < parts.length; i++) {
-      final part = parts[i];
-      if (i % 2 == 1) {
-        // Highlighted option
+    // Highlight (Ví dụ: ...)
+    final exampleIndex = currentText.indexOf('(Ví dụ:');
+    if (exampleIndex != -1) {
+      spans.add(TextSpan(text: currentText.substring(0, exampleIndex)));
+
+      final endParenIndex = currentText.indexOf(')', exampleIndex);
+      if (endParenIndex != -1) {
+        final exampleText = currentText.substring(
+          exampleIndex,
+          endParenIndex + 1,
+        );
         spans.add(
           TextSpan(
-            text: part,
+            text: exampleText,
             style: TextStyle(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.w600,
@@ -385,26 +403,12 @@ class _RichDescription extends StatelessWidget {
             ),
           ),
         );
+        spans.add(TextSpan(text: currentText.substring(endParenIndex + 1)));
       } else {
-        // Regular text, but check for bold action at the very start
-        if (i == 0 && part.contains(' ')) {
-          final firstSpace = part.indexOf(' ');
-          final action = part.substring(0, firstSpace);
-          final rest = part.substring(firstSpace);
-          spans.add(
-            TextSpan(
-              text: action,
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                color: AppTheme.charcoal,
-              ),
-            ),
-          );
-          spans.add(TextSpan(text: rest));
-        } else {
-          spans.add(TextSpan(text: part));
-        }
+        spans.add(TextSpan(text: currentText.substring(exampleIndex)));
       }
+    } else {
+      spans.add(TextSpan(text: currentText));
     }
 
     return spans;

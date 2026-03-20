@@ -22,7 +22,8 @@ class StoreApiService {
     if (exceptUser != null) params['except_user'] = exceptUser;
 
     final response = await _dio.get('/stores', queryParameters: params);
-    final list = response.data as List<dynamic>;
+    final data = response.data;
+    final list = (data is List) ? data : (data['items'] as List<dynamic>);
     return list
         .map((j) => StoreDto.fromJson(j as Map<String, dynamic>))
         .toList();
