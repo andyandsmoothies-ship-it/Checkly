@@ -211,7 +211,7 @@ class _TemplateListPageState extends State<TemplateListPage> {
                       return _TypeSection(
                         label: label,
                         count: templates.length,
-                        initiallyExpanded: templates.isNotEmpty,
+                        initiallyExpanded: false,
                         children: templates
                             .map((t) => _TemplateCard(template: t))
                             .toList(),
