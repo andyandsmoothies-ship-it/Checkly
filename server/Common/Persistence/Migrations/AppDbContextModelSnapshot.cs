@@ -915,6 +915,14 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<Guid?>("EntityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("entity_id");
+
+                    b.Property<string>("EntityType")
+                        .HasColumnType("text")
+                        .HasColumnName("entity_type");
+
                     b.Property<string>("Level")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -938,6 +946,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("CreatedAt")
                         .IsDescending();
+
+                    b.HasIndex("EntityType", "EntityId");
 
                     b.ToTable("system_logs", (string)null);
                 });

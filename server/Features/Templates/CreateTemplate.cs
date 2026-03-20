@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 
 namespace Checkly.Api.Features.Templates;
 
@@ -33,6 +34,8 @@ public static class CreateTemplate
         };
 
         db.Templates.Add(template);
+        AuditLogger.Log(db, user, "template_created", "template", template.Id,
+            $"Created template '{template.Title}'", "/api/templates");
         await db.SaveChangesAsync(ct);
 
         return TypedResults.Created(

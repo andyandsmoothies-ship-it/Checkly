@@ -118,6 +118,7 @@ src/entities/[entity]/
 ### Server API Standards
 - **Pagination**: All list endpoints MUST return `PagedResult<T>` (from `Common/PagedResult.cs`). Use `page`/`pageSize` query params with defaults (page=1, pageSize=50) and enforced max (200). Pattern: `Skip((page-1)*pageSize).Take(pageSize)` + `CountAsync`.
 - **Action Plan Service**: Auto-creation of action plans from triggered answers is centralized in `ActionPlanService.AutoCreateAsync()` (`Features/ActionPlans/ActionPlanService.cs`). Never inline AP creation logic in submission handlers.
+- **Audit Logging**: All sensitive operations (template CRUD, submission finalization, admin user actions) MUST write to `system_logs` via `AuditLogger.Log()` (`Common/Services/AuditLogger.cs`). Use `EntityType` + `EntityId` for entity-level traceability. Logs participate in the same SaveChanges transaction as the primary operation.
 
 ---
 

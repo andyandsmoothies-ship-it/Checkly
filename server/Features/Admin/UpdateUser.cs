@@ -97,6 +97,8 @@ public static class UpdateUser
             UserId = callerId,
             Action = "update_user",
             Category = "admin",
+            EntityType = "user",
+            EntityId = id,
             Message = $"Updated user {profile.FullName} ({profile.Email}): role={effectiveRole}",
             Path = $"/api/admin/users/{id}",
             Level = "info",

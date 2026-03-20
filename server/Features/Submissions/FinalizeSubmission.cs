@@ -3,6 +3,7 @@ using System.Text.Json;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
+using Checkly.Api.Common.Services;
 using Checkly.Api.Features.ActionPlans;
 using Checkly.Api.Features.Submissions;
 using Microsoft.EntityFrameworkCore;
@@ -189,6 +190,11 @@ public static class FinalizeSubmission
         }).ToList();
 
         db.Answers.AddRange(answers);
+
+        AuditLogger.Log(db, user, "submission_finalized", "submission", submission.Id,
+            $"Finalized submission for store '{submission.StoreName}'",
+            $"/api/submissions/{submission.Id}/finalize");
+
         await db.SaveChangesAsync(ct);
 
         // 7. Auto-create action plans for triggered answers

@@ -94,6 +94,8 @@ public static class TransferStoreManager
             UserId = callerId,
             Action = "transfer_store_manager",
             Category = "admin",
+            EntityType = "store",
+            EntityId = storeId,
             Message = $"Transferred store {storeId} from {oldSmProfile?.FullName ?? "none"} to {newManagerProfile.FullName}. Reassigned {openAps.Count} action plans.",
             Path = $"/api/admin/stores/{storeId}/transfer",
             Level = "warning",

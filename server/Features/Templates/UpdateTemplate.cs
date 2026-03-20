@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Templates;
@@ -15,7 +17,9 @@ public static class UpdateTemplate
         string? Type,
         string? ScoringLogicConfig);
 
-    public static async Task<IResult> HandleAsync(Guid id, Request request, AppDbContext db, CancellationToken ct)
+    public static async Task<IResult> HandleAsync(
+        Guid id, Request request, ClaimsPrincipal user,
+        AppDbContext db, CancellationToken ct)
     {
         var template = await db.Templates.FindAsync([id], ct);
         if (template is null)
@@ -35,6 +39,9 @@ public static class UpdateTemplate
 
         template.Version++;
         template.UpdatedAt = DateTimeOffset.UtcNow;
+
+        AuditLogger.Log(db, user, "template_updated", "template", id,
+            $"Updated template '{template.Title}' to v{template.Version}", $"/api/templates/{id}");
 
         try
         {

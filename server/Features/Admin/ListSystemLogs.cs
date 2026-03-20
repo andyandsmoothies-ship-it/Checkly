@@ -17,6 +17,8 @@ public static class ListSystemLogs
         string? Message,
         string? Path,
         string Level,
+        string? EntityType,
+        Guid? EntityId,
         DateTimeOffset CreatedAt);
 
     public static async Task<IResult> HandleAsync(
@@ -52,7 +54,8 @@ public static class ListSystemLogs
             .Take(pageSize)
             .Select(l => new SystemLogDto(
                 l.Id, l.UserId, l.Action, l.Category,
-                l.Message, l.Path, l.Level, l.CreatedAt))
+                l.Message, l.Path, l.Level,
+                l.EntityType, l.EntityId, l.CreatedAt))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new

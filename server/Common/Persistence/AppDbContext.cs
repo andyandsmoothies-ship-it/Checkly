@@ -415,10 +415,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Message).HasColumnName("message");
             e.Property(x => x.Path).HasColumnName("path");
             e.Property(x => x.Level).HasColumnName("level").HasDefaultValue("info");
+            e.Property(x => x.EntityType).HasColumnName("entity_type");
+            e.Property(x => x.EntityId).HasColumnName("entity_id");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
 
-            // Performance index
+            // Performance indexes
             e.HasIndex(x => x.CreatedAt).IsDescending();
+            e.HasIndex(x => new { x.EntityType, x.EntityId });
         });
     }
     private static void ConfigureArea(ModelBuilder mb)

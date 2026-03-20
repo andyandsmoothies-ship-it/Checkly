@@ -46,6 +46,7 @@ Endpoints are registered in `*Endpoints.cs` files using `MapGet`/`MapPost`/`MapP
 ### Shared Services Pattern (Server)
 - **ActionPlanService** (`Features/ActionPlans/ActionPlanService.cs`): Centralized auto-creation of action plans from triggered answers. Called by both `CreateSubmission` and `FinalizeSubmission`. Idempotent — skips if APs already exist.
 - **SubmissionAccessGuard** (`Common/SubmissionAccessGuard.cs`): Reusable IDOR guard for all submission-scoped resources. Uses `Guid.TryParse` defense-in-depth.
+- **AuditLogger** (`Common/Services/AuditLogger.cs`): Static helper for writing entity-level audit logs to `system_logs`. Uses `Category = "audit"`, tracks `EntityType` + `EntityId`. Participates in the caller's `SaveChangesAsync` transaction.
 
 ### Pagination Standard (Server)
 All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):

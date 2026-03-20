@@ -52,6 +52,8 @@ public static class BanUser
             UserId = callerId,
             Action = request.IsBanned ? "ban_user" : "unban_user",
             Category = "admin",
+            EntityType = "user",
+            EntityId = id,
             Message = $"{(request.IsBanned ? "Banned" : "Unbanned")} user {profile?.FullName ?? id.ToString()} ({profile?.Email})",
             Path = $"/api/admin/users/{id}/ban",
             Level = request.IsBanned ? "warning" : "info",

@@ -362,6 +362,30 @@ Unique constraint on `(template_id, user_group_id)`.
 
 ---
 
+### `system_logs`
+**Soft Delete**: No (auto-purged by `ReminderService` based on `created_at`)
+
+Admin observability and audit trail. Records sensitive actions (template CRUD, user management, submission finalization) with entity-level tracking.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique log entry ID |
+| `user_id` | UUID | ID of the user who performed the action |
+| `action` | text | Action identifier (e.g., `template_created`, `ban_user`) |
+| `category` | text | Log category: `admin`, `audit`, `system` |
+| `message` | text? | Human-readable description |
+| `path` | text? | API endpoint path |
+| `level` | text | Severity: `info`, `warning`, `error` |
+| `entity_type` | text? | Entity being acted on: `template`, `submission`, `user`, `store` |
+| `entity_id` | UUID? | ID of the entity being acted on |
+| `created_at` | timestamptz | When the action occurred |
+
+**Indexes**: `ix_system_logs_created_at` (descending), `ix_system_logs_entity_type_entity_id` (composite)
+
+> **Convention**: Use `AuditLogger.Log()` for new audit entries — sets `Category = "audit"` and handles `ClaimsPrincipal` parsing. Existing admin handlers use inline `SystemLogs.Add` with `Category = "admin"`.
+
+---
+
 ## ASP.NET Identity Tables (7)
 
 These are managed automatically by the ASP.NET Identity framework. You typically don't interact with them directly.
