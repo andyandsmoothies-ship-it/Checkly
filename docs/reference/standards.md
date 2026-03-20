@@ -103,7 +103,7 @@ src/entities/[entity]/
 - **Error Handling**: Never leak server-side stack traces or internal schema details.
 
 ### OWASP Top 10 Adherence
-- **A01: Broken Access Control**: Admin endpoints use `RequireAuthorization("AdminOnly")` at the route group level. IDOR checks in every handler.
+- **A01: Broken Access Control**: Admin endpoints use `RequireAuthorization("AdminOnly")` at the route group level. Area management (POST/PUT) requires `AdminOnly`. IDOR checks in every handler via `SubmissionAccessGuard.CanAccessAsync()` for submission-scoped resources (submissions, photos).
 - **A03: Injection**: Use EF Core LINQ or parameterized queries. Raw SQL with user input is forbidden.
 - **A05: Security Misconfiguration**: CORS policy is config-driven via `Cors:AllowedOrigins` in appsettings. Never use `AllowAnyOrigin()` with `AllowCredentials()`.
 - **A07: Auth Failures**: Login endpoint uses `SignInManager.CheckPasswordSignInAsync` with `lockoutOnFailure: true`. Account locks after 5 failed attempts for 15 minutes.
@@ -113,6 +113,11 @@ src/entities/[entity]/
 - **Lockout**: 5 attempts max, 15-min lockout, enabled for new users.
 - **CORS**: Middleware ordering: `UseCors()` → `UseAuthentication()` → `UseAuthorization()`.
 - **Policies**: `AdminOnly`, `AuditorAccess`, `StoreManagerAccess`, `AreaManagerAccess`.
+- **IDOR Guard**: `SubmissionAccessGuard` (`Common/SubmissionAccessGuard.cs`) — reusable guard for all submission-scoped resources. Uses `Guid.TryParse` for defense-in-depth. Role-based access: admin→all, auditor→owns, store_manager→their store, area_manager→their area.
+
+### Server API Standards
+- **Pagination**: All list endpoints MUST return `PagedResult<T>` (from `Common/PagedResult.cs`). Use `page`/`pageSize` query params with defaults (page=1, pageSize=50) and enforced max (200). Pattern: `Skip((page-1)*pageSize).Take(pageSize)` + `CountAsync`.
+- **Action Plan Service**: Auto-creation of action plans from triggered answers is centralized in `ActionPlanService.AutoCreateAsync()` (`Features/ActionPlans/ActionPlanService.cs`). Never inline AP creation logic in submission handlers.
 
 ---
 

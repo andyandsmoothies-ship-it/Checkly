@@ -43,6 +43,16 @@ public static class DoSomething
 ```
 Endpoints are registered in `*Endpoints.cs` files using `MapGet`/`MapPost`/`MapPut`.
 
+### Shared Services Pattern (Server)
+- **ActionPlanService** (`Features/ActionPlans/ActionPlanService.cs`): Centralized auto-creation of action plans from triggered answers. Called by both `CreateSubmission` and `FinalizeSubmission`. Idempotent — skips if APs already exist.
+- **SubmissionAccessGuard** (`Common/SubmissionAccessGuard.cs`): Reusable IDOR guard for all submission-scoped resources. Uses `Guid.TryParse` defense-in-depth.
+
+### Pagination Standard (Server)
+All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
+- Query params: `page` (default 1), `pageSize` (default 50, max 200)
+- Pattern: `CountAsync` + `Skip/Take` + wrap in `PagedResult<T>`
+- Reference: `ListSubmissions.cs`, `ListTemplates.cs`, `ListStores.cs`
+
 ## 2. Database Conventions
 
 ### Column Naming
@@ -91,5 +101,6 @@ Four modes: `penalty` (default), `accumulation`, `checklist`, `survey`.
 | Auth | ASP.NET Identity + JWT Bearer. `SignInManager` with lockout (5 attempts / 15 min) |
 | RBAC | `admin`, `auditor`, `store_manager`, `area_manager` |
 | CORS | Config-driven `Cors:AllowedOrigins` in appsettings. Middleware: `UseCors()` → `UseAuth()` |
-| IDOR | Every `GetSubmission`/`GetTemplate` checks role-based access |
-| Admin-only | Template CRUD, analytics, survey results. `RequireAuthorization("AdminOnly")` at route group |
+| IDOR | `SubmissionAccessGuard.CanAccessAsync()` for submissions and photos. Role-based: admin→all, auditor→owns, SM→store, AM→area |
+| Admin-only | Template CRUD, Area management (POST/PUT), analytics, survey results. `RequireAuthorization("AdminOnly")` at route group |
+| Photos | Upload and download enforce IDOR via `SubmissionAccessGuard`. Only submission owner/admin/SM/AM can access |
