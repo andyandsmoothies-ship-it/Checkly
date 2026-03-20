@@ -17,11 +17,12 @@ public static class ListStores
         var search = httpContext.Request.Query["search"].FirstOrDefault();
         var assignableAs = httpContext.Request.Query["assignable_as"].FirstOrDefault();
         var exceptUser = httpContext.Request.Query["except_user"].FirstOrDefault();
+        var includeInactive = httpContext.Request.Query["includeInactive"].FirstOrDefault();
 
         var query = db.Stores.AsQueryable();
 
-        // Default: only active stores (unless assignable_as filter handles its own IsActive check)
-        if (string.IsNullOrEmpty(assignableAs))
+        // Default: only active stores (unless includeInactive or assignable_as filter)
+        if (string.IsNullOrEmpty(assignableAs) && !string.Equals(includeInactive, "true", StringComparison.OrdinalIgnoreCase))
             query = query.Where(s => s.IsActive == true);
 
         if (!string.IsNullOrEmpty(search))

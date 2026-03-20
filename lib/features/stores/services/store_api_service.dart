@@ -15,11 +15,13 @@ class StoreApiService {
     String? search,
     String? assignableAs,
     String? exceptUser,
+    bool includeInactive = false,
   }) async {
     final params = <String, dynamic>{};
     if (search != null && search.isNotEmpty) params['search'] = search;
     if (assignableAs != null) params['assignable_as'] = assignableAs;
     if (exceptUser != null) params['except_user'] = exceptUser;
+    if (includeInactive) params['includeInactive'] = 'true';
 
     final response = await _dio.get('/stores', queryParameters: params);
     final data = response.data;

@@ -38,7 +38,9 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     });
 
     try {
-      final storesFuture = _di<StoreApiService>().getStores();
+      final storesFuture = _di<StoreApiService>().getStores(
+        includeInactive: true,
+      );
       final areasFuture = _loadAreas();
 
       final stores = await storesFuture;

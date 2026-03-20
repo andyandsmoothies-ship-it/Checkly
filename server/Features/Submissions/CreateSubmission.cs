@@ -86,6 +86,14 @@ public static class CreateSubmission
         if (store.IsActive == false)
             return TypedResults.BadRequest(new { error = "Store is deactivated" });
 
+        if (store.AreaId.HasValue)
+        {
+            var area = await db.Areas.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == store.AreaId.Value, ct);
+            if (area is not null && !area.IsActive)
+                return TypedResults.BadRequest(new { error = "Area is deactivated" });
+        }
+
         // Load groups + criteria for ALL statuses (needed for snapshot)
         var groups = await db.Groups
             .AsNoTracking()
