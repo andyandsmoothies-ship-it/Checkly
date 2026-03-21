@@ -87,7 +87,8 @@ class SubmissionApiService {
       '/submissions/survey-results',
       queryParameters: {'templateId': templateId},
     );
-    final list = response.data as List<dynamic>;
+    final data = response.data;
+    final list = (data is List) ? data : (data['items'] as List<dynamic>);
     return list
         .map((j) => SurveyQuestionResult.fromJson(j as Map<String, dynamic>))
         .toList();

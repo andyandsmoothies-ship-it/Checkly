@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import '../services/admin_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get_it/get_it.dart';
@@ -65,10 +65,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadAreas() async {
-    final dio = _di<Dio>();
-    final response = await dio.get('/areas');
-    final list = response.data as List<dynamic>;
-    return list.cast<Map<String, dynamic>>();
+    return _di<AdminApiService>().getAreas();
   }
 
   // ─── Create / Edit ───

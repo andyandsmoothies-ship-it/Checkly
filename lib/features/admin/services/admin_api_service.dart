@@ -85,7 +85,8 @@ class AdminApiService {
       '/admin/logs',
       queryParameters: {'limit': limit, 'offset': offset},
     );
-    final list = response.data as List<dynamic>;
+    final data = response.data;
+    final list = (data is List) ? data : (data['items'] as List<dynamic>);
     return list.cast<Map<String, dynamic>>();
   }
 
@@ -124,7 +125,8 @@ class AdminApiService {
   /// GET /areas — list all areas.
   Future<List<Map<String, dynamic>>> getAreas() async {
     final response = await _dio.get('/areas');
-    final list = response.data as List<dynamic>;
+    final data = response.data;
+    final list = (data is List) ? data : (data['items'] as List<dynamic>);
     return list.cast<Map<String, dynamic>>();
   }
 
