@@ -348,6 +348,33 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
 
   Future<void> _toggleActive(StoreDto store) async {
     final newActive = !(store.isActive ?? true);
+
+    // Deactivation is destructive — confirm first
+    if (!newActive) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Deactivate Store?'),
+          content: Text(
+            'Are you sure you want to deactivate "${store.name}"? '
+            'Auditors will no longer be able to submit audits to this store.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Deactivate'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+
     try {
       await _di<StoreApiService>().updateStore(store.id, isActive: newActive);
       if (mounted) {
