@@ -7,7 +7,6 @@ import 'package:latlong2/latlong.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../stores/model/store_dto.dart';
-import '../services/admin_api_service.dart';
 
 final _di = GetIt.instance;
 
@@ -371,63 +370,6 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
 
   // ─── Transfer SM ───
 
-  void _showTransferDialog(StoreDto store) {
-    final managerIdCtrl = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Transfer Store Manager'),
-        content: TextField(
-          controller: managerIdCtrl,
-          decoration: const InputDecoration(
-            labelText: 'New Manager User ID',
-            border: OutlineInputBorder(),
-            helperText: 'Enter the user ID of the new store manager',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final id = managerIdCtrl.text.trim();
-              if (id.isEmpty) return;
-              Navigator.pop(ctx);
-              try {
-                await _di<AdminApiService>().transferStoreManager(
-                  store.id,
-                  newManagerId: id,
-                );
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Store manager transferred'),
-                      backgroundColor: AppTheme.success,
-                    ),
-                  );
-                  _loadData();
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text('Transfer'),
-          ),
-        ],
-      ),
-    );
-  }
-
   // ─── Build ───
 
   @override
@@ -516,7 +458,6 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
             store: store,
             onEdit: () => _showStoreForm(store: store),
             onToggleActive: () => _toggleActive(store),
-            onTransferSm: () => _showTransferDialog(store),
           );
         },
       ),
@@ -530,13 +471,11 @@ class _StoreCard extends StatelessWidget {
   final StoreDto store;
   final VoidCallback onEdit;
   final VoidCallback onToggleActive;
-  final VoidCallback onTransferSm;
 
   const _StoreCard({
     required this.store,
     required this.onEdit,
     required this.onToggleActive,
-    required this.onTransferSm,
   });
 
   @override
@@ -618,6 +557,28 @@ class _StoreCard extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // 3-dot menu
+                  PopupMenuButton<String>(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    onSelected: (value) {
+                      if (value == 'edit') onEdit();
+                      if (value == 'toggle') onToggleActive();
+                    },
+                    itemBuilder: (ctx) => [
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Text('Edit Store'),
+                      ),
+                      PopupMenuItem(
+                        value: 'toggle',
+                        child: Text(isActive ? 'Deactivate' : 'Activate'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
 
@@ -645,60 +606,31 @@ class _StoreCard extends StatelessWidget {
                 ),
               ],
 
-              // Manager name (if assigned)
-              if (store.managerName != null &&
-                  store.managerName!.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person_outline,
-                      size: 14,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        'SM: ${store.managerName!}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-
-              // Action buttons row
-              const SizedBox(height: 8),
+              // Manager row (always visible)
+              const SizedBox(height: 4),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton.icon(
-                    onPressed: onTransferSm,
-                    icon: const Icon(Icons.swap_horiz, size: 16),
-                    label: const Text('Transfer SM'),
-                    style: TextButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                    ),
+                  Icon(
+                    store.managerName != null
+                        ? Icons.person_outline
+                        : Icons.warning_amber,
+                    size: 14,
+                    color: store.managerName != null
+                        ? theme.colorScheme.onSurfaceVariant
+                        : AppTheme.warning,
                   ),
-                  const SizedBox(width: 8),
-                  TextButton.icon(
-                    onPressed: onToggleActive,
-                    icon: Icon(
-                      isActive ? Icons.block : Icons.check_circle_outline,
-                      size: 16,
-                      color: isActive ? Colors.red : AppTheme.success,
-                    ),
-                    label: Text(
-                      isActive ? 'Deactivate' : 'Activate',
-                      style: TextStyle(
-                        color: isActive ? Colors.red : AppTheme.success,
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      store.managerName != null
+                          ? 'SM: ${store.managerName!}'
+                          : 'SM: Unassigned',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: store.managerName != null
+                            ? theme.colorScheme.onSurfaceVariant
+                            : AppTheme.warning,
                       ),
-                    ),
-                    style: TextButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

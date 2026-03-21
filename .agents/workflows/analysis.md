@@ -38,20 +38,33 @@ description: Precision Analysis Workflow for System Architecture.
   8. **Complexity Assessment**: State whether this task is Small (single concern), Medium (multiple concerns), or Large (crosses all layers). This drives Track classification in Phase 5.
 
 ## Phase 5: Task Routing & Handoff
-- **Action**: Read the `analysis_[topic].md` produced in Phase 4. Based on its findings (blast radius, complexity, layer count), categorize the task into one of three tracks.
+- **Action**: Read the `analysis_[topic].md` produced in Phase 4. Based on its findings (blast radius, complexity, layer count), categorize the task into one of the tracks below.
 
   - **Track A — Small Tasks (Single concern, low blast radius)**:
-    Slicing is not needed. Load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and generate a single `implementation_plan_[topic].md` using a **lightweight subset** of its template — include only: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE] tags), Database/Schema Changes (if any), API Contracts (if any), and Verification Plan. **Omit** non-functional requirements, phased timelines, and rate limiting sections.
-    **Handoff**: Instruct the user to hand it directly to `/implement` (and optionally `/verify` for a quick stability check). No ATDD required.
+    Generate a single `implementation_plan_[topic].md` using a lightweight template: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE] tags), Database/Schema Changes (if any), API Contracts (if any), and Verification Plan.
+    **Handoff**: `/implement` → (optionally) `/verify`.
 
   - **Track B — Medium Tasks (Multiple concerns, moderate blast radius)**:
-    Slicing is not needed, but the spec must be detailed enough for the ATDD workflow. Load the `technical-specification` skill and generate a single `spec_[topic].md` with: Executive Summary, Functional Requirements with **explicit acceptance criteria** (Given/When/Then or numbered ACs), Proposed Changes (grouped by file), Database/Schema Changes, API Contracts, System Impact & Blast Radius, and Verification Plan.
-    **Handoff**: Instruct the user to route it through the full pipeline: `/atdd` → `/implement` → `/verify`.
+    Generate a single `implementation_plan_[topic].md` with: Executive Summary, Proposed Changes (grouped by file), Database/Schema Changes, API Contracts, System Impact & Blast Radius, and Verification Plan with explicit scenarios.
+
+    Then apply the **ATDD Decision Gate** to determine the pipeline:
+
+    | Signal | Skip ATDD (B1) | Require ATDD (B2) |
+    |--------|----------------|---------------------|
+    | Correctness | Obvious from the spec | Ambiguous — multiple valid interpretations |
+    | Pattern | Extends existing, well-understood pattern | New pattern or algorithm |
+    | State | Simple flag/branch | Complex state machine or multi-step transitions |
+    | Edge cases | Few, easily enumerated in verification table | Many, easy to miss without formal test writing |
+    | Risk | Low — failure is visible and recoverable | High — silent corruption or data loss |
+
+    **B1 Handoff**: `/implement` → `/verify`.
+    **B2 Handoff**: `/atdd` → `/implement` → `/verify`.
 
   - **Track C — Large Tasks (Crosses all layers, high complexity, new epic)**:
     This track requires vertical slicing FIRST, then per-slice classification.
-    1. **Step 1 — Slice**: Search `.agents/skills/` for the `use-case-slicing` skill and invoke it. Ensure slices are structurally sound (End-to-End, UI down to DB). List the slices in the `analysis_[topic].md` artifact.
-    2. **Step 2 — Per-Slice Analysis**: For EACH slice, classify it as **Track A** or **Track B** based on its individual complexity and blast radius. Then generate the appropriate artifact for each:
-       - **Track A slices** → `implementation_plan_[slice_name].md` (lightweight, direct to `/implement`)
-       - **Track B slices** → `spec_[slice_name].md` (full spec with acceptance criteria, routed through `/atdd` → `/implement` → `/verify`)
-    3. **Handoff**: Present the slice list with each slice's track classification. Instruct the user to execute slices one by one in dependency order, using each slice's designated pipeline.
+    1. **Step 1 — Slice**: Search `.agents/skills/` for the `use-case-slicing` skill and invoke it. List the slices in the `analysis_[topic].md` artifact.
+    2. **Step 2 — Per-Slice Classification**: For EACH slice, classify it as **Track A**, **Track B1**, or **Track B2** using the same decision gate above. Generate the appropriate artifact for each:
+       - **Track A slices** → `implementation_plan_[slice].md` → `/implement`
+       - **Track B1 slices** → `implementation_plan_[slice].md` → `/implement` → `/verify`
+       - **Track B2 slices** → `implementation_plan_[slice].md` → `/atdd` → `/implement` → `/verify`
+    3. **Handoff**: Present the slice list with each slice's track. Execute in dependency order.

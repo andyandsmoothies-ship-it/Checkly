@@ -38,6 +38,15 @@ public static class BanUser
         if (request.IsBanned)
         {
             await userManager.SetLockoutEndDateAsync(appUser, DateTimeOffset.MaxValue);
+
+            // Sever role-entity associations to prevent ghost managers
+            var profile = await db.Profiles.FirstOrDefaultAsync(p => p.Id == id, ct);
+            if (profile != null)
+            {
+                profile.StoreId = null;
+                profile.AreaId = null;
+                profile.UpdatedAt = DateTimeOffset.UtcNow;
+            }
         }
         else
         {
@@ -45,7 +54,7 @@ public static class BanUser
         }
 
         // Log the admin action
-        var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id, ct);
+        var profileForLog = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id, ct);
         db.SystemLogs.Add(new SystemLog
         {
             Id = Guid.NewGuid(),
@@ -54,7 +63,7 @@ public static class BanUser
             Category = "admin",
             EntityType = "user",
             EntityId = id,
-            Message = $"{(request.IsBanned ? "Banned" : "Unbanned")} user {profile?.FullName ?? id.ToString()} ({profile?.Email})",
+            Message = $"{(request.IsBanned ? "Banned" : "Unbanned")} user {profileForLog?.FullName ?? id.ToString()} ({profileForLog?.Email})",
             Path = $"/api/admin/users/{id}/ban",
             Level = request.IsBanned ? "warning" : "info",
             CreatedAt = DateTimeOffset.UtcNow,

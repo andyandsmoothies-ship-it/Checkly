@@ -104,6 +104,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             'id': s.id,
             'name': s.name,
             'isActive': s.isActive,
+            'managerName': s.managerName,
           },
         )
         .toList();
@@ -140,13 +141,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
     String? selectedAreaId = user['areaId'] as String?;
     final userId = user['id'] as String;
 
-    // Load SM-assignable stores (active + unoccupied, plus this user's own)
+    // Load all active stores (with manager names for annotated dropdown)
     List<Map<String, dynamic>> assignableStores = [];
     if (selectedRole == 'store_manager') {
-      assignableStores = await _loadStores(
-        assignableAs: 'store_manager',
-        exceptUser: userId,
-      );
+      assignableStores = await _loadStores();
     }
 
     if (!mounted) return;
@@ -210,10 +208,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       // Reload assignable stores when switching to SM
                       if (v == 'store_manager' &&
                           selectedRole != 'store_manager') {
-                        assignableStores = await _loadStores(
-                          assignableAs: 'store_manager',
-                          exceptUser: userId,
-                        );
+                        assignableStores = await _loadStores();
                       }
                       setSheetState(() {
                         selectedRole = v;
@@ -249,12 +244,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           value: null,
                           child: Text('— None —'),
                         ),
-                        ...assignableStores.map(
-                          (s) => DropdownMenuItem(
+                        ...assignableStores.map((s) {
+                          final mgr = s['managerName'] as String?;
+                          final label = mgr != null
+                              ? '${s['name']} (SM: $mgr)'
+                              : '${s['name']} (Vacant)';
+                          return DropdownMenuItem(
                             value: s['id'] as String,
-                            child: Text(s['name'] as String),
-                          ),
-                        ),
+                            child: Text(label),
+                          );
+                        }),
                       ],
                       onChanged: (v) =>
                           setSheetState(() => selectedStoreId = v),
@@ -278,12 +277,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           value: null,
                           child: Text('— None —'),
                         ),
-                        ..._areas.map(
-                          (a) => DropdownMenuItem(
+                        ..._areas.map((a) {
+                          final mgr = a['managerName'] as String?;
+                          final label = mgr != null
+                              ? '${a['name']} (AM: $mgr)'
+                              : '${a['name']} (Vacant)';
+                          return DropdownMenuItem(
                             value: a['id'] as String,
-                            child: Text(a['name'] as String),
-                          ),
-                        ),
+                            child: Text(label),
+                          );
+                        }),
                       ],
                       onChanged: (v) => setSheetState(() => selectedAreaId = v),
                     ),
@@ -351,6 +354,70 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ),
         );
         _loadData();
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 409 && mounted) {
+        final data = e.response?.data as Map<String, dynamic>?;
+        final existingName =
+            data?['existingManagerName'] as String? ?? 'another user';
+
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Transfer Required'),
+            content: Text(
+              'This position is currently held by $existingName. '
+              'Do you want to remove them and assign this user instead?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Confirm Transfer'),
+              ),
+            ],
+          ),
+        );
+
+        if (confirmed == true && mounted) {
+          try {
+            await _di<AdminApiService>().updateUser(
+              id,
+              role: role,
+              storeId: storeId,
+              areaId: areaId,
+              forceReassign: true,
+            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Transferred from $existingName'),
+                  backgroundColor: AppTheme.success,
+                ),
+              );
+              _loadData();
+            }
+          } catch (retryErr) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Transfer failed: $retryErr'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed: ${e.message}'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

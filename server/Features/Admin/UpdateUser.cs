@@ -12,7 +12,7 @@ namespace Checkly.Api.Features.Admin;
 /// </summary>
 public static class UpdateUser
 {
-    public record Request(string? Role, Guid? StoreId, Guid? AreaId);
+    public record Request(string? Role, Guid? StoreId, Guid? AreaId, bool ForceReassign = false);
 
     private static readonly HashSet<string> ValidRoles = ["admin", "auditor", "store_manager", "area_manager"];
 
@@ -41,6 +41,7 @@ public static class UpdateUser
             return TypedResults.NotFound(new { error = "User role not found" });
 
         var effectiveRole = request.Role ?? userRole.Role;
+        string? previousManagerName = null;
 
         // S9: 1 SM per store
         if (effectiveRole == "store_manager" && request.StoreId.HasValue)
@@ -48,11 +49,27 @@ public static class UpdateUser
             var existingSm = await RoleAssignmentGuard.FindExistingStoreManager(
                 db, request.StoreId.Value, id, ct);
             if (existingSm.HasValue)
-                return TypedResults.Conflict(new
+            {
+                if (!request.ForceReassign)
                 {
-                    error = "Store already has a store manager assigned",
-                    existingManagerId = existingSm.Value
-                });
+                    var existingName = await db.Profiles.Where(p => p.Id == existingSm.Value)
+                        .Select(p => p.FullName).FirstOrDefaultAsync(ct);
+                    return TypedResults.Conflict(new
+                    {
+                        error = "Store already has a store manager assigned",
+                        existingManagerId = existingSm.Value,
+                        existingManagerName = existingName,
+                    });
+                }
+                // Force reassign: null out old SM's StoreId
+                var oldSm = await db.Profiles.FirstOrDefaultAsync(p => p.Id == existingSm.Value, ct);
+                if (oldSm != null)
+                {
+                    previousManagerName = oldSm.FullName;
+                    oldSm.StoreId = null;
+                    oldSm.UpdatedAt = DateTimeOffset.UtcNow;
+                }
+            }
         }
 
         // S10: 1 AM per area
@@ -61,11 +78,27 @@ public static class UpdateUser
             var existingAm = await RoleAssignmentGuard.FindExistingAreaManager(
                 db, request.AreaId.Value, id, ct);
             if (existingAm.HasValue)
-                return TypedResults.Conflict(new
+            {
+                if (!request.ForceReassign)
                 {
-                    error = "Area already has an area manager assigned",
-                    existingManagerId = existingAm.Value
-                });
+                    var existingName = await db.Profiles.Where(p => p.Id == existingAm.Value)
+                        .Select(p => p.FullName).FirstOrDefaultAsync(ct);
+                    return TypedResults.Conflict(new
+                    {
+                        error = "Area already has an area manager assigned",
+                        existingManagerId = existingAm.Value,
+                        existingManagerName = existingName,
+                    });
+                }
+                // Force reassign: null out old AM's AreaId
+                var oldAm = await db.Profiles.FirstOrDefaultAsync(p => p.Id == existingAm.Value, ct);
+                if (oldAm != null)
+                {
+                    previousManagerName = oldAm.FullName;
+                    oldAm.AreaId = null;
+                    oldAm.UpdatedAt = DateTimeOffset.UtcNow;
+                }
+            }
         }
 
         // Apply updates
@@ -91,15 +124,19 @@ public static class UpdateUser
 
         // Log the admin action
         var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var logMessage = request.ForceReassign && previousManagerName != null
+            ? $"Updated user {profile.FullName} ({profile.Email}): role={effectiveRole}, transferred from {previousManagerName}"
+            : $"Updated user {profile.FullName} ({profile.Email}): role={effectiveRole}";
+
         db.SystemLogs.Add(new SystemLog
         {
             Id = Guid.NewGuid(),
             UserId = callerId,
-            Action = "update_user",
+            Action = request.ForceReassign ? "transfer_role" : "update_user",
             Category = "admin",
             EntityType = "user",
             EntityId = id,
-            Message = $"Updated user {profile.FullName} ({profile.Email}): role={effectiveRole}",
+            Message = logMessage,
             Path = $"/api/admin/users/{id}",
             Level = "info",
             CreatedAt = DateTimeOffset.UtcNow
@@ -113,6 +150,8 @@ public static class UpdateUser
             role = userRole.Role,
             storeId = profile.StoreId,
             areaId = profile.AreaId,
+            transferred = request.ForceReassign && previousManagerName != null,
+            previousManagerName,
         });
     }
 }

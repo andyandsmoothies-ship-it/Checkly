@@ -18,14 +18,18 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
   - Which user group (e.g., admin, field auditor, viewer)
   - Which device type (mobile, desktop, tablet)
 
-## Phase 2: Evaluate
+## Phase 2: Source Code Walkthrough
+- **Instruction**: Before the heuristic pass, read the target page's source code to build a complete mental model of the page's behavior — what the user sees, what they can do, what feedback they receive, and what happens at every edge (loading, empty, error, offline). This mental model replaces the need for a screenshot and catches structural issues that visual inspection alone cannot reveal.
+- **Action**: Use `view_file` on the target page's source code. Trace widget trees, callbacks, and navigation flows.
+
+## Phase 3: Evaluate
 - **Instruction**: Follow the skill's **Evaluation Protocol** (Double Pass Pattern). Walk through the scoped task flow as the target user, then evaluate against all 10 heuristics on the second pass.
 - **Documentation**: Use the skill's **Deliverable Format** for each violation found.
 
 > [!IMPORTANT]
 > A design choice violating a heuristic does NOT automatically mean it needs fixing — context matters. Note justified tradeoffs as exceptions, not issues.
 
-## Phase 3: Consolidate & Deliver
+## Phase 4: Consolidate & Deliver
 - **Action**: Group similar issues, remove duplicates, and prioritize by severity.
 - **Deliverable**: Create a `ux_heuristic_eval_[scope].md` artifact with:
   1. **Evaluation Summary**: Scope, date, device, user group
