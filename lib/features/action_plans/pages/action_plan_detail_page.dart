@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../auth/manager/auth_manager.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
 import '../widgets/action_timeline.dart';
@@ -9,22 +10,273 @@ import '../widgets/action_timeline.dart';
 final _di = GetIt.instance;
 
 /// Action Plan detail page — timeline, info, evidence, role-aware actions.
-class ActionPlanDetailPage extends StatelessWidget {
+class ActionPlanDetailPage extends StatefulWidget {
   final String actionPlanId;
 
   const ActionPlanDetailPage({super.key, required this.actionPlanId});
 
   @override
+  State<ActionPlanDetailPage> createState() => _ActionPlanDetailPageState();
+}
+
+class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
+  late final ActionPlanManager _manager;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _manager = _di<ActionPlanManager>();
+  }
+
+  String get _userRole => _di<AuthManager>().currentUser?.role ?? '';
+
+  String get _userName =>
+      _di<AuthManager>().currentUser?.email.split('@').first ?? 'Unknown';
+
+  // ── Submit Evidence (Store Manager) ──
+  void _showSubmitEvidenceSheet(ActionPlanDto plan) {
+    final correctionCtrl = TextEditingController(text: plan.correctionPlan);
+    final evidenceCtrl = TextEditingController(text: plan.evidenceNote);
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          24,
+          24,
+          24 + MediaQuery.of(ctx).viewInsets.bottom,
+        ),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Submit Evidence',
+                style: Theme.of(
+                  ctx,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: correctionCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Correction Plan',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+                validator: (v) =>
+                    v == null || v.trim().isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: evidenceCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Evidence Note',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+                validator: (v) =>
+                    v == null || v.trim().isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () async {
+                  if (!formKey.currentState!.validate()) return;
+                  Navigator.pop(ctx);
+                  await _callManager(
+                    () => _manager.submitEvidence(
+                      plan,
+                      correctionPlan: correctionCtrl.text.trim(),
+                      evidenceNote: evidenceCtrl.text.trim(),
+                    ),
+                    successMsg: 'Evidence submitted — awaiting verification',
+                  );
+                },
+                child: const Text('Submit'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Verify & Close (Auditor / Admin) ──
+  void _showVerifyDialog(ActionPlanDto plan) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Verify & Close'),
+        content: const Text(
+          'Mark this action plan as resolved? This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _callManager(
+                () => _manager.closePlan(plan, verifierName: _userName),
+                successMsg: 'Action plan closed',
+              );
+            },
+            child: const Text('Verify & Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Reject (Auditor / Admin) ──
+  void _showRejectDialog(ActionPlanDto plan) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reject Evidence'),
+        content: const Text(
+          'Return this plan to open status? The store manager will '
+          'need to resubmit evidence.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _callManager(
+                () => _manager.rejectEvidence(plan),
+                successMsg: 'Evidence rejected — plan reopened',
+              );
+            },
+            child: const Text('Reject'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Shared manager call wrapper ──
+  Future<void> _callManager(
+    Future<ActionPlanDto> Function() fn, {
+    required String successMsg,
+  }) async {
+    setState(() => _busy = true);
+    try {
+      await fn();
+      await _manager.loadActionPlans();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(successMsg)));
+      }
+    } on RoleGuardException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Permission denied: $e')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  // ── Build role-aware action bar ──
+  Widget? _buildActionBar(ActionPlanDto plan) {
+    if (_busy) {
+      return const SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
+    final role = _userRole;
+    final status = plan.status;
+
+    // SM can submit evidence when plan is open
+    if (status == 'open' && role == 'store_manager') {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: FilledButton.icon(
+            onPressed: () => _showSubmitEvidenceSheet(plan),
+            icon: const Icon(Icons.upload_file),
+            label: const Text('Submit Evidence'),
+          ),
+        ),
+      );
+    }
+
+    // Auditor/Admin can verify or reject when pending
+    if (status == 'pending_verify' && (role == 'auditor' || role == 'admin')) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red),
+                  ),
+                  onPressed: () => _showRejectDialog(plan),
+                  child: const Text('Reject'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: FilledButton.icon(
+                  onPressed: () => _showVerifyDialog(plan),
+                  icon: const Icon(Icons.check_circle),
+                  label: const Text('Verify & Close'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return null; // No actions for this role/status combo
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final manager = _di<ActionPlanManager>();
 
     return ListenableBuilder(
-      listenable: manager,
+      listenable: _manager,
       builder: (context, _) {
-        final plan = manager.actionPlans.value
+        final plan = _manager.actionPlans.value
             .cast<ActionPlanDto?>()
-            .firstWhere((p) => p?.id == actionPlanId, orElse: () => null);
+            .firstWhere(
+              (p) => p?.id == widget.actionPlanId,
+              orElse: () => null,
+            );
 
         if (plan == null) {
           return Scaffold(
@@ -40,6 +292,7 @@ class ActionPlanDetailPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(title: Text(plan.criteriaLabel)),
+          bottomNavigationBar: _buildActionBar(plan),
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
