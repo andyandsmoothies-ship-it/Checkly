@@ -33,6 +33,11 @@ Before ANY technical implementation or research:
 2. **Invocation**: For project-specific business logic, refer to the Rules in `.agents/rules/`. For cross-project behaviors, refer to the Skills in `.agents/skills/`.
 3. **Task-Based Application**: Apply the patterns defined in the relevant Rule or Skill for the current task.
 
+## The Surgical Strike Mandate (Preventing Comprehension Debt)
+- **Problem**: "Just Regenerating" entire files destroys institutional context (hidden edge cases, vendor quirks) and creates massive Comprehension Debt for human reviewers.
+- **Rule**: You are STRICTLY FORBIDDEN from rewriting an entire file or massive function from scratch just to implement a missing feature.
+- **Action**: You MUST use surgical, targeted edits. Preserve the existing code structure, even if it looks slightly "messy." Only re-architect lines if specifically ordered to perform a refactor.
+
 ## The Anti-MacGyver Protocol (STRICT)
 Before implementing ANY local utility behavior, routing logic, data transformation, or UI component:
 - **Rule**: You MUST execute a `grep_search` within `server/Common/` or `lib/_shared/`.
@@ -80,8 +85,8 @@ Agents MUST NOT dump test logs, build outputs, or scratchpad files (`build.txt`,
 After completing any significant implementation, debug, or refactor, assess whether a new LESSON, GOTCHA, or PATTERN was discovered that must be preserved.
 
 1. **Target File**: Update `.agents/rules/project-gotchas.md`. Do NOT use `AGENTS.md`.
-2. **Curation Rules (Preventing Bloat)**:
-   - **DO ADD**: Highly specific, project-breaking quirks.
+2. **Curation Rules (Preventing Bloat & Comprehension Debt)**:
+   - **DO ADD**: Highly specific, project-breaking quirks or vendor-specific edge cases. This acts as our defense against future AI "cleanups" breaking production.
    - **DO ADD**: Architectural decisions that deviate from standard tutorials.
    - **DO ADD**: Undocumented library bugs or workarounds specific to this stack.
    - **DO NOT ADD**: Generic C#, Dart, or Flutter knowledge.

@@ -22,6 +22,9 @@ description: Verification gate for any upstream workflow — validates that anal
   - Locate the "Behavioral Expectations" formulated during the analysis phase.
   - You MUST act as an **Adversarial Reviewer** (Sentinel persona). Do NOT accept "Generative Evidence" (the builder merely claiming it works).
   - You MUST demand **Executed Evidence**: exact terminal logs, API responses, or database query results proving the expectation is met. If the output is missing, you must run the code to verify.
+**Non-Testable Accountability (UX & Efficiency)**:
+  - DO NOT rely solely on test coverage. 100% coverage represents what executes, not what matters.
+  - You MUST evaluate the changes for Big-O complexity, database query inefficiency (N+1), memory leaks, and UX degradation. If the code passes tests but wastes system resources or creates a poor user experience, flag it as a failure.
 </strict-instruction>
 
 ## Phase 2: CI Gate — Validation & Output Parsing
