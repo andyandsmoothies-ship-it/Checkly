@@ -12,6 +12,11 @@ Before ANY technical implementation, research, or audit, you MUST perform a ment
 - **Rules Compliance**: [Confirm coding patterns follow project governance and orchestration rules]
 - **Context Inventory**: [Explicitly list all `.md` rule files, MCP schemas, or documentation URLs you referenced to produce this response/artifact]
 
+## The Context Flushing Rule (Combating Context Decay)
+LLMs suffer from context decay; instructions given earlier in long sessions lose their weight. Do not rely on conversational memory for long-running tasks.
+- **Action**: Whenever you cross a new `/task_boundary` or shift to a new phase of work, you MUST physically re-read (`view_file`) the canonical `implementation_plan.md` and applicable workspace rules.
+- **Purpose**: This refreshes the exact "shape of the container" at the top of your context window, erasing the time-bias decay. Treat `.md` artifacts as the true "Externalized Memory".
+
 ## Pre-Flight Check (CANONICAL)
 <pre-flight-check>
 Before ANY workflow response that involves analysis, design, or implementation:
@@ -27,6 +32,17 @@ Before ANY technical implementation or research:
 1. **Discovery**: Match the task to available skills in `.agents/skills/` (e.g., `clean_coder`, `systematic-debugging`).
 2. **Invocation**: For project-specific business logic, refer to the Rules in `.agents/rules/`. For cross-project behaviors, refer to the Skills in `.agents/skills/`.
 3. **Task-Based Application**: Apply the patterns defined in the relevant Rule or Skill for the current task.
+
+## The Anti-MacGyver Protocol (STRICT)
+Before implementing ANY local utility behavior, routing logic, data transformation, or UI component:
+- **Rule**: You MUST execute a `grep_search` within `server/Common/` or `lib/_shared/`.
+- **Purpose**: You must prove you are using the project's existing "Stove" (canonical tools) before you are allowed to build a "Lighter" (custom local logic).
+- **Prohibition**: Do not write custom date parsers, unauthorized navigation extensions, or ad-hoc security guards. Use what exists.
+
+## The Micro-Verification Mandate
+During the implementation phase, do not wait until the entire feature is coded to verify stability.
+- **Rule**: You MUST run `dotnet build`, `flutter analyze`, or the relevant test suite after **EVERY single file modification or major logical step**.
+- **Purpose**: Catch "myopic" compiler-level decisions and state violations immediately before they pollute the rest of the causal chain.
 
 ## Artifact Protocol
 <artifact-protocol>

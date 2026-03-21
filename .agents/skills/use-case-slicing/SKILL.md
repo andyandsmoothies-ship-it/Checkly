@@ -34,6 +34,10 @@ A "Use-Case Slice" is a slice of a use case that provides clear value to stakeho
 - Slices should minimize cross-feature coupling. Later slices should not break earlier slices.
 - If an epic is large, isolate the highest risk or core value in Slice 1.
 
+### Rule 5: Slices MUST Enforce State Invariants (The Causal Chain)
+- To prevent "myopic" local decisions that break the broader flow, every slice MUST explicitly define its **Entry State Required** (preconditions) and **Exit State Guaranteed** (postconditions).
+- When implementing a slice, the first action must be to assert the Entry State. The final action must guarantee the Exit State.
+
 ---
 
 ### AI-First Development Constraint
@@ -51,5 +55,7 @@ When orchestrating work or handing off an analysis plan (e.g., in `analysis_[top
 **Slice [N]: [Name of the Slice]**
 - **Scenario Focus**: [Is this the Basic Scenario or an Extension?]
 - **Value Delivered**: [What can the user actually click or achieve when this is done?]
+- **Entry State Required**: [What MUST be true before this slice can begin? e.g., "Submission ID must exist and be in 'draft' status."]
+- **Exit State Guaranteed**: [What invariant MUST hold true after this slice completes? e.g., "ActionPlan entities are created within the same transaction."]
 - **Architectural Scope**: [Explicitly mention the UI, Backend, and DB components this slice will touch]
 - **Acceptance Criteria**: [How will we reliably test that this end-to-end slice is complete?]

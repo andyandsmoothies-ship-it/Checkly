@@ -62,6 +62,16 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 
 If an AC **cannot be tested** due to a pre-existing bug or missing infrastructure, apply the **Skip-With-Reason Protocol** from `atdd-quality-gates` skill Gate 4. Never comment out tests — use `[Fact(Skip = "reason")]` (xUnit) or `it.skip()` (Vitest) so they remain visible in test reports.
 
+### 2e. The Saboteur Protocol (Mutation Verification)
+
+> [!CAUTION]
+> AI agents act like water flowing to the path of least resistance. They will write tests that just "run" rather than tests that "mean something". To prove the tests actually enforce intent, you must perform manual mutation testing.
+
+- **Action**: Before declaring test coverage complete, the Sentinel MUST intentionally sabotage one piece of core business logic in the source code (e.g., change a `>=` to a `<`, remove a validation check, or alter a required property).
+- **Execution**: Run the tests.
+- **Pass/Fail**: If the tests still PASS despite the sabotaged code, the tests are weak ("leaky container"). Sentinel must reject the tests and force the Builder to write stronger assertions. Only when the tests successfully FAIL on sabotaged code are they considered stable.
+- **Cleanup**: Revert the sabotage in the source code immediately after the check.
+
 ## Phase 3: Deliverable (The Handoff)
 - **Requirement**: Output the failed test evidence and specifications.
 - **Action**: Create a `specs_[feature].md` artifact and commit the failing test code to the test project.
