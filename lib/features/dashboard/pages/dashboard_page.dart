@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -10,15 +9,14 @@ import '../../auth/manager/auth_manager.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/section_header.dart';
-import '../../../_shared/widgets/stat_block.dart';
-import '../../../_shared/database/database_service.dart';
+import '../../../_shared/database/app_database.dart';
 import '../manager/dashboard_manager.dart';
 import '../../notifications/widgets/notification_bell.dart';
-import '../widgets/tactical_history_drawer.dart';
 
 final _di = GetIt.instance;
 
-/// Dashboard page — "Mission Control" matching PWA spec.
+/// Dashboard page — "The Checkly Stream" enterprise layout.
+/// Compact header + Bento Box action cards + chronological submission feed.
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -36,44 +34,6 @@ class _DashboardPageState extends State<DashboardPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _manager.loadStats();
     });
-  }
-
-  Future<void> _openCategoryDrawer(String categoryType) async {
-    final db = _di<DatabaseService>().db;
-
-    // Find template IDs matching this category type
-    final templates = await db.select(db.cachedTemplates).get();
-    final catTemplateIds = templates
-        .where((t) => t.type == categoryType)
-        .map((t) => t.id)
-        .toSet();
-
-    // Query last 10 submissions for those templates
-    final allSubs = await db.select(db.cachedSubmissions).get();
-    final filtered =
-        allSubs.where((s) => catTemplateIds.contains(s.templateId)).toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-    final auditMaps = filtered
-        .take(10)
-        .map(
-          (s) => <String, dynamic>{
-            'id': s.id,
-            'storeName': s.storeName ?? 'Unknown Store',
-            'totalScore': s.totalScore,
-            'status': s.status,
-            'createdAt': s.createdAt.toIso8601String(),
-          },
-        )
-        .toList();
-
-    if (mounted) {
-      TacticalHistoryDrawer.show(
-        context,
-        categoryName: categoryType,
-        audits: auditMaps,
-      );
-    }
   }
 
   void _showScheduleSheet(BuildContext context) {
@@ -142,9 +102,9 @@ class _DashboardPageState extends State<DashboardPage> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
               children: [
-                // ── Apothecary Header ──
+                // ── Compact Header: Greeting + Progress ──
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Column(
@@ -153,7 +113,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           Text(
                             _greeting(),
                             style: AppFonts.serifStyle(
-                              fontSize: 30,
+                              fontSize: 26,
                               color: AppTheme.charcoal,
                             ),
                           ),
@@ -170,138 +130,156 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
                     ),
+                    // Compact progress indicator
+                    SizedBox(
+                      width: 64,
+                      height: 64,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            value: progress,
+                            strokeWidth: 4,
+                            backgroundColor: AppTheme.sageGray.withValues(
+                              alpha: 0.3,
+                            ),
+                            color: theme.colorScheme.primary,
+                          ),
+                          Text(
+                            '$percentage%',
+                            style: AppFonts.serifStyle(
+                              fontSize: 16,
+                              color: AppTheme.charcoal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     const NotificationBell(),
                   ],
                 ),
 
-                // ── Circular Progress Ring ──
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: Center(
-                    child: SizedBox(
-                      width: 192,
-                      height: 192,
-                      child: CustomPaint(
-                        painter: _ProgressRingPainter(
-                          progress: progress,
-                          trackColor: AppTheme.sageGray.withValues(alpha: 0.3),
-                          progressColor: theme.colorScheme.primary,
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '$percentage%',
-                                style: AppFonts.serifStyle(
-                                  fontSize: 48,
-                                  color: AppTheme.charcoal,
-                                ),
-                              ),
-                              Text(
-                                'SCORE',
-                                style: AppFonts.displayStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppTheme.charcoal.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                  letterSpacing: 3,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 24),
 
-                // ── Asymmetric Stats ──
+                // ── Bento Box: Action Center ──
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () => context.go('/plans?filter=open'),
-                          child: StatBlock(
-                            value: '${stats.pendingActionPlanCount}',
-                            label: 'Open Action Plans',
-                          ),
-                        ),
+                      child: _DashboardCard(
+                        icon: Icons.pending_actions,
+                        label: 'Open APs',
+                        value: '${stats.pendingActionPlanCount}',
+                        color: const Color(0xFFFEEAD1), // soft peach
+                        iconColor: AppTheme.warning,
+                        onTap: () => context.go('/plans?filter=open'),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    SizedBox(
-                      width: 128,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () => context.go('/activity'),
-                          child: StatBlock.compact(
-                            value: '${stats.recentAuditCount}',
-                            label: 'Recent Audits',
-                          ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _DashboardCard(
+                        icon: Icons.assignment,
+                        label: 'Audits',
+                        value: '${stats.recentAuditCount}',
+                        color: theme.colorScheme.surface,
+                        iconColor: theme.colorScheme.primary,
+                        onTap: () => context.go('/activity'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _DashboardCard(
+                        icon: Icons.warning_amber,
+                        label: 'Overdue',
+                        value: '${stats.overdueActionPlanCount}',
+                        color: Colors.red.withValues(alpha: 0.08),
+                        iconColor: Colors.red,
+                        onTap: () => context.go('/plans?sort=urgent'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _DashboardCard(
+                        icon: Icons.speed,
+                        label: 'Avg Score',
+                        value: '${stats.averageScore}%',
+                        color: AppTheme.success.withValues(alpha: 0.08),
+                        iconColor: AppTheme.success,
+                        onTap: () => context.go('/analytics'),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+
+                // ── Latest Submissions Header ──
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(child: SectionHeader('LATEST SUBMISSIONS')),
+                    InkWell(
+                      onTap: () => context.go('/activity'),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'VIEW ALL',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Icon(
+                              Icons.chevron_right,
+                              size: 16,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 12),
 
-                // ── Recent Scans Section Header ──
-                const SectionHeader('RECENT SCANS'),
-
-                // ── Per-Template Sections ──
-                ...stats.templateCategories.map(
-                  (cat) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Material(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () => _openCategoryDrawer(cat.type),
-                        child: _TemplateCategorySection(category: cat),
+                // ── Submission Feed ──
+                if (stats.recentSubmissions.isEmpty)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          'No audits yet — start your first one!',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
                     ),
+                  )
+                else
+                  ...stats.recentSubmissions.map(
+                    (sub) => _SubmissionFeedRow(submission: sub),
                   ),
-                ),
-
-                // If no categories, show overall stats
-                if (stats.templateCategories.isEmpty) ...[
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => context.go('/activity'),
-                      child: _StatCard(
-                        icon: Icons.assignment_turned_in,
-                        label: 'Total Audits',
-                        value: '${stats.recentAuditCount}',
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => context.go('/analytics'),
-                      child: _StatCard(
-                        icon: Icons.score,
-                        label: 'Average Score',
-                        value: '${stats.averageScore}%',
-                        color: AppTheme.success,
-                      ),
-                    ),
-                  ),
-                ],
               ],
             ),
           );
@@ -322,248 +300,163 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-// ── Progress Ring Painter (Apothecary) ──
+// ── Bento Box Card ──
 
-class _ProgressRingPainter extends CustomPainter {
-  final double progress;
-  final Color trackColor;
-  final Color progressColor;
-
-  _ProgressRingPainter({
-    required this.progress,
-    required this.trackColor,
-    required this.progressColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 4;
-
-    // Track ring
-    final trackPaint = Paint()
-      ..color = trackColor
-      ..strokeWidth = 4
-      ..style = PaintingStyle.stroke;
-    canvas.drawCircle(center, radius, trackPaint);
-
-    // Progress arc
-    final progressPaint = Paint()
-      ..color = progressColor
-      ..strokeWidth = 4
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -math.pi / 2,
-      2 * math.pi * progress,
-      false,
-      progressPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _ProgressRingPainter oldDelegate) =>
-      oldDelegate.progress != progress;
-}
-
-// ── Template Category Section ──
-
-class _TemplateCategorySection extends StatelessWidget {
-  final TemplateCategoryStats category;
-
-  const _TemplateCategorySection({required this.category});
-
-  Color _categoryColor() => switch (category.type.toLowerCase()) {
-    'quality_control' || 'quality control' => Colors.blue,
-    'training' || 'training assessment' => Colors.green,
-    'operations' => Colors.orange,
-    'safety' => Colors.red,
-    _ => Colors.teal,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = _categoryColor();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section header
-        Row(
-          children: [
-            Container(
-              width: 4,
-              height: 20,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                category.type.toUpperCase(),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-            Text(
-              'VIEW ALL',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              size: 16,
-              color: theme.colorScheme.primary,
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Two stat cards side-by-side
-        Row(
-          children: [
-            Expanded(
-              child: _MiniStatCard(
-                label: 'ACTIVITY',
-                value: '${category.pendingCount}',
-                subtitle: 'pending',
-                color: AppTheme.info,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _MiniStatCard(
-                label: 'WEAK STORES',
-                value: '${category.weakStoreCount}',
-                subtitle: 'score < 80%',
-                color: AppTheme.warning,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _MiniStatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final String subtitle;
-  final Color color;
-
-  const _MiniStatCard({
-    required this.label,
-    required this.value,
-    required this.subtitle,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Fallback Stat Card ──
-
-class _StatCard extends StatelessWidget {
+class _DashboardCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
   final Color color;
+  final Color iconColor;
+  final VoidCallback onTap;
 
-  const _StatCard({
+  const _DashboardCard({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
+    required this.iconColor,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
+                  Icon(icon, color: iconColor, size: 20),
+                  const Spacer(),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 16,
+                    color: AppTheme.charcoal.withValues(alpha: 0.3),
                   ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                value,
+                style: AppFonts.serifStyle(
+                  fontSize: 32,
+                  color: AppTheme.charcoal,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label.toUpperCase(),
+                style: AppFonts.displayStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.charcoal.withValues(alpha: 0.5),
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+}
+
+// ── Submission Feed Row ──
+
+class _SubmissionFeedRow extends StatelessWidget {
+  final CachedSubmission submission;
+
+  const _SubmissionFeedRow({required this.submission});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final score = submission.totalScore;
+    final scoreColor = score != null
+        ? (score >= 80 ? AppTheme.success : Colors.red)
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.go('/activity'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      submission.templateTitle ?? 'Audit',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${submission.storeName ?? 'Unknown'} · ${_timeAgo(submission.createdAt)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (score != null)
+                Text(
+                  '${score.toStringAsFixed(0)}%',
+                  style: AppFonts.serifStyle(fontSize: 22, color: scoreColor),
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    submission.status.toUpperCase(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.tertiary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _timeAgo(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${date.day}/${date.month}';
   }
 }
 
@@ -578,103 +471,69 @@ class _DashboardSkeleton extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
       children: [
         // Header shimmer
-        const _ShimmerBox(width: 200, height: 32),
-        const SizedBox(height: 8),
-        const _ShimmerBox(width: 140, height: 14),
-        const SizedBox(height: 32),
-
-        // Progress ring shimmer
-        Center(
-          child: Container(
-            width: 192,
-            height: 192,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade200, width: 4),
-            ),
-            child: Center(
+        Row(
+          children: [
+            const Expanded(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ShimmerBox(width: 80, height: 40),
-                  const SizedBox(height: 4),
-                  _ShimmerBox(width: 50, height: 12),
+                  _ShimmerBox(width: 200, height: 28),
+                  SizedBox(height: 8),
+                  _ShimmerBox(width: 140, height: 14),
                 ],
               ),
             ),
-          ),
+            _ShimmerBox(width: 64, height: 64),
+          ],
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
 
-        // Stats row shimmer
+        // Bento box shimmer
         Row(
           children: [
-            Expanded(child: _ShimmerBox(height: 72)),
-            const SizedBox(width: 16),
-            SizedBox(width: 128, child: _ShimmerBox(height: 72)),
+            Expanded(child: _ShimmerBox(height: 110)),
+            const SizedBox(width: 12),
+            Expanded(child: _ShimmerBox(height: 110)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(child: _ShimmerBox(height: 110)),
+            const SizedBox(width: 12),
+            Expanded(child: _ShimmerBox(height: 110)),
           ],
         ),
         const SizedBox(height: 32),
 
-        // Section header shimmer
-        const _ShimmerBox(width: 120, height: 14),
-        const SizedBox(height: 16),
-
-        // Category cards shimmer
-        _ShimmerBox(height: 100),
-        const SizedBox(height: 16),
-        _ShimmerBox(height: 100),
+        // Feed shimmer
+        const _ShimmerBox(width: 160, height: 14),
+        const SizedBox(height: 12),
+        _ShimmerBox(height: 72),
+        const SizedBox(height: 8),
+        _ShimmerBox(height: 72),
+        const SizedBox(height: 8),
+        _ShimmerBox(height: 72),
       ],
     );
   }
 }
 
-class _ShimmerBox extends StatefulWidget {
+class _ShimmerBox extends StatelessWidget {
   final double? width;
   final double height;
 
   const _ShimmerBox({this.width, this.height = 16});
 
   @override
-  State<_ShimmerBox> createState() => _ShimmerBoxState();
-}
-
-class _ShimmerBoxState extends State<_ShimmerBox>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final opacity =
-            0.15 +
-            0.15 * (0.5 + 0.5 * math.sin(_controller.value * 2 * math.pi));
-        return Container(
-          width: widget.width,
-          height: widget.height,
-          decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: opacity),
-            borderRadius: BorderRadius.circular(8),
-          ),
-        );
-      },
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
     );
   }
 }

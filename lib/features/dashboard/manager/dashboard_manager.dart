@@ -6,19 +6,6 @@ import '../../../_shared/database/app_database.dart';
 
 final _di = GetIt.instance;
 
-/// Per-template category stats for dashboard sections.
-class TemplateCategoryStats {
-  final String type;
-  final int pendingCount;
-  final int weakStoreCount;
-
-  const TemplateCategoryStats({
-    required this.type,
-    required this.pendingCount,
-    required this.weakStoreCount,
-  });
-}
-
 /// Dashboard statistics computed from the local Drift cache.
 class DashboardStats {
   final int recentAuditCount;
@@ -30,7 +17,7 @@ class DashboardStats {
   final DateTime? nearestDeadline;
   final int monthlyCompleted;
   final int monthlyTotal;
-  final List<TemplateCategoryStats> templateCategories;
+  final List<CachedSubmission> recentSubmissions;
 
   const DashboardStats({
     this.recentAuditCount = 0,
@@ -42,7 +29,7 @@ class DashboardStats {
     this.nearestDeadline,
     this.monthlyCompleted = 0,
     this.monthlyTotal = 0,
-    this.templateCategories = const [],
+    this.recentSubmissions = const [],
   });
 }
 
@@ -109,51 +96,15 @@ class DashboardManager extends ChangeNotifier {
         return avg < 80;
       }).length;
 
-      // ── Templates (for per-category breakdown) ──
-      final templates = await _db.select(_db.cachedTemplates).get();
-
       // Monthly total = templates × stores (active audit plan targets)
+      final templates = await _db.select(_db.cachedTemplates).get();
       final stores = await _db.select(_db.cachedStores).get();
       final monthlyTotal = templates.length * stores.length;
 
-      // Per-template category stats
-      final categoryMap = <String, List<String>>{}; // type → [templateId]
-      for (final t in templates) {
-        categoryMap.putIfAbsent(t.type, () => []).add(t.id);
-      }
-
-      final categoryStats = <TemplateCategoryStats>[];
-      for (final entry in categoryMap.entries) {
-        final catTemplateIds = entry.value;
-
-        // Pending count: open APs for these templates' submissions
-        final catSubmissionIds = submissions
-            .where((s) => catTemplateIds.contains(s.templateId))
-            .map((s) => s.id)
-            .toSet();
-
-        // WeakStores for this category
-        final catStoreScores = <String, List<double>>{};
-        for (final s in submissions) {
-          if (catTemplateIds.contains(s.templateId) &&
-              s.storeId != null &&
-              s.totalScore != null) {
-            catStoreScores.putIfAbsent(s.storeId!, () => []).add(s.totalScore!);
-          }
-        }
-        final catWeakStores = catStoreScores.entries.where((e) {
-          final avg = e.value.reduce((a, b) => a + b) / e.value.length;
-          return avg < 80;
-        }).length;
-
-        categoryStats.add(
-          TemplateCategoryStats(
-            type: entry.key,
-            pendingCount: catSubmissionIds.length,
-            weakStoreCount: catWeakStores,
-          ),
-        );
-      }
+      // ── Recent submissions for the feed (top 5, sorted by createdAt) ──
+      final sortedSubs = List.of(submissions)
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final recentSubs = sortedSubs.take(5).toList();
 
       // ── Action Plans ──
       final openPlans = await (_db.select(
@@ -194,7 +145,7 @@ class DashboardManager extends ChangeNotifier {
         nearestDeadline: nearestDeadline,
         monthlyCompleted: monthlyCompleted,
         monthlyTotal: monthlyTotal > 0 ? monthlyTotal : 1,
-        templateCategories: categoryStats,
+        recentSubmissions: recentSubs,
       );
     } catch (_) {
       // If cache is empty or DB not ready, use defaults
