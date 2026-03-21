@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
@@ -351,7 +352,11 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     const SectionHeader('6-MONTH TREND'),
 
                     // Trend chart (fl_chart LineChart)
-                    TrendChart(data: _trend),
+                    TrendChart(
+                      data: _trend,
+                      onMonthTap: (month) =>
+                          context.go('/activity?month=$month'),
+                    ),
 
                     const SizedBox(height: 24),
 

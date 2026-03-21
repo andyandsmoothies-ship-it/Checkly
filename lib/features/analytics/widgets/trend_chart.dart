@@ -20,8 +20,9 @@ class TrendPoint {
 /// - "No data yet" placeholder when [data] is empty (AC2)
 class TrendChart extends StatelessWidget {
   final List<TrendPoint> data;
+  final void Function(String month)? onMonthTap;
 
-  const TrendChart({super.key, required this.data});
+  const TrendChart({super.key, required this.data, this.onMonthTap});
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +158,21 @@ class TrendChart extends StatelessWidget {
                 ),
               ],
               lineTouchData: LineTouchData(
+                touchCallback: (event, response) {
+                  if (event is! FlTapUpEvent) return;
+                  if (onMonthTap == null) return;
+                  final spots = response?.lineBarSpots;
+                  if (spots == null || spots.isEmpty) return;
+                  // First spot from the score line (barIndex 0)
+                  final spot = spots.firstWhere(
+                    (s) => s.barIndex == 0,
+                    orElse: () => spots.first,
+                  );
+                  final idx = spot.x.toInt();
+                  if (idx >= 0 && idx < data.length && data[idx].count > 0) {
+                    onMonthTap!(data[idx].month);
+                  }
+                },
                 touchTooltipData: LineTouchTooltipData(
                   getTooltipItems: (touchedSpots) {
                     return touchedSpots.map((spot) {

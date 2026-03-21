@@ -56,7 +56,8 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/activity',
-          builder: (context, state) => const HistoryPage(),
+          builder: (context, state) =>
+              HistoryPage(initialMonth: state.uri.queryParameters['month']),
         ),
         GoRoute(
           path: '/plans',

@@ -37,6 +37,11 @@ description: The Core Builder Implementation Workflow.
   1. Use `grep_search` / `view_file` to confirm the files listed in the plan actually exist and match the described state.
   2. Spot-check at least ONE blast radius claim — read the referenced file and verify the dependency exists.
   3. If ANY claim contradicts the actual code → **STOP**. Flag the discrepancy to the user. Do not code against a stale plan.
+- **"Worth Doing?" Gate (Mandatory Critical Thinking)**: Even if the plan is technically correct and passes all checks above, you MUST independently evaluate whether it delivers real value. Ask yourself:
+  1. **Complexity vs. Benefit**: Does this change add complexity (raw SQL, new abstractions, extra files) that isn't justified by a real, observable problem today? Premature optimization is a code smell, not a feature.
+  2. **YAGNI Check**: Is the plan solving a problem the user actually has, or a hypothetical future problem? If the answer is "it would matter at 10,000 rows" but the user has 200, flag it.
+  3. **Readability Trade**: Does the "improved" version make the code harder to understand, debug, or maintain? Simpler code that a junior dev can read beats clever code that only the author understands.
+  4. **Action**: If ANY of the above raise concerns → **tell the user honestly**. Present a clear comparison table (Before vs. After) with trade-offs. Let them decide. Do NOT silently implement changes you believe are net-negative.
 
 ## Phase 3: Coding (Builder Execution — Quality Built In)
 - **Instruction**: Put on your "Senior Developer" hat. Quality is built in during coding, not inspected out after.
@@ -65,8 +70,10 @@ description: The Core Builder Implementation Workflow.
   | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough_[topic].md` as a "Show and Tell" for async knowledge sharing — not a gate. |
   | **Ask** | Architectural change, new DB migration, security-sensitive | Use `notify_user` to request review BEFORE committing. Include numbered test scenarios with Steps, Expected, and Blast Radius. |
 
-- **Walkthrough** (for Show and Ask): Create `walkthrough_[topic].md` with a **Verification Handoff** section. Each scenario must have:
-  - **Steps**: Exact user actions to reproduce
-  - **Expected**: Observable correct behavior
-  - **Blast radius**: Related features to regression-test
+- **Walkthrough** (for Show and Ask): Create `walkthrough_[topic].md` with:
+  - **Decision Log** (mandatory when the source plan proposed multiple features): A table showing each proposed feature with its verdict (✅ Implemented, ⏳ Deferred, ❌ Rejected) and a one-line rationale. This captures WHY things were or weren't built, so future sessions don't re-propose rejected ideas.
+  - **Verification Handoff**: Each scenario must have:
+    - **Steps**: Exact user actions to reproduce
+    - **Expected**: Observable correct behavior
+    - **Blast radius**: Related features to regression-test
 - **Drift Check**: Run `git status` / `git diff` to verify only planned files were changed. Fix any violations before handoff.

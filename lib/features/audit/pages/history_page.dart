@@ -16,7 +16,9 @@ final _di = GetIt.instance;
 
 /// Audits page — search, filter chips, grouped by store.
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+  final String? initialMonth; // e.g. '2026-03' from trend chart drill-down
+
+  const HistoryPage({super.key, this.initialMonth});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -86,6 +88,20 @@ class _HistoryPageState extends State<HistoryPage> {
                 (s.templateTitle ?? '').toLowerCase().contains(q),
           )
           .toList();
+    }
+
+    // Filter by month (from trend chart drill-down)
+    if (widget.initialMonth != null) {
+      final parts = widget.initialMonth!.split('-');
+      if (parts.length == 2) {
+        final y = int.tryParse(parts[0]);
+        final m = int.tryParse(parts[1]);
+        if (y != null && m != null) {
+          items = items
+              .where((s) => s.createdAt.year == y && s.createdAt.month == m)
+              .toList();
+        }
+      }
     }
 
     return items;
