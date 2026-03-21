@@ -137,14 +137,30 @@ class _DashboardPageState extends State<DashboardPage> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          CircularProgressIndicator(
-                            value: progress,
-                            strokeWidth: 4,
-                            backgroundColor: AppTheme.sageGray.withValues(
-                              alpha: 0.3,
+                          if (progress == 0.0)
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppTheme.sageGray.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  width: 4,
+                                ),
+                              ),
+                            )
+                          else
+                            CircularProgressIndicator(
+                              value: progress,
+                              strokeWidth: 4,
+                              strokeCap: StrokeCap.round,
+                              backgroundColor: AppTheme.sageGray.withValues(
+                                alpha: 0.3,
+                              ),
+                              color: theme.colorScheme.primary,
                             ),
-                            color: theme.colorScheme.primary,
-                          ),
                           Text(
                             '$percentage%',
                             style: AppFonts.serifStyle(
@@ -206,7 +222,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       child: _DashboardCard(
                         icon: Icons.speed,
                         label: 'Avg Score',
-                        value: '${stats.averageScore}%',
+                        value:
+                            '${stats.averageScore.truncateToDouble() == stats.averageScore ? stats.averageScore.toStringAsFixed(0) : stats.averageScore.toStringAsFixed(1)}%',
                         color: AppTheme.success.withValues(alpha: 0.08),
                         iconColor: AppTheme.success,
                         onTap: () => context.go('/analytics'),
@@ -219,13 +236,17 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 // ── Latest Submissions Header ──
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 4,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(2),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 1),
+                      child: Container(
+                        width: 4,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -340,10 +361,13 @@ class _DashboardCard extends StatelessWidget {
                 children: [
                   Icon(icon, color: iconColor, size: 20),
                   const Spacer(),
-                  Icon(
-                    Icons.chevron_right,
-                    size: 16,
-                    color: AppTheme.charcoal.withValues(alpha: 0.3),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2, right: 2),
+                    child: Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: AppTheme.charcoal.withValues(alpha: 0.3),
+                    ),
                   ),
                 ],
               ),
