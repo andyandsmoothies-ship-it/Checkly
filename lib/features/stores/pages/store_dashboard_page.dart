@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/theme/app_fonts.dart';
@@ -97,7 +98,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                   child: Column(
                     children: [
                       Text(
-                        'Average Score',
+                        'Trailing 6-Month Average',
                         style: AppFonts.displayStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -229,6 +230,16 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                       ),
                     );
                   }),
+
+                // View All History button
+                if (_recentAudits.isNotEmpty)
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () => context.go('/activity'),
+                      icon: const Icon(Icons.history, size: 16),
+                      label: const Text('View All History'),
+                    ),
+                  ),
               ],
             ),
     );

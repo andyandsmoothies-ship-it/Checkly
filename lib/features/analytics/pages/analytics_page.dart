@@ -160,6 +160,78 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     setState(() => _loading = false);
   }
 
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Filters',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedStore,
+              isExpanded: true,
+              decoration: const InputDecoration(
+                labelText: 'Store',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                const DropdownMenuItem(value: null, child: Text('All Stores')),
+                ..._storeNames.map(
+                  (s) => DropdownMenuItem(
+                    value: s,
+                    child: Text(s, overflow: TextOverflow.ellipsis),
+                  ),
+                ),
+              ],
+              onChanged: (v) {
+                _selectedStore = v;
+                Navigator.pop(context);
+                setState(() => _loading = true);
+                _loadData();
+              },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              value: _selectedType,
+              isExpanded: true,
+              decoration: const InputDecoration(
+                labelText: 'Audit Type',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                const DropdownMenuItem(value: null, child: Text('All Types')),
+                ..._templateTypes.map(
+                  (t) => DropdownMenuItem(
+                    value: t,
+                    child: Text(t, overflow: TextOverflow.ellipsis),
+                  ),
+                ),
+              ],
+              onChanged: (v) {
+                _selectedType = v;
+                Navigator.pop(context);
+                setState(() => _loading = true);
+                _loadData();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -173,89 +245,37 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  // ── Filter Dropdowns ──
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      // Store filter
-                      SizedBox(
-                        width: (MediaQuery.sizeOf(context).width - 40) / 2,
-                        child: DropdownButtonFormField<String>(
-                          initialValue: _selectedStore,
-                          isExpanded: true,
-                          borderRadius: BorderRadius.circular(12),
-                          decoration: const InputDecoration(
-                            labelText: 'Store',
-                            isDense: true,
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
-                          ),
-                          items: [
-                            const DropdownMenuItem(
-                              value: null,
-                              child: Text('All Stores'),
-                            ),
-                            ..._storeNames.map(
-                              (s) => DropdownMenuItem(
-                                value: s,
-                                child: Text(s, overflow: TextOverflow.ellipsis),
-                              ),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            _selectedStore = v;
-                            setState(() => _loading = true);
-                            _loadData();
-                          },
-                        ),
-                      ),
-                      // Type filter
-                      SizedBox(
-                        width: (MediaQuery.sizeOf(context).width - 40) / 2,
-                        child: DropdownButtonFormField<String>(
-                          initialValue: _selectedType,
-                          isExpanded: true,
-                          borderRadius: BorderRadius.circular(12),
-                          decoration: const InputDecoration(
-                            labelText: 'Type',
-                            isDense: true,
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
-                          ),
-                          items: [
-                            const DropdownMenuItem(
-                              value: null,
-                              child: Text('All Types'),
-                            ),
-                            ..._templateTypes.map(
-                              (t) => DropdownMenuItem(
-                                value: t,
-                                child: Text(t, overflow: TextOverflow.ellipsis),
-                              ),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            _selectedType = v;
-                            setState(() => _loading = true);
-                            _loadData();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Date range chips
+                  // ── Filter Chip Bar ──
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
+                        // Active filter chips
+                        if (_selectedStore != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InputChip(
+                              label: Text(_selectedStore!),
+                              onDeleted: () {
+                                _selectedStore = null;
+                                setState(() => _loading = true);
+                                _loadData();
+                              },
+                            ),
+                          ),
+                        if (_selectedType != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InputChip(
+                              label: Text(_selectedType!),
+                              onDeleted: () {
+                                _selectedType = null;
+                                setState(() => _loading = true);
+                                _loadData();
+                              },
+                            ),
+                          ),
+                        // Date range chips
                         WarmChip(
                           label: 'All Time',
                           selected: _dateRange == 'all',
@@ -267,7 +287,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                         const SizedBox(width: 8),
                         WarmChip(
-                          label: '30 Days',
+                          label: '30d',
                           selected: _dateRange == '30',
                           onTap: () {
                             _dateRange = '30';
@@ -277,7 +297,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                         const SizedBox(width: 8),
                         WarmChip(
-                          label: '90 Days',
+                          label: '90d',
                           selected: _dateRange == '90',
                           onTap: () {
                             _dateRange = '90';
@@ -287,13 +307,20 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                         const SizedBox(width: 8),
                         WarmChip(
-                          label: '6 Months',
+                          label: '6mo',
                           selected: _dateRange == '180',
                           onTap: () {
                             _dateRange = '180';
                             setState(() => _loading = true);
                             _loadData();
                           },
+                        ),
+                        const SizedBox(width: 8),
+                        // All Filters button
+                        ActionChip(
+                          avatar: const Icon(Icons.tune, size: 16),
+                          label: const Text('Filters'),
+                          onPressed: _showFilterSheet,
                         ),
                       ],
                     ),
@@ -318,24 +345,28 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           label: 'Total Audits',
                           value: '$_totalAudits',
                           accentColor: theme.colorScheme.primary,
+                          tooltip: 'Total non-rejected audits',
                         ),
                         _KpiCard(
                           icon: Icons.speed,
                           label: 'Avg Score',
                           value: '${_avgScore.toStringAsFixed(1)}%',
                           accentColor: AppTheme.success,
+                          tooltip: 'Mean score of all scored audits',
                         ),
                         _KpiCard(
                           icon: Icons.pending_actions,
                           label: 'Open APs',
                           value: '$_openAPs',
                           accentColor: AppTheme.warning,
+                          tooltip: 'Action plans awaiting resolution',
                         ),
                         _KpiCard(
                           icon: Icons.warning_amber,
                           label: 'Overdue',
                           value: '$_overdueAPs',
                           accentColor: Colors.red,
+                          tooltip: 'Action plans past their deadline',
                         ),
                         _KpiCard(
                           icon: Icons.check_circle,
@@ -376,12 +407,14 @@ class _KpiCard extends StatelessWidget {
   final String label;
   final String value;
   final Color accentColor;
+  final String? tooltip;
 
   const _KpiCard({
     required this.icon,
     required this.label,
     required this.value,
     required this.accentColor,
+    this.tooltip,
   });
 
   @override
@@ -398,7 +431,22 @@ class _KpiCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: accentColor, size: 18),
+            Row(
+              children: [
+                Icon(icon, color: accentColor, size: 18),
+                const Spacer(),
+                if (tooltip != null)
+                  Tooltip(
+                    message: tooltip!,
+                    triggerMode: TooltipTriggerMode.tap,
+                    child: Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: AppTheme.charcoal.withValues(alpha: 0.3),
+                    ),
+                  ),
+              ],
+            ),
             const SizedBox(height: 8),
             Text(
               value,

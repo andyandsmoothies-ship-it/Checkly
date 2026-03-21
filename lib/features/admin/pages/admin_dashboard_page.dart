@@ -65,10 +65,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {
-          if (_manager.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
+          final isLoading = _manager.isLoading;
           final stats = _manager.stats;
 
           return ListView(
@@ -77,16 +74,17 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               // Subtitle
               const SectionHeader('SYSTEM MANAGEMENT'),
 
-              // Stats grid (2×2)
+              // Stats grid (2×2) — shows shimmer values while loading
               Row(
                 children: [
                   Expanded(
                     child: _AdminStat(
                       icon: Icons.people,
                       label: 'USERS',
-                      value: '$_userCount',
+                      value: isLoading ? '—' : '$_userCount',
                       color: theme.colorScheme.primary,
                       filled: true,
+                      dimmed: isLoading,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -94,8 +92,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     child: _AdminStat(
                       icon: Icons.store,
                       label: 'STORES',
-                      value: '$_storeCount',
+                      value: isLoading ? '—' : '$_storeCount',
                       color: AppTheme.success,
+                      dimmed: isLoading,
                     ),
                   ),
                 ],
@@ -107,8 +106,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     child: _AdminStat(
                       icon: Icons.description,
                       label: 'TEMPLATES',
-                      value: '$_templateCount',
+                      value: isLoading ? '—' : '$_templateCount',
                       color: AppTheme.info,
+                      dimmed: isLoading,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -116,15 +116,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     child: _AdminStat(
                       icon: Icons.hourglass_empty,
                       label: 'PENDING',
-                      value: '${stats.pendingActionPlanCount}',
+                      value: isLoading
+                          ? '—'
+                          : '${stats.pendingActionPlanCount}',
                       color: AppTheme.warning,
+                      dimmed: isLoading,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Menu items
+              // Menu items — always visible, no waiting
               _MenuItem(
                 icon: Icons.people,
                 title: 'User Management',
@@ -181,6 +184,7 @@ class _AdminStat extends StatelessWidget {
   final String value;
   final Color color;
   final bool filled;
+  final bool dimmed;
 
   const _AdminStat({
     required this.icon,
@@ -188,40 +192,48 @@ class _AdminStat extends StatelessWidget {
     required this.value,
     required this.color,
     this.filled = false,
+    this.dimmed = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context); // ignore: unused_local_variable
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: filled ? AppTheme.softPeach : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: filled
-            ? null
-            : Border.all(color: AppTheme.sageGray.withValues(alpha: 0.5)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: AppFonts.serifStyle(fontSize: 28, color: AppTheme.charcoal),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppFonts.displayStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.charcoal.withValues(alpha: 0.5),
-              letterSpacing: 0.5,
+    return AnimatedOpacity(
+      opacity: dimmed ? 0.4 : 1.0,
+      duration: const Duration(milliseconds: 300),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: filled ? AppTheme.softPeach : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: filled
+              ? null
+              : Border.all(color: AppTheme.sageGray.withValues(alpha: 0.5)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: AppFonts.serifStyle(
+                fontSize: 28,
+                color: AppTheme.charcoal,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: AppFonts.displayStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.charcoal.withValues(alpha: 0.5),
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

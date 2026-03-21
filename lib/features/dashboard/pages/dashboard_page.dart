@@ -232,7 +232,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       width: 128,
                       child: StatBlock.compact(
                         value: '${stats.recentAuditCount}',
-                        label: 'Activities',
+                        label: 'Recent Audits',
                       ),
                     ),
                   ],
@@ -246,9 +246,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 ...stats.templateCategories.map(
                   (cat) => Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: GestureDetector(
-                      onTap: () => _openCategoryDrawer(cat.type),
-                      child: _TemplateCategorySection(category: cat),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () => _openCategoryDrawer(cat.type),
+                        child: _TemplateCategorySection(category: cat),
+                      ),
                     ),
                   ),
                 ),
@@ -379,11 +384,16 @@ class _TemplateCategorySection extends StatelessWidget {
               ),
             ),
             Text(
-              'VIEW ALL >',
+              'VIEW ALL',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w700,
               ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: 16,
+              color: theme.colorScheme.primary,
             ),
           ],
         ),
