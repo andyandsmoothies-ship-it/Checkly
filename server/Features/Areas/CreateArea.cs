@@ -35,7 +35,6 @@ public static class CreateArea
             Id = Guid.NewGuid(),
             Name = request.Name.Trim(),
             Description = request.Description?.Trim(),
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -45,6 +44,6 @@ public static class CreateArea
 
         return TypedResults.Created(
             $"/api/areas/{area.Id}",
-            new AreaDto(area.Id, area.Name, area.Description, area.IsActive, area.CreatedAt));
+            new AreaDto(area.Id, area.Name, area.Description, area.CreatedAt));
     }
 }

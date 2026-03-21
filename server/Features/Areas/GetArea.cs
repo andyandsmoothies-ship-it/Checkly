@@ -16,7 +16,7 @@ public static class GetArea
         var area = await db.Areas
             .AsNoTracking()
             .Where(a => a.Id == id)
-            .Select(a => new AreaDto(a.Id, a.Name, a.Description, a.IsActive, a.CreatedAt))
+            .Select(a => new AreaDto(a.Id, a.Name, a.Description, a.CreatedAt))
             .FirstOrDefaultAsync(ct);
 
         return area is null

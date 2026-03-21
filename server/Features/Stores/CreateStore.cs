@@ -26,9 +26,6 @@ public static class CreateStore
         if (request.AreaId.HasValue)
             area = await db.Areas.AsNoTracking().FirstOrDefaultAsync(a => a.Id == request.AreaId.Value, ct);
 
-        if (area is not null && !area.IsActive)
-            return Results.BadRequest(new { error = "Cannot create store in a deactivated area" });
-
         var now = DateTimeOffset.UtcNow;
         var store = new Store
         {

@@ -119,13 +119,9 @@ class AdminApiService {
 
   // ── Area API ──
 
-  /// GET /areas — list areas (optionally include inactive).
-  Future<List<Map<String, dynamic>>> getAreas({
-    bool includeInactive = false,
-  }) async {
-    final params = <String, dynamic>{};
-    if (includeInactive) params['includeInactive'] = 'true';
-    final response = await _dio.get('/areas', queryParameters: params);
+  /// GET /areas — list all areas.
+  Future<List<Map<String, dynamic>>> getAreas() async {
+    final response = await _dio.get('/areas');
     final list = response.data as List<dynamic>;
     return list.cast<Map<String, dynamic>>();
   }
@@ -146,12 +142,10 @@ class AdminApiService {
     String id, {
     String? name,
     String? description,
-    bool? isActive,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
     if (description != null) body['description'] = description;
-    if (isActive != null) body['isActive'] = isActive;
     final response = await _dio.put('/areas/$id', data: body);
     return response.data as Map<String, dynamic>;
   }

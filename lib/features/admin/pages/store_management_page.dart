@@ -151,14 +151,12 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                             value: null,
                             child: Text('— None —'),
                           ),
-                          ..._areas
-                              .where((a) => a['isActive'] == true)
-                              .map(
-                                (a) => DropdownMenuItem(
-                                  value: a['id'] as String,
-                                  child: Text(a['name'] as String),
-                                ),
-                              ),
+                          ..._areas.map(
+                            (a) => DropdownMenuItem(
+                              value: a['id'] as String,
+                              child: Text(a['name'] as String),
+                            ),
+                          ),
                         ],
                         onChanged: (v) =>
                             setSheetState(() => selectedAreaId = v),

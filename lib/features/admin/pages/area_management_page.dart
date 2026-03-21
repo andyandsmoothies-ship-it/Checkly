@@ -8,7 +8,7 @@ import '../services/admin_api_service.dart';
 
 final _di = GetIt.instance;
 
-/// Admin: Area Management — list, search, create, edit, deactivate/reactivate.
+/// Admin: Area Management — list, search, create, edit.
 class AreaManagementPage extends StatefulWidget {
   const AreaManagementPage({super.key});
 
@@ -41,9 +41,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
         _isLoading = true;
         _error = null;
       });
-      final areas = await _di<AdminApiService>().getAreas(
-        includeInactive: true,
-      );
+      final areas = await _di<AdminApiService>().getAreas();
       if (mounted) {
         setState(() {
           _areas = areas;
@@ -76,31 +74,6 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
 
   void _onSearch(String _) {
     setState(() => _applyFilter());
-  }
-
-  Future<void> _toggleActive(Map<String, dynamic> area) async {
-    final isActive = area['isActive'] as bool? ?? true;
-    try {
-      await _di<AdminApiService>().updateArea(
-        area['id'] as String,
-        isActive: !isActive,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(!isActive ? 'Area reactivated' : 'Area deactivated'),
-            backgroundColor: !isActive ? AppTheme.success : Colors.red,
-          ),
-        );
-        _loadData();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
   }
 
   void _showCreateSheet() {
@@ -396,11 +369,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
         itemCount: _filtered.length,
         itemBuilder: (_, index) {
           final area = _filtered[index];
-          return _AreaCard(
-            area: area,
-            onTap: () => _showEditSheet(area),
-            onToggle: () => _toggleActive(area),
-          );
+          return _AreaCard(area: area, onTap: () => _showEditSheet(area));
         },
       ),
     );
@@ -412,20 +381,14 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
 class _AreaCard extends StatelessWidget {
   final Map<String, dynamic> area;
   final VoidCallback onTap;
-  final VoidCallback onToggle;
 
-  const _AreaCard({
-    required this.area,
-    required this.onTap,
-    required this.onToggle,
-  });
+  const _AreaCard({required this.area, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final name = area['name'] as String? ?? 'Unnamed';
     final description = area['description'] as String? ?? '';
-    final isActive = area['isActive'] as bool? ?? true;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -446,16 +409,12 @@ class _AreaCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: (isActive ? AppTheme.sageGray : Colors.grey).withAlpha(
-                    25,
-                  ),
+                  color: AppTheme.sageGray.withAlpha(25),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.map_outlined,
-                  color: isActive
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant,
+                  color: theme.colorScheme.primary,
                   size: 22,
                 ),
               ),
@@ -486,49 +445,8 @@ class _AreaCard extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        if (!isActive) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Inactive',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ] else ...[
-                          Text(
-                            'Active',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppTheme.success,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
                   ],
                 ),
-              ),
-
-              // Toggle
-              IconButton(
-                icon: Icon(
-                  isActive ? Icons.block : Icons.check_circle_outline,
-                  color: isActive ? Colors.red : AppTheme.success,
-                ),
-                tooltip: isActive ? 'Deactivate area' : 'Reactivate area',
-                onPressed: onToggle,
               ),
 
               // Chevron
