@@ -93,7 +93,7 @@ flowchart LR
 | Requirement | Detail |
 |-------------|--------|
 | **Auto-generation (S1)** | Created automatically for each failed criteria on submission. Snapshots criteria label, group, store name, SM |
-| **Lifecycle** | `open` → `in_progress` → `pending_verify` → `closed` / `overdue` |
+| **Lifecycle** | `open` → `pending_verify` → `closed` (overdue = visual flag when `open` + past deadline) |
 | **Store Manager response** | SM provides root cause, correction plan, and evidence photo |
 | **Verification** | Admin/AM verifies completion, marks as closed |
 | **Deadline tracking** | Configurable per template (default 7 days), with overdue status |

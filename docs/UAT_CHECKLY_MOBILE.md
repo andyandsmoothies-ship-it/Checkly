@@ -166,11 +166,13 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 11.1 | Auto-generation (Legacy) | Submit audit with 2 `pass_fail` Non-Conform faults | 2 Open Action Plans automatically created for the store. | [ ] |
 | 11.2 | Auto-generation (Custom Trigger) | Configure criterion with `actionPlanTrigger: {type: "value_equals", value: "fail"}` → Trigger it | Action Plan created for the triggered criterion. | [ ] |
 | 11.3 | AP Cap (Max 10) | Submit audit triggering 12 AP-eligible faults | Only 10 Action Plans created. No overflow. | [ ] |
-| 11.4 | SM Root Cause Input | SM opens AP → Enters Root Cause & Correction → Submits | AP status shifts to `pending_verify`. | [ ] |
-| 11.5 | AM Verification | AM reviews `pending_verify` AP → Approves | AP status shifts to `closed`. | [ ] |
-| 11.6 | AM Rejection | AM reviews → Rejects with comment | AP status shifts back to `in_progress`. | [ ] |
-| 11.7 | SM Transfer | Admin moves SM to new store | New SM sees APs for new store. Old SM loses access. | [ ] |
-| 11.8 | Automatic Overdue | Change server clock past the AP 7-day deadline | AP status automatically transitions to `overdue`. | [ ] |
+| 11.4 | SM Submit Evidence | SM opens `open` AP → Taps "Submit Evidence" → Enters Correction Plan & Evidence Note → Submits | AP status shifts to `pending_verify`. SM no longer sees action button. | [ ] |
+| 11.5 | Auditor/Admin Verification | Auditor or Admin opens `pending_verify` AP → Taps "Verify & Close" → Confirms | AP status shifts to `closed`. Verifier name recorded. | [ ] |
+| 11.6 | Auditor/Admin Rejection | Auditor or Admin opens `pending_verify` AP → Taps "Reject" → Confirms | AP status shifts back to `open`. Evidence cleared. SM can resubmit. | [ ] |
+| 11.7 | Role Guard — SM Cannot Verify | SM opens a `pending_verify` AP | No "Verify & Close" or "Reject" buttons visible. | [ ] |
+| 11.8 | Role Guard — Auditor Cannot Submit | Auditor opens an `open` AP | No "Submit Evidence" button visible. | [ ] |
+| 11.9 | SM Transfer | Admin moves SM to new store | New SM sees APs for new store. Old SM loses access. | [ ] |
+| 11.10 | Overdue Visual Flag | AP deadline passes while status is `open` | AP shows red OVERDUE indicator. Status remains `open` (visual flag only). | [ ] |
 
 ## Module 12: Real-Time Notifications
 **Focus**: SignalR pushes, inbox, and background reminders.

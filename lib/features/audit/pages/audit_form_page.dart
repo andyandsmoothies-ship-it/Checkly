@@ -35,6 +35,7 @@ class AuditFormPage extends StatefulWidget {
 
 class _AuditFormPageState extends State<AuditFormPage> {
   bool _isLoading = true;
+  bool _scoreExpanded = true;
   int _currentSection = 0;
   bool _hasChanges = false;
 
@@ -530,9 +531,22 @@ class _AuditFormPageState extends State<AuditFormPage> {
             body: Column(
               children: [
                 // Live score HUD
-                _ScoreHud(
-                  score: manager.liveScore,
-                  sectionScores: manager.sectionScores,
+                GestureDetector(
+                  onTap: () => setState(() => _scoreExpanded = !_scoreExpanded),
+                  child: AnimatedCrossFade(
+                    duration: const Duration(milliseconds: 200),
+                    crossFadeState: _scoreExpanded
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    firstChild: _ScoreHud(
+                      score: manager.liveScore,
+                      sectionScores: manager.sectionScores,
+                    ),
+                    secondChild: _CollapsedScoreHud(
+                      score: manager.liveScore,
+                      sectionScores: manager.sectionScores,
+                    ),
+                  ),
                 ),
 
                 // Current section only (F7: swipe gesture navigation)
@@ -666,6 +680,57 @@ class _ScoreHud extends StatelessWidget {
                 backgroundColor: color.withAlpha(30),
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CollapsedScoreHud extends StatelessWidget {
+  final double? score;
+  final Map<String, SectionScore> sectionScores;
+  const _CollapsedScoreHud({required this.score, required this.sectionScores});
+
+  Color _scoreColor(ThemeData theme) => scoreColor(score, theme);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = _scoreColor(theme);
+
+    // Calculate total points from section scores
+    final totalMax = sectionScores.values.fold(
+      0.0,
+      (sum, s) => sum + s.maxPoints,
+    );
+    final totalEarned = sectionScores.values.fold(
+      0.0,
+      (sum, s) => sum + s.score,
+    );
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withAlpha(15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withAlpha(60)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.speed, color: color, size: 24),
+          const SizedBox(width: 12),
+          Text(
+            score != null
+                ? '${totalEarned.toStringAsFixed(0)} / ${totalMax.toStringAsFixed(0)} pts'
+                : 'Survey — No Score',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
+          const Spacer(),
+          Icon(Icons.keyboard_arrow_down, color: color),
         ],
       ),
     );
@@ -1698,14 +1763,37 @@ class _SectionNavBar extends StatelessWidget {
 
             const SizedBox(width: 4),
 
-            // Section counter
-            Text(
-              '${currentSection + 1}/$totalSections',
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: theme.colorScheme.onSurfaceVariant,
+            // Section dots (fallback to text for >8 sections)
+            if (totalSections <= 8)
+              Semantics(
+                label: 'Section ${currentSection + 1} of $totalSections',
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(
+                    totalSections,
+                    (i) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: i == currentSection ? 20 : 6,
+                      height: 6,
+                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        color: i == currentSection
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.outlineVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              Text(
+                '${currentSection + 1}/$totalSections',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
 
             const SizedBox(width: 4),
 
