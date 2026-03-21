@@ -13,7 +13,10 @@ final _di = GetIt.instance;
 
 /// Action Plans list page — search, filter chips, grouped by store.
 class ActionPlansPage extends StatefulWidget {
-  const ActionPlansPage({super.key});
+  final String? initialFilter;
+  final String? initialSort;
+
+  const ActionPlansPage({super.key, this.initialFilter, this.initialSort});
 
   @override
   State<ActionPlansPage> createState() => _ActionPlansPageState();
@@ -25,11 +28,39 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
   String _filter = 'all'; // all, open, pending_verify, closed
   String _sort = 'newest'; // newest, urgent
 
+  static const _validFilters = {'all', 'open', 'pending_verify', 'closed'};
+  static const _validSorts = {'newest', 'urgent'};
+
   @override
   void initState() {
     super.initState();
     _manager = _di<ActionPlanManager>();
+    _filter = _validFilters.contains(widget.initialFilter)
+        ? widget.initialFilter!
+        : 'all';
+    _sort = _validSorts.contains(widget.initialSort)
+        ? widget.initialSort!
+        : 'newest';
     _manager.loadActionPlans();
+  }
+
+  @override
+  void didUpdateWidget(covariant ActionPlansPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialFilter != widget.initialFilter) {
+      setState(() {
+        _filter = _validFilters.contains(widget.initialFilter)
+            ? widget.initialFilter!
+            : 'all';
+      });
+    }
+    if (oldWidget.initialSort != widget.initialSort) {
+      setState(() {
+        _sort = _validSorts.contains(widget.initialSort)
+            ? widget.initialSort!
+            : 'newest';
+      });
+    }
   }
 
   List<ActionPlanDto> get _filtered {

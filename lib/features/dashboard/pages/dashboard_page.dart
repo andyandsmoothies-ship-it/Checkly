@@ -222,17 +222,31 @@ class _DashboardPageState extends State<DashboardPage> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
-                      child: StatBlock(
-                        value: '${stats.pendingActionPlanCount}',
-                        label: 'Open Action Plans',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () => context.go('/plans?filter=open'),
+                          child: StatBlock(
+                            value: '${stats.pendingActionPlanCount}',
+                            label: 'Open Action Plans',
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
                     SizedBox(
                       width: 128,
-                      child: StatBlock.compact(
-                        value: '${stats.recentAuditCount}',
-                        label: 'Recent Audits',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () => context.go('/activity'),
+                          child: StatBlock.compact(
+                            value: '${stats.recentAuditCount}',
+                            label: 'Recent Audits',
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -260,18 +274,32 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 // If no categories, show overall stats
                 if (stats.templateCategories.isEmpty) ...[
-                  _StatCard(
-                    icon: Icons.assignment_turned_in,
-                    label: 'Total Audits',
-                    value: '${stats.recentAuditCount}',
-                    color: theme.colorScheme.primary,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => context.go('/activity'),
+                      child: _StatCard(
+                        icon: Icons.assignment_turned_in,
+                        label: 'Total Audits',
+                        value: '${stats.recentAuditCount}',
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  _StatCard(
-                    icon: Icons.score,
-                    label: 'Average Score',
-                    value: '${stats.averageScore}%',
-                    color: AppTheme.success,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => context.go('/analytics'),
+                      child: _StatCard(
+                        icon: Icons.score,
+                        label: 'Average Score',
+                        value: '${stats.averageScore}%',
+                        color: AppTheme.success,
+                      ),
+                    ),
                   ),
                 ],
               ],

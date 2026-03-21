@@ -17,8 +17,9 @@ final _di = GetIt.instance;
 /// Audits page — search, filter chips, grouped by store.
 class HistoryPage extends StatefulWidget {
   final String? initialMonth; // e.g. '2026-03' from trend chart drill-down
+  final String? initialFilter; // e.g. 'submitted' from KPI drilldown
 
-  const HistoryPage({super.key, this.initialMonth});
+  const HistoryPage({super.key, this.initialMonth, this.initialFilter});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -29,13 +30,30 @@ class _HistoryPageState extends State<HistoryPage> {
   String _filter = 'all'; // all, todo, doing, submitted, overdue
   final _scrollController = ScrollController();
 
+  static const _validFilters = {'all', 'todo', 'doing', 'submitted', 'overdue'};
+
   @override
   void initState() {
     super.initState();
+    _filter = _validFilters.contains(widget.initialFilter)
+        ? widget.initialFilter!
+        : 'all';
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _di<HistoryManager>().loadHistory();
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant HistoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialFilter != widget.initialFilter) {
+      setState(() {
+        _filter = _validFilters.contains(widget.initialFilter)
+            ? widget.initialFilter!
+            : 'all';
+      });
+    }
   }
 
   @override

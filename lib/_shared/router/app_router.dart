@@ -56,12 +56,17 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/activity',
-          builder: (context, state) =>
-              HistoryPage(initialMonth: state.uri.queryParameters['month']),
+          builder: (context, state) => HistoryPage(
+            initialMonth: state.uri.queryParameters['month'],
+            initialFilter: state.uri.queryParameters['filter'],
+          ),
         ),
         GoRoute(
           path: '/plans',
-          builder: (context, state) => const ActionPlansPage(),
+          builder: (context, state) => ActionPlansPage(
+            initialFilter: state.uri.queryParameters['filter'],
+            initialSort: state.uri.queryParameters['sort'],
+          ),
         ),
         GoRoute(
           path: '/templates',

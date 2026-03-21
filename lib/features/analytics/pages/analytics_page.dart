@@ -25,24 +25,33 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   late final AppDatabase _db;
   bool _loading = true;
 
-  // Filters
+  // ── Filters ──
   String? _selectedStore;
   String? _selectedType;
-  String _dateRange = 'all'; // all, 30, 90, 180
+  String? _selectedArea;
+  String? _selectedAuditor;
+  String? _selectedStatus; // 'completed' | 'in_progress'
+  String? _selectedReviewStatus; // 'pending' | 'approved'
+  String _dateRange = 'all'; // all, 30, 90, 180, custom
+  DateTimeRange? _customDateRange;
+
+  // ── Filter option lists ──
   List<String> _storeNames = [];
   List<String> _templateTypes = [];
+  List<String> _areaNames = [];
+  List<String> _auditorNames = [];
 
-  // KPIs
+  // ── KPIs ──
   int _totalAudits = 0;
   double _avgScore = 0;
   int _openAPs = 0;
   int _overdueAPs = 0;
   double _completionRate = 0;
 
-  // Trend data
+  // ── Trend data ──
   List<TrendPoint> _trend = [];
 
-  // Category heatmap data
+  // ── Category heatmap data ──
   List<CategoryScore> _categoryScores = [];
 
   @override
@@ -56,9 +65,29 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     final allSubs = await _db.select(_db.cachedSubmissions).get();
     var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
 
-    // Build filter options from cached master data (always fully populated)
+    // Build filter options from cached master data
     final allStores = await _db.select(_db.cachedStores).get();
-    _storeNames = allStores.map((s) => s.name).toSet().toList()..sort();
+    _areaNames =
+        allStores
+            .map((s) => s.areaName)
+            .where((a) => a != null)
+            .cast<String>()
+            .toSet()
+            .toList()
+          ..sort();
+
+    // Area → Store cascade: if area selected, restrict stores to that area
+    final filteredStores = _selectedArea != null
+        ? allStores.where((s) => s.areaName == _selectedArea).toList()
+        : allStores;
+
+    _storeNames = filteredStores.map((s) => s.name).toSet().toList()..sort();
+
+    // Reset store if it's no longer valid after area change
+    if (_selectedStore != null && !_storeNames.contains(_selectedStore)) {
+      _selectedStore = null;
+    }
+
     final templates = await _db.select(_db.cachedTemplates).get();
     _templateTypes = templates.map((t) => t.type).toSet().toList()..sort();
     final templateTypeMap = <String, String>{};
@@ -66,12 +95,30 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       templateTypeMap[t.id] = t.type;
     }
 
-    // Apply store filter
+    // Build auditor list from submissions
+    _auditorNames =
+        subs
+            .map((s) => s.auditorName)
+            .where((a) => a != null)
+            .cast<String>()
+            .toSet()
+            .toList()
+          ..sort();
+
+    // ── Apply filters ──
+
+    // Area filter (via store set for O(1) lookups)
+    if (_selectedArea != null) {
+      final areaStoreNames = filteredStores.map((s) => s.name).toSet();
+      subs = subs.where((s) => areaStoreNames.contains(s.storeName)).toList();
+    }
+
+    // Store filter
     if (_selectedStore != null) {
       subs = subs.where((s) => s.storeName == _selectedStore).toList();
     }
 
-    // Apply type filter
+    // Type filter
     if (_selectedType != null) {
       final typeTemplateIds = templates
           .where((t) => t.type == _selectedType)
@@ -80,13 +127,42 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       subs = subs.where((s) => typeTemplateIds.contains(s.templateId)).toList();
     }
 
-    // Apply date range filter
+    // Auditor filter
+    if (_selectedAuditor != null) {
+      subs = subs.where((s) => s.auditorName == _selectedAuditor).toList();
+    }
+
+    // Status filter
+    if (_selectedStatus != null) {
+      subs = subs.where((s) => s.status == _selectedStatus).toList();
+    }
+
+    // Review status filter
+    if (_selectedReviewStatus != null) {
+      subs = subs
+          .where((s) => s.reviewStatus == _selectedReviewStatus)
+          .toList();
+    }
+
+    // Date range filter
     final now = DateTime.now();
-    if (_dateRange != 'all') {
+    if (_dateRange == 'custom' && _customDateRange != null) {
+      subs = subs
+          .where(
+            (s) =>
+                s.createdAt.isAfter(_customDateRange!.start) &&
+                s.createdAt.isBefore(
+                  _customDateRange!.end.add(const Duration(days: 1)),
+                ),
+          )
+          .toList();
+    } else if (_dateRange != 'all') {
       final days = int.parse(_dateRange);
       final cutoff = now.subtract(Duration(days: days));
       subs = subs.where((s) => s.createdAt.isAfter(cutoff)).toList();
     }
+
+    // ── Compute KPIs ──
 
     _totalAudits = subs.length;
     final scored = subs.where((s) => s.totalScore != null).toList();
@@ -112,7 +188,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         )
         .length;
 
-    // 6-month trend — padded to always show 6 months
+    // ── 6-month trend ──
     final sixMonthsAgo = now.subtract(const Duration(days: 180));
     final recentSubs = subs
         .where((s) => s.totalScore != null && s.createdAt.isAfter(sixMonthsAgo))
@@ -125,7 +201,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       grouped.putIfAbsent(key, () => []).add(s.totalScore!);
     }
 
-    // Build exactly 6 month keys for continuous X-axis
     final monthKeys = List.generate(6, (i) {
       final d = DateTime(now.year, now.month - i);
       return '${d.year}-${d.month.toString().padLeft(2, '0')}';
@@ -140,7 +215,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       return TrendPoint(key, 0, 0);
     }).toList();
 
-    // Category heatmap — group by template type
+    // ── Category heatmap ──
     final catScores = <String, List<double>>{};
     for (final s in subs) {
       final type = templateTypeMap[s.templateId];
@@ -160,76 +235,251 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     setState(() => _loading = false);
   }
 
+  // ── Filter Sheet ──
+
   void _showFilterSheet() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Filters',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedStore,
-              isExpanded: true,
-              decoration: const InputDecoration(
-                labelText: 'Store',
-                border: OutlineInputBorder(),
-              ),
-              items: [
-                const DropdownMenuItem(value: null, child: Text('All Stores')),
-                ..._storeNames.map(
-                  (s) => DropdownMenuItem(
-                    value: s,
-                    child: Text(s, overflow: TextOverflow.ellipsis),
+      builder: (_) {
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Filters',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
-              onChanged: (v) {
-                _selectedStore = v;
-                Navigator.pop(context);
-                setState(() => _loading = true);
-                _loadData();
-              },
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: _selectedType,
-              isExpanded: true,
-              decoration: const InputDecoration(
-                labelText: 'Audit Type',
-                border: OutlineInputBorder(),
-              ),
-              items: [
-                const DropdownMenuItem(value: null, child: Text('All Types')),
-                ..._templateTypes.map(
-                  (t) => DropdownMenuItem(
-                    value: t,
-                    child: Text(t, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 16),
+
+                  // Area dropdown
+                  DropdownButtonFormField<String>(
+                    value: _selectedArea,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Area',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Areas'),
+                      ),
+                      ..._areaNames.map(
+                        (a) => DropdownMenuItem(
+                          value: a,
+                          child: Text(a, overflow: TextOverflow.ellipsis),
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      _selectedArea = v;
+                      // Reset store when area changes (cascade)
+                      _selectedStore = null;
+                      Navigator.pop(context);
+                      setState(() => _loading = true);
+                      _loadData();
+                    },
                   ),
-                ),
-              ],
-              onChanged: (v) {
-                _selectedType = v;
-                Navigator.pop(context);
-                setState(() => _loading = true);
-                _loadData();
-              },
+                  const SizedBox(height: 12),
+
+                  // Store dropdown (filtered by area)
+                  DropdownButtonFormField<String>(
+                    value: _selectedStore,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Store',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Stores'),
+                      ),
+                      ..._storeNames.map(
+                        (s) => DropdownMenuItem(
+                          value: s,
+                          child: Text(s, overflow: TextOverflow.ellipsis),
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      _selectedStore = v;
+                      Navigator.pop(context);
+                      setState(() => _loading = true);
+                      _loadData();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Audit Type dropdown
+                  DropdownButtonFormField<String>(
+                    value: _selectedType,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Audit Type',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Types'),
+                      ),
+                      ..._templateTypes.map(
+                        (t) => DropdownMenuItem(
+                          value: t,
+                          child: Text(t, overflow: TextOverflow.ellipsis),
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      _selectedType = v;
+                      Navigator.pop(context);
+                      setState(() => _loading = true);
+                      _loadData();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Auditor dropdown
+                  DropdownButtonFormField<String>(
+                    value: _selectedAuditor,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Auditor',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Auditors'),
+                      ),
+                      ..._auditorNames.map(
+                        (a) => DropdownMenuItem(
+                          value: a,
+                          child: Text(a, overflow: TextOverflow.ellipsis),
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      _selectedAuditor = v;
+                      Navigator.pop(context);
+                      setState(() => _loading = true);
+                      _loadData();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Status dropdown
+                  DropdownButtonFormField<String>(
+                    value: _selectedStatus,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Status',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: null,
+                        child: Text('All Statuses'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'completed',
+                        child: Text('Completed'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'in_progress',
+                        child: Text('In Progress'),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      _selectedStatus = v;
+                      Navigator.pop(context);
+                      setState(() => _loading = true);
+                      _loadData();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Review Status dropdown
+                  DropdownButtonFormField<String>(
+                    value: _selectedReviewStatus,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Review Status',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: null,
+                        child: Text('All Review Statuses'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'pending',
+                        child: Text('Pending'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'approved',
+                        child: Text('Approved'),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      _selectedReviewStatus = v;
+                      Navigator.pop(context);
+                      setState(() => _loading = true);
+                      _loadData();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+  // ── Custom Date Range ──
+
+  Future<void> _pickCustomDateRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 2),
+      lastDate: now,
+      initialDateRange: _customDateRange,
+    );
+    if (picked != null) {
+      _customDateRange = picked;
+      _dateRange = 'custom';
+      setState(() => _loading = true);
+      _loadData();
+    }
+  }
+
+  // ── Active filter count (for badge) ──
+
+  int get _activeFilterCount {
+    int count = 0;
+    if (_selectedArea != null) count++;
+    if (_selectedStore != null) count++;
+    if (_selectedType != null) count++;
+    if (_selectedAuditor != null) count++;
+    if (_selectedStatus != null) count++;
+    if (_selectedReviewStatus != null) count++;
+    return count;
   }
 
   @override
@@ -250,7 +500,20 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        // Active filter chips
+                        // Active filter chips (dismissible)
+                        if (_selectedArea != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InputChip(
+                              label: Text('Area: $_selectedArea'),
+                              onDeleted: () {
+                                _selectedArea = null;
+                                _selectedStore = null; // cascade reset
+                                setState(() => _loading = true);
+                                _loadData();
+                              },
+                            ),
+                          ),
                         if (_selectedStore != null)
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -275,12 +538,58 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                               },
                             ),
                           ),
+                        if (_selectedAuditor != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InputChip(
+                              label: Text(_selectedAuditor!),
+                              onDeleted: () {
+                                _selectedAuditor = null;
+                                setState(() => _loading = true);
+                                _loadData();
+                              },
+                            ),
+                          ),
+                        if (_selectedStatus != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InputChip(
+                              label: Text(
+                                _selectedStatus == 'completed'
+                                    ? 'Completed'
+                                    : 'In Progress',
+                              ),
+                              onDeleted: () {
+                                _selectedStatus = null;
+                                setState(() => _loading = true);
+                                _loadData();
+                              },
+                            ),
+                          ),
+                        if (_selectedReviewStatus != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InputChip(
+                              label: Text(
+                                _selectedReviewStatus == 'pending'
+                                    ? 'Pending Review'
+                                    : 'Approved',
+                              ),
+                              onDeleted: () {
+                                _selectedReviewStatus = null;
+                                setState(() => _loading = true);
+                                _loadData();
+                              },
+                            ),
+                          ),
+
                         // Date range chips
                         WarmChip(
                           label: 'All Time',
                           selected: _dateRange == 'all',
                           onTap: () {
                             _dateRange = 'all';
+                            _customDateRange = null;
                             setState(() => _loading = true);
                             _loadData();
                           },
@@ -291,6 +600,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           selected: _dateRange == '30',
                           onTap: () {
                             _dateRange = '30';
+                            _customDateRange = null;
                             setState(() => _loading = true);
                             _loadData();
                           },
@@ -301,6 +611,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           selected: _dateRange == '90',
                           onTap: () {
                             _dateRange = '90';
+                            _customDateRange = null;
                             setState(() => _loading = true);
                             _loadData();
                           },
@@ -311,14 +622,29 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           selected: _dateRange == '180',
                           onTap: () {
                             _dateRange = '180';
+                            _customDateRange = null;
                             setState(() => _loading = true);
                             _loadData();
                           },
                         ),
                         const SizedBox(width: 8),
-                        // All Filters button
+                        WarmChip(
+                          label:
+                              _dateRange == 'custom' && _customDateRange != null
+                              ? '${_customDateRange!.start.day}/${_customDateRange!.start.month} – ${_customDateRange!.end.day}/${_customDateRange!.end.month}'
+                              : 'Custom',
+                          selected: _dateRange == 'custom',
+                          onTap: _pickCustomDateRange,
+                        ),
+                        const SizedBox(width: 8),
+
+                        // All Filters button (with badge)
                         ActionChip(
-                          avatar: const Icon(Icons.tune, size: 16),
+                          avatar: Badge(
+                            isLabelVisible: _activeFilterCount > 0,
+                            label: Text('$_activeFilterCount'),
+                            child: const Icon(Icons.tune, size: 16),
+                          ),
                           label: const Text('Filters'),
                           onPressed: _showFilterSheet,
                         ),
@@ -346,6 +672,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           value: '$_totalAudits',
                           accentColor: theme.colorScheme.primary,
                           tooltip: 'Total non-rejected audits',
+                          onTap: () => context.go('/activity'),
                         ),
                         _KpiCard(
                           icon: Icons.speed,
@@ -353,6 +680,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           value: '${_avgScore.toStringAsFixed(1)}%',
                           accentColor: AppTheme.success,
                           tooltip: 'Mean score of all scored audits',
+                          onTap: () => context.go('/activity?filter=submitted'),
                         ),
                         _KpiCard(
                           icon: Icons.pending_actions,
@@ -360,6 +688,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           value: '$_openAPs',
                           accentColor: AppTheme.warning,
                           tooltip: 'Action plans awaiting resolution',
+                          onTap: () => context.go('/plans?filter=open'),
                         ),
                         _KpiCard(
                           icon: Icons.warning_amber,
@@ -367,12 +696,14 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           value: '$_overdueAPs',
                           accentColor: Colors.red,
                           tooltip: 'Action plans past their deadline',
+                          onTap: () => context.go('/plans?sort=urgent'),
                         ),
                         _KpiCard(
                           icon: Icons.check_circle,
                           label: 'Completion',
                           value: '${_completionRate.toStringAsFixed(1)}%',
                           accentColor: AppTheme.info,
+                          onTap: () => context.go('/activity?filter=submitted'),
                         ),
                       ],
                     ),
@@ -408,6 +739,7 @@ class _KpiCard extends StatelessWidget {
   final String value;
   final Color accentColor;
   final String? tooltip;
+  final VoidCallback? onTap;
 
   const _KpiCard({
     required this.icon,
@@ -415,57 +747,67 @@ class _KpiCard extends StatelessWidget {
     required this.value,
     required this.accentColor,
     this.tooltip,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: (MediaQuery.sizeOf(context).width - 40) / 2,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: accentColor.withValues(alpha: 0.08),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppTheme.sageGray.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, color: accentColor, size: 18),
-                const Spacer(),
-                if (tooltip != null)
-                  Tooltip(
-                    message: tooltip!,
-                    triggerMode: TooltipTriggerMode.tap,
-                    child: Icon(
-                      Icons.info_outline,
-                      size: 14,
-                      color: AppTheme.charcoal.withValues(alpha: 0.3),
-                    ),
+                Row(
+                  children: [
+                    Icon(icon, color: accentColor, size: 18),
+                    const Spacer(),
+                    if (tooltip != null)
+                      Tooltip(
+                        message: tooltip!,
+                        triggerMode: TooltipTriggerMode.tap,
+                        child: Icon(
+                          Icons.info_outline,
+                          size: 14,
+                          color: AppTheme.charcoal.withValues(alpha: 0.3),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: AppFonts.serifStyle(
+                    fontSize: 28,
+                    color: AppTheme.charcoal,
                   ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label.toUpperCase(),
+                  style: AppFonts.displayStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.charcoal.withValues(alpha: 0.5),
+                    letterSpacing: 1,
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: AppFonts.serifStyle(
-                fontSize: 28,
-                color: AppTheme.charcoal,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label.toUpperCase(),
-              style: AppFonts.displayStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.charcoal.withValues(alpha: 0.5),
-                letterSpacing: 1,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
