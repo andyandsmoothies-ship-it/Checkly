@@ -122,7 +122,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/admin/users',
-      builder: (context, state) => const UserManagementPage(),
+      builder: (context, state) => UserManagementPage(
+        initialSearch: state.uri.queryParameters['search'],
+      ),
     ),
     GoRoute(
       path: '/admin/stores',

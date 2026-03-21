@@ -6,5 +6,5 @@ public sealed record AreaDto(
     string Name,
     string? Description,
     int StoreCount,
-    int UserCount,
+    string? ManagerName,
     DateTimeOffset CreatedAt);

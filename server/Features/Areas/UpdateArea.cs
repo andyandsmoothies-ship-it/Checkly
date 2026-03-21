@@ -44,7 +44,12 @@ public static class UpdateArea
             .Select(a => new AreaDto(
                 a.Id, a.Name, a.Description,
                 a.Stores.Count(s => s.IsActive == true),
-                a.Profiles.Count,
+                db.Profiles
+                    .Where(p => p.AreaId == a.Id)
+                    .Join(db.AppUserRoles, p => p.Id, r => r.UserId, (p, r) => new { p.FullName, r.Role })
+                    .Where(x => x.Role == "area_manager")
+                    .Select(x => x.FullName)
+                    .FirstOrDefault(),
                 a.CreatedAt))
             .FirstAsync(ct);
 

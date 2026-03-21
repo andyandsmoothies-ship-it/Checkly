@@ -44,6 +44,6 @@ public static class CreateArea
 
         return TypedResults.Created(
             $"/api/areas/{area.Id}",
-            new AreaDto(area.Id, area.Name, area.Description, 0, 0, area.CreatedAt));
+            new AreaDto(area.Id, area.Name, area.Description, 0, null, area.CreatedAt));
     }
 }

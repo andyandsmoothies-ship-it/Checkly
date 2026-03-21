@@ -466,10 +466,10 @@ class _AreaCard extends StatelessWidget {
 
   Widget _buildBadges(BuildContext context) {
     final storeCount = area['storeCount'] as int? ?? 0;
-    final userCount = area['userCount'] as int? ?? 0;
+    final managerName = area['managerName'] as String?;
     final areaId = area['id'] as String? ?? '';
 
-    if (storeCount == 0 && userCount == 0) {
+    if (storeCount == 0 && managerName == null) {
       return Text(
         'No stores yet',
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -488,12 +488,16 @@ class _AreaCard extends StatelessWidget {
             visualDensity: VisualDensity.compact,
             onPressed: () => context.push('/admin/stores?areaId=$areaId'),
           ),
-        if (userCount > 0)
-          Chip(
-            avatar: const Icon(Icons.people, size: 14),
-            label: Text('$userCount Users'),
-            visualDensity: VisualDensity.compact,
+        ActionChip(
+          avatar: const Icon(Icons.person, size: 14),
+          label: Text(
+            managerName != null ? 'AM: $managerName' : 'AM: Unassigned',
           ),
+          visualDensity: VisualDensity.compact,
+          onPressed: managerName != null
+              ? () => context.push('/admin/users?search=$managerName')
+              : null,
+        ),
       ],
     );
   }

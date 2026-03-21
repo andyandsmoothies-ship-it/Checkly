@@ -12,7 +12,8 @@ final _di = GetIt.instance;
 
 /// Admin: User Management — list, search, edit role/store/area, deactivate/reactivate.
 class UserManagementPage extends StatefulWidget {
-  const UserManagementPage({super.key});
+  final String? initialSearch;
+  const UserManagementPage({super.key, this.initialSearch});
 
   @override
   State<UserManagementPage> createState() => _UserManagementPageState();
@@ -39,6 +40,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialSearch != null) {
+      _searchController.text = widget.initialSearch!;
+    }
     _loadData();
   }
 

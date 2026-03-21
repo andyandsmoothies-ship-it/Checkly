@@ -22,7 +22,7 @@ description: Precision Analysis Workflow for System Architecture.
 ## Phase 3: Adversarial Review (Red Team)
 - **Instruction**: Switch to a "Red Team Adversary" persona. Your goal is to destroy the proposed implementation plan before it is coded.
 - **Skill Refresh**: The concern has shifted to failure modes. Re-scan `.agents/skills/` for skills related to error handling, concurrency, or debugging patterns. Load 1-2 if relevant.
-- **Action**: Explicitly write out at least 3 reasons why the proposed architecture, logic, or implementation plan could fail in production. Consider concurrency, race conditions, memory leaks, security bypasses, or missing offline states.
+- **Action**: Explicitly write out at least 3 reasons why the proposed solution could fail in production. Consider concurrency, race conditions, memory leaks, security bypasses, or missing offline states.
 - **Resolution**: Refine the solution to mitigate the 3 identified failures. If the failures cannot be mitigated, reject the feature and request a redesign.
 
 ## Phase 4: The Deliverable (Production-Grade Architecture Document)
@@ -35,15 +35,23 @@ description: Precision Analysis Workflow for System Architecture.
   5. **System Impact & Blast Radius**: Explicit list of existing features/components that could break and how they are protected.
   6. **Adversarial Review & Edge Cases**: The 3 Red Team failures and their mitigations. Error handling strategies (offline, timeouts, invalid data).
   7. **Security & Permissions**: RLS, Auth, or authorization checks required.
+  8. **Complexity Assessment**: State whether this task is Small (single concern), Medium (multiple concerns), or Large (crosses all layers). This drives Track classification in Phase 5.
 
 ## Phase 5: Task Routing & Handoff
-- **Action**: Based on the `analysis_[topic].md`, categorize the task and break it down for the user.
+- **Action**: Read the `analysis_[topic].md` produced in Phase 4. Based on its findings (blast radius, complexity, layer count), categorize the task into one of three tracks.
 
-  - **Track A - Tiny Tasks (e.g., typo fixes, color changes)**: Advise the user that `/analysis` was overkill and they should take these directly to `/implement` in the future. Output a 1-sentence `implementation_plan.md`.
+  - **Track A — Small Tasks (Single concern, low blast radius)**:
+    Slicing is not needed. Load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and generate a single `implementation_plan_[topic].md` using a **lightweight subset** of its template — include only: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE] tags), Database/Schema Changes (if any), API Contracts (if any), and Verification Plan. **Omit** non-functional requirements, phased timelines, and rate limiting sections.
+    **Handoff**: Instruct the user to hand it directly to `/implement` (and optionally `/verify` for a quick stability check). No ATDD required.
 
-  - **Track B - Small/Medium Tasks (Low/Medium complexity)**: Slicing is not needed. Load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and generate a single `implementation_plan.md` using a **lightweight subset** of its template — include only: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE] tags), Database/Schema Changes (if any), API Contracts (if any), and Verification Plan. **Omit** non-functional requirements, phased timelines, and rate limiting sections. Instruct the user to hand it directly to `/implement` (No ATDD required).
+  - **Track B — Medium Tasks (Multiple concerns, moderate blast radius)**:
+    Slicing is not needed, but the spec must be detailed enough for the ATDD workflow. Load the `technical-specification` skill and generate a single `spec_[topic].md` with: Executive Summary, Functional Requirements with **explicit acceptance criteria** (Given/When/Then or numbered ACs), Proposed Changes (grouped by file), Database/Schema Changes, API Contracts, System Impact & Blast Radius, and Verification Plan.
+    **Handoff**: Instruct the user to route it through the full pipeline: `/atdd` → `/implement` → `/verify`.
 
-  - **Track C - Large Tasks (Crosses all layers, high complexity, new epic)**: This track requires two sequential steps:
-    1. **Step 1 — Slice**: You MUST vertically slice the feature FIRST. Search `.agents/skills/` for the `use-case-slicing` skill and invoke it to ensure your slices are structurally sound (End-to-End, UI down to DB). List the slices in the `analysis_[topic].md` artifact.
-    2. **Step 2 — Per-Slice Tech Spec**: For EACH slice, you MUST load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and use its template to generate a dedicated specification document: `spec_[slice_name].md`. Each spec MUST include: Executive Summary, Functional Requirements with acceptance criteria, Database Schema changes, API Contracts, and a Verification Plan.
-    3. **Handoff**: Present the list of spec documents to the user. Instruct them to execute each slice one by one through the full `/atdd` -> `/implement` -> `/verify` pipeline.
+  - **Track C — Large Tasks (Crosses all layers, high complexity, new epic)**:
+    This track requires vertical slicing FIRST, then per-slice classification.
+    1. **Step 1 — Slice**: Search `.agents/skills/` for the `use-case-slicing` skill and invoke it. Ensure slices are structurally sound (End-to-End, UI down to DB). List the slices in the `analysis_[topic].md` artifact.
+    2. **Step 2 — Per-Slice Analysis**: For EACH slice, classify it as **Track A** or **Track B** based on its individual complexity and blast radius. Then generate the appropriate artifact for each:
+       - **Track A slices** → `implementation_plan_[slice_name].md` (lightweight, direct to `/implement`)
+       - **Track B slices** → `spec_[slice_name].md` (full spec with acceptance criteria, routed through `/atdd` → `/implement` → `/verify`)
+    3. **Handoff**: Present the slice list with each slice's track classification. Instruct the user to execute slices one by one in dependency order, using each slice's designated pipeline.
