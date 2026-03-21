@@ -115,6 +115,32 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Future<void> _banUser(Map<String, dynamic> user, bool ban) async {
+    // Only confirm when deactivating
+    if (ban) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Deactivate User?'),
+          content: Text(
+            'Are you sure you want to deactivate ${user['fullName']}? '
+            'They will lose access to the system.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Deactivate'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+
     try {
       await _di<AdminApiService>().banUser(user['id'] as String, ban: ban);
       if (mounted) {
@@ -928,7 +954,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
         itemBuilder: (context, index) => _UserCard(
           user: filtered[index],
           isSelf: filtered[index]['id'] == _currentUserId,
-          onTap: () => _showEditSheet(filtered[index]),
+          onEdit: () => _showEditSheet(filtered[index]),
+          onResetPassword: () => _showResetPasswordDialog(
+            context,
+            filtered[index]['id'] as String,
+            filtered[index]['fullName'] as String? ?? 'this user',
+          ),
           onBanToggle: (ban) => _banUser(filtered[index], ban),
         ),
       ),
@@ -941,13 +972,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
 class _UserCard extends StatelessWidget {
   final Map<String, dynamic> user;
   final bool isSelf;
-  final VoidCallback onTap;
+  final VoidCallback onEdit;
+  final VoidCallback onResetPassword;
   final void Function(bool ban) onBanToggle;
 
   const _UserCard({
     required this.user,
     required this.isSelf,
-    required this.onTap,
+    required this.onEdit,
+    required this.onResetPassword,
     required this.onBanToggle,
   });
 
@@ -977,184 +1010,191 @@ class _UserCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              // Avatar
-              CircleAvatar(
-                radius: 22,
-                backgroundImage: avatarUrl != null
-                    ? NetworkImage(avatarUrl)
-                    : null,
-                child: avatarUrl == null
-                    ? Text(
-                        fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      )
-                    : null,
-              ),
-              const SizedBox(width: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            // Avatar
+            CircleAvatar(
+              radius: 22,
+              backgroundImage: avatarUrl != null
+                  ? NetworkImage(avatarUrl)
+                  : null,
+              child: avatarUrl == null
+                  ? Text(
+                      fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
 
-              // Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
+            // Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          fullName,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isSelf) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           child: Text(
-                            fullName,
-                            style: theme.textTheme.titleSmall?.copyWith(
+                            'You',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (isSelf) ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              'You',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    email,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      email,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      // Role badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: roleColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _roleLabels[role] ?? role,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: roleColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        // Role badge
+                      if (isLocked) ...[
+                        const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: roleColor.withValues(alpha: 0.15),
+                            color: Colors.red.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            _roleLabels[role] ?? role,
+                            'Inactive',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: roleColor,
+                              color: Colors.red,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        if (isLocked) ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
+                      ],
+                    ],
+                  ),
+                  // Assignment info
+                  if (user['storeName'] != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.store,
+                          size: 13,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            user['storeName'] as String,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Inactive',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
+                        ),
                       ],
                     ),
-                    // Assignment info
-                    if (user['storeName'] != null) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.store,
-                            size: 13,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              user['storeName'] as String,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    if (user['areaName'] != null) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.map_outlined,
-                            size: 13,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              user['areaName'] as String,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ],
-                ),
+                  if (user['areaName'] != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.map_outlined,
+                          size: 13,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            user['areaName'] as String,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
+            ),
 
-              // Deactivate toggle (disabled for self)
-              if (!isSelf)
-                IconButton(
-                  icon: Icon(
-                    isLocked ? Icons.lock_open : Icons.block,
-                    color: isLocked ? AppTheme.success : Colors.red,
-                  ),
-                  tooltip: isLocked ? 'Reactivate user' : 'Deactivate user',
-                  onPressed: () => onBanToggle(!isLocked),
-                ),
-
-              // Edit chevron
-              Icon(
-                Icons.chevron_right,
+            // 3-dot menu
+            PopupMenuButton<String>(
+              icon: Icon(
+                Icons.more_vert,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
-            ],
-          ),
+              onSelected: (value) {
+                if (value == 'edit') onEdit();
+                if (value == 'reset_password') onResetPassword();
+                if (value == 'toggle') onBanToggle(!isLocked);
+              },
+              itemBuilder: (ctx) => [
+                const PopupMenuItem(
+                  value: 'edit',
+                  child: Text('Edit Role & Assignment'),
+                ),
+                const PopupMenuItem(
+                  value: 'reset_password',
+                  child: Text('Reset Password'),
+                ),
+                if (!isSelf)
+                  PopupMenuItem(
+                    value: 'toggle',
+                    child: Text(isLocked ? 'Activate User' : 'Deactivate User'),
+                  ),
+              ],
+            ),
+          ],
         ),
       ),
     );

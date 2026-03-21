@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
 
@@ -22,6 +23,7 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
   late final ActionPlanManager _manager;
   String _search = '';
   String _filter = 'all'; // all, open, pending_verify, closed
+  String _sort = 'newest'; // newest, urgent
 
   @override
   void initState() {
@@ -51,6 +53,20 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
           .toList();
     }
 
+    // Sort
+    if (_sort == 'urgent') {
+      items.sort((a, b) {
+        final da = a.deadline;
+        final db = b.deadline;
+        if (da == null && db == null) return 0;
+        if (da == null) return 1;
+        if (db == null) return -1;
+        return da.compareTo(db);
+      });
+    } else {
+      items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    }
+
     return items;
   }
 
@@ -68,10 +84,15 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
     return _manager.actionPlans.value.where((p) => p.status == status).length;
   }
 
+  String _filterLabel(String filter) => switch (filter) {
+    'open' => 'open',
+    'pending_verify' => 'pending verification',
+    'closed' => 'completed',
+    _ => filter,
+  };
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Action Plans')),
       body: ListenableBuilder(
@@ -134,16 +155,39 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
               ),
               const SizedBox(height: 8),
 
+              // Sort selector
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    WarmChip(
+                      label: 'Newest',
+                      selected: _sort == 'newest',
+                      onTap: () => setState(() => _sort = 'newest'),
+                    ),
+                    const SizedBox(width: 8),
+                    WarmChip(
+                      label: 'Urgent',
+                      selected: _sort == 'urgent',
+                      onTap: () => setState(() => _sort = 'urgent'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+
               // Grouped list
               Expanded(
                 child: _filtered.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No action plans found',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+                    ? ChecklyEmptyState(
+                        icon: Icons.assignment_outlined,
+                        title: _filter == 'all'
+                            ? 'No action plans yet'
+                            : 'No ${_filterLabel(_filter)} action plans',
+                        subtitle: _filter == 'all'
+                            ? 'Action plans will appear here when audits flag issues.'
+                            : 'Try changing the filter to see more.',
                       )
                     : RefreshIndicator(
                         onRefresh: _manager.loadActionPlans,

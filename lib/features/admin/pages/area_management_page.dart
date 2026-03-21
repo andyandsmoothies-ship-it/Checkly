@@ -451,12 +451,6 @@ class _AreaCard extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Chevron
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
             ],
           ),
         ),

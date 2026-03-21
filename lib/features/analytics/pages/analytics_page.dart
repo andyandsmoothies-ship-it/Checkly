@@ -5,6 +5,7 @@ import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:checkly/_shared/theme/app_fonts.dart';
 import 'package:checkly/_shared/widgets/warm_chip.dart';
 import 'package:checkly/_shared/widgets/section_header.dart';
+import 'package:checkly/_shared/widgets/checkly_empty_state.dart';
 import 'package:get_it/get_it.dart';
 
 import '../widgets/trend_chart.dart';
@@ -54,9 +55,9 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     final allSubs = await _db.select(_db.cachedSubmissions).get();
     var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
 
-    // Build filter options from all data (before filtering)
-    _storeNames = subs.map((s) => s.storeName ?? 'Unknown').toSet().toList()
-      ..sort();
+    // Build filter options from cached master data (always fully populated)
+    final allStores = await _db.select(_db.cachedStores).get();
+    _storeNames = allStores.map((s) => s.name).toSet().toList()..sort();
     final templates = await _db.select(_db.cachedTemplates).get();
     _templateTypes = templates.map((t) => t.type).toSet().toList()..sort();
     final templateTypeMap = <String, String>{};
@@ -110,7 +111,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         )
         .length;
 
-    // 6-month trend
+    // 6-month trend — padded to always show 6 months
     final sixMonthsAgo = now.subtract(const Duration(days: 180));
     final recentSubs = subs
         .where((s) => s.totalScore != null && s.createdAt.isAfter(sixMonthsAgo))
@@ -123,10 +124,20 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       grouped.putIfAbsent(key, () => []).add(s.totalScore!);
     }
 
-    _trend = grouped.entries.map((e) {
-      final avg = e.value.reduce((a, b) => a + b) / e.value.length;
-      return TrendPoint(e.key, avg, e.value.length);
-    }).toList()..sort((a, b) => a.month.compareTo(b.month));
+    // Build exactly 6 month keys for continuous X-axis
+    final monthKeys = List.generate(6, (i) {
+      final d = DateTime(now.year, now.month - i);
+      return '${d.year}-${d.month.toString().padLeft(2, '0')}';
+    }).reversed.toList();
+
+    _trend = monthKeys.map((key) {
+      final scores = grouped[key];
+      if (scores != null && scores.isNotEmpty) {
+        final avg = scores.reduce((a, b) => a + b) / scores.length;
+        return TrendPoint(key, avg, scores.length);
+      }
+      return TrendPoint(key, 0, 0);
+    }).toList();
 
     // Category heatmap — group by template type
     final catScores = <String, List<double>>{};
@@ -288,57 +299,66 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // KPI Grid
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _KpiCard(
-                        icon: Icons.assignment,
-                        label: 'Total Audits',
-                        value: '$_totalAudits',
-                        accentColor: theme.colorScheme.primary,
-                      ),
-                      _KpiCard(
-                        icon: Icons.speed,
-                        label: 'Avg Score',
-                        value: '${_avgScore.toStringAsFixed(1)}%',
-                        accentColor: AppTheme.success,
-                      ),
-                      _KpiCard(
-                        icon: Icons.pending_actions,
-                        label: 'Open APs',
-                        value: '$_openAPs',
-                        accentColor: AppTheme.warning,
-                      ),
-                      _KpiCard(
-                        icon: Icons.warning_amber,
-                        label: 'Overdue',
-                        value: '$_overdueAPs',
-                        accentColor: Colors.red,
-                      ),
-                      _KpiCard(
-                        icon: Icons.check_circle,
-                        label: 'Completion',
-                        value: '${_completionRate.toStringAsFixed(1)}%',
-                        accentColor: AppTheme.info,
-                      ),
-                    ],
-                  ),
+                  if (_totalAudits == 0)
+                    const ChecklyEmptyState(
+                      icon: Icons.analytics_outlined,
+                      title: 'No analytics yet',
+                      subtitle:
+                          'Complete your first audit to generate insights.',
+                    )
+                  else ...[
+                    // KPI Grid
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _KpiCard(
+                          icon: Icons.assignment,
+                          label: 'Total Audits',
+                          value: '$_totalAudits',
+                          accentColor: theme.colorScheme.primary,
+                        ),
+                        _KpiCard(
+                          icon: Icons.speed,
+                          label: 'Avg Score',
+                          value: '${_avgScore.toStringAsFixed(1)}%',
+                          accentColor: AppTheme.success,
+                        ),
+                        _KpiCard(
+                          icon: Icons.pending_actions,
+                          label: 'Open APs',
+                          value: '$_openAPs',
+                          accentColor: AppTheme.warning,
+                        ),
+                        _KpiCard(
+                          icon: Icons.warning_amber,
+                          label: 'Overdue',
+                          value: '$_overdueAPs',
+                          accentColor: Colors.red,
+                        ),
+                        _KpiCard(
+                          icon: Icons.check_circle,
+                          label: 'Completion',
+                          value: '${_completionRate.toStringAsFixed(1)}%',
+                          accentColor: AppTheme.info,
+                        ),
+                      ],
+                    ),
 
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                  // Trend section header
-                  const SectionHeader('6-MONTH TREND'),
+                    // Trend section header
+                    const SectionHeader('6-MONTH TREND'),
 
-                  // Trend chart (fl_chart LineChart)
-                  TrendChart(data: _trend),
+                    // Trend chart (fl_chart LineChart)
+                    TrendChart(data: _trend),
 
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                  // Category heatmap
-                  const SectionHeader('CATEGORY PERFORMANCE'),
-                  CategoryHeatmap(categories: _categoryScores),
+                    // Category heatmap
+                    const SectionHeader('CATEGORY PERFORMANCE'),
+                    CategoryHeatmap(categories: _categoryScores),
+                  ],
                 ],
               ),
             ),
