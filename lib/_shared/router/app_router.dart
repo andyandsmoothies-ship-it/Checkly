@@ -126,7 +126,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/admin/stores',
-      builder: (context, state) => const StoreManagementPage(),
+      builder: (context, state) => StoreManagementPage(
+        initialAreaId: state.uri.queryParameters['areaId'],
+      ),
     ),
     GoRoute(
       path: '/admin/logs',

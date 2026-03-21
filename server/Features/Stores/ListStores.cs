@@ -18,6 +18,7 @@ public static class ListStores
         var assignableAs = httpContext.Request.Query["assignable_as"].FirstOrDefault();
         var exceptUser = httpContext.Request.Query["except_user"].FirstOrDefault();
         var includeInactive = httpContext.Request.Query["includeInactive"].FirstOrDefault();
+        var areaIdParam = httpContext.Request.Query["areaId"].FirstOrDefault();
 
         var query = db.Stores.AsQueryable();
 
@@ -29,6 +30,10 @@ public static class ListStores
             query = query.Where(s =>
                 s.Name.Contains(search) ||
                 (s.Area != null && s.Area.Name.Contains(search)));
+
+        // Filter by area
+        if (Guid.TryParse(areaIdParam, out var areaId))
+            query = query.Where(s => s.AreaId == areaId);
 
         // Smart filter: only stores assignable to a specific role
         if (assignableAs == "store_manager")

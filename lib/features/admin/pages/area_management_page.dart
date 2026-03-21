@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
@@ -445,6 +446,8 @@ class _AreaCard extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 4),
+                    // Store & user count badges
+                    _buildBadges(context),
                   ],
                 ),
               ),
@@ -458,6 +461,40 @@ class _AreaCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildBadges(BuildContext context) {
+    final storeCount = area['storeCount'] as int? ?? 0;
+    final userCount = area['userCount'] as int? ?? 0;
+    final areaId = area['id'] as String? ?? '';
+
+    if (storeCount == 0 && userCount == 0) {
+      return Text(
+        'No stores yet',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+
+    return Wrap(
+      spacing: 8,
+      children: [
+        if (storeCount > 0)
+          ActionChip(
+            avatar: const Icon(Icons.store, size: 14),
+            label: Text('$storeCount Stores'),
+            visualDensity: VisualDensity.compact,
+            onPressed: () => context.push('/admin/stores?areaId=$areaId'),
+          ),
+        if (userCount > 0)
+          Chip(
+            avatar: const Icon(Icons.people, size: 14),
+            label: Text('$userCount Users'),
+            visualDensity: VisualDensity.compact,
+          ),
+      ],
     );
   }
 }

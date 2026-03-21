@@ -37,7 +37,17 @@ public static class UpdateArea
 
         await db.SaveChangesAsync(ct);
 
-        return TypedResults.Ok(
-            new AreaDto(area.Id, area.Name, area.Description, area.CreatedAt));
+        // Reload with counts for consistent response
+        var dto = await db.Areas
+            .AsNoTracking()
+            .Where(a => a.Id == id)
+            .Select(a => new AreaDto(
+                a.Id, a.Name, a.Description,
+                a.Stores.Count(s => s.IsActive == true),
+                a.Profiles.Count,
+                a.CreatedAt))
+            .FirstAsync(ct);
+
+        return TypedResults.Ok(dto);
     }
 }

@@ -13,7 +13,8 @@ final _di = GetIt.instance;
 
 /// Admin: Store Management — list, create, edit, deactivate, transfer SM.
 class StoreManagementPage extends StatefulWidget {
-  const StoreManagementPage({super.key});
+  final String? initialAreaId;
+  const StoreManagementPage({super.key, this.initialAreaId});
 
   @override
   State<StoreManagementPage> createState() => _StoreManagementPageState();
@@ -24,10 +25,12 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
   List<Map<String, dynamic>> _areas = [];
   bool _isLoading = true;
   String? _error;
+  String? _selectedAreaId;
 
   @override
   void initState() {
     super.initState();
+    _selectedAreaId = widget.initialAreaId;
     _loadData();
   }
 
@@ -40,6 +43,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     try {
       final storesFuture = _di<StoreApiService>().getStores(
         includeInactive: true,
+        areaId: _selectedAreaId,
       );
       final areasFuture = _loadAreas();
 
@@ -435,7 +439,40 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
-      body: _buildBody(),
+      body: Column(
+        children: [
+          // Area filter dropdown
+          if (_areas.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: DropdownButtonFormField<String?>(
+                value: _selectedAreaId,
+                decoration: const InputDecoration(
+                  labelText: 'Filter by Area',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                ),
+                items: [
+                  const DropdownMenuItem(value: null, child: Text('All Areas')),
+                  ..._areas.map(
+                    (a) => DropdownMenuItem(
+                      value: a['id'] as String,
+                      child: Text(a['name'] as String),
+                    ),
+                  ),
+                ],
+                onChanged: (v) {
+                  setState(() => _selectedAreaId = v);
+                  _loadData();
+                },
+              ),
+            ),
+          Expanded(child: _buildBody()),
+        ],
+      ),
     );
   }
 

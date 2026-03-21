@@ -16,7 +16,11 @@ public static class ListAreas
             .AsNoTracking()
             .OrderBy(a => a.Name)
             .Take(100)
-            .Select(a => new AreaDto(a.Id, a.Name, a.Description, a.CreatedAt))
+            .Select(a => new AreaDto(
+                a.Id, a.Name, a.Description,
+                a.Stores.Count(s => s.IsActive == true),
+                a.Profiles.Count,
+                a.CreatedAt))
             .ToListAsync(ct);
 
         return TypedResults.Ok(areas);

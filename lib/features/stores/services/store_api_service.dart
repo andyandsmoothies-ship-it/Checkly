@@ -13,12 +13,14 @@ class StoreApiService {
   /// [exceptUser] — userId to exclude from "occupied" check (for edit forms).
   Future<List<StoreDto>> getStores({
     String? search,
+    String? areaId,
     String? assignableAs,
     String? exceptUser,
     bool includeInactive = false,
   }) async {
     final params = <String, dynamic>{};
     if (search != null && search.isNotEmpty) params['search'] = search;
+    if (areaId != null) params['areaId'] = areaId;
     if (assignableAs != null) params['assignable_as'] = assignableAs;
     if (exceptUser != null) params['except_user'] = exceptUser;
     if (includeInactive) params['includeInactive'] = 'true';
