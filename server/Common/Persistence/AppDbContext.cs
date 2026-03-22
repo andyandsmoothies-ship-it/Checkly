@@ -161,7 +161,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.TemplateId).HasColumnName("template_id").IsRequired();
             e.Property(x => x.Title).HasColumnName("title").IsRequired();
             e.Property(x => x.Description).HasColumnName("description");
-            e.Property(x => x.Weight).HasColumnName("weight").HasDefaultValue(1.0m);
+            e.Property(x => x.Weight).HasColumnName("weight");
             e.Property(x => x.MaxDeductionPoints).HasColumnName("max_deduction_points");
             e.Property(x => x.MinusPerFault).HasColumnName("minus_per_fault");
             e.Property(x => x.OrderIndex).HasColumnName("order_index").HasDefaultValue(0);
