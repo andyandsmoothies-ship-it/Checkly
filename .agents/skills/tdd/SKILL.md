@@ -1,9 +1,18 @@
 ---
 name: tdd
-description: Load this skill whenever building features or fixing bugs using TDD, when the user mentions "red-green-refactor", wants integration tests, or explicitly asks for test-first development.
+description: Load this skill whenever building features or fixing bugs using TDD, when the user mentions "red-green-refactor", wants integration tests, explicitly asks for test-first development, needs to verify AI-generated code, is working with legacy code that lacks tests, or when applying SOLID principles through test design. This skill enforces the Detroit (Classical) testing style — test observable state/output, not internal interactions. Use PROACTIVELY during any /implement workflow.
 ---
 
 # Test-Driven Development
+
+## Why TDD Matters
+
+TDD isn't a philosophical preference — it's empirically proven. Landmark studies across Microsoft and IBM showed that strict TDD reduced pre-release defect density by **40% to 90%** at the cost of a **15% to 35%** increase in initial development time. That time penalty is absorbed entirely during the implementation phase, compressing the full Software Development Life Cycle by virtually eliminating downstream costs of late-stage bug resolution, manual regression testing, and technical debt remediation.
+
+Recent longitudinal studies (2020-2025) confirm these findings at scale: projects with strict TDD procedures showed significantly lower defect-fixing commit rates and higher test coverage stability even as complex features were rapidly introduced.
+
+> [!IMPORTANT]
+> **The AI Amplifier (DORA 2025)**: AI acts strictly as an organizational amplifier. If a team has a weak testing culture, AI exponentially accelerates the creation of technical debt — generating legacy code at unprecedented speed. If a team practices disciplined TDD, AI becomes a powerful velocity multiplier. By writing the test first, you mathematically bound the problem space, defining the exact intent, requirements, and edge cases. The pre-existing test suite then acts as an immediate, deterministic, and automated verification mechanism for AI-generated code.
 
 ## Philosophy
 
@@ -11,11 +20,28 @@ description: Load this skill whenever building features or fixing bugs using TDD
 
 **Wishful Amnesia**: When writing a spec, forget how the system works internally. Ask: "What does the consumer need?" — not "What can the system do?" This consumer-first perspective is what makes specs survive refactors.
 
-**Good specs** exercise real code paths through public APIs. They describe _what_ the system does, not _how_ it does it. A good spec reads like a requirement — "user can checkout with valid cart" tells you exactly what capability exists. These survive refactors because they don't care about internal structure.
+**Write Assertions First**: Before writing any setup code or mocks, write the final `expect()` or `Assert()`. This forces you to define the exact outcome you want. Once the assertion is clear, work backward to set up the state.
+
+**Good specs** exercise real code paths through public APIs. They describe _what_ the system does, not _how_ it does it. A good spec reads like a requirement — "user can checkout with valid cart" tells you exactly what capability exists. They test behavior, not implementation details.
 
 **Bad specs** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means. The warning sign: your spec breaks when you refactor, but behavior hasn't changed.
 
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
+
+## Detroit vs. London Style
+
+This project follows the **Detroit (Classical) style** of TDD. Understanding the difference is critical because it determines how you write every test.
+
+| | Detroit (Classical) — **USE THIS** | London (Mockist) — Avoid |
+|---|---|---|
+| **Unit** | A module or group of coupled classes | A single class or function |
+| **Dependencies** | Uses real collaborators; stubs only slow boundaries (DB, network) | Mocks all external dependencies |
+| **Testing Focus** | State/Output — *what the object produces* | Interactions — *how the object works internally* |
+| **Refactoring Resilience** | High — tests survive internal changes as long as output is constant | Low — tests break when implementation details change |
+
+The modern industry consensus, driven by the need for maintainable software over long lifespans, leans heavily toward the Detroit style. As Uber's engineering teams discovered, over-mocking leads to a false sense of security where unit tests pass entirely in a vacuum but fail catastrophically upon integration. By focusing on testing state and observable behavior, your test suites act as an enabler of continuous change rather than an impediment.
+
+See [mocking.md](mocking.md) for detailed guidelines on when to mock and the Detroit vs. London comparison.
 
 ## Spec-Tests vs Unit Tests
 
@@ -30,7 +56,7 @@ These are two different things that often happen at the same time. Don't confuse
 | **If from /atdd** | The Gherkin scenarios ARE your spec-tests — don't re-spec them | Add these after the spec-tests pass |
 
 > [!IMPORTANT]
-> When specs arrive from the `/atdd` workflow, they ARE the RED starting point. Do not re-specify what ATDD already defined — go straight to GREEN.
+> When specs arrive from the `/atdd` workflow, they ARE the RED starting point. Do not re-specify what ATDD already defined — go straight to GREEN. BDD (ATDD) defines the *edges of the box* at the macro level; TDD *fills it in* at the micro level. They are nested: a high-level BDD scenario fails first, prompting the developer into the granular TDD Red-Green-Refactor cycle to implement the underlying logic.
 
 ## Anti-Pattern: Horizontal Slices
 
@@ -110,15 +136,25 @@ Rules:
 
 After all tests pass, look for [refactor candidates](refactoring.md):
 
-- [ ] Extract duplication
+- [ ] Extract duplication in production code
 - [ ] Deepen modules (move complexity behind simple interfaces)
-- [ ] Apply SOLID principles where natural
+- [ ] Apply SOLID principles where natural — TDD organically drives Single Responsibility and Dependency Inversion because code must be testable from inception
 - [ ] Look for new abstractions — simplifying often means creating MORE things, not fewer
 - [ ] Organize boundaries — separate files, directories, new interfaces
+- [ ] **Refactor Test Code**: Treat test code as first-class code. Remove obsolete tests and extract duplicated setup logic, but **prefer clarity over DRY**. Avoid complex base classes for tests; reading a test should not require jumping through 3 parent classes.
 - [ ] Consider what new code reveals about existing code
 - [ ] Run tests after each refactor step
 
 **Never refactor while RED.** Get to GREEN first.
+
+## Working with Legacy Code
+
+When you encounter existing code that lacks tests, do NOT attempt a full rewrite. Load [legacy-code.md](legacy-code.md) for the complete strategy. The key steps are:
+
+1. **Find a Seam** — a point where behavior can be altered without editing the code at that location
+2. **Write Characterization Tests** — capture the current behavior (including bugs) as a safety net
+3. **Refactor safely** within the characterization perimeter
+4. **Apply TDD** for all new changes going forward
 
 ## Checklist Per Cycle
 
@@ -128,6 +164,9 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 [ ] Test would survive internal refactor
 [ ] Code is minimal for this test
 [ ] No speculative features added
+[ ] Test is strictly independent (does not rely on execution order or shared mutable state)
+[ ] Assertions are minimized (one logical condition per test to pinpoint failures)
+[ ] Mocking follows Detroit style (real collaborators; stubs only at slow boundaries)
 ```
 
 ## Project-Specific Rules
