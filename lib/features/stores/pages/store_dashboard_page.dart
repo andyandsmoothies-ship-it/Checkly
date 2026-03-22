@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/utils/date_format_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/database_service.dart';
@@ -245,9 +246,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
     );
   }
 
-  String _formatDate(DateTime dt) {
-    return '${dt.day}/${dt.month}/${dt.year}';
-  }
+  String _formatDate(DateTime dt) => formatDate(dt);
 }
 
 /// Metric chip with icon + label — Apothecary style.

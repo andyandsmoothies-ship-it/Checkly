@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/utils/date_format_utils.dart';
+
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
@@ -10,16 +12,9 @@ import '../model/template_dto.dart';
 
 final _di = GetIt.instance;
 
-/// Returns a human-readable relative time string (e.g. "2 hours ago").
-String _timeAgo(DateTime dt) {
-  final diff = DateTime.now().difference(dt);
-  if (diff.inMinutes < 1) return 'just now';
-  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-  if (diff.inHours < 24) return '${diff.inHours}h ago';
-  if (diff.inDays < 30) return '${diff.inDays}d ago';
-  if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mo ago';
-  return '${(diff.inDays / 365).floor()}y ago';
-}
+/// Returns a human-readable relative time string.
+/// Delegates to shared [timeAgo] utility.
+String _timeAgo(DateTime dt) => timeAgo(dt);
 
 /// Template type labels matching PWA TemplateCard constants.
 const kTemplateTypeLabels = <String, String>{

@@ -8,6 +8,7 @@ import '../../auth/manager/auth_manager.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/utils/date_format_utils.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../../_shared/database/app_database.dart';
 import '../manager/dashboard_manager.dart';
@@ -435,7 +436,7 @@ class _SubmissionFeedRow extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${submission.storeName ?? 'Unknown'} · ${_timeAgo(submission.createdAt)}',
+                      '${submission.storeName ?? 'Unknown'} · ${timeAgo(submission.createdAt)}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -473,14 +474,6 @@ class _SubmissionFeedRow extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _timeAgo(DateTime date) {
-    final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
-    return '${date.day}/${date.month}';
   }
 }
 

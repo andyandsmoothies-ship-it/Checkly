@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/utils/date_format_utils.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -642,7 +643,5 @@ class _AuditCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
+  String _formatDate(DateTime date) => formatDate(date);
 }

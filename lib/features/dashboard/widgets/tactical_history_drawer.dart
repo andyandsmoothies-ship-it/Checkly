@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/utils/date_format_utils.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
@@ -171,9 +172,8 @@ class _AuditCard extends StatelessWidget {
       s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
 
   String _formatDate(String raw) {
-    final dt = DateTime.tryParse(raw);
-    if (dt == null) return raw;
-    final local = dt.toLocal();
-    return '${local.day}/${local.month}/${local.year}';
+    final local = DateTime.tryParse(raw)?.toLocal();
+    if (local == null) return raw;
+    return formatDate(local);
   }
 }

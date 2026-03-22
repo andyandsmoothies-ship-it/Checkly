@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/utils/date_format_utils.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/database/database_service.dart';
@@ -130,7 +131,7 @@ class _ActivityCard extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          '${item.storeName} · ${item.date.day}/${item.date.month}/${item.date.year}',
+          '${item.storeName} · ${formatDate(item.date)}',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),

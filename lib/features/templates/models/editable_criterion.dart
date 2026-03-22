@@ -45,7 +45,13 @@ class EditableCriterion {
         (dto.inputType == 'single_choice' || dto.inputType == 'multi_choice')) {
       try {
         final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
-        choices = (meta['options'] as List?)?.cast<String>() ?? [];
+        choices =
+            (meta['options'] as List?)?.map((e) {
+              if (e is String) return e;
+              if (e is Map) return (e['label'] as String?) ?? '';
+              return e.toString();
+            }).toList() ??
+            [];
       } catch (e) {
         debugPrint('Criterion metadata parse: $e');
       }
