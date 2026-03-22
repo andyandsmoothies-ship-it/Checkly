@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../services/admin_api_service.dart';
 
 final _di = GetIt.instance;
@@ -85,92 +86,121 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,
+      isDismissible: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          24,
-          16,
-          MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'New Area',
-              style: AppFonts.displayStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Area Name *',
-                hintText: 'e.g. Mekong Delta',
-                border: OutlineInputBorder(),
-              ),
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: descCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                hintText: 'Optional description of this area',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 2,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: () async {
-                final name = nameCtrl.text.trim();
-                final desc = descCtrl.text.trim();
-                if (name.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Area name is required')),
-                  );
-                  return;
-                }
-                try {
-                  await _di<AdminApiService>().createArea(
-                    name: name,
-                    description: desc.isNotEmpty ? desc : null,
-                  );
-                  if (context.mounted) {
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(
-                        content: const Text('Area created'),
-                        backgroundColor: AppTheme.success,
+      builder: (ctx) {
+        var isDirty = false;
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            void markDirty() {
+              if (!isDirty) setSheetState(() => isDirty = true);
+            }
+
+            return UnsavedChangesGuard(
+              isDirty: isDirty,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  24,
+                  16,
+                  MediaQuery.of(ctx).viewInsets.bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'New Area',
+                          style: AppFonts.displayStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.maybePop(ctx),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: nameCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Area Name *',
+                        hintText: 'e.g. Mekong Delta',
+                        border: OutlineInputBorder(),
                       ),
-                    );
-                    _loadData();
-                  }
-                } on DioException catch (e) {
-                  if (mounted) {
-                    final msg =
-                        e.response?.data?['error'] ?? 'Failed to create area';
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(msg.toString()),
-                        backgroundColor: Colors.red,
+                      textCapitalization: TextCapitalization.words,
+                      onChanged: (_) => markDirty(),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: descCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        hintText: 'Optional description of this area',
+                        border: OutlineInputBorder(),
                       ),
-                    );
-                  }
-                }
-              },
-              child: const Text('Create Area'),
-            ),
-          ],
-        ),
-      ),
+                      maxLines: 2,
+                      textCapitalization: TextCapitalization.sentences,
+                      onChanged: (_) => markDirty(),
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton(
+                      onPressed: () async {
+                        final name = nameCtrl.text.trim();
+                        final desc = descCtrl.text.trim();
+                        if (name.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Area name is required'),
+                            ),
+                          );
+                          return;
+                        }
+                        try {
+                          await _di<AdminApiService>().createArea(
+                            name: name,
+                            description: desc.isNotEmpty ? desc : null,
+                          );
+                          if (context.mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: const Text('Area created'),
+                                backgroundColor: AppTheme.success,
+                              ),
+                            );
+                            _loadData();
+                          }
+                        } on DioException catch (e) {
+                          if (mounted) {
+                            final msg =
+                                e.response?.data?['error'] ??
+                                'Failed to create area';
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(msg.toString()),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Create Area'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -184,89 +214,115 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,
+      isDismissible: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          24,
-          16,
-          MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Edit Area',
-              style: AppFonts.displayStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Area Name *',
-                border: OutlineInputBorder(),
-              ),
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: descCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 2,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: () async {
-                final name = nameCtrl.text.trim();
-                final desc = descCtrl.text.trim();
-                if (name.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Name is required')),
-                  );
-                  return;
-                }
-                try {
-                  await _di<AdminApiService>().updateArea(
-                    area['id'] as String,
-                    name: name,
-                    description: desc,
-                  );
-                  if (context.mounted) {
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(
-                        content: const Text('Area updated'),
-                        backgroundColor: AppTheme.success,
+      builder: (ctx) {
+        var isDirty = false;
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            void markDirty() {
+              if (!isDirty) setSheetState(() => isDirty = true);
+            }
+
+            return UnsavedChangesGuard(
+              isDirty: isDirty,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  24,
+                  16,
+                  MediaQuery.of(ctx).viewInsets.bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Edit Area',
+                          style: AppFonts.displayStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.maybePop(ctx),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: nameCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Area Name *',
+                        border: OutlineInputBorder(),
                       ),
-                    );
-                    _loadData();
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Failed: $e'),
-                        backgroundColor: Colors.red,
+                      textCapitalization: TextCapitalization.words,
+                      onChanged: (_) => markDirty(),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: descCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        border: OutlineInputBorder(),
                       ),
-                    );
-                  }
-                }
-              },
-              child: const Text('Save Changes'),
-            ),
-          ],
-        ),
-      ),
+                      maxLines: 2,
+                      textCapitalization: TextCapitalization.sentences,
+                      onChanged: (_) => markDirty(),
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton(
+                      onPressed: () async {
+                        final name = nameCtrl.text.trim();
+                        final desc = descCtrl.text.trim();
+                        if (name.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Name is required')),
+                          );
+                          return;
+                        }
+                        try {
+                          await _di<AdminApiService>().updateArea(
+                            area['id'] as String,
+                            name: name,
+                            description: desc,
+                          );
+                          if (context.mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: const Text('Area updated'),
+                                backgroundColor: AppTheme.success,
+                              ),
+                            );
+                            _loadData();
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Failed: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Save Changes'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

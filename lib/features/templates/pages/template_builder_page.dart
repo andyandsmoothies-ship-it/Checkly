@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/widgets/section_header.dart';
+import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../manager/template_manager.dart';
 import '../model/template_dto.dart';
 import '../models/editable_criterion.dart';
@@ -32,6 +33,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
   bool _loading = true;
   bool _saving = false;
+  bool _isDirty = false;
 
   // ── Form state ──
   final _titleCtrl = TextEditingController();
@@ -59,6 +61,11 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   void initState() {
     super.initState();
     _manager = _di<TemplateManager>();
+    // Track text controller changes for dirty state
+    _titleCtrl.addListener(_markDirty);
+    _descCtrl.addListener(_markDirty);
+    _deadlineCtrl.addListener(_markDirty);
+    _reminderCtrl.addListener(_markDirty);
     if (!_isNew) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadExistingTemplate();
@@ -120,6 +127,10 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     };
   }
 
+  void _markDirty() {
+    if (!_isDirty && mounted) setState(() => _isDirty = true);
+  }
+
   @override
   void dispose() {
     _titleCtrl.dispose();
@@ -161,7 +172,10 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
         }
       }
     }
-    setState(() => _loading = false);
+    setState(() {
+      _loading = false;
+      _isDirty = false; // Initial load is not a user edit
+    });
   }
 
   String _buildScoringConfig() {
@@ -384,6 +398,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       );
 
       if (mounted) {
+        setState(() => _isDirty = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(_isNew ? 'Template created!' : 'Template saved!'),
@@ -406,6 +421,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   void _addSection() {
     setState(() {
       _sections.add(EditableGroup());
+      _isDirty = true;
     });
     // Auto-scroll to the new section after frame renders
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -418,12 +434,14 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     setState(() {
       _sections[index].dispose();
       _sections.removeAt(index);
+      _isDirty = true;
     });
   }
 
   void _addSubSection(int sectionIndex) {
     setState(() {
       _sections[sectionIndex].subSections.add(EditableGroup());
+      _isDirty = true;
     });
   }
 
@@ -432,6 +450,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     setState(() {
       _sections[sectionIndex].subSections[subIndex].dispose();
       _sections[sectionIndex].subSections.removeAt(subIndex);
+      _isDirty = true;
     });
   }
 
@@ -441,6 +460,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   ]) {
     setState(() {
       group.criteria.add(EditableCriterion(inputType: inputType));
+      _isDirty = true;
     });
   }
 
@@ -450,6 +470,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     setState(() {
       c.dispose();
       group.criteria.removeAt(criterionIndex);
+      _isDirty = true;
     });
   }
 
@@ -491,109 +512,114 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(_isNew ? 'New Template' : 'Edit Template')),
-      bottomNavigationBar: TemplateFooter(
-        totalPoints: _totalPoints,
-        totalDensity: _totalDensity,
-        densityEnabled: _weightedDensity,
-        canSave:
-            _titleCtrl.text.trim().isNotEmpty &&
-            _sections.isNotEmpty &&
-            (!_weightedDensity || (_totalDensity - 100).abs() < 0.01),
-        saving: _saving,
-        onSave: _save,
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                // ── Metadata Card (AC-5) ──
-                MetadataFormCard(
-                  titleCtrl: _titleCtrl,
-                  descCtrl: _descCtrl,
-                  type: _type,
-                  onTypeChanged: (v) => setState(() => _type = v ?? _type),
-                ),
+    return UnsavedChangesGuard(
+      isDirty: _isDirty,
+      child: Scaffold(
+        appBar: AppBar(title: Text(_isNew ? 'New Template' : 'Edit Template')),
+        bottomNavigationBar: TemplateFooter(
+          totalPoints: _totalPoints,
+          totalDensity: _totalDensity,
+          densityEnabled: _weightedDensity,
+          canSave:
+              _titleCtrl.text.trim().isNotEmpty &&
+              _sections.isNotEmpty &&
+              (!_weightedDensity || (_totalDensity - 100).abs() < 0.01),
+          saving: _saving,
+          onSave: _save,
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  // ── Metadata Card (AC-5) ──
+                  MetadataFormCard(
+                    titleCtrl: _titleCtrl,
+                    descCtrl: _descCtrl,
+                    type: _type,
+                    onTypeChanged: (v) => setState(() => _type = v ?? _type),
+                  ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // ── Blueprint Guide Banner (onboarding) ──
-                _BlueprintGuideBanner(scoringMode: _scoringMode),
+                  // ── Blueprint Guide Banner (onboarding) ──
+                  _BlueprintGuideBanner(scoringMode: _scoringMode),
 
-                const SizedBox(height: 16),
-                AdvancedSettingsCard(
-                  scoringMode: _scoringMode,
-                  ccpOverride: _ccpOverride,
-                  riskOverride: _riskOverride,
-                  weightedDensity: _weightedDensity,
-                  confirmCorrect: _confirmCorrect,
-                  progressiveRepeat: _progressiveRepeat,
-                  deadlineCtrl: _deadlineCtrl,
-                  reminderCtrl: _reminderCtrl,
-                  onScoringModeChanged: (v) =>
-                      setState(() => _scoringMode = v ?? _scoringMode),
-                  onCcpChanged: (v) => setState(() => _ccpOverride = v),
-                  onRiskChanged: (v) => setState(() => _riskOverride = v),
-                  onDensityChanged: (v) => setState(() => _weightedDensity = v),
-                  onCorrectChanged: (v) => setState(() => _confirmCorrect = v),
-                  onProgressiveChanged: (v) =>
-                      setState(() => _progressiveRepeat = v),
-                ),
+                  const SizedBox(height: 16),
+                  AdvancedSettingsCard(
+                    scoringMode: _scoringMode,
+                    ccpOverride: _ccpOverride,
+                    riskOverride: _riskOverride,
+                    weightedDensity: _weightedDensity,
+                    confirmCorrect: _confirmCorrect,
+                    progressiveRepeat: _progressiveRepeat,
+                    deadlineCtrl: _deadlineCtrl,
+                    reminderCtrl: _reminderCtrl,
+                    onScoringModeChanged: (v) =>
+                        setState(() => _scoringMode = v ?? _scoringMode),
+                    onCcpChanged: (v) => setState(() => _ccpOverride = v),
+                    onRiskChanged: (v) => setState(() => _riskOverride = v),
+                    onDensityChanged: (v) =>
+                        setState(() => _weightedDensity = v),
+                    onCorrectChanged: (v) =>
+                        setState(() => _confirmCorrect = v),
+                    onProgressiveChanged: (v) =>
+                        setState(() => _progressiveRepeat = v),
+                  ),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // ── Sections Editor (AC-7) ──
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SectionHeader('SECTIONS'),
-                    TextButton.icon(
-                      onPressed: _addSection,
-                      icon: const Icon(Icons.add, size: 16),
-                      label: const Text('Add Section'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
+                  // ── Sections Editor (AC-7) ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SectionHeader('SECTIONS'),
+                      TextButton.icon(
+                        onPressed: _addSection,
+                        icon: const Icon(Icons.add, size: 16),
+                        label: const Text('Add Section'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
 
-                if (_sections.isEmpty)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        'No sections yet. Tap "Add Section" to start building.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                  if (_sections.isEmpty)
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          'No sections yet. Tap "Add Section" to start building.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                else
-                  ..._sections.asMap().entries.map((e) {
-                    final i = e.key;
-                    final section = e.value;
-                    return SectionEditor(
-                      index: i,
-                      section: section,
-                      depth: 0,
+                    )
+                  else
+                    ..._sections.asMap().entries.map((e) {
+                      final i = e.key;
+                      final section = e.value;
+                      return SectionEditor(
+                        index: i,
+                        section: section,
+                        depth: 0,
 
-                      densityEnabled: _weightedDensity,
-                      onRemoveSection: () => _removeSection(i),
-                      onAddCriterion: (inputType) =>
-                          _addCriterionToGroup(section, inputType),
-                      onRemoveCriterion: (ci) =>
-                          _removeCriterionFromGroup(section, ci),
-                      onAddSubSection: () => _addSubSection(i),
-                      onRemoveSubSection: (si) => _removeSubSection(i, si),
-                      onChanged: () => setState(() {}),
-                    );
-                  }),
+                        densityEnabled: _weightedDensity,
+                        onRemoveSection: () => _removeSection(i),
+                        onAddCriterion: (inputType) =>
+                            _addCriterionToGroup(section, inputType),
+                        onRemoveCriterion: (ci) =>
+                            _removeCriterionFromGroup(section, ci),
+                        onAddSubSection: () => _addSubSection(i),
+                        onRemoveSubSection: (si) => _removeSubSection(i, si),
+                        onChanged: () => setState(() {}),
+                      );
+                    }),
 
-                const SizedBox(height: 80), // Footer clearance
-              ],
-            ),
+                  const SizedBox(height: 80), // Footer clearance
+                ],
+              ),
+      ),
     );
   }
 }

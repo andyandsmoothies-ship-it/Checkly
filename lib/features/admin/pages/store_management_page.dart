@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../stores/model/store_dto.dart';
 
@@ -86,6 +87,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,
+      isDismissible: false,
       builder: (ctx) {
         // Map state
         LatLng? markerPos;
@@ -96,182 +98,205 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
         }
         final mapCtrl = MapController();
 
+        var isDirty = false;
+
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
-            return FractionallySizedBox(
-              heightFactor: 0.92,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isEdit ? 'Edit Store' : 'Create Store',
-                        style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
+            void markDirty() {
+              if (!isDirty) setSheetState(() => isDirty = true);
+            }
 
-                      // Name
-                      TextField(
-                        controller: nameCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Store Name *',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Address
-                      TextField(
-                        controller: addressCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Address',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Area dropdown
-                      DropdownButtonFormField<String>(
-                        initialValue:
-                            _areas.any((a) => a['id'] == selectedAreaId)
-                            ? selectedAreaId
-                            : null,
-                        borderRadius: BorderRadius.circular(12),
-                        decoration: const InputDecoration(
-                          labelText: 'Area',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: [
-                          const DropdownMenuItem(
-                            value: null,
-                            child: Text('— None —'),
-                          ),
-                          ..._areas.map(
-                            (a) => DropdownMenuItem(
-                              value: a['id'] as String,
-                              child: Text(a['name'] as String),
+            return UnsavedChangesGuard(
+              isDirty: isDirty,
+              child: FractionallySizedBox(
+                heightFactor: 0.92,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              isEdit ? 'Edit Store' : 'Create Store',
+                              style: Theme.of(ctx).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.w700),
                             ),
-                          ),
-                        ],
-                        onChanged: (v) =>
-                            setSheetState(() => selectedAreaId = v),
-                      ),
-                      const SizedBox(height: 12),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () => Navigator.maybePop(ctx),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
 
-                      // GPS fields (side by side)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: latCtrl,
-                              decoration: const InputDecoration(
-                                labelText: 'Latitude',
-                                border: OutlineInputBorder(),
+                        // Name
+                        TextField(
+                          controller: nameCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Store Name *',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (_) => markDirty(),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Address
+                        TextField(
+                          controller: addressCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Address',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (_) => markDirty(),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Area dropdown
+                        DropdownButtonFormField<String>(
+                          initialValue:
+                              _areas.any((a) => a['id'] == selectedAreaId)
+                              ? selectedAreaId
+                              : null,
+                          borderRadius: BorderRadius.circular(12),
+                          decoration: const InputDecoration(
+                            labelText: 'Area',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: [
+                            const DropdownMenuItem(
+                              value: null,
+                              child: Text('— None —'),
+                            ),
+                            ..._areas.map(
+                              (a) => DropdownMenuItem(
+                                value: a['id'] as String,
+                                child: Text(a['name'] as String),
                               ),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                    signed: true,
-                                  ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextField(
-                              controller: lngCtrl,
-                              decoration: const InputDecoration(
-                                labelText: 'Longitude',
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                    signed: true,
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
+                          ],
+                          onChanged: (v) {
+                            setSheetState(() => selectedAreaId = v);
+                            markDirty();
+                          },
+                        ),
+                        const SizedBox(height: 12),
 
-                      // Interactive map
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: SizedBox(
-                          height: 220,
-                          child: FlutterMap(
-                            mapController: mapCtrl,
-                            options: MapOptions(
-                              initialCenter:
-                                  markerPos ?? const LatLng(15.0, 108.0),
-                              initialZoom: markerPos != null ? 14.0 : 5.5,
-                              onTap: (tapPos, latlng) {
-                                setSheetState(() {
-                                  markerPos = latlng;
-                                  latCtrl.text = latlng.latitude
-                                      .toStringAsFixed(6);
-                                  lngCtrl.text = latlng.longitude
-                                      .toStringAsFixed(6);
-                                });
-                              },
-                            ),
-                            children: [
-                              TileLayer(
-                                urlTemplate:
-                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                userAgentPackageName: 'com.checkly.app',
-                              ),
-                              if (markerPos != null)
-                                MarkerLayer(
-                                  markers: [
-                                    Marker(
-                                      point: markerPos!,
-                                      width: 40,
-                                      height: 40,
-                                      child: const Icon(
-                                        Icons.location_on,
-                                        color: Colors.red,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ],
+                        // GPS fields (side by side)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: latCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Latitude',
+                                  border: OutlineInputBorder(),
                                 ),
-                            ],
-                          ),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                      signed: true,
+                                    ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                controller: lngCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Longitude',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                      signed: true,
+                                    ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Tap on the map to set store location',
-                        style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 12),
 
-                      // Save button
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: () => _saveStore(
-                            existingId: store?.id,
-                            name: nameCtrl.text.trim(),
-                            address: addressCtrl.text.trim(),
-                            areaId: selectedAreaId,
-                            gpsLat: double.tryParse(latCtrl.text.trim()),
-                            gpsLng: double.tryParse(lngCtrl.text.trim()),
+                        // Interactive map
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: SizedBox(
+                            height: 220,
+                            child: FlutterMap(
+                              mapController: mapCtrl,
+                              options: MapOptions(
+                                initialCenter:
+                                    markerPos ?? const LatLng(15.0, 108.0),
+                                initialZoom: markerPos != null ? 14.0 : 5.5,
+                                onTap: (tapPos, latlng) {
+                                  setSheetState(() {
+                                    markerPos = latlng;
+                                    latCtrl.text = latlng.latitude
+                                        .toStringAsFixed(6);
+                                    lngCtrl.text = latlng.longitude
+                                        .toStringAsFixed(6);
+                                  });
+                                },
+                              ),
+                              children: [
+                                TileLayer(
+                                  urlTemplate:
+                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                  userAgentPackageName: 'com.checkly.app',
+                                ),
+                                if (markerPos != null)
+                                  MarkerLayer(
+                                    markers: [
+                                      Marker(
+                                        point: markerPos!,
+                                        width: 40,
+                                        height: 40,
+                                        child: const Icon(
+                                          Icons.location_on,
+                                          color: Colors.red,
+                                          size: 40,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            ),
                           ),
-                          icon: const Icon(Icons.save),
-                          label: Text(isEdit ? 'Save Changes' : 'Create Store'),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          'Tap on the map to set store location',
+                          style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Save button
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: () => _saveStore(
+                              existingId: store?.id,
+                              name: nameCtrl.text.trim(),
+                              address: addressCtrl.text.trim(),
+                              areaId: selectedAreaId,
+                              gpsLat: double.tryParse(latCtrl.text.trim()),
+                              gpsLng: double.tryParse(lngCtrl.text.trim()),
+                            ),
+                            icon: const Icon(Icons.save),
+                            label: Text(
+                              isEdit ? 'Save Changes' : 'Create Store',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                   ),
                 ),
               ),

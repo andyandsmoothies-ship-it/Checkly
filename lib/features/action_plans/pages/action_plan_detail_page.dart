@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
@@ -43,70 +44,112 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          24,
-          24,
-          24,
-          24 + MediaQuery.of(ctx).viewInsets.bottom,
-        ),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Submit Evidence',
-                style: Theme.of(
-                  ctx,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: correctionCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Correction Plan',
-                  border: OutlineInputBorder(),
+      builder: (ctx) {
+        var isDirty = false;
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            // Attach listeners once on first build
+            void markDirty() {
+              if (!isDirty) setSheetState(() => isDirty = true);
+            }
+
+            // Use addListener carefully — only attach once
+            // We track via the initial text to detect changes
+            final correctionChanged =
+                correctionCtrl.text != (plan.correctionPlan ?? '');
+            final evidenceChanged =
+                evidenceCtrl.text != (plan.evidenceNote ?? '');
+            final computedDirty = correctionChanged || evidenceChanged;
+
+            return UnsavedChangesGuard(
+              isDirty: isDirty || computedDirty,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  24,
+                  24,
+                  24,
+                  24 + MediaQuery.of(ctx).viewInsets.bottom,
                 ),
-                maxLines: 3,
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: evidenceCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Evidence Note',
-                  border: OutlineInputBorder(),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Submit Evidence',
+                            style: Theme.of(ctx).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              if (isDirty || computedDirty) {
+                                // Let PopScope handle via back-navigation
+                                Navigator.maybePop(ctx);
+                              } else {
+                                Navigator.pop(ctx);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: correctionCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Correction Plan',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                        onChanged: (_) => markDirty(),
+                        validator: (v) =>
+                            v == null || v.trim().isEmpty ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: evidenceCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Evidence Note',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                        onChanged: (_) => markDirty(),
+                        validator: (v) =>
+                            v == null || v.trim().isEmpty ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: () async {
+                          if (!formKey.currentState!.validate()) return;
+                          Navigator.pop(ctx);
+                          await _callManager(
+                            () => _manager.submitEvidence(
+                              plan,
+                              correctionPlan: correctionCtrl.text.trim(),
+                              evidenceNote: evidenceCtrl.text.trim(),
+                            ),
+                            successMsg:
+                                'Evidence submitted — awaiting verification',
+                          );
+                        },
+                        child: const Text('Submit'),
+                      ),
+                    ],
+                  ),
                 ),
-                maxLines: 3,
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Required' : null,
               ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) return;
-                  Navigator.pop(ctx);
-                  await _callManager(
-                    () => _manager.submitEvidence(
-                      plan,
-                      correctionPlan: correctionCtrl.text.trim(),
-                      evidenceNote: evidenceCtrl.text.trim(),
-                    ),
-                    successMsg: 'Evidence submitted — awaiting verification',
-                  );
-                },
-                child: const Text('Submit'),
-              ),
-            ],
-          ),
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
