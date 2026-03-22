@@ -76,7 +76,7 @@ class SectionEditor extends StatelessWidget {
                     hintText: isRoot
                         ? 'Section ${index + 1}'
                         : 'Sub-section ${index + 1}',
-                    hintStyle: theme.textTheme.titleSmall?.copyWith(
+                    hintStyle: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w400,
                       color: theme.colorScheme.onSurface.withValues(
                         alpha: 0.38,
@@ -84,11 +84,32 @@ class SectionEditor extends StatelessWidget {
                       fontStyle: FontStyle.italic,
                     ),
                     isDense: true,
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
+                    filled: false, // Remove the global grey pill background
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
+                        ),
+                      ),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
+                        ),
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                        width: 1.5,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.only(bottom: 6, right: 8),
                   ),
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
                   ),
                   onChanged: (_) => onChanged(),
                 ),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../_shared/widgets/section_header.dart';
 
 /// Template types matching PWA constants.
-const templateTypes = ['qc', 'training', 'general'];
+const templateTypes = ['qc', 'training', 'general', 'task force'];
 
 class MetadataFormCard extends StatelessWidget {
   final TextEditingController titleCtrl;

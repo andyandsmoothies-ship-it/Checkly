@@ -198,14 +198,12 @@ class _OverviewCard extends StatelessWidget {
   }
 
   String _typeLabel(String type) {
-    switch (type) {
-      case 'qc':
-        return 'QC';
-      case 'training':
-        return 'TRAINING';
-      default:
-        return 'GENERAL';
-    }
+    return switch (type) {
+      'qc' => 'QC',
+      'training' => 'TRAINING',
+      'general' => 'GENERAL',
+      _ => type.toUpperCase(),
+    };
   }
 
   List<String> _parseScoringRules(String? config) {

@@ -1,8 +1,8 @@
 # Checkly Mobile — Comprehensive UAT Test Suite
-> **Version**: 3.0 (Post Roles & Permissions) | **Date**: 2026-03-18 | **Platform**: Android (APK)
+> **Version**: 4.0 (Post Dashboard & Dirty State) | **Date**: 2026-03-22 | **Platform**: Android (APK)
 > **Pre-requisite**: Server running on local LAN IP, device connected via USB/Wi-Fi.
 
-Master User Acceptance Testing (UAT) document for the Checkly Mobile application. Covers 15 core modules and 130+ test cases.
+Master User Acceptance Testing (UAT) document for the Checkly Mobile application. Covers 15 core modules and 155+ test cases.
 
 ---
 
@@ -73,6 +73,10 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 5.11 | Scored Choices Validation | Set input type to Scored Choices → Try to save with 0 or 1 options | Save blocked with SnackBar error: min 2 options. | [ ] |
 | 5.12 | CCP/RISK Badges | Enable CCP on a criterion → Collapse | CCP badge visible on collapsed row. | [ ] |
 | 5.13 | Edit Existing Template | Open saved template → Modify name → Save | Changes persisted. Score rules and criteria intact. | [ ] |
+| 5.14 | Dirty State — Text Edit | Edit template title → Tap Back | "Discard changes?" dialog appears. | [ ] |
+| 5.15 | Dirty State — Structural | Add a section or criterion → Tap Back | "Discard changes?" dialog appears. | [ ] |
+| 5.16 | Dirty State — Clean Exit | Open existing template (no edits) → Tap Back | Navigates back immediately. No dialog. | [ ] |
+| 5.17 | Dirty State — Save Clears | Edit title → Save → Tap Back | Navigates back immediately (dirty cleared on save). | [ ] |
 
 ## Module 6: Audit Form Execution
 **Focus**: Collapsible sections, answering criteria, and form validation.
@@ -173,6 +177,8 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 11.8 | Role Guard — Auditor Cannot Submit | Auditor opens an `open` AP | No "Submit Evidence" button visible. | [ ] |
 | 11.9 | SM Transfer | Admin moves SM to new store | New SM sees APs for new store. Old SM loses access. | [ ] |
 | 11.10 | Overdue Visual Flag | AP deadline passes while status is `open` | AP shows red OVERDUE indicator. Status remains `open` (visual flag only). | [ ] |
+| 11.11 | Dirty State — Evidence Sheet | SM opens evidence sheet → Types in field → Swipes down | "Discard changes?" dialog appears (sheet is `isDismissible: false`). | [ ] |
+| 11.12 | Dirty State — Clean Close | SM opens evidence sheet (no edits) → Taps ✕ | Sheet closes immediately. No dialog. | [ ] |
 
 ## Module 12: Real-Time Notifications
 **Focus**: SignalR pushes, inbox, and background reminders.
@@ -208,16 +214,51 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 13.16 | System Logs List | Admin → System Logs | Shows log entries with timestamp, level badge, category. | [ ] |
 | 13.17 | Log Level Filter | Filter by ERROR level | Only error-level logs shown. | [ ] |
 | 13.18 | Log Detail View | Tap a log entry | Bottom sheet shows full log detail (trace ID, metadata). | [ ] |
+| 13.19 | Dirty State — Store Sheet | Open store edit → Type in Name → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
+| 13.20 | Dirty State — Store Clean | Open store edit (no changes) → Tap ✕ | Sheet closes immediately. No dialog. | [ ] |
+| 13.21 | Dirty State — Area Sheet | Open area edit → Type in Name → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
+| 13.22 | Dirty State — User Edit Sheet | Open user edit → Change role → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
+| 13.23 | Dirty State — User Create Sheet | Open create user → Type name/email → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
+| 13.24 | isDismissible — Admin Sheets | Open any admin sheet → Tap outside the sheet | Sheet does NOT close (isDismissible: false). Must use ✕ button. | [ ] |
 
 ## Module 14: Dashboard & Analytics
-**Focus**: KPI logic, charting, and role-based filtering.
+**Focus**: KPI logic, Bento Box layout, drilldown navigation, advanced filtering. **Redesigned in v4.0.**
+
+### 14A: Dashboard Layout ("The Checkly Stream")
 
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
-| 14.1 | Global KPIs | Admin views dashboard | Shows total audits, average score, global open APs. | [ ] |
-| 14.2 | Area Filter | AM views dashboard | Dashboard automatically locked to AM's specific Area. | [ ] |
-| 14.3 | Exclude Rejected | Auditor has an audit rejected by Admin | That audit's score completely removed from KPI average. | [ ] |
-| 14.4 | Trend Charts | Render line chart for past 30 days | UI draws smoothly. No overlapping axis labels. | [ ] |
+| 14A.1 | Bento Box Grid | Admin views dashboard | Shows 2×2 grid of stat blocks: Audits, Avg Score, Open APs, Compliance. | [ ] |
+| 14A.2 | Recent Submissions Feed | Scroll below stat blocks | Shows live feed of recent submissions with store, score, and time. | [ ] |
+| 14A.3 | Role-Scoped Data | Login as SM → View dashboard | Stats show only the SM's assigned store data. | [ ] |
+| 14A.4 | AM Scoped Data | Login as AM → View dashboard | Stats show only stores within the AM's assigned area. | [ ] |
+| 14A.5 | Empty State | New installation with no submissions | Dashboard shows zeros, no crash. Feed shows "No recent audits". | [ ] |
+
+### 14B: KPI Drilldown (Tap-to-Navigate)
+
+| ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
+|----|-----------|-----------------|-----------------|:---------:|
+| 14B.1 | Tap Total Audits | Tap "Total Audits" stat block | Navigates to History page (pre-filtered). | [ ] |
+| 14B.2 | Tap Avg Score | Tap "Avg Score" stat block | Navigates to Analytics page. | [ ] |
+| 14B.3 | Tap Open APs | Tap "Open APs" stat block | Navigates to Action Plans page filtered to `open`. | [ ] |
+| 14B.4 | Tap Overdue APs | Tap "Overdue" stat block | Navigates to Action Plans page sorted by deadline ascending. | [ ] |
+| 14B.5 | Analytics KPI Drilldown | Tap any KPI card on Analytics page | Navigates to relevant filtered page (e.g., worst store → store detail). | [ ] |
+| 14B.6 | Ink Splash Feedback | Tap any stat block | Material InkWell ripple effect visible on tap. | [ ] |
+
+### 14C: Analytics Filtering
+
+| ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
+|----|-----------|-----------------|-----------------|:---------:|
+| 14C.1 | Filter Sheet Opens | Tap filter icon on Analytics page | Scrollable filter sheet slides up. | [ ] |
+| 14C.2 | Area Filter | Select an area → Apply | Analytics data scoped to selected area's stores. | [ ] |
+| 14C.3 | Area→Store Cascade | Select Area → Check store dropdown | Store dropdown auto-filters to only stores in that area. | [ ] |
+| 14C.4 | Auditor Filter | Select specific auditor → Apply | Only that auditor's submissions shown. | [ ] |
+| 14C.5 | Status Filter | Select "Completed" → Apply | Only completed submissions included. | [ ] |
+| 14C.6 | Review Status Filter | Select "Approved" → Apply | Only approved submissions included. | [ ] |
+| 14C.7 | Custom Date Range | Select "Last 7 Days" → Apply | Data filtered to past 7 days only. | [ ] |
+| 14C.8 | Active Filter Badge | Apply 2 filters | Filter icon shows badge with count of active filters. | [ ] |
+| 14C.9 | Clear All Filters | Tap "Clear" in filter sheet | All filters reset. Full dataset restored. | [ ] |
+| 14C.10 | Exclude Rejected | Auditor has an audit rejected by Admin | That audit's score completely removed from KPI average. | [ ] |
 
 ## Module 15: User Groups & Template Access Control
 **Focus**: Group-based template visibility, membership management. **NEW in v3.0.**
@@ -243,10 +284,10 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | Area | Status | Date |
 |------|--------|------|
 | RBAC & Core (Mod 1-4) | [ ] Pass / [ ] Fail | |
-| Template Builder (Mod 5) | [ ] Pass / [ ] Fail | |
+| Template Builder + Dirty State (Mod 5) | [ ] Pass / [ ] Fail | |
 | Audit Engine (Mod 6-8) | [ ] Pass / [ ] Fail | |
 | Photo & Offline (Mod 9-10) | [ ] Pass / [ ] Fail | |
-| Workflows (Mod 11-13) | [ ] Pass / [ ] Fail | |
-| Analytics (Mod 14) | [ ] Pass / [ ] Fail | |
+| Workflows + Dirty State (Mod 11-13) | [ ] Pass / [ ] Fail | |
+| Dashboard & Analytics (Mod 14A-C) | [ ] Pass / [ ] Fail | |
 | User Groups & Access Control (Mod 15) | [ ] Pass / [ ] Fail | |
 | **Release Decision** | [ ] **APPROVED FOR PROD** | |

@@ -29,41 +29,36 @@ class InputTypeBottomSheet extends StatelessWidget {
       value: 'pass_fail',
       icon: Icons.check_circle_outline,
       title: 'Pass / Fail',
-      desc: 'Binary check — e.g., "Is the floor clean?"',
-      helper:
-          'Auditor taps Pass or Fail. Fails trigger point deductions based on your scoring rules.',
+      desc: 'Binary compliance check.',
+      helper: 'Auditor selects Pass or Fail. Fails deduct points.',
     ),
     (
       value: 'numeric',
       icon: Icons.pin_outlined,
       title: 'Fault Count',
-      desc: 'Count occurrences — e.g., "How many expired items?"',
-      helper:
-          'Auditor enters a number. Each fault multiplies the deduction rate you configure.',
+      desc: 'Defect counter (e.g., number of expired items).',
+      helper: 'Auditor enters a number. Deducts points per fault.',
     ),
     (
       value: 'scale',
       icon: Icons.linear_scale,
       title: 'Scored Choices',
-      desc: 'Maturity scale — e.g., Poor / Fair / Good / Excellent',
-      helper:
-          'Auditor picks one option from a scored list. You assign different point values to each level.',
+      desc: 'Maturity scale (e.g., Poor, Fair, Good).',
+      helper: 'Each choice awards or deducts a specific point value.',
     ),
     (
       value: 'single_choice',
       icon: Icons.radio_button_checked,
       title: 'Single Choice',
-      desc: 'Pick one — e.g., "Which shift?"',
-      helper:
-          'Auditor selects one option. No scoring impact — used for data collection and filtering.',
+      desc: 'Pick exactly one option from a custom list.',
+      helper: 'Used for data collection ONLY. Does not affect the score.',
     ),
     (
       value: 'multi_choice',
       icon: Icons.checklist,
       title: 'Multi Choice',
-      desc: 'Pick many — e.g., "Select all that apply"',
-      helper:
-          'Auditor selects multiple options. No scoring impact — used for multi-tag data collection.',
+      desc: 'Pick multiple options from a custom list.',
+      helper: 'Used for data collection ONLY. Does not affect the score.',
     ),
   ];
 
@@ -71,6 +66,7 @@ class InputTypeBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Give bottom sheet more max height if needed, but defaults are fine
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -102,13 +98,14 @@ class InputTypeBottomSheet extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 itemCount: _types.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 4),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, i) {
                   final t = _types[i];
                   final isSelected = t.value == currentType;
 
                   return Card(
                     elevation: 0,
+                    margin: EdgeInsets.zero,
                     color: isSelected
                         ? theme.colorScheme.primaryContainer.withValues(
                             alpha: 0.4,
@@ -129,54 +126,60 @@ class InputTypeBottomSheet extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 12,
+                          vertical: 14,
                         ),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              t.icon,
-                              size: 22,
-                              color: isSelected
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurfaceVariant,
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Icon(
+                                t.icon,
+                                size: 24,
+                                color: isSelected
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     t.title,
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
+                                  const SizedBox(height: 4),
                                   Text(
                                     t.desc,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onSurface,
                                     ),
                                   ),
-                                  if (isSelected) ...[
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      t.helper,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: theme.colorScheme.primary
-                                                .withValues(alpha: 0.8),
-                                            fontStyle: FontStyle.italic,
-                                          ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    t.helper,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                      fontStyle: FontStyle.italic,
                                     ),
-                                  ],
+                                  ),
                                 ],
                               ),
                             ),
                             if (isSelected)
-                              Icon(
-                                Icons.check_circle,
-                                color: theme.colorScheme.primary,
-                                size: 20,
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 12,
+                                  top: 2,
+                                ),
+                                child: Icon(
+                                  Icons.check_circle,
+                                  color: theme.colorScheme.primary,
+                                  size: 24,
+                                ),
                               ),
                           ],
                         ),

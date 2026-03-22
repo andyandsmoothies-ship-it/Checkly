@@ -21,10 +21,12 @@ const kTemplateTypeLabels = <String, String>{
   'qc': 'QUALITY CONTROL',
   'training': 'TRAINING',
   'general': 'GENERAL',
+  'task force': 'TASK FORCE',
+  'task_force': 'TASK FORCE',
 };
 
 /// Display order for template types.
-const _typeOrder = ['qc', 'training', 'general'];
+const _typeOrder = ['qc', 'training', 'general', 'task force'];
 
 /// Template list page — search, filter tabs, and FAB.
 /// Matches PWA spec: search bar, Published/Draft tabs, template cards.
