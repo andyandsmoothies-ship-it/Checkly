@@ -22,13 +22,7 @@ description: Verification gate for any upstream workflow — validates that anal
   - Locate the "Behavioral Expectations" formulated during the analysis phase.
   - You MUST act as an **Adversarial Reviewer** (Sentinel persona). Do NOT accept "Generative Evidence" (the builder merely claiming it works).
   - You MUST demand **Executed Evidence**: exact terminal logs, API responses, or database query results proving the expectation is met. If the output is missing, you must run the code to verify.
-**Hostile Interrogation (The Expert Witness Protocol)**:
-  - Do NOT assume you will automatically volunteer scaling concerns. You MUST interrogate the implementation against the extremes of the current project's domain.
-  - You MUST ask and answer at least 3 custom "What breaks?" questions tailored to this specific codebase:
-    1. **Concurrency Extreme**: "What happens when 2+ instances execute this exactly concurrently behind a load balancer?" (Look for missing locks or duplicate events).
-    2. **Volume Extreme**: "What happens when the core data structure grows by 10,000x?" (Look for OOM errors, missing pagination, or N+1 queries).
-    3. **Dependency Extreme**: "What happens when the upstream service or database takes 30 seconds to respond?" (Look for missing jitter, thundering herds, or infinite timeouts).
-  - If the code cannot survive these domain-specific extremes without proper defenses, flag it as a deployment failure.
+- [ ] **Hostile Interrogation**: Trigger the `hostile-interrogation` skill to evaluate the codebase against domain scale extremes. Do not proceed until the 3 failure questions are answered. If the code cannot survive without proper defenses, flag it as a deployment failure.
 **Non-Testable Accountability (UX & Efficiency)**:
   - DO NOT rely solely on test coverage. 100% coverage represents what executes, not what matters.
   - You MUST evaluate the changes for Big-O complexity, database query inefficiency (N+1), memory leaks, and UX degradation. If the code passes tests but wastes system resources or creates a poor user experience, flag it as a failure.
