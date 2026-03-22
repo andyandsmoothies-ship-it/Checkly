@@ -8,6 +8,7 @@ import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../manager/template_manager.dart';
 import '../model/template_dto.dart';
 import '../models/editable_criterion.dart';
+import '../widgets/ghost_add_button.dart';
 import '../models/editable_group.dart';
 import '../widgets/advanced_settings_card.dart';
 import '../widgets/blueprint_selection_modal.dart';
@@ -340,6 +341,60 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       return;
     }
 
+    // V5: Ghost Template guard — scored templates must have ≥1 scoring criterion
+    if (_scoringMode != 'survey') {
+      bool hasScoringCriterion(List<EditableGroup> groups) {
+        for (final g in groups) {
+          for (final c in g.criteria) {
+            if (c.inputType == 'pass_fail' ||
+                c.inputType == 'numeric' ||
+                c.inputType == 'scale') {
+              return true;
+            }
+          }
+          if (hasScoringCriterion(g.subSections)) return true;
+        }
+        return false;
+      }
+
+      if (!hasScoringCriterion(_sections)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Scored templates must have at least one scoring criterion '
+              '(Pass/Fail, Fault Count, or Scored Choices)',
+            ),
+          ),
+        );
+        return;
+      }
+    }
+
+    // V6: Pointless Criteria guard — scoring criteria must have points > 0
+    if (_scoringMode != 'survey') {
+      bool hasZeroPointCriterion(List<EditableGroup> groups) {
+        for (final g in groups) {
+          for (final c in g.criteria) {
+            if (c.inputType != 'single_choice' &&
+                c.inputType != 'multi_choice') {
+              if ((double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) return true;
+            }
+          }
+          if (hasZeroPointCriterion(g.subSections)) return true;
+        }
+        return false;
+      }
+
+      if (hasZeroPointCriterion(_sections)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Scoring criteria must have points greater than 0'),
+          ),
+        );
+        return;
+      }
+    }
+
     // Rules 2 & 3: Density validation (only when weighted density enabled)
     if (_weightedDensity) {
       if (_sections.any(
@@ -570,51 +625,36 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                   const SizedBox(height: 16),
 
                   // ── Sections Editor (AC-7) ──
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const SectionHeader('SECTIONS'),
-                      TextButton.icon(
-                        onPressed: _addSection,
-                        icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Add Section'),
-                      ),
-                    ],
-                  ),
+                  const SectionHeader('SECTIONS'),
                   const SizedBox(height: 8),
 
-                  if (_sections.isEmpty)
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          'No sections yet. Tap "Add Section" to start building.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    ..._sections.asMap().entries.map((e) {
-                      final i = e.key;
-                      final section = e.value;
-                      return SectionEditor(
-                        index: i,
-                        section: section,
-                        depth: 0,
+                  ..._sections.asMap().entries.map((e) {
+                    final i = e.key;
+                    final section = e.value;
+                    return SectionEditor(
+                      index: i,
+                      section: section,
+                      depth: 0,
 
-                        densityEnabled: _weightedDensity,
-                        onRemoveSection: () => _removeSection(i),
-                        onAddCriterion: (inputType) =>
-                            _addCriterionToGroup(section, inputType),
-                        onRemoveCriterion: (ci) =>
-                            _removeCriterionFromGroup(section, ci),
-                        onAddSubSection: () => _addSubSection(i),
-                        onRemoveSubSection: (si) => _removeSubSection(i, si),
-                        onChanged: () => setState(() {}),
-                      );
-                    }),
+                      densityEnabled: _weightedDensity,
+                      onRemoveSection: () => _removeSection(i),
+                      onAddCriterion: (inputType) =>
+                          _addCriterionToGroup(section, inputType),
+                      onRemoveCriterion: (ci) =>
+                          _removeCriterionFromGroup(section, ci),
+                      onAddSubSection: () => _addSubSection(i),
+                      onRemoveSubSection: (si) => _removeSubSection(i, si),
+                      onChanged: () => setState(() {}),
+                    );
+                  }),
+
+                  // "Add Section" ghost card at the bottom
+                  GhostAddButton(
+                    label: 'Add Section',
+                    icon: Icons.add,
+                    onPressed: _addSection,
+                    tintColor: theme.colorScheme.outline,
+                  ),
 
                   const SizedBox(height: 80), // Footer clearance
                 ],

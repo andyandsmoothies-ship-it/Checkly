@@ -5,6 +5,7 @@ import '../../../_shared/theme/app_fonts.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import 'criterion_editor.dart';
+import 'ghost_add_button.dart';
 
 class SectionEditor extends StatelessWidget {
   final int index;
@@ -236,41 +237,37 @@ class SectionEditor extends StatelessWidget {
               );
             }),
 
-            // Quick-Add Input Chips — hidden if root has sub-sections
+            // "Add Criterion" ghost card
             if (isRoot && section.subSections.isEmpty || !isRoot)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    _QuickAddChip(
-                      label: '+ Pass/Fail',
-                      icon: Icons.check_circle_outline,
-                      onTap: () => onAddCriterion('pass_fail'),
-                    ),
-                    _QuickAddChip(
-                      label: '+ Fault Count',
-                      icon: Icons.pin_outlined,
-                      onTap: () => onAddCriterion('numeric'),
-                    ),
-                    _QuickAddChip(
-                      label: '+ Scale',
-                      icon: Icons.linear_scale,
-                      onTap: () => onAddCriterion('scale'),
-                    ),
-                    _QuickAddChip(
-                      label: '+ Choice',
-                      icon: Icons.radio_button_checked,
-                      onTap: () => onAddCriterion('single_choice'),
-                    ),
-                  ],
-                ),
+              GhostAddButton(
+                label: 'Add Criterion',
+                icon: Icons.add,
+                onPressed: () => onAddCriterion('pass_fail'),
+                tintColor: Theme.of(context).colorScheme.primary,
               ),
 
             // Gap 1: Sub-sections
             if (isRoot) ...[
-              const Divider(),
+              if (section.criteria.isNotEmpty || section.subSections.isNotEmpty)
+                const Divider(),
+
+              if (section.criteria.isEmpty && section.subSections.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Center(
+                    child: Text(
+                      '— OR —',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.4,
+                        ),
+                        letterSpacing: 2.0,
+                      ),
+                    ),
+                  ),
+                ),
               ...section.subSections.asMap().entries.map((e) {
                 final si = e.key;
                 final sub = e.value;
@@ -295,52 +292,16 @@ class SectionEditor extends StatelessWidget {
                 );
               }),
               if (section.criteria.isEmpty)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: onAddSubSection,
-                    icon: const Icon(Icons.subdirectory_arrow_right, size: 14),
-                    label: const Text('Add Sub-Section'),
-                    style: TextButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 12),
-                    ),
-                  ),
+                GhostAddButton(
+                  label: 'Add Sub-Section',
+                  icon: Icons.subdirectory_arrow_right,
+                  onPressed: onAddSubSection,
+                  tintColor: theme.colorScheme.outline,
                 ),
             ],
           ],
         ),
       ),
-    );
-  }
-}
-
-class _QuickAddChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _QuickAddChip({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ActionChip(
-      avatar: Icon(icon, size: 14, color: theme.colorScheme.primary),
-      label: Text(
-        label,
-        style: TextStyle(fontSize: 11, color: theme.colorScheme.primary),
-      ),
-      backgroundColor: theme.colorScheme.primaryContainer.withValues(
-        alpha: 0.3,
-      ),
-      side: BorderSide.none,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      visualDensity: VisualDensity.compact,
-      onPressed: onTap,
     );
   }
 }

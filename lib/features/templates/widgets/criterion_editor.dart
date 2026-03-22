@@ -388,112 +388,36 @@ class CriterionEditor extends StatelessWidget {
                   ),
                 ),
               ],
-              // Input type badge
-              if (criterion.inputType == 'scale') ...[
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
+              // Input type badge — unified, using the same labels as the selector
+              const SizedBox(width: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondaryContainer.withValues(
+                    alpha: 0.5,
                   ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'LOW → HIGH',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: theme.colorScheme.onTertiaryContainer,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.circular(4),
                 ),
-              ],
-              if (criterion.inputType == 'pass_fail') ...[
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'YES · NO',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      inputTypeIcon(criterion.inputType),
+                      size: 10,
                       color: theme.colorScheme.onSecondaryContainer,
                     ),
-                  ),
-                ),
-              ],
-              if (criterion.inputType == 'numeric') ...[
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade100,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    '0 · 1 · 2',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.orange.shade900,
+                    const SizedBox(width: 3),
+                    Text(
+                      inputTypeLabel(criterion.inputType).toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.onSecondaryContainer,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-              if (criterion.inputType == 'single_choice') ...[
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade50,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    '1 OF N',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.purple.shade700,
-                    ),
-                  ),
-                ),
-              ],
-              if (criterion.inputType == 'multi_choice') ...[
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade50,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'N OF N',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.purple.shade700,
-                    ),
-                  ),
-                ),
-              ],
+              ),
 
               // Inline delete — PWA parity
               IconButton(
