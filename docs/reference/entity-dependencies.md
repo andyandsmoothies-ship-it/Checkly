@@ -53,9 +53,10 @@
 |----------|------|-------------|
 | CreateSubmission | `Features/Submissions/CreateSubmission.cs` | Loads template, checks `IsActive`, snapshots |
 | FinalizeSubmission | `Features/Submissions/FinalizeSubmission.cs` | Reads snapshot or falls back to live template |
+| SaveTemplateTree | `Features/Templates/SaveTemplateTree.cs` | Atomic upsert of full tree (groups + criteria), soft-delete reconciliation, optimistic concurrency via `Version` |
 | Groups & Criteria | `Features/Templates/` | Cascade delete on template deletion |
 | TemplateAssignments | `Features/Templates/` | Links to UserGroups |
-| Sync endpoint | `Features/Submissions/SyncTemplates.cs` | Delta sync for offline clients |
+| Sync endpoint | `Features/Templates/SyncTemplates.cs` | Delta sync for offline clients |
 | Analytics | `Features/Analytics/GetAnalytics.cs` | Filters by template type |
 
 ### Deactivation Impact
@@ -129,7 +130,7 @@
 |------|----------|---------|---------|
 | `SubmissionAccessGuard` | `Common/SubmissionAccessGuard.cs` | IDOR check (role → ownership) | GetSubmission, UploadPhoto, GetPhoto |
 | `RoleAssignmentGuard` | `Common/Auth/RoleAssignmentGuard.cs` | 1 SM per store, 1 AM per area | UpdateUser |
-| `AuditLogger` | `Common/Services/AuditLogger.cs` | Entity-level audit log | Template CRUD, FinalizeSubmission, Admin actions |
+| `AuditLogger` | `Common/Services/AuditLogger.cs` | Entity-level audit log | Template CRUD, SaveTemplateTree, FinalizeSubmission, Admin actions |
 | `TokenService` | `Common/Auth/TokenService.cs` | JWT generation | Login, Register |
 | `ScoringVerifier` | `Common/Scoring/ScoringVerifier.cs` | Score validation | CreateSubmission, FinalizeSubmission |
 | `ActionPlanService` | `Features/ActionPlans/ActionPlanService.cs` | Auto-create action plans | CreateSubmission, FinalizeSubmission |
