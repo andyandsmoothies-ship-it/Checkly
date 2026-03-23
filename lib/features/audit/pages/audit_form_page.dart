@@ -1488,10 +1488,10 @@ class _PassFailInput extends StatelessWidget {
     final theme = Theme.of(context);
 
     return SegmentedButton<String>(
+      emptySelectionAllowed: true,
       segments: const [
         ButtonSegment(value: 'conform', label: Text('Conform')),
         ButtonSegment(value: 'non_conform', label: Text('Non-Conform')),
-        ButtonSegment(value: 'na', label: Text('N/A')),
       ],
       selected: value != null ? {value!} : {},
       onSelectionChanged: (s) => onChanged(s.first),

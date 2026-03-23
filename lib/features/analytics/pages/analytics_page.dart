@@ -266,7 +266,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
                   // Area dropdown
                   DropdownButtonFormField<String>(
-                    value: _selectedArea,
+                    initialValue: _selectedArea,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Area',
@@ -297,7 +297,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
                   // Store dropdown (filtered by area)
                   DropdownButtonFormField<String>(
-                    value: _selectedStore,
+                    initialValue: _selectedStore,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Store',
@@ -326,7 +326,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
                   // Audit Type dropdown
                   DropdownButtonFormField<String>(
-                    value: _selectedType,
+                    initialValue: _selectedType,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Audit Type',
@@ -355,7 +355,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
                   // Auditor dropdown
                   DropdownButtonFormField<String>(
-                    value: _selectedAuditor,
+                    initialValue: _selectedAuditor,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Auditor',
@@ -384,7 +384,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
                   // Status dropdown
                   DropdownButtonFormField<String>(
-                    value: _selectedStatus,
+                    initialValue: _selectedStatus,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Status',
@@ -415,7 +415,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
                   // Review Status dropdown
                   DropdownButtonFormField<String>(
-                    value: _selectedReviewStatus,
+                    initialValue: _selectedReviewStatus,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Review Status',

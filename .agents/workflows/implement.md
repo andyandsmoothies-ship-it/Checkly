@@ -23,6 +23,8 @@ description: The Core Builder Implementation Workflow.
 - **Skill Discovery**: Derive 2-3 technical keywords from the user's request (e.g., "login" → "auth", "security"). Use `grep_search` or `list_dir` on `.agents/skills/` to find skills matching those keywords. Load ONLY the top 1-2 most relevant `SKILL.md` files. Declare `- **Skills Checked**: [paths]` in your next response.
 - **Rule Inventory**: Match the task to modular workspace rules in `.agents/rules/`.
 
+> **@@SCAN** Before proceeding, answer: (1) Which skills and rules did you load? (2) What are the core files and dependencies for this feature?
+
 ## Phase 2: Planning (THE GATE)
 - **Instruction**: Check if an `implementation_plan.md` already exists in your `brain/` folder (from a prior `/analysis` workflow).
     - **If YES**: Read it and run the **Plan Quality Checklist** below. If ALL pass → request permission to begin coding. If ANY fail → **stop** and tell the user which items are missing. Recommend they re-run `/analysis` or provide the missing details.
@@ -43,6 +45,8 @@ description: The Core Builder Implementation Workflow.
   3. **Readability Trade**: Does the "improved" version make the code harder to understand, debug, or maintain? Simpler code that a junior dev can read beats clever code that only the author understands.
   4. **Action**: If ANY of the above raise concerns → **tell the user honestly**. Present a clear comparison table (Before vs. After) with trade-offs. Let them decide. Do NOT silently implement changes you believe are net-negative.
 
+> **@@SCAN** Before coding, answer: (1) Does the plan pass ALL 5 quality checklist items? (2) Did you spot-check at least ONE blast radius claim against real code? (3) Does this change pass the YAGNI / Worth Doing gate?
+
 ## Phase 3: Coding (Builder Execution — Quality Built In)
 - **Instruction**: Put on your "Senior Developer" hat. Quality is built in during coding, not inspected out after.
   1. **ATDD Outer Loop Check (Conditional)**: If the QA/SDET provided failing acceptance tests (from a prior `/atdd` workflow), review them. Your goal is to turn these GREEN. DO NOT modify the QA's test code. If no ATDD tests exist, proceed standardly.
@@ -50,6 +54,8 @@ description: The Core Builder Implementation Workflow.
   3. **Red-Green-Refactor**: Repeat the TDD cycle until the feature is complete.
   4. **Inline Quality Gate (per component)**: After each component reaches GREEN, immediately check it against the rules loaded in Phase 1 — architecture compliance, null handling, edge cases, import legality. Fix violations NOW, not in a post-hoc review phase. This replaces the "inspect after coding" antipattern.
   5. **Skill Refresh**: If the concern shifts (e.g., API → DB → UI), re-scan `.agents/skills/` for matching skills. Load 1-2 new, drop irrelevant ones.
+
+> **@@SCAN** Before self-review, answer: (1) Did you follow TDD (Red-Green-Refactor) for each component? (2) Were there ATDD tests — if yes, are they now GREEN? (3) Did you run the inline quality gate after each component went GREEN?
 
 ## Phase 4: Self-Review & Drift Check (N-Dimensional)
 - **Action**: Stop coding and assume the role of a Senior Reviewer.
@@ -59,6 +65,8 @@ description: The Core Builder Implementation Workflow.
   2. **Logic & Correctness**: Does the code perfectly handle nulls, edge cases, and unexpected inputs? Did you miss any acceptance criteria?
   3. **Coverage**: Did your TDD Inner Loop tests actually cover the critical paths?
 - **Drift Check**: Did you edit files NOT listed in the `implementation_plan.md`? **Action:** Use the `run_command` tool with `git status` or `git diff` to verify the actual files changed. Re-read acceptance criteria. Fix any violations found during self-review before handoff.
+
+> **@@SCAN** Before handoff, answer: (1) Did you review from all 3 perspectives (Security, Logic, Coverage)? (2) Did you run `git status` to check for unplanned file changes? (3) What was the verdict — Ship, Show, or Ask?
 
 ## Phase 5: Integrate & Handoff (Ship / Show / Ask)
 - **Action**: Stop any running dev servers. Run the project's build and test commands to verify zero compilation errors.

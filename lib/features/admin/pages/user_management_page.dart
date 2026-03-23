@@ -164,7 +164,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
     String? selectedRole = user['role'] as String?;
     String? selectedStoreId = user['storeId'] as String?;
     String? selectedAreaId = user['areaId'] as String?;
-    final userId = user['id'] as String;
 
     // Load all active stores (with manager names for annotated dropdown)
     List<Map<String, dynamic>> assignableStores = [];
@@ -803,8 +802,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                     nErr = 'Full name is required';
                                   }
                                   if (email.isEmpty) eErr = 'Email is required';
-                                  if (pass.isEmpty)
+                                  if (pass.isEmpty) {
                                     pErr = 'Password is required';
+                                  }
 
                                   if (nErr != null ||
                                       eErr != null ||

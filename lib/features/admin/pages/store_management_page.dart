@@ -437,7 +437,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: DropdownButtonFormField<String?>(
-                value: _selectedAreaId,
+                initialValue: _selectedAreaId,
                 decoration: const InputDecoration(
                   labelText: 'Filter by Area',
                   border: OutlineInputBorder(),
