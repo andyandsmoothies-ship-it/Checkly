@@ -422,4 +422,132 @@ void main() {
     // Earned 5 + 10 = 15 out of possible 10 + 10 = 20 → 75%
     expect(result.totalScore, closeTo(75.00, 0.01));
   });
+
+  // ================================================================
+  // Scenario 17: Scale + is_risk with passing score → RISK NOT triggered
+  // Bug fix: numericValue > 0 on scale is earned points, not faults
+  // ================================================================
+  test('V17: Scale + is_risk with passing score → RISK NOT triggered', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 100,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: true, // RISK criterion
+              inputType: 'scale',
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'scale',
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        AnswerInput(
+          criteriaId: 'c1',
+          numericValue: 7,
+        ), // Good score → NOT a fault
+        AnswerInput(criteriaId: 'c2', numericValue: 10),
+      ],
+      scoringMode: ScoringMode.accumulation,
+    );
+    final result = ScoringEngine.calculate(input);
+    // 7 + 10 = 17 out of 20 = 85%, RISK should NOT trigger
+    expect(result.totalScore, closeTo(85.00, 0.01));
+    expect(result.hasRiskFailure, false);
+  });
+
+  // ================================================================
+  // Scenario 18: Scale + is_risk with zero score → RISK triggered → 0%
+  // ================================================================
+  test('V18: Scale + is_risk with zero score → RISK triggered → 0%', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 100,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: true, // RISK criterion
+              inputType: 'scale',
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'scale',
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        AnswerInput(
+          criteriaId: 'c1',
+          numericValue: 0,
+        ), // Zero score → fault → RISK
+        AnswerInput(criteriaId: 'c2', numericValue: 10),
+      ],
+      scoringMode: ScoringMode.accumulation,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, closeTo(0.00, 0.01));
+    expect(result.hasRiskFailure, true);
+  });
+
+  // ================================================================
+  // Scenario 19: Pass_fail + is_risk + Non-Conform → RISK triggered (regression)
+  // ================================================================
+  test('V19: Pass_fail + is_risk + Non-Conform → RISK triggered → 0%', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 0,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: true, // RISK criterion
+              inputType: 'pass_fail',
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'pass_fail',
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        AnswerInput(criteriaId: 'c1', value: 'non_conform'), // RISK fail
+        AnswerInput(criteriaId: 'c2', value: 'conform'),
+      ],
+      scoringMode: ScoringMode.accumulation,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, closeTo(0.00, 0.01));
+    expect(result.hasRiskFailure, true);
+  });
 }

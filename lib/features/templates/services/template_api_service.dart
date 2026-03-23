@@ -148,6 +148,7 @@ class TemplateApiService {
     bool? isRisk,
     double? minusImpact,
     int? orderIndex,
+    String? metadata,
   }) async {
     final body = <String, dynamic>{'label': label, 'inputType': inputType};
     if (description != null) body['description'] = description;
@@ -156,6 +157,7 @@ class TemplateApiService {
     if (isRisk != null) body['isRisk'] = isRisk;
     if (minusImpact != null) body['minusImpact'] = minusImpact;
     if (orderIndex != null) body['orderIndex'] = orderIndex;
+    if (metadata != null) body['metadata'] = metadata;
 
     final response = await _dio.post(
       '/templates/$templateId/groups/$groupId/criteria',
@@ -176,6 +178,7 @@ class TemplateApiService {
     bool? isRisk,
     double? minusImpact,
     int? orderIndex,
+    String? metadata,
   }) async {
     final body = <String, dynamic>{};
     if (label != null) body['label'] = label;
@@ -186,6 +189,7 @@ class TemplateApiService {
     if (isRisk != null) body['isRisk'] = isRisk;
     if (minusImpact != null) body['minusImpact'] = minusImpact;
     if (orderIndex != null) body['orderIndex'] = orderIndex;
+    if (metadata != null) body['metadata'] = metadata;
 
     final response = await _dio.put(
       '/templates/$templateId/criteria/$criterionId',
@@ -197,5 +201,36 @@ class TemplateApiService {
   /// DELETE /templates/{tId}/criteria/{cId} — soft-delete.
   Future<void> deleteCriterion(String templateId, String criterionId) async {
     await _dio.delete('/templates/$templateId/criteria/$criterionId');
+  }
+
+  // ── Batch Tree Save ──────────────────────────────────────────
+
+  /// PUT /templates/{id}/tree — atomic upsert of full template tree.
+  /// Returns the updated TemplateTreeDto.
+  /// Throws DioException with 409 status for version conflicts.
+  Future<TemplateTreeDto> saveTemplateTree(
+    String id, {
+    required String title,
+    required String type,
+    String? description,
+    String? scoringLogicConfig,
+    String? displayNoun,
+    required int version,
+    required List<Map<String, dynamic>> groups,
+  }) async {
+    final body = <String, dynamic>{
+      'title': title,
+      'type': type,
+      'version': version,
+      'groups': groups,
+    };
+    if (description != null) body['description'] = description;
+    if (scoringLogicConfig != null) {
+      body['scoringLogicConfig'] = scoringLogicConfig;
+    }
+    if (displayNoun != null) body['displayNoun'] = displayNoun;
+
+    final response = await _dio.put('/templates/$id/tree', data: body);
+    return TemplateTreeDto.fromJson(response.data as Map<String, dynamic>);
   }
 }

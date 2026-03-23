@@ -20,6 +20,8 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
   2. Use `grep_search` / `view_file` to confirm entities, endpoints, or DB tables mentioned in the spec actually exist in the codebase.
   3. If the spec references components that don't exist or have changed → flag the discrepancy to the user. Do not write tests against stale specs.
 
+> **@@SCAN** Before writing scenarios, answer: (1) Did you load the `atdd-quality-gates` skill? (2) Did you verify the upstream spec against the actual codebase? (3) Were any discrepancies found?
+
 ## Phase 2: SDET Execution
 
 ### 2a. Scenario Authoring (Write scenarios BEFORE code)
@@ -64,6 +66,8 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 
 ### 2e. The Saboteur Protocol (Mutation Verification)
 
+> **@@SCAN** Before declaring tests complete, answer: (1) Did ALL test failures classify as Business (not Infra)? (2) Were any ACs deferred with Skip-With-Reason? (3) Did you run the Saboteur Protocol — what did you sabotage and did the tests catch it?
+
 > [!CAUTION]
 > AI agents act like water flowing to the path of least resistance. They will write tests that just "run" rather than tests that "mean something". To prove the tests actually enforce intent, you must perform manual mutation testing.
 
@@ -71,6 +75,8 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 - **Execution**: Run the tests.
 - **Pass/Fail**: If the tests still PASS despite the sabotaged code, the tests are weak ("leaky container"). Sentinel must reject the tests and force the Builder to write stronger assertions. Only when the tests successfully FAIL on sabotaged code are they considered stable.
 - **Cleanup**: Revert the sabotage in the source code immediately after the check.
+
+> **@@SCAN** Before handoff, answer: (1) Does the specs artifact include the Test Infrastructure Map? (2) Are all tests RED for business reasons only? (3) Did you append Test Constraints to the implementation plan?
 
 ## Phase 3: Deliverable (The Handoff)
 - **Requirement**: Output the failed test evidence and specifications.

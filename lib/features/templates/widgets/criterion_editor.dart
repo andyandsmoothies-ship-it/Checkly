@@ -6,6 +6,7 @@ import 'input_type_bottom_sheet.dart';
 
 class CriterionEditor extends StatelessWidget {
   final EditableCriterion criterion;
+  final List<String> errors;
 
   final VoidCallback onRemove;
   final VoidCallback onChanged;
@@ -13,7 +14,7 @@ class CriterionEditor extends StatelessWidget {
   const CriterionEditor({
     super.key,
     required this.criterion,
-
+    this.errors = const [],
     required this.onRemove,
     required this.onChanged,
   });
@@ -106,6 +107,12 @@ class CriterionEditor extends StatelessWidget {
                     );
                     if (selected != null && context.mounted) {
                       criterion.inputType = selected;
+                      // Clear points for non-scored types
+                      if (selected == 'text' ||
+                          selected == 'single_choice' ||
+                          selected == 'multi_choice') {
+                        criterion.pointsCtrl.clear();
+                      }
                       onChanged();
                       _openDrawer(context);
                     }
@@ -305,7 +312,8 @@ class CriterionEditor extends StatelessWidget {
                 //  - scale: read-only (auto-synced from highest option value)
                 //  - single_choice / multi_choice: HIDDEN (survey-only, no scoring)
                 if (criterion.inputType == 'single_choice' ||
-                    criterion.inputType == 'multi_choice')
+                    criterion.inputType == 'multi_choice' ||
+                    criterion.inputType == 'text')
                   const SizedBox.shrink() // No points weight for survey inputs
                 else if (criterion.inputType == 'scale')
                   ListTile(
@@ -345,95 +353,152 @@ class CriterionEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasErrors = errors.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: () => _openDrawer(context),
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLow,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () => _openDrawer(context),
             borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.drag_indicator, size: 16, color: Colors.grey),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  criterion.labelCtrl.text.isEmpty
-                      ? 'Untitled criterion'
-                      : criterion.labelCtrl.text,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: criterion.labelCtrl.text.isEmpty
-                        ? theme.colorScheme.onSurfaceVariant
-                        : null,
-                    fontStyle: criterion.labelCtrl.text.isEmpty
-                        ? FontStyle.italic
-                        : FontStyle.normal,
-                  ),
-                ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: hasErrors
+                    ? theme.colorScheme.errorContainer.withValues(alpha: 0.3)
+                    : theme.colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(8),
+                border: hasErrors
+                    ? Border.all(color: theme.colorScheme.error, width: 1.5)
+                    : null,
               ),
-              // Points/CCP/RISK badges (always visible)
-              if (criterion.pointsCtrl.text.isNotEmpty) ...[
-                const SizedBox(width: 4),
-                Text(
-                  '${criterion.pointsCtrl.text}pt',
-                  style: AppFonts.serifStyle(
-                    fontSize: 11,
-                    color: theme.colorScheme.primary,
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.drag_indicator,
+                    size: 16,
+                    color: Colors.grey,
                   ),
-                ),
-              ],
-              // Input type badge — unified, using the same labels as the selector
-              const SizedBox(width: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.secondaryContainer.withValues(
-                    alpha: 0.5,
-                  ),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      inputTypeIcon(criterion.inputType),
-                      size: 10,
-                      color: theme.colorScheme.onSecondaryContainer,
-                    ),
-                    const SizedBox(width: 3),
-                    Text(
-                      inputTypeLabel(criterion.inputType).toUpperCase(),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      criterion.labelCtrl.text.isEmpty
+                          ? 'Untitled criterion'
+                          : criterion.labelCtrl.text,
                       style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: theme.colorScheme.onSecondaryContainer,
+                        fontSize: 13,
+                        color: criterion.labelCtrl.text.isEmpty
+                            ? theme.colorScheme.onSurfaceVariant
+                            : null,
+                        fontStyle: criterion.labelCtrl.text.isEmpty
+                            ? FontStyle.italic
+                            : FontStyle.normal,
+                      ),
+                    ),
+                  ),
+                  // Points/CCP/RISK badges (always visible)
+                  // Only show points badge for scored input types
+                  if (criterion.pointsCtrl.text.isNotEmpty &&
+                      criterion.inputType != 'text' &&
+                      criterion.inputType != 'single_choice' &&
+                      criterion.inputType != 'multi_choice') ...[
+                    const SizedBox(width: 4),
+                    Text(
+                      '${criterion.pointsCtrl.text}pt',
+                      style: AppFonts.serifStyle(
+                        fontSize: 11,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ],
-                ),
-              ),
+                  // Input type badge — unified, using the same labels as the selector
+                  const SizedBox(width: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer.withValues(
+                        alpha: 0.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          inputTypeIcon(criterion.inputType),
+                          size: 10,
+                          color: theme.colorScheme.onSecondaryContainer,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          inputTypeLabel(criterion.inputType).toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSecondaryContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
-              // Inline delete — PWA parity
-              IconButton(
-                onPressed: onRemove,
-                icon: Icon(
-                  Icons.delete_outline,
-                  size: 18,
-                  color: Colors.red.shade400,
-                ),
-                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                padding: EdgeInsets.zero,
+                  // Inline delete — PWA parity
+                  IconButton(
+                    onPressed: onRemove,
+                    icon: Icon(
+                      Icons.delete_outline,
+                      size: 18,
+                      color: Colors.red.shade400,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
+                  const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                ],
               ),
-              const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
-            ],
+            ),
           ),
-        ),
+          // Inline error messages
+          if (hasErrors)
+            Padding(
+              padding: const EdgeInsets.only(left: 12, top: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: errors
+                    .map(
+                      (msg) => Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 12,
+                            color: theme.colorScheme.error,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              msg,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: theme.colorScheme.error,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+        ],
       ),
     );
   }

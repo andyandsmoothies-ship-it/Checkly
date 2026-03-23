@@ -33,6 +33,8 @@ Evaluate the structural health of the persistence layer and query patterns.
 4. **FK Constraint Safety**: Check `OnDelete` behaviors in DbContext match the delete strategy. Flag dangerous cascades or missing `SetNull`.
 5. **N+1 Query Detection**: Scan for loops that execute queries per iteration.
 
+> **@@SCAN** Before security audit, answer: (1) How many unbounded queries were found? (2) Any missing indexes on high-frequency columns? (3) Does the delete strategy match the approved pattern?
+
 ### Phase 3: Security & Data Integrity Audit
 Verify authorization guards and data isolation across features.
 - **Skill Refresh**: Re-scan for skills matching "security", "auth", "validation", "error-handling". Load 1-2 if relevant.
@@ -42,6 +44,8 @@ Verify authorization guards and data isolation across features.
 4. **Role-Based Data Leakage**: Verify list endpoints scope data by user role. Flag endpoints where a non-admin sees data outside their scope.
 5. **Cross-System Consistency**: If server and client compute the same value, flag the duplication and verify logic matches.
 
+> **@@SCAN** Before API audit, answer: (1) Any endpoints missing authorization guards? (2) Any queries loading deactivated entities? (3) Were role-based data leakage issues found?
+
 ### Phase 4: API Completeness Audit
 Verify the CRUD surface is complete and consistent across backend and frontend.
 - **Skill Refresh**: Re-scan for skills matching "api-design", "scaffolding", "vertical-slice". Load 1-2 if relevant.
@@ -49,6 +53,8 @@ Verify the CRUD surface is complete and consistent across backend and frontend.
 2. **Flutter API Service Coverage**: For every backend endpoint group, verify a corresponding Flutter API service exists.
 3. **Endpoint-Page Wiring**: Verify Flutter pages call API services rather than using mock/local-only data.
 4. **PRD Parity**: Compare endpoints against PRD §5.2 and §3.x. Flag any PRD feature lacking a corresponding endpoint.
+
+> **@@SCAN** Before writing assessment, answer: (1) How many missing CRUD operations were found? (2) Any Flutter API services missing for backend endpoints? (3) Any PRD features without corresponding endpoints?
 
 ### Phase 5: The Sentinel Assessment
 Synthesize findings into a structured audit report.

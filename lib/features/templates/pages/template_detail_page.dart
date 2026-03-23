@@ -580,8 +580,11 @@ class _CriterionRow extends StatelessWidget {
                 ),
               ),
 
-              // Points badge
-              if (criterion.pointsWeight != null) ...[
+              // Points badge — only for scored input types
+              if (criterion.pointsWeight != null &&
+                  criterion.inputType != 'text' &&
+                  criterion.inputType != 'single_choice' &&
+                  criterion.inputType != 'multi_choice') ...[
                 const SizedBox(width: 8),
                 Text(
                   '${criterion.pointsWeight!.toStringAsFixed(1)} pts',

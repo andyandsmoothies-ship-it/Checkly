@@ -144,6 +144,7 @@ class CriterionDto {
   final double? pointsWeight;
   final bool isCcp;
   final bool isRisk;
+  final double? minusImpact;
   final int orderIndex;
   final String? metadata;
 
@@ -155,6 +156,7 @@ class CriterionDto {
     this.pointsWeight,
     required this.isCcp,
     required this.isRisk,
+    this.minusImpact,
     required this.orderIndex,
     this.metadata,
   });
@@ -167,6 +169,7 @@ class CriterionDto {
     pointsWeight: (json['pointsWeight'] as num?)?.toDouble(),
     isCcp: json['isCcp'] as bool,
     isRisk: json['isRisk'] as bool,
+    minusImpact: (json['minusImpact'] as num?)?.toDouble(),
     orderIndex: json['orderIndex'] as int,
     metadata: json['metadata'] as String?,
   );

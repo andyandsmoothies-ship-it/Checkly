@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
@@ -125,19 +126,24 @@ class TemplateManager extends ChangeNotifier {
     }
   }
 
-  // ---------- Save template (create or update) ----------
+  // ---------- Save template (atomic tree save) ----------
+  /// Saves the full template tree atomically via PUT /templates/{id}/tree.
+  /// For new templates: creates first, then saves the tree.
+  /// Returns the final template ID.
   Future<String> saveTemplate({
     String? id,
     required String title,
     required String type,
     String? description,
     String? scoringLogicConfig,
-    List<GroupDto> groups = const [],
+    String? displayNoun,
+    int version = 0,
+    List<Map<String, dynamic>> groups = const [],
   }) async {
     String templateId;
 
     if (id == null || id.isEmpty || id == 'new') {
-      // Create new
+      // Create new template first (gets us the ID)
       final result = await _api.createTemplate(
         title: title,
         type: type,
@@ -145,100 +151,37 @@ class TemplateManager extends ChangeNotifier {
         scoringLogicConfig: scoringLogicConfig,
       );
       templateId = result['id'] as String;
+      // New templates start at version 0, tree save will increment to 1
+      version = 0;
     } else {
-      // Update existing
-      await _api.updateTemplate(
-        id,
+      templateId = id;
+    }
+
+    // Save the full tree atomically
+    try {
+      await _api.saveTemplateTree(
+        templateId,
         title: title,
         type: type,
         description: description,
         scoringLogicConfig: scoringLogicConfig,
+        displayNoun: displayNoun,
+        version: version,
+        groups: groups,
       );
-      templateId = id;
-    }
-
-    // Save groups recursively
-    for (var i = 0; i < groups.length; i++) {
-      await _saveGroupRecursive(templateId, groups[i], i, null);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 409) {
+        throw Exception(
+          'This template was modified by another user. '
+          'Please reload the template and try again.',
+        );
+      }
+      rethrow;
     }
 
     // Refresh list
     await loadTemplates();
     return templateId;
-  }
-
-  Future<void> _saveGroupRecursive(
-    String templateId,
-    GroupDto group,
-    int orderIndex,
-    String? parentId,
-  ) async {
-    String groupId;
-
-    if (group.id.isEmpty) {
-      // New group
-      final result = await _api.createGroup(
-        templateId,
-        title: group.title,
-        description: group.description,
-        weight: group.weight,
-        maxDeductionPoints: group.maxDeductionPoints,
-        minusPerFault: group.minusPerFault,
-        orderIndex: orderIndex,
-        parentId: parentId,
-        metadata: group.metadata,
-      );
-      groupId = result['id'] as String;
-    } else {
-      // Existing group
-      await _api.updateGroup(
-        templateId,
-        group.id,
-        title: group.title,
-        description: group.description,
-        weight: group.weight,
-        maxDeductionPoints: group.maxDeductionPoints,
-        minusPerFault: group.minusPerFault,
-        orderIndex: orderIndex,
-        metadata: group.metadata,
-      );
-      groupId = group.id;
-    }
-
-    // Save criteria
-    for (var i = 0; i < group.criteria.length; i++) {
-      final c = group.criteria[i];
-      if (c.id.isEmpty) {
-        await _api.createCriterion(
-          templateId,
-          groupId,
-          label: c.label,
-          inputType: c.inputType,
-          description: c.description,
-          pointsWeight: c.pointsWeight,
-          isCcp: c.isCcp,
-          isRisk: c.isRisk,
-          orderIndex: i,
-        );
-      } else {
-        await _api.updateCriterion(
-          templateId,
-          c.id,
-          label: c.label,
-          inputType: c.inputType,
-          description: c.description,
-          pointsWeight: c.pointsWeight,
-          isCcp: c.isCcp,
-          isRisk: c.isRisk,
-          orderIndex: i,
-        );
-      }
-    }
-
-    // Save children recursively
-    for (var i = 0; i < group.children.length; i++) {
-      await _saveGroupRecursive(templateId, group.children[i], i, groupId);
-    }
   }
 
   // ---------- Delete template ----------

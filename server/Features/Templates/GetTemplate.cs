@@ -52,7 +52,7 @@ public static class GetTemplate
         return TypedResults.Ok(dto);
     }
 
-    private static List<GroupDto> BuildGroupTree(List<Group> allGroups, Guid? parentId)
+    internal static List<GroupDto> BuildGroupTree(List<Group> allGroups, Guid? parentId)
     {
         return allGroups
             .Where(g => g.ParentId == parentId)
@@ -62,7 +62,7 @@ public static class GetTemplate
                 BuildGroupTree(allGroups, g.Id),
                 g.Criteria.Select(c => new CriterionDto(
                     c.Id, c.Label, c.Description, c.InputType, c.PointsWeight,
-                    c.IsCcp, c.IsRisk, c.OrderIndex, c.Metadata)).ToList()))
+                    c.IsCcp, c.IsRisk, c.MinusImpact, c.OrderIndex, c.Metadata)).ToList()))
             .ToList();
     }
 }

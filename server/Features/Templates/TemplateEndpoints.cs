@@ -21,6 +21,10 @@ public static class TemplateEndpoints
             .WithName("CreateTemplate")
             .RequireAuthorization("AdminOnly");
 
+        group.MapPut("/{id}/tree", SaveTemplateTree.HandleAsync)
+            .WithName("SaveTemplateTree")
+            .RequireAuthorization("AdminOnly");
+
         group.MapPut("/{id}", UpdateTemplate.HandleAsync)
             .WithName("UpdateTemplate")
             .RequireAuthorization("AdminOnly");

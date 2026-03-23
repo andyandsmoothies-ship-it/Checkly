@@ -12,6 +12,11 @@ The scoring logic operates on a three-level hierarchy:
 2.  **Subsection (Sub-Group)**: Has "Max Points" (Absolute contribution to the section points).
 3.  **Criteria (Audit Item)**: Has "Minus Per Fault" and "Penalty Weights".
 
+> [!NOTE]
+> **Non-scored input types** (`text`, `single_choice`, `multi_choice`) are data-collection only — they have no `pointsWeight`, are excluded from scoring calculations, and do not show points in any UI.
+>
+> **Builder Enforcement**: The Template Builder's save-time validation guards (V5, V6) enforce that scored templates have at least one scoring criterion and that scoring criteria have points > 0. See Section 6 for details.
+
 ## 2. Core Formulas
 
 ### A. Subsection Score
@@ -55,7 +60,11 @@ The system includes two types of logical overrides that bypass standard arithmet
     - Standard weighting still applies (e.g., if a 15% section fails CCP, the total audit score drops by 15 points).
 
 ### ⚠️ RISK
-- **Trigger**: Any criteria with `is_risk = true` is marked as "Fail" or has > 0 faults.
+- **Trigger**: Any criteria with `is_risk = true` that has a **fault** (input-type-aware via `_hasFault()`).
+  - `pass_fail`: fault = answer is `non_conform`
+  - `numeric`: fault = `numericValue > 0` (fault count)
+  - `scale`: fault = `numericValue == 0` (earned zero points)
+- **Also triggered by**: `answer.isRisk = true` (auditor manual override)
 - **Scope**: **Audit-Level**.
 - **Impact**:
     - The **Final Audit Score** is forced to **0%**.
@@ -94,7 +103,7 @@ When `scoringMode == 'survey'`, the scoring engine skips all calculation — `to
 ## 6. Technical Implementation
 
 ### Flutter Mobile (Primary)
-- **Scoring Engine**: `lib/features/audit/services/scoring_engine.dart`
+- **Scoring Engine**: `lib/_shared/services/scoring_engine.dart`
 - **Audit Manager**: `lib/features/audit/manager/audit_manager.dart`
 - **Audit Form Page**: `lib/features/audit/pages/audit_form_page.dart`
 - **Template Builder**: `lib/features/templates/pages/template_builder_page.dart`
@@ -120,6 +129,26 @@ The `finalize_audit` RPC includes **synchronous server-side score verification**
 
 > [!WARNING]
 > Submissions with spoofed scores (>5% delta) are rejected. The Phase 1 async trigger (`pg_net`) also logs all mismatches as a redundant safety net.
+
+### Template Builder Validation
+
+The Template Builder (`template_builder_page.dart`) includes a **unified inline validation system** that prevents admins from creating broken or meaningless templates. All validations run in a single pass on save, showing ALL errors simultaneously with red borders, inline error text, a summary banner, and auto-scroll to the first error.
+
+| Guard | Rule | Error When |
+|:------|:-----|:-----------|
+| Template title | Title must not be empty | Blank title field |
+| Minimum sections | At least 1 section required | Zero sections |
+| Section title | All sections/sub-sections need titles | Any empty title |
+| Empty sections | Every section must have ≥1 criterion or sub-section | Section has neither |
+| Scale options | Scale criteria must have ≥2 options | Fewer than 2 scale options |
+| Choice options | Choice criteria must have ≥2 options | Fewer than 2 choice options |
+| **V5: Ghost Template** | Scored templates must have ≥1 scoring criterion (`pass_fail`, `numeric`, or `scale`) | All criteria are non-scoring types |
+| **V6: Pointless Criteria** | `numeric` and `scale` criteria must have `pointsWeight > 0` | Zero or empty points on scoring criteria |
+| Density weights | When Weighted Density is ON, all section weights > 0 and sum to 100% | Zero weight or sum ≠ 100% |
+
+- **Validation Model**: `lib/features/templates/models/validation_result.dart` — key-value map for O(1) lookup per widget
+- **Blueprint Selection**: New templates open with a Blueprint Selection modal that auto-configures scoring mode and scaffolds the first section
+- **Survey exemption**: V5 and V6 guards are skipped for Survey mode templates
 
 ---
 

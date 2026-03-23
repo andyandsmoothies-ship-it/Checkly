@@ -4,6 +4,7 @@ import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
+import '../models/validation_result.dart';
 import 'criterion_editor.dart';
 import 'ghost_add_button.dart';
 
@@ -13,6 +14,9 @@ class SectionEditor extends StatelessWidget {
   final int depth;
 
   final bool densityEnabled;
+  final ValidationErrors? errors;
+  final String? errorKeyPrefix;
+  final Map<String, GlobalKey>? errorKeys;
   final VoidCallback onRemoveSection;
   final ValueChanged<String> onAddCriterion;
   final ValueChanged<int> onRemoveCriterion;
@@ -25,8 +29,10 @@ class SectionEditor extends StatelessWidget {
     required this.index,
     required this.section,
     this.depth = 0,
-
     this.densityEnabled = true,
+    this.errors,
+    this.errorKeyPrefix,
+    this.errorKeys,
     required this.onRemoveSection,
     required this.onAddCriterion,
     required this.onRemoveCriterion,
@@ -39,25 +45,29 @@ class SectionEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isRoot = depth == 0;
+    final sKey = errorKeyPrefix ?? 'section:$index';
+    final sectionErrors = errors?.forKey(sKey) ?? const [];
+    final hasErrors = sectionErrors.isNotEmpty;
 
     // Gap 6: count badge
     final subCount = section.countSubs();
     final critCount = section.countCriteria();
 
     return Card(
-      margin: EdgeInsets.only(
-        bottom: 12,
-        left: isRoot ? 0 : 16, // Gap 1: indent sub-sections
+      margin: EdgeInsets.only(bottom: 12, left: isRoot ? 0 : 16),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: hasErrors
+              ? theme.colorScheme.error
+              : isRoot
+              ? theme.cardTheme.shape != null
+                    ? Colors.transparent
+                    : Colors.transparent
+              : theme.colorScheme.primary.withValues(alpha: 0.3),
+          width: hasErrors ? 2 : (isRoot ? 0 : 2),
+        ),
+        borderRadius: BorderRadius.circular(12),
       ),
-      shape: isRoot
-          ? null
-          : RoundedRectangleBorder(
-              side: BorderSide(
-                color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
@@ -193,6 +203,39 @@ class SectionEditor extends StatelessWidget {
             onPressed: onRemoveSection,
           ),
           children: [
+            // Section-level error messages
+            if (hasErrors)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: sectionErrors
+                      .map(
+                        (msg) => Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              size: 14,
+                              color: theme.colorScheme.error,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                msg,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.colorScheme.error,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+
             // Sub-section metadata (non-root sections always show Max Points)
             if (!isRoot) ...[
               Row(
@@ -229,11 +272,16 @@ class SectionEditor extends StatelessWidget {
             ...section.criteria.asMap().entries.map((e) {
               final ci = e.key;
               final c = e.value;
-              return CriterionEditor(
-                criterion: c,
-
-                onRemove: () => onRemoveCriterion(ci),
-                onChanged: onChanged,
+              final cKey = '$sKey:c:$ci';
+              final cErrors = errors?.forKey(cKey) ?? const [];
+              return KeyedSubtree(
+                key: errorKeys?[cKey] ?? GlobalKey(),
+                child: CriterionEditor(
+                  criterion: c,
+                  errors: cErrors,
+                  onRemove: () => onRemoveCriterion(ci),
+                  onChanged: onChanged,
+                ),
               );
             }),
 
@@ -271,24 +319,29 @@ class SectionEditor extends StatelessWidget {
               ...section.subSections.asMap().entries.map((e) {
                 final si = e.key;
                 final sub = e.value;
-                return SectionEditor(
-                  index: si,
-                  section: sub,
-                  depth: depth + 1,
-
-                  densityEnabled: densityEnabled,
-
-                  onRemoveSection: () => onRemoveSubSection?.call(si),
-                  onAddCriterion: (inputType) {
-                    sub.criteria.add(EditableCriterion(inputType: inputType));
-                    onChanged();
-                  },
-                  onRemoveCriterion: (ci) {
-                    sub.criteria[ci].dispose();
-                    sub.criteria.removeAt(ci);
-                    onChanged();
-                  },
-                  onChanged: onChanged,
+                final subKey = '$sKey:sub:$si';
+                return KeyedSubtree(
+                  key: errorKeys?[subKey] ?? GlobalKey(),
+                  child: SectionEditor(
+                    index: si,
+                    section: sub,
+                    depth: depth + 1,
+                    densityEnabled: densityEnabled,
+                    errors: errors,
+                    errorKeyPrefix: subKey,
+                    errorKeys: errorKeys,
+                    onRemoveSection: () => onRemoveSubSection?.call(si),
+                    onAddCriterion: (inputType) {
+                      sub.criteria.add(EditableCriterion(inputType: inputType));
+                      onChanged();
+                    },
+                    onRemoveCriterion: (ci) {
+                      sub.criteria[ci].dispose();
+                      sub.criteria.removeAt(ci);
+                      onChanged();
+                    },
+                    onChanged: onChanged,
+                  ),
                 );
               }),
               if (section.criteria.isEmpty)

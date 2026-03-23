@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../manager/template_manager.dart';
-import '../model/template_dto.dart';
 import '../models/editable_criterion.dart';
-import '../widgets/ghost_add_button.dart';
 import '../models/editable_group.dart';
+import '../models/validation_result.dart';
+import '../widgets/ghost_add_button.dart';
 import '../widgets/advanced_settings_card.dart';
 import '../widgets/blueprint_selection_modal.dart';
 import '../widgets/metadata_form_card.dart';
@@ -36,6 +36,10 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   bool _saving = false;
   bool _isDirty = false;
 
+  // Validation state
+  ValidationErrors? _validationErrors;
+  final Map<String, GlobalKey> _errorKeys = {};
+
   // ── Form state ──
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -53,10 +57,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
   // Sections (mutable list for editing)
   List<EditableGroup> _sections = [];
-
-  // Deletion tracking — IDs of removed groups/criteria to delete on save
-  final List<String> _deletedGroupIds = [];
-  final List<String> _deletedCriteriaIds = [];
+  int _version = 0;
 
   @override
   void initState() {
@@ -148,6 +149,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       _titleCtrl.text = tree.title;
       _descCtrl.text = tree.description ?? '';
       _type = tree.type;
+      _version = tree.version;
       _sections = tree.groups.map((g) => EditableGroup.fromDto(g)).toList();
 
       // Parse scoring config
@@ -192,7 +194,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     });
   }
 
-  List<GroupDto> _buildGroupsRecursive(List<EditableGroup> groups) {
+  List<Map<String, dynamic>> _buildGroupsRecursive(List<EditableGroup> groups) {
     return groups.asMap().entries.map((e) {
       final i = e.key;
       final s = e.value;
@@ -207,142 +209,114 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             'minus_per_fault': double.tryParse(s.minusPerFaultCtrl.text),
         });
       }
-      return GroupDto(
-        id: s.id,
-        title: s.titleCtrl.text,
-        description: s.descCtrl.text.isEmpty ? null : s.descCtrl.text,
-        weight: double.tryParse(s.weightCtrl.text),
-        // Dual-write: column fields + metadata JSON for PWA backward compat
-        maxDeductionPoints: double.tryParse(s.maxPointsCtrl.text),
-        minusPerFault: double.tryParse(s.minusPerFaultCtrl.text),
-        orderIndex: i,
-        metadata: metadata,
-        children: _buildGroupsRecursive(s.subSections),
-        criteria: s.criteria.asMap().entries.map((ce) {
+      return <String, dynamic>{
+        if (s.id.isNotEmpty) 'id': s.id,
+        'title': s.titleCtrl.text,
+        if (s.descCtrl.text.isNotEmpty) 'description': s.descCtrl.text,
+        if (double.tryParse(s.weightCtrl.text) != null)
+          'weight': double.tryParse(s.weightCtrl.text),
+        if (double.tryParse(s.maxPointsCtrl.text) != null)
+          'maxDeductionPoints': double.tryParse(s.maxPointsCtrl.text),
+        if (double.tryParse(s.minusPerFaultCtrl.text) != null)
+          'minusPerFault': double.tryParse(s.minusPerFaultCtrl.text),
+        'orderIndex': i,
+        if (metadata != null) 'metadata': metadata,
+        'children': _buildGroupsRecursive(s.subSections),
+        'criteria': s.criteria.asMap().entries.map((ce) {
           final ci = ce.key;
           final c = ce.value;
-          return CriterionDto(
-            id: c.id,
-            label: c.labelCtrl.text,
-            description: c.descCtrl.text.isEmpty ? null : c.descCtrl.text,
-            inputType: c.inputType,
-            pointsWeight: double.tryParse(c.pointsCtrl.text),
-            isCcp: false,
-            isRisk: false,
-            orderIndex: ci,
-            metadata: c.inputType == 'scale' && c.scaleOptions.isNotEmpty
-                ? json.encode({'scaleOptions': c.scaleOptions})
-                : (c.inputType == 'single_choice' ||
-                          c.inputType == 'multi_choice') &&
-                      c.choiceOptions.isNotEmpty
-                ? json.encode({'options': c.choiceOptions})
-                : null,
-          );
+          return <String, dynamic>{
+            if (c.id.isNotEmpty) 'id': c.id,
+            'label': c.labelCtrl.text,
+            if (c.descCtrl.text.isNotEmpty) 'description': c.descCtrl.text,
+            'inputType': c.inputType,
+            if (c.inputType != 'text' &&
+                c.inputType != 'single_choice' &&
+                c.inputType != 'multi_choice')
+              'pointsWeight': double.tryParse(c.pointsCtrl.text),
+            'isCcp': false,
+            'isRisk': false,
+            'orderIndex': ci,
+            if (c.inputType == 'scale' && c.scaleOptions.isNotEmpty)
+              'metadata': json.encode({'scaleOptions': c.scaleOptions}),
+            if ((c.inputType == 'single_choice' ||
+                    c.inputType == 'multi_choice') &&
+                c.choiceOptions.isNotEmpty)
+              'metadata': json.encode({'options': c.choiceOptions}),
+          };
         }).toList(),
-      );
+      };
     }).toList();
   }
 
-  List<GroupDto> _buildGroups() => _buildGroupsRecursive(_sections);
+  List<Map<String, dynamic>> _buildGroups() => _buildGroupsRecursive(_sections);
 
-  Future<void> _save() async {
+  // ── Unified validation ──
+  ValidationErrors _validate() {
+    final errors = ValidationErrors();
+    _errorKeys.clear();
+
+    // Template-level checks
     if (_titleCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a template title')),
-      );
-      return;
+      errors.add('template', 'Please enter a template title');
     }
-
-    // Rule 1: Must have at least one section
     if (_sections.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Add at least one section')));
-      return;
+      errors.add('template', 'Add at least one section');
     }
 
-    // Rule 1b: All sections/sub-sections must have a title
-    bool hasEmptyTitle(List<EditableGroup> groups) {
-      for (final g in groups) {
-        if (g.titleCtrl.text.trim().isEmpty) return true;
-        if (hasEmptyTitle(g.subSections)) return true;
-      }
-      return false;
-    }
+    // Section & criteria checks (recursive)
+    void validateGroups(List<EditableGroup> groups, String prefix) {
+      for (var i = 0; i < groups.length; i++) {
+        final g = groups[i];
+        final sKey = '$prefix$i';
+        _errorKeys.putIfAbsent(sKey, () => GlobalKey());
 
-    if (hasEmptyTitle(_sections)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All sections and sub-sections must have a title'),
-        ),
-      );
-      return;
-    }
-
-    // Validate scale criteria have at least 2 options
-    bool hasInvalidScale(List<EditableGroup> groups) {
-      for (final g in groups) {
-        for (final c in g.criteria) {
-          if (c.inputType == 'scale' && c.scaleOptions.length < 2) return true;
+        if (g.titleCtrl.text.trim().isEmpty) {
+          errors.add(sKey, 'Section title is required');
         }
-        if (hasInvalidScale(g.subSections)) return true;
-      }
-      return false;
-    }
+        if (g.criteria.isEmpty && g.subSections.isEmpty) {
+          errors.add(sKey, 'Section must have at least one criterion');
+        }
 
-    if (hasInvalidScale(_sections)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Scale criteria must have at least 2 options'),
-        ),
-      );
-      return;
-    }
+        // Density: weight > 0 (root sections only, when enabled)
+        if (_weightedDensity && prefix == 'section:') {
+          if ((double.tryParse(g.weightCtrl.text) ?? 0) <= 0) {
+            errors.add(sKey, 'Section weight must be greater than 0%');
+          }
+        }
 
-    // Validate choice criteria have at least 2 options
-    bool hasInvalidChoice(List<EditableGroup> groups) {
-      for (final g in groups) {
-        for (final c in g.criteria) {
+        // Criteria checks
+        for (var ci = 0; ci < g.criteria.length; ci++) {
+          final c = g.criteria[ci];
+          final cKey = '$sKey:c:$ci';
+          _errorKeys.putIfAbsent(cKey, () => GlobalKey());
+
+          if (c.inputType == 'scale' && c.scaleOptions.length < 2) {
+            errors.add(cKey, 'Scale criteria must have at least 2 options');
+          }
           if ((c.inputType == 'single_choice' ||
                   c.inputType == 'multi_choice') &&
               c.choiceOptions.length < 2) {
-            return true;
+            errors.add(cKey, 'Choice criteria must have at least 2 options');
+          }
+          // V6: Pointless criteria (numeric + scale only)
+          if (_scoringMode != 'survey' &&
+              (c.inputType == 'numeric' || c.inputType == 'scale')) {
+            if ((double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) {
+              errors.add(cKey, 'Scoring criteria must have points > 0');
+            }
           }
         }
-        if (hasInvalidChoice(g.subSections)) return true;
+
+        // Recurse into sub-sections
+        validateGroups(g.subSections, '$sKey:sub:');
       }
-      return false;
     }
 
-    if (hasInvalidChoice(_sections)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Choice criteria must have at least 2 options'),
-        ),
-      );
-      return;
-    }
+    validateGroups(_sections, 'section:');
 
-    // V4: Every section must have at least one criterion
-    bool hasEmptySection(List<EditableGroup> groups) {
-      for (final g in groups) {
-        if (g.criteria.isEmpty && g.subSections.isEmpty) return true;
-        if (hasEmptySection(g.subSections)) return true;
-      }
-      return false;
-    }
-
-    if (hasEmptySection(_sections)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Every section must have at least one criterion'),
-        ),
-      );
-      return;
-    }
-
-    // V5: Ghost Template guard — scored templates must have ≥1 scoring criterion
-    if (_scoringMode != 'survey') {
+    // V5: Ghost template guard
+    if (_scoringMode != 'survey' && _sections.isNotEmpty) {
       bool hasScoringCriterion(List<EditableGroup> groups) {
         for (final g in groups) {
           for (final c in g.criteria) {
@@ -358,89 +332,54 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       }
 
       if (!hasScoringCriterion(_sections)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Scored templates must have at least one scoring criterion '
-              '(Pass/Fail, Fault Count, or Scored Choices)',
-            ),
-          ),
+        errors.add(
+          'template',
+          'Scored templates must have at least one scoring criterion',
         );
-        return;
       }
     }
 
-    // V6: Pointless Criteria guard — scoring criteria must have points > 0
-    if (_scoringMode != 'survey') {
-      bool hasZeroPointCriterion(List<EditableGroup> groups) {
-        for (final g in groups) {
-          for (final c in g.criteria) {
-            if (c.inputType != 'single_choice' &&
-                c.inputType != 'multi_choice') {
-              if ((double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) return true;
-            }
-          }
-          if (hasZeroPointCriterion(g.subSections)) return true;
-        }
-        return false;
-      }
-
-      if (hasZeroPointCriterion(_sections)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Scoring criteria must have points greater than 0'),
-          ),
-        );
-        return;
-      }
+    // Density sum check
+    if (_weightedDensity && (_totalDensity - 100).abs() > 0.01) {
+      _errorKeys.putIfAbsent('density', () => GlobalKey());
+      errors.add('density', 'Section weights must sum to exactly 100%');
     }
 
-    // Rules 2 & 3: Density validation (only when weighted density enabled)
-    if (_weightedDensity) {
-      if (_sections.any(
-        (s) => (double.tryParse(s.weightCtrl.text) ?? 0) <= 0,
-      )) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('All sections must have a weight greater than 0%'),
-          ),
-        );
-        return;
-      }
-      if ((_totalDensity - 100).abs() > 0.01) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Section weights must sum to exactly 100%'),
-          ),
-        );
-        return;
-      }
-    }
+    return errors;
+  }
 
-    setState(() => _saving = true);
+  void _scrollToFirstError() {
+    final firstKey = _validationErrors?.firstKey;
+    if (firstKey == null) return;
+    final gk = _errorKeys[firstKey];
+    if (gk?.currentContext != null) {
+      Scrollable.ensureVisible(
+        gk!.currentContext!,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+        alignment: 0.3,
+      );
+    }
+  }
+
+  Future<void> _save() async {
+    final errors = _validate();
+    if (errors.hasAny) {
+      setState(() => _validationErrors = errors);
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _scrollToFirstError(),
+      );
+      return;
+    }
+    setState(() {
+      _validationErrors = null;
+      _saving = true;
+    });
+
+    final templateId = _isNew ? null : widget.templateId;
+
     try {
-      // 1. Process deletions first (criteria before groups)
-      final templateId = _isNew ? null : widget.templateId;
-      if (templateId != null) {
-        for (final cId in _deletedCriteriaIds) {
-          try {
-            await _manager.deleteCriterion(templateId, cId);
-          } catch (e) {
-            debugPrint('Delete criterion $cId: $e');
-          } // Ignore already-deleted
-        }
-        for (final gId in _deletedGroupIds) {
-          try {
-            await _manager.deleteGroup(templateId, gId);
-          } catch (e) {
-            debugPrint('Delete group $gId: $e');
-          } // Ignore already-deleted
-        }
-      }
-      _deletedCriteriaIds.clear();
-      _deletedGroupIds.clear();
-
-      // 2. Save template + groups
+      // Save template + groups atomically (server handles delete reconciliation)
       await _manager.saveTemplate(
         id: templateId,
         title: _titleCtrl.text.trim(),
@@ -449,6 +388,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             ? null
             : _descCtrl.text.trim(),
         scoringLogicConfig: _buildScoringConfig(),
+        version: _version,
         groups: _buildGroups(),
       );
 
@@ -485,7 +425,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   }
 
   void _removeSection(int index) {
-    _collectDeletionIds(_sections[index]);
     setState(() {
       _sections[index].dispose();
       _sections.removeAt(index);
@@ -501,7 +440,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   }
 
   void _removeSubSection(int sectionIndex, int subIndex) {
-    _collectDeletionIds(_sections[sectionIndex].subSections[subIndex]);
     setState(() {
       _sections[sectionIndex].subSections[subIndex].dispose();
       _sections[sectionIndex].subSections.removeAt(subIndex);
@@ -521,23 +459,11 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
 
   void _removeCriterionFromGroup(EditableGroup group, int criterionIndex) {
     final c = group.criteria[criterionIndex];
-    if (c.id.isNotEmpty) _deletedCriteriaIds.add(c.id);
     setState(() {
       c.dispose();
       group.criteria.removeAt(criterionIndex);
       _isDirty = true;
     });
-  }
-
-  /// Recursively collect IDs of a group and all its children/criteria for deletion.
-  void _collectDeletionIds(EditableGroup group) {
-    if (group.id.isNotEmpty) _deletedGroupIds.add(group.id);
-    for (final c in group.criteria) {
-      if (c.id.isNotEmpty) _deletedCriteriaIds.add(c.id);
-    }
-    for (final sub in group.subSections) {
-      _collectDeletionIds(sub);
-    }
   }
 
   // ── Computed values ──
@@ -601,28 +527,76 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                   _BlueprintGuideBanner(scoringMode: _scoringMode),
 
                   const SizedBox(height: 16),
-                  AdvancedSettingsCard(
-                    scoringMode: _scoringMode,
-                    ccpOverride: _ccpOverride,
-                    riskOverride: _riskOverride,
-                    weightedDensity: _weightedDensity,
-                    confirmCorrect: _confirmCorrect,
-                    progressiveRepeat: _progressiveRepeat,
-                    deadlineCtrl: _deadlineCtrl,
-                    reminderCtrl: _reminderCtrl,
-                    onScoringModeChanged: (v) =>
-                        setState(() => _scoringMode = v ?? _scoringMode),
-                    onCcpChanged: (v) => setState(() => _ccpOverride = v),
-                    onRiskChanged: (v) => setState(() => _riskOverride = v),
-                    onDensityChanged: (v) =>
-                        setState(() => _weightedDensity = v),
-                    onCorrectChanged: (v) =>
-                        setState(() => _confirmCorrect = v),
-                    onProgressiveChanged: (v) =>
-                        setState(() => _progressiveRepeat = v),
+                  KeyedSubtree(
+                    key: _errorKeys['density'] ?? ValueKey('settings'),
+                    child: AdvancedSettingsCard(
+                      scoringMode: _scoringMode,
+                      ccpOverride: _ccpOverride,
+                      riskOverride: _riskOverride,
+                      weightedDensity: _weightedDensity,
+                      confirmCorrect: _confirmCorrect,
+                      progressiveRepeat: _progressiveRepeat,
+                      deadlineCtrl: _deadlineCtrl,
+                      reminderCtrl: _reminderCtrl,
+                      onScoringModeChanged: (v) =>
+                          setState(() => _scoringMode = v ?? _scoringMode),
+                      onCcpChanged: (v) => setState(() => _ccpOverride = v),
+                      onRiskChanged: (v) => setState(() => _riskOverride = v),
+                      onDensityChanged: (v) =>
+                          setState(() => _weightedDensity = v),
+                      onCorrectChanged: (v) =>
+                          setState(() => _confirmCorrect = v),
+                      onProgressiveChanged: (v) =>
+                          setState(() => _progressiveRepeat = v),
+                    ),
                   ),
 
                   const SizedBox(height: 16),
+
+                  // ── Error Banner ──
+                  if (_validationErrors?.hasAny == true)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: theme.colorScheme.error.withValues(alpha: 0.4),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            size: 20,
+                            color: theme.colorScheme.error,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              '${_validationErrors!.totalCount} issue${_validationErrors!.totalCount == 1 ? '' : 's'} found. Fix before saving.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: () =>
+                                setState(() => _validationErrors = null),
+                            constraints: const BoxConstraints(
+                              minWidth: 28,
+                              minHeight: 28,
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ],
+                      ),
+                    ),
 
                   // ── Sections Editor (AC-7) ──
                   const SectionHeader('SECTIONS'),
@@ -631,20 +605,26 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                   ..._sections.asMap().entries.map((e) {
                     final i = e.key;
                     final section = e.value;
-                    return SectionEditor(
-                      index: i,
-                      section: section,
-                      depth: 0,
-
-                      densityEnabled: _weightedDensity,
-                      onRemoveSection: () => _removeSection(i),
-                      onAddCriterion: (inputType) =>
-                          _addCriterionToGroup(section, inputType),
-                      onRemoveCriterion: (ci) =>
-                          _removeCriterionFromGroup(section, ci),
-                      onAddSubSection: () => _addSubSection(i),
-                      onRemoveSubSection: (si) => _removeSubSection(i, si),
-                      onChanged: () => setState(() {}),
+                    final sKey = 'section:$i';
+                    return KeyedSubtree(
+                      key: _errorKeys[sKey] ?? (_errorKeys[sKey] = GlobalKey()),
+                      child: SectionEditor(
+                        index: i,
+                        section: section,
+                        depth: 0,
+                        densityEnabled: _weightedDensity,
+                        errors: _validationErrors,
+                        errorKeyPrefix: sKey,
+                        errorKeys: _errorKeys,
+                        onRemoveSection: () => _removeSection(i),
+                        onAddCriterion: (inputType) =>
+                            _addCriterionToGroup(section, inputType),
+                        onRemoveCriterion: (ci) =>
+                            _removeCriterionFromGroup(section, ci),
+                        onAddSubSection: () => _addSubSection(i),
+                        onRemoveSubSection: (si) => _removeSubSection(i, si),
+                        onChanged: () => setState(() {}),
+                      ),
                     );
                   }),
 

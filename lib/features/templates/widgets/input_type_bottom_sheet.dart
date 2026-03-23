@@ -7,6 +7,7 @@ IconData inputTypeIcon(String type) => switch (type) {
   'scale' => Icons.linear_scale,
   'single_choice' => Icons.radio_button_checked,
   'multi_choice' => Icons.checklist,
+  'text' => Icons.text_fields,
   _ => Icons.help_outline,
 };
 
@@ -16,6 +17,7 @@ String inputTypeLabel(String type) => switch (type) {
   'scale' => 'Scored Choices',
   'single_choice' => 'Single Choice',
   'multi_choice' => 'Multi Choice',
+  'text' => 'Text Input',
   _ => type,
 };
 
@@ -58,6 +60,13 @@ class InputTypeBottomSheet extends StatelessWidget {
       icon: Icons.checklist,
       title: 'Multi Choice',
       desc: 'Pick multiple options from a custom list.',
+      helper: 'Used for data collection ONLY. Does not affect the score.',
+    ),
+    (
+      value: 'text',
+      icon: Icons.text_fields,
+      title: 'Text Input',
+      desc: 'Free-form text answer (notes, observations).',
       helper: 'Used for data collection ONLY. Does not affect the score.',
     ),
   ];

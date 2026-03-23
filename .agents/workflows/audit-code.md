@@ -32,6 +32,8 @@ Hunt for "AI Slop" — code that works but deviates from established invariants.
 3. **Stale Documentation**: Compare workspace docs against the actual codebase. Flag anything outdated or misleading.
 4. **Format & Convention Compliance**: Check for naming convention deviations, missing patterns required by project rules.
 
+> **@@SCAN** Before structural health scan, answer: (1) What dead code or unused assets did you find? (2) Were any architectural drift violations detected? (3) Is documentation up to date?
+
 ### Phase 3: Structural Health
 Scan for file-level code smells that indicate a need for decomposition.
 1. **File Size**: Flag files over 500 lines (🟡 Warning). Flag files over 1000 lines (🔴 Critical — mandatory decomposition).
@@ -45,6 +47,8 @@ Scan for file-level code smells that indicate a need for decomposition.
 2. **Dependency Freshness**: Check package manifests (`pubspec.yaml`, `*.csproj`, `package.json`) for outdated or unused dependencies.
 3. **TODO/FIXME/HACK Audit**: Search for stale markers. Flag any older than 30 days or with no owner/issue reference.
 4. **Duplication Detection**: Identify copy-pasted logic across files (e.g., identical validation functions, repeated API calls). Flag for extraction into shared utilities.
+
+> **@@SCAN** Before writing assessment, answer: (1) How many files exceeded the 500/1000 line thresholds? (2) Were any test coverage gaps found? (3) How many stale TODOs exist?
 
 ### Phase 5: The Sentinel Assessment
 Synthesize findings into a structured audit report.

@@ -97,7 +97,7 @@ Audit templates define the structure of an audit (what to check).
 | `id` | UUID (PK) | Unique template ID |
 | `title` | text | Template name (e.g., "QC Monthly Audit") |
 | `description` | text? | Template description |
-| `type` | text? | Category: `qc`, `training`, `general` |
+| `type` | text? | Category: `qc`, `training`, `general`, `task force` |
 | `is_active` | boolean | Soft delete flag |
 | `version` | integer | Template version counter — incremented on every template/group/criterion update. Used for snapshot versioning |
 | `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, and repeat config |
@@ -141,10 +141,11 @@ Individual checklist items within a group that auditors evaluate.
 | `id` | UUID (PK) | Unique criteria ID |
 | `group_id` | UUID (FK → groups) | Parent group/section |
 | `label` | text | Question text (e.g., "Floor cleanliness maintained?") |
-| `input_type` | text | `pass_fail`, `numeric`, `scale`, `single_choice`, or `multi_choice` |
+| `description` | text? | Optional description/instructions for the criterion |
+| `input_type` | text | `pass_fail`, `numeric`, `scale`, `single_choice`, `multi_choice`, or `text` |
 | `is_ccp` | boolean | Critical Control Point — fail = section score → 0% |
 | `is_risk` | boolean | RISK item — fail = entire audit score → 0% |
-| `points_weight` | decimal? | Deduction weight for standard scoring |
+| `points_weight` | decimal? | Deduction weight for standard scoring. `null` for non-scored types (`text`, `single_choice`, `multi_choice`) |
 | `minus_per_fault` | decimal? | Deduction per fault for numeric input |
 | `minus_impact` | decimal? | C4 override: uses this instead of `points_weight` |
 | `order_index` | integer | Display order within group |

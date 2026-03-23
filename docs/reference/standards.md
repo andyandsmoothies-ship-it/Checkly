@@ -32,6 +32,7 @@ lib/features/[feature]/
 │   └── [feature]_manager.dart
 ├── model/          # DTOs and data classes
 │   └── [feature]_dto.dart
+├── models/         # Editable/validation models (e.g., EditableGroup, ValidationErrors)
 ├── pages/          # Route-level widgets
 │   └── [feature]_page.dart
 ├── services/       # API calls and business logic

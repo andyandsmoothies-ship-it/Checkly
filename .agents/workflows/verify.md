@@ -28,6 +28,8 @@ description: Verification gate for any upstream workflow — validates that anal
   - You MUST evaluate the changes for Big-O complexity, database query inefficiency (N+1), memory leaks, and UX degradation. If the code passes tests but wastes system resources or creates a poor user experience, flag it as a failure.
 </strict-instruction>
 
+> **@@SCAN** Before running CI, answer: (1) Did you trace the modified code line-by-line? (2) Did you verify ALL acceptance criteria from the upstream artifact against real code? (3) Did you run the hostile-interrogation skill?
+
 ## Phase 2: CI Gate — Validation & Output Parsing
 <strict-instruction>
 **Action**: Stop any running development servers. Run the project's standard build and test commands (e.g., `npm run build`, `dotnet build`, `make test`).
@@ -35,6 +37,8 @@ description: Verification gate for any upstream workflow — validates that anal
 - **PASS**: All tests green, zero warnings in build output. Proceed to Phase 3.
 - **FAIL**: Any error, test failure, or structural warning. **Action**: You MUST automatically transition to the `/diagnose` workflow. Do not ask for permission. Treat the failure as a regression to be fixed before retry.
 </strict-instruction>
+
+> **@@SCAN** Before knowledge sharing, answer: (1) Did the build pass with zero warnings? (2) If it failed, did you transition to `/diagnose`?
 
 ## Phase 3: Continuous Verification (Knowledge Sharing)
 <strict-instruction>

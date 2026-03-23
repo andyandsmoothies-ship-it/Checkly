@@ -15,6 +15,8 @@ description: Architect's Strategic Research Workflow for System Architecture.
 - **Skill Discovery**: Derive 2-3 technical keywords from the research topic (e.g., "first-principles", "challenge assumptions"). Use `grep_search` on `.agents/skills/` to find skills matching those keywords. Load ONLY the top 1-2 most relevant architectural `SKILL.md` files. Declare which skills were loaded.
 - **Action**: Query `context7` or perform web searches to gather modern patterns.
 
+> **@@SCAN** Before context mapping, answer: (1) Which skills did you load? (2) What modern patterns or libraries did you discover?
+
 ## Phase 2: E2E Context Mapping (MANDATORY)
 - **Instruction**: Before evaluating ANY solution, you MUST map the **full context** that this feature or decision touches. Never evaluate an option in isolation — understand the complete picture first.
 - **Action**:
@@ -24,10 +26,14 @@ description: Architect's Strategic Research Workflow for System Architecture.
 - **Output**: A structured summary showing the full context. Adapt the format to the topic (e.g., lifecycle table, integration diagram, data flow, dependency map, cost comparison).
 - **Why**: A solution that works for one part of the picture may break another part entirely. The context map ensures every proposed option is stress-tested against the full scope before recommendation.
 
+> **@@SCAN** Before feasibility check, answer: (1) Did you map the full E2E scope (upstream triggers + downstream effects)? (2) What are the handoff points / friction points you identified?
+
 ## Phase 3: Feasibility & Rules Check
 - **Instruction**: Evaluate the idea against the project's rigid constraints.
 - **Skill Refresh**: If the research shifted domains (e.g., started as "which database?" but now involves "auth architecture"), re-scan `.agents/skills/` for skills matching the new concern. Load 1-2 if relevant.
 - **Action**: Read the workspace rules in `.agents/rules/`. Does the proposed idea violate any existing architecture or security constraints?
+
+> **@@SCAN** Before writing deliverable, answer: (1) Does the idea violate any workspace rules? (2) Is the recommendation Viable, Needs Redesign, or Reject?
 
 ## Phase 4: Deliverable (The Handoff)
 - **Requirement**: Always output a structured artifact.

@@ -160,12 +160,8 @@ class ScoringEngine {
       for (final c in allCriteria) {
         final answer = answerMap[c.id];
         final isAnswerRisk = answer?.isRisk ?? false;
-        final hasFaults =
-            answer != null &&
-            ((answer.numericValue ?? 0) > 0 ||
-                answer.value?.toLowerCase() == 'non_conform' ||
-                answer.repeatedFaults > 0);
-        final isTemplateRisk = c.isRisk && hasFaults;
+        final isTemplateRisk =
+            c.isRisk && answer != null && _hasFault(c, answer);
 
         if (isAnswerRisk || isTemplateRisk) {
           hasRiskFailure = true;
@@ -219,11 +215,7 @@ class ScoringEngine {
           final answer = answerMap[c.id];
           final isAnswerCcp = answer?.isCcp ?? false;
           final isAnswerRisk = answer?.isRisk ?? false;
-          final hasFaults =
-              answer != null &&
-              ((answer.numericValue ?? 0) > 0 ||
-                  answer.value?.toLowerCase() == 'non_conform' ||
-                  answer.repeatedFaults > 0);
+          final hasFaults = answer != null && _hasFault(c, answer);
           final isTemplateCcp = c.isCcp && hasFaults;
           final isTemplateRisk = c.isRisk && hasFaults;
 
@@ -341,11 +333,7 @@ class ScoringEngine {
         final answer = answerMap[c.id];
         final isAnswerCcp = answer?.isCcp ?? false;
         final isAnswerRisk = answer?.isRisk ?? false;
-        final hasFaults =
-            answer != null &&
-            ((answer.numericValue ?? 0) > 0 ||
-                answer.value?.toLowerCase() == 'non_conform' ||
-                answer.repeatedFaults > 0);
+        final hasFaults = answer != null && _hasFault(c, answer);
         final isTemplateCcp = c.isCcp && hasFaults;
         final isTemplateRisk = c.isRisk && hasFaults;
 
@@ -429,6 +417,20 @@ class ScoringEngine {
       totalScore: hasRiskFailure ? 0.0 : _round2(score),
       hasRiskFailure: hasRiskFailure,
     );
+  }
+
+  /// Determines if a criterion's answer constitutes a fault.
+  /// Scale inputs: numericValue is earned points (fault = 0 earned).
+  /// Other inputs: numericValue is fault count (fault = count > 0).
+  static bool _hasFault(CriterionInput c, AnswerInput answer) {
+    if (answer.value?.toLowerCase() == 'non_conform') return true;
+    if (answer.repeatedFaults > 0) return true;
+    if (c.inputType == 'scale') {
+      // Scale: fault = scored 0 out of possible points
+      return answer.numericValue == 0;
+    }
+    // Numeric/pass_fail: fault = numericValue > 0 (fault count)
+    return (answer.numericValue ?? 0) > 0;
   }
 
   /// Calculates deduction for a criterion.
