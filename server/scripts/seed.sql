@@ -35,8 +35,8 @@ DECLARE
 BEGIN
 
 -- Template
-INSERT INTO templates (id, title, description, type, version, is_active, created_at, updated_at)
-VALUES (t_id, 'Vệ sinh An toàn Thực phẩm', 'Kiểm tra tiêu chuẩn ATTP hàng tháng', 'weighted', 1, true, NOW(), NOW());
+INSERT INTO templates (id, title, description, type, version, scoring_logic_config, display_noun, is_active, created_at, updated_at)
+VALUES (t_id, 'Vệ sinh An toàn Thực phẩm', 'Kiểm tra tiêu chuẩn ATTP hàng tháng', 'weighted', 1, '{"scoringMode":"penalty"}', 'Audit', true, NOW(), NOW());
 
 -- Section 1: Kitchen Area
 INSERT INTO groups (id, template_id, title, description, weight, order_index, is_active, created_at, updated_at)
@@ -47,21 +47,21 @@ INSERT INTO groups (id, template_id, title, description, weight, order_index, is
 VALUES (g2_id, t_id, 'Khu vực phục vụ', 'Kiểm tra khu vực tiếp khách', 40.0, 1, true, NOW(), NOW());
 
 -- Criteria for Section 1 (Kitchen)
-INSERT INTO criteria (id, group_id, label, description, input_type, points_weight, is_ccp, is_risk, order_index, is_active, created_at, updated_at)
+INSERT INTO criteria (id, group_id, label, description, input_type, points_weight, is_ccp, is_risk, minus_impact, order_index, is_active, created_at, updated_at)
 VALUES
-  (gen_random_uuid(), g1_id, 'Sàn nhà sạch sẽ',        'Không có rác, nước đọng',       'boolean', 10.0, false, false, 0, true, NOW(), NOW()),
-  (gen_random_uuid(), g1_id, 'Nhiệt độ tủ lạnh',       'Dưới 5°C',                      'numeric', 15.0, true,  false, 1, true, NOW(), NOW()),
-  (gen_random_uuid(), g1_id, 'Dụng cụ được khử trùng', 'Dao, thớt, dụng cụ nấu nướng',  'boolean', 15.0, true,  true,  2, true, NOW(), NOW()),
-  (gen_random_uuid(), g1_id, 'Nhân viên đeo găng tay',  'Khi chế biến thực phẩm',        'boolean', 10.0, false, false, 3, true, NOW(), NOW()),
-  (gen_random_uuid(), g1_id, 'Thùng rác có nắp đậy',   'Đầy đủ và sạch sẽ',             'boolean', 10.0, false, false, 4, true, NOW(), NOW());
+  (gen_random_uuid(), g1_id, 'Sàn nhà sạch sẽ',        'Không có rác, nước đọng',       'pass_fail', 10.0, false, false, 10.0, 0, true, NOW(), NOW()),
+  (gen_random_uuid(), g1_id, 'Nhiệt độ tủ lạnh',       'Dưới 5°C',                      'numeric',   15.0, true,  false, 15.0, 1, true, NOW(), NOW()),
+  (gen_random_uuid(), g1_id, 'Dụng cụ được khử trùng', 'Dao, thớt, dụng cụ nấu nướng',  'pass_fail', 15.0, true,  true,  15.0, 2, true, NOW(), NOW()),
+  (gen_random_uuid(), g1_id, 'Nhân viên đeo găng tay',  'Khi chế biến thực phẩm',        'pass_fail', 10.0, false, false, 10.0, 3, true, NOW(), NOW()),
+  (gen_random_uuid(), g1_id, 'Thùng rác có nắp đậy',   'Đầy đủ và sạch sẽ',             'pass_fail', 10.0, false, false, 10.0, 4, true, NOW(), NOW());
 
 -- Criteria for Section 2 (Service)
-INSERT INTO criteria (id, group_id, label, description, input_type, points_weight, is_ccp, is_risk, order_index, is_active, created_at, updated_at)
+INSERT INTO criteria (id, group_id, label, description, input_type, points_weight, is_ccp, is_risk, minus_impact, order_index, is_active, created_at, updated_at)
 VALUES
-  (gen_random_uuid(), g2_id, 'Bàn ghế sạch sẽ',         'Không có vết bẩn, đồ ăn thừa',  'boolean', 10.0, false, false, 0, true, NOW(), NOW()),
-  (gen_random_uuid(), g2_id, 'Menu rõ ràng, sạch sẽ',   'Không rách, không bẩn',          'boolean', 10.0, false, false, 1, true, NOW(), NOW()),
-  (gen_random_uuid(), g2_id, 'Nhà vệ sinh đạt chuẩn',   'Có xà phòng, giấy, nước sạch',  'boolean', 10.0, false, true,  2, true, NOW(), NOW()),
-  (gen_random_uuid(), g2_id, 'Khu vực rửa tay khách',    'Có xà phòng và khăn giấy',      'boolean', 10.0, false, false, 3, true, NOW(), NOW());
+  (gen_random_uuid(), g2_id, 'Bàn ghế sạch sẽ',         'Không có vết bẩn, đồ ăn thừa',  'pass_fail', 10.0, false, false, 10.0, 0, true, NOW(), NOW()),
+  (gen_random_uuid(), g2_id, 'Menu rõ ràng, sạch sẽ',   'Không rách, không bẩn',          'pass_fail', 10.0, false, false, 10.0, 1, true, NOW(), NOW()),
+  (gen_random_uuid(), g2_id, 'Nhà vệ sinh đạt chuẩn',   'Có xà phòng, giấy, nước sạch',  'pass_fail', 10.0, false, true,  10.0, 2, true, NOW(), NOW()),
+  (gen_random_uuid(), g2_id, 'Khu vực rửa tay khách',    'Có xà phòng và khăn giấy',      'pass_fail', 10.0, false, false, 10.0, 3, true, NOW(), NOW());
 
 END $$;
 
