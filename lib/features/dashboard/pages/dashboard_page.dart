@@ -227,7 +227,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             '${stats.averageScore.truncateToDouble() == stats.averageScore ? stats.averageScore.toStringAsFixed(0) : stats.averageScore.toStringAsFixed(1)}%',
                         color: AppTheme.success.withValues(alpha: 0.08),
                         iconColor: AppTheme.success,
-                        onTap: () => context.go('/analytics'),
+                        onTap: () => context.push('/analytics'),
                       ),
                     ),
                   ],
