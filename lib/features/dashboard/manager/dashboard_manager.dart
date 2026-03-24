@@ -1,157 +1,214 @@
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/app_database.dart';
+import '../../../_shared/database/database_service.dart';
+import '../../auth/manager/auth_manager.dart';
+import 'dashboard_queries.dart';
 
 final _di = GetIt.instance;
 
-/// Dashboard statistics computed from the local Drift cache.
-class DashboardStats {
-  final int recentAuditCount;
-  final double averageScore;
-  final int pendingActionPlanCount;
-  final int overdueActionPlanCount;
-  final int unreadNotificationCount;
-  final int weakStoreCount;
+// ────────────────────────────────────────────────────────────────
+// Sealed state hierarchy — replaces the generic DashboardStats class.
+// Each role variant only exposes data relevant to that role.
+// ────────────────────────────────────────────────────────────────
+
+sealed class DashboardState {}
+
+/// Initial / in-progress loading state.
+class DashboardLoading extends DashboardState {}
+
+/// State for Auditor role.
+class AuditorDashboardState extends DashboardState {
+  final int draftCount;
+  final int openActionPlans;
+  final double myAvgScore;
   final DateTime? nearestDeadline;
+  final List<CachedSubmission> recentSubmissions;
+
+  AuditorDashboardState({
+    required this.draftCount,
+    required this.openActionPlans,
+    required this.myAvgScore,
+    this.nearestDeadline,
+    required this.recentSubmissions,
+  });
+}
+
+/// State for Store Manager and Area Manager roles.
+class ManagerDashboardState extends DashboardState {
+  final String storeId;
+  final String? storeName;
+  final int openActionPlans;
+  final int overdueActionPlans;
+  final double storeAvgScore;
+  final DateTime? nearestDeadline;
+  final List<CachedSubmission> recentSubmissions;
+
+  ManagerDashboardState({
+    required this.storeId,
+    this.storeName,
+    required this.openActionPlans,
+    required this.overdueActionPlans,
+    required this.storeAvgScore,
+    this.nearestDeadline,
+    required this.recentSubmissions,
+  });
+}
+
+/// State for Admin role.
+class AdminDashboardState extends DashboardState {
+  final int totalAudits;
+  final double globalAvgScore;
+  final int weakStoreCount;
+  final int openActionPlans;
+  final int overdueActionPlans;
   final int monthlyCompleted;
   final int monthlyTotal;
   final List<CachedSubmission> recentSubmissions;
 
-  const DashboardStats({
-    this.recentAuditCount = 0,
-    this.averageScore = 0,
-    this.pendingActionPlanCount = 0,
-    this.overdueActionPlanCount = 0,
-    this.unreadNotificationCount = 0,
-    this.weakStoreCount = 0,
-    this.nearestDeadline,
-    this.monthlyCompleted = 0,
-    this.monthlyTotal = 0,
-    this.recentSubmissions = const [],
+  AdminDashboardState({
+    required this.totalAudits,
+    required this.globalAvgScore,
+    required this.weakStoreCount,
+    required this.openActionPlans,
+    required this.overdueActionPlans,
+    required this.monthlyCompleted,
+    required this.monthlyTotal,
+    required this.recentSubmissions,
   });
 }
 
+// ────────────────────────────────────────────────────────────────
+// DashboardManager
+// ────────────────────────────────────────────────────────────────
+
 /// Manager for the dashboard — reads stats from local Drift cache.
+///
+/// Branches on [AuthManager.currentUser.role] to produce a role-scoped
+/// [DashboardState] variant. All DB access is via [DashboardQueries],
+/// which uses Drift `count()` expressions to avoid full-table loads.
 class DashboardManager extends ChangeNotifier {
-  late final AppDatabase _db;
+  final AppDatabase _db;
+  final AuthManager _auth;
 
-  DashboardManager({AppDatabase? db}) {
-    _db = db ?? _di<DatabaseService>().db;
-  }
+  DashboardManager({AppDatabase? db, AuthManager? auth})
+    : _db = db ?? _di<DatabaseService>().db,
+      _auth = auth ?? _di<AuthManager>();
 
-  DashboardStats _stats = const DashboardStats();
-  DashboardStats get stats => _stats;
+  DashboardState _state = DashboardLoading();
+  DashboardState get dashboardState => _state;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool get isLoading => _state is DashboardLoading;
 
-  /// Load dashboard stats from local Drift cache.
+  /// Load dashboard stats from local Drift cache, branching on role.
   Future<void> loadStats() async {
-    _isLoading = true;
+    _state = DashboardLoading();
     notifyListeners();
 
     try {
-      final now = DateTime.now();
-      final monthStart = DateTime(now.year, now.month, 1);
+      final role = _auth.currentUser?.role ?? 'admin';
+      final queries = DashboardQueries(_db);
 
-      // ── Submissions ──
-      final allSubmissions = await _db.select(_db.cachedSubmissions).get();
-      // C8: Exclude rejected audits from all dashboard metrics
-      final submissions = allSubmissions
-          .where((s) => s.reviewStatus != 'rejected')
-          .toList();
-      final recentCount = submissions.length;
-
-      // Average score
-      double avgScore = 0;
-      if (submissions.isNotEmpty) {
-        final scores = submissions
-            .where((s) => s.totalScore != null)
-            .map((s) => s.totalScore!)
-            .toList();
-        if (scores.isNotEmpty) {
-          avgScore = scores.reduce((a, b) => a + b) / scores.length;
-        }
+      switch (role) {
+        case 'auditor':
+          _state = await _loadAuditorState(queries);
+        case 'store_manager':
+        case 'area_manager':
+          _state = await _loadManagerState(queries, role);
+        default:
+          // admin — also fallback for unknown roles
+          _state = await _loadAdminState(queries);
       }
-
-      // Monthly completed (this month)
-      final monthlyCompleted = submissions
-          .where(
-            (s) => s.status == 'completed' && s.createdAt.isAfter(monthStart),
-          )
-          .length;
-
-      // Weak stores
-      int weakStoreCount = 0;
-      final storeScores = <String, List<double>>{};
-      for (final s in submissions) {
-        if (s.storeId != null && s.totalScore != null) {
-          storeScores.putIfAbsent(s.storeId!, () => []).add(s.totalScore!);
-        }
-      }
-      weakStoreCount = storeScores.entries.where((e) {
-        final avg = e.value.reduce((a, b) => a + b) / e.value.length;
-        return avg < 80;
-      }).length;
-
-      // Monthly total = templates × stores (active audit plan targets)
-      final templates = await _db.select(_db.cachedTemplates).get();
-      final stores = await _db.select(_db.cachedStores).get();
-      final monthlyTotal = templates.length * stores.length;
-
-      // ── Recent submissions for the feed (top 5, sorted by createdAt) ──
-      final sortedSubs = List.of(submissions)
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      final recentSubs = sortedSubs.take(5).toList();
-
-      // ── Action Plans ──
-      final openPlans = await (_db.select(
-        _db.cachedActionPlans,
-      )..where((a) => a.status.isIn(['open', 'pending_verify']))).get();
-
-      final overduePlans = openPlans
-          .where(
-            (p) =>
-                p.status == 'open' &&
-                p.deadline != null &&
-                p.deadline!.isBefore(now),
-          )
-          .length;
-
-      DateTime? nearestDeadline;
-      for (final p in openPlans) {
-        if (p.deadline != null && p.deadline!.isAfter(now)) {
-          if (nearestDeadline == null ||
-              p.deadline!.isBefore(nearestDeadline)) {
-            nearestDeadline = p.deadline;
-          }
-        }
-      }
-
-      // ── Notifications ──
-      final unreadNotifications = await (_db.select(
-        _db.cachedNotifications,
-      )..where((n) => n.readAt.isNull())).get();
-
-      _stats = DashboardStats(
-        recentAuditCount: recentCount,
-        averageScore: double.parse(avgScore.toStringAsFixed(1)),
-        pendingActionPlanCount: openPlans.length,
-        overdueActionPlanCount: overduePlans,
-        unreadNotificationCount: unreadNotifications.length,
-        weakStoreCount: weakStoreCount,
-        nearestDeadline: nearestDeadline,
-        monthlyCompleted: monthlyCompleted,
-        monthlyTotal: monthlyTotal > 0 ? monthlyTotal : 1,
-        recentSubmissions: recentSubs,
-      );
     } catch (_) {
-      // If cache is empty or DB not ready, use defaults
+      // On any error (DB not ready, cache empty), fall back to loading state
+      // so the UI shows the loading placeholder rather than crashing.
+      _state = DashboardLoading();
     } finally {
-      _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // ── Role-specific loaders ────────────────────────────────────────
+
+  Future<AuditorDashboardState> _loadAuditorState(
+    DashboardQueries queries,
+  ) async {
+    final results = await Future.wait([
+      queries.getDraftCount(),
+      queries.getMyOpenApCount(),
+      queries.getMyAvgScore(),
+    ]);
+
+    final deadline = await queries.getNearestDeadline();
+    final recent = await queries.getRecentSubmissions(limit: 10);
+
+    return AuditorDashboardState(
+      draftCount: results[0] as int,
+      openActionPlans: results[1] as int,
+      myAvgScore: results[2] as double,
+      nearestDeadline: deadline,
+      recentSubmissions: recent,
+    );
+  }
+
+  Future<DashboardState> _loadManagerState(
+    DashboardQueries queries,
+    String role,
+  ) async {
+    // Get storeId from the cached store profile.
+    // Store managers have exactly one store in the local cache.
+    final stores = await (_db.select(_db.cachedStores)..limit(1)).get();
+    if (stores.isEmpty) {
+      // No store synced yet — fallback to auditor-style view
+      return _loadAuditorState(queries);
+    }
+
+    final store = stores.first;
+    final storeId = store.id;
+
+    final results = await Future.wait([
+      queries.getOpenApCountForStore(storeId),
+      queries.getOverdueApCountForStore(storeId),
+      queries.getAvgScoreForStore(storeId),
+    ]);
+
+    final deadline = await queries.getNearestDeadline();
+    final recent = await queries.getRecentSubmissions(limit: 10);
+
+    return ManagerDashboardState(
+      storeId: storeId,
+      storeName: store.name,
+      openActionPlans: results[0] as int,
+      overdueActionPlans: results[1] as int,
+      storeAvgScore: results[2] as double,
+      nearestDeadline: deadline,
+      recentSubmissions: recent,
+    );
+  }
+
+  Future<AdminDashboardState> _loadAdminState(DashboardQueries queries) async {
+    final results = await Future.wait([
+      queries.getTotalAuditCount(),
+      queries.getGlobalAvgScore(),
+      queries.getWeakStoreCount(),
+      queries.getGlobalOpenApCount(),
+      queries.getGlobalOverdueApCount(),
+      queries.getMonthlyCompletedCount(),
+      queries.getMonthlyTotal(),
+    ]);
+
+    final recent = await queries.getRecentSubmissions(limit: 10);
+
+    return AdminDashboardState(
+      totalAudits: results[0] as int,
+      globalAvgScore: results[1] as double,
+      weakStoreCount: results[2] as int,
+      openActionPlans: results[3] as int,
+      overdueActionPlans: results[4] as int,
+      monthlyCompleted: results[5] as int,
+      monthlyTotal: results[6] as int,
+      recentSubmissions: recent,
+    );
   }
 }

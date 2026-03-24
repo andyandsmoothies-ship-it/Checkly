@@ -3839,6 +3839,17 @@ class $CachedActionPlansTable extends CachedActionPlans
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _storeManagerNameMeta = const VerificationMeta(
     'storeManagerName',
   );
@@ -3899,6 +3910,7 @@ class $CachedActionPlansTable extends CachedActionPlans
     deadline,
     closedAt,
     storeName,
+    storeId,
     storeManagerName,
     verifierName,
     createdAt,
@@ -4021,6 +4033,12 @@ class $CachedActionPlansTable extends CachedActionPlans
         storeName.isAcceptableOrUnknown(data['store_name']!, _storeNameMeta),
       );
     }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    }
     if (data.containsKey('store_manager_name')) {
       context.handle(
         _storeManagerNameMeta,
@@ -4120,6 +4138,10 @@ class $CachedActionPlansTable extends CachedActionPlans
         DriftSqlType.string,
         data['${effectivePrefix}store_name'],
       ),
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      ),
       storeManagerName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}store_manager_name'],
@@ -4161,6 +4183,7 @@ class CachedActionPlan extends DataClass
   final DateTime? deadline;
   final DateTime? closedAt;
   final String? storeName;
+  final String? storeId;
   final String? storeManagerName;
   final String? verifierName;
   final DateTime createdAt;
@@ -4180,6 +4203,7 @@ class CachedActionPlan extends DataClass
     this.deadline,
     this.closedAt,
     this.storeName,
+    this.storeId,
     this.storeManagerName,
     this.verifierName,
     required this.createdAt,
@@ -4221,6 +4245,9 @@ class CachedActionPlan extends DataClass
     }
     if (!nullToAbsent || storeName != null) {
       map['store_name'] = Variable<String>(storeName);
+    }
+    if (!nullToAbsent || storeId != null) {
+      map['store_id'] = Variable<String>(storeId);
     }
     if (!nullToAbsent || storeManagerName != null) {
       map['store_manager_name'] = Variable<String>(storeManagerName);
@@ -4269,6 +4296,9 @@ class CachedActionPlan extends DataClass
       storeName: storeName == null && nullToAbsent
           ? const Value.absent()
           : Value(storeName),
+      storeId: storeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(storeId),
       storeManagerName: storeManagerName == null && nullToAbsent
           ? const Value.absent()
           : Value(storeManagerName),
@@ -4300,6 +4330,7 @@ class CachedActionPlan extends DataClass
       deadline: serializer.fromJson<DateTime?>(json['deadline']),
       closedAt: serializer.fromJson<DateTime?>(json['closedAt']),
       storeName: serializer.fromJson<String?>(json['storeName']),
+      storeId: serializer.fromJson<String?>(json['storeId']),
       storeManagerName: serializer.fromJson<String?>(json['storeManagerName']),
       verifierName: serializer.fromJson<String?>(json['verifierName']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -4324,6 +4355,7 @@ class CachedActionPlan extends DataClass
       'deadline': serializer.toJson<DateTime?>(deadline),
       'closedAt': serializer.toJson<DateTime?>(closedAt),
       'storeName': serializer.toJson<String?>(storeName),
+      'storeId': serializer.toJson<String?>(storeId),
       'storeManagerName': serializer.toJson<String?>(storeManagerName),
       'verifierName': serializer.toJson<String?>(verifierName),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -4346,6 +4378,7 @@ class CachedActionPlan extends DataClass
     Value<DateTime?> deadline = const Value.absent(),
     Value<DateTime?> closedAt = const Value.absent(),
     Value<String?> storeName = const Value.absent(),
+    Value<String?> storeId = const Value.absent(),
     Value<String?> storeManagerName = const Value.absent(),
     Value<String?> verifierName = const Value.absent(),
     DateTime? createdAt,
@@ -4371,6 +4404,7 @@ class CachedActionPlan extends DataClass
     deadline: deadline.present ? deadline.value : this.deadline,
     closedAt: closedAt.present ? closedAt.value : this.closedAt,
     storeName: storeName.present ? storeName.value : this.storeName,
+    storeId: storeId.present ? storeId.value : this.storeId,
     storeManagerName: storeManagerName.present
         ? storeManagerName.value
         : this.storeManagerName,
@@ -4408,6 +4442,7 @@ class CachedActionPlan extends DataClass
       deadline: data.deadline.present ? data.deadline.value : this.deadline,
       closedAt: data.closedAt.present ? data.closedAt.value : this.closedAt,
       storeName: data.storeName.present ? data.storeName.value : this.storeName,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
       storeManagerName: data.storeManagerName.present
           ? data.storeManagerName.value
           : this.storeManagerName,
@@ -4436,6 +4471,7 @@ class CachedActionPlan extends DataClass
           ..write('deadline: $deadline, ')
           ..write('closedAt: $closedAt, ')
           ..write('storeName: $storeName, ')
+          ..write('storeId: $storeId, ')
           ..write('storeManagerName: $storeManagerName, ')
           ..write('verifierName: $verifierName, ')
           ..write('createdAt: $createdAt, ')
@@ -4460,6 +4496,7 @@ class CachedActionPlan extends DataClass
     deadline,
     closedAt,
     storeName,
+    storeId,
     storeManagerName,
     verifierName,
     createdAt,
@@ -4483,6 +4520,7 @@ class CachedActionPlan extends DataClass
           other.deadline == this.deadline &&
           other.closedAt == this.closedAt &&
           other.storeName == this.storeName &&
+          other.storeId == this.storeId &&
           other.storeManagerName == this.storeManagerName &&
           other.verifierName == this.verifierName &&
           other.createdAt == this.createdAt &&
@@ -4504,6 +4542,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
   final Value<DateTime?> deadline;
   final Value<DateTime?> closedAt;
   final Value<String?> storeName;
+  final Value<String?> storeId;
   final Value<String?> storeManagerName;
   final Value<String?> verifierName;
   final Value<DateTime> createdAt;
@@ -4524,6 +4563,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.deadline = const Value.absent(),
     this.closedAt = const Value.absent(),
     this.storeName = const Value.absent(),
+    this.storeId = const Value.absent(),
     this.storeManagerName = const Value.absent(),
     this.verifierName = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -4545,6 +4585,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.deadline = const Value.absent(),
     this.closedAt = const Value.absent(),
     this.storeName = const Value.absent(),
+    this.storeId = const Value.absent(),
     this.storeManagerName = const Value.absent(),
     this.verifierName = const Value.absent(),
     required DateTime createdAt,
@@ -4570,6 +4611,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Expression<DateTime>? deadline,
     Expression<DateTime>? closedAt,
     Expression<String>? storeName,
+    Expression<String>? storeId,
     Expression<String>? storeManagerName,
     Expression<String>? verifierName,
     Expression<DateTime>? createdAt,
@@ -4591,6 +4633,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
       if (deadline != null) 'deadline': deadline,
       if (closedAt != null) 'closed_at': closedAt,
       if (storeName != null) 'store_name': storeName,
+      if (storeId != null) 'store_id': storeId,
       if (storeManagerName != null) 'store_manager_name': storeManagerName,
       if (verifierName != null) 'verifier_name': verifierName,
       if (createdAt != null) 'created_at': createdAt,
@@ -4614,6 +4657,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Value<DateTime?>? deadline,
     Value<DateTime?>? closedAt,
     Value<String?>? storeName,
+    Value<String?>? storeId,
     Value<String?>? storeManagerName,
     Value<String?>? verifierName,
     Value<DateTime>? createdAt,
@@ -4635,6 +4679,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
       deadline: deadline ?? this.deadline,
       closedAt: closedAt ?? this.closedAt,
       storeName: storeName ?? this.storeName,
+      storeId: storeId ?? this.storeId,
       storeManagerName: storeManagerName ?? this.storeManagerName,
       verifierName: verifierName ?? this.verifierName,
       createdAt: createdAt ?? this.createdAt,
@@ -4688,6 +4733,9 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     if (storeName.present) {
       map['store_name'] = Variable<String>(storeName.value);
     }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
     if (storeManagerName.present) {
       map['store_manager_name'] = Variable<String>(storeManagerName.value);
     }
@@ -4723,6 +4771,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
           ..write('deadline: $deadline, ')
           ..write('closedAt: $closedAt, ')
           ..write('storeName: $storeName, ')
+          ..write('storeId: $storeId, ')
           ..write('storeManagerName: $storeManagerName, ')
           ..write('verifierName: $verifierName, ')
           ..write('createdAt: $createdAt, ')
@@ -9779,6 +9828,7 @@ typedef $$CachedActionPlansTableCreateCompanionBuilder =
       Value<DateTime?> deadline,
       Value<DateTime?> closedAt,
       Value<String?> storeName,
+      Value<String?> storeId,
       Value<String?> storeManagerName,
       Value<String?> verifierName,
       required DateTime createdAt,
@@ -9801,6 +9851,7 @@ typedef $$CachedActionPlansTableUpdateCompanionBuilder =
       Value<DateTime?> deadline,
       Value<DateTime?> closedAt,
       Value<String?> storeName,
+      Value<String?> storeId,
       Value<String?> storeManagerName,
       Value<String?> verifierName,
       Value<DateTime> createdAt,
@@ -9884,6 +9935,11 @@ class $$CachedActionPlansTableFilterComposer
 
   ColumnFilters<String> get storeName => $composableBuilder(
     column: $table.storeName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storeId => $composableBuilder(
+    column: $table.storeId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9987,6 +10043,11 @@ class $$CachedActionPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get storeManagerName => $composableBuilder(
     column: $table.storeManagerName,
     builder: (column) => ColumnOrderings(column),
@@ -10073,6 +10134,9 @@ class $$CachedActionPlansTableAnnotationComposer
   GeneratedColumn<String> get storeName =>
       $composableBuilder(column: $table.storeName, builder: (column) => column);
 
+  GeneratedColumn<String> get storeId =>
+      $composableBuilder(column: $table.storeId, builder: (column) => column);
+
   GeneratedColumn<String> get storeManagerName => $composableBuilder(
     column: $table.storeManagerName,
     builder: (column) => column,
@@ -10144,6 +10208,7 @@ class $$CachedActionPlansTableTableManager
                 Value<DateTime?> deadline = const Value.absent(),
                 Value<DateTime?> closedAt = const Value.absent(),
                 Value<String?> storeName = const Value.absent(),
+                Value<String?> storeId = const Value.absent(),
                 Value<String?> storeManagerName = const Value.absent(),
                 Value<String?> verifierName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -10164,6 +10229,7 @@ class $$CachedActionPlansTableTableManager
                 deadline: deadline,
                 closedAt: closedAt,
                 storeName: storeName,
+                storeId: storeId,
                 storeManagerName: storeManagerName,
                 verifierName: verifierName,
                 createdAt: createdAt,
@@ -10186,6 +10252,7 @@ class $$CachedActionPlansTableTableManager
                 Value<DateTime?> deadline = const Value.absent(),
                 Value<DateTime?> closedAt = const Value.absent(),
                 Value<String?> storeName = const Value.absent(),
+                Value<String?> storeId = const Value.absent(),
                 Value<String?> storeManagerName = const Value.absent(),
                 Value<String?> verifierName = const Value.absent(),
                 required DateTime createdAt,
@@ -10206,6 +10273,7 @@ class $$CachedActionPlansTableTableManager
                 deadline: deadline,
                 closedAt: closedAt,
                 storeName: storeName,
+                storeId: storeId,
                 storeManagerName: storeManagerName,
                 verifierName: verifierName,
                 createdAt: createdAt,

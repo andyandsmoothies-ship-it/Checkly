@@ -66,7 +66,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         listenable: _manager,
         builder: (context, _) {
           final isLoading = _manager.isLoading;
-          final stats = _manager.stats;
+          final adminState = _manager.dashboardState is AdminDashboardState
+              ? _manager.dashboardState as AdminDashboardState
+              : null;
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -118,7 +120,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       label: 'PENDING',
                       value: isLoading
                           ? '—'
-                          : '${stats.pendingActionPlanCount}',
+                          : '${adminState?.openActionPlans ?? 0}',
                       color: AppTheme.warning,
                       dimmed: isLoading,
                     ),

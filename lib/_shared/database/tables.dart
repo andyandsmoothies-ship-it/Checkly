@@ -117,6 +117,7 @@ class CachedActionPlans extends Table {
   DateTimeColumn get deadline => dateTime().nullable()();
   DateTimeColumn get closedAt => dateTime().nullable()();
   TextColumn get storeName => text().nullable()();
+  TextColumn get storeId => text().nullable()();
   TextColumn get storeManagerName => text().nullable()();
   TextColumn get verifierName => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();

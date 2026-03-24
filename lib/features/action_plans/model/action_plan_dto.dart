@@ -7,6 +7,7 @@ class ActionPlanDto {
   final String criteriaLabel;
   final String groupTitle;
   final String? storeName;
+  final String? storeId;
   final String? storeManagerName;
   final String? rootCause;
   final String? correctionPlan;
@@ -24,6 +25,7 @@ class ActionPlanDto {
     required this.criteriaLabel,
     required this.groupTitle,
     this.storeName,
+    this.storeId,
     this.storeManagerName,
     this.rootCause,
     this.correctionPlan,
@@ -42,6 +44,7 @@ class ActionPlanDto {
     criteriaLabel: json['criteriaLabel'] as String? ?? '',
     groupTitle: json['groupTitle'] as String? ?? '',
     storeName: json['storeName'] as String?,
+    storeId: json['storeId'] as String?,
     storeManagerName: json['storeManagerName'] as String?,
     rootCause: json['rootCause'] as String?,
     correctionPlan: json['correctionPlan'] as String?,

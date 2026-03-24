@@ -39,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -63,6 +63,9 @@ class AppDatabase extends _$AppDatabase {
           cachedSubmissions.templateSnapshot,
         );
         await m.addColumn(cachedSubmissions, cachedSubmissions.templateVersion);
+      }
+      if (from < 6) {
+        await m.addColumn(cachedActionPlans, cachedActionPlans.storeId);
       }
     },
   );
