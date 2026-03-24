@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../model/template_dto.dart';
+import './template_dto.dart';
 import 'editable_criterion.dart';
 
 class EditableGroup {

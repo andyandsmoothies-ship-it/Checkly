@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+
+import '../../templates/models/template_dto.dart';
+import '../manager/audit_manager.dart';
+import 'audit_criterion_row.dart';
+
+// ============================================================
+// Section Card
+// ============================================================
+
+class AuditSectionCard extends StatelessWidget {
+  final GroupDto group;
+  final AuditManager manager;
+  final int depth;
+  final bool confirmRequired;
+  final bool ccpEnabled;
+  final bool riskEnabled;
+
+  const AuditSectionCard({
+    super.key,
+    required this.group,
+    required this.manager,
+    this.depth = 0,
+    this.confirmRequired = false,
+    this.ccpEnabled = true,
+    this.riskEnabled = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final sectionScore = depth == 0 ? manager.sectionScores[group.id] : null;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                group.title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            // Section score display (top-level only)
+            if (depth == 0 && sectionScore != null) ...[
+              if (sectionScore.hasCcpFailure)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  margin: const EdgeInsets.only(right: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.error,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'CCP',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 9,
+                    ),
+                  ),
+                ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: sectionScore.hasCcpFailure
+                      ? theme.colorScheme.errorContainer
+                      : theme.colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '${sectionScore.score.toStringAsFixed(0)} / ${sectionScore.maxPoints.toStringAsFixed(0)}',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: sectionScore.hasCcpFailure
+                        ? theme.colorScheme.error
+                        : theme.colorScheme.onSecondaryContainer,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+            if (depth == 0 &&
+                group.weight != null &&
+                group.weight! > 0 &&
+                manager.liveScore != null) // Hide weight in Survey mode
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '${group.weight!.toStringAsFixed(0)}%',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        children: [
+          ...group.criteria.map(
+            (c) => AuditCriterionRow(
+              criterion: c,
+              manager: manager,
+              confirmRequired: confirmRequired,
+              ccpEnabled: ccpEnabled,
+              riskEnabled: riskEnabled,
+            ),
+          ),
+          ...group.children.map(
+            (g) => Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: AuditSectionCard(
+                group: g,
+                manager: manager,
+                depth: depth + 1,
+                confirmRequired: confirmRequired,
+                ccpEnabled: ccpEnabled,
+                riskEnabled: riskEnabled,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

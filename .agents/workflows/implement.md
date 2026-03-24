@@ -63,10 +63,16 @@ description: The Core Builder Implementation Workflow.
 - **N-Dimensional Audit**: You MUST review your own code changes from three distinctly different perspectives. Explicitly state your findings for each:
   1. **Security & Architecture**: Does the code violate the specific workspace rules identified for this task? Are there illegal imports or missed package dependencies?
   2. **Logic & Correctness**: Does the code perfectly handle nulls, edge cases, and unexpected inputs? Did you miss any acceptance criteria?
-  3. **Coverage**: Did your TDD Inner Loop tests actually cover the critical paths?
-- **Drift Check**: Did you edit files NOT listed in the `implementation_plan.md`? **Action:** Use the `run_command` tool with `git status` or `git diff` to verify the actual files changed. Re-read acceptance criteria. Fix any violations found during self-review before handoff.
+  3. **Coverage — Test Evidence Gate (MANDATORY)**: For every `[NEW]` handler or endpoint created during this session, you MUST explicitly verify:
+     - ✅ A **happy-path** test exists (e.g., `200 OK`, `201 Created`, `204 NoContent`)
+     - ✅ A **primary-error-path** test exists (e.g., `404 NotFound`, `403 Forbidden`, `409 Conflict`, `400 BadRequest`)
+     - ❌ "The existing suite is still green" does NOT count as coverage of new behavior.
+     - **Action**: List each new handler by name. If either test is missing → write it NOW before proceeding to Phase 5. This gate applies even for "Track B1" slices. (See `project-gotchas.md` Gotcha #12)
+- **Drift Check (2-part)**:
+  1. **File scope**: Run `git status` / `git diff --name-only`. Did you edit files NOT listed in the plan? Fix violations.
+  2. **Verification cross-check (MANDATORY)**: Re-read the `## Verification Plan` section of the `implementation_plan.md`. For each **named test** listed there, confirm it appears in `git diff`. If a test name from the plan is missing from the diff → it was skipped. Write it NOW. The phrase "standard Builder tests will be authored" is NOT a pass.
 
-> **@@SCAN** Before handoff, answer: (1) Did you review from all 3 perspectives (Security, Logic, Coverage)? (2) Did you run `git status` to check for unplanned file changes? (3) What was the verdict — Ship, Show, or Ask?
+> **@@SCAN** Before handoff, answer: (1) Did you review from all 3 perspectives (Security, Logic, Coverage)? (2) For every [NEW] handler: does a happy-path AND error-path test exist? (3) Did you run `git status` to check for unplanned file changes? (4) What was the verdict — Ship, Show, or Ask?
 
 ## Phase 5: Integrate & Handoff (Ship / Show / Ask)
 - **Action**: Stop any running dev servers. Run the project's build and test commands to verify zero compilation errors.

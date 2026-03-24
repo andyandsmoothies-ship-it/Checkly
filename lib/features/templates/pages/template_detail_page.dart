@@ -8,7 +8,7 @@ import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 
 import '../manager/template_manager.dart';
-import '../model/template_dto.dart';
+import '../models/template_dto.dart';
 
 final _di = GetIt.instance;
 

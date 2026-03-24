@@ -14,6 +14,10 @@ public static class StoreEndpoints
         group.MapGet("/", ListStores.HandleAsync)
             .WithName("ListStores");
 
+        // IMPORTANT: /{id:guid} must be BEFORE /{id:guid}/dashboard (Gotcha #3 — specific before catch-all)
+        group.MapGet("/{id:guid}", GetStore.HandleAsync)
+            .WithName("GetStore");
+
         group.MapGet("/{id:guid}/dashboard", GetStoreDashboard.HandleAsync)
             .WithName("GetStoreDashboard");
 

@@ -14,7 +14,7 @@ public static class GetTemplate
     {
         var template = await db.Templates
             .AsNoTracking()
-            .Where(t => t.Id == id)
+            .Where(t => t.Id == id && t.IsActive)
             .Select(t => new
             {
                 t.Id,
@@ -39,6 +39,7 @@ public static class GetTemplate
             .Where(g => g.TemplateId == id && g.IsActive)
             .OrderBy(g => g.OrderIndex)
             .Include(g => g.Criteria.Where(c => c.IsActive).OrderBy(c => c.OrderIndex))
+            .AsSplitQuery()
             .ToListAsync(ct);
 
         // Build tree: root groups (ParentId == null) with nested children

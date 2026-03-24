@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../app_database.dart';
-import '../../../features/templates/model/template_dto.dart';
+import '../../../features/templates/models/template_dto.dart';
 
 /// DAO for cached template data (templates, groups, criteria).
 ///

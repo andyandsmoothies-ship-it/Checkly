@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/dao/template_dao.dart';
-import '../model/template_dto.dart';
+import '../models/template_dto.dart';
 import '../services/template_api_service.dart';
 
 final _di = GetIt.instance;

@@ -148,4 +148,55 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
+    // ─── AC6: DELETE with active stores returns 409 Conflict ──────────────────
+
+    [Fact]
+    public async Task DeleteArea_WithActiveStores_ReturnsConflict()
+    {
+        var client = _factory.CreateClient();
+        var bootstrapToken = await _factory.LoginBootstrapAdminAsync(client);
+        var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
+
+        var areaResp = await adminClient.PostAsJsonAsync("/api/areas", new { name = $"Del Conflict {_runId}" });
+        var areaId = (await areaResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString();
+        await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Del Store {_runId}", areaId });
+
+        var response = await adminClient.DeleteAsync($"/api/areas/{areaId}");
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    }
+
+    // ─── AC7: DELETE with no active stores soft-deletes the area ─────────────
+
+    [Fact]
+    public async Task DeleteArea_NoActiveStores_ReturnsNoContent()
+    {
+        var client = _factory.CreateClient();
+        var bootstrapToken = await _factory.LoginBootstrapAdminAsync(client);
+        var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
+
+        var areaResp = await adminClient.PostAsJsonAsync("/api/areas", new { name = $"Del Empty {_runId}" });
+        var areaId = (await areaResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString();
+
+        var response = await adminClient.DeleteAsync($"/api/areas/{areaId}");
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+        // Verify the area is now unreachable (IsActive = false → 404)
+        var getResp = await adminClient.GetAsync($"/api/areas/{areaId}");
+        Assert.Equal(HttpStatusCode.NotFound, getResp.StatusCode);
+    }
+
+    // ─── AC8: DELETE on a non-existent area returns 404 ──────────────────────
+
+    [Fact]
+    public async Task DeleteArea_UnknownId_ReturnsNotFound()
+    {
+        var client = _factory.CreateClient();
+        var bootstrapToken = await _factory.LoginBootstrapAdminAsync(client);
+        var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
+
+        var response = await adminClient.DeleteAsync($"/api/areas/{Guid.NewGuid()}");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
 }

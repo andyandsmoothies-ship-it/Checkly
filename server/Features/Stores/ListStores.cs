@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,10 @@ namespace Checkly.Api.Features.Stores;
 
 /// <summary>
 /// GET /api/stores — list all active stores with GPS coordinates.
+/// Infra Slice 1: role-scoped filtering added.
+///   admin / auditor → all active stores
+///   store_manager   → only their assigned store
+///   area_manager    → only stores in their assigned area
 /// </summary>
 public static class ListStores
 {
@@ -22,6 +27,7 @@ public static class ListStores
 
         var query = db.Stores.AsQueryable();
 
+        // Default: only active stores (unless includeInactive or assignable_as filter)
         // Default: only active stores (unless includeInactive or assignable_as filter)
         if (string.IsNullOrEmpty(assignableAs) && !string.Equals(includeInactive, "true", StringComparison.OrdinalIgnoreCase))
             query = query.Where(s => s.IsActive == true);
@@ -56,6 +62,33 @@ public static class ListStores
             query = query.Where(s => !takenStoreIds.Contains(s.Id));
         }
 
+        // ── Infra Slice 1: Role-scoped filtering ────────────────────────────────
+        // admin and auditor: no additional scoping (auditors must see all stores to start an audit)
+        // store_manager: only their assigned store
+        // area_manager: only stores in their assigned area
+        var user = httpContext.User;
+        var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
+        var userIdStr = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (role is "store_manager" or "area_manager")
+        {
+            if (Guid.TryParse(userIdStr, out var userGuid))
+            {
+                var profile = await db.Profiles
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.Id == userGuid, ct);
+
+                if (profile is not null)
+                {
+                    if (role == "store_manager" && profile.StoreId.HasValue)
+                        query = query.Where(s => s.Id == profile.StoreId.Value);
+                    else if (role == "area_manager" && profile.AreaId.HasValue)
+                        query = query.Where(s => s.AreaId == profile.AreaId.Value);
+                }
+            }
+        }
+        // ────────────────────────────────────────────────────────────────────────
+
         // Subquery: SM name per store
         var smLookup = db.Profiles
             .Join(db.AppUserRoles, p => p.Id, r => r.UserId,
@@ -82,3 +115,4 @@ public static class ListStores
         return TypedResults.Ok(new PagedResult<StoreDto>(stores, total, page, pageSize));
     }
 }
+

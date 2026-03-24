@@ -30,6 +30,12 @@ public static class CreateArea
         if (exists)
             return TypedResults.Conflict(new { error = "Area name already exists" });
 
+        if (request.Name.Length > 200)
+            return TypedResults.BadRequest(new { error = "Name must not exceed 200 characters" });
+
+        if (request.Description?.Length > 1000)
+            return TypedResults.BadRequest(new { error = "Description must not exceed 1000 characters" });
+
         var area = new Area
         {
             Id = Guid.NewGuid(),

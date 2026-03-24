@@ -21,6 +21,12 @@ public static class CreateStore
         if (string.IsNullOrWhiteSpace(request.Name))
             return Results.BadRequest(new { error = "Store name is required" });
 
+        if (request.Name.Length > 200)
+            return Results.BadRequest(new { error = "Name must not exceed 200 characters" });
+
+        if (request.Address?.Length > 500)
+            return Results.BadRequest(new { error = "Address must not exceed 500 characters" });
+
         // Look up area to include areaName in the response
         Area? area = null;
         if (request.AreaId.HasValue)

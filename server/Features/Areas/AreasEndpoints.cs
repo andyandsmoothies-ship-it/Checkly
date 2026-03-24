@@ -16,5 +16,7 @@ public static class AreasEndpoints
             .RequireAuthorization("AdminOnly");
         group.MapPut("/{id:guid}", UpdateArea.HandleAsync)
             .RequireAuthorization("AdminOnly");
+        group.MapDelete("/{id:guid}", DeleteArea.HandleAsync)
+            .RequireAuthorization("AdminOnly");
     }
 }

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../model/template_dto.dart';
+import '../models/template_dto.dart';
 
 /// API service for template endpoints.
 class TemplateApiService {

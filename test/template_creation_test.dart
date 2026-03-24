@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/features/templates/services/template_api_service.dart';
 import 'package:checkly/features/templates/manager/template_manager.dart';
 import 'package:checkly/features/templates/pages/template_builder_page.dart';
-import 'package:checkly/features/templates/model/template_dto.dart';
+import 'package:checkly/features/templates/models/template_dto.dart';
 
 void main() {
   // ────────────────────────────────────────────────────────────

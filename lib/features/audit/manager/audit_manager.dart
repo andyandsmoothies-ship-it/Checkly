@@ -11,9 +11,10 @@ import '../../../_shared/database/dao/outbox_dao.dart'; // Kept as it's used
 import '../../../_shared/services/connectivity_service.dart'; // Kept as it's used
 import '../../../_shared/services/scoring_engine.dart'; // Kept as it's used
 import '../../auth/manager/auth_manager.dart';
-import '../../templates/model/template_dto.dart';
+import '../../templates/models/template_dto.dart';
 import '../model/submission_dto.dart';
 import '../services/draft_service.dart'; // Added
+import '../services/scoring_input_mapper.dart';
 import '../services/submission_api_service.dart';
 
 final _di = GetIt.instance;
@@ -279,169 +280,24 @@ class AuditManager extends ChangeNotifier {
   // ---------- Live scoring ----------
   void _recalculateScore() {
     if (_template == null) return;
-
-    final sections = _template!.groups.map((g) {
-      // Top-level criteria (flat)
-      final flatCriteria = g.criteria.map((c) {
-        return CriterionInput(
-          id: c.id,
-          groupId: g.id,
-          pointsWeight: c.pointsWeight ?? 0,
-          isCcp: c.isCcp,
-          isRisk: c.isRisk,
-          inputType: c.inputType,
-        );
-      }).toList();
-
-      // Subsections (child groups)
-      final subsections = g.children.map((sub) {
-        // Flatten criteria inside subsection in case of deeper nesting
-        final subCriteria = _flattenCriteria(sub).map((c) {
-          return CriterionInput(
-            id: c.id,
-            groupId: sub.id,
-            pointsWeight: c.pointsWeight ?? 0,
-            isCcp: c.isCcp,
-            isRisk: c.isRisk,
-            inputType: c.inputType,
-          );
-        }).toList();
-
-        return SubsectionInput(
-          id: sub.id,
-          title: sub.title,
-          maxPoints: _metaDouble(sub.metadata, 'subsection_max_points'),
-          criteria: subCriteria,
-        );
-      }).toList();
-
-      return SectionInput(
-        id: g.id,
-        weight: g.weight ?? 0,
-        maxDeductionPoints: g.maxDeductionPoints,
-        subsections: subsections,
-        criteria: flatCriteria,
-      );
-    }).toList();
-
-    final scoringAnswers = _answers.values
-        .map((a) {
-          double? numFaults = a.numericValue;
-          if (numFaults == null && a.value == 'non_conform') {
-            numFaults = 1;
-          }
-
-          return AnswerInput(
-            criteriaId: a.criteriaId,
-            numericValue: numFaults,
-            value: a.value,
-            repeatedFaults: a.repeatedFaultCount,
-            isCcp: a.isCcp,
-            isRisk: a.isRisk,
-          );
-        })
-        .where(
-          (a) =>
-              a.numericValue != null || a.value != null || a.isCcp || a.isRisk,
-        )
-        .toList();
-
-    final input = ScoringInput(
-      sections: sections,
-      answers: scoringAnswers,
-      scoringMode: _parseScoringMode(_template!.scoringLogicConfig),
-      progressiveRepeatPenalty: _parseBoolConfig(
-        _template!.scoringLogicConfig,
-        'progressiveRepeat',
-      ),
-    );
+    final input = ScoringInputMapper.fromTemplate(_template!, _answers);
     final result = ScoringEngine.calculate(input);
     _liveScore = result.totalScore;
     _sectionScores = result.sectionScores;
   }
 
-  /// Reads scoringMode from the template's scoringLogicConfig JSON.
-  static ScoringMode _parseScoringMode(String? configJson) {
-    if (configJson == null || configJson.isEmpty) return ScoringMode.penalty;
-    try {
-      final config = json.decode(configJson) as Map<String, dynamic>;
-      final mode = config['scoringMode'] as String?;
-      if (mode == 'accumulation') return ScoringMode.accumulation;
-      if (mode == 'checklist') return ScoringMode.checklist;
-      if (mode == 'survey') return ScoringMode.survey;
-    } catch (e) {
-      debugPrint('Parse scoringMode: $e');
-    }
-    return ScoringMode.penalty;
-  }
-
-  /// Reads a boolean field from the scoring config JSON.
-  static bool _parseBoolConfig(String? configJson, String key) {
-    if (configJson == null || configJson.isEmpty) return false;
-    try {
-      final config = json.decode(configJson) as Map<String, dynamic>;
-      return config[key] == true;
-    } catch (e) {
-      debugPrint('Parse config[$key]: $e');
-    }
-    return false;
-  }
-
-  List<CriterionDto> _flattenCriteria(GroupDto group) {
-    final result = <CriterionDto>[...group.criteria];
-    for (final child in group.children) {
-      result.addAll(_flattenCriteria(child));
-    }
-    return result;
-  }
-
-  /// Extracts a double field from a group's metadata JSON string.
-  double _metaDouble(String? metadata, String key) {
-    if (metadata == null || metadata.isEmpty) return 0;
-    try {
-      final map = jsonDecode(metadata) as Map<String, dynamic>;
-      return (map[key] as num?)?.toDouble() ?? 0;
-    } catch (_) {
-      return 0;
-    }
-  }
-
   // ---------- Section scores JSON ----------
+  // Reads from _sectionScores computed by _recalculateScore() — no re-calculation.
   String _buildSectionScoresJson() {
     if (_template == null) return '{}';
-
     final sections = <String, dynamic>{};
     for (final group in _template!.groups) {
-      final criteria = _flattenCriteria(group);
-      final sectionInput = SectionInput(
-        id: group.id,
-        weight: group.weight ?? 0,
-        maxDeductionPoints: group.maxDeductionPoints,
-        criteria: criteria
-            .map(
-              (c) => CriterionInput(
-                id: c.id,
-                groupId: group.id,
-                pointsWeight: c.pointsWeight ?? 0,
-                isCcp: c.isCcp,
-                isRisk: c.isRisk,
-              ),
-            )
-            .toList(),
-      );
-
-      final sectionBefore = sectionInput.criteria.fold<double>(
-        0.0,
-        (sum, c) => sum + c.pointsWeight,
-      );
-
       sections[group.id] = {
         'title': group.title,
         'weight': group.weight,
-        'maxPoints': sectionBefore,
+        'maxPoints': _sectionScores[group.id]?.maxPoints ?? 0.0,
       };
     }
-
     return jsonEncode(sections);
   }
 
