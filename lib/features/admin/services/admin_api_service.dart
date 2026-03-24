@@ -77,17 +77,24 @@ class AdminApiService {
   }
 
   /// GET /admin/logs — list system logs.
-  Future<List<Map<String, dynamic>>> getSystemLogs({
-    int limit = 100,
-    int offset = 0,
+  Future<Map<String, dynamic>> getSystemLogs({
+    int page = 1,
+    int pageSize = 50,
+    String? level,
+    String? search,
+    String? startDate,
+    String? endDate,
+    String? traceId,
   }) async {
-    final response = await _dio.get(
-      '/admin/logs',
-      queryParameters: {'limit': limit, 'offset': offset},
-    );
-    final data = response.data;
-    final list = (data is List) ? data : (data['items'] as List<dynamic>);
-    return list.cast<Map<String, dynamic>>();
+    final params = <String, dynamic>{'page': page, 'pageSize': pageSize};
+    if (level != null && level != 'all') params['level'] = level;
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    if (startDate != null) params['startDate'] = startDate;
+    if (endDate != null) params['endDate'] = endDate;
+    if (traceId != null) params['traceId'] = traceId;
+
+    final response = await _dio.get('/admin/logs', queryParameters: params);
+    return response.data as Map<String, dynamic>;
   }
 
   /// POST /admin/users — create a new user (admin only).

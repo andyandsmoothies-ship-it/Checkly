@@ -3,6 +3,7 @@ using System.Text.Json;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
+using Checkly.Api.Common.Services;
 using Checkly.Api.Features.ActionPlans;
 using Microsoft.EntityFrameworkCore;
 
@@ -262,6 +263,11 @@ public static class CreateSubmission
             // Draft or scheduled — just save the submission (no answers)
             await db.SaveChangesAsync(ct);
         }
+
+        AuditLogger.Log(db, user, "submission_started", "Submission", submission.Id,
+            message: $"Submission created with status '{submission.Status}' for store '{submission.StoreName}'",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
+        await db.SaveChangesAsync(ct);
 
         return TypedResults.Created($"/api/submissions/{submission.Id}", new SubmissionDto(
             submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,

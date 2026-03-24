@@ -10,6 +10,12 @@ import 'audit_inputs.dart';
 // Criterion Bottom Sheet — full editing controls
 // ============================================================
 
+/// Returns true for input types that participate in scoring.
+bool _isScored(String? inputType) =>
+    inputType != 'text' &&
+    inputType != 'single_choice' &&
+    inputType != 'multi_choice';
+
 Future<void> showAuditCriterionSheet(
   BuildContext context, {
   required CriterionDto criterion,
@@ -108,6 +114,25 @@ Future<void> showAuditCriterionSheet(
                           onChanged: (v) =>
                               manager.setAnswer(criterion.id, value: v),
                         )
+                      else if (criterion.inputType == 'text')
+                        TextFormField(
+                          initialValue: answer?.value,
+                          decoration: InputDecoration(
+                            labelText: 'Response',
+                            hintText: 'Enter text...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                          ),
+                          maxLines: 4,
+                          style: theme.textTheme.bodySmall,
+                          onChanged: (v) =>
+                              manager.setAnswer(criterion.id, value: v),
+                        )
                       else ...[
                         // Faults + Repeats on same row
                         Row(
@@ -138,7 +163,9 @@ Future<void> showAuditCriterionSheet(
                       ],
 
                       // Confirm Correct button
-                      if (confirmRequired && !hasFaults) ...[
+                      if (confirmRequired &&
+                          !hasFaults &&
+                          _isScored(criterion.inputType)) ...[
                         const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
@@ -195,7 +222,8 @@ Future<void> showAuditCriterionSheet(
                       ],
 
                       // CCP / RISK toggle buttons
-                      if (ccpEnabled || riskEnabled) ...[
+                      if ((ccpEnabled || riskEnabled) &&
+                          _isScored(criterion.inputType)) ...[
                         const SizedBox(height: 12),
                         Row(
                           children: [

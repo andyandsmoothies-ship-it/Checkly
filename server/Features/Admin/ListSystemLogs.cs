@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Checkly.Api.Features.Admin;
 
 /// <summary>
-/// GET /api/admin/logs — paginated system logs with optional level/category filter.
+/// GET /api/admin/logs — paginated system logs with optional filters.
+/// Supports: level, category, search (ILike across message/action/email),
+/// startDate, endDate (DateTimeOffset), traceId (exact match).
 /// </summary>
 public static class ListSystemLogs
 {
@@ -19,6 +21,8 @@ public static class ListSystemLogs
         string Level,
         string? EntityType,
         Guid? EntityId,
+        string? TraceId,
+        string? UserEmail,
         DateTimeOffset CreatedAt);
 
     public static async Task<IResult> HandleAsync(
@@ -32,10 +36,15 @@ public static class ListSystemLogs
         if (callerRole != "admin")
             return TypedResults.Forbid();
 
-        var levelFilter = httpContext.Request.Query["level"].FirstOrDefault();
-        var categoryFilter = httpContext.Request.Query["category"].FirstOrDefault();
-        var pageStr = httpContext.Request.Query["page"].FirstOrDefault();
-        var page = int.TryParse(pageStr, out var p) ? Math.Max(1, p) : 1;
+        var q = httpContext.Request.Query;
+        var levelFilter    = q["level"].FirstOrDefault();
+        var categoryFilter = q["category"].FirstOrDefault();
+        var search         = q["search"].FirstOrDefault();
+        var startDateStr   = q["startDate"].FirstOrDefault();
+        var endDateStr     = q["endDate"].FirstOrDefault();
+        var traceIdFilter  = q["traceId"].FirstOrDefault();
+        var pageStr        = q["page"].FirstOrDefault();
+        var page           = int.TryParse(pageStr, out var p) ? Math.Max(1, p) : 1;
         const int pageSize = 50;
 
         var query = db.SystemLogs.AsNoTracking().AsQueryable();
@@ -46,6 +55,22 @@ public static class ListSystemLogs
         if (!string.IsNullOrEmpty(categoryFilter) && categoryFilter != "all")
             query = query.Where(l => l.Category == categoryFilter);
 
+        if (!string.IsNullOrEmpty(traceIdFilter))
+            query = query.Where(l => l.TraceId == traceIdFilter);
+
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(l =>
+                EF.Functions.ILike(l.Message ?? "", $"%{search}%") ||
+                EF.Functions.ILike(l.Action,         $"%{search}%") ||
+                EF.Functions.ILike(l.UserEmail ?? "", $"%{search}%") ||
+                l.EntityId.ToString() == search);
+
+        if (DateTimeOffset.TryParse(startDateStr, out var startDate))
+            query = query.Where(l => l.CreatedAt >= startDate);
+
+        if (DateTimeOffset.TryParse(endDateStr, out var endDate))
+            query = query.Where(l => l.CreatedAt <= endDate);
+
         var totalCount = await query.CountAsync(ct);
 
         var logs = await query
@@ -55,7 +80,8 @@ public static class ListSystemLogs
             .Select(l => new SystemLogDto(
                 l.Id, l.UserId, l.Action, l.Category,
                 l.Message, l.Path, l.Level,
-                l.EntityType, l.EntityId, l.CreatedAt))
+                l.EntityType, l.EntityId,
+                l.TraceId, l.UserEmail, l.CreatedAt))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new

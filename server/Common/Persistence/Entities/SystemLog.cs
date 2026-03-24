@@ -15,5 +15,7 @@ public sealed class SystemLog
     public string Level { get; set; } = "info"; // info, warning, error
     public string? EntityType { get; set; }
     public Guid? EntityId { get; set; }
+    public string? TraceId { get; set; }
+    public string? UserEmail { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

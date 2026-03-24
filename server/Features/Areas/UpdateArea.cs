@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Areas;
@@ -38,6 +39,10 @@ public static class UpdateArea
 
         area.UpdatedAt = DateTimeOffset.UtcNow;
 
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "area_updated", "Area", area.Id,
+            message: $"Area '{area.Name}' updated",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 
         // Reload with counts for consistent response

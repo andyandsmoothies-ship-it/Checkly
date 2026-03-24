@@ -152,6 +152,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
     final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (ctx) {
         return SafeArea(
           child: Column(
@@ -167,61 +168,70 @@ class _AuditFormPageState extends State<AuditFormPage> {
                   ),
                 ),
               ),
-              ...List.generate(template.groups.length, (i) {
-                final group = template.groups[i];
-                final answered = _groupAnsweredCount(manager, group);
-                final total = _groupTotalCount(group);
-                final isCurrent = i == _currentSection;
-                final isComplete = answered >= total;
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(template.groups.length, (i) {
+                      final group = template.groups[i];
+                      final answered = _groupAnsweredCount(manager, group);
+                      final total = _groupTotalCount(group);
+                      final isCurrent = i == _currentSection;
+                      final isComplete = answered >= total;
 
-                return ListTile(
-                  leading: CircleAvatar(
-                    radius: 16,
-                    backgroundColor: isComplete
-                        ? AppTheme.success.withAlpha(30)
-                        : isCurrent
-                        ? theme.colorScheme.primaryContainer
-                        : theme.colorScheme.surfaceContainerHighest,
-                    child: isComplete
-                        ? const Icon(
-                            Icons.check,
-                            size: 16,
-                            color: AppTheme.success,
-                          )
-                        : Text(
-                            '${i + 1}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                              color: isCurrent
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurfaceVariant,
-                            ),
+                      return ListTile(
+                        leading: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: isComplete
+                              ? AppTheme.success.withAlpha(30)
+                              : isCurrent
+                              ? theme.colorScheme.primaryContainer
+                              : theme.colorScheme.surfaceContainerHighest,
+                          child: isComplete
+                              ? const Icon(
+                                  Icons.check,
+                                  size: 16,
+                                  color: AppTheme.success,
+                                )
+                              : Text(
+                                  '${i + 1}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: isCurrent
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                        ),
+                        title: Text(
+                          group.title,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: isCurrent
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                           ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: Text(
+                          '$answered / $total done',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: isComplete
+                                ? AppTheme.success
+                                : theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        selected: isCurrent,
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          setState(() => _currentSection = i);
+                        },
+                      );
+                    }),
                   ),
-                  title: Text(
-                    group.title,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: Text(
-                    '$answered / $total',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: isComplete
-                          ? AppTheme.success
-                          : theme.colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  selected: isCurrent,
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    setState(() => _currentSection = i);
-                  },
-                );
-              }),
+                ),
+              ),
               const SizedBox(height: 12),
             ],
           ),

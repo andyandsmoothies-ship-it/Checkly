@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Areas;
@@ -46,6 +47,10 @@ public static class CreateArea
         };
 
         db.Areas.Add(area);
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "area_created", "Area", area.Id,
+            message: $"Area '{area.Name}' created",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 
         return TypedResults.Created(

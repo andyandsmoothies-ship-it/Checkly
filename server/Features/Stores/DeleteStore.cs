@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Services;
 
 namespace Checkly.Api.Features.Stores;
 
@@ -9,7 +11,7 @@ namespace Checkly.Api.Features.Stores;
 /// </summary>
 public static class DeleteStore
 {
-    public static async Task<IResult> HandleAsync(Guid id, AppDbContext db, CancellationToken ct)
+    public static async Task<IResult> HandleAsync(Guid id, ClaimsPrincipal user, AppDbContext db, CancellationToken ct)
     {
         var store = await db.Stores.FindAsync([id], ct);
         if (store is null)
@@ -17,6 +19,10 @@ public static class DeleteStore
 
         store.IsActive = false;
         store.UpdatedAt = DateTimeOffset.UtcNow;
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "store_deleted", "Store", store.Id,
+            message: $"Store '{store.Name}' deactivated",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
         return Results.NoContent();
     }

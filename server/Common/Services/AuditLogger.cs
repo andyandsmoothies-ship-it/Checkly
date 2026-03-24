@@ -14,7 +14,8 @@ public static class AuditLogger
     public static void Log(
         AppDbContext db, ClaimsPrincipal user,
         string action, string entityType, Guid entityId,
-        string? message = null, string? path = null)
+        string? message = null, string? path = null,
+        string? traceId = null, string? userEmail = null)
     {
         _ = Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var uid);
 
@@ -28,6 +29,8 @@ public static class AuditLogger
             EntityId = entityId,
             Message = message,
             Path = path,
+            TraceId = traceId,
+            UserEmail = userEmail,
             Level = "info",
             CreatedAt = DateTimeOffset.UtcNow
         });

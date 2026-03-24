@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Areas;
@@ -13,6 +15,7 @@ public static class DeleteArea
 {
     public static async Task<IResult> HandleAsync(
         Guid id,
+        ClaimsPrincipal user,
         AppDbContext db,
         CancellationToken ct)
     {
@@ -31,6 +34,10 @@ public static class DeleteArea
         area.IsActive = false;
         area.UpdatedAt = DateTimeOffset.UtcNow;
 
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "area_deleted", "Area", area.Id,
+            message: $"Area '{area.Name}' deactivated",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 
         return TypedResults.NoContent();

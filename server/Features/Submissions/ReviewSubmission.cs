@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -80,6 +81,10 @@ public static class ReviewSubmission
             });
         }
 
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "submission_reviewed", "Submission", submission.Id,
+            message: $"Submission '{submission.Id}' reviewed as '{request.Status}' by admin",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 
         return TypedResults.Ok(new

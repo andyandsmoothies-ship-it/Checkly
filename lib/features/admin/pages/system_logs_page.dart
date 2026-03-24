@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import 'system_log_detail_page.dart';
 
 final _di = GetIt.instance;
 
@@ -23,6 +26,11 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
   int _page = 1;
   int _totalCount = 0;
   String _levelFilter = 'all';
+  String _searchQuery = '';
+  DateTimeRange? _dateRange;
+  Timer? _debounce;
+
+  final _searchController = TextEditingController();
 
   static const _levels = ['all', 'info', 'warn', 'error'];
 
@@ -36,6 +44,8 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -63,6 +73,13 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
     try {
       final params = <String, dynamic>{'page': _page, 'pageSize': 50};
       if (_levelFilter != 'all') params['level'] = _levelFilter;
+      if (_searchQuery.isNotEmpty) params['search'] = _searchQuery;
+      if (_dateRange != null) {
+        params['startDate'] = _dateRange!.start.toIso8601String();
+        params['endDate'] = _dateRange!.end
+            .add(const Duration(days: 1))
+            .toIso8601String();
+      }
 
       final response = await _di<Dio>().get(
         '/admin/logs',
@@ -99,85 +116,42 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
     _loadLogs(reset: true);
   }
 
-  void _showLogDetail(Map<String, dynamic> log) {
-    showModalBottomSheet(
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() => _searchQuery = value);
+      _loadLogs(reset: true);
+    });
+  }
+
+  Future<void> _pickDateRange() async {
+    final picked = await showDateRangePicker(
       context: context,
-      isScrollControlled: true,
-      builder: (ctx) {
-        final theme = Theme.of(ctx);
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                children: [
-                  _LevelBadge(level: log['level'] as String? ?? 'info'),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      log['action'] as String? ?? '',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+      firstDate: DateTime(2024),
+      lastDate: DateTime.now(),
+      initialDateRange: _dateRange,
+    );
+    if (picked != null) {
+      setState(() => _dateRange = picked);
+      _loadLogs(reset: true);
+    }
+  }
 
-              // Detail rows
-              _DetailRow(label: 'Category', value: log['category'] as String?),
-              _DetailRow(label: 'Path', value: log['path'] as String?),
-              _DetailRow(label: 'User ID', value: log['userId'] as String?),
-              _DetailRow(
-                label: 'Timestamp',
-                value: _formatTimestamp(log['createdAt'] as String?),
-              ),
-              const SizedBox(height: 12),
+  void _clearDateRange() {
+    setState(() => _dateRange = null);
+    _loadLogs(reset: true);
+  }
 
-              // Message (full)
-              if (log['message'] != null) ...[
-                Text(
-                  'Message',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: SelectableText(
-                    log['message'] as String,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
+  static String _fmt(DateTime dt) {
+    return '${dt.day}/${dt.month}/${dt.year}';
+  }
+
+  void _showLogDetail(Map<String, dynamic> log) {
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute<void>(builder: (_) => SystemLogDetailPage(log: log)),
     );
   }
-
-  String _formatTimestamp(String? raw) {
-    if (raw == null) return '—';
-    final dt = DateTime.tryParse(raw);
-    if (dt == null) return raw;
-    final local = dt.toLocal();
-    return '${local.year}-${_pad(local.month)}-${_pad(local.day)} '
-        '${_pad(local.hour)}:${_pad(local.minute)}:${_pad(local.second)}';
-  }
-
-  static String _pad(int n) => n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
@@ -185,26 +159,79 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
       appBar: AppBar(title: const Text('System Logs')),
       body: Column(
         children: [
-          // Level filter chips
+          // ── Investigate Toolbar: search ──
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Row(
-              children: _levels
-                  .map(
-                    (level) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        label: Text(level.toUpperCase()),
-                        selected: _levelFilter == level,
-                        onSelected: (_) => _onLevelChanged(level),
-                      ),
-                    ),
-                  )
-                  .toList(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              decoration: InputDecoration(
+                hintText: 'Search email, message, entity ID…',
+                prefixIcon: const Icon(Icons.search, size: 20),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: () {
+                          _searchController.clear();
+                          _onSearchChanged('');
+                        },
+                      )
+                    : null,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                border: const OutlineInputBorder(),
+              ),
             ),
           ),
-
-          // Content
+          // ── Date range + level chips ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
+            child: Row(
+              children: [
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  icon: const Icon(Icons.date_range, size: 16),
+                  label: Text(
+                    _dateRange == null
+                        ? 'Date Range'
+                        : '${_fmt(_dateRange!.start)} – ${_fmt(_dateRange!.end)}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  onPressed: _pickDateRange,
+                ),
+                if (_dateRange != null)
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 16),
+                    tooltip: 'Clear dates',
+                    onPressed: _clearDateRange,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                const Spacer(),
+                ..._levels.map(
+                  (level) => Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: FilterChip(
+                      label: Text(
+                        level.toUpperCase(),
+                        style: const TextStyle(fontSize: 11),
+                      ),
+                      selected: _levelFilter == level,
+                      onSelected: (_) => _onLevelChanged(level),
+                      padding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // ── Content ──
           Expanded(child: _buildBody()),
         ],
       ),
@@ -393,40 +420,6 @@ class _LevelBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(icon, size: 16, color: fg),
-    );
-  }
-}
-
-// ─── Detail Row ───
-
-class _DetailRow extends StatelessWidget {
-  final String label;
-  final String? value;
-
-  const _DetailRow({required this.label, this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    if (value == null || value!.isEmpty) return const SizedBox.shrink();
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          Expanded(child: Text(value!, style: theme.textTheme.bodyMedium)),
-        ],
-      ),
     );
   }
 }

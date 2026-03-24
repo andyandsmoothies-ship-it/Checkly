@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Stores;
@@ -17,7 +19,7 @@ public static class UpdateStore
         decimal? GpsLng,
         bool? IsActive);
 
-    public static async Task<IResult> HandleAsync(Guid id, Request request, AppDbContext db, CancellationToken ct)
+    public static async Task<IResult> HandleAsync(Guid id, Request request, ClaimsPrincipal user, AppDbContext db, CancellationToken ct)
     {
         var store = await db.Stores.FindAsync([id], ct);
         if (store is null)
@@ -37,6 +39,10 @@ public static class UpdateStore
             store.IsActive = request.IsActive.Value;
 
         store.UpdatedAt = DateTimeOffset.UtcNow;
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "store_updated", "Store", store.Id,
+            message: $"Store '{store.Name}' updated",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 
         // Look up area name for response

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -82,6 +83,10 @@ public static class UpdateSubmission
         }
 
         submission.UpdatedAt = now;
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "submission_draft_saved", "Submission", submission.Id,
+            message: $"Submission status transitioned to '{submission.Status}'",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 
         return TypedResults.Ok(new SubmissionDto(

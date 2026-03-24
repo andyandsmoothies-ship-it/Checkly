@@ -77,7 +77,7 @@ class AuditSectionCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  '${sectionScore.score.toStringAsFixed(0)} / ${sectionScore.maxPoints.toStringAsFixed(0)}',
+                  '${sectionScore.score.toStringAsFixed(0)} / ${sectionScore.maxPoints.toStringAsFixed(0)} pts',
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: sectionScore.hasCcpFailure
                         ? theme.colorScheme.error

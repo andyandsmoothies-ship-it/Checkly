@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Stores;
@@ -16,7 +18,7 @@ public static class CreateStore
         decimal? GpsLat,
         decimal? GpsLng);
 
-    public static async Task<IResult> HandleAsync(Request request, AppDbContext db, CancellationToken ct)
+    public static async Task<IResult> HandleAsync(Request request, ClaimsPrincipal user, AppDbContext db, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
             return Results.BadRequest(new { error = "Store name is required" });
@@ -47,6 +49,10 @@ public static class CreateStore
         };
 
         db.Stores.Add(store);
+        await db.SaveChangesAsync(ct);
+        AuditLogger.Log(db, user, "store_created", "Store", store.Id,
+            message: $"Store '{store.Name}' created",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 
         return Results.Created($"/api/stores/{store.Id}", new

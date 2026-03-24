@@ -12,6 +12,12 @@ import 'audit_criterion_sheet.dart';
 // Criterion Row — compact list item (Bottom Sheet pattern)
 // ============================================================
 
+/// Returns true for input types that participate in scoring.
+bool _isScored(String? inputType) =>
+    inputType != 'text' &&
+    inputType != 'single_choice' &&
+    inputType != 'multi_choice';
+
 class AuditCriterionRow extends StatelessWidget {
   final CriterionDto criterion;
   final AuditManager manager;
@@ -91,23 +97,26 @@ class AuditCriterionRow extends StatelessWidget {
             Wrap(
               spacing: 4,
               children: [
-                if (faults > 0)
-                  AuditStatusBadge(
-                    label: 'F:$faults',
-                    color: theme.colorScheme.error,
-                  ),
-                if (repeats > 0)
-                  AuditStatusBadge(
-                    label: 'R:$repeats',
-                    color: AppTheme.warning,
-                  ),
-                if (isCcp)
-                  AuditStatusBadge(
-                    label: 'CCP',
-                    color: theme.colorScheme.error,
-                  ),
-                if (isRisk)
-                  AuditStatusBadge(label: 'RISK', color: AppTheme.warning),
+                if (_isScored(criterion.inputType)) ...[
+                  if (faults > 0)
+                    AuditStatusBadge(
+                      label: 'F:$faults',
+                      color: theme.colorScheme.error,
+                    ),
+                  if (repeats > 0)
+                    AuditStatusBadge(
+                      label: 'R:$repeats',
+                      color: AppTheme.warning,
+                    ),
+                  if (isCcp)
+                    AuditStatusBadge(
+                      label: 'CCP',
+                      color: theme.colorScheme.error,
+                    ),
+                  if (isRisk)
+                    AuditStatusBadge(label: 'RISK', color: AppTheme.warning),
+                ],
+
                 if (hasNote)
                   Icon(Icons.notes, size: 16, color: theme.colorScheme.primary),
                 if (hasPhoto)
