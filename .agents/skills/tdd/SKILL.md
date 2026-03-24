@@ -89,16 +89,15 @@ RIGHT (vertical):
 
 Before writing any code:
 
-- [ ] Confirm with user what interface changes are needed
-- [ ] Confirm with user which behaviors to test (prioritize)
 - [ ] Identify opportunities for [deep modules](deep-modules.md) (small interface, deep implementation)
 - [ ] Design interfaces for [testability](interface-design.md)
 - [ ] List the behaviors to test (not implementation steps)
-- [ ] Get user approval on the plan
 
-Ask: "What should the public interface look like? Which behaviors are most important to test?"
+**Document & Proceed**: Do NOT pause to ask the user which behaviors to test or for approval on the plan. Default to testing the most critical, riskiest paths first (auth, data mutation, error handling). Document your chosen test scope in a short **"Test Plan"** comment at the top of the test file and proceed immediately.
 
-**You can't test everything.** Confirm with the user exactly which behaviors matter most. Focus testing effort on critical paths and complex logic, not every possible edge case.
+**Only halt** if the public interface for the feature is completely undefined and cannot be inferred from existing code, architecture docs, or the upstream `/atdd` spec.
+
+**You can't test everything.** Focus testing effort on critical paths and complex logic, not every possible edge case.
 
 > [!IMPORTANT]
 > **Don't write tests for what the type system already guarantees.** If TypeScript enforces a shape, a required field, or a return type — trust it. Testing that a function "returns a string" when the signature says `(): string` is a shit test. Reserve tests for *behavior* the compiler can't see: business rules, state transitions, conditional logic, and edge cases.
@@ -169,8 +168,11 @@ When you encounter existing code that lacks tests, do NOT attempt a full rewrite
 [ ] Mocking follows Detroit style (real collaborators; stubs only at slow boundaries)
 ```
 
-## Project-Specific Rules
+## Project-Agnostic Rules
 
-- **No Raw DOM** — All assertions go through Drivers (`app.form.submit()`), never raw `screen.getByText()` or `fireEvent.click()`
-- **Driver Pattern** — Use `AppDriver` from `src/test/drivers/` to abstract test setup
-- **Gherkin Naming** — Test names follow `Scenario N: [Given] → [Expected]` convention
+These apply regardless of language, framework, or platform:
+
+- **Avoid Raw Selectors** — Do not assert against implementation-specific identifiers (e.g., CSS class names, widget keys, internal method names). Assert against *observable behavior* (status codes, returned values, visible state).
+- **Abstraction Layer** — If your project has a shared test helper, driver, or factory (e.g., `WebApplicationFactory`, `WidgetTester`, `AppDriver`, `render()`), always use it. Never bypass your project's established test scaffolding.
+- **Naming Convention** — Test names must read as specifications: `Entity_Action_ExpectedOutcome` (e.g., `Auditor_SubmitWithMissingField_Returns400`, `Cart_Checkout_DecreasesStock`). Never use `Test1`, `MyTest`, or `It_Works`.
+- **One Assertion Per Concept** — Each test should prove exactly one behavioral claim. Multiple assertions are acceptable only if they all verify the same logical outcome.
