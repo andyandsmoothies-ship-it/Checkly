@@ -268,4 +268,91 @@ public class ScoringVerifierTests
         var result = _sut.Verify(0.00m, answers, groups, allCriteria);
         Assert.True(result.IsValid, $"C4 fallback: expected 0.00 but got {result.ServerScore}");
     }
+
+    // ====================================================================
+    // ATDD SC-A1: FailedCriteriaIds populated for faulted criteria only
+    // ====================================================================
+
+    [Fact]
+    public void Verify_Populates_FailedCriteriaIds_Only_For_Faults()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var c2 = Guid.NewGuid();
+        var c3 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[]
+        {
+            MakeCriterion(c1, sectionId, points: 5m),
+            MakeCriterion(c2, sectionId, points: 5m),
+            MakeCriterion(c3, sectionId, points: 5m)
+        };
+
+        var answers = new[]
+        {
+            MakeAnswer(c1, numericValue: null, value: "non_conform"), // Fault
+            MakeAnswer(c2, numericValue: null, value: "conform"),     // No fault
+            MakeAnswer(c3, numericValue: 1, value: null)              // Fault (numeric > 0)
+        };
+
+        var result = _sut.Verify(100m, answers, groups, criteria);
+
+        // This will fail (RED) compiling until FailedCriteriaIds is added to VerificationResult
+        Assert.Contains(c1, result.FailedCriteriaIds);
+        Assert.Contains(c3, result.FailedCriteriaIds);
+        Assert.DoesNotContain(c2, result.FailedCriteriaIds);
+    }
+
+    // ====================================================================
+    // ATDD SC-A2: Survey mode produces empty FailedCriteriaIds
+    // ====================================================================
+
+    [Fact]
+    public void Survey_Mode_Returns_Empty_FailedCriteriaIds()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 5m) };
+        
+        // Even with a fault answer, survey mode should bypass scoring
+        var answers = new[] { MakeAnswer(c1, numericValue: null, value: "non_conform") };
+
+        var result = _sut.Verify(0m, answers, groups, criteria, scoringMode: "survey");
+
+        // This will fail (RED) compiling until FailedCriteriaIds is added
+        Assert.Empty(result.FailedCriteriaIds);
+    }
+
+    // ====================================================================
+    // ATDD SC-A3: Unscored input types are never in FailedCriteriaIds
+    // ====================================================================
+
+    [Theory]
+    [InlineData("single_choice")]
+    [InlineData("multi_choice")]
+    [InlineData("text")]
+    public void Unscored_Inputs_Are_Excluded_From_FailedCriteriaIds(string inputType)
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        
+        // Data-collection inputs typically have null pointsWeight
+        var crit = MakeCriterion(c1, sectionId, points: 0m); 
+        crit.InputType = inputType;
+        crit.PointsWeight = null;
+        var criteria = new[] { crit };
+        
+        // Some answer value
+        var answers = new[] { MakeAnswer(c1, numericValue: null, value: "Option A") };
+
+        var result = _sut.Verify(100m, answers, groups, criteria);
+
+        // This will fail (RED) compiling until FailedCriteriaIds is added
+        Assert.DoesNotContain(c1, result.FailedCriteriaIds);
+    }
 }

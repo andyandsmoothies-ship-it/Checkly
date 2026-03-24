@@ -16,6 +16,12 @@ public sealed class Answer
     public string? PhotoUrl { get; set; }
     public string? PhotoMetadata { get; set; }
     public bool IsRepeatedError { get; set; }
+
+    /// <summary>
+    /// Server-derived semantic failure flag. Set by FinalizeSubmission using ScoringVerifier.FailedCriteriaIds.
+    /// Analytics-only — excluded from AnswerDto and AnswerInput (never sent by Flutter client).
+    /// </summary>
+    public bool IsFailure { get; set; }
     public int RepeatedFaults { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }

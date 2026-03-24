@@ -11,7 +11,12 @@ public sealed class ScoringVerifier
 {
     private const decimal Tolerance = 0.01m;
 
-    public sealed record VerificationResult(bool IsValid, decimal? ServerScore, string? Reason);
+    public sealed record VerificationResult(
+        bool IsValid,
+        decimal? ServerScore,
+        string? Reason,
+        HashSet<Guid> FailedCriteriaIds);
+
 
     /// <summary>
     /// Verifies the client-submitted score against a server-side recalculation.
@@ -32,17 +37,19 @@ public sealed class ScoringVerifier
         if (riskTriggered)
         {
             var serverScore = 0m;
+            var allFailed = BuildFailedSet(criteria, answers);
             return new VerificationResult(
                 Math.Abs(clientScore - serverScore) <= Tolerance,
                 serverScore,
-                "RISK criteria triggered — total score forced to 0%");
+                "RISK criteria triggered — total score forced to 0%",
+                allFailed);
         }
 
         return scoringMode switch
         {
             "accumulation" => VerifyAccumulation(clientScore, answers, groups, criteria),
             "checklist" => VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty),
-            "survey" => new VerificationResult(true, null, "Survey mode — no scoring"),
+            "survey" => new VerificationResult(true, null, "Survey mode — no scoring", []),
             _ => VerifyPenalty(clientScore, answers, groups, criteria, progressiveRepeatPenalty),
         };
     }
@@ -84,7 +91,8 @@ public sealed class ScoringVerifier
             return new VerificationResult(
                 Math.Abs(clientScore - serverScore) <= Tolerance,
                 Math.Round(serverScore, 2),
-                null);
+                null,
+                BuildFailedSet(criteria, answers));
         }
         else
         {
@@ -100,7 +108,7 @@ public sealed class ScoringVerifier
     {
         var totalPoints = criteria.Sum(c => c.PointsWeight ?? 0);
         if (totalPoints == 0)
-            return new VerificationResult(clientScore == 100, 100, null);
+            return new VerificationResult(clientScore == 100, 100, null, []);
 
         var totalDeductions = criteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
         var serverScore = Math.Max(0, (totalPoints - totalDeductions) / totalPoints * 100);
@@ -108,7 +116,8 @@ public sealed class ScoringVerifier
         return new VerificationResult(
             Math.Abs(clientScore - serverScore) <= Tolerance,
             Math.Round(serverScore, 2),
-            null);
+            null,
+            BuildFailedSet(criteria, answers));
     }
 
     private VerificationResult VerifyAccumulation(
@@ -164,7 +173,25 @@ public sealed class ScoringVerifier
         return new VerificationResult(
             Math.Abs(clientScore - Math.Round(serverScore, 2)) <= Tolerance,
             Math.Round(serverScore, 2),
-            null);
+            null,
+            BuildFailedSet(criteria, answers));
+    }
+
+    /// <summary>
+    /// Builds the set of criteria IDs that semantically failed.
+    /// Excludes unscored input types (text, single_choice, multi_choice) — Gotcha #11.
+    /// </summary>
+    private static HashSet<Guid> BuildFailedSet(
+        IReadOnlyList<Criterion> criteria,
+        IReadOnlyList<Answer> answers)
+    {
+        var unscoredTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { "text", "single_choice", "multi_choice" };
+
+        return criteria
+            .Where(c => !unscoredTypes.Contains(c.InputType) && HasFaults(c, answers))
+            .Select(c => c.Id)
+            .ToHashSet();
     }
 
     /// <summary>

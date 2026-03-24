@@ -514,5 +514,177 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         // Assert — must be 403 (not 200, not 404)
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
+
+    // ═══════════════════════════════════════════════════
+    // ATDD Slice A: Semantic Failure Stamping (SC-A5 to SC-A8)
+    // ═══════════════════════════════════════════════════
+
+    /// <summary>
+    /// SC-A5: IsFailure correctly stamped per-answer at finalize.
+    /// Expected RED: Answer entity doesn't have IsFailure property yet.
+    /// </summary>
+    [Fact]
+    public async Task Finalize_Stamps_IsFailure_Correctly_In_Db()
+    {
+        // Arrange
+        var adminClient = await CreateAdminClientAsync("a5");
+        var storeId = await CreateStoreAsync(adminClient, "SC-A5 Store");
+        
+        var (templateId, criteriaIds) = await CreateTemplateWithSectionsAsync(adminClient);
+        // We know from setup: criteriaIds[0], [1], [2] exist.
+        
+        var (auditorClient, _) = await CreateRoleClientAsync("s5-aud@test.test", "auditor");
+
+        var sectionScores = JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            ["Section A"] = new { score = 50.0, maxScore = 100.0 }, // Failed half
+            ["Section B"] = new { score = 50.0, maxScore = 50.0 }   // Perfect
+        });
+
+        // Act - Submit with C1=fail, C2=pass, C3=pass
+        // create draft
+        var createResp = await auditorClient.PostAsJsonAsync("/api/submissions", new { status = "draft", templateId, storeId });
+        var subId = Guid.Parse((await createResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);
+
+        var answers = new[]
+        {
+            new { criteriaId = criteriaIds[0], value = "non_conform" }, // Should be IsFailure = true
+            new { criteriaId = criteriaIds[1], value = "conform" },     // Should be IsFailure = false
+            new { criteriaId = criteriaIds[2], value = "conform" }      // Should be IsFailure = false
+        };
+
+        var finalResp = await auditorClient.PutAsJsonAsync($"/api/submissions/{subId}/finalize", new
+        {
+            clientScore = 70.0m,  // Server: Section A (1 fail/2 = 0.5 ratio × 60 weight) + Section B (0 fail = 1.0 ratio × 40 weight) = 70%
+            sectionScores,
+            answers
+        });
+        Assert.True(finalResp.IsSuccessStatusCode, $"Finalize failed: {await finalResp.Content.ReadAsStringAsync()}");
+
+        // Assert
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        // RED: This will fail compilation until Answer.IsFailure is added
+        var dbAnswers = await db.Answers.Where(a => a.SubmissionId == subId).ToListAsync();
+        
+        var c1Answer = dbAnswers.Single(a => a.CriteriaId == criteriaIds[0]);
+        var c2Answer = dbAnswers.Single(a => a.CriteriaId == criteriaIds[1]);
+
+        Assert.True(c1Answer.IsFailure, "C1 (non_conform) should have IsFailure = true");
+        Assert.False(c2Answer.IsFailure, "C2 (conform) should have IsFailure = false");
+    }
+
+    /// <summary>
+    /// SC-A6: Survey submissions stamp IsFailure=false on all answers
+    /// Expected RED: Answer entity doesn't have IsFailure property yet.
+    /// </summary>
+    [Fact]
+    public async Task Survey_Mode_Stamps_All_Answers_As_Not_Failure()
+    {
+        // Arrange
+        var adminClient = await CreateAdminClientAsync("a6");
+        var storeId = await CreateStoreAsync(adminClient, "SC-A6 Store");
+        var (templateId, criteriaIds) = await CreateTemplateWithSectionsAsync(adminClient, "survey");
+        var (auditorClient, _) = await CreateRoleClientAsync("s6-aud@test.test", "auditor");
+
+        // Act - Submit anything (even "non_conform")
+        var createResp = await auditorClient.PostAsJsonAsync("/api/submissions", new { status = "draft", templateId, storeId });
+        var subId = Guid.Parse((await createResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);
+
+        var answers = new[]
+        {
+            new { criteriaId = criteriaIds[0], value = "non_conform" }, 
+            new { criteriaId = criteriaIds[1], value = "conform" },     
+        };
+
+        await auditorClient.PutAsJsonAsync($"/api/submissions/{subId}/finalize", new
+        {
+            clientScore = 0.0m, // Survey mode: no scoring applied
+            answers
+        });
+
+        // Assert
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var dbAnswers = await db.Answers.Where(a => a.SubmissionId == subId).ToListAsync();
+        
+        // RED: Compilation fails until Answer.IsFailure exists
+        Assert.All(dbAnswers, a => Assert.False(a.IsFailure, "Survey answer should never be marked IsFailure"));
+    }
+
+    /// <summary>
+    /// SC-A7: GetTopFailures logic must only count semantic failures, not string matching.
+    /// Expected RED: Route exists but uses value != 'pass', so it will incorrectly return C2.
+    /// </summary>
+    [Fact]
+    public async Task GetTopFailures_Uses_Semantic_IsFailure_Instead_Of_String_Matching()
+    {
+        // Arrange
+        var adminClient = await CreateAdminClientAsync("a7");
+        var storeId = await CreateStoreAsync(adminClient, "SC-A7 Store");
+        
+        // Custom template: C1 is pass_fail, C2 is numeric.
+        var tResp = await adminClient.PostAsJsonAsync("/api/templates", new { title = "A7", type = "qc" });
+        var templateId = Guid.Parse((await tResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);
+        var gId = await CreateGroupAsync(adminClient, templateId, "G1", 100m, 10m, 5m, 0);
+        
+        var c1Id = await CreateCriterionAsync(adminClient, templateId, gId, "True Failure", "pass_fail", 5m, 0);
+        var c2Id = await CreateCriterionAsync(adminClient, templateId, gId, "Not A Failure", "numeric", 5m, 1);
+
+        var (auditorClient, _) = await CreateRoleClientAsync("s7-aud@test.test", "auditor");
+
+        // Act: Submission where C1 fails (non_conform) and C2 has value=0 but string is null (or whatever default is)
+        // Wait, numeric inputs have value=null and numericValue=0 for pass. 
+        // If numericValue=0, it's not a fault. But old string logic `value != 'pass' && value != 'n/a'` 
+        // will catch it if value is null because null != 'pass'! Wait, `a.Value != null` is in the old query.
+        // Let's make C2 `numericValue=0` and `value="0"` (the app often echo strings).
+        var createResp = await auditorClient.PostAsJsonAsync("/api/submissions", new { status = "draft", templateId, storeId });
+        var subId = Guid.Parse((await createResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);
+
+        var answers = new[]
+        {
+            // True semantic failure
+            new { criteriaId = c1Id, value = "non_conform", numericValue = (decimal?)null }, 
+            // NOT a semantic failure, but string is not "pass"
+            new { criteriaId = c2Id, value = "0", numericValue = (decimal?)0 } 
+        };
+
+        var sectionScores = JsonSerializer.Serialize(new Dictionary<string, object> { ["G1"] = new { score = 50.0, maxScore = 100.0 } });
+        await auditorClient.PutAsJsonAsync($"/api/submissions/{subId}/finalize", new
+        {
+            // Server: 1 section, weight=100. C1=non_conform (5pts deduction from 10 total) → ratio 0.5 → 50%
+            clientScore = 50.0m,
+            sectionScores,
+            answers
+        });
+
+        // Query analytics
+        var response = await adminClient.GetAsync($"/api/analytics/top-failures?templateId={templateId}");
+        
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var items = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var failLabels = items.EnumerateArray().Select(i => i.GetProperty("criterionLabel").GetString()).ToList();
+
+        // RED: This will currently fail because "Not A Failure" (C2) will be in the list 
+        // because its value "0" != "pass" && !="na" && !=null.
+        Assert.Contains("True Failure", failLabels);
+        Assert.DoesNotContain("Not A Failure", failLabels);
+    }
+
+    /// <summary>
+    /// SC-A8: GetTopFailures missing templateId returns 400.
+    /// Expected GREEN: Existing validation logic works.
+    /// </summary>
+    [Fact]
+    public async Task GetTopFailures_Without_TemplateId_Returns_BadRequest()
+    {
+        var adminClient = await CreateAdminClientAsync("a8");
+        var response = await adminClient.GetAsync("/api/analytics/top-failures");
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }
+
 

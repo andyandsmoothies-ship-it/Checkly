@@ -158,6 +158,12 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("criteria_label");
 
+                    b.Property<bool>("IsFailure")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_failure");
+
                     b.Property<bool>("IsRepeatedError")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -209,6 +215,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("CriteriaId");
 
                     b.HasIndex("SubmissionId");
+
+                    b.HasIndex("IsFailure", "CriteriaId")
+                        .HasDatabaseName("IX_answers_is_failure_criteria_id");
 
                     b.ToTable("answers", (string)null);
                 });
@@ -295,6 +304,12 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text")
                         .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -457,9 +472,7 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasDefaultValueSql("now()");
 
                     b.Property<decimal?>("Weight")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric")
-                        .HasDefaultValue(1.0m)
                         .HasColumnName("weight");
 
                     b.HasKey("Id");

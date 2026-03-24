@@ -290,6 +290,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.PhotoUrl).HasColumnName("photo_url");
             e.Property(x => x.PhotoMetadata).HasColumnName("photo_metadata").HasColumnType("jsonb");
             e.Property(x => x.IsRepeatedError).HasColumnName("is_repeated_error").HasDefaultValue(false);
+            e.Property(x => x.IsFailure).HasColumnName("is_failure").HasDefaultValue(false);
             e.Property(x => x.RepeatedFaults).HasColumnName("repeated_faults").HasDefaultValue(0);
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
@@ -305,6 +306,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithMany(c => c.Answers)
                 .HasForeignKey(x => x.CriteriaId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Composite index for fast Top Failures analytics query (concept brief Phase A mandate)
+            e.HasIndex(x => new { x.IsFailure, x.CriteriaId })
+                .HasDatabaseName("IX_answers_is_failure_criteria_id");
         });
     }
 
@@ -433,6 +438,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
             e.Property(x => x.Name).HasColumnName("name").IsRequired();
             e.Property(x => x.Description).HasColumnName("description");
+            e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
 

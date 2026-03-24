@@ -5,9 +5,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Checkly.Api.Features.Submissions;
 
 /// <summary>
-/// GET /api/submissions/survey-results?templateId={id}
-/// Returns aggregated answer distributions per criterion for survey-mode templates.
+/// GET /api/submissions/survey-results?templateId={id}[&amp;inputTypes=single_choice,multi_choice]
+/// Returns aggregated answer distributions per criterion for ANY template type.
 /// Admin-only endpoint. Uses SQL GROUP BY for efficiency.
+///
+/// Phase B (Analytics V2): Removed ScoringMode == "survey" gate.
+/// Now works for all scoring modes, enabling distribution analytics for
+/// choice/scale inputs on scored (penalty/accumulation/checklist) templates.
 /// </summary>
 public static class GetSurveyResults
 {
@@ -25,15 +29,31 @@ public static class GetSurveyResults
         if (string.IsNullOrEmpty(templateIdStr) || !Guid.TryParse(templateIdStr, out var templateId))
             return TypedResults.BadRequest(new { error = "templateId query parameter is required" });
 
-        // SQL GROUP BY on answers — no in-memory loading
-        // Filter by scoring_mode instead of joining to templates
-        var grouped = await db.Answers
+        // Optional: filter by one or more input types (e.g. "single_choice,multi_choice")
+        var inputTypesParam = httpContext.Request.Query["inputTypes"].FirstOrDefault();
+        var inputTypeFilter = string.IsNullOrWhiteSpace(inputTypesParam)
+            ? null
+            : inputTypesParam.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                             .Select(t => t.ToLowerInvariant())
+                             .ToHashSet();
+
+        // SQL GROUP BY on answers — no in-memory loading.
+        // Phase B: removed ScoringMode == "survey" filter to support universal distributions.
+        var query = db.Answers
             .AsNoTracking()
             .Where(a => a.Submission!.TemplateId == templateId
                      && a.Submission.Status == "completed"
-                     && a.Submission.ScoringMode == "survey"
                      && a.Value != null
-                     && a.Value != "")
+                     && a.Value != "");
+
+        // If caller specified inputTypes, join to criteria and filter by input_type
+        if (inputTypeFilter is { Count: > 0 })
+        {
+            query = query.Where(a => a.Criterion != null
+                && inputTypeFilter.Contains(a.Criterion.InputType));
+        }
+
+        var grouped = await query
             .GroupBy(a => new { a.CriteriaId, a.CriteriaLabel, a.Value })
             .Select(g => new
             {
@@ -42,6 +62,7 @@ public static class GetSurveyResults
                 g.Key.Value,
                 Count = g.Count()
             })
+            .OrderByDescending(x => x.Count)
             .Take(500)
             .ToListAsync(ct);
 
@@ -105,3 +126,4 @@ public static class GetSurveyResults
         public Dictionary<string, int> OptionCounts { get; } = new();
     }
 }
+

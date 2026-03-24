@@ -478,3 +478,4 @@ C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\ne
 C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\Checkly.Api.Tests.pdb
 C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\Checkly.Api.Tests.genruntimeconfig.cache
 C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\ref\Checkly.Api.Tests.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\scripts\templates_update.json

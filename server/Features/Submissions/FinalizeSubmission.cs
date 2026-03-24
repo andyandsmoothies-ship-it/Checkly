@@ -184,6 +184,7 @@ public static class FinalizeSubmission
             Note = a.Note,
             PhotoUrl = a.PhotoUrl,
             IsRepeatedError = a.IsRepeatedError,
+            IsFailure = verification.FailedCriteriaIds.Contains(a.CriteriaId),
             CriteriaLabel = criteria.FirstOrDefault(c => c.Id == a.CriteriaId)?.Label,
             CreatedAt = now,
             UpdatedAt = now

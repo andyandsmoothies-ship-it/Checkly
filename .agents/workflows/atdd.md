@@ -30,7 +30,10 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 - **Rule (Anti-Hallucination)**: Every scenario MUST include a comment citing the exact line or rule from `.agents/rules/` or the user's prompt that justifies its existence. If you cannot cite a business source, you are hallucinating it — delete it.
 - **Rule (Negative Coverage)**: For each happy-path scenario, write at least one negative or boundary case (e.g., wrong role → 403, missing field → 400, duplicate entry → 409).
 - **Rule (Spec-Readable Names)**: Scenario names must read like specifications a non-engineer can understand. Bad: `Test1`, `CreateStore_Works`. Good: `Auditor_Cannot_Delete_Template`, `Submission_With_Empty_Sections_Returns_ValidationError`.
-- **Checkpoint**: Present the Gherkin scenarios to the user via `notify_user` for approval BEFORE writing any test code. This is the "Three Amigos" validation — catch misunderstood requirements here, not after coding.
+- **Checkpoint & Assumptions (Document & Proceed)**: Do NOT pause to ask the user routine questions about test optimization, minor technical choices, or non-conflicting edge cases (e.g., "Should I test X input type as well?"). 
+  - **Rule**: Default to the most comprehensive and safest testing strategy based on `.agents/rules/` and industry best practices.
+  - **Action**: Document any assumptions you made in an **"Assumptions & Design Choices"** block within your output or artifact.
+  - **Gate**: Proceed immediately to **Phase 2b** (Writing code). ONLY use `notify_user` to halt execution if you discover a massive, unresolvable contradiction in the business requirement that makes the feature impossible to test or logic completely ambiguous.
 
 ### 2b. Test Implementation (One scenario at a time)
 

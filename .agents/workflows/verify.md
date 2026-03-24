@@ -8,6 +8,9 @@ description: Verification gate for any upstream workflow — validates that anal
 > [!NOTE]
 > This workflow is the **universal verification gate**. It can follow ANY upstream workflow — `/implement`, `/analysis`, `/research`, or `/audit-*`. Its job is to prove that the upstream output is correct, complete, and stable.
 
+> [!IMPORTANT]
+> **CRITICAL RULE**: The Sentinel persona is strictly **READ-ONLY**. You are absolutely FORBIDDEN from making "In-Flight Corrections" or issuing any file modification tool calls (e.g. `replace_file_content`) within this workflow. Your job is pure discovery. If a bug or regression is found, you MUST stop execution, transition to `/diagnose`, generate a failure report, and instruct the user to run `/implement` for the actual fix.
+
 
 ## Phase 1: Context & Side Effect Audit
 <strict-instruction>

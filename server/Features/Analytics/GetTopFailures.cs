@@ -26,14 +26,12 @@ public static class GetTopFailures
                 g => g.Id, c => c.GroupId,
                 (g, c) => c.Id);
 
-        // Count failures per criterion (uses subquery, not IN(...))
+        // Count failures per criterion using the semantic IsFailure flag (Analytics V2 Phase A)
         var failures = await db.Answers
             .AsNoTracking()
             .Where(a => a.CriteriaId.HasValue
-                && criteriaQuery.Contains(a.CriteriaId.Value)
-                && a.Value != null
-                && a.Value != "pass"
-                && a.Value != "n/a")
+                && a.IsFailure
+                && criteriaQuery.Contains(a.CriteriaId.Value))
             .GroupBy(a => new { a.CriteriaId, a.CriteriaLabel })
             .Select(g => new
             {
@@ -44,7 +42,7 @@ public static class GetTopFailures
             .Take(20)
             .ToListAsync(ct);
 
-        // Total answers for this template (also subquery)
+        // Total answered for this template (basis for fail rate %)
         var totalAnswers = await db.Answers
             .AsNoTracking()
             .CountAsync(a => a.CriteriaId.HasValue

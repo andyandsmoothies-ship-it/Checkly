@@ -7,4 +7,5 @@ public sealed record AreaDto(
     string? Description,
     int StoreCount,
     string? ManagerName,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    bool IsActive = true);
