@@ -52,6 +52,7 @@ During the implementation phase, do not wait until the entire feature is coded t
 ## Artifact Protocol
 <artifact-protocol>
 - **The "Executive Manager" Strategy (Firehose Mitigation)**: You are highly discouraged from monitoring real-time agent terminal outputs or line-by-line coding. Treat the AI like a direct report: issue the workflow (e.g., `/diagnose`), ignore the execution "firehose," and ONLY review the final Markdown artifact outputted to the `brain/` folder.
+- **Thinking Process Separation (Anti-Poisoning Rule)**: Do NOT pollute structural artifacts (like `implementation_plan.md` or `walkthrough_[topic].md`) with the AI's internal monologue, rejected ideas, or "thinking processes." This bloats the context window for downstream agents (e.g., Builder or Sentinel) and causes hallucination. All "thinking" and rationale MUST be written to a dedicated separate file: `thinking_log_[topic].md`. Downstream agents are strictly FORBIDDEN from reading `thinking_log` files.
 - **Absolute Paths**: References to artifacts MUST use the full `file:///` URI.
 - **Requirement Summary**: Every artifact MUST start with a `# Requirement Summary` section.
 - **Context Inventory**: Every artifact MUST include a `# Context & References` section immediately after the summary, explicitly listing the `.agents/rules/` files, docs, or MCPs used to generate the artifact.
@@ -67,6 +68,7 @@ During the implementation phase, do not wait until the entire feature is coded t
 | Implementation Plan | `implementation_plan_[feature].md` | `implementation_plan_batch_mode.md` |
 | Concept Brief | `concept_brief_[feature].md` | `concept_brief_voucher_sender.md` |
 | Failure Report | `failure_report_[topic].md` | `failure_report_email_timeout.md` |
+| Thinking Log | `thinking_log_[topic].md` | `thinking_log_batch_mode.md` |
 
 ### Artifact Tracking (MANDATORY)
 Every `task.md` MUST include an `# Artifact Inventory` section listing all artifacts:
