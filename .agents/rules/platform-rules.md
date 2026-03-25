@@ -11,8 +11,8 @@ trigger: always_on
 - **Purpose**: Mobile-first audit/inspection platform with offline-first capabilities.
 - **Frontend**: Flutter (Dart) — PWA-ready, offline-first with Dexie.js (IndexedDB).
 - **Backend**: ASP.NET Core (.NET 10) Minimal API — feature-sliced, no controllers.
-- **Database**: PostgreSQL via Supabase, accessed through EF Core.
-- **Auth**: Supabase Auth (JWT) → ASP.NET Identity for server-side RBAC.
+- **Database**: PostgreSQL (Self-Hosted), accessed through EF Core.
+- **Auth**: ASP.NET Core Identity (JWT Bearer) for authentication and server-side RBAC.
 
 ### Project Structure
 

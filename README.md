@@ -23,9 +23,9 @@
 |-------|-----------|---------|
 | **Mobile App** | Flutter (Dart 3.11+) | Cross-platform iOS & Android |
 | **Backend API** | ASP.NET Core (.NET 10) | Vertical Slice Minimal API |
-| **Database** | PostgreSQL (via Supabase) | Primary data store |
+| **Database** | PostgreSQL (Self-Hosted) | Primary data store |
 | **ORM** | Entity Framework Core | Server-side data access |
-| **Auth** | Supabase Auth (JWT) | Authentication + RBAC |
+| **Auth** | ASP.NET Core Identity (JWT) | Authentication + RBAC |
 | **Local DB** | Drift (SQLite) | Offline cache & sync |
 | **DI** | get_it / watch_it | Flutter service locator |
 
@@ -72,7 +72,7 @@ Checkly/
 
 - **Flutter SDK** 3.41+ (Dart 3.11+)
 - **.NET SDK** 10+
-- **PostgreSQL** 18+ (or a Supabase project)
+- **PostgreSQL** 18+
 - **Android Studio** (for Android SDK & emulator)
 - **JDK** 25+
 
@@ -101,10 +101,6 @@ Create a `server/appsettings.Development.json` with your database connection:
 {
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Database=checkly;Username=postgres;Password=your_password"
-  },
-  "Supabase": {
-    "Url": "https://your-project.supabase.co",
-    "JwtSecret": "your-jwt-secret"
   }
 }
 ```

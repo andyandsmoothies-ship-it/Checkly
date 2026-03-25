@@ -28,6 +28,7 @@ import '../../features/profile/pages/activity_history_page.dart';
 import '../../features/analytics/pages/analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
 import '../../features/templates/pages/template_builder_page.dart';
+import '../../features/templates/pages/template_wizard_page.dart';
 import '../../features/notifications/pages/notification_drawer_page.dart';
 import '../../features/audit/pages/survey_results_page.dart';
 
@@ -83,6 +84,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/templates/new',
       builder: (context, state) => const TemplateBuilderPage(templateId: 'new'),
+    ),
+    GoRoute(
+      path: '/templates/wizard',
+      builder: (context, state) => const TemplateWizardPage(),
     ),
     GoRoute(
       path: '/templates/edit/:id',

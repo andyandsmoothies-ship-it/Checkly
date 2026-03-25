@@ -49,6 +49,60 @@ class _TemplateListPageState extends State<TemplateListPage> {
     });
   }
 
+  /// Shows a popup menu with 2 creation options.
+  /// Uses showMenu() — never wraps FAB in PopupMenuButton (Gotcha #2).
+  void _showCreateMenu(BuildContext context) async {
+    final RenderBox button = context.findRenderObject()! as RenderBox;
+    final RenderBox overlay =
+        Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(
+          button.size.bottomRight(Offset.zero),
+          ancestor: overlay,
+        ),
+        button.localToGlobal(
+          button.size.bottomRight(Offset.zero),
+          ancestor: overlay,
+        ),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    final result = await showMenu<String>(
+      context: context,
+      position: position,
+      items: const [
+        PopupMenuItem(
+          value: 'classic',
+          child: ListTile(
+            leading: Icon(Icons.build_outlined),
+            title: Text('Classic Builder'),
+            subtitle: Text('Full control over every detail'),
+            dense: true,
+          ),
+        ),
+        PopupMenuItem(
+          value: 'wizard',
+          child: ListTile(
+            leading: Icon(Icons.auto_fix_high),
+            title: Text('Guided Creation'),
+            subtitle: Text('Step-by-step for quick setup'),
+            dense: true,
+          ),
+        ),
+      ],
+    );
+
+    if (!context.mounted) return;
+    switch (result) {
+      case 'classic':
+        context.push('/templates/new');
+      case 'wizard':
+        context.push('/templates/wizard');
+    }
+  }
+
   List<TemplateDto> get _filtered {
     final manager = _di<TemplateManager>();
     var items = manager.templates.value;
@@ -114,7 +168,7 @@ class _TemplateListPageState extends State<TemplateListPage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 80),
         child: FloatingActionButton(
-          onPressed: () => context.push('/templates/new'),
+          onPressed: () => _showCreateMenu(context),
           shape: const CircleBorder(),
           child: const Icon(Icons.add),
         ),

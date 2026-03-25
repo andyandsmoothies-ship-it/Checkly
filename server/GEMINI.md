@@ -10,7 +10,7 @@
 - **Pagination Standard**: All list endpoints MUST use `PagedResult<T>` with `page` and `pageSize`.
 
 ## 2. Infrastructure & Database (EF Core)
-- **Database**: PostgreSQL via Supabase (EF Core).
+- **Database**: PostgreSQL (Self-Hosted via EF Core).
 - **Mandatory Mapping**: ALL columns must use explicit `HasColumnName("snake_case")` in the central `AppDbContext`. EF will NOT auto-map `ScoringMode` -> `scoring_mode`.
 - **Snapshot Pattern (Crucial)**: Submissions denormalize template/store/auditor data at creation time (e.g. `TemplateSnapshot`, `TemplateTitle`, `DisplayNoun`). **Always** snapshot new denormalized fields in BOTH `CreateSubmission` AND `FinalizeSubmission`.
 - **SectionScores Storage**: `SectionScores` is a `jsonb` column. You cannot use EF `GroupBy` on dynamic keys — load the strings and parse in C#.
