@@ -129,9 +129,11 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("Deadline");
 
-                    b.HasIndex("SubmissionId");
-
                     b.HasIndex("StoreId", "Status");
+
+                    b.HasIndex("SubmissionId", "AnswerId")
+                        .IsUnique()
+                        .HasFilter("submission_id IS NOT NULL AND answer_id IS NOT NULL");
 
                     b.ToTable("action_plans", (string)null);
                 });

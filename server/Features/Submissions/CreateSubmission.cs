@@ -251,12 +251,16 @@ public static class CreateSubmission
             }).ToList();
 
             db.Answers.AddRange(answers);
-            await db.SaveChangesAsync(ct);
 
-            // --- S1: Auto-create action plans for triggered answers ---
+            // --- S1: Auto-create action plans for triggered answers (stages only, no flush) ---
             await ActionPlanService.AutoCreateAsync(
                 submission.Id, submission.StoreId,
-                answers, criteria, groups, now, db, ct);
+                answers, criteria, groups, now, db, ct,
+                scoringMode: submissionScoringMode,
+                scoringLogicConfig: template.ScoringLogicConfig);
+
+            // Atomic flush: submission + answers + action plans in one transaction
+            await db.SaveChangesAsync(ct);
         }
         else
         {

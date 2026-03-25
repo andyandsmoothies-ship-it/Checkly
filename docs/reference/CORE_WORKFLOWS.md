@@ -142,12 +142,17 @@ Notifications are generated server-side by `handle_action_plan_status_change()` 
 
 ## 5. Action Plan Creation Rules
 
-When a submission status changes to `completed`, the DB trigger `handle_submission_completion` auto-creates one action plan **per failed answer** (`answers.value = 'fail'`).
+When a submission is completed (via `CreateSubmission` or `FinalizeSubmission`), `ActionPlanService.AutoCreateAsync` evaluates answers via `ActionPlanEvaluator` and creates one AP per triggered answer.
 
-- **Condition**: `answer.value = 'fail'` (all fails, not just CCP/RISK)
+- **Survey Guard**: `scoringMode == "survey"` → **no APs are created** (survey submissions are data-collection only)
+- **Trigger Rules**: Evaluated by `ActionPlanEvaluator.GetTriggeredAnswers()` using per-criterion `metadata.actionPlanTrigger` config:
+  - `value_equals` (e.g., `"fail"`, `"non_conform"`) — matches exact answer values
+  - `numeric_lt` / `numeric_gt` — threshold triggers for `scale` and `numeric` inputs
+  - **Legacy default**: `pass_fail` criteria with `value = "non_conform"` (no explicit trigger config needed)
 - **Idempotency**: Skips if action plans already exist for that submission
-- **Deadline**: `NOW() + N days` where N = `template.scoring_logic_config.features.action_plan_deadline_days` (default: 7)
-- **Snapshots**: `store_name`, `store_manager_name`, `criteria_label`, `group_title` (path via recursive CTE)
+- **Deadline**: `NOW + N days` where N = `template.scoring_logic_config.features.action_plan_deadline_days` (default: 7, range: 1–90)
+- **Cap**: Max 10 APs per submission
+- **Snapshots**: `store_name`, `store_manager_name`, `criteria_label`, `group_title`
 
 ---
 

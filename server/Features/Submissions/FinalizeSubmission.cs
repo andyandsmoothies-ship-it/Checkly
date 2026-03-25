@@ -196,12 +196,15 @@ public static class FinalizeSubmission
             $"Finalized submission for store '{submission.StoreName}'",
             $"/api/submissions/{submission.Id}/finalize");
 
-        await db.SaveChangesAsync(ct);
-
-        // 7. Auto-create action plans for triggered answers
+        // 7. Auto-create action plans for triggered answers (stages only, no flush)
         await ActionPlanService.AutoCreateAsync(
             submission.Id, submission.StoreId,
-            answers, criteria, groups, now, db, ct);
+            answers, criteria, groups, now, db, ct,
+            scoringMode: scoringMode,
+            scoringLogicConfig: scoringLogicConfig);
+
+        // Atomic flush: submission update + answers + audit log + action plans in one transaction
+        await db.SaveChangesAsync(ct);
 
         // 8. Explode SectionScores JSON into relational rows (skip for survey mode)
         if (scoringMode != "survey" && !string.IsNullOrEmpty(request.SectionScores))

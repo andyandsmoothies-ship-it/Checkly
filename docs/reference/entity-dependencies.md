@@ -111,8 +111,7 @@
 |----------|------|-------------|
 | ActionPlanService | `Features/ActionPlans/ActionPlanService.cs` | Auto-created from triggered answers on finalize |
 | ListActionPlans | `Features/ActionPlans/ListActionPlans.cs` | Filtered by store, status, overdue |
-| UpdateActionPlan | `Features/ActionPlans/UpdateActionPlan.cs` | SM adds root cause, correction plan, evidence |
-| VerifyActionPlan | `Features/ActionPlans/VerifyActionPlan.cs` | Admin/AM closes action plan |
+| UpdateActionPlan | `Features/ActionPlans/UpdateActionPlan.cs` | SM submits evidence, Admin/AM closes via status transition |
 | GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Open/overdue counts per store |
 | GetStoreDashboard | `Features/Stores/GetStoreDashboard.cs` | Open AP count |
 | StoreAnalyticsSnapshot | Background refresh | Overdue AP count per store |

@@ -485,4 +485,147 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         Assert.Equal(countBefore, countAfter); // Should PASS even now
     }
+
+    // ================================================================
+    // F1/F2: Action Plan Hardening Tests
+    // ================================================================
+
+    /// <summary>
+    /// Seeds a template with ScoringLogicConfig (for F1/F2 tests).
+    /// Returns (templateId, storeId, criteriaIds[], smProfileId).
+    /// </summary>
+    private async Task<(Guid TemplateId, Guid StoreId, List<Guid> CriteriaIds, Guid SmProfileId)>
+        SeedTestDataWithConfigAsync(string? scoringLogicConfig, int criteriaCount = 1)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var storeId = Guid.NewGuid();
+        db.Stores.Add(new Store
+        {
+            Id = storeId, Name = "Config Test Store",
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+        });
+
+        var smProfileId = Guid.NewGuid();
+        db.Profiles.Add(new Profile
+        {
+            Id = smProfileId, FullName = "Config SM",
+            Email = $"sm-{smProfileId:N}@test.com", StoreId = storeId,
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+        });
+
+        var templateId = Guid.NewGuid();
+        db.Templates.Add(new Template
+        {
+            Id = templateId, Title = "Config Test Template", Type = "QC",
+            Version = 1, IsActive = true,
+            ScoringLogicConfig = scoringLogicConfig,
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+        });
+
+        var groupId = Guid.NewGuid();
+        db.Groups.Add(new Group
+        {
+            Id = groupId, TemplateId = templateId, Title = "TEST SECTION",
+            IsActive = true, OrderIndex = 0, MaxDeductionPoints = 100,
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+        });
+
+        var criteriaIds = new List<Guid>();
+        for (var i = 0; i < criteriaCount; i++)
+        {
+            var cId = Guid.NewGuid();
+            criteriaIds.Add(cId);
+            db.Criteria.Add(new Criterion
+            {
+                Id = cId, GroupId = groupId, Label = $"C{i + 1}",
+                InputType = "pass_fail", IsActive = true, OrderIndex = i,
+                PointsWeight = 5,
+                CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            });
+        }
+
+        await db.SaveChangesAsync();
+        return (templateId, storeId, criteriaIds, smProfileId);
+    }
+
+    /// <summary>
+    /// F1: Template with action_plan_deadline_days=14 → AP deadline = NOW + 14 days.
+    /// Source: implementation_plan.md E2
+    /// </summary>
+    [Fact]
+    public async Task F1_AP_Uses_Template_Configured_Deadline()
+    {
+        var config = JsonSerializer.Serialize(new
+        {
+            scoringMode = "penalty",
+            features = new { action_plan_deadline_days = 14 }
+        });
+
+        var (templateId, storeId, criteriaIds, _) = await SeedTestDataWithConfigAsync(config);
+        var (client, _) = await CreateAuditorClientAsync();
+
+        var response = await client.PostAsJsonAsync("/api/submissions", new
+        {
+            templateId, storeId, clientScore = 0m,
+            answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
+            idempotencyKey = Guid.NewGuid().ToString()
+        });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var submissionId = body.GetProperty("id").GetGuid();
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var ap = await db.ActionPlans.FirstOrDefaultAsync(a => a.SubmissionId == submissionId);
+
+        Assert.NotNull(ap);
+        Assert.NotNull(ap!.Deadline);
+        var expected = DateTimeOffset.UtcNow.AddDays(14);
+        Assert.InRange(ap.Deadline!.Value, expected.AddMinutes(-5), expected.AddMinutes(5));
+    }
+
+    /// <summary>
+    /// F2: Survey-mode template + non_conform answers → 0 APs created.
+    /// Source: implementation_plan.md E1
+    /// </summary>
+    [Fact]
+    public async Task F2_Survey_Mode_Skips_AP_Creation()
+    {
+        var config = JsonSerializer.Serialize(new
+        {
+            scoringMode = "survey"
+        });
+
+        var (templateId, storeId, criteriaIds, _) = await SeedTestDataWithConfigAsync(config, criteriaCount: 3);
+        var (client, _) = await CreateAuditorClientAsync();
+
+        var answers = criteriaIds.Select(cId => new
+        {
+            criteriaId = cId,
+            value = "non_conform",
+            numericValue = 0m,
+            isRepeatedError = false
+        }).ToList();
+
+        // Survey mode: clientScore must be provided (validation is mode-agnostic), use 0
+        var response = await client.PostAsJsonAsync("/api/submissions", new
+        {
+            templateId, storeId, clientScore = 0m,
+            answers, idempotencyKey = Guid.NewGuid().ToString()
+        });
+
+        // Survey submissions should succeed
+        Assert.True(response.IsSuccessStatusCode, $"Expected success but got {response.StatusCode}");
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var submissionId = body.GetProperty("id").GetGuid();
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var apCount = await db.ActionPlans.CountAsync(a => a.SubmissionId == submissionId);
+
+        Assert.Equal(0, apCount); // Survey mode = no APs
+    }
 }

@@ -362,6 +362,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .HasForeignKey(x => x.StoreId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            // Unique constraint: prevents duplicate APs for the same (submission, answer) under race conditions
+            e.HasIndex(x => new { x.SubmissionId, x.AnswerId })
+                .IsUnique()
+                .HasFilter("submission_id IS NOT NULL AND answer_id IS NOT NULL");
+
             // Performance indexes
             e.HasIndex(x => new { x.StoreId, x.Status });
             e.HasIndex(x => x.Deadline);

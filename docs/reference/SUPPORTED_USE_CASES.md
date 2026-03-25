@@ -190,3 +190,16 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 > [!NOTE]
 > Source: [Sentinel Audit Findings #3 and #5](file:///C:/Users/HP/.gemini/antigravity/brain/1625bb51-f67a-4822-aaa2-2998d745d964/audit_infra_report_20260317.md.resolved) — both resolved.
 
+---
+
+## Action Plan Trigger Rules by Input Type
+
+| Input Type | Trigger Config | Example |
+|:-----------|:--------------|:--------|
+| `pass_fail` | Default: `value = "non_conform"` | Fails → AP auto-created |
+| `numeric` | `numeric_gt` / `numeric_lt` in criterion metadata | Fault count > threshold → AP |
+| `scale` | `numeric_lt` / `numeric_gt` in criterion metadata | Scale score below threshold → AP |
+| `text`, `single_choice`, `multi_choice` | `value_equals` in criterion metadata | Specific answer value → AP |
+
+> [!IMPORTANT]
+> **Survey-mode templates** (`scoringMode: "survey"`) **never generate action plans**, even if individual answer values match AP trigger rules. This is enforced by a server-side guard in `ActionPlanService.AutoCreateAsync`.

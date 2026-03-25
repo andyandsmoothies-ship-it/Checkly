@@ -11,9 +11,9 @@ namespace Checkly.Api.Features.ActionPlans;
 public static class ActionPlanService
 {
     /// <summary>
-    /// Evaluates triggered answers and creates action plan records.
+    /// Evaluates triggered answers and stages action plan records in the change tracker.
     /// Idempotent: skips if action plans already exist for this submission.
-    /// Calls SaveChangesAsync internally if new APs are created.
+    /// Does NOT call SaveChangesAsync — the caller is responsible for flushing.
     /// </summary>
     public static async Task AutoCreateAsync(
         Guid submissionId,
@@ -23,8 +23,14 @@ public static class ActionPlanService
         List<Group> groups,
         DateTimeOffset now,
         AppDbContext db,
-        CancellationToken ct)
+        CancellationToken ct,
+        string? scoringMode = null,
+        string? scoringLogicConfig = null)
     {
+        // F2: Survey-mode submissions should never generate action plans
+        if (string.Equals(scoringMode, "survey", StringComparison.OrdinalIgnoreCase))
+            return;
+
         var failedAnswers = ActionPlanEvaluator.GetTriggeredAnswers(answers, criteria);
         if (failedAnswers.Count == 0)
             return;
@@ -46,7 +52,23 @@ public static class ActionPlanService
                 .FirstOrDefaultAsync(p => p.StoreId == storeId.Value, ct)
             : null;
 
-        var deadline = now.AddDays(7);
+        // F1: Parse configurable deadline from template config (default: 7 days, range: 1–90)
+        var deadlineDays = 7;
+        if (!string.IsNullOrEmpty(scoringLogicConfig))
+        {
+            try
+            {
+                var configDoc = System.Text.Json.JsonDocument.Parse(scoringLogicConfig);
+                if (configDoc.RootElement.TryGetProperty("features", out var features)
+                    && features.TryGetProperty("action_plan_deadline_days", out var daysElem)
+                    && daysElem.TryGetInt32(out var parsedDays))
+                {
+                    deadlineDays = Math.Clamp(parsedDays, 1, 90);
+                }
+            }
+            catch { /* malformed config → default to 7 days */ }
+        }
+        var deadline = now.AddDays(deadlineDays);
 
         foreach (var fail in failedAnswers)
         {
@@ -72,7 +94,5 @@ public static class ActionPlanService
                 UpdatedAt = now
             });
         }
-
-        await db.SaveChangesAsync(ct);
     }
 }

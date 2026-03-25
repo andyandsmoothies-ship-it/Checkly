@@ -48,25 +48,54 @@ public sealed class ReminderService : BackgroundService
     }
 
     /// <summary>
-    /// S6: Send notifications for open APs with deadline within 48 hours.
+    /// S6: Send notifications for open APs with deadline approaching.
+    /// Reads action_plan_reminder_days from template config (default: 2 days / 48h).
     /// </summary>
     private async Task SendDeadlineReminders(AppDbContext db, CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
-        var cutoff = now.AddHours(48);
 
-        var dueSoonAPs = await db.ActionPlans
+        // Load open APs that have a future deadline, joined to their submission's template config
+        var openAPs = await db.ActionPlans
             .AsNoTracking()
             .Where(ap => ap.Status == "open"
                 && ap.Deadline.HasValue
-                && ap.Deadline.Value <= cutoff
                 && ap.Deadline.Value > now)
+            .Join(db.Submissions.AsNoTracking(),
+                ap => ap.SubmissionId,
+                s => s.Id,
+                (ap, s) => new { AP = ap, s.TemplateId })
+            .Join(db.Templates.AsNoTracking(),
+                x => x.TemplateId,
+                t => t.Id,
+                (x, t) => new { x.AP, t.ScoringLogicConfig })
             .ToListAsync(ct);
 
         var count = 0;
-        foreach (var ap in dueSoonAPs)
+        foreach (var item in openAPs)
         {
+            var ap = item.AP;
             if (ap.StoreManagerId == null) continue;
+
+            // F3: Parse configurable reminder window (default: 2 days = 48h)
+            var reminderDays = 2;
+            if (!string.IsNullOrEmpty(item.ScoringLogicConfig))
+            {
+                try
+                {
+                    var configDoc = System.Text.Json.JsonDocument.Parse(item.ScoringLogicConfig);
+                    if (configDoc.RootElement.TryGetProperty("features", out var features)
+                        && features.TryGetProperty("action_plan_reminder_days", out var daysElem)
+                        && daysElem.TryGetInt32(out var parsedDays))
+                    {
+                        reminderDays = Math.Clamp(parsedDays, 1, 30);
+                    }
+                }
+                catch { /* malformed config → default to 2 days */ }
+            }
+
+            var cutoff = now.AddDays(reminderDays);
+            if (ap.Deadline!.Value > cutoff) continue;
 
             // Idempotency: skip if notification already sent for this AP deadline
             var alreadySent = await db.Notifications
@@ -81,7 +110,7 @@ public sealed class ReminderService : BackgroundService
                 UserId = ap.StoreManagerId.Value,
                 Type = "ap_deadline_reminder",
                 Title = "Action Plan Deadline Approaching",
-                Message = $"AP for \"{ap.CriteriaLabel}\" at {ap.StoreName} is due within 48 hours.",
+                Message = $"AP for \"{ap.CriteriaLabel}\" at {ap.StoreName} is due within {reminderDays} day(s).",
                 ActionUrl = $"/action-plans/{ap.Id}",
                 ReadAt = null,
                 CreatedAt = now,
