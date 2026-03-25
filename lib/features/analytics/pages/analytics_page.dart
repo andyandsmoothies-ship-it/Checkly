@@ -676,7 +676,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                         _KpiCard(
                           icon: Icons.speed,
-                          label: 'Avg Score',
+                          label: 'Avg Audit Score',
                           value: '${_avgScore.toStringAsFixed(1)}%',
                           accentColor: AppTheme.success,
                           tooltip: 'Mean score of all scored audits',
@@ -684,7 +684,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                         _KpiCard(
                           icon: Icons.pending_actions,
-                          label: 'Open APs',
+                          label: 'Action Plans',
                           value: '$_openAPs',
                           accentColor: AppTheme.warning,
                           tooltip: 'Action plans awaiting resolution',

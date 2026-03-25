@@ -263,7 +263,11 @@ class _StatsRow extends StatelessWidget {
         ),
         _divider(theme),
         Expanded(
-          child: _StatColumn(label: 'Avg Score', value: '—', theme: theme),
+          child: _StatColumn(
+            label: 'Avg Audit Score',
+            value: '—',
+            theme: theme,
+          ),
         ),
         _divider(theme),
         Expanded(

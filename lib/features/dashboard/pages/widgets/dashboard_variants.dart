@@ -44,7 +44,12 @@ class DashboardLoadingView extends StatelessWidget {
 /// Command Center for Auditors — focuses on drafts and personal APs.
 class AuditorDashboardVariant extends StatelessWidget {
   final AuditorDashboardState state;
-  const AuditorDashboardVariant({super.key, required this.state});
+  final Future<void> Function()? onRefresh;
+  const AuditorDashboardVariant({
+    super.key,
+    required this.state,
+    this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +59,7 @@ class AuditorDashboardVariant extends StatelessWidget {
         : state.myAvgScore.toStringAsFixed(1);
 
     return RefreshIndicator(
-      onRefresh: () async => context.read<_DashboardRefresh>()?.refresh(),
+      onRefresh: onRefresh ?? () async {},
       child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
         children: [
@@ -79,7 +84,8 @@ class AuditorDashboardVariant extends StatelessWidget {
               Expanded(
                 child: _DashboardStatCard(
                   icon: Icons.pending_actions,
-                  label: 'Open APs',
+                  label: 'Action Plans',
+                  subtitle: 'ASSIGNED TO YOU',
                   value: '${state.openActionPlans}',
                   color: const Color(0xFFFEEAD1),
                   iconColor: AppTheme.warning,
@@ -90,7 +96,8 @@ class AuditorDashboardVariant extends StatelessWidget {
               Expanded(
                 child: _DashboardStatCard(
                   icon: Icons.speed,
-                  label: 'Avg Score',
+                  label: 'My Avg Audit Score',
+                  subtitle: 'AUDITS I PERFORMED',
                   value: '$avgFormatted%',
                   color: AppTheme.success.withValues(alpha: 0.08),
                   iconColor: AppTheme.success,
@@ -175,7 +182,8 @@ class ManagerDashboardVariant extends StatelessWidget {
             Expanded(
               child: _DashboardStatCard(
                 icon: Icons.pending_actions,
-                label: 'Open APs',
+                label: 'Action Plans',
+                subtitle: isArea ? 'IN YOUR AREA' : 'AT THIS STORE',
                 value: '${state.openActionPlans}',
                 color: const Color(0xFFFEEAD1),
                 iconColor: AppTheme.warning,
@@ -186,7 +194,10 @@ class ManagerDashboardVariant extends StatelessWidget {
             Expanded(
               child: _DashboardStatCard(
                 icon: Icons.speed,
-                label: 'Store Avg',
+                label: isArea
+                    ? 'Area Avg Audit Score'
+                    : 'Store Avg Audit Score',
+                subtitle: isArea ? 'STORES IN REGION' : 'THIS LOCATION ONLY',
                 value: '$avgFormatted%',
                 color: AppTheme.success.withValues(alpha: 0.08),
                 iconColor: AppTheme.success,
@@ -317,7 +328,8 @@ class AdminDashboardVariant extends StatelessWidget {
               Expanded(
                 child: _DashboardStatCard(
                   icon: Icons.pending_actions,
-                  label: 'Open APs',
+                  label: 'Action Plans',
+                  subtitle: 'ACROSS PLATFORM',
                   value: '${state.openActionPlans}',
                   color: const Color(0xFFFEEAD1),
                   iconColor: AppTheme.warning,
@@ -328,7 +340,8 @@ class AdminDashboardVariant extends StatelessWidget {
               Expanded(
                 child: _DashboardStatCard(
                   icon: Icons.assignment,
-                  label: 'Audits',
+                  label: 'Total Audits',
+                  subtitle: 'ALL-TIME COMPLETIONS',
                   value: '${state.totalAudits}',
                   color: theme.colorScheme.surface,
                   iconColor: theme.colorScheme.primary,
@@ -344,6 +357,7 @@ class AdminDashboardVariant extends StatelessWidget {
                 child: _DashboardStatCard(
                   icon: Icons.warning_amber,
                   label: 'Overdue',
+                  subtitle: 'ACROSS PLATFORM',
                   value: '${state.overdueActionPlans}',
                   color: Colors.red.withValues(alpha: 0.08),
                   iconColor: Colors.red,
@@ -354,7 +368,8 @@ class AdminDashboardVariant extends StatelessWidget {
               Expanded(
                 child: _DashboardStatCard(
                   icon: Icons.speed,
-                  label: 'Avg Score',
+                  label: 'Global Avg Audit Score',
+                  subtitle: 'ALL STORES GLOBALLY',
                   value: '$avgFormatted%',
                   color: AppTheme.success.withValues(alpha: 0.08),
                   iconColor: AppTheme.success,
@@ -495,6 +510,7 @@ class _DeadlineBanner extends StatelessWidget {
 class _DashboardStatCard extends StatelessWidget {
   final IconData icon;
   final String label;
+  final String? subtitle;
   final String value;
   final Color color;
   final Color iconColor;
@@ -503,6 +519,7 @@ class _DashboardStatCard extends StatelessWidget {
   const _DashboardStatCard({
     required this.icon,
     required this.label,
+    this.subtitle,
     required this.value,
     required this.color,
     required this.iconColor,
@@ -558,6 +575,18 @@ class _DashboardStatCard extends StatelessWidget {
                   letterSpacing: 1,
                 ),
               ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle!,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.charcoal.withValues(alpha: 0.35),
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -728,14 +757,4 @@ class _SubmissionRow extends StatelessWidget {
       ),
     );
   }
-}
-
-// Internal helper — not a real InheritedWidget, just a pattern marker
-class _DashboardRefresh {
-  final VoidCallback refresh;
-  const _DashboardRefresh(this.refresh);
-}
-
-extension on BuildContext {
-  T? read<T>() => null;
 }

@@ -104,7 +104,10 @@ class _DashboardPageState extends State<DashboardPage> {
               builder: (context, _) {
                 return switch (_manager.dashboardState) {
                   DashboardLoading() => const DashboardLoadingView(),
-                  AuditorDashboardState s => AuditorDashboardVariant(state: s),
+                  AuditorDashboardState s => AuditorDashboardVariant(
+                    state: s,
+                    onRefresh: _manager.loadStats,
+                  ),
                   ManagerDashboardState s => ManagerDashboardVariant(
                     state: s,
                     role: role,

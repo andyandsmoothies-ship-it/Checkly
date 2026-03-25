@@ -99,7 +99,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                   child: Column(
                     children: [
                       Text(
-                        'Trailing 6-Month Average',
+                        'Trailing 6-Month Avg Audit Score',
                         style: AppFonts.displayStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -126,7 +126,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                           ),
                           const SizedBox(width: 20),
                           _MetricChip(
-                            label: 'Open APs',
+                            label: 'Action Plans',
                             value: '$_openAPs',
                             icon: Icons.pending_actions_outlined,
                           ),

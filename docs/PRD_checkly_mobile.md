@@ -310,6 +310,8 @@ flowchart TD
 | **Batch 5** | Admin CRUD — User/store management, SM transfer (S8), audit trail (S12), activity history | ✅ Done |
 | **Batch 6** | Analytics + Polish — Scoring edge cases (C3+C4), reminders (S6+S7), lifecycle (C2) | ✅ Done |
 | **Batch 7** | Scoring Engine & Builder — Generic builder layout, 3 scoring modes, Scale input (Maturity Matrix) | ✅ Done |
+| **Batch 8** | Enterprise Dashboard & Fleet Analytics — Role-aware command center (Auditor/Manager/Admin), Drift SQLite aggregations, contextual stat cards, hierarchical drilldowns | ✅ Done |
+| **Batch 8** | Enterprise Dashboard & Fleet Analytics — Role-aware command center (Auditor/Manager/Admin), Drift SQLite aggregations, contextual stat cards, hierarchical drilldowns | ✅ Done |
 
 ### Future Phases
 
