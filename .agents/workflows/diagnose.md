@@ -46,3 +46,17 @@ You MUST NOT guess the root cause of an error.
 
 ## Phase 4: Deliverable (The Handoff)
 - **Handoff**: Instruct the user to take the `failure_report_[topic].md` artifact and feed it to the `/implement` Builder agent to execute the fix.
+
+---
+
+## Final Phase: Self-Correction Gate (CRITICAL)
+<strict-instruction>
+Before concluding this workflow and replying to the user, you MUST self-audit your output against the global rules of this specific project. You are required to literally type out the following checklist in your final message:
+
+1. **Thinking Process Check**: Did I isolate my internal reasoning into a dedicated thinking log file as dictated by this project's artifact rules? (Yes/No)
+2. **Template Check**: Did I include the mandatory header sections (e.g., `# Requirement Summary`) required by this project? (Yes/No)
+3. **Tracking Update**: Did I update the primary task tracking document with an inventory of my generated artifacts? (Yes/No)
+4. **Integrity Audit**: Did I include the mandatory attribution/compliance block in my final response? (Yes/No)
+
+You are strictly FORBIDDEN from handing off this task to the user until you have achieved 'Yes' on all 4 checks. If any answer is 'No', use your file tools to correct the mistake immediately.
+</strict-instruction>
