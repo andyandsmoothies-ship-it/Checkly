@@ -479,3 +479,14 @@ C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\ne
 C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\Checkly.Api.Tests.genruntimeconfig.cache
 C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\ref\Checkly.Api.Tests.dll
 C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\scripts\templates_update.json
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.AspNetCore.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Sinks.Console.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Extensions.Hosting.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Settings.Configuration.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Enrichers.Environment.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Extensions.Logging.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Expressions.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Formatting.Compact.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Sinks.Debug.dll
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Serilog.Sinks.File.dll

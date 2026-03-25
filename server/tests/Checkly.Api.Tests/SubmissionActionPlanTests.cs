@@ -71,6 +71,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
             Title = "Test Template",
             Type = "QC",
             Version = 1,
+            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow
         });
@@ -82,6 +83,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
             Id = groupId,
             TemplateId = templateId,
             Title = "HOSPITALITY",
+            IsActive = true,
             OrderIndex = 0,
             MaxDeductionPoints = 100,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -517,7 +519,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         db.Templates.Add(new Template
         {
             Id = templateId, Title = "Config Test Template", Type = "QC",
-            Version = 1,
+            Version = 1, IsActive = true,
             ScoringLogicConfig = scoringLogicConfig,
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
@@ -526,7 +528,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         db.Groups.Add(new Group
         {
             Id = groupId, TemplateId = templateId, Title = "TEST SECTION",
-            OrderIndex = 0, MaxDeductionPoints = 100,
+            IsActive = true, OrderIndex = 0, MaxDeductionPoints = 100,
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
 
@@ -538,7 +540,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
             db.Criteria.Add(new Criterion
             {
                 Id = cId, GroupId = groupId, Label = $"C{i + 1}",
-                InputType = "pass_fail", OrderIndex = i,
+                InputType = "pass_fail", IsActive = true, OrderIndex = i,
                 PointsWeight = 5,
                 CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
             });

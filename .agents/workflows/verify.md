@@ -3,7 +3,9 @@ name: Verification Workflow
 description: Verification gate for any upstream workflow — validates that analysis, research, implementation, or audit artifacts are correct, complete, and stable before declaring done.
 ---
 
-@[../../../.gemini/GEMINI.md]
+@[.agents/rules/orchestration-standards.md]
+@[.agents/rules/governance-rules.md]
+@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /verify
 

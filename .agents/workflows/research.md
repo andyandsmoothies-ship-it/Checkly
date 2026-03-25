@@ -3,7 +3,9 @@ name: Research Workflow
 description: Architect's Strategic Research Workflow for System Architecture.
 ---
 
-@[../../../.gemini/GEMINI.md]
+@[.agents/rules/orchestration-standards.md]
+@[.agents/rules/governance-rules.md]
+@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /research
 

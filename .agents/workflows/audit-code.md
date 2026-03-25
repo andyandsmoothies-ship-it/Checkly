@@ -2,7 +2,9 @@
 description: Code quality audit — dead code, architectural drift, conventions, and documentation freshness.
 ---
 
-@[../../../.gemini/GEMINI.md]
+@[.agents/rules/orchestration-standards.md]
+@[.agents/rules/governance-rules.md]
+@[.agents/rules/artifact-protocol.md]
 
 # Code Quality Audit Workflow
 

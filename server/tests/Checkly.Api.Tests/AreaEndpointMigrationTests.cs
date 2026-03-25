@@ -104,6 +104,7 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
                 Id = Guid.NewGuid(),
                 Name = $"S1-{_runId}",
                 AreaId = area1Id,
+                IsActive = true,
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             };
@@ -112,6 +113,7 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
                 Id = Guid.NewGuid(),
                 Name = $"S2-{_runId}",
                 AreaId = area2Id,
+                IsActive = true,
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             };
@@ -192,6 +194,7 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
                 Id = Guid.NewGuid(),
                 Name = $"Hidden Store {_runId}",
                 AreaId = areaId,
+                IsActive = true,
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             });

@@ -69,6 +69,18 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[10.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.*, )"
+            },
+            "Serilog.Enrichers.Environment": {
+              "target": "Package",
+              "version": "[3.*, )"
+            },
+            "Serilog.Expressions": {
+              "target": "Package",
+              "version": "[5.*, )"
             }
           },
           "imports": [

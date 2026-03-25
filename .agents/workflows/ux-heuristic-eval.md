@@ -3,7 +3,9 @@ name: UX Heuristic Evaluation
 description: Structured UX heuristic evaluation based on Nielsen Norman Group methodology.
 ---
 
-@[../../../.gemini/GEMINI.md]
+@[.agents/rules/orchestration-standards.md]
+@[.agents/rules/governance-rules.md]
+@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /ux-heuristic-eval
 

@@ -3,7 +3,9 @@ name: Diagnostic Workflow
 description: High-Compliance Diagnostic Workflow for System Errors.
 ---
 
-@[../../../.gemini/GEMINI.md]
+@[.agents/rules/orchestration-standards.md]
+@[.agents/rules/governance-rules.md]
+@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /diagnose
 

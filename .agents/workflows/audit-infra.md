@@ -2,7 +2,9 @@
 description: Infrastructure & architecture audit — database health, security posture, API completeness, and scalability.
 ---
 
-@[../../../.gemini/GEMINI.md]
+@[.agents/rules/orchestration-standards.md]
+@[.agents/rules/governance-rules.md]
+@[.agents/rules/artifact-protocol.md]
 
 # Infrastructure & Architecture Audit Workflow
 

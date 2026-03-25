@@ -3,27 +3,29 @@ name: Implementation Workflow
 description: The Core Builder Implementation Workflow.
 ---
 
-@[../../../.gemini/GEMINI.md]
+@[.agents/rules/orchestration-standards.md]
+@[.agents/rules/governance-rules.md]
+@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /implement
 
 ## Step 0: Context Initialization (CRITICAL FAIL-SAFE)
 > [!IMPORTANT]
-> Before you write any code, you MUST verify you fully understand the global governance rules.
-> **Rule**: If you do not currently have the exact contents of `C:\Users\HP\.gemini\GEMINI.md` in your active memory, you MUST use the `view_file` tool to read it right now. Do not proceed to Phase 1 until confirming adherence.
+> Before you write any code, you MUST verify you fully understand the workspace rules.
+> **Rule**: Ensure the above rule files are loaded in your context. Do not proceed to Phase 1 until confirming adherence.
 
 > [!NOTE]
 > This is the **Builder** workflow — where code gets written.
 > Use for new features, modifications, and bug fixes (after `/diagnose`).
 
 ## Pre-Flight
-> Run the **Pre-Flight Check** in the globally loaded `@./GEMINI.md` (CANONICAL) before proceeding.
+> Run the **Pre-Flight Check** in `@.agents/rules/governance-rules.md` (CANONICAL) before proceeding.
 
 // Step 0: Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
 > You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing any other files. All internal reasoning, logic hypotheses, and rejected implementations must go there. Do NOT pollute structured artifacts with internal monologue.
 > **Raw Data Requirement**: This log MUST contain a structured Markdown table titled `# Implementation Test Data`. Columns must be: `TDD Goal | Internal Cycle (Red/Green) | Rejected/Approved Assertion | Final Code Path`. This ensures the user has raw analysis data mirroring your internal logic loop.
-1. If artifact needed → Create it FIRST (naming per `@./GEMINI.md` § Artifact Naming Convention)
+1. If artifact needed → Create it FIRST (naming per `@.agents/rules/artifact-protocol.md` § Artifact Naming Convention)
 2. If task needed → Set task_boundary FIRST
 
 

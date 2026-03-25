@@ -61,7 +61,6 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         Assert.True(json.TryGetProperty("id", out _));
         Assert.Equal($"Miền Bắc {_runId}", json.GetProperty("name").GetString());
-        Assert.True(json.GetProperty("isActive").GetBoolean());
     }
 
     // ─── AC3: Duplicate name returns 409 Conflict ───
@@ -119,15 +118,13 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
         // Update it
         var updateResponse = await authClient.PutAsJsonAsync($"/api/areas/{areaId}", new
         {
-            name = $"Miền Trung (cũ) {_runId}",
-            isActive = false
+            name = $"Miền Trung (cũ) {_runId}"
         });
 
         Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
 
         var updated = await updateResponse.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal($"Miền Trung (cũ) {_runId}", updated.GetProperty("name").GetString());
-        Assert.False(updated.GetProperty("isActive").GetBoolean());
     }
 
     // ─── AC5: Non-admin cannot create area ───
@@ -182,7 +179,7 @@ public class AreaTests : IClassFixture<TestWebApplicationFactory>
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-        // Verify the area is now unreachable (IsActive = false → 404)
+        // Verify the area is now unreachable (404)
         var getResp = await adminClient.GetAsync($"/api/areas/{areaId}");
         Assert.Equal(HttpStatusCode.NotFound, getResp.StatusCode);
     }
