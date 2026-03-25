@@ -21,7 +21,8 @@ description: The Core Builder Implementation Workflow.
 
 // Step 0: Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
-> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing any other files. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
+> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing any other files. All internal reasoning, logic hypotheses, and rejected implementations must go there. Do NOT pollute structured artifacts with internal monologue.
+> **Raw Data Requirement**: This log MUST contain a structured Markdown table titled `# Implementation Test Data`. Columns must be: `TDD Goal | Internal Cycle (Red/Green) | Rejected/Approved Assertion | Final Code Path`. This ensures the user has raw analysis data mirroring your internal logic loop.
 1. If artifact needed → Create it FIRST (naming per `@./GEMINI.md` § Artifact Naming Convention)
 2. If task needed → Set task_boundary FIRST
 
@@ -94,8 +95,8 @@ description: The Core Builder Implementation Workflow.
 
   | Category | When | Action |
   |----------|------|--------|
-  | **Ship** | TDD green, blast radius = 0, trivial scope | Commit directly. Create a 1-line entry in `walkthrough_[topic].md`. |
-  | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough_[topic].md` as a "Show and Tell" for async knowledge sharing — not a gate. |
+  | **Ship** | TDD green, blast radius = 0, trivial scope | Commit directly. Create a 1-line entry in `walkthrough_[topic].md`. The artifact MUST contain an `# Executed Test Data` raw table (Columns: `Test Method | Target File | Assertion Verified`). |
+  | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough_[topic].md` as a "Show and Tell". The artifact MUST contain an `# Executed Test Data` raw table (Columns: `Test Method | Target File | Assertion Verified`). |
   | **Ask** | Architectural change, new DB migration, security-sensitive | Use `notify_user` to request review BEFORE committing. Include numbered test scenarios with Steps, Expected, and Blast Radius. |
 
 - **Walkthrough** (for Show and Ask): Create `walkthrough_[topic].md` with:

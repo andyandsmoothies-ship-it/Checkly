@@ -14,6 +14,9 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
 > You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing scenarios. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
+> **Raw Data Requirement**: To fulfill the user's need for raw analysis data, this log MUST contain a structured Markdown table titled `# Test Case Derivation Data`. 
+> Columns must be: `Scenario Hypothesis | Rejected/Approved | Reason (Cite Rule/Spec) | Final Gherkin Title`. 
+> ALL internal reasoning and hypothesis generation for test cases must be recorded in this tabular format so the user can easily extract the raw logical data.
 
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
@@ -88,7 +91,7 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 
 ## Phase 3: Deliverable (The Handoff)
 - **Requirement**: Output the failed test evidence and specifications.
-- **Action**: Create a `specs_[feature].md` artifact and commit the failing test code to the test project.
+- **Action**: Create a `specs_[feature].md` artifact. This artifact MUST contain a new section titled `# Test Case Export` containing a raw Markdown table of all approved Test Cases (Columns: `ID | Scenario Name | Given (State) | When (Trigger) | Then (Assertion)`). Commit the failing test code to the test project.
 - **Infrastructure Map (MANDATORY)**: The specs artifact MUST include a Test Infrastructure Map section following the template from `atdd-quality-gates` skill Gate 5.
 - **Key Principle**: The Gherkin scenarios and failing tests produced by this workflow ARE the TDD spec-tests. The Builder's `/implement` workflow should treat them as the RED starting point — go straight to GREEN, do not re-specify.
 - **Handoff**: If an `implementation_plan.md` exists from a prior `/analysis` workflow, append a **Test Constraints** section listing the test names that must turn GREEN and any ATDD-specific requirements. If NO plan exists, do NOT generate one — recommend the user run `/analysis` first.
