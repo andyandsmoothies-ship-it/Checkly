@@ -10,10 +10,10 @@ description: The Core Builder Implementation Workflow.
 > Use for new features, modifications, and bug fixes (after `/diagnose`).
 
 ## Pre-Flight
-> Run the **Pre-Flight Check** in `orchestration.md` § Pre-Flight Check (CANONICAL) before proceeding.
+> Run the **Pre-Flight Check** in the globally loaded `@./rules/orchestration.md` (CANONICAL) before proceeding.
 
 // Step 0: Setup
-1. If artifact needed → Create it FIRST (naming per `orchestration.md` § Artifact Naming Convention)
+1. If artifact needed → Create it FIRST (naming per `@./rules/artifacts.md` § Artifact Naming Convention)
 2. If task needed → Set task_boundary FIRST
 
 
@@ -49,6 +49,7 @@ description: The Core Builder Implementation Workflow.
 
 ## Phase 3: Coding (Builder Execution — Quality Built In)
 - **Instruction**: Put on your "Senior Developer" hat. Quality is built in during coding, not inspected out after.
+- **The Micro-Verification Mandate**: During the implementation phase, do not wait until the entire feature is coded to verify stability. You MUST run `dotnet build`, `flutter analyze`, or the relevant test suite after **EVERY single file modification or major logical step**.
   1. **ATDD Outer Loop Check (Conditional)**: If the QA/SDET provided failing acceptance tests (from a prior `/atdd` workflow), review them. Your goal is to turn these GREEN. DO NOT modify the QA's test code. If no ATDD tests exist, proceed standardly.
   2. **TDD Inner Loop (MANDATORY)**: Search `.agents/skills/` for a TDD skill and invoke it. Write failing unit tests first, then write the implementation to make them pass.
   3. **Red-Green-Refactor**: Repeat the TDD cycle until the feature is complete.
