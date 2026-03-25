@@ -11,7 +11,10 @@ class StoreDao {
 
   /// Read all cached stores.
   Future<List<StoreDto>> getAllStores() async {
-    final rows = await _db.select(_db.cachedStores).get();
+    final rows =
+        await (_db.select(_db.cachedStores)
+              ..limit(1000)) // Bounded to 1000 for memory safety (Gotcha #14)
+            .get();
     return rows.map(_rowToDto).toList();
   }
 

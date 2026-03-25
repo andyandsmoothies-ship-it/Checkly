@@ -62,11 +62,17 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   }
 
   Future<void> _loadData() async {
-    final allSubs = await _db.select(_db.cachedSubmissions).get();
+    final allSubs =
+        await (_db.select(_db.cachedSubmissions)
+              ..limit(1000)) // Bounded for memory safety (Gotcha #14)
+            .get();
     var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
 
     // Build filter options from cached master data
-    final allStores = await _db.select(_db.cachedStores).get();
+    final allStores =
+        await (_db.select(_db.cachedStores)
+              ..limit(1000)) // Bounded for memory safety (Gotcha #14)
+            .get();
     _areaNames =
         allStores
             .map((s) => s.areaName)
@@ -88,7 +94,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       _selectedStore = null;
     }
 
-    final templates = await _db.select(_db.cachedTemplates).get();
+    final templates =
+        await (_db.select(_db.cachedTemplates)
+              ..limit(500)) // Bounded for memory safety (Gotcha #14)
+            .get();
     _templateTypes = templates.map((t) => t.type).toSet().toList()..sort();
     final templateTypeMap = <String, String>{};
     for (final t in templates) {
@@ -177,7 +186,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         : 0;
 
     // APs
-    final aps = await _db.select(_db.cachedActionPlans).get();
+    final aps =
+        await (_db.select(_db.cachedActionPlans)
+              ..limit(1000)) // Bounded for memory safety (Gotcha #14)
+            .get();
     _openAPs = aps.where((ap) => ap.status == 'open').length;
     _overdueAPs = aps
         .where(

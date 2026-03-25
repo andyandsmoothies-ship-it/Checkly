@@ -14,9 +14,10 @@ class OutboxDao {
 
   /// Get all pending submissions ordered by createdAt (FIFO).
   Future<List<PendingSubmission>> getAllPending() async {
-    return (_db.select(
-      _db.pendingSubmissions,
-    )..orderBy([(s) => OrderingTerm.asc(s.createdAt)])).get();
+    return (_db.select(_db.pendingSubmissions)
+          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)])
+          ..limit(100)) // Bounded to 100 per sync batch (Gotcha #14)
+        .get();
   }
 
   /// Get pending submissions by sync status.

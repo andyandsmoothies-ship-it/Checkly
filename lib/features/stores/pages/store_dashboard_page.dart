@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:drift/drift.dart'
+    hide Column; // Hide Column to avoid conflict with Flutter
 import '../../../_shared/utils/date_format_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:checkly/_shared/database/app_database.dart';
@@ -38,20 +40,23 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
 
   Future<void> _loadData() async {
     // Store info
-    final stores = await _db.select(_db.cachedStores).get();
-    final store = stores.where((s) => s.id == widget.storeId).firstOrNull;
+    final store =
+        await (_db.select(_db.cachedStores)
+              ..where((s) => s.id.equals(widget.storeId))
+              ..limit(1)) // Bounded for memory safety (Gotcha #14)
+            .getSingleOrNull();
     _storeName = store?.name ?? 'Unknown Store';
 
-    // Submissions for this store
-    final allSubs = await _db.select(_db.cachedSubmissions).get();
+    // Submissions for this store - Filtered in DB
     final storeSubs =
-        allSubs
-            .where(
-              (s) =>
-                  s.storeId == widget.storeId && s.reviewStatus != 'rejected',
-            )
-            .toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        await (_db.select(_db.cachedSubmissions)
+              ..where((s) => s.storeId.equals(widget.storeId))
+              ..where((s) => s.reviewStatus.equals('rejected').not())
+              ..orderBy([(s) => OrderingTerm.desc(s.createdAt)])
+              ..limit(
+                1000,
+              )) // Bounded to 1000 history items for mobile (Gotcha #14)
+            .get();
 
     _recentAudits = storeSubs.take(10).toList();
 
@@ -61,16 +66,20 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
               scored.length
         : 0;
 
-    // APs for this store
-    final aps = await _db.select(_db.cachedActionPlans).get();
-    _openAPs = aps
-        .where(
-          (ap) =>
-              ap.status == 'open' &&
-              ap.submissionId != null &&
-              storeSubs.any((s) => s.id == ap.submissionId),
-        )
-        .length;
+    // Open APs for this store - Filtered in DB using submission subquery
+    final openAPsQuery = _db.select(_db.cachedActionPlans)
+      ..where((ap) => ap.status.equals('open'))
+      ..where(
+        (ap) => ap.submissionId.isInQuery(
+          _db.selectOnly(_db.cachedSubmissions)
+            ..addColumns([_db.cachedSubmissions.id])
+            ..where(_db.cachedSubmissions.storeId.equals(widget.storeId)),
+        ),
+      )
+      ..limit(1000); // Bounded for memory safety (Gotcha #14)
+
+    final openAPList = await openAPsQuery.get();
+    _openAPs = openAPList.length;
 
     setState(() => _loading = false);
   }

@@ -186,26 +186,27 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
               ),
               const SizedBox(height: 8),
 
-              // Sort selector
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    const Spacer(),
-                    WarmChip(
-                      label: 'Newest',
-                      selected: _sort == 'newest',
-                      onTap: () => setState(() => _sort = 'newest'),
-                    ),
-                    const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Urgent',
-                      selected: _sort == 'urgent',
-                      onTap: () => setState(() => _sort = 'urgent'),
-                    ),
-                  ],
+              // Sort selector — hidden when no data exists
+              if (_countByStatus('all') > 0)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      WarmChip(
+                        label: 'Newest',
+                        selected: _sort == 'newest',
+                        onTap: () => setState(() => _sort = 'newest'),
+                      ),
+                      const SizedBox(width: 8),
+                      WarmChip(
+                        label: 'Urgent',
+                        selected: _sort == 'urgent',
+                        onTap: () => setState(() => _sort = 'urgent'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               const SizedBox(height: 8),
 
               // Grouped list
@@ -219,6 +220,14 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                         subtitle: _filter == 'all'
                             ? 'Action plans will appear here when audits flag issues.'
                             : 'Try changing the filter to see more.',
+                        actionButton:
+                            _filter == 'all' && _countByStatus('all') == 0
+                            ? FilledButton.icon(
+                                onPressed: () => context.go('/home'),
+                                icon: const Icon(Icons.play_arrow_rounded),
+                                label: const Text('Start an Audit'),
+                              )
+                            : null,
                       )
                     : RefreshIndicator(
                         onRefresh: _manager.loadActionPlans,

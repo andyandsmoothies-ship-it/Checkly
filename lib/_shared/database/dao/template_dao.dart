@@ -15,7 +15,10 @@ class TemplateDao {
 
   /// Read all cached templates.
   Future<List<TemplateDto>> getAllTemplates() async {
-    final rows = await _db.select(_db.cachedTemplates).get();
+    final rows =
+        await (_db.select(_db.cachedTemplates)
+              ..limit(500)) // Bounded to 500 for memory safety (Gotcha #14)
+            .get();
     return rows.map(_rowToTemplateDto).toList();
   }
 
@@ -38,7 +41,8 @@ class TemplateDao {
   Future<List<CachedGroup>> getGroupsForTemplate(String templateId) async {
     return (_db.select(_db.cachedGroups)
           ..where((g) => g.templateId.equals(templateId))
-          ..orderBy([(g) => OrderingTerm.asc(g.orderIndex)]))
+          ..orderBy([(g) => OrderingTerm.asc(g.orderIndex)])
+          ..limit(500)) // Bounded to 500 for memory safety (Gotcha #14)
         .get();
   }
 
@@ -84,7 +88,8 @@ class TemplateDao {
   Future<List<CachedCriteriaData>> getCriteriaForGroup(String groupId) async {
     return (_db.select(_db.cachedCriteria)
           ..where((c) => c.groupId.equals(groupId))
-          ..orderBy([(c) => OrderingTerm.asc(c.orderIndex)]))
+          ..orderBy([(c) => OrderingTerm.asc(c.orderIndex)])
+          ..limit(500)) // Bounded to 500 for memory safety (Gotcha #14)
         .get();
   }
 

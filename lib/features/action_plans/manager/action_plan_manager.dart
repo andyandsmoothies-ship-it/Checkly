@@ -84,7 +84,11 @@ class ActionPlanManager extends ChangeNotifier {
 
     try {
       final db = _di<DatabaseService>().db;
-      final rows = await db.select(db.cachedActionPlans).get();
+      final rows =
+          await (db.select(db.cachedActionPlans)..limit(
+                500,
+              )) // Bounded to 500 for mobile performance safety (Gotcha #14)
+              .get();
 
       actionPlans.value = rows
           .map(

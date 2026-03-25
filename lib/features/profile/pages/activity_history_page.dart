@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:drift/drift.dart' hide Column;
 import '../../../_shared/utils/date_format_utils.dart';
 import 'package:get_it/get_it.dart';
 
@@ -27,7 +28,11 @@ class _ActivityHistoryPageState extends State<ActivityHistoryPage> {
 
   Future<void> _loadActivity() async {
     final db = _di<DatabaseService>().db;
-    final subs = await db.select(db.cachedSubmissions).get();
+    final subs =
+        await (db.select(db.cachedSubmissions)
+              ..orderBy([(s) => OrderingTerm.desc(s.createdAt)])
+              ..limit(500)) // Bounded to 500 for memory safety (Gotcha #14)
+            .get();
     setState(() {
       _items =
           subs

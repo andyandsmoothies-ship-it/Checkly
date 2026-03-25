@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
 
 /// Standardized empty state widget used across Checkly.
+///
+/// Optionally accepts an [actionButton] widget (e.g. an ElevatedButton)
+/// rendered below the subtitle as a call-to-action.
 class ChecklyEmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final Widget? actionButton;
 
   const ChecklyEmptyState({
     super.key,
     this.icon = Icons.inbox_outlined,
     required this.title,
     required this.subtitle,
+    this.actionButton,
   });
 
   @override
@@ -39,6 +44,10 @@ class ChecklyEmptyState extends StatelessWidget {
               ).textTheme.bodyMedium?.copyWith(color: AppTheme.sageGray),
               textAlign: TextAlign.center,
             ),
+            if (actionButton != null) ...[
+              const SizedBox(height: 24),
+              actionButton!,
+            ],
           ],
         ),
       ),
