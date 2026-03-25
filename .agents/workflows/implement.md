@@ -3,7 +3,14 @@ name: Implementation Workflow
 description: The Core Builder Implementation Workflow.
 ---
 
+@[../../../.gemini/GEMINI.md]
+
 # Workflow: /implement
+
+## Step 0: Context Initialization (CRITICAL FAIL-SAFE)
+> [!IMPORTANT]
+> Before you write any code, you MUST verify you fully understand the global governance rules.
+> **Rule**: If you do not currently have the exact contents of `C:\Users\HP\.gemini\GEMINI.md` in your active memory, you MUST use the `view_file` tool to read it right now. Do not proceed to Phase 1 until confirming adherence.
 
 > [!NOTE]
 > This is the **Builder** workflow — where code gets written.

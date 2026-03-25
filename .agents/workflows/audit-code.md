@@ -2,6 +2,8 @@
 description: Code quality audit — dead code, architectural drift, conventions, and documentation freshness.
 ---
 
+@[../../../.gemini/GEMINI.md]
+
 # Code Quality Audit Workflow
 
 ## Environment Setup

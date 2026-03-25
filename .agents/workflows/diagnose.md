@@ -3,6 +3,8 @@ name: Diagnostic Workflow
 description: High-Compliance Diagnostic Workflow for System Errors.
 ---
 
+@[../../../.gemini/GEMINI.md]
+
 # Workflow: /diagnose
 
 > [!NOTE]

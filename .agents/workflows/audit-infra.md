@@ -2,6 +2,8 @@
 description: Infrastructure & architecture audit — database health, security posture, API completeness, and scalability.
 ---
 
+@[../../../.gemini/GEMINI.md]
+
 # Infrastructure & Architecture Audit Workflow
 
 ## Environment Setup

@@ -3,6 +3,8 @@ name: Research Workflow
 description: Architect's Strategic Research Workflow for System Architecture.
 ---
 
+@[../../../.gemini/GEMINI.md]
+
 # Workflow: /research
 
 > [!NOTE]

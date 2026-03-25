@@ -3,6 +3,8 @@ name: ATDD Workflow
 description: Acceptance Test-Driven Development — defines acceptance tests before implementation begins.
 ---
 
+@[../../../.gemini/GEMINI.md]
+
 # Workflow: /atdd
 
 > [!NOTE]
