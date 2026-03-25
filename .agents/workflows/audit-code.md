@@ -29,7 +29,7 @@ This workflow is triggered **weekly** or on-demand to keep the codebase clean. F
 ### Phase 2: Code Quality Scan
 Hunt for "AI Slop" — code that works but deviates from established invariants.
 - **Skill Refresh**: Re-scan `.agents/skills/` for skills matching issue patterns you're finding. Load 1-2 if relevant.
-1. **Dead Code & Unused Assets**: Scan for files, functions, or dependencies that are imported but never used.
+1. **The Dead Code Trap (🔴 Critical)**: Scan for files, functions, commented-out blocks, or unreachable branches. LLMs treat dead code as live and will hallucinate bugs inside it. Wipe them immediately to protect downstream debugging.
 2. **Architectural Drift**: Verify layer boundaries have not been violated (e.g., a page importing from a service layer directly, circular dependencies).
 3. **Stale Documentation**: Compare workspace docs against the actual codebase. Flag anything outdated or misleading.
 4. **Format & Convention Compliance**: Check for naming convention deviations, missing patterns required by project rules.

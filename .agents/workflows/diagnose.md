@@ -17,12 +17,13 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 ## Phase 1: Symptom Isolation (NO GUESSING)
 <strict-instruction>
 You MUST NOT guess the root cause of an error.
-**Action**: Use the `grep_search` tool to locate the exact file and line number where the error occurred. Use the `view_file` tool to read the surrounding 50 lines of code before forming any hypothesis.
+**Action 1 (Execution Context)**: If the user has not provided a stack trace or runtime execution context, you MUST ask for it or use a terminal tool to generate it. You cannot debug by simply staring at static code.
+**Action 2 (Targeted Reading)**: Do NOT read entire files. LLMs suffer from top-to-bottom attention bias and will miss bugs in the bottom half of long files. Use the `view_code_item` tool to read specific functions in isolation, or `grep_search` targeted strictly around the stack trace line number.
 
 **Semi-Formal Reasoning Checklist (MANDATORY)**: Before proposing a fix, you must explicitly output:
 1. **Explicit Premises**: Write down exactly what the code currently does based ONLY on the actual read file contents.
 2. **Execution Trace**: Trace the exact execution path line-by-line using specific file names and line numbers.
-3. **Formal Conclusion**: Prove your root cause conclusion with specific evidence from the trace. Do not rely on assumptions or naming conventions.
+3. **Formal Conclusion**: Prove your root cause conclusion with specific evidence from the runtime trace. Do not rely on assumptions or naming conventions.
 </strict-instruction>
 
 > **@@SCAN** Before proceeding, answer: (1) What is the exact file and line number of the error? (2) What does the execution trace prove? (3) What is your root cause conclusion and its evidence?
