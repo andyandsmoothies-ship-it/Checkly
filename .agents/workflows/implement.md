@@ -10,10 +10,12 @@ description: The Core Builder Implementation Workflow.
 > Use for new features, modifications, and bug fixes (after `/diagnose`).
 
 ## Pre-Flight
-> Run the **Pre-Flight Check** in the globally loaded `@./rules/orchestration.md` (CANONICAL) before proceeding.
+> Run the **Pre-Flight Check** in the globally loaded `@./GEMINI.md` (CANONICAL) before proceeding.
 
-// Step 0: Setup
-1. If artifact needed → Create it FIRST (naming per `@./rules/artifacts.md` § Artifact Naming Convention)
+// Step 0: Setup (ANTI-POISONING MANDATE)
+> [!IMPORTANT]
+> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing any other files. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
+1. If artifact needed → Create it FIRST (naming per `@./GEMINI.md` § Artifact Naming Convention)
 2. If task needed → Set task_boundary FIRST
 
 
@@ -33,6 +35,7 @@ description: The Core Builder Implementation Workflow.
   - [ ] **Goal**: Has a clear 1-paragraph goal statement?
   - [ ] **File Changes**: Lists specific files with [NEW]/[MODIFY]/[DELETE] tags?
   - [ ] **Data Changes**: Covers DB/Schema/migration changes (or explicitly states N/A)?
+  - [ ] **Concurrency**: Explicitly addresses idempotency (DB unique constraints) and transaction boundaries (Unit of Work)?
   - [ ] **Blast Radius**: Identifies which existing features could break?
   - [ ] **Verification**: Has concrete test commands or manual verification steps?
 - **First Principles Check (Substance over Format)**: Do NOT trust the plan blindly. Independently verify it against the real codebase:
@@ -61,10 +64,13 @@ description: The Core Builder Implementation Workflow.
 ## Phase 4: Self-Review & Drift Check (N-Dimensional)
 - **Action**: Stop coding and assume the role of a Senior Reviewer.
 - **Context Discipline Rule**: DO NOT indiscriminately scan or read files in `.agents/rules/` or `.agents/skills/` during this phase. This will cause severe context bloat and memory loss. Only evaluate against the *specific* rules and skills you already loaded in Phase 1 or those explicitly listed in the `implementation_plan.md`.
-- **N-Dimensional Audit**: You MUST review your own code changes from three distinctly different perspectives. Explicitly state your findings for each:
+- **N-Dimensional Audit**: You MUST review your own code changes from four distinctly different perspectives. Explicitly state your findings for each:
   1. **Security & Architecture**: Does the code violate the specific workspace rules identified for this task? Are there illegal imports or missed package dependencies?
   2. **Logic & Correctness**: Does the code perfectly handle nulls, edge cases, and unexpected inputs? Did you miss any acceptance criteria?
-  3. **Coverage — Test Evidence Gate (MANDATORY)**: For every `[NEW]` handler or endpoint created during this session, you MUST explicitly verify:
+  3. **Concurrency & Transactions (The Hostile Gate)**: Mentally simulate a 500ms network drop and a thundering herd (race condition).
+     - ✅ **DB-First Idempotency**: Application-layer checks (`AnyAsync`, `Exists`) are sequential illusions. Idempotency MUST be enforced via DB-level Unique Constraints (`.IsUnique()`).
+     - ✅ **Transaction Singularity**: Ban `SaveChangesAsync()` inside domain services or helpers. Services only *stage* entities. The top-level Handler assumes sole authority to flush the transaction.
+  4. **Coverage — Test Evidence Gate (MANDATORY)**: For every `[NEW]` handler or endpoint created during this session, you MUST explicitly verify:
      - ✅ A **happy-path** test exists (e.g., `200 OK`, `201 Created`, `204 NoContent`)
      - ✅ A **primary-error-path** test exists (e.g., `404 NotFound`, `403 Forbidden`, `409 Conflict`, `400 BadRequest`)
      - ❌ "The existing suite is still green" does NOT count as coverage of new behavior.
@@ -73,7 +79,7 @@ description: The Core Builder Implementation Workflow.
   1. **File scope**: Run `git status` / `git diff --name-only`. Did you edit files NOT listed in the plan? Fix violations.
   2. **Verification cross-check (MANDATORY)**: Re-read the `## Verification Plan` section of the `implementation_plan.md`. For each **named test** listed there, confirm it appears in `git diff`. If a test name from the plan is missing from the diff → it was skipped. Write it NOW. The phrase "standard Builder tests will be authored" is NOT a pass.
 
-> **@@SCAN** Before handoff, answer: (1) Did you review from all 3 perspectives (Security, Logic, Coverage)? (2) For every [NEW] handler: does a happy-path AND error-path test exist? (3) Did you run `git status` to check for unplanned file changes? (4) What was the verdict — Ship, Show, or Ask?
+> **@@SCAN** Before handoff, answer: (1) Did you review from all 4 perspectives (Security, Logic, Concurrency/Transactions, Coverage)? (2) For every [NEW] handler: does a happy-path AND error-path test exist? (3) Did you run `git status` to check for unplanned file changes? (4) What was the verdict — Ship, Show, or Ask?
 
 ## Phase 5: Integrate & Handoff (Ship / Show / Ask)
 - **Action**: Stop any running dev servers. Run the project's build and test commands to verify zero compilation errors.

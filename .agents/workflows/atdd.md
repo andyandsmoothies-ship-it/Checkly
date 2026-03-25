@@ -9,6 +9,9 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > This is the **Acceptance Test-Driven Development (ATDD)** workflow — used to define acceptance tests for complex/high-risk features before coding begins.
 > It sits between `/analysis` and `/implement`. Do NOT confuse with TDD (unit tests during coding) — ATDD defines WHAT the feature must do at the acceptance level; TDD proves HOW the internal code works.
 
+## Pre-Flight Setup (ANTI-POISONING MANDATE)
+> [!IMPORTANT]
+> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing scenarios. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
 
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).

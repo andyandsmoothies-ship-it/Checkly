@@ -8,6 +8,9 @@ description: Precision Analysis Workflow for System Architecture.
 > [!NOTE]
 > This is the **System & Business Analysis** workflow — used to evaluate solutions, analyze business logic, verify architecture feasibility, and identify edge cases before implementation. It is designed to produce production-grade Software Engineering Tech Specs.
 
+## Pre-Flight Setup (ANTI-POISONING MANDATE)
+> [!IMPORTANT]
+> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE starting your analysis. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
 
 ## Phase 1: Technical Discovery & Reuse Audit
 - **Instruction**: Assume the role of a Principal Software Engineer. Your first job is to determine if we should build this at all or if it can be achieved by reusing/configuring existing code.

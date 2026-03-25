@@ -8,6 +8,9 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 > [!NOTE]
 > This workflow enforces systematic root cause analysis. No guessing is allowed.
 
+## Pre-Flight Setup (ANTI-POISONING MANDATE)
+> [!IMPORTANT]
+> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE investigating. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
 
 ## Phase 1: Symptom Isolation (NO GUESSING)
 <strict-instruction>
