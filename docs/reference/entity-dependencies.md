@@ -109,7 +109,7 @@
 
 | Consumer | File | Relationship |
 |----------|------|-------------|
-| ActionPlanService | `Features/ActionPlans/ActionPlanService.cs` | Auto-created from triggered answers on finalize |
+| ActionPlanService | `Features/ActionPlans/ActionPlanService.cs` | Auto-created from triggered answers (participates in caller's transaction) |
 | ListActionPlans | `Features/ActionPlans/ListActionPlans.cs` | Filtered by store, status, overdue |
 | UpdateActionPlan | `Features/ActionPlans/UpdateActionPlan.cs` | SM submits evidence, Admin/AM closes via status transition |
 | GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Open/overdue counts per store |
@@ -132,5 +132,5 @@
 | `AuditLogger` | `Common/Services/AuditLogger.cs` | Entity-level audit log | Template CRUD, SaveTemplateTree, FinalizeSubmission, Admin actions |
 | `TokenService` | `Common/Auth/TokenService.cs` | JWT generation | Login, Register |
 | `ScoringVerifier` | `Common/Scoring/ScoringVerifier.cs` | Score validation | CreateSubmission, FinalizeSubmission |
-| `ActionPlanService` | `Features/ActionPlans/ActionPlanService.cs` | Auto-create action plans | CreateSubmission, FinalizeSubmission |
+| `ActionPlanService` | `Features/ActionPlans/ActionPlanService.cs` | Auto-create action plans (runs in caller's Unit of Work) | CreateSubmission, FinalizeSubmission |
 | `ReminderService` | `Common/Services/ReminderService.cs` | Background cleanup + reminders | Hosted service (scheduled) |

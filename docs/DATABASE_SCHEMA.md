@@ -100,7 +100,7 @@ Audit templates define the structure of an audit (what to check).
 | `type` | text? | Category: `qc`, `training`, `general`, `task force` |
 | `is_active` | boolean | Soft delete flag |
 | `version` | integer | Template version counter — incremented on every template/group/criterion update. Used for snapshot versioning |
-| `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, and repeat config |
+| `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, repeat config, and `actionPlanDeadlineDays` |
 | `display_noun` | text? | Custom terminology override (e.g., "Inspection" instead of default derived from scoring mode) |
 | `created_by` | UUID? (FK → AspNetUsers) | Admin who created the template |
 | `created_at` | timestamptz | Record creation |
@@ -224,7 +224,7 @@ Legacy: `pass_fail` criteria with `non_conform` answer. Max 10 per submission.
 | `answer_id` | UUID? (FK → answers) | Which specific failed answer triggered this |
 | `store_id` | UUID? (FK → stores) | Which store needs correction |
 | `status` | text | `open` → `in_progress` → `pending_verify` → `closed` / `overdue` |
-| `deadline` | timestamptz? | Due date (default: 7 days from creation) |
+| `deadline` | timestamptz? | Due date (driven by template config `actionPlanDeadlineDays`, defaults to 7 days) |
 | `root_cause` | text? | SM's explanation of root cause |
 | `correction_plan` | text? | SM's planned corrective action |
 | `evidence_photo_url` | text? | SM's evidence of correction |
@@ -234,6 +234,8 @@ Legacy: `pass_fail` criteria with `non_conform` answer. Max 10 per submission.
 | `store_manager_name` | text? | **Snapshot**: SM name |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last update |
+
+> **Constraints**: Unique index on `(submission_id, answer_id)` to prevent duplicate action plans from double-clicks or offline sync race conditions.
 
 ---
 

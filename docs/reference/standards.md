@@ -23,6 +23,7 @@ description: Engineering standards — architecture, security, and verification 
 - **State**: Manager classes extend `ChangeNotifier`, registered via `GetIt`
 - **Navigation**: GoRouter declarative routing
 - **DI**: GetIt service locator (singleton managers, scoped services)
+- **Database (Drift)**: All unpaginated `.get()` queries MUST include a `.limit(n)` boundary to prevent OOM violations on large datasets.
 - **Build**: `flutter analyze` + `flutter test` must pass before handoff
 
 #### Flutter Feature Structure
@@ -118,7 +119,7 @@ src/entities/[entity]/
 
 ### Server API Standards
 - **Pagination**: All list endpoints MUST return `PagedResult<T>` (from `Common/PagedResult.cs`). Use `page`/`pageSize` query params with defaults (page=1, pageSize=50) and enforced max (200). Pattern: `Skip((page-1)*pageSize).Take(pageSize)` + `CountAsync`.
-- **Action Plan Service**: Auto-creation of action plans from triggered answers is centralized in `ActionPlanService.AutoCreateAsync()` (`Features/ActionPlans/ActionPlanService.cs`). Never inline AP creation logic in submission handlers.
+- **Transaction Singularity**: Shared services (e.g., `ActionPlanService`) MUST NOT call `SaveChangesAsync` internally. They must participate in the caller's transaction (`CreateSubmission`, `FinalizeSubmission`) to ensure atomicity and prevent orphaned records or race conditions.
 - **Audit Logging**: All sensitive operations (template CRUD, submission finalization, admin user actions) MUST write to `system_logs` via `AuditLogger.Log()` (`Common/Services/AuditLogger.cs`). Use `EntityType` + `EntityId` for entity-level traceability. Logs participate in the same SaveChanges transaction as the primary operation.
 
 ---
