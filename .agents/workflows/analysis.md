@@ -21,6 +21,7 @@ description: Precision Analysis Workflow for System Architecture.
 
 ## Phase 1: Technical Discovery & Reuse Audit
 - **Instruction**: Assume the role of a Principal Software Engineer. Your first job is to determine if we should build this at all or if it can be achieved by reusing/configuring existing code.
+- **Consume Research (MANDATORY)**: Check if the user provided a `concept_brief_[topic].md` or `research_[topic].md` in the chat context (via a file path, link, or attachment). If one is provided, you MUST read it to consume the E2E Workflow Map before beginning your analysis. Do NOT start from scratch if research exists.
 - **Skill Discovery**: Derive 2-3 technical keywords from the feature scope (e.g., "first-principles", "think from scratch"). Use `grep_search` on `.agents/skills/` to find matches. Load ONLY the top 1-2 most relevant `SKILL.md` files. Declare which skills were loaded.
 - **Reuse vs. Build (CRITICAL)**: Use `grep_search` and `codebase_search` to determine if the requirement can be met by configuring or deleting existing components. If it can, skip to Phase 4 and recommend reuse/refactoring.
 
@@ -60,11 +61,11 @@ description: Precision Analysis Workflow for System Architecture.
 - **Action**: Read the `analysis_[topic].md` produced in Phase 4. Based on its findings (blast radius, complexity, layer count), categorize the task into one of the tracks below.
 
   - **Track A — Small Tasks (Single concern, low blast radius)**:
-    Generate a single `implementation_plan_[topic].md` using a lightweight template: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE] tags), Database/Schema Changes (if any), API Contracts (if any), and Verification Plan.
+    Generate a single `implementation_plan_[topic].md`. To cross the Builder's quality gate seamlessly, it MUST contain: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE]), Database/Schema Changes (or N/A), Concurrency/Idempotency Strategy (or N/A), System Impact & Blast Radius (or N/A), and Verification Plan.
     **Handoff**: `/implement` → (optionally) `/verify`.
 
   - **Track B — Medium Tasks (Multiple concerns, moderate blast radius)**:
-    Generate a single `implementation_plan_[topic].md` with: Executive Summary, Proposed Changes (grouped by file), Database/Schema Changes, API Contracts, System Impact & Blast Radius, Behavioral Expectations (EDD), and Verification Plan with explicit scenarios.
+    Generate a single `implementation_plan_[topic].md`. It MUST contain: Executive Summary, Proposed Changes (grouped by file with [NEW]/[MODIFY]/[DELETE]), Database/Schema Changes, API Contracts, Concurrency/Idempotency Strategy, System Impact & Blast Radius, Behavioral Expectations (EDD), and Verification Plan with explicit scenarios.
 
     Then apply the **ATDD Decision Gate** to determine the pipeline:
 

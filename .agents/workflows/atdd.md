@@ -24,7 +24,7 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 - **Skill Discovery**: Derive 2-3 keywords from the feature context (e.g., "scoring" → testing, validation). Use `grep_search` on `.agents/skills/` to find the most relevant testing or planning `SKILL.md` file. Load ONLY the top 1-2. Declare which skills were loaded.
 - **Action**: Identify the focus area and consult relevant project workspace rules in `.agents/rules/` to confirm technical constraints.
 - **First Principles Check**: Before authoring scenarios, independently verify the upstream spec/analysis artifact:
-  1. Read the `analysis_[topic].md` or `spec_[slice].md` from the prior `/analysis` workflow.
+  1. Read the `analysis_[topic].md` or `specs_[slice].md` from the prior `/analysis` workflow provided by the user in this session prompt (via attachment or absolute file path).
   2. Use `grep_search` / `view_file` to confirm entities, endpoints, or DB tables mentioned in the spec actually exist in the codebase.
   3. If the spec references components that don't exist or have changed → flag the discrepancy to the user. Do not write tests against stale specs.
 
@@ -91,7 +91,7 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 
 ## Phase 3: Deliverable (The Handoff)
 - **Requirement**: Output the failed test evidence and specifications.
-- **Action**: Create a `specs_[feature].md` artifact. This artifact MUST contain a new section titled `# Test Case Export` containing a raw Markdown table of all approved Test Cases (Columns: `ID | Scenario Name | Given (State) | When (Trigger) | Then (Assertion)`). Commit the failing test code to the test project.
+- **Action**: Create a `specs_[feature].md` artifact AND a separate `test_cases_[feature].md` artifact. The `test_cases` artifact MUST contain ONLY a raw Markdown data table of all approved Test Cases (Columns: `ID | Scenario Name | Given (State) | When (Trigger) | Then (Assertion)`). Do not bloat the specs file with this data. Commit the failing test code to the test project.
 - **Infrastructure Map (MANDATORY)**: The specs artifact MUST include a Test Infrastructure Map section following the template from `atdd-quality-gates` skill Gate 5.
 - **Key Principle**: The Gherkin scenarios and failing tests produced by this workflow ARE the TDD spec-tests. The Builder's `/implement` workflow should treat them as the RED starting point — go straight to GREEN, do not re-specify.
-- **Handoff**: If an `implementation_plan.md` exists from a prior `/analysis` workflow, append a **Test Constraints** section listing the test names that must turn GREEN and any ATDD-specific requirements. If NO plan exists, do NOT generate one — recommend the user run `/analysis` first.
+- **Handoff**: If an `implementation_plan_[topic].md` exists from a prior `/analysis` workflow, you MUST modify it by injecting your authored test names directly into its `## Verification Plan` section under a new `### ATDD Constraints` subheading. This mathematically forces the Builder's Phase 4 Drift Check to verify them. If NO plan exists, do NOT generate one — recommend the user run `/analysis` first.

@@ -11,6 +11,10 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > This is the **Discovery & Architecture** workflow — used to explore new ideas or libraries before writing code.
 > Handoff usually goes to `/analysis` or directly to `/implement`.
 
+## Pre-Flight Setup (ANTI-POISONING MANDATE)
+> [!IMPORTANT]
+> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE beginning your research. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
+> **Raw Data Requirement**: This log MUST contain a structured Markdown table titled `# Research Data Tracking`. Columns must be: `Hypothesis | Source/Doc Checked | Rejected/Approved | Architectural Implication`. This ensures the user has raw analysis data mirroring your internal logic loop.
 
 ## Phase 1: Skill & Persona Alignment
 - **Instruction**: Assume the role of a Senior Architect.

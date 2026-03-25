@@ -36,8 +36,9 @@ description: The Core Builder Implementation Workflow.
 > **@@SCAN** Before proceeding, answer: (1) Which skills and rules did you load? (2) What are the core files and dependencies for this feature?
 
 ## Phase 2: Planning (THE GATE)
-- **Instruction**: Check if an `implementation_plan.md` already exists in your `brain/` folder (from a prior `/analysis` workflow).
-    - **If YES**: Read it and run the **Plan Quality Checklist** below. If ALL pass → request permission to begin coding. If ANY fail → **stop** and tell the user which items are missing. Recommend they re-run `/analysis` or provide the missing details.
+- **Instruction**: Check if the user provided an `implementation_plan_[topic].md` (from `/analysis`) and a `specs_[topic].md` (from `/atdd`) in the chat context (via a file path, link, or attachment).
+    - **Handling Existing Artifacts**: If an `implementation_plan` is provided, read it and run the **Plan Quality Checklist** below. If a `specs` file is provided, you MUST read it to consume the Test Infrastructure Map and the ATDD specifications before coding.
+    - **If ALL pass** → request permission to begin coding. If ANY fail → **stop** and tell the user which items are missing. Recommend they re-run `/analysis` or provide the missing details.
     - **If NO**: Load the `technical-specification` skill (`.agents/skills/technical-specification/SKILL.md`) and generate a new `implementation_plan.md` using a lightweight subset of its template. Request approval via `notify_user` before coding.
 - **Plan Quality Checklist** (mandatory for both paths):
   - [ ] **Goal**: Has a clear 1-paragraph goal statement?
@@ -85,7 +86,7 @@ description: The Core Builder Implementation Workflow.
      - **Action**: List each new handler by name. If either test is missing → write it NOW before proceeding to Phase 5. This gate applies even for "Track B1" slices. (See `project-gotchas.md` Gotcha #12)
 - **Drift Check (2-part)**:
   1. **File scope**: Run `git status` / `git diff --name-only`. Did you edit files NOT listed in the plan? Fix violations.
-  2. **Verification cross-check (MANDATORY)**: Re-read the `## Verification Plan` section of the `implementation_plan.md`. For each **named test** listed there, confirm it appears in `git diff`. If a test name from the plan is missing from the diff → it was skipped. Write it NOW. The phrase "standard Builder tests will be authored" is NOT a pass.
+  2. **Verification cross-check (MANDATORY)**: Re-read the `## Verification Plan` section of the `implementation_plan_[topic].md` (including any `### ATDD Constraints` injected by the Sentinel). For each **named test** listed there, run it and confirm it is GREEN. If you authored new standard unit tests, confirm they appear in `git diff`. If a test name from the plan is missing from the diff/suite → it was skipped. Write or fix it NOW. The phrase "standard Builder tests will be authored" is NOT a pass.
 
 > **@@SCAN** Before handoff, answer: (1) Did you review from all 4 perspectives (Security, Logic, Concurrency/Transactions, Coverage)? (2) For every [NEW] handler: does a happy-path AND error-path test exist? (3) Did you run `git status` to check for unplanned file changes? (4) What was the verdict — Ship, Show, or Ask?
 
@@ -95,8 +96,8 @@ description: The Core Builder Implementation Workflow.
 
   | Category | When | Action |
   |----------|------|--------|
-  | **Ship** | TDD green, blast radius = 0, trivial scope | Commit directly. Create a 1-line entry in `walkthrough_[topic].md`. The artifact MUST contain an `# Executed Test Data` raw table (Columns: `Test Method | Target File | Assertion Verified`). |
-  | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough_[topic].md` as a "Show and Tell". The artifact MUST contain an `# Executed Test Data` raw table (Columns: `Test Method | Target File | Assertion Verified`). |
+  | **Ship** | TDD green, blast radius = 0, trivial scope | Commit directly. Create a 1-line entry in `walkthrough_[topic].md`. You MUST also create a separate `executed_tests_[topic].md` artifact containing ONLY a raw data table (Columns: `Test Method | Target File | Assertion Verified`). |
+  | **Show** | TDD green, moderate scope, no blocking risk | Commit, then create `walkthrough_[topic].md` as a "Show and Tell". You MUST also create a separate `executed_tests_[topic].md` artifact containing ONLY a raw data table (Columns: `Test Method | Target File | Assertion Verified`). |
   | **Ask** | Architectural change, new DB migration, security-sensitive | Use `notify_user` to request review BEFORE committing. Include numbered test scenarios with Steps, Expected, and Blast Radius. |
 
 - **Walkthrough** (for Show and Ask): Create `walkthrough_[topic].md` with:
