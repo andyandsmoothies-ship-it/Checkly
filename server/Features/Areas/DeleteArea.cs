@@ -28,15 +28,12 @@ public static class DeleteArea
 
         var area = await db.Areas.FindAsync([id], ct);
 
-        if (area is null || area.IsActive == false)
+        if (area is null)
             return TypedResults.NotFound(new { error = "Area not found" });
 
-        area.IsActive = false;
-        area.UpdatedAt = DateTimeOffset.UtcNow;
-
-        await db.SaveChangesAsync(ct);
+        db.Areas.Remove(area);
         AuditLogger.Log(db, user, "area_deleted", "Area", area.Id,
-            message: $"Area '{area.Name}' deactivated",
+            message: $"Area '{area.Name}' deleted",
             userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
 

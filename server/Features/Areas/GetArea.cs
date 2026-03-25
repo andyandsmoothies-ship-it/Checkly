@@ -15,7 +15,7 @@ public static class GetArea
     {
         var area = await db.Areas
             .AsNoTracking()
-            .Where(a => a.Id == id && a.IsActive == true)
+            .Where(a => a.Id == id)
             .Select(a => new AreaDto(
                 a.Id, a.Name, a.Description,
                 a.Stores.Count(s => s.IsActive == true),
@@ -25,8 +25,7 @@ public static class GetArea
                     .Where(x => x.Role == "area_manager")
                     .Select(x => x.FullName)
                     .FirstOrDefault(),
-                a.CreatedAt,
-                a.IsActive))
+                a.CreatedAt))
             .FirstOrDefaultAsync(ct);
 
 
