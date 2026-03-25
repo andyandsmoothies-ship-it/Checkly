@@ -36,7 +36,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Test Region {_runId}",
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -48,7 +47,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
             Id = Guid.NewGuid(),
             Name = $"Store AC1 {_runId}",
             AreaId = area.Id,
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -80,7 +78,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Profile Region {_runId}",
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -125,7 +122,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
             Id = Guid.NewGuid(),
             Name = $"No-Area Store {_runId}",
             // AreaId intentionally not set → should be null
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -151,7 +147,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"Compat Region {_runId}",
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -162,7 +157,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
             Id = Guid.NewGuid(),
             Name = $"Compat Store {_runId}",
             AreaId = area.Id,
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -190,7 +184,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = Guid.NewGuid(),
             Name = $"North {_runId}",
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -202,7 +195,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
             Id = Guid.NewGuid(),
             Name = $"North Store 1 {_runId}",
             AreaId = area.Id,
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -211,7 +203,6 @@ public class AreaMigrationTests : IClassFixture<TestWebApplicationFactory>
             Id = Guid.NewGuid(),
             Name = $"North Store 2 {_runId}",
             AreaId = area.Id,
-            IsActive = true,
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
