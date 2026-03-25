@@ -235,10 +235,6 @@ class AdminDashboardVariant extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final progress = state.monthlyTotal > 0
-        ? (state.monthlyCompleted / state.monthlyTotal).clamp(0.0, 1.0)
-        : 0.0;
-    final percentage = (progress * 100).toStringAsFixed(0);
     final avgFormatted =
         state.globalAvgScore.truncateToDouble() == state.globalAvgScore
         ? state.globalAvgScore.toStringAsFixed(0)
@@ -251,70 +247,25 @@ class AdminDashboardVariant extends StatelessWidget {
         children: [
           const SizedBox(height: 24),
 
-          // ── Monthly Progress Ring ──
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          // ── Dashboard Title ──
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Mission Control',
-                      style: AppFonts.serifStyle(
-                        fontSize: 26,
-                        color: AppTheme.charcoal,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'PLATFORM OVERVIEW',
-                      style: AppFonts.displayStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.charcoal.withValues(alpha: 0.5),
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
+              Text(
+                'Mission Control',
+                style: AppFonts.serifStyle(
+                  fontSize: 26,
+                  color: AppTheme.charcoal,
                 ),
               ),
-              SizedBox(
-                width: 64,
-                height: 64,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (progress == 0.0)
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppTheme.sageGray.withValues(alpha: 0.3),
-                            width: 4,
-                          ),
-                        ),
-                      )
-                    else
-                      CircularProgressIndicator(
-                        value: progress,
-                        strokeWidth: 4,
-                        strokeCap: StrokeCap.round,
-                        backgroundColor: AppTheme.sageGray.withValues(
-                          alpha: 0.3,
-                        ),
-                        color: theme.colorScheme.primary,
-                      ),
-                    Text(
-                      '$percentage%',
-                      style: AppFonts.serifStyle(
-                        fontSize: 16,
-                        color: AppTheme.charcoal,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 4),
+              Text(
+                'PLATFORM OVERVIEW',
+                style: AppFonts.displayStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.charcoal.withValues(alpha: 0.5),
+                  letterSpacing: 1.5,
                 ),
               ),
             ],
