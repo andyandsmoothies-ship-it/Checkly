@@ -39,10 +39,10 @@ description: Precision Analysis Workflow for System Architecture.
 ## Phase 3: Adversarial Review (Red Team)
 - **Instruction**: Switch to a "Red Team Adversary" persona. Your goal is to destroy the proposed implementation plan before it is coded. Be aware of the "Expert Witness Trap" — AI models will pass flawed logic unless explicitly asked about scaling extremes.
 - **Skill Refresh**: The concern has shifted to failure modes. Re-scan `.agents/skills/` for skills related to error handling, concurrency, or debugging patterns. Load 1-2 if relevant.
-- [ ] **Hostile Interrogation**: Trigger the `hostile-interrogation` skill to evaluate the design against domain scale extremes. Do not proceed until the 3 failure questions are answered.
+- [ ] **Hostile Interrogation**: Run the **Hostile Interrogation** gate from `verification-loop` skill (Part C) to evaluate the design against domain scale extremes. Do not proceed until the 3 failure questions are answered.
 - [ ] **Resolution**: Refine the solution to mitigate the identified failures. If the failures cannot be mitigated, reject the feature and request a redesign.
 
-> **@@SCAN** Before proceeding, answer: (1) Did you run the hostile-interrogation skill? (2) What are the 3 failure scenarios you identified? (3) Were any failures unmitigable?
+> **@@SCAN** Before proceeding, answer: (1) Did you run the Hostile Interrogation gate (verification-loop Part C)? (2) What are the 3 failure scenarios you identified? (3) Were any failures unmitigable?
 
 ## Phase 4: The Deliverable (Production-Grade Architecture Document)
 - **Requirement**: You MUST create a rigorous, structured `analysis_[topic].md` artifact. This is NOT a code diff; it is a Software Engineering Design Document.

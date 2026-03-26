@@ -29,14 +29,14 @@ description: Verification gate for any upstream workflow — validates that anal
   - Locate the "Behavioral Expectations" formulated during the analysis phase.
   - You MUST act as an **Adversarial Reviewer** (Sentinel persona). Do NOT accept "Generative Evidence" (the builder merely claiming it works).
   - You MUST demand **Executed Evidence**: exact terminal logs, API responses, or database query results proving the expectation is met. If the output is missing, you must run the code to verify.
-- [ ] **Hostile Interrogation**: Trigger the `hostile-interrogation` skill to evaluate the codebase against domain scale extremes. Do not proceed until the 3 failure questions are answered. If the code cannot survive without proper defenses, flag it as a deployment failure.
+- [ ] **Hostile Interrogation**: Run the **Hostile Interrogation** gate from `verification-loop` skill (Part C) to evaluate the codebase against domain scale extremes. Do not proceed until the 3 failure questions are answered. If the code cannot survive without proper defenses, flag it as a deployment failure.
 - [ ] **Drift OOM Scan** *(Flutter/Drift projects only)*: For any file matching `*_queries.dart`, `*_manager.dart`, or `*_dao.dart` modified in this change, run `grep_search` for `.get()`. Every hit MUST satisfy one of: (1) preceded by `..limit(n)`, (2) inside a `selectOnly` query using `count()/avg()`, or (3) has an explicit comment justifying why the result set is bounded. Any bare `.select().get()` without one of these three is an **automatic OOM violation** — flag as FAIL and transition to `/diagnose` immediately. Do NOT proceed to CI.
 **Non-Testable Accountability (UX & Efficiency)**:
   - DO NOT rely solely on test coverage. 100% coverage represents what executes, not what matters.
   - You MUST evaluate the changes for Big-O complexity, database query inefficiency (N+1), memory leaks, and UX degradation. If the code passes tests but wastes system resources or creates a poor user experience, flag it as a failure.
 </strict-instruction>
 
-> **@@SCAN** Before running CI, answer: (1) Did you trace the modified code line-by-line? (2) Did you verify ALL acceptance criteria from the upstream artifact against real code? (3) Did you run the hostile-interrogation skill?
+> **@@SCAN** Before running CI, answer: (1) Did you trace the modified code line-by-line? (2) Did you verify ALL acceptance criteria from the upstream artifact against real code? (3) Did you run the Hostile Interrogation gate (verification-loop Part C)?
 
 ## Phase 2: CI Gate — Validation & Output Parsing
 <strict-instruction>

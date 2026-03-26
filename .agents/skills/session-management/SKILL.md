@@ -190,6 +190,19 @@ SESSION RESUME FLOW:
    "Got it, setting aside the pending tasks. What would you like to work on?"
 ```
 
+### Mid-Session Compaction (Brain Dump)
+
+When the session context window becomes too large or degraded, but the user's task is not yet complete:
+
+```
+COMPACTION PROTOCOL:
+1. Detect context degradation (looping, forgetting rules, or explicit user request).
+2. Trigger the `/brain-dump` workflow to capture the immediate execution state.
+3. The workflow writes a highly compressed delta to `.claude/handoff.md`.
+4. The AI explicitly instructs the user to clear the chat window and start fresh.
+5. In the new window, the user types "resume" and the AI loads the compacted state.
+```
+
 ### First Session Bootstrap
 
 When no context files exist (brand new project or first Claude session):
@@ -348,4 +361,5 @@ MEMORY.md          ← permanent rules (append-only, audited)
 | First-ever session on a project | Run bootstrap protocol, offer convention scan |
 | Solution is still loading (MCP returns "loading") | Wait 5 seconds, retry once, then proceed without MCP |
 | Mid-session context getting large | Offload research to subagents, keep main context focused |
+| Context window full or degraded | Run the `/brain-dump` workflow to serialize state and suggest a chat restart |
 | User asks "what were we working on?" | Read handoff.md and summarize |

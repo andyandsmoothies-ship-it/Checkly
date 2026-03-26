@@ -1,18 +1,17 @@
 ---
 name: verification-loop
 description: >
-  7-phase .NET verification pipeline with structured PASS/FAIL reporting.
+  7-phase .NET verification pipeline with structured PASS/FAIL reporting, post-implementation
+  blast radius analysis, hostile interrogation, and manual testing handoff.
   Ensures every change is build-verified, diagnostics-clean, anti-pattern-free,
   test-passing, security-scanned, format-compliant, and diff-reviewed before
   marking work as complete. Load this skill when: "verify", "check everything",
   "run verification", "pre-PR check", "is this ready", "validate changes",
-  "build and test", "quality gate", "pipeline check", "ready to merge".
+  "build and test", "quality gate", "pipeline check", "ready to merge",
+  "blast radius", "is this safe", "hostile review", "red team", "what breaks".
 ---
 
 # Verification Loop
-
-> [!NOTE]
-> **Related skills:** For a post-implementation checklist (blast radius, structural integrity, manual testing handoff), see `verification-checklist`. This skill is the full 7-phase automated verification pipeline for .NET projects.
 
 ## Core Principles
 
@@ -26,9 +25,9 @@ description: >
 
 5. **Verification is iterative** — A single pass rarely produces all-green. Fix the first failure, re-run from that phase, repeat until clean. The loop is the point.
 
-## Patterns
+---
 
-### 7-Phase Verification Pipeline
+## Part A: 7-Phase Automated Pipeline
 
 Execute phases in order. Short-circuit on CRITICAL failures (Phase 1 and Phase 4).
 
@@ -115,7 +114,83 @@ After running all phases, produce a verification report:
 - [ ] Fix CS8600 in OrderService.cs:47 — add null check or use null-forgiving operator with justification
 ```
 
-### Fix-and-Retry Loop
+---
+
+## Part B: Post-Implementation Blast Radius & Handoff
+
+Use this section after completing code changes, after fixing a bug, or when the user asks "is this safe to merge".
+
+### Blast Radius Check
+
+For every modified file, find all consumers:
+
+| Modified File | Consumer | What it imports | Risk |
+|:---|:---|:---|:---|
+| `CreateArea.cs` | `AreaTests.cs` | `POST /api/areas` | Breaks if route or DTO changes |
+
+**Actions:**
+1. For server changes: `grep -r "ClassName" server/` to find references
+2. For Flutter changes: `grep -r "ClassName" lib/` to find widget/service consumers
+3. Document the chain and assess risk per consumer
+
+### Structural Integrity
+
+1. **Build Check**: `dotnet build` (server) and/or `flutter analyze` (mobile) — MANDATORY
+2. **Ghost Audit**: Verify all usings/imports actually resolve. Remove dead imports.
+3. **Zombie Check**: If any classes, methods, or exports were deleted, verify no references remain
+
+### Logic & Integration Audit
+
+1. **Contract Verification**: Every scenario in the spec has a passing test or verified logic block
+2. **Schema Sync**: Cross-reference changed entities with `AppDbContext` — all `HasColumnName` mappings must be present
+3. **Snapshot Check**: If the feature touches denormalized fields, verify dual writes (see `project-gotchas.md` #7)
+
+### Manual Testing Handoff
+
+Scope: Only scenarios that can't be automated (auth flows, visual UI, device-specific behavior).
+Generate steps covering:
+- **Critical Paths**: Steps to test the primary logic
+- **Regression Checklist**: Existing features near the blast radius
+- **Edge Case Triggers**: How to manually trigger error paths
+
+### Final Verdict
+
+1. **Impact Statement**: "Modified [X] and verified that [Y] remains intact."
+2. **Test Coverage Delta**: Report before/after test counts
+3. **Verdict**: **PASS** or **PENDING HUMAN VERIFICATION**
+
+---
+
+## Part C: Hostile Interrogation (Red Team Gate)
+
+When invoked during design review, verification, or PR review, you MUST halt and answer these three domain-specific "What breaks?" questions using the exact class names, database tables, and framework features of the current codebase.
+
+AI agents suffer from the "Expert Witness Trap" — they will politely agree with a flawed design unless specifically cross-examined about scale extremes. This section counteracts that trap.
+
+### 1. Concurrency Extreme (Race Conditions & Thundering Herds)
+- **Question**: "What happens when 2+ instances execute this exactly concurrently (e.g., behind a load balancer or in a multi-threaded loop)?"
+- **Look For**: Missing database row locks (`SELECT FOR UPDATE`), absent distributed locks, missing idempotency keys on POST requests, or race conditions in memory arrays.
+- **Action**: Output the exact point of expected failure and the required architectural fix.
+
+### 2. Volume Extreme (Payload limits & OOM Crashes)
+- **Question**: "What happens when the core data structure (or list being returned) grows by 10,000x?"
+- **Look For**: Missing pagination on generic `ListAll` endpoints, loading entire EF Core tables into memory before filtering, unindexed column queries, or JSON payloads exceeding standard limits.
+- **Action**: Output the exact `OOM` or latency failure point and enforce pagination/indexing.
+
+### 3. Dependency Extreme (Systemic Failure)
+- **Question**: "What happens when the upstream service, database, or third-party API takes 30 seconds to respond or drops connections?"
+- **Look For**: Missing Polly timeout policies, lack of circuit breakers, synchronous blocking calls in background tasks, or missing jitter on retries.
+- **Action**: Output how the cascading failure will manifest to the end user and specify the required timeout/resilience bounds.
+
+### Resolution Protocol
+
+After answering the three questions:
+1. If the code/design CANNOT survive these extremes → **Flag as deployment failure** and request a redesign.
+2. Provide the exact code snippets or dependency patterns required to mitigate the identified extremes before handing control back to the original workflow.
+
+---
+
+## Fix-and-Retry Loop
 
 When a phase fails, follow this exact sequence:
 
@@ -133,52 +208,21 @@ Phase 4 fails: OrderServiceTests.CreateOrder_ReturnsCreated fails with 404
   → Continue Phase 5, 6, 7
 ```
 
-### Pre-PR Verification
+## Decision Guide
 
-Before creating any pull request, run the full 7-phase pipeline. This is non-negotiable.
-
-```
-PRE-PR CHECKLIST:
-1. All 7 phases PASS (warnings acceptable only if pre-existing)
-2. No new warnings introduced
-3. All new code has corresponding tests
-4. Diff review confirms changes match the PR description
-5. No TODO comments left unresolved (or tracked in issues)
-
-Only after all 7 phases pass:
-→ Create the PR with the verification report as part of the PR description
-```
-
-### Quick Verification
-
-For minor changes (typo fix, config change, documentation), run a subset:
-
-```
-QUICK VERIFICATION (3 phases):
-Phase 1: dotnet build
-Phase 4: dotnet test
-Phase 6: dotnet format --verify-no-changes
-
-Use when:
-- Single-line bug fix with existing test coverage
-- Configuration change
-- Documentation-only change
-- Dependency version bump (also add Phase 5 for security)
-```
-
-### Post-Refactor Verification
-
-After structural refactoring, focus on correctness:
-
-```
-POST-REFACTOR VERIFICATION (4 phases):
-Phase 1: dotnet build — refactors often break compilation
-Phase 2: get_diagnostics — refactors often introduce new warnings
-Phase 3: detect_antipatterns — refactors can accidentally introduce anti-patterns
-Phase 4: dotnet test — the ultimate refactor validation
-
-Skip Phase 5-7 unless the refactor touches security-sensitive code or public APIs.
-```
+| Scenario | Phases | Notes |
+|----------|--------|-------|
+| Feature complete | All 7 + Part B + Part C | Full pipeline, no shortcuts |
+| Bug fix (with test) | 1, 2, 4 | Build, diagnostics, tests |
+| Bug fix (no test) | 1, 2, 3, 4 | Add a test, then verify |
+| Formatting only | 6 | Format check is sufficient |
+| Dependency update | 1, 4, 5 | Build, tests, security |
+| Pre-PR | All 7 + Part B | Non-negotiable full pipeline |
+| After refactor | 1, 2, 3, 4 | Focus on correctness |
+| Config change | 1, 4 | Build and test |
+| New endpoint added | All 7 + Part C | Full pipeline including hostile review |
+| Test-only changes | 1, 4 | Build and run the new tests |
+| Design review | Part C only | Hostile interrogation before coding |
 
 ## Anti-patterns
 
@@ -201,8 +245,6 @@ Skip Phase 5-7 unless the refactor touches security-sensitive code or public API
 # BAD — wasting time on downstream checks
 Phase 1: Build FAIL (3 errors)
 Phase 2: Running diagnostics anyway...
-Phase 3: Running anti-pattern scan...
-Phase 4: Running tests... (they'll fail because build failed)
 
 # GOOD — short-circuit and fix
 Phase 1: Build FAIL (3 errors)
@@ -216,26 +258,12 @@ Phase 1: Build FAIL (3 errors)
 # BAD — "warnings are just suggestions"
 Phase 2: 12 new CS8600 warnings introduced
 "These are just warnings, not errors. Moving on."
-# Three weeks later: NullReferenceException in production
 
 # GOOD — treat new warnings as failures
 Phase 2: 12 new CS8600 warnings introduced
 "12 new nullability warnings detected. Fixing before proceeding."
 → Add null checks or non-nullable assertions with justification
 → Re-run Phase 2: 0 new warnings. PASS.
-```
-
-### Manual-Only Verification
-
-```
-# BAD — reading code instead of running tools
-"Let me read through OrderService.cs... looks good to me."
-# Missed: DateTime.Now on line 23, async void on line 67, CS8600 on line 91
-
-# GOOD — tools first, then human judgment
-→ detect_antipatterns: Found DateTime.Now (line 23), async void (line 67)
-→ get_diagnostics: CS8600 on line 91
-"Found 3 issues via automated analysis. Fixing all three before manual review."
 ```
 
 ### Cherry-Picking Phases
@@ -249,20 +277,3 @@ Phase 2: 12 new CS8600 warnings introduced
 When in doubt, run all 7 phases. The cost of running extra phases is minutes.
 The cost of missing a security issue is days of incident response.
 ```
-
-## Decision Guide
-
-| Scenario | Phases | Notes |
-|----------|--------|-------|
-| Feature complete | All 7 | Full pipeline, no shortcuts |
-| Bug fix (with test) | 1, 2, 4 | Build, diagnostics, tests |
-| Bug fix (no test) | 1, 2, 3, 4 | Add a test, then verify |
-| Formatting only | 6 | Format check is sufficient |
-| Dependency update | 1, 4, 5 | Build, tests, security |
-| Pre-PR | All 7 | Non-negotiable full pipeline |
-| After refactor | 1, 2, 3, 4 | Focus on correctness |
-| Config change | 1, 4 | Build and test |
-| New endpoint added | All 7 | Full pipeline including security |
-| Test-only changes | 1, 4 | Build and run the new tests |
-| Performance optimization | 1, 2, 3, 4 | Correctness first, benchmark separately |
-| CI failure investigation | Run the failing phase locally | Reproduce, fix, verify |

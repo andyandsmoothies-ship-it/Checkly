@@ -36,14 +36,22 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 > **@@SCAN** Before feasibility check, answer: (1) Did you map the full E2E scope (upstream triggers + downstream effects)? (2) What are the handoff points / friction points you identified?
 
-## Phase 3: Feasibility & Rules Check
+## Phase 3: Blind-Spot & Conflict Detection (SCAN Protocol)
+- **Instruction**: Operate as an adversarial "Explorer". Your goal is to find why the proposed pattern will fail or what assumptions are dangerous.
+- **Action**: 
+  1. Identify exactly 3 **BLIND SPOTS** — things you or the user do *not* currently know about how this tech will behave in this specific stack.
+  2. Identify at least 1 **`!!! CONFLICT`** — an existing architectural rule in `.agents/rules/` or project gotcha that explicitly clashes with this new idea. If none exist, prove why.
+
+> **@@SCAN** Before feasibility check, answer: (1) What are the 3 Blind Spots? (2) What is the `!!! CONFLICT` or risk to existing rules?
+
+## Phase 4: Feasibility & Rules Check
 - **Instruction**: Evaluate the idea against the project's rigid constraints.
 - **Skill Refresh**: If the research shifted domains (e.g., started as "which database?" but now involves "auth architecture"), re-scan `.agents/skills/` for skills matching the new concern. Load 1-2 if relevant.
 - **Action**: Read the workspace rules in `.agents/rules/`. Does the proposed idea violate any existing architecture or security constraints?
 
 > **@@SCAN** Before writing deliverable, answer: (1) Does the idea violate any workspace rules? (2) Is the recommendation Viable, Needs Redesign, or Reject?
 
-## Phase 4: Deliverable (The Handoff)
+## Phase 5: Deliverable (The Handoff)
 - **Requirement**: Always output a structured artifact.
 - **Action**: Create a `concept_brief_[feature].md` or `research_[topic].md` artifact. The artifact MUST include the E2E Workflow Map from Phase 2.
 - **Handoff**: If the research concludes the idea is viable, recommend the user run `/analysis` to produce a proper implementation plan. Do NOT generate an `implementation_plan.md` from this workflow — research lacks the system impact analysis and adversarial review required for a quality plan.
