@@ -16,7 +16,8 @@ description: The Core Builder Implementation Workflow.
 
 ## Phase 1: Deep Discovery
 - Read config files (`.csproj`, `pubspec.yaml`, etc.) to understand the current project state before touching anything.
-- Derive 2-3 keywords from the request → scan `.agents/skills/` → load the top 1-2 matching `SKILL.md` files. Loading the right skill early prevents mistakes later.
+- **MANDATORY SKILLS**: You MUST ALWAYS load the `tdd` skill before coding. If working in .NET, you MUST also load `testing-strategy`.
+- **DYNAMIC SKILLS**: Derive 2-3 keywords from the request → scan `.agents/skills/` → load the top 1-2 matching `SKILL.md` files. Loading the right skill early prevents mistakes later.
 - Match the task to rules in `.agents/rules/`. You need to know which rules apply before you plan.
 
 > **@@SCAN**: (1) Which skills & rules did you load? (2) What are the core files and dependencies?
