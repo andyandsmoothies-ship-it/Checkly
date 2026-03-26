@@ -5,6 +5,6 @@ trigger: always
 # Environment Rules
 
 ENV: Windows.
-Always use ‘cmd /c’ for all shell executions to ensure the process terminates correctly and sends an EOF signal.
-Example: Use ‘cmd /c pip list’ instead of just ‘pip list’.
-Avoid interactive shells. If a persistent session is needed, use ‘cmd /k’ but ensure the command is self-terminating.
+Always use 'cmd /c' for all shell executions to ensure the process terminates correctly and sends an EOF signal.
+Example: Use 'cmd /c pip list' instead of just 'pip list'.
+Avoid interactive shells. If a persistent session is needed, use 'cmd /k' but ensure the command is self-terminating.

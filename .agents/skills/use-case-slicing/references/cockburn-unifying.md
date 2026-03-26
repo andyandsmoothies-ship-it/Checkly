@@ -28,7 +28,7 @@ To unify these practices successfully, you must understand:
 **The Slicing Rule for User Stories:**
 1. Choose the *thinnest full transaction* (the shortest path through the Main Scenario) as Slice 1. (This creates the "walking skeleton").
 2. Choose any action/extension that fits an iteration as subsequent slices.
-3. Subset any action/extension until it’s small enough.
+3. Subset any action/extension until it's small enough.
 
 ## The Story Map as the Bridge
 A Story Map is the physical intersection of Use Cases and User Stories:

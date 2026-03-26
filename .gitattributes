@@ -1,0 +1,6 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force LF for all agent/skill/workflow markdown files
+# Prevents mixed line endings when AI tools edit these files
+.agents/**/*.md text eol=lf

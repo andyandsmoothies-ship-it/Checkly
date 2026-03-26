@@ -30,3 +30,16 @@ Before ANY technical implementation or research:
 1. **Discovery**: Match the task to available skills in `.agents/skills/` (e.g., `clean_coder`, `systematic-debugging`).
 2. **Invocation**: For project-specific business logic, refer to the Rules in `.agents/rules/`. For cross-project behaviors, refer to the Skills in `.agents/skills/`.
 3. **Task-Based Application**: Apply the patterns defined in the relevant Rule or Skill for the current task.
+
+## Skill Auto-Router (AUTOMATIC)
+When you open or modify a file matching a pattern below, **auto-load** the associated skills without waiting for keyword discovery. This overrides manual skill search for known file types.
+
+| File Pattern | Auto-Load Skills |
+|-------------|-----------------|
+| `*_queries.dart`, `*_manager.dart` | `flutter-architecture`, `database-performance` |
+| `*.cs` in `Features/` or `Endpoints/` | `vertical-slice`, `modern-csharp` |
+| `*Tests.cs`, `*_test.dart` | `testing-strategy`, `tdd`, `test-refactoring` |
+| `AppDbContext.cs`, `*Configuration.cs` | `ef-core`, `migration-workflow` |
+| `Program.cs`, `*Module.cs` | `dependency-injection` |
+| `pubspec.yaml`, `*.csproj` | `migration-workflow` |
+| `project-gotchas.md` modified | `vertical-slice-completeness` |

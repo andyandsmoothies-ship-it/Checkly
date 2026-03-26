@@ -92,11 +92,18 @@ STEP 5: Update Instincts
   → Update confidence scores in .claude/instincts.md
   → Promote any instincts that reached 0.9 (via instinct-system)
 
+STEP 5.5: Log Workflow Usage
+  → Append a single line to .claude/workflow-usage.log:
+    [YYYY-MM-DD] workflows: /implement, /verify | skills: tdd, ef-core
+  → This creates a long-running log for quarterly audits of workflow/skill ROI.
+  → Create the file if it doesn't exist.
+
 STEP 6: Confirm
   "Session wrapped up:
    - Handoff written to .claude/handoff.md
    - [N] learnings added to MEMORY.md
    - [N] instincts updated
+   - Workflow usage logged
    Next session will pick up right where we left off."
 ```
 

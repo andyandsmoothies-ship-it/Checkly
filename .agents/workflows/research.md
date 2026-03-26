@@ -52,9 +52,25 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > **@@SCAN** Before writing deliverable, answer: (1) Does the idea violate any workspace rules? (2) Is the recommendation Viable, Needs Redesign, or Reject?
 
 ## Phase 5: Deliverable (The Handoff)
-- **Requirement**: Always output a structured artifact.
-- **Action**: Create a `concept_brief_[feature].md` or `research_[topic].md` artifact. The artifact MUST include the E2E Workflow Map from Phase 2.
+- **Requirement**: Always output a structured artifact that **persists across sessions**.
+- **Action**:
+  1. Create a `concept_brief_[feature].md` or `research_[topic].md` artifact in the brain artifacts folder (for current session use).
+  2. **ALSO** write the same deliverable to `.agents/tmp/research/research_[topic].md` (for cross-session handoff). Create the directory if it doesn't exist.
+  3. The artifact MUST include the E2E Workflow Map from Phase 2.
+  4. The artifact MUST end with a **Handoff Block** (see template below).
 - **Handoff**: If the research concludes the idea is viable, recommend the user run `/analysis` to produce a proper implementation plan. Do NOT generate an `implementation_plan.md` from this workflow — research lacks the system impact analysis and adversarial review required for a quality plan.
+- **Final Message**: You MUST print the absolute file path to the `.agents/tmp/research/` deliverable so the user can paste it into the next `/analysis` session.
+
+### Handoff Block Template (MANDATORY at end of deliverable)
+```markdown
+---
+## Handoff Block
+- **Verdict**: Viable / Needs Redesign / Reject
+- **Recommended Next**: `/analysis` or `/implement`
+- **Persistent Path**: `.agents/tmp/research/research_[topic].md`
+- **Blind Spots**: [3 items from Phase 3]
+- **Conflicts**: [items from Phase 3, or NONE]
+```
 
 ---
 

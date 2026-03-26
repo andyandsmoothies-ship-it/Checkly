@@ -6,7 +6,7 @@
 
 # Mermaid Kanban Diagram Documentation
 
-Mermaid’s Kanban diagram allows you to create visual representations of tasks moving through different stages of a workflow. This guide explains how to use the Kanban diagram syntax, based on the provided example.
+Mermaid's Kanban diagram allows you to create visual representations of tasks moving through different stages of a workflow. This guide explains how to use the Kanban diagram syntax, based on the provided example.
 
 ## Overview
 
@@ -26,7 +26,7 @@ kanban
 
 ## Defining Columns
 
-Columns represent the different stages in your workflow, such as “Todo,” “In Progress,” “Done,” etc. Each column is defined using a unique identifier and a title enclosed in square brackets.
+Columns represent the different stages in your workflow, such as "Todo," "In Progress," "Done," etc. Each column is defined using a unique identifier and a title enclosed in square brackets.
 
 **Syntax:**
 
@@ -158,4 +158,4 @@ In conclusion, creating a Kanban diagram in Mermaid is a straightforward process
 
 You can enhance your diagram by adding optional metadata to tasks using the @{ ... } syntax, which allows you to include additional context such as assignee, ticket numbers, and priority levels. For further customization, utilize the configuration block at the top of your file to set global options like ticketBaseUrl for linking tickets directly from your diagram.
 
-By adhering to these guidelines—ensuring unique identifiers, proper indentation, and utilizing metadata and configuration options—you can create a comprehensive and customized Kanban board that effectively maps out your project’s workflow using Mermaid.
+By adhering to these guidelines—ensuring unique identifiers, proper indentation, and utilizing metadata and configuration options—you can create a comprehensive and customized Kanban board that effectively maps out your project's workflow using Mermaid.

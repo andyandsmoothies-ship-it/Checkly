@@ -374,7 +374,7 @@ Below is a comprehensive list of the newly introduced shapes and their correspon
 
 ### Example Flowchart with New Shapes
 
-Here’s an example flowchart that utilizes some of the newly introduced shapes:
+Here's an example flowchart that utilizes some of the newly introduced shapes:
 
 ```mermaid-example
 flowchart RL
@@ -1220,7 +1220,7 @@ In this example, `e1` is the ID of the edge connecting `A` to `B`. You can then 
 
 ### Turning an Animation On
 
-Once you have assigned an ID to an edge, you can turn on animations for that edge by defining the edge’s properties:
+Once you have assigned an ID to an edge, you can turn on animations for that edge by defining the edge's properties:
 
 ```mermaid-example
 flowchart LR
@@ -1281,7 +1281,7 @@ In this snippet:
 - `class e1 animate` applies the `animate` class to the edge `e1`.
 
 **Note on Escaping Commas:**
-When setting the `stroke-dasharray` property, remember to escape commas as `\,` since commas are used as delimiters in Mermaid’s style definitions.
+When setting the `stroke-dasharray` property, remember to escape commas as `\,` since commas are used as delimiters in Mermaid's style definitions.
 
 ## New arrow types
 
