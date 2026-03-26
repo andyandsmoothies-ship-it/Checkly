@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../models/editable_group.dart';
 import '../models/wizard_starter_packs.dart';
 
 /// Wizard Step 2: Choose your structure.
-///
-/// Renders the starter pack sections as toggleable cards. Users can:
-/// - Enable/disable sections (disabled = excluded from Step 3)
-/// - Rename a section inline
-/// - Expand a section to preview criteria labels
-/// - Add a custom blank section
+/// Shows editable section titles and suggests new sections to add via Action Chips.
 class WizardStepStructure extends StatefulWidget {
-  final List<StarterSection> sections;
+  final List<EditableGroup> sections;
   final String scoringMode;
   final VoidCallback onChanged;
 
@@ -26,96 +22,121 @@ class WizardStepStructure extends StatefulWidget {
 }
 
 class _WizardStepStructureState extends State<WizardStepStructure> {
-  final _expandedSections = <int>{};
-
-  void _toggleEnabled(int index) {
+  void _addSection(String title) {
     setState(() {
-      widget.sections[index].enabled = !widget.sections[index].enabled;
+      final section = EditableGroup(title: title);
+      section.titleCtrl.text = title;
+      widget.sections.add(section);
     });
     widget.onChanged();
   }
 
-  void _toggleExpanded(int index) {
+  void _removeSection(int index) {
     setState(() {
-      if (_expandedSections.contains(index)) {
-        _expandedSections.remove(index);
-      } else {
-        _expandedSections.add(index);
-      }
-    });
-  }
-
-  void _addCustomSection() {
-    setState(() {
-      widget.sections.add(
-        StarterSection(
-          title: 'Section ${widget.sections.length + 1}',
-          criteria: [],
-        ),
-      );
+      widget.sections[index].dispose();
+      widget.sections.removeAt(index);
     });
     widget.onChanged();
-  }
-
-  void _showRenameDialog(int index) {
-    final ctrl = TextEditingController(text: widget.sections[index].title);
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Rename Section'),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          decoration: const InputDecoration(labelText: 'Section name'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final newName = ctrl.text.trim();
-              if (newName.isNotEmpty) {
-                setState(() => widget.sections[index].title = newName);
-                widget.onChanged();
-              }
-              Navigator.pop(ctx);
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final suggestions =
+        WizardSuggestions.getSectionSuggestions(widget.scoringMode);
 
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
         Text(
-          'Choose your structure',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          'Build your structure',
+          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(
-          'We\'ve pre-built a structure for you. Toggle sections on or off and rename them to match your needs.',
+          'Start by defining the main sections of your template. Add custom sections or tap suggestions below.',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 24),
 
+        // Sections List
+        ...widget.sections.asMap().entries.map((e) {
+          final i = e.key;
+          final section = e.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: section.titleCtrl,
+                    onChanged: (_) => widget.onChanged(),
+                    decoration: InputDecoration(
+                      labelText: 'Section ${i + 1}',
+                      prefixIcon: const Icon(Icons.drag_indicator),
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => _removeSection(i),
+                  tooltip: 'Remove section',
+                ),
+              ],
+            ),
+          );
+        }),
+
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () => _addSection(''),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Blank Section'),
+          ),
+        ),
+
+        const Divider(height: 32),
+
+        // Suggestions Block
+        Text(
+          'Suggested sections for this type:',
+          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: suggestions.map((title) {
+            final alreadyAdded =
+                widget.sections.any((s) => s.titleCtrl.text == title);
+            return ActionChip(
+              label: Text(title),
+              avatar: const Icon(Icons.add, size: 16),
+              onPressed: alreadyAdded ? null : () => _addSection(title),
+              backgroundColor: alreadyAdded
+                  ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                  : theme.colorScheme.secondaryContainer,
+              labelStyle: TextStyle(
+                color: alreadyAdded
+                    ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
+                    : theme.colorScheme.onSecondaryContainer,
+              ),
+            );
+          }).toList(),
+        ),
+
+        const SizedBox(height: 24),
         // Expert tip banner
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: theme.colorScheme.secondaryContainer,
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -123,164 +144,21 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
               Icon(
                 Icons.lightbulb_outline,
                 size: 18,
-                color: theme.colorScheme.onSecondaryContainer,
+                color: theme.colorScheme.onPrimaryContainer,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Tip: Audits work best with 3–5 sections and 5–10 criteria each.',
+                  'Tip: A typical audit has 3–5 sections. You can add the specific questions (criteria) in the next step.',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSecondaryContainer,
+                    color: theme.colorScheme.onPrimaryContainer,
                   ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 20),
-
-        // Section cards
-        ...widget.sections.asMap().entries.map((entry) {
-          final i = entry.key;
-          final section = entry.value;
-          final isExpanded = _expandedSections.contains(i);
-          return _SectionToggleCard(
-            section: section,
-            sectionIndex: i,
-            isExpanded: isExpanded,
-            onToggleEnabled: () => _toggleEnabled(i),
-            onToggleExpanded: () => _toggleExpanded(i),
-            onRename: () => _showRenameDialog(i),
-          );
-        }),
-
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: _addCustomSection,
-          icon: const Icon(Icons.add),
-          label: const Text('Add Custom Section'),
-        ),
-
-        if (widget.sections.every((s) => !s.enabled))
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Text(
-              'At least one section must be enabled.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.error,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
       ],
-    );
-  }
-}
-
-class _SectionToggleCard extends StatelessWidget {
-  final StarterSection section;
-  final int sectionIndex;
-  final bool isExpanded;
-  final VoidCallback onToggleEnabled;
-  final VoidCallback onToggleExpanded;
-  final VoidCallback onRename;
-
-  const _SectionToggleCard({
-    required this.section,
-    required this.sectionIndex,
-    required this.isExpanded,
-    required this.onToggleEnabled,
-    required this.onToggleExpanded,
-    required this.onRename,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isEnabled = section.enabled;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      elevation: isEnabled ? 1 : 0,
-      color: isEnabled
-          ? theme.colorScheme.surface
-          : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      child: Column(
-        children: [
-          ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            leading: Checkbox(
-              value: isEnabled,
-              onChanged: (_) => onToggleEnabled(),
-            ),
-            title: Text(
-              section.title,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: isEnabled
-                    ? null
-                    : theme.colorScheme.onSurface.withValues(alpha: 0.4),
-              ),
-            ),
-            subtitle: Text(
-              '${section.criteria.length} criteria',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isEnabled)
-                  TextButton(
-                    onPressed: onRename,
-                    child: const Text('Rename'),
-                  ),
-                IconButton(
-                  icon: Icon(
-                    isExpanded ? Icons.expand_less : Icons.expand_more,
-                  ),
-                  onPressed: onToggleExpanded,
-                  tooltip: isExpanded ? 'Collapse' : 'Preview criteria',
-                ),
-              ],
-            ),
-          ),
-          if (isExpanded && section.criteria.isNotEmpty) ...[
-            const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(56, 8, 16, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: section.criteria
-                    .map(
-                      (c) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.circle,
-                              size: 6,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                c.label,
-                                style: theme.textTheme.bodySmall,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }

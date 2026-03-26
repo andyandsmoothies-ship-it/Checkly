@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
+import '../models/wizard_starter_packs.dart';
 
 /// Wizard Step 3: Build criteria per section.
 /// Shows ONE section at a time with pill navigation at the top.
@@ -254,10 +255,56 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
               }),
 
               const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: _addCriterion,
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('Add Criterion'),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: _addCriterion,
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text('Add Blank Criterion'),
+                ),
+              ),
+              
+              const Divider(height: 32),
+              
+              Text(
+                'Suggested criteria:',
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              Builder(
+                builder: (ctx) {
+                  final suggestions = WizardSuggestions.getCriteriaSuggestions(
+                      widget.scoringMode, section.titleCtrl.text);
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: suggestions.map((sc) {
+                      final alreadyAdded = section.criteria
+                          .any((c) => c.labelCtrl.text == sc.label);
+                      return ActionChip(
+                        label: Text(sc.label),
+                        avatar: const Icon(Icons.add, size: 16),
+                        onPressed: alreadyAdded ? null : () {
+                          setState(() {
+                            final c = EditableCriterion(
+                                inputType: sc.inputType, points: sc.points);
+                            c.labelCtrl.text = sc.label;
+                            section.criteria.add(c);
+                          });
+                          widget.onChanged();
+                        },
+                        backgroundColor: alreadyAdded
+                            ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                            : theme.colorScheme.secondaryContainer,
+                        labelStyle: TextStyle(
+                          color: alreadyAdded
+                              ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
+                              : theme.colorScheme.onSecondaryContainer,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
               ),
             ],
           ),

@@ -4,9 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../manager/template_manager.dart';
-import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
-import '../models/wizard_starter_packs.dart';
 import '../widgets/wizard_step_name.dart';
 import '../widgets/wizard_step_structure.dart';
 import '../widgets/wizard_step_sections.dart';
@@ -21,8 +19,8 @@ final _di = GetIt.instance;
 ///
 /// Step 0: Blueprint selection (inline dialog on entry).
 /// Step 1 (Name): Title, description, category.
-/// Step 2 (Structure): Toggle starter pack sections.
-/// Step 3 (Build): Drill into each section and add/edit criteria.
+/// Step 2 (Structure): Add/name sections via action chips.
+/// Step 3 (Build): Drill into each section and add criteria via action chips.
 /// Step 4 (Review): Full summary with quality indicator before saving.
 /// Step 5 (Done): Animated success screen with post-save action buttons.
 ///
@@ -55,10 +53,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   final _deadlineCtrl = TextEditingController(text: '7');
   final _reminderCtrl = TextEditingController(text: '2');
 
-  // ── Starter sections (Step 2: toggleable structure) ──
-  List<StarterSection> _starterSections = [];
-
-  // ── Actual editable sections (Step 3: criteria builder) ──
+  // ── Actual editable sections ──
   final List<EditableGroup> _sections = [];
 
   // ── Section cursor in Step 3 ──
@@ -116,33 +111,11 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
         'checklist' => 'general',
         _ => 'qc',
       };
-      // Pre-load starter structure for this mode
-      _starterSections = WizardStarterPacks.forMode(mode);
-    });
-  }
-
-  // ── Starter pack → EditableGroup conversion ──
-
-  void _applyStarterPack() {
-    // Dispose old sections
-    for (final s in _sections) {
-      s.dispose();
-    }
-    _sections.clear();
-
-    for (final starter in _starterSections.where((s) => s.enabled)) {
-      final group = EditableGroup(title: starter.title);
-      group.titleCtrl.text = starter.title;
-      for (final sc in starter.criteria) {
-        final crit = EditableCriterion(inputType: sc.inputType, points: sc.points);
-        crit.labelCtrl.text = sc.label;
-        group.criteria.add(crit);
+      // Initialize with one empty section so they aren't looking at a blank screen
+      if (_sections.isEmpty) {
+        _sections.add(EditableGroup(title: ''));
       }
-      _sections.add(group);
-    }
-
-    _currentSectionIndex = 0;
-    _markDirty();
+    });
   }
 
   // ── Navigation ──
@@ -151,8 +124,8 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
     if (!_validateCurrentStep()) return;
 
     if (_currentStep == 1) {
-      // Transitioning from Structure → Build: materialise the EditableGroups
-      _applyStarterPack();
+      // Transitioning from Structure → Build: reset section cursor
+      _currentSectionIndex = 0;
     }
 
     if (_currentStep < 3) {
@@ -186,23 +159,23 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
         return true;
 
       case 1: // Structure
-        if (_starterSections.every((s) => !s.enabled)) {
+        if (_sections.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('At least one section must be enabled'),
-            ),
+            const SnackBar(content: Text('Please add at least one section.')),
           );
           return false;
+        }
+        for (int i = 0; i < _sections.length; i++) {
+          if (_sections[i].titleCtrl.text.trim().isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please name Section ${i + 1}')),
+            );
+            return false;
+          }
         }
         return true;
 
       case 2: // Build Criteria
-        if (_sections.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add at least one section')),
-          );
-          return false;
-        }
         for (int i = 0; i < _sections.length; i++) {
           if (_sections[i].criteria.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -331,128 +304,142 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
       isDirty: _isDirty && _currentStep < 4,
       title: 'Discard wizard?',
       message: 'Your progress will be lost. Are you sure?',
-      child: Scaffold(
-        appBar: _currentStep == 4
-            ? null
-            : AppBar(
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Guided Creation', style: TextStyle(fontSize: 16)),
-                    Text(
-                      '${_currentStep + 1} of 5 — ${_stepTitles[_currentStep]}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(4),
-                  child: LinearProgressIndicator(
-                    value: (_currentStep + 1) / 5,
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  ),
-                ),
-              ),
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            // Step 1: Name
-            WizardStepName(
-              titleCtrl: _titleCtrl,
-              descCtrl: _descCtrl,
-              selectedType: _type,
-              scoringMode: _scoringMode,
-              onTypeChanged: (t) => setState(() {
-                _type = t;
-                _isDirty = true;
-              }),
-            ),
-            // Step 2: Structure
-            WizardStepStructure(
-              sections: _starterSections,
-              scoringMode: _scoringMode,
-              onChanged: _markDirty,
-            ),
-            // Step 3: Build Criteria (per-section)
-            WizardStepSections(
-              sections: _sections,
-              scoringMode: _scoringMode,
-              currentSectionIndex: _currentSectionIndex,
-              onChanged: _markDirty,
-              onSectionChanged: (i) => setState(() => _currentSectionIndex = i),
-            ),
-            // Step 4: Review
-            WizardStepReview(
-              title: _titleCtrl.text,
-              scoringMode: _scoringMode,
-              type: _type,
-              sections: _sections,
-              ccpOverride: _ccpOverride,
-              riskOverride: _riskOverride,
-              weightedDensity: _weightedDensity,
-              confirmCorrect: _confirmCorrect,
-              progressiveRepeat: _progressiveRepeat,
-              deadlineCtrl: _deadlineCtrl,
-              reminderCtrl: _reminderCtrl,
-              onCcpChanged: (v) => setState(() => _ccpOverride = v),
-              onRiskChanged: (v) => setState(() => _riskOverride = v),
-              onDensityChanged: (v) => setState(() => _weightedDensity = v),
-              onCorrectChanged: (v) => setState(() => _confirmCorrect = v),
-              onProgressiveChanged: (v) => setState(() => _progressiveRepeat = v),
-            ),
-            // Step 5: Done
-            if (_savedTemplateId != null)
-              WizardStepSuccess(
-                templateId: _savedTemplateId!,
-                templateTitle: _titleCtrl.text,
-                sectionCount: _sections.length,
-                criteriaCount: _totalSavedCriteria,
-                onViewTemplate: () =>
-                    context.go('/templates/$_savedTemplateId'),
-                onOpenBuilder: () =>
-                    context.go('/templates/$_savedTemplateId/edit'),
-                onDone: () => context.go('/templates'),
-              )
-            else
-              const SizedBox.shrink(),
-          ],
-        ),
-        bottomNavigationBar: isSavingOrDone
-            ? null
-            : SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-                  child: Row(
+      child: PopScope(
+        // Intercept hardware back & swipe: steps 1–3 navigate within wizard,
+        // only step 0 and step 4 (done) allow actual route pop.
+        canPop: _currentStep == 0 || _currentStep == 4,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _prevStep();
+        },
+        child: Scaffold(
+          appBar: _currentStep == 4
+              ? null
+              : AppBar(
+                  // Custom leading: steps 1–3 call _prevStep; step 0 pops route.
+                  leading: _currentStep == 0
+                      ? const BackButton()
+                      : BackButton(onPressed: _prevStep),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (_currentStep > 0)
-                        OutlinedButton(
-                          onPressed: _saving ? null : _prevStep,
-                          child: const Text('Back'),
+                      const Text('Guided Creation', style: TextStyle(fontSize: 16)),
+                      Text(
+                        '${_currentStep + 1} of 5 — ${_stepTitles[_currentStep]}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
-                      const Spacer(),
-                      FilledButton(
-                        onPressed: _saving ? null : () {
-                          if (_currentStep == 3) {
-                            _save();
-                          } else {
-                            _nextStep();
-                          }
-                        },
-                        child: _saving
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Text(_currentStep == 3 ? 'Save Template' : 'Next'),
                       ),
                     ],
                   ),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(4),
+                    child: LinearProgressIndicator(
+                      value: (_currentStep + 1) / 5,
+                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    ),
+                  ),
                 ),
+          body: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              // Step 1: Name
+              WizardStepName(
+                titleCtrl: _titleCtrl,
+                descCtrl: _descCtrl,
+                selectedType: _type,
+                scoringMode: _scoringMode,
+                onTypeChanged: (t) => setState(() {
+                  _type = t;
+                  _isDirty = true;
+                }),
               ),
+              // Step 2: Structure
+              WizardStepStructure(
+                sections: _sections,
+                scoringMode: _scoringMode,
+                onChanged: _markDirty,
+              ),
+              // Step 3: Build Criteria (per-section)
+              WizardStepSections(
+                sections: _sections,
+                scoringMode: _scoringMode,
+                currentSectionIndex: _currentSectionIndex,
+                onChanged: _markDirty,
+                onSectionChanged: (i) => setState(() => _currentSectionIndex = i),
+              ),
+              // Step 4: Review
+              WizardStepReview(
+                title: _titleCtrl.text,
+                scoringMode: _scoringMode,
+                type: _type,
+                sections: _sections,
+                ccpOverride: _ccpOverride,
+                riskOverride: _riskOverride,
+                weightedDensity: _weightedDensity,
+                confirmCorrect: _confirmCorrect,
+                progressiveRepeat: _progressiveRepeat,
+                deadlineCtrl: _deadlineCtrl,
+                reminderCtrl: _reminderCtrl,
+                onCcpChanged: (v) => setState(() => _ccpOverride = v),
+                onRiskChanged: (v) => setState(() => _riskOverride = v),
+                onDensityChanged: (v) => setState(() => _weightedDensity = v),
+                onCorrectChanged: (v) => setState(() => _confirmCorrect = v),
+                onProgressiveChanged: (v) => setState(() => _progressiveRepeat = v),
+              ),
+              // Step 5: Done
+              if (_savedTemplateId != null)
+                WizardStepSuccess(
+                  templateId: _savedTemplateId!,
+                  templateTitle: _titleCtrl.text,
+                  sectionCount: _sections.length,
+                  criteriaCount: _totalSavedCriteria,
+                  onViewTemplate: () =>
+                      context.go('/templates/$_savedTemplateId'),
+                  onOpenBuilder: () =>
+                      context.go('/templates/$_savedTemplateId/edit'),
+                  onDone: () => context.go('/templates'),
+                )
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
+          bottomNavigationBar: isSavingOrDone
+              ? null
+              : SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+                    child: Row(
+                      children: [
+                        if (_currentStep > 0)
+                          OutlinedButton(
+                            onPressed: _saving ? null : _prevStep,
+                            child: const Text('Back'),
+                          ),
+                        const Spacer(),
+                        FilledButton(
+                          onPressed: _saving
+                              ? null
+                              : () {
+                                  if (_currentStep == 3) {
+                                    _save();
+                                  } else {
+                                    _nextStep();
+                                  }
+                                },
+                          child: _saving
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : Text(_currentStep == 3 ? 'Save Template' : 'Next'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+        ),
       ),
     );
   }
