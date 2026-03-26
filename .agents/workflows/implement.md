@@ -62,6 +62,22 @@ description: The Core Builder Implementation Workflow.
 > **@@SCAN** Before coding, answer: (1) Does the plan pass ALL 5 quality checklist items? (2) Did you spot-check at least ONE blast radius claim against real code? (3) Does this change pass the YAGNI / Worth Doing gate?
 
 ## Phase 3: Coding (Builder Execution — Quality Built In)
+> [!IMPORTANT]
+> **@@SCAN — Pre-Code Governance Anchor (MANDATORY)**
+> Before writing the first line of code, explicitly state all three:
+> 1. **Active Platform Rules**: Architecture pattern (FSD etc.) and the exact target file structure for this feature.
+> 2. **Active Gotchas**: Any entries from `project-gotchas.md` that apply to this task. Write `NONE` if none apply.
+> 3. **Active Skills**: Which skills from Phase 1 are still in scope for coding. Drop irrelevant ones now.
+>
+> **Required output before first code change:**
+> ```
+> [SCAN] Active rules: <list>
+> [SCAN] Applicable gotchas: <list or NONE>
+> [SCAN] Active skills: <list>
+> ```
+> ❌ Skipping this block is a workflow violation. Do NOT write any code without it.
+
+
 - **Instruction**: Put on your "Senior Developer" hat. Quality is built in during coding, not inspected out after.
 - **The Micro-Verification Mandate**: During the implementation phase, do not wait until the entire feature is coded to verify stability. You MUST run `dotnet build`, `flutter analyze`, or the relevant test suite after **EVERY single file modification or major logical step**.
   1. **ATDD Outer Loop Check (Conditional)**: If the QA/SDET provided failing acceptance tests (from a prior `/atdd` workflow), review them. Your goal is to turn these GREEN. DO NOT modify the QA's test code. If no ATDD tests exist, proceed standardly.

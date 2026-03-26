@@ -46,6 +46,22 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
   - **Gate**: Proceed immediately to **Phase 2b** (Writing code). ONLY use `notify_user` to halt execution if you discover a massive, unresolvable contradiction in the business requirement that makes the feature impossible to test or logic completely ambiguous.
 
 ### 2b. Test Implementation (One scenario at a time)
+> [!IMPORTANT]
+> **@@SCAN — Pre-Test Governance Anchor (MANDATORY)**
+> Before writing the first test, explicitly state all three:
+> 1. **Active Platform Rules**: Which testing framework and conventions apply (xUnit, Testcontainers, AppDriver pattern etc.).
+> 2. **Active Gotchas**: Any entries from `project-gotchas.md` relevant to the entities or endpoints under test. Write `NONE` if none apply.
+> 3. **Active Skills**: Which skills from Phase 1 are still in scope. Drop irrelevant ones now.
+>
+> **Required output before first test method:**
+> ```
+> [SCAN] Active rules: <list>
+> [SCAN] Applicable gotchas: <list or NONE>
+> [SCAN] Active skills: <list>
+> ```
+> ❌ Skipping this block is a workflow violation. Do NOT write any test code without it.
+
+
 
 - **Requirement**: For each approved scenario, write the corresponding test code. Iterate vertically — one scenario → one test → verify RED → next.
 - **Rule (No-Code Mandate)**: Sentinel CANNOT write or modify production code. Sentinel writes test code only.
