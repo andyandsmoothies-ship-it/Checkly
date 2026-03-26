@@ -50,9 +50,13 @@ class WizardStepReview extends StatefulWidget {
 
 class _WizardStepReviewState extends State<WizardStepReview> {
   bool _showAdvanced = false;
+  final _expandedSections = <int>{};
 
   int get _totalCriteria =>
       widget.sections.fold(0, (sum, s) => sum + s.criteria.length);
+
+  bool get _isProductionReady =>
+      widget.sections.length >= 3 && _totalCriteria >= 5;
 
   String get _modeLabel {
     switch (widget.scoringMode) {
@@ -91,6 +95,56 @@ class _WizardStepReviewState extends State<WizardStepReview> {
         ),
         const SizedBox(height: 24),
 
+        // Quality indicator
+        if (_isProductionReady)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.green.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.green.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.check_circle_outline, color: Colors.green.shade700, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    '${widget.sections.length} sections, $_totalCriteria criteria — Production ready',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.green.shade800,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber_outlined, color: Colors.orange.shade700, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Consider adding more — aim for 3+ sections with 5+ criteria for a thorough audit.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.orange.shade800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 16),
+
         // Summary card
         Card(
           child: Padding(
@@ -125,13 +179,84 @@ class _WizardStepReviewState extends State<WizardStepReview> {
                 _ReviewRow(
                   icon: Icons.checklist,
                   label: 'Criteria',
-                  value: '$_totalCriteria criterion/criteria total',
+                  value: '$_totalCriteria total',
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
+
+        // Tappable section breakdown
+        if (widget.sections.isNotEmpty) ...[
+          Text(
+            'Sections',
+            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          ...widget.sections.asMap().entries.map((entry) {
+            final i = entry.key;
+            final s = entry.value;
+            final isExpanded = _expandedSections.contains(i);
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: InkWell(
+                onTap: () => setState(() {
+                  if (isExpanded) {
+                    _expandedSections.remove(i);
+                  } else {
+                    _expandedSections.add(i);
+                  }
+                }),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              s.titleCtrl.text.isEmpty ? 'Section ${i + 1}' : s.titleCtrl.text,
+                              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          Text(
+                            '${s.criteria.length} criteria',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            isExpanded ? Icons.expand_less : Icons.expand_more,
+                            size: 18,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                      if (isExpanded && s.criteria.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        ...s.criteria.map((c) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4, left: 8),
+                          child: Row(
+                            children: [
+                              Icon(Icons.circle, size: 5, color: theme.colorScheme.onSurfaceVariant),
+                              const SizedBox(width: 8),
+                              Expanded(child: Text(c.labelCtrl.text, style: theme.textTheme.bodySmall)),
+                            ],
+                          ),
+                        )),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 16),
+        ],
 
         // Optional advanced settings
         OutlinedButton.icon(
@@ -162,6 +287,14 @@ class _WizardStepReviewState extends State<WizardStepReview> {
             onProgressiveChanged: widget.onProgressiveChanged,
           ),
         ],
+        const SizedBox(height: 16),
+        Center(
+          child: TextButton.icon(
+            onPressed: null, // handled via success screen
+            icon: const Icon(Icons.open_in_new, size: 16),
+            label: const Text('Continue editing in Template Builder'),
+          ),
+        ),
         const SizedBox(height: 80),
       ],
     );

@@ -4,21 +4,27 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../manager/template_manager.dart';
+import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
+import '../models/wizard_starter_packs.dart';
 import '../widgets/wizard_step_name.dart';
+import '../widgets/wizard_step_structure.dart';
 import '../widgets/wizard_step_sections.dart';
 import '../widgets/wizard_step_review.dart';
+import '../widgets/wizard_step_success.dart';
 import '../widgets/blueprint_selection_modal.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 
 final _di = GetIt.instance;
 
-/// Template Creation Wizard — guided 3-step flow for novice admins.
+/// Template Creation Wizard — guided 5-step flow for novice admins.
 ///
 /// Step 0: Blueprint selection (inline dialog on entry).
-/// Step 1: Name + type.
-/// Step 2: Sections + criteria.
-/// Step 3: Review + optional advanced settings + Save.
+/// Step 1 (Name): Title, description, category.
+/// Step 2 (Structure): Toggle starter pack sections.
+/// Step 3 (Build): Drill into each section and add/edit criteria.
+/// Step 4 (Review): Full summary with quality indicator before saving.
+/// Step 5 (Done): Animated success screen with post-save action buttons.
 ///
 /// Produces the same payload as [TemplateBuilderPage] → [TemplateManager.saveTemplate].
 class TemplateWizardPage extends StatefulWidget {
@@ -34,7 +40,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   bool _saving = false;
   bool _isDirty = false;
 
-  // ── Form state (mirrors TemplateBuilderPage) ──
+  // ── Form state ──
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   String _type = 'qc';
@@ -49,17 +55,25 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   final _deadlineCtrl = TextEditingController(text: '7');
   final _reminderCtrl = TextEditingController(text: '2');
 
-  // Sections
+  // ── Starter sections (Step 2: toggleable structure) ──
+  List<StarterSection> _starterSections = [];
+
+  // ── Actual editable sections (Step 3: criteria builder) ──
   final List<EditableGroup> _sections = [];
 
-  static const _stepTitles = ['Name', 'Sections', 'Review'];
+  // ── Section cursor in Step 3 ──
+  int _currentSectionIndex = 0;
+
+  // ── Success state ──
+  String? _savedTemplateId;
+
+  static const _stepTitles = ['Name', 'Structure', 'Build Criteria', 'Review', 'Done'];
 
   @override
   void initState() {
     super.initState();
     _titleCtrl.addListener(_markDirty);
     _descCtrl.addListener(_markDirty);
-    // Show blueprint selection as first action
     WidgetsBinding.instance.addPostFrameCallback((_) => _showBlueprintModal());
   }
 
@@ -90,40 +104,68 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
     if (!mounted) return;
 
     if (mode == null) {
-      // User closed without selecting — exit wizard
       context.pop();
       return;
     }
 
     setState(() {
       _scoringMode = mode;
-      // Default type based on blueprint
       _type = switch (mode) {
         'accumulation' => 'training',
         'survey' => 'general',
         'checklist' => 'general',
         _ => 'qc',
       };
+      // Pre-load starter structure for this mode
+      _starterSections = WizardStarterPacks.forMode(mode);
     });
+  }
+
+  // ── Starter pack → EditableGroup conversion ──
+
+  void _applyStarterPack() {
+    // Dispose old sections
+    for (final s in _sections) {
+      s.dispose();
+    }
+    _sections.clear();
+
+    for (final starter in _starterSections.where((s) => s.enabled)) {
+      final group = EditableGroup(title: starter.title);
+      group.titleCtrl.text = starter.title;
+      for (final sc in starter.criteria) {
+        final crit = EditableCriterion(inputType: sc.inputType, points: sc.points);
+        crit.labelCtrl.text = sc.label;
+        group.criteria.add(crit);
+      }
+      _sections.add(group);
+    }
+
+    _currentSectionIndex = 0;
+    _markDirty();
   }
 
   // ── Navigation ──
 
   void _nextStep() {
     if (!_validateCurrentStep()) return;
-    if (_currentStep < 2) {
+
+    if (_currentStep == 1) {
+      // Transitioning from Structure → Build: materialise the EditableGroups
+      _applyStarterPack();
+    }
+
+    if (_currentStep < 3) {
       setState(() => _currentStep++);
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-    } else {
-      _save();
     }
   }
 
   void _prevStep() {
-    if (_currentStep > 0) {
+    if (_currentStep > 0 && _currentStep < 4) {
       setState(() => _currentStep--);
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
@@ -134,7 +176,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
 
   bool _validateCurrentStep() {
     switch (_currentStep) {
-      case 0: // Name step
+      case 0: // Name
         if (_titleCtrl.text.trim().isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Please enter a template title')),
@@ -142,25 +184,32 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
           return false;
         }
         return true;
-      case 1: // Sections step
+
+      case 1: // Structure
+        if (_starterSections.every((s) => !s.enabled)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('At least one section must be enabled'),
+            ),
+          );
+          return false;
+        }
+        return true;
+
+      case 2: // Build Criteria
         if (_sections.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Add at least one section')),
           );
           return false;
         }
-        // Validate each section has a name and at least one criterion
         for (int i = 0; i < _sections.length; i++) {
-          if (_sections[i].titleCtrl.text.trim().isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Section ${i + 1} needs a name')),
-            );
-            return false;
-          }
           if (_sections[i].criteria.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Section ${i + 1} needs at least one criterion'),
+                content: Text(
+                  '"${_sections[i].titleCtrl.text.isEmpty ? 'Section ${i + 1}' : _sections[i].titleCtrl.text}" needs at least one criterion',
+                ),
               ),
             );
             return false;
@@ -170,7 +219,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'Criterion ${ci + 1} in Section ${i + 1} needs a label',
+                    'Criterion ${ci + 1} in section ${i + 1} needs a label',
                   ),
                 ),
               );
@@ -179,12 +228,16 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
           }
         }
         return true;
+
+      case 3: // Review — trigger save
+        return true;
+
       default:
         return true;
     }
   }
 
-  // ── Build payload (mirrors TemplateBuilderPage._buildGroupsRecursive) ──
+  // ── Payload builders ──
 
   List<Map<String, dynamic>> _buildGroups() {
     return _sections.asMap().entries.map((e) {
@@ -229,28 +282,30 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   }
 
   Future<void> _save() async {
-    if (!_validateCurrentStep()) return;
-
     setState(() => _saving = true);
     try {
       final manager = _di<TemplateManager>();
-      await manager.saveTemplate(
+      final templateId = await manager.saveTemplate(
         id: null,
         title: _titleCtrl.text.trim(),
         type: _type,
-        description: _descCtrl.text.trim().isNotEmpty
-            ? _descCtrl.text.trim()
-            : null,
+        description: _descCtrl.text.trim().isNotEmpty ? _descCtrl.text.trim() : null,
         scoringLogicConfig: _buildScoringLogicConfig(),
         version: 0,
         groups: _buildGroups(),
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Template created successfully!')),
+        setState(() {
+          _saving = false;
+          _savedTemplateId = templateId;
+          _currentStep = 4;
+        });
+        _pageController.animateToPage(
+          4,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
         );
-        context.go('/templates');
       }
     } catch (e) {
       if (mounted) {
@@ -262,38 +317,44 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
     }
   }
 
+  int get _totalSavedCriteria =>
+      _sections.fold(0, (sum, s) => sum + s.criteria.length);
+
   // ── Build ──
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isSavingOrDone = _saving || _currentStep == 4;
 
     return UnsavedChangesGuard(
-      isDirty: _isDirty,
+      isDirty: _isDirty && _currentStep < 4,
       title: 'Discard wizard?',
       message: 'Your progress will be lost. Are you sure?',
       child: Scaffold(
-        appBar: AppBar(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Guided Creation', style: TextStyle(fontSize: 16)),
-              Text(
-                'Step ${_currentStep + 1} of 3 — ${_stepTitles[_currentStep]}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+        appBar: _currentStep == 4
+            ? null
+            : AppBar(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Guided Creation', style: TextStyle(fontSize: 16)),
+                    Text(
+                      '${_currentStep + 1} of 5 — ${_stepTitles[_currentStep]}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(4),
+                  child: LinearProgressIndicator(
+                    value: (_currentStep + 1) / 5,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  ),
                 ),
               ),
-            ],
-          ),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(4),
-            child: LinearProgressIndicator(
-              value: (_currentStep + 1) / 3,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            ),
-          ),
-        ),
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
@@ -303,18 +364,27 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
               titleCtrl: _titleCtrl,
               descCtrl: _descCtrl,
               selectedType: _type,
+              scoringMode: _scoringMode,
               onTypeChanged: (t) => setState(() {
                 _type = t;
                 _isDirty = true;
               }),
             ),
-            // Step 2: Sections
-            WizardStepSections(
-              sections: _sections,
+            // Step 2: Structure
+            WizardStepStructure(
+              sections: _starterSections,
               scoringMode: _scoringMode,
               onChanged: _markDirty,
             ),
-            // Step 3: Review
+            // Step 3: Build Criteria (per-section)
+            WizardStepSections(
+              sections: _sections,
+              scoringMode: _scoringMode,
+              currentSectionIndex: _currentSectionIndex,
+              onChanged: _markDirty,
+              onSectionChanged: (i) => setState(() => _currentSectionIndex = i),
+            ),
+            // Step 4: Review
             WizardStepReview(
               title: _titleCtrl.text,
               scoringMode: _scoringMode,
@@ -331,36 +401,58 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
               onRiskChanged: (v) => setState(() => _riskOverride = v),
               onDensityChanged: (v) => setState(() => _weightedDensity = v),
               onCorrectChanged: (v) => setState(() => _confirmCorrect = v),
-              onProgressiveChanged: (v) =>
-                  setState(() => _progressiveRepeat = v),
+              onProgressiveChanged: (v) => setState(() => _progressiveRepeat = v),
             ),
+            // Step 5: Done
+            if (_savedTemplateId != null)
+              WizardStepSuccess(
+                templateId: _savedTemplateId!,
+                templateTitle: _titleCtrl.text,
+                sectionCount: _sections.length,
+                criteriaCount: _totalSavedCriteria,
+                onViewTemplate: () =>
+                    context.go('/templates/$_savedTemplateId'),
+                onOpenBuilder: () =>
+                    context.go('/templates/$_savedTemplateId/edit'),
+                onDone: () => context.go('/templates'),
+              )
+            else
+              const SizedBox.shrink(),
           ],
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-            child: Row(
-              children: [
-                if (_currentStep > 0)
-                  OutlinedButton(
-                    onPressed: _saving ? null : _prevStep,
-                    child: const Text('Back'),
+        bottomNavigationBar: isSavingOrDone
+            ? null
+            : SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+                  child: Row(
+                    children: [
+                      if (_currentStep > 0)
+                        OutlinedButton(
+                          onPressed: _saving ? null : _prevStep,
+                          child: const Text('Back'),
+                        ),
+                      const Spacer(),
+                      FilledButton(
+                        onPressed: _saving ? null : () {
+                          if (_currentStep == 3) {
+                            _save();
+                          } else {
+                            _nextStep();
+                          }
+                        },
+                        child: _saving
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : Text(_currentStep == 3 ? 'Save Template' : 'Next'),
+                      ),
+                    ],
                   ),
-                const Spacer(),
-                FilledButton(
-                  onPressed: _saving ? null : _nextStep,
-                  child: _saving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(_currentStep < 2 ? 'Next' : 'Save Template'),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }

@@ -3,18 +3,23 @@ import 'package:flutter/material.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 
-/// Wizard Step 2: Add sections and criteria.
+/// Wizard Step 3: Build criteria per section.
+/// Shows ONE section at a time with pill navigation at the top.
 /// Simplified — no sub-sections, smart defaults for input type.
 class WizardStepSections extends StatefulWidget {
   final List<EditableGroup> sections;
   final String scoringMode;
+  final int currentSectionIndex;
   final VoidCallback onChanged;
+  final ValueChanged<int> onSectionChanged;
 
   const WizardStepSections({
     super.key,
     required this.sections,
     required this.scoringMode,
+    required this.currentSectionIndex,
     required this.onChanged,
+    required this.onSectionChanged,
   });
 
   @override
@@ -36,24 +41,9 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     }
   }
 
-  void _addSection() {
-    setState(() {
-      widget.sections.add(
-        EditableGroup(title: 'Section ${widget.sections.length + 1}'),
-      );
-    });
-    widget.onChanged();
-  }
 
-  void _removeSection(int index) {
-    setState(() {
-      widget.sections[index].dispose();
-      widget.sections.removeAt(index);
-    });
-    widget.onChanged();
-  }
-
-  void _addCriterion(EditableGroup section) {
+  void _addCriterion() {
+    final section = widget.sections[widget.currentSectionIndex];
     setState(() {
       section.criteria.add(
         EditableCriterion(inputType: _defaultInputType, points: '10'),
@@ -62,7 +52,8 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     widget.onChanged();
   }
 
-  void _removeCriterion(EditableGroup section, int ci) {
+  void _removeCriterion(int ci) {
+    final section = widget.sections[widget.currentSectionIndex];
     setState(() {
       section.criteria[ci].dispose();
       section.criteria.removeAt(ci);
@@ -70,156 +61,212 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     widget.onChanged();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        Text(
-          'Build your sections',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+  void _showBatchAdd() {
+    final ctrl = TextEditingController();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Add at least one section with criteria. You can always refine in the full editor later.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        // Section cards
-        ...widget.sections.asMap().entries.map((entry) {
-          final si = entry.key;
-          final section = entry.value;
-          return _SectionCard(
-            section: section,
-            sectionIndex: si,
-            scoringMode: widget.scoringMode,
-            defaultInputType: _defaultInputType,
-            onRemove: () => _removeSection(si),
-            onAddCriterion: () => _addCriterion(section),
-            onRemoveCriterion: (ci) => _removeCriterion(section, ci),
-            onChanged: widget.onChanged,
-          );
-        }),
-
-        const SizedBox(height: 12),
-        // Add section button
-        OutlinedButton.icon(
-          onPressed: _addSection,
-          icon: const Icon(Icons.add),
-          label: const Text('Add Section'),
-        ),
-
-        if (widget.sections.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Center(
-              child: Text(
-                'At least one section is required.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.error,
-                ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Batch Add Criteria',
+              style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
-          ),
-      ],
-    );
-  }
-}
-
-// ── Section card ──
-
-class _SectionCard extends StatelessWidget {
-  final EditableGroup section;
-  final int sectionIndex;
-  final String scoringMode;
-  final String defaultInputType;
-  final VoidCallback onRemove;
-  final VoidCallback onAddCriterion;
-  final ValueChanged<int> onRemoveCriterion;
-  final VoidCallback onChanged;
-
-  const _SectionCard({
-    required this.section,
-    required this.sectionIndex,
-    required this.scoringMode,
-    required this.defaultInputType,
-    required this.onRemove,
-    required this.onAddCriterion,
-    required this.onRemoveCriterion,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Section header
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: section.titleCtrl,
-                    onChanged: (_) => onChanged(),
-                    decoration: InputDecoration(
-                      labelText: 'Section ${sectionIndex + 1} Name',
-                      isDense: true,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: onRemove,
-                  tooltip: 'Remove section',
-                ),
-              ],
+            const SizedBox(height: 8),
+            Text(
+              'Enter one criterion per line (max 20).',
+              style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
-
-            // Criteria
-            if (section.criteria.isEmpty)
-              Text(
-                'No criteria yet. Tap "Add Criterion" below.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+            TextField(
+              controller: ctrl,
+              maxLines: 8,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Handwashing station available\nFloor cleanliness\nWaste disposal...',
+                border: OutlineInputBorder(),
               ),
-            ...section.criteria.asMap().entries.map((ce) {
-              final ci = ce.key;
-              final criterion = ce.value;
-              return _CriterionRow(
-                criterion: criterion,
-                index: ci,
-                scoringMode: scoringMode,
-                onRemove: () => onRemoveCriterion(ci),
-                onChanged: onChanged,
-              );
-            }),
-            const SizedBox(height: 8),
-            TextButton.icon(
-              onPressed: onAddCriterion,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add Criterion'),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () {
+                final lines = ctrl.text
+                    .split('\n')
+                    .map((l) => l.trim())
+                    .where((l) => l.isNotEmpty)
+                    .toList();
+                final capped = lines.length > 20;
+                final toAdd = lines.take(20).toList();
+                final section = widget.sections[widget.currentSectionIndex];
+                setState(() {
+                  for (final label in toAdd) {
+                    final c = EditableCriterion(
+                      inputType: _defaultInputType,
+                      points: '10',
+                    );
+                    c.labelCtrl.text = label;
+                    section.criteria.add(c);
+                  }
+                });
+                widget.onChanged();
+                Navigator.pop(ctx);
+                if (capped && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Maximum 20 criteria per batch. Additional lines were ignored.',
+                      ),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Add Criteria'),
             ),
           ],
         ),
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final sectionCount = widget.sections.length;
+    final currentIdx = widget.currentSectionIndex.clamp(0, sectionCount - 1);
+
+    if (sectionCount == 0) {
+      return const Center(child: Text('No sections to build.'));
+    }
+
+    final section = widget.sections[currentIdx];
+
+    return Column(
+      children: [
+        // Section pill navigation
+        if (sectionCount > 1)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Row(
+              children: [
+                for (int i = 0; i < sectionCount; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(
+                        widget.sections[i].titleCtrl.text.isEmpty
+                            ? 'Section ${i + 1}'
+                            : widget.sections[i].titleCtrl.text,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      selected: i == currentIdx,
+                      onSelected: (_) => widget.onSectionChanged(i),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+        // Criteria list for active section
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            children: [
+              // Section progress header
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Section ${currentIdx + 1} of $sectionCount',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        Text(
+                          section.titleCtrl.text.isEmpty
+                              ? 'Section ${currentIdx + 1}'
+                              : section.titleCtrl.text,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          '${section.criteria.length} criterion/criteria',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Batch add button
+                  OutlinedButton.icon(
+                    onPressed: _showBatchAdd,
+                    icon: const Icon(Icons.playlist_add, size: 18),
+                    label: const Text('Batch Add'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Criteria list
+              if (section.criteria.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    'No criteria yet. Tap "Add Criterion" or "Batch Add" below.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ...section.criteria.asMap().entries.map((ce) {
+                final ci = ce.key;
+                final criterion = ce.value;
+                return _CriterionRow(
+                  criterion: criterion,
+                  index: ci,
+                  scoringMode: widget.scoringMode,
+                  onRemove: () => _removeCriterion(ci),
+                  onChanged: widget.onChanged,
+                );
+              }),
+
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: _addCriterion,
+                icon: const Icon(Icons.add, size: 18),
+                label: const Text('Add Criterion'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
+
 
 // ── Criterion row (simplified) ──
 

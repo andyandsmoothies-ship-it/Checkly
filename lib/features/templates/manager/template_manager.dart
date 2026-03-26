@@ -151,8 +151,8 @@ class TemplateManager extends ChangeNotifier {
         scoringLogicConfig: scoringLogicConfig,
       );
       templateId = result['id'] as String;
-      // New templates start at version 0, tree save will increment to 1
-      version = 0;
+      // Sync the server-initialized version (server sets Version = 1 on creation)
+      version = result['version'] as int;
     } else {
       templateId = id;
     }
