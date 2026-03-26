@@ -15,6 +15,12 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
 > You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE investigating. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
+> 
+> **MANDATORY LOG STRUCTURE**: Your `thinking_log_[topic].md` MUST strictly follow this 4-section format, and you must update it progressively as you move through the debugging phases:
+> `## 1. Initial Hypothesis`: Brainstorm potential causes (Code, DB, Navigation, etc.) BEFORE reading deep code.
+> `## 2. Evidence Gathered`: Document facts, code snippets, `grep` results, and execution traces here.
+> `## 3. Root Cause Identified`: Explain the exact *why*, linking the evidence to the failure.
+> `## 4. Fix Strategy`: List possible solutions and their tradeoffs before drafting the final failure report.
 
 ## Phase 1: Symptom Isolation (NO GUESSING)
 <strict-instruction>
