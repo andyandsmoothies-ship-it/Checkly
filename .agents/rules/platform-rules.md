@@ -1,7 +1,7 @@
 ---
 name: Checkly Platform Rules
 description: Architecture, coding standards, and data conventions for the Checkly mobile audit platform.
-trigger: always_on
+trigger: model_decision
 ---
 
 # Checkly Platform Rules
