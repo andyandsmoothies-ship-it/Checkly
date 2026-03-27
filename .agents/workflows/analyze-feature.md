@@ -20,6 +20,8 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
 > You must establish a clear internal reasoning trace before starting your analysis. Keep your thinking rigorous but internal.
+> 
+> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now before proceeding to Phase 1. Use it to track your progress through the phases below. Do not skip this.
 
 ## Phase 1: Skill Loading (Precision Focus)
 - **Instruction**: Do not act as a generic AI. You MUST assume the persona of the exact specialist needed for this scoped task.
@@ -64,7 +66,14 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
   - **Verification Plan:** Exact steps to prove it works in the local environment.
 
 ## Phase 4: Route Implementation (The ATDD Gate)
-- **Instruction**: Evaluate the generated plan against the **ATDD Decision Gate** to determine where to send the user next.
+
+> [!IMPORTANT]
+> The B1/B2 verdict is decided **here**, after full analysis. If this slice came from an epic dispatch table that listed `/atdd` in the chain, that was a **forecast**, not a mandate. Follow the gate below, not the epic's assumption.
+
+> [!CAUTION]
+> **Scope Escalation**: If analysis reveals this feature touches >5 files, requires new DB migrations, new services, or a new architectural pattern — **STOP**. This is a Track C epic in disguise. Inform the user and invoke `/analyze-epic` instead. Do not proceed to Phase 4 routing.
+
+- **Instruction**: Evaluate the generated plan against the **ATDD Decision Gate**.
 
   | Signal | Skip ATDD (Track B1) | Require ATDD (Track B2) |
   |--------|----------------|---------------------|

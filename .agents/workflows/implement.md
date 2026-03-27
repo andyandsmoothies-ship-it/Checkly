@@ -12,7 +12,7 @@ description: The Core Builder Implementation Workflow.
 - **Workflow Calibration**: If you are just starting this session, you MUST use `view_file` to read the entirety of this `implement.md` file right now to load the strict `@@SCAN` checkpoints into your active context.
 - Run Pre-Flight Check from `governance-rules.md`. This makes sure you don't write code that breaks project rules.
 - **INTERNAL LOGGING**: You must rigorously process the output of every single `@@SCAN` block defined below in your internal chain of thought. Do NOT use it as a free-form scratchpad.
-- If a task list is needed → create `task.md` FIRST. This gives you a stable checklist to track progress.
+- **MANDATORY ARTIFACT**: You MUST create a `task.md` artifact FIRST before writing any code. Do not skip this under any circumstances. This gives you a stable checklist to track progress and prevents task amnesia.
 
 ## Phase 1: Deep Discovery
 - Read config files (`.csproj`, `pubspec.yaml`, etc.) to understand the current project state before touching anything.
@@ -57,8 +57,6 @@ description: The Core Builder Implementation Workflow.
 > **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you test every state in the State Matrix BEFORE coding? (2) Did you follow TDD for each component? (3) Did you run the inline quality gate after each component?
 
 ## Phase 4: Self-Review
-> Only use rules and skills already loaded in Phase 1. Do NOT scan `.agents/rules/` or `.agents/skills/` broadly here — it wastes context.
-
 Review your own changes from 4 angles. State findings for each:
 
 1. **Security & Architecture**: Does the code break any workspace rules? Any illegal imports or wrong package dependencies?

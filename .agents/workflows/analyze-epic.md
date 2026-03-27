@@ -21,6 +21,8 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
 > You must establish a clear internal reasoning trace before starting your analysis. Do NOT pollute structured artifacts with internal monologue.
+> 
+> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now before proceeding to Phase 1. Use it to track your progress through the phases below. Do not skip this.
 
 ## Phase 1: Technical Discovery & Reuse Audit
 - **Instruction**: Assume the role of a Principal Software Engineer. Your first job is to determine if we should build this at all.

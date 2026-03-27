@@ -151,6 +151,54 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     return '$c $cLabel';
   }
 
+  /// Returns a contextual guidance banner for modes that restrict wizard
+  /// capabilities. Returns [SizedBox.shrink] for unrestricted modes (penalty,
+  /// accumulation) to avoid noise for experienced users.
+  Widget _buildModeBanner(BuildContext context) {
+    final theme = Theme.of(context);
+    final (IconData icon, String text, Color color) = switch (widget.scoringMode) {
+      'survey' => (
+          Icons.forum_outlined,
+          'Survey Mode — Sub-sections and scoring logic are disabled. Add questions to collect responses.',
+          theme.colorScheme.secondary,
+        ),
+      'checklist' => (
+          Icons.checklist_rounded,
+          'Checklist Mode — Keep it flat with Pass / Fail or choice inputs. Advanced math is disabled.',
+          theme.colorScheme.primary,
+        ),
+      _ => (Icons.info_outline, '', Colors.transparent),
+    };
+
+    // No banner for penalty / accumulation modes (or unknown modes)
+    if (text.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: color,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -197,6 +245,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
             children: [
+              _buildModeBanner(context),
               // Section progress header with recursive count (Change 3)
               Row(
                 children: [

@@ -16,6 +16,8 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 > [!IMPORTANT]
 > You must internally structure your reasoning before investigating. Do NOT pollute structured artifacts with internal monologue.
 > 
+> **MANDATORY ARTIFACT**: You MUST create a `task.md` document right now before investigating the codebase. This guarantees you will correctly satisfy Question 3 in the Final Phase Self-Correction Gate.
+> 
 > **MANDATORY REASONING PHASES**: You must process these progressively in your context:
 > `## 1. Initial Hypothesis`: Brainstorm potential causes (Code, DB, Navigation, etc.) BEFORE reading deep code.
 > `## 2. Evidence Gathered`: Document facts, code snippets, `grep` results, and execution traces here.
