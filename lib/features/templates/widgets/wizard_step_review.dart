@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../widgets/advanced_settings_card.dart';
 
@@ -57,8 +58,9 @@ class _WizardStepReviewState extends State<WizardStepReview> {
   bool _showAdvanced = false;
   final _expandedSections = <int>{};
 
+  // Change 4: use recursive countCriteria() so sub-section criteria are included (EDD-5)
   int get _totalCriteria =>
-      widget.sections.fold(0, (sum, s) => sum + s.criteria.length);
+      widget.sections.fold(0, (sum, s) => sum + s.countCriteria());
 
   bool get _isProductionReady =>
       widget.sections.length >= 3 && _totalCriteria >= 5;
@@ -74,21 +76,48 @@ class _WizardStepReviewState extends State<WizardStepReview> {
     for (int si = 0; si < widget.sections.length; si++) {
       final s = widget.sections[si];
       final sName = s.titleCtrl.text.trim().isEmpty ? 'Section ${si + 1}' : '"${s.titleCtrl.text.trim()}"';
-      if (s.criteria.isEmpty) {
+      // BL-3: section must have criteria OR sub-sections
+      if (s.criteria.isEmpty && s.subSections.isEmpty) {
         errors.add('$sName has no criteria.');
         continue;
       }
-      for (int ci = 0; ci < s.criteria.length; ci++) {
-        final c = s.criteria[ci];
-        final cName = c.labelCtrl.text.trim().isEmpty ? 'Criterion ${ci + 1} in $sName' : '"${c.labelCtrl.text.trim()}"';
-        final isChoice = c.inputType == 'single_choice' || c.inputType == 'multi_choice';
-        final isScored = !isSurvey && c.inputType != 'text' && !isChoice;
-        if (isChoice && c.choiceOptions.length < 2) {
-          errors.add('$cName needs at least 2 options.');
+      // Validate root criteria
+      errors.addAll(_validateCriteriaForV6(s.criteria, sName, isSurvey));
+      // BL-4: recurse into sub-sections
+      for (int subI = 0; subI < s.subSections.length; subI++) {
+        final sub = s.subSections[subI];
+        final subName = sub.titleCtrl.text.trim().isEmpty
+            ? 'Sub-section ${subI + 1} in $sName'
+            : '"${sub.titleCtrl.text.trim()}"';
+        if (sub.criteria.isEmpty) {
+          errors.add('$subName has no criteria.');
+          continue;
         }
-        if (isScored && (double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) {
-          errors.add('$cName has 0 points — set a point value.');
-        }
+        errors.addAll(_validateCriteriaForV6(sub.criteria, subName, isSurvey));
+      }
+    }
+    return errors;
+  }
+
+  /// Validates choice-option counts and point values for a list of criteria.
+  List<String> _validateCriteriaForV6(
+    List<EditableCriterion> criteria,
+    String parentName,
+    bool isSurvey,
+  ) {
+    final errors = <String>[];
+    for (int ci = 0; ci < criteria.length; ci++) {
+      final c = criteria[ci];
+      final cName = c.labelCtrl.text.trim().isEmpty
+          ? 'Criterion ${ci + 1} in $parentName'
+          : '"${c.labelCtrl.text.trim()}"';
+      final isChoice = c.inputType == 'single_choice' || c.inputType == 'multi_choice';
+      final isScored = !isSurvey && c.inputType != 'text' && !isChoice;
+      if (isChoice && c.choiceOptions.length < 2) {
+        errors.add('$cName needs at least 2 options.');
+      }
+      if (isScored && (double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) {
+        errors.add('$cName has 0 points — set a point value.');
       }
     }
     return errors;
@@ -307,7 +336,8 @@ class _WizardStepReviewState extends State<WizardStepReview> {
                             ),
                           ),
                           Text(
-                            '${s.criteria.length} criteria',
+                            // Change 6: use countCriteria() so sub-section criteria are counted
+                            '${s.countCriteria()} criteria',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

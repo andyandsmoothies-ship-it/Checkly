@@ -15,15 +15,15 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
-> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE beginning your research. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
-> **Raw Data Requirement**: This log MUST contain a structured Markdown table titled `# Research Data Tracking`. Columns must be: `Hypothesis | Source/Doc Checked | Rejected/Approved | Architectural Implication`. This ensures the user has raw analysis data mirroring your internal logic loop.
+> You must synthesize your internal reasoning rigorously BEFORE starting your research deliverables. Do NOT pollute structured artifacts with internal monologue.
+> **Raw Data Requirement**: You must internally track your reasoning via: `Hypothesis | Source/Doc Checked | Rejected/Approved | Architectural Implication`. This ensures the user has raw analysis data mirroring your internal logic loop.
 
 ## Phase 1: Skill & Persona Alignment
 - **Instruction**: Assume the role of a Senior Architect.
 - **Skill Discovery**: Derive 2-3 technical keywords from the research topic (e.g., "first-principles", "challenge assumptions"). Use `grep_search` on `.agents/skills/` to find skills matching those keywords. Load ONLY the top 1-2 most relevant architectural `SKILL.md` files. Declare which skills were loaded.
 - **Action**: Query `context7` or perform web searches to gather modern patterns.
 
-> **@@SCAN** Before context mapping, answer: (1) Which skills did you load? (2) What modern patterns or libraries did you discover?
+> **@@SCAN** Before context mapping, PAUSE and INTERNALLY evaluate: (1) Which skills did you load? (2) What modern patterns or libraries did you discover?
 
 ## Phase 2: E2E Context Mapping (MANDATORY)
 - **Instruction**: Before evaluating ANY solution, you MUST map the **full context** that this feature or decision touches. Never evaluate an option in isolation — understand the complete picture first.
@@ -34,7 +34,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 - **Output**: A structured summary showing the full context. Adapt the format to the topic (e.g., lifecycle table, integration diagram, data flow, dependency map, cost comparison).
 - **Why**: A solution that works for one part of the picture may break another part entirely. The context map ensures every proposed option is stress-tested against the full scope before recommendation.
 
-> **@@SCAN** Before feasibility check, answer: (1) Did you map the full E2E scope (upstream triggers + downstream effects)? (2) What are the handoff points / friction points you identified?
+> **@@SCAN** Before feasibility check, PAUSE and INTERNALLY evaluate: (1) Did you map the full E2E scope (upstream triggers + downstream effects)? (2) What are the handoff points / friction points you identified?
 
 ## Phase 3: Blind-Spot & Conflict Detection (SCAN Protocol)
 - **Instruction**: Operate as an adversarial "Explorer". Your goal is to find why the proposed pattern will fail or what assumptions are dangerous.
@@ -42,14 +42,14 @@ description: Architect's Strategic Research Workflow for System Architecture.
   1. Identify exactly 3 **BLIND SPOTS** — things you or the user do *not* currently know about how this tech will behave in this specific stack.
   2. Identify at least 1 **`!!! CONFLICT`** — an existing architectural rule in `.agents/rules/` or project gotcha that explicitly clashes with this new idea. If none exist, prove why.
 
-> **@@SCAN** Before feasibility check, answer: (1) What are the 3 Blind Spots? (2) What is the `!!! CONFLICT` or risk to existing rules?
+> **@@SCAN** Before feasibility check, PAUSE and INTERNALLY evaluate: (1) What are the 3 Blind Spots? (2) What is the `!!! CONFLICT` or risk to existing rules?
 
 ## Phase 4: Feasibility & Rules Check
 - **Instruction**: Evaluate the idea against the project's rigid constraints.
 - **Skill Refresh**: If the research shifted domains (e.g., started as "which database?" but now involves "auth architecture"), re-scan `.agents/skills/` for skills matching the new concern. Load 1-2 if relevant.
 - **Action**: Read the workspace rules in `.agents/rules/`. Does the proposed idea violate any existing architecture or security constraints?
 
-> **@@SCAN** Before writing deliverable, answer: (1) Does the idea violate any workspace rules? (2) Is the recommendation Viable, Needs Redesign, or Reject?
+> **@@SCAN** Before writing deliverable, PAUSE and INTERNALLY evaluate: (1) Does the idea violate any workspace rules? (2) Is the recommendation Viable, Needs Redesign, or Reject?
 
 ## Phase 5: Deliverable (The Handoff)
 - **Requirement**: Always output a structured artifact that **persists across sessions**.
@@ -79,7 +79,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 <strict-instruction>
 Before concluding this workflow and replying to the user, you MUST self-audit your output against the global rules of this specific project. You are required to literally type out the following checklist in your final message:
 
-1. **Thinking Process Check**: Did I isolate my internal reasoning into a dedicated thinking log file as dictated by this project's artifact rules? (Yes/No)
+1. **Thinking Process Check**: Did I isolate my internal reasoning properly (avoiding polluting the final deliverable)? (Yes/No)
 2. **Template Check**: Did I include the mandatory header sections (e.g., `# Requirement Summary`) required by this project? (Yes/No)
 3. **Tracking Update**: Did I update the primary task tracking document with an inventory of my generated artifacts? (Yes/No)
 4. **Integrity Audit**: Did I include the mandatory attribution/compliance block in my final response? (Yes/No)

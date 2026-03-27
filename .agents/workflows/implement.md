@@ -12,8 +12,7 @@ description: The Core Builder Implementation Workflow.
 ## Step 0: Init
 - **Workflow Calibration**: If you are just starting this session, you MUST use `view_file` to read the entirety of this `implement.md` file right now to load the strict `@@SCAN` checkpoints into your active context.
 - Run Pre-Flight Check from `governance-rules.md`. This makes sure you don't write code that breaks project rules.
-- Create `thinking_log_[topic].md` FIRST before any other file. 
-  - **MANDATORY LOG STRUCTURE**: Your thinking log MUST rigidly capture the output of every single `@@SCAN` block defined below. Create headers for `## Phase 1`, `## Phase 2`, `## Phase 3 (Pre-Code)`, `## Phase 3 (Post-Code)`, and `## Phase 4`, and answer the `@@SCAN` questions directly under them. Do NOT use it as a free-form scratchpad.
+- **INTERNAL LOGGING**: You must rigorously process the output of every single `@@SCAN` block defined below in your internal chain of thought. Do NOT use it as a free-form scratchpad.
 - If a task list is needed → create `task.md` FIRST. This gives you a stable checklist to track progress.
 
 ## Phase 1: Deep Discovery
@@ -22,7 +21,7 @@ description: The Core Builder Implementation Workflow.
 - **DYNAMIC SKILLS**: Derive 2-3 keywords from the request → scan `.agents/skills/` → load the top 1-2 matching `SKILL.md` files. Loading the right skill early prevents mistakes later.
 - Match the task to rules in `.agents/rules/`. You need to know which rules apply before you plan.
 
-> **@@SCAN**: (1) Which skills & rules did you load? (2) What are the core files and dependencies?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Which skills & rules did you load? (2) What are the core files and dependencies?
 
 ## Phase 2: Planning (THE GATE)
 - Check if an `implementation_plan_[topic].md` (from `/analysis`) or `specs_[topic].md` (from `/atdd`) is in context.
@@ -38,7 +37,7 @@ description: The Core Builder Implementation Workflow.
 - **Codebase Spot-Check**: Use `grep_search`/`view_file` to confirm at least ONE plan claim against real code. Plans go stale — always verify. If a claim contradicts the code → **STOP** and flag to the user before proceeding.
 - **YAGNI Gate**: Ask yourself — is this solving a real problem today, or a future one? If the change adds complexity without a clear, present benefit → show the user a Before/After trade-off table and let them decide. Do not silently implement things you think are net-negative.
 
-> **@@SCAN**: (1) Does the plan pass all checklist items? (2) What was the spot-check result? (3) Does it pass the YAGNI gate?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Does the plan pass all checklist items? (2) What was the spot-check result? (3) Does it pass the YAGNI gate?
 
 ## Phase 3: Coding
 > **@@SCAN — Pre-Code (MANDATORY)** — state all three before writing the first line:
@@ -56,7 +55,7 @@ description: The Core Builder Implementation Workflow.
 - After each component turns GREEN: immediately check it for architecture compliance, null handling, edge cases, and import legality. Fix violations now — not in a post-review phase.
 - If the task shifts (e.g., API → DB → UI), re-scan `.agents/skills/` for new matching skills. Drop irrelevant ones to save context.
 
-> **@@SCAN**: (1) Did you test every state in the State Matrix BEFORE coding? (2) Did you follow TDD for each component? (3) Did you run the inline quality gate after each component?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you test every state in the State Matrix BEFORE coding? (2) Did you follow TDD for each component? (3) Did you run the inline quality gate after each component?
 
 ## Phase 4: Self-Review
 > Only use rules and skills already loaded in Phase 1. Do NOT scan `.agents/rules/` or `.agents/skills/` broadly here — it wastes context.
@@ -77,7 +76,7 @@ Review your own changes from 4 angles. State findings for each:
 - Run `git diff --name-only`. If you edited files not in the plan → fix it. Scope creep breaks other features silently.
 - Re-read the `## Verification Plan` in `implementation_plan_[topic].md`. Run each named test. Confirm GREEN. If a test from the plan is missing from the diff → it was skipped. Write it now.
 
-> **@@SCAN**: (1) All 4 review angles covered? (2) Do structural tests exist for Success, Error, and Empty states for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) All 4 review angles covered? (2) Do structural tests exist for Success, Error, and Empty states for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
 
 ## Phase 5: Handoff
 

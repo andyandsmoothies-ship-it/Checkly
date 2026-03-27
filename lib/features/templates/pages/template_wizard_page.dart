@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../manager/template_manager.dart';
+import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../widgets/wizard_step_name.dart';
 import '../widgets/wizard_step_structure.dart';
@@ -177,41 +178,37 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
 
       case 2: // Build Criteria
         for (int i = 0; i < _sections.length; i++) {
-          if (_sections[i].criteria.isEmpty) {
+          final sec = _sections[i];
+          final secName = sec.titleCtrl.text.isEmpty ? 'Section ${i + 1}' : '"${sec.titleCtrl.text}"';
+          // BL-3: section is valid if it has criteria OR sub-sections.
+          if (sec.criteria.isEmpty && sec.subSections.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '"${_sections[i].titleCtrl.text.isEmpty ? 'Section ${i + 1}' : _sections[i].titleCtrl.text}" needs at least one criterion',
-                ),
-              ),
+              SnackBar(content: Text('$secName needs at least one criterion')),
             );
             return false;
           }
-          for (int ci = 0; ci < _sections[i].criteria.length; ci++) {
-            final c = _sections[i].criteria[ci];
-            if (c.labelCtrl.text.trim().isEmpty) {
+          // Validate root criteria
+          final rootError = _validateCriteriaList(sec.criteria, secName);
+          if (rootError != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(rootError), duration: const Duration(seconds: 4)),
+            );
+            return false;
+          }
+          // BL-3: every sub-section must have >= 1 criterion
+          for (int si = 0; si < sec.subSections.length; si++) {
+            final sub = sec.subSections[si];
+            final subName = sub.titleCtrl.text.isEmpty ? 'Sub-section ${si + 1} in $secName' : '"${sub.titleCtrl.text}"';
+            if (sub.criteria.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Criterion ${ci + 1} in section ${i + 1} needs a label',
-                  ),
-                ),
+                SnackBar(content: Text('$subName has no criteria')),
               );
               return false;
             }
-            // V6 pre-flight: choice types need >= 2 options
-            if ((c.inputType == 'single_choice' || c.inputType == 'multi_choice') &&
-                c.choiceOptions.length < 2) {
-              final label = c.labelCtrl.text.trim().isNotEmpty
-                  ? '"${c.labelCtrl.text.trim()}"'
-                  : 'Criterion ${ci + 1}';
+            final subError = _validateCriteriaList(sub.criteria, subName);
+            if (subError != null) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '$label needs at least 2 choices. Tap it to add options.',
-                  ),
-                  duration: const Duration(seconds: 4),
-                ),
+                SnackBar(content: Text(subError), duration: const Duration(seconds: 4)),
               );
               return false;
             }
@@ -227,44 +224,72 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
     }
   }
 
+  // ── Validation helpers ──
+
+  /// Validates [criteria] labels and V6 choice-option rules.
+  /// Returns the first error message or null if all pass.
+  String? _validateCriteriaList(List<EditableCriterion> criteria, String parentName) {
+    for (int ci = 0; ci < criteria.length; ci++) {
+      final c = criteria[ci];
+      if (c.labelCtrl.text.trim().isEmpty) {
+        return 'Criterion ${ci + 1} in $parentName needs a label';
+      }
+      if ((c.inputType == 'single_choice' || c.inputType == 'multi_choice') &&
+          c.choiceOptions.length < 2) {
+        final label = c.labelCtrl.text.trim().isNotEmpty
+            ? '"${c.labelCtrl.text.trim()}"'
+            : 'Criterion ${ci + 1}';
+        return '$label needs at least 2 choices. Tap it to add options.';
+      }
+    }
+    return null;
+  }
+
   // ── Payload builders ──
 
-  List<Map<String, dynamic>> _buildGroups() {
-    return _sections.asMap().entries.map((e) {
+  /// Serialises [EditableCriterion] to the server's expected shape.
+  /// BL-2 / Gotcha #11: excludes pointsWeight for text/choice types at ALL depths.
+  Map<String, dynamic> _buildCriterion(EditableCriterion c, int ci) {
+    final bool isChoiceType =
+        c.inputType == 'single_choice' || c.inputType == 'multi_choice';
+    final bool isScaleType = c.inputType == 'scale';
+    return <String, dynamic>{
+      'label': c.labelCtrl.text,
+      if (c.descCtrl.text.isNotEmpty) 'description': c.descCtrl.text,
+      'inputType': c.inputType,
+      if (!isChoiceType && c.inputType != 'text')
+        'pointsWeight': double.tryParse(c.pointsCtrl.text),
+      'isCcp': false,
+      'isRisk': false,
+      'orderIndex': ci,
+      if (isChoiceType && c.choiceOptions.isNotEmpty)
+        'metadata': json.encode({'options': c.choiceOptions}),
+      if (isScaleType && c.scaleOptions.isNotEmpty)
+        'metadata': json.encode({'scaleOptions': c.scaleOptions}),
+    };
+  }
+
+  /// Recursively serialises a [List<EditableGroup>] into the server's group shape.
+  /// BL-1: matches `template_builder_page.dart` shape — {title, orderIndex, children, criteria}.
+  List<Map<String, dynamic>> _buildGroupsRecursive(List<EditableGroup> groups) {
+    return groups.asMap().entries.map((e) {
       final i = e.key;
       final s = e.value;
       return <String, dynamic>{
         'title': s.titleCtrl.text,
         if (s.descCtrl.text.isNotEmpty) 'description': s.descCtrl.text,
         'orderIndex': i,
-        'children': <dynamic>[],
-        'criteria': s.criteria.asMap().entries.map((ce) {
-          final ci = ce.key;
-          final c = ce.value;
-          final bool isChoiceType =
-              c.inputType == 'single_choice' || c.inputType == 'multi_choice';
-          final bool isScaleType = c.inputType == 'scale';
-          return <String, dynamic>{
-            'label': c.labelCtrl.text,
-            if (c.descCtrl.text.isNotEmpty) 'description': c.descCtrl.text,
-            'inputType': c.inputType,
-            // Points: only for non-choice, non-text types
-            if (!isChoiceType &&
-                c.inputType != 'text')
-              'pointsWeight': double.tryParse(c.pointsCtrl.text),
-            'isCcp': false,
-            'isRisk': false,
-            'orderIndex': ci,
-            // Slice 1 fix: serialise metadata for choice/scale types
-            if (isChoiceType && c.choiceOptions.isNotEmpty)
-              'metadata': json.encode({'options': c.choiceOptions}),
-            if (isScaleType && c.scaleOptions.isNotEmpty)
-              'metadata': json.encode({'scaleOptions': c.scaleOptions}),
-          };
-        }).toList(),
+        'children': _buildGroupsRecursive(s.subSections),
+        'criteria': s.criteria
+            .asMap()
+            .entries
+            .map((ce) => _buildCriterion(ce.value, ce.key))
+            .toList(),
       };
     }).toList();
   }
+
+  List<Map<String, dynamic>> _buildGroups() => _buildGroupsRecursive(_sections);
 
   String _buildScoringLogicConfig() {
     return json.encode({

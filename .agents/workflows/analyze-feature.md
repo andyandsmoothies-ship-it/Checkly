@@ -19,28 +19,28 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
-> You MUST immediately create a `thinking_log_feature_[topic].md` artifact using `write_to_file` BEFORE starting your analysis. Keep it brief. 
+> You must establish a clear internal reasoning trace before starting your analysis. Keep your thinking rigorous but internal.
 
 ## Phase 1: Skill Loading (Precision Focus)
 - **Instruction**: Do not act as a generic AI. You MUST assume the persona of the exact specialist needed for this scoped task.
 - **Action**: Search `.agents/skills/` to find the 1-2 skills that perfectly match this feature (e.g., `ui-ux-designer`, `react-patterns`, `postgres-best-practices`).
 - **Load**: Use `view_file` to read the specific `SKILL.md` files. You will let the loaded skill dictate your approach for the rest of this workflow.
 
-> **@@SCAN** Before proceeding, answer: (1) Which strict, tactical skill(s) did you load? (2) Are you following that skill's specific methodology?
+> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) Which strict, tactical skill(s) did you load? (2) Are you following that skill's specific methodology?
 
 ## Phase 1.5: Requirement Deconstruction (First Principles)
 - **Instruction**: Strip the requirement down to its absolute core. What is the fundamental business value being created or protected?
 - **Action**: Explicitly define the *Strict Boundaries* of the feature. State exactly what this feature MUST do, and explicitly state what is OUT OF SCOPE (YAGNI).
 - **Action**: Formulate the core underlying logic or state transition independently of the code implementation.
 
-> **@@SCAN** Before proceeding, answer: (1) What is the core business value? (2) What is explicitly OUT OF SCOPE for this tactical feature? (3) What is the fundamental state transition required?
+> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) What is the core business value? (2) What is explicitly OUT OF SCOPE for this tactical feature? (3) What is the fundamental state transition required?
 
 ## Phase 2: Tactical Blast Radius Review
 - **Instruction**: Even tiny features break things. You must identify exactly what you might step on.
 - **Action**: Check `.agents/rules/project-gotchas.md`. Does this feature conflict with any known project gotcha (e.g., FAB padding, navigation routing order, EF Core snake_case)?
 - **Action**: If modifying an existing function/component, verify its callers before proceeding to ensure you aren't breaking an upstream dependency.
 
-> **@@SCAN** Before proceeding, answer: (1) Which specific rule from `project-gotchas.md` applies here, if any? (2) Did you check the current callers of the code you are modifying?
+> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) Which specific rule from `project-gotchas.md` applies here, if any? (2) Did you check the current callers of the code you are modifying?
 
 ## Phase 2.5: Edge Case & State Matrix
 - **Instruction**: Enterprise-grade code does not fail silently. You must define the resilience boundaries before writing any implementation code.
@@ -50,7 +50,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
   - **Error State:** How does the UI/Handler respond to 404s, 500s, or validation failures? (Are we using showErrorToast / Domain Errors?)
   - **Success State:** What is the exact happy-path mutation?
 
-> **@@SCAN** Before proceeding, answer: (1) Have you fully defined the Loading, Empty, Error, and Success states for this scoped feature? (2) Are there any unhandled silent failures?
+> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) Have you fully defined the Loading, Empty, Error, and Success states for this scoped feature? (2) Are there any unhandled silent failures?
 
 ## Phase 3: Deliverable (Enterprise-Grade Tactical Plan)
 - **Requirement**: You MUST generate an `implementation_plan_[topic].md` artifact. This plan must be deeply analytical but narrowly scoped to the tactical objective.
@@ -83,8 +83,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 <strict-instruction>
 Before concluding this workflow and replying to the user, you MUST ensure you have produced the physical artifacts required for the next agent in the chain.
 
-- **Mandatory Output**: You must explicitly output the literal file paths of both the generated implementation plan and the `thinking_log_feature_[topic].md` file.
-- **Handoff Phrase**: You must explicitly instruct the user with the following phrase in your final response: *"My reasoning is physically saved in the log above. Please run the `/audit-thinking` workflow on it to independently verify my logic."*
+- **Mandatory Output**: You must explicitly output the literal file path of the generated implementation plan.
 
 You are strictly FORBIDDEN from subjectively grading your own work. The human or the auditor agent will perform the verification.
 </strict-instruction>
