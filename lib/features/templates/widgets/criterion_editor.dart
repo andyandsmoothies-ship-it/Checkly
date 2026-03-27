@@ -356,6 +356,36 @@ class CriterionEditor extends StatelessWidget {
                     onChanged: (_) => onChanged(),
                   ),
                 const SizedBox(height: 16),
+
+                // CCP / Risk toggles — only for scored input types (Gotcha #11)
+                if (criterion.inputType != 'text' &&
+                    criterion.inputType != 'single_choice' &&
+                    criterion.inputType != 'multi_choice') ...[
+                  const Divider(),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Critical Control Point (CCP)'),
+                    subtitle: const Text(
+                      'Failure zeros this entire section score',
+                    ),
+                    value: criterion.isCcp,
+                    onChanged: (v) {
+                      setSheetState(() => criterion.isCcp = v);
+                      onChanged();
+                    },
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Risk'),
+                    subtitle: const Text('Failure zeros the entire audit score'),
+                    value: criterion.isRisk,
+                    onChanged: (v) {
+                      setSheetState(() => criterion.isRisk = v);
+                      onChanged();
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
               ],
             ),
           ),

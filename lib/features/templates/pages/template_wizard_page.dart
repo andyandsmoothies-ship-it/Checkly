@@ -259,8 +259,8 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
       'inputType': c.inputType,
       if (!isChoiceType && c.inputType != 'text')
         'pointsWeight': double.tryParse(c.pointsCtrl.text),
-      'isCcp': false,
-      'isRisk': false,
+      'isCcp': c.isCcp,
+      'isRisk': c.isRisk,
       'orderIndex': ci,
       if (isChoiceType && c.choiceOptions.isNotEmpty)
         'metadata': json.encode({'options': c.choiceOptions}),

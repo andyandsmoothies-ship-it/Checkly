@@ -12,6 +12,8 @@ class EditableCriterion {
   String inputType;
   List<Map<String, dynamic>> scaleOptions;
   List<String> choiceOptions;
+  bool isCcp;
+  bool isRisk;
 
   EditableCriterion({
     this.id = '',
@@ -21,6 +23,8 @@ class EditableCriterion {
     this.inputType = 'numeric',
     List<Map<String, dynamic>>? scaleOptions,
     List<String>? choiceOptions,
+    this.isCcp = false,
+    this.isRisk = false,
   }) : labelCtrl = TextEditingController(text: label),
        descCtrl = TextEditingController(text: description),
        pointsCtrl = TextEditingController(text: points),
@@ -64,6 +68,8 @@ class EditableCriterion {
       inputType: dto.inputType,
       scaleOptions: options,
       choiceOptions: choices,
+      isCcp: dto.isCcp,
+      isRisk: dto.isRisk,
     );
   }
 

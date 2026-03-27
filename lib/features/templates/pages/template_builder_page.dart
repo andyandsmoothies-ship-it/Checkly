@@ -234,8 +234,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                 c.inputType != 'single_choice' &&
                 c.inputType != 'multi_choice')
               'pointsWeight': double.tryParse(c.pointsCtrl.text),
-            'isCcp': false,
-            'isRisk': false,
+            'isCcp': c.isCcp,
+            'isRisk': c.isRisk,
             'orderIndex': ci,
             if (c.inputType == 'scale' && c.scaleOptions.isNotEmpty)
               'metadata': json.encode({'scaleOptions': c.scaleOptions}),

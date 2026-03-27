@@ -41,8 +41,8 @@ List<Map<String, dynamic>> buildGroupsRecursive(List<EditableGroup> groups) {
           // BL-2 / Gotcha #11: exclude pointsWeight for non-scored types
           if (!isChoiceType && c.inputType != 'text')
             'pointsWeight': double.tryParse(c.pointsCtrl.text),
-          'isCcp': false,
-          'isRisk': false,
+          'isCcp': c.isCcp,
+          'isRisk': c.isRisk,
           'orderIndex': ci,
           if (isChoiceType && c.choiceOptions.isNotEmpty)
             'metadata': json.encode({'options': c.choiceOptions}),
@@ -61,8 +61,15 @@ EditableCriterion _criterion({
   String inputType = 'pass_fail',
   String points = '10',
   List<String>? choiceOptions,
+  bool isCcp = false,
+  bool isRisk = false,
 }) {
-  final c = EditableCriterion(inputType: inputType, points: points);
+  final c = EditableCriterion(
+    inputType: inputType,
+    points: points,
+    isCcp: isCcp,
+    isRisk: isRisk,
+  );
   c.labelCtrl.text = label;
   if (choiceOptions != null) c.choiceOptions = choiceOptions;
   return c;
@@ -255,6 +262,46 @@ void main() {
         final root = _section();
         final isEmpty = root.criteria.isEmpty && root.subSections.isEmpty;
         expect(isEmpty, isTrue);
+      },
+    );
+  });
+
+  // ── P0 isCcp/isRisk round-trip ────────────────────────────────────────────
+
+  group('isCcp / isRisk field round-trip', () {
+    test(
+      'CriterionWithCcpTrue_SerializesAsTrueNotFalse',
+      () {
+        // Success state: flag must survive into payload
+        final crit = _criterion(isCcp: true);
+        final result = buildGroupsRecursive([_section(criteria: [crit])]);
+        final c = (result[0]['criteria'] as List)[0] as Map<String, dynamic>;
+        expect(c['isCcp'], isTrue);
+        expect(c['isRisk'], isFalse);
+      },
+    );
+
+    test(
+      'CriterionWithRiskTrue_SerializesAsTrueNotFalse',
+      () {
+        // Success state: isRisk flag must survive into payload
+        final crit = _criterion(isRisk: true);
+        final result = buildGroupsRecursive([_section(criteria: [crit])]);
+        final c = (result[0]['criteria'] as List)[0] as Map<String, dynamic>;
+        expect(c['isCcp'], isFalse);
+        expect(c['isRisk'], isTrue);
+      },
+    );
+
+    test(
+      'NewCriterionDefault_BothFlagsFalse',
+      () {
+        // Empty / default state: both flags must default to false
+        final crit = _criterion();
+        final result = buildGroupsRecursive([_section(criteria: [crit])]);
+        final c = (result[0]['criteria'] as List)[0] as Map<String, dynamic>;
+        expect(c['isCcp'], isFalse);
+        expect(c['isRisk'], isFalse);
       },
     );
   });
