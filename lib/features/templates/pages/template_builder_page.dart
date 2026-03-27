@@ -198,6 +198,14 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     return groups.asMap().entries.map((e) {
       final i = e.key;
       final s = e.value;
+      // P2: Mutual-exclusivity invariant — a group must NOT contain both flat
+      // criteria AND nested sub-sections. The UI enforces this; this assert
+      // guards against corrupted payloads that bypass the UI guard.
+      assert(
+        s.criteria.isEmpty || s.subSections.isEmpty,
+        'Group "${s.titleCtrl.text}" violates mutual-exclusivity: '
+        'has ${s.criteria.length} criteria AND ${s.subSections.length} sub-sections.',
+      );
       // Build metadata JSON for sub-section fields
       String? metadata;
       if (s.maxPointsCtrl.text.isNotEmpty ||

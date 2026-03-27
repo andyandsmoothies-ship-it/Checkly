@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
@@ -260,6 +261,9 @@ class SectionEditor extends StatelessWidget {
                         isDense: true,
                       ),
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       onChanged: (_) => onChanged(),
                     ),
                   ),
@@ -272,6 +276,9 @@ class SectionEditor extends StatelessWidget {
                         isDense: true,
                       ),
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       onChanged: (_) => onChanged(),
                     ),
                   ),

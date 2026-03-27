@@ -275,6 +275,14 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
     return groups.asMap().entries.map((e) {
       final i = e.key;
       final s = e.value;
+      // P2: Mutual-exclusivity invariant — a group must NOT contain both flat
+      // criteria AND nested sub-sections. The UI enforces this; this assert
+      // guards against corrupted payloads that bypass the UI guard.
+      assert(
+        s.criteria.isEmpty || s.subSections.isEmpty,
+        'Group "${s.titleCtrl.text}" violates mutual-exclusivity: '
+        'has ${s.criteria.length} criteria AND ${s.subSections.length} sub-sections.',
+      );
       return <String, dynamic>{
         'title': s.titleCtrl.text,
         if (s.descCtrl.text.isNotEmpty) 'description': s.descCtrl.text,

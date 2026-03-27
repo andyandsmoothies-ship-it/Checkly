@@ -23,6 +23,11 @@ List<Map<String, dynamic>> buildGroupsRecursive(List<EditableGroup> groups) {
   return groups.asMap().entries.map((e) {
     final i = e.key;
     final s = e.value;
+    assert(
+      s.criteria.isEmpty || s.subSections.isEmpty,
+      'Group "${s.titleCtrl.text}" violates mutual-exclusivity: '
+      'has ${s.criteria.length} criteria AND ${s.subSections.length} sub-sections.',
+    );
     return <String, dynamic>{
       'title': s.titleCtrl.text,
       if (s.descCtrl.text.isNotEmpty) 'description': s.descCtrl.text,
@@ -302,6 +307,37 @@ void main() {
         final c = (result[0]['criteria'] as List)[0] as Map<String, dynamic>;
         expect(c['isCcp'], isFalse);
         expect(c['isRisk'], isFalse);
+      },
+    );
+  });
+
+  // ── P2: Mutual-exclusivity payload guard ──────────────────────────────────
+
+  group('mutual-exclusivity invariant', () {
+    test(
+      'CriteriaOnlyGroup_Serializes_Successfully',
+      () {
+        // Success state: flat criteria group must serialize without throwing
+        final section = _section(criteria: [_criterion()]);
+        expect(
+          () => buildGroupsRecursive([section]),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'MixedGroup_WithCriteriaAndSubSections_ThrowsAssertionError',
+      () {
+        // Error state: group with both criteria AND sub-sections must throw
+        final section = _section(criteria: [_criterion()]);
+        final sub = EditableGroup(title: 'Sub');
+        sub.criteria.add(_criterion(label: 'Sub Criterion'));
+        section.subSections.add(sub);
+        expect(
+          () => buildGroupsRecursive([section]),
+          throwsA(isA<AssertionError>()),
+        );
       },
     );
   });
