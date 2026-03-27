@@ -301,6 +301,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 depth: 0,
                 densityEnabled: false,
                 isWizardMode: true,
+                scoringMode: widget.scoringMode,
                 onRemoveSection: () {
                   // No-op: wizard manages section removal via Step 2 (Structure)
                 },

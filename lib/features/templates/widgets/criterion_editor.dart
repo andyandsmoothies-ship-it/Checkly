@@ -7,6 +7,7 @@ import 'input_type_bottom_sheet.dart';
 class CriterionEditor extends StatelessWidget {
   final EditableCriterion criterion;
   final List<String> errors;
+  final String? scoringMode; // optional — filters input type bottom sheet
 
   final VoidCallback onRemove;
   final VoidCallback onChanged;
@@ -15,6 +16,7 @@ class CriterionEditor extends StatelessWidget {
     super.key,
     required this.criterion,
     this.errors = const [],
+    this.scoringMode,
     required this.onRemove,
     required this.onChanged,
   });
@@ -103,6 +105,7 @@ class CriterionEditor extends StatelessWidget {
                       ),
                       builder: (_) => InputTypeBottomSheet(
                         currentType: criterion.inputType,
+                        scoringMode: scoringMode,
                       ),
                     );
                     if (selected != null && context.mounted) {

@@ -30,6 +30,17 @@ class SectionEditor extends StatelessWidget {
   /// to avoid visual redundancy â€” it manages section context separately.
   final bool isWizardMode;
 
+  /// The current scoring mode — used to gate sub-section creation for
+  /// Survey and Checklist modes. Null means no constraint (Builder default).
+  final String? scoringMode;
+
+  /// True when the current scoring mode allows sub-sections.
+  /// Survey and Checklist modes enforce a flat structure.
+  bool get _allowSubSections =>
+      scoringMode == null ||
+      scoringMode == 'penalty' ||
+      scoringMode == 'accumulation';
+
   const SectionEditor({
     super.key,
     required this.index,
@@ -46,6 +57,7 @@ class SectionEditor extends StatelessWidget {
     this.onRemoveSubSection,
     required this.onChanged,
     this.isWizardMode = false,
+    this.scoringMode,             // optional, null → no constraint
   });
 
   @override
@@ -298,6 +310,7 @@ class SectionEditor extends StatelessWidget {
                 child: CriterionEditor(
                   criterion: c,
                   errors: cErrors,
+                  scoringMode: scoringMode,
                   onRemove: () => onRemoveCriterion(ci),
                   onChanged: onChanged,
                 ),
@@ -363,12 +376,23 @@ class SectionEditor extends StatelessWidget {
                   ),
                 );
               }),
-              if (section.criteria.isEmpty)
+              if (section.criteria.isEmpty || !_allowSubSections)
                 GhostAddButton(
                   label: 'Add Sub-Section',
                   icon: Icons.subdirectory_arrow_right,
-                  onPressed: onAddSubSection,
-                  tintColor: theme.colorScheme.outline,
+                  tintColor: _allowSubSections
+                      ? theme.colorScheme.outline
+                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.45),
+                  onPressed: _allowSubSections
+                      ? onAddSubSection
+                      : () => ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Sub-sections require Penalty or Accumulation mode.',
+                              ),
+                              duration: Duration(seconds: 3),
+                            ),
+                          ),
                 ),
             ],
           ],
@@ -431,6 +455,7 @@ class SectionEditor extends StatelessWidget {
               child: CriterionEditor(
                 criterion: c,
                 errors: cErrors,
+                scoringMode: scoringMode,
                 onRemove: () => onRemoveCriterion(ci),
                 onChanged: onChanged,
               ),
@@ -490,12 +515,23 @@ class SectionEditor extends StatelessWidget {
               ),
             );
           }),
-          if (section.criteria.isEmpty)
+          if (section.criteria.isEmpty || !_allowSubSections)
             GhostAddButton(
               label: 'Add Sub-Section',
               icon: Icons.subdirectory_arrow_right,
-              onPressed: onAddSubSection,
-              tintColor: theme.colorScheme.outline,
+              tintColor: _allowSubSections
+                  ? theme.colorScheme.outline
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.45),
+              onPressed: _allowSubSections
+                  ? onAddSubSection
+                  : () => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Sub-sections require Penalty or Accumulation mode.',
+                          ),
+                          duration: Duration(seconds: 3),
+                        ),
+                      ),
             ),
         ],
       ),

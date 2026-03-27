@@ -23,8 +23,13 @@ String inputTypeLabel(String type) => switch (type) {
 
 class InputTypeBottomSheet extends StatelessWidget {
   final String currentType;
+  final String? scoringMode; // optional — null means no constraint
 
-  const InputTypeBottomSheet({super.key, required this.currentType});
+  const InputTypeBottomSheet({
+    super.key,
+    required this.currentType,
+    this.scoringMode,
+  });
 
   static const _types = [
     (
@@ -71,6 +76,26 @@ class InputTypeBottomSheet extends StatelessWidget {
     ),
   ];
 
+  /// Returns true when [inputType] is not valid for [scoringMode].
+  /// This is an ALLOWLIST: only explicitly listed modes constrain types.
+  /// Unknown or null modes allow all types (backward-compatible default).
+  static bool _isDisabledForMode(String inputType, String? scoringMode) =>
+      switch (scoringMode) {
+        'survey' =>
+          inputType == 'pass_fail' ||
+          inputType == 'numeric' ||
+          inputType == 'scale',
+        'checklist' => inputType == 'numeric' || inputType == 'scale',
+        _ => false,
+      };
+
+  /// Human-readable label for the disabled subtitle line.
+  static String _modeLabel(String? scoringMode) => switch (scoringMode) {
+    'survey' => 'Survey',
+    'checklist' => 'Checklist',
+    _ => '',
+  };
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -111,86 +136,92 @@ class InputTypeBottomSheet extends StatelessWidget {
                 itemBuilder: (_, i) {
                   final t = _types[i];
                   final isSelected = t.value == currentType;
+                  final isDisabled = _isDisabledForMode(t.value, scoringMode);
 
-                  return Card(
-                    elevation: 0,
-                    margin: EdgeInsets.zero,
-                    color: isSelected
-                        ? theme.colorScheme.primaryContainer.withValues(
-                            alpha: 0.4,
-                          )
-                        : null,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: isSelected
-                          ? BorderSide(
-                              color: theme.colorScheme.primary,
-                              width: 1.5,
+                  return Opacity(
+                    opacity: isDisabled ? 0.45 : 1.0,
+                    child: Card(
+                      elevation: 0,
+                      margin: EdgeInsets.zero,
+                      color: isSelected
+                          ? theme.colorScheme.primaryContainer.withValues(
+                              alpha: 0.4,
                             )
-                          : BorderSide(color: theme.colorScheme.outlineVariant),
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () => Navigator.pop(context, t.value),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Icon(
-                                t.icon,
-                                size: 24,
-                                color: isSelected
-                                    ? theme.colorScheme.primary
-                                    : theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    t.title,
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    t.desc,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    t.helper,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (isSelected)
+                          : null,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: isSelected
+                            ? BorderSide(
+                                color: theme.colorScheme.primary,
+                                width: 1.5,
+                              )
+                            : BorderSide(color: theme.colorScheme.outlineVariant),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: isDisabled ? null : () => Navigator.pop(context, t.value),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 12,
-                                  top: 2,
-                                ),
+                                padding: const EdgeInsets.only(top: 2),
                                 child: Icon(
-                                  Icons.check_circle,
-                                  color: theme.colorScheme.primary,
+                                  t.icon,
                                   size: 24,
+                                  color: isSelected
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
-                          ],
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      t.title,
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(fontWeight: FontWeight.w600),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      t.desc,
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        color: theme.colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      isDisabled
+                                          ? 'Not available in ${_modeLabel(scoringMode)} mode.'
+                                          : t.helper,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isSelected)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 12,
+                                    top: 2,
+                                  ),
+                                  child: Icon(
+                                    Icons.check_circle,
+                                    color: theme.colorScheme.primary,
+                                    size: 24,
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
