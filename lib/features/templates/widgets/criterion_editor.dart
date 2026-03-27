@@ -116,6 +116,17 @@ class CriterionEditor extends StatelessWidget {
                         // Restore default when switching back to a scored type.
                         criterion.pointsCtrl.text = '10';
                       }
+
+                      if (selected == 'scale') {
+                        final maxPts = criterion.scaleOptions.fold<double>(
+                          0,
+                          (m, o) => (o['points'] as num? ?? 0).toDouble() > m
+                              ? (o['points'] as num).toDouble()
+                              : m,
+                        );
+                        criterion.pointsCtrl.text = maxPts.toStringAsFixed(0);
+                      }
+
                       onChanged();
                       _openDrawer(context);
                     }
