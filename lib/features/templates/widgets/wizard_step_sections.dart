@@ -232,6 +232,15 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
               ),
               const SizedBox(height: 12),
 
+              // UX Fix (H10): Provide explicit guidance for what a criterion is
+              Text(
+                'Add the specific checks or questions for this section. Keep it simple with a single list, or use sub-sections to group related items (e.g., \'Indoor\' and \'Outdoor\').',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 24),
+
 
               // Change 4: Delegate to SectionEditor(depth: 0) with isWizardMode:true
               // so it renders a clean Column body without the duplicate
@@ -279,7 +288,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                   child: OutlinedButton.icon(
                     onPressed: () => _showBatchAdd(context, section),
                     icon: const Icon(Icons.playlist_add, size: 18),
-                    label: const Text('Batch Add Criteria'),
+                    label: const Text('Add Multiple Criteria'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,

@@ -287,7 +287,7 @@ class SectionEditor extends StatelessWidget {
               final cKey = '$sKey:c:$ci';
               final cErrors = errors?.forKey(cKey) ?? const [];
               return KeyedSubtree(
-                key: errorKeys?[cKey] ?? GlobalKey(),
+                key: errorKeys?[cKey] ?? ObjectKey(c),
                 child: CriterionEditor(
                   criterion: c,
                   errors: cErrors,
@@ -333,7 +333,7 @@ class SectionEditor extends StatelessWidget {
                 final sub = e.value;
                 final subKey = '$sKey:sub:$si';
                 return KeyedSubtree(
-                  key: errorKeys?[subKey] ?? GlobalKey(),
+                  key: errorKeys?[subKey] ?? ObjectKey(sub),
                   child: SectionEditor(
                     index: si,
                     section: sub,
@@ -420,7 +420,7 @@ class SectionEditor extends StatelessWidget {
             final cKey = '$sKey:c:$ci';
             final cErrors = errors?.forKey(cKey) ?? const [];
             return KeyedSubtree(
-              key: errorKeys?[cKey] ?? GlobalKey(),
+              key: errorKeys?[cKey] ?? ObjectKey(c),
               child: CriterionEditor(
                 criterion: c,
                 errors: cErrors,
@@ -460,7 +460,7 @@ class SectionEditor extends StatelessWidget {
             final sub = e.value;
             final subKey = '$sKey:sub:$si';
             return KeyedSubtree(
-              key: errorKeys?[subKey] ?? GlobalKey(),
+              key: errorKeys?[subKey] ?? ObjectKey(sub),
               child: SectionEditor(
                 index: si,
                 section: sub,

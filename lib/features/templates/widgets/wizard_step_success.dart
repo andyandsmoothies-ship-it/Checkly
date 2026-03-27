@@ -142,6 +142,14 @@ class _WizardStepSuccessState extends State<WizardStepSuccess>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text(
+                'Your template is ready to use. What would you like to do next?',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
               FilledButton.icon(
                 onPressed: widget.onViewTemplate,
                 icon: const Icon(Icons.visibility_outlined),
@@ -151,12 +159,12 @@ class _WizardStepSuccessState extends State<WizardStepSuccess>
               OutlinedButton.icon(
                 onPressed: widget.onOpenBuilder,
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Open in Template Builder'),
+                label: const Text('Advanced Edit (Template Builder)'),
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: widget.onDone,
-                child: const Text('Done'),
+                child: const Text('Return to Templates'),
               ),
             ],
           ),

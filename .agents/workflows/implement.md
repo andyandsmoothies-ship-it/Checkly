@@ -1,5 +1,4 @@
 ---
-name: Implementation Workflow
 description: The Core Builder Implementation Workflow.
 ---
 
@@ -86,7 +85,7 @@ Review your own changes from 4 angles. State findings for each:
 | **Show** | TDD green, moderate scope, no blocking risk | Commit + full `walkthrough_[topic].md` + `executed_tests_[topic].md` raw data table. |
 | **Ask** | Architectural change, new migration, security-sensitive | Use `notify_user` BEFORE committing. Include numbered test scenarios with Steps / Expected / Blast Radius. |
 
-**`walkthrough_[topic].md`** must include:
+**Create the `walkthrough_[topic].md`** must include:
 - **Decision Log** (only when the plan had multiple proposed features): a table showing each with ✅ Implemented / ⏳ Deferred / ❌ Rejected and a one-line reason. This stops future sessions from re-proposing rejected ideas.
 - **Gotcha Removal/Edit Proposal (MANDATORY)**: At the very bottom, add a section evaluating `.agents/rules/project-gotchas.md`. Did your refactor just eliminate the need for an existing workaround? Did you modernize an architecture that makes a Gotcha obsolete? 
   - If yes, explicitly propose which Gotcha (e.g., #4) should be deleted or edited, and provide the exact new Markdown table row. Wait for human approval before editing the rules file.
