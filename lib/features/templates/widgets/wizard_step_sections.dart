@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../models/wizard_starter_packs.dart';
-import 'criterion_editor.dart';
+import 'section_editor.dart';
 
 /// Wizard Step 3: Build criteria per section.
 /// Shows ONE section at a time with pill navigation at the top.
-/// Simplified — no sub-sections, smart defaults for input type.
+/// Delegates criteria editing and sub-section management to [SectionEditor].
 class WizardStepSections extends StatefulWidget {
   final List<EditableGroup> sections;
   final String scoringMode;
@@ -29,7 +29,7 @@ class WizardStepSections extends StatefulWidget {
 }
 
 class _WizardStepSectionsState extends State<WizardStepSections> {
-  /// Default input type based on scoring mode.
+  /// Default input type based on scoring mode (BL-DEFAULT).
   String get _defaultInputType {
     switch (widget.scoringMode) {
       case 'accumulation':
@@ -43,27 +43,24 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     }
   }
 
-
-  void _addCriterion() {
-    final section = widget.sections[widget.currentSectionIndex];
+  /// Adds a sub-section to the current section (BL-DISPOSE: dispose on remove).
+  void _addSubSection(EditableGroup section) {
     setState(() {
-      section.criteria.add(
-        EditableCriterion(inputType: _defaultInputType, points: '10'),
-      );
+      section.subSections.add(EditableGroup());
     });
     widget.onChanged();
   }
 
-  void _removeCriterion(int ci) {
-    final section = widget.sections[widget.currentSectionIndex];
+  /// Removes and disposes a sub-section (BL-DISPOSE).
+  void _removeSubSection(EditableGroup section, int si) {
     setState(() {
-      section.criteria[ci].dispose();
-      section.criteria.removeAt(ci);
+      section.subSections[si].dispose();
+      section.subSections.removeAt(si);
     });
     widget.onChanged();
   }
 
-  void _showBatchAdd() {
+  void _showBatchAdd(BuildContext context, EditableGroup section) {
     final ctrl = TextEditingController();
     showModalBottomSheet<void>(
       context: context,
@@ -112,7 +109,6 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                     .toList();
                 final capped = lines.length > 20;
                 final toAdd = lines.take(20).toList();
-                final section = widget.sections[widget.currentSectionIndex];
                 setState(() {
                   for (final label in toAdd) {
                     final c = EditableCriterion(
@@ -143,6 +139,18 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     );
   }
 
+  /// Grammar-correct count label: '1 criterion' / 'N criteria' with sub-section variant.
+  String _buildCountLabel(EditableGroup section, bool hasSubSections) {
+    final c = hasSubSections ? section.countCriteria() : section.criteria.length;
+    final cLabel = c == 1 ? 'criterion' : 'criteria';
+    if (hasSubSections) {
+      final s = section.subSections.length;
+      final sLabel = s == 1 ? 'sub-section' : 'sub-sections';
+      return '$c $cLabel \u2022 $s $sLabel';
+    }
+    return '$c $cLabel';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -154,6 +162,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     }
 
     final section = widget.sections[currentIdx];
+    final hasSubSections = section.subSections.isNotEmpty;
 
     return Column(
       children: [
@@ -183,12 +192,12 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
             ),
           ),
 
-        // Criteria list for active section
+        // Section content area
         Expanded(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
             children: [
-              // Section progress header
+              // Section progress header with recursive count (Change 3)
               Row(
                 children: [
                   Expanded(
@@ -209,8 +218,9 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
+                        // Grammar fix: singular-aware count
                         Text(
-                          '${section.criteria.length} criterion/criteria',
+                          _buildCountLabel(section, hasSubSections),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -218,103 +228,115 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                       ],
                     ),
                   ),
-                  // Batch add button
-                  OutlinedButton.icon(
-                    onPressed: _showBatchAdd,
+                ],
+              ),
+              const SizedBox(height: 12),
+
+
+              // Change 4: Delegate to SectionEditor(depth: 0) with isWizardMode:true
+              // so it renders a clean Column body without the duplicate
+              // title / badge / delete header (H8, H2, H3 UX fix).
+              SectionEditor(
+                key: ValueKey(section),
+                index: currentIdx,
+                section: section,
+                depth: 0,
+                densityEnabled: false,
+                isWizardMode: true,
+                onRemoveSection: () {
+                  // No-op: wizard manages section removal via Step 2 (Structure)
+                },
+                // BL-DEFAULT: override SectionEditor's 'pass_fail' with scoring-mode-aware default
+                onAddCriterion: (_) {
+                  setState(() {
+                    section.criteria.add(EditableCriterion(
+                      inputType: _defaultInputType,
+                      points: '10',
+                    ));
+                  });
+                  widget.onChanged();
+                },
+                onRemoveCriterion: (ci) {
+                  setState(() {
+                    section.criteria[ci].dispose();
+                    section.criteria.removeAt(ci);
+                  });
+                  widget.onChanged();
+                },
+                // BL-DISPOSE: sub-section management via local helpers
+                onAddSubSection: () => _addSubSection(section),
+                onRemoveSubSection: (si) => _removeSubSection(section, si),
+                onChanged: () {
+                  setState(() {});
+                  widget.onChanged();
+                },
+              ),
+
+              // H6 fix: Batch Add grouped with the other Add actions (below SectionEditor)
+              if (!hasSubSections)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: OutlinedButton.icon(
+                    onPressed: () => _showBatchAdd(context, section),
                     icon: const Icon(Icons.playlist_add, size: 18),
-                    label: const Text('Batch Add'),
+                    label: const Text('Batch Add Criteria'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Criteria list
-              if (section.criteria.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'No criteria yet. Tap "Add Criterion" or "Batch Add" below.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
                 ),
-              ...section.criteria.asMap().entries.map((ce) {
-                final ci = ce.key;
-                final criterion = ce.value;
-                return CriterionEditor(
-                  key: ValueKey(criterion),
-                  criterion: criterion,
-                  onRemove: () => _removeCriterion(ci),
-                  onChanged: () {
-                    setState(() {});
-                    widget.onChanged();
+
+              // Suggested criteria chips — visible when using root criteria path
+              if (!hasSubSections) ...[
+                const Divider(height: 32),
+                Text(
+                  'Suggested criteria:',
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                Builder(
+                  builder: (ctx) {
+                    final suggestions = WizardSuggestions.getCriteriaSuggestions(
+                        widget.scoringMode, section.titleCtrl.text);
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: suggestions.map((sc) {
+                        final alreadyAdded = section.criteria
+                            .any((c) => c.labelCtrl.text == sc.label);
+                        return ActionChip(
+                          label: Text(sc.label),
+                          avatar: const Icon(Icons.add, size: 16),
+                          onPressed: alreadyAdded ? null : () {
+                            setState(() {
+                              final c = EditableCriterion(
+                                  inputType: sc.inputType, points: sc.points);
+                              c.labelCtrl.text = sc.label;
+                              // Q1: pre-populate two options so the V6 choice guard
+                              // doesn't block save for survey single_choice chips.
+                              if (sc.inputType == 'single_choice' ||
+                                  sc.inputType == 'multi_choice') {
+                                c.choiceOptions = ['Yes', 'No'];
+                              }
+                              section.criteria.add(c);
+                            });
+                            widget.onChanged();
+                          },
+                          backgroundColor: alreadyAdded
+                              ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                              : theme.colorScheme.secondaryContainer,
+                          labelStyle: TextStyle(
+                            color: alreadyAdded
+                                ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
+                                : theme.colorScheme.onSecondaryContainer,
+                          ),
+                        );
+                      }).toList(),
+                    );
                   },
-                );
-              }),
-
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: _addCriterion,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add Blank Criterion'),
                 ),
-              ),
-              
-              const Divider(height: 32),
-              
-              Text(
-                'Suggested criteria:',
-                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 12),
-              Builder(
-                builder: (ctx) {
-                  final suggestions = WizardSuggestions.getCriteriaSuggestions(
-                      widget.scoringMode, section.titleCtrl.text);
-                  return Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: suggestions.map((sc) {
-                      final alreadyAdded = section.criteria
-                          .any((c) => c.labelCtrl.text == sc.label);
-                      return ActionChip(
-                        label: Text(sc.label),
-                        avatar: const Icon(Icons.add, size: 16),
-                        onPressed: alreadyAdded ? null : () {
-                          setState(() {
-                            final c = EditableCriterion(
-                                inputType: sc.inputType, points: sc.points);
-                            c.labelCtrl.text = sc.label;
-                            // Q1: pre-populate two options so the V6 choice guard
-                            // doesn't block save for survey single_choice chips.
-                            if (sc.inputType == 'single_choice' ||
-                                sc.inputType == 'multi_choice') {
-                              c.choiceOptions = ['Yes', 'No'];
-                            }
-                            section.criteria.add(c);
-                          });
-                          widget.onChanged();
-                        },
-                        backgroundColor: alreadyAdded
-                            ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
-                            : theme.colorScheme.secondaryContainer,
-                        labelStyle: TextStyle(
-                          color: alreadyAdded
-                              ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
-                              : theme.colorScheme.onSecondaryContainer,
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
+              ],
             ],
           ),
         ),
@@ -322,5 +344,3 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     );
   }
 }
-
-

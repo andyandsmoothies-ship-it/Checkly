@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
@@ -24,6 +24,11 @@ class SectionEditor extends StatelessWidget {
   final ValueChanged<int>? onRemoveSubSection;
   final VoidCallback onChanged;
 
+  /// When true and depth==0, renders without the ExpansionTile header
+  /// (title TextField, badge, delete button). Wizard injects this flag
+  /// to avoid visual redundancy â€” it manages section context separately.
+  final bool isWizardMode;
+
   const SectionEditor({
     super.key,
     required this.index,
@@ -39,6 +44,7 @@ class SectionEditor extends StatelessWidget {
     this.onAddSubSection,
     this.onRemoveSubSection,
     required this.onChanged,
+    this.isWizardMode = false,
   });
 
   @override
@@ -52,6 +58,12 @@ class SectionEditor extends StatelessWidget {
     // Gap 6: count badge
     final subCount = section.countSubs();
     final critCount = section.countCriteria();
+
+    // In wizard mode at root depth, skip the ExpansionTile header entirely.
+    // The wizard manages its own section header (title, progress) above.
+    if (isWizardMode && isRoot) {
+      return _buildWizardContent(context, theme, sKey, sectionErrors, hasErrors);
+    }
 
     return Card(
       margin: EdgeInsets.only(bottom: 12, left: isRoot ? 0 : 16),
@@ -125,7 +137,7 @@ class SectionEditor extends StatelessWidget {
                   onChanged: (_) => onChanged(),
                 ),
               ),
-              // Gap 6: count badge (XS • YC) — root sections only
+              // Gap 6: count badge (XS â€¢ YC) â€” root sections only
               if (isRoot)
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -137,7 +149,7 @@ class SectionEditor extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '${subCount}S • ${critCount}C',
+                    '${subCount}S â€¢ ${critCount}C',
                     style: AppFonts.serifStyle(
                       fontSize: 10,
                       color: AppTheme.charcoal.withValues(alpha: 0.5),
@@ -304,7 +316,7 @@ class SectionEditor extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Center(
                     child: Text(
-                      '— OR —',
+                      'â€” OR â€”',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -354,6 +366,131 @@ class SectionEditor extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  /// Wizard-mode layout: renders only the section body content without
+  /// the Card/ExpansionTile header (title, badge, delete button).
+  /// The wizard provides its own section header above this widget.
+  Widget _buildWizardContent(
+    BuildContext context,
+    ThemeData theme,
+    String sKey,
+    List<String> sectionErrors,
+    bool hasErrors,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section-level error messages
+          if (hasErrors)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: sectionErrors
+                    .map(
+                      (msg) => Row(
+                        children: [
+                          Icon(Icons.error_outline, size: 14, color: theme.colorScheme.error),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              msg,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: theme.colorScheme.error,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          // Criteria list
+          ...section.criteria.asMap().entries.map((e) {
+            final ci = e.key;
+            final c = e.value;
+            final cKey = '$sKey:c:$ci';
+            final cErrors = errors?.forKey(cKey) ?? const [];
+            return KeyedSubtree(
+              key: errorKeys?[cKey] ?? GlobalKey(),
+              child: CriterionEditor(
+                criterion: c,
+                errors: cErrors,
+                onRemove: () => onRemoveCriterion(ci),
+                onChanged: onChanged,
+              ),
+            );
+          }),
+          // "Add Criterion" ghost button — only when no sub-sections
+          if (section.subSections.isEmpty)
+            GhostAddButton(
+              label: 'Add Criterion',
+              icon: Icons.add,
+              onPressed: () => onAddCriterion('pass_fail'),
+              tintColor: theme.colorScheme.primary,
+            ),
+          // Sub-sections zone
+          if (section.criteria.isNotEmpty || section.subSections.isNotEmpty)
+            const Divider(),
+          if (section.criteria.isEmpty && section.subSections.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Center(
+                child: Text(
+                  '— OR —',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                    letterSpacing: 2.0,
+                  ),
+                ),
+              ),
+            ),
+          ...section.subSections.asMap().entries.map((e) {
+            final si = e.key;
+            final sub = e.value;
+            final subKey = '$sKey:sub:$si';
+            return KeyedSubtree(
+              key: errorKeys?[subKey] ?? GlobalKey(),
+              child: SectionEditor(
+                index: si,
+                section: sub,
+                depth: depth + 1,
+                densityEnabled: densityEnabled,
+                errors: errors,
+                errorKeyPrefix: subKey,
+                errorKeys: errorKeys,
+                onRemoveSection: () => onRemoveSubSection?.call(si),
+                onAddCriterion: (inputType) {
+                  sub.criteria.add(EditableCriterion(inputType: inputType));
+                  onChanged();
+                },
+                onRemoveCriterion: (ci) {
+                  sub.criteria[ci].dispose();
+                  sub.criteria.removeAt(ci);
+                  onChanged();
+                },
+                onChanged: onChanged,
+              ),
+            );
+          }),
+          if (section.criteria.isEmpty)
+            GhostAddButton(
+              label: 'Add Sub-Section',
+              icon: Icons.subdirectory_arrow_right,
+              onPressed: onAddSubSection,
+              tintColor: theme.colorScheme.outline,
+            ),
+        ],
       ),
     );
   }

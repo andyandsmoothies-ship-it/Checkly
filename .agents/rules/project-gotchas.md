@@ -1,10 +1,12 @@
 ---
 name: Project Gotchas & Lessons
-description: Continuous log of critical project-specific lessons, gotchas, and patterns.
+description: Continuous log of critical project-specific lessons, gotchas, and patterns (including operational and tooling friction).
 trigger: always_on
 ---
 
 # Project Gotchas & Lessons — Checkly
+
+> **AI INSTRUCTION (MANDATORY TOOLING & OPS CAPTURE)**: This rule MUST catch all issues, even small ones, encountered while going through the thinking process. For example, if editing a file with a specific tool hangs and you use another simpler tool as a workaround, this kind of mechanical/operational friction MUST be updated and documented here as a formal Gotcha rule. Do not limit this file to just code-level architectural constraints.
 
 ## CRITICAL GOTCHAS
 
@@ -25,6 +27,7 @@ trigger: always_on
 | 13 | Audit | **AuditSectionCard lazy-section rendering:** `audit_form_page.dart` renders exactly ONE `AuditSectionCard` at a time (`template.groups[_currentSection]`). Only a single section is ever in the widget tree. Do NOT "optimize" this by rendering all sections with `Visibility` or `IndexedStack` — that would build and hold all criterion rows simultaneously, destroying the perf model. The swipe/nav bar updates `_currentSection` via `setState` which swap-renders the one active card. |
 | 14 | Drift/Performance | **Drift Query OOM Invariant:** Every function in a `*_queries.dart` or `*_manager.dart` DAO MUST satisfy one of: (1) use `selectOnly + count()/avg()`, (2) have an explicit `..limit(n)`, or (3) have a comment explicitly justifying why the result set is bounded. Any bare `.select().get()` without one of these three is an automatic OOM violation. For `GROUP BY ... HAVING AVG()`, use `customSelect` raw SQL — Drift 2.x does not expose `.having()` on `selectOnly()` results. The Verification gate MUST grep for bare `.get()` in DAO files before approving. |
 | 15 | Routing | **Navigating from outside the ShellRoute to a Shell-child route:** Pages rendered outside the `ShellRoute` (e.g., Wizard, on-boarding) MUST NOT use `context.go('/templates/:id')` directly — this renders the target as a top-level route, bypassing the shell (no bottom nav, no back button). **Safe pattern**: `final router = GoRouter.of(context); router.go('/templates'); Future.microtask(() => router.push('/templates/$id'));` — restores the shell first, then pushes the detail page. Always capture `router` before the microtask to satisfy `use_build_context_synchronously`. |
+| 16 | Agent Tooling | **AI Tooling & Operational Friction:** (Example) If a specific tool (like reading a massive file) hangs or fails during the agent's thinking process, the agent must immediately pivot to a simpler/alternative tool. Any operational or mechanical failure encountered while attempting a task should be treated as a valid "Gotcha." Do not force failing tools; document the constraint and pivot. |
 
 
 
