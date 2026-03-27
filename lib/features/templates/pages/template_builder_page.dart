@@ -220,7 +220,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
         if (double.tryParse(s.minusPerFaultCtrl.text) != null)
           'minusPerFault': double.tryParse(s.minusPerFaultCtrl.text),
         'orderIndex': i,
-        if (metadata != null) 'metadata': metadata,
+        'metadata': ?metadata,
         'children': _buildGroupsRecursive(s.subSections),
         'criteria': s.criteria.asMap().entries.map((ce) {
           final ci = ce.key;

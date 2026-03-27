@@ -133,18 +133,18 @@ void main() {
   setUpAll(_registerFallbacks);
 
   late AppDatabase testDb;
-  final _di = GetIt.instance;
+  final di = GetIt.instance;
 
   setUp(() async {
     // Reset GetIt to a clean state before each test to prevent cross-file leaks
-    await _di.reset();
+    await di.reset();
     testDb = AppDatabase.forTesting(NativeDatabase.memory());
-    _di.registerSingleton<DatabaseService>(DatabaseService.forTesting(testDb));
+    di.registerSingleton<DatabaseService>(DatabaseService.forTesting(testDb));
   });
 
   tearDown(() async {
     await testDb.close();
-    await _di.reset();
+    await di.reset();
   });
 
   // ── Group 1: Initialization ─────────────────────────────────────────────

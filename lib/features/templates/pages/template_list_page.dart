@@ -167,10 +167,18 @@ class _TemplateListPageState extends State<TemplateListPage> {
       appBar: AppBar(title: const Text('Templates')),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 80),
-        child: FloatingActionButton(
-          onPressed: () => _showCreateMenu(context),
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add),
+        child: Builder(
+          builder: (context) {
+            final theme = Theme.of(context);
+            return FloatingActionButton(
+              onPressed: () => _showCreateMenu(context),
+              shape: const CircleBorder(),
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              elevation: 4,
+              child: const Icon(Icons.add),
+            );
+          },
         ),
       ),
       body: ListenableBuilder(

@@ -45,6 +45,9 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
         onPressed: () =>
             context.push('/stores/select?templateId=${widget.templateId}'),
         shape: const CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        elevation: 4,
         child: const Icon(Icons.play_arrow),
       ),
       body: ListenableBuilder(
