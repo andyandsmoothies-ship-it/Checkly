@@ -69,14 +69,12 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 
 ---
 
-## Final Phase: Self-Correction Gate (CRITICAL)
+## Final Phase: Artifact Handoff (CRITICAL)
 <strict-instruction>
-Before concluding this workflow and replying to the user, you MUST self-audit your output against the global rules of this specific project. You are required to literally type out the following checklist in your final message:
+Before concluding this workflow and replying to the user, you MUST ensure you have produced the physical artifacts required for the next agent in the chain.
 
-1. **Thinking Process Check**: Did I isolate my internal reasoning into a dedicated thinking log file as dictated by this project's artifact rules? (Yes/No)
-2. **Template Check**: Did I include the mandatory header sections (e.g., `# Requirement Summary`) required by this project? (Yes/No)
-3. **Tracking Update**: Did I update the primary task tracking document with an inventory of my generated artifacts? (Yes/No)
-4. **Integrity Audit**: Did I include the mandatory attribution/compliance block in my final response? (Yes/No)
+- **Mandatory Output**: You must explicitly output the literal file paths of both the generated architecture document and the `thinking_log_epic_[topic].md` file.
+- **Handoff Phrase**: You must explicitly instruct the user with the following phrase in your final response: *"My reasoning is physically saved in the log above. Please run the `/audit-thinking` workflow on it to independently verify my logic."*
 
-You are strictly FORBIDDEN from handing off this task to the user until you have achieved 'Yes' on all 4 checks. If any answer is 'No', use your file tools to correct the mistake immediately.
+You are strictly FORBIDDEN from subjectively grading your own work. The human or the auditor agent will perform the verification.
 </strict-instruction>
