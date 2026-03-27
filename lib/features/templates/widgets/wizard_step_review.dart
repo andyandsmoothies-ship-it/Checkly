@@ -24,6 +24,10 @@ class WizardStepReview extends StatefulWidget {
   final ValueChanged<bool> onCorrectChanged;
   final ValueChanged<bool> onProgressiveChanged;
 
+  /// Called whenever the computed validity changes so the parent can
+  /// enable/disable the Save button.
+  final ValueChanged<bool> onValidityChanged;
+
   const WizardStepReview({
     super.key,
     required this.title,
@@ -42,6 +46,7 @@ class WizardStepReview extends StatefulWidget {
     required this.onDensityChanged,
     required this.onCorrectChanged,
     required this.onProgressiveChanged,
+    required this.onValidityChanged,
   });
 
   @override
@@ -57,6 +62,37 @@ class _WizardStepReviewState extends State<WizardStepReview> {
 
   bool get _isProductionReady =>
       widget.sections.length >= 3 && _totalCriteria >= 5;
+
+  /// V6 blocking errors — if non-empty, the template CANNOT be saved.
+  List<String> get _v6Errors {
+    final errors = <String>[];
+    if (widget.sections.isEmpty) {
+      errors.add('Add at least one section before saving.');
+      return errors;
+    }
+    final isSurvey = widget.scoringMode == 'survey';
+    for (int si = 0; si < widget.sections.length; si++) {
+      final s = widget.sections[si];
+      final sName = s.titleCtrl.text.trim().isEmpty ? 'Section ${si + 1}' : '"${s.titleCtrl.text.trim()}"';
+      if (s.criteria.isEmpty) {
+        errors.add('$sName has no criteria.');
+        continue;
+      }
+      for (int ci = 0; ci < s.criteria.length; ci++) {
+        final c = s.criteria[ci];
+        final cName = c.labelCtrl.text.trim().isEmpty ? 'Criterion ${ci + 1} in $sName' : '"${c.labelCtrl.text.trim()}"';
+        final isChoice = c.inputType == 'single_choice' || c.inputType == 'multi_choice';
+        final isScored = !isSurvey && c.inputType != 'text' && !isChoice;
+        if (isChoice && c.choiceOptions.length < 2) {
+          errors.add('$cName needs at least 2 options.');
+        }
+        if (isScored && (double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) {
+          errors.add('$cName has 0 points — set a point value.');
+        }
+      }
+    }
+    return errors;
+  }
 
   String get _modeLabel {
     switch (widget.scoringMode) {
@@ -74,8 +110,27 @@ class _WizardStepReviewState extends State<WizardStepReview> {
   }
 
   @override
+  void didUpdateWidget(WizardStepReview old) {
+    super.didUpdateWidget(old);
+    // Notify parent on every rebuild so Save button state stays in sync.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => widget.onValidityChanged(_v6Errors.isEmpty),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => widget.onValidityChanged(_v6Errors.isEmpty),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final v6Errors = _v6Errors;
+    final isV6Valid = v6Errors.isEmpty;
 
     return ListView(
       padding: const EdgeInsets.all(24),
@@ -95,8 +150,37 @@ class _WizardStepReviewState extends State<WizardStepReview> {
         ),
         const SizedBox(height: 24),
 
-        // Quality indicator
-        if (_isProductionReady)
+        // V6 validation badge (blocking errors — red)
+        if (!isV6Valid)
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.errorContainer,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: theme.colorScheme.error, width: 1),
+            ),
+            child: ExpansionTile(
+              leading: Icon(Icons.cancel_outlined, color: theme.colorScheme.error, size: 20),
+              title: Text(
+                'Needs Attention — ${v6Errors.length} issue${v6Errors.length == 1 ? '' : 's'} to fix',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onErrorContainer,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              initiallyExpanded: true,
+              children: v6Errors
+                  .map((e) => ListTile(
+                        dense: true,
+                        leading: Icon(Icons.error_outline, size: 16, color: theme.colorScheme.error),
+                        title: Text(e, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onErrorContainer)),
+                      ))
+                  .toList(),
+            ),
+          ),
+
+        // Quality indicator (non-blocking: coverage recommendation)
+        if (isV6Valid && _isProductionReady)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(

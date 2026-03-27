@@ -62,6 +62,9 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   // ── Success state ──
   String? _savedTemplateId;
 
+  // ── Review validity (V6 gate from WizardStepReview) ──
+  bool _templateIsValid = true;
+
   static const _stepTitles = ['Name', 'Structure', 'Build Criteria', 'Review', 'Done'];
 
   @override
@@ -111,10 +114,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
         'checklist' => 'general',
         _ => 'qc',
       };
-      // Initialize with one empty section so they aren't looking at a blank screen
-      if (_sections.isEmpty) {
-        _sections.add(EditableGroup(title: ''));
-      }
+      // Slate 1 fix: start blank — user adds sections themselves
     });
   }
 
@@ -188,12 +188,29 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
             return false;
           }
           for (int ci = 0; ci < _sections[i].criteria.length; ci++) {
-            if (_sections[i].criteria[ci].labelCtrl.text.trim().isEmpty) {
+            final c = _sections[i].criteria[ci];
+            if (c.labelCtrl.text.trim().isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     'Criterion ${ci + 1} in section ${i + 1} needs a label',
                   ),
+                ),
+              );
+              return false;
+            }
+            // V6 pre-flight: choice types need >= 2 options
+            if ((c.inputType == 'single_choice' || c.inputType == 'multi_choice') &&
+                c.choiceOptions.length < 2) {
+              final label = c.labelCtrl.text.trim().isNotEmpty
+                  ? '"${c.labelCtrl.text.trim()}"'
+                  : 'Criterion ${ci + 1}';
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '$label needs at least 2 choices. Tap it to add options.',
+                  ),
+                  duration: const Duration(seconds: 4),
                 ),
               );
               return false;
@@ -224,17 +241,25 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
         'criteria': s.criteria.asMap().entries.map((ce) {
           final ci = ce.key;
           final c = ce.value;
+          final bool isChoiceType =
+              c.inputType == 'single_choice' || c.inputType == 'multi_choice';
+          final bool isScaleType = c.inputType == 'scale';
           return <String, dynamic>{
             'label': c.labelCtrl.text,
             if (c.descCtrl.text.isNotEmpty) 'description': c.descCtrl.text,
             'inputType': c.inputType,
-            if (c.inputType != 'text' &&
-                c.inputType != 'single_choice' &&
-                c.inputType != 'multi_choice')
+            // Points: only for non-choice, non-text types
+            if (!isChoiceType &&
+                c.inputType != 'text')
               'pointsWeight': double.tryParse(c.pointsCtrl.text),
             'isCcp': false,
             'isRisk': false,
             'orderIndex': ci,
+            // Slice 1 fix: serialise metadata for choice/scale types
+            if (isChoiceType && c.choiceOptions.isNotEmpty)
+              'metadata': json.encode({'options': c.choiceOptions}),
+            if (isScaleType && c.scaleOptions.isNotEmpty)
+              'metadata': json.encode({'scaleOptions': c.scaleOptions}),
           };
         }).toList(),
       };
@@ -386,6 +411,11 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                 onDensityChanged: (v) => setState(() => _weightedDensity = v),
                 onCorrectChanged: (v) => setState(() => _confirmCorrect = v),
                 onProgressiveChanged: (v) => setState(() => _progressiveRepeat = v),
+                onValidityChanged: (isValid) {
+                  if (_templateIsValid != isValid) {
+                    setState(() => _templateIsValid = isValid);
+                  }
+                },
               ),
               // Step 5: Done
               if (_savedTemplateId != null)
@@ -394,10 +424,25 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                   templateTitle: _titleCtrl.text,
                   sectionCount: _sections.length,
                   criteriaCount: _totalSavedCriteria,
-                  onViewTemplate: () =>
-                      context.go('/templates/$_savedTemplateId'),
-                  onOpenBuilder: () =>
-                      context.go('/templates/$_savedTemplateId/edit'),
+                  onViewTemplate: () {
+                    // Restore the Shell (list page) first, then push the detail
+                    // page onto its navigator. Using go() alone skips the
+                    // ShellRoute (no footer, no back button). Gotcha #1.
+                    // Capture router before async gap to satisfy
+                    // use_build_context_synchronously.
+                    final router = GoRouter.of(context);
+                    router.go('/templates');
+                    Future.microtask(
+                      () => router.push('/templates/$_savedTemplateId'),
+                    );
+                  },
+                  onOpenBuilder: () {
+                    final router = GoRouter.of(context);
+                    router.go('/templates');
+                    Future.microtask(
+                      () => router.push('/templates/edit/$_savedTemplateId'),
+                    );
+                  },
                   onDone: () => context.go('/templates'),
                 )
               else
@@ -418,7 +463,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                           ),
                         const Spacer(),
                         FilledButton(
-                          onPressed: _saving
+                          onPressed: (_saving || (_currentStep == 3 && !_templateIsValid))
                               ? null
                               : () {
                                   if (_currentStep == 3) {

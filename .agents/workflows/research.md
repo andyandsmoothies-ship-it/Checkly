@@ -54,8 +54,9 @@ description: Architect's Strategic Research Workflow for System Architecture.
 ## Phase 5: Deliverable (The Handoff)
 - **Requirement**: Always output a structured artifact that **persists across sessions**.
 - **Action**:
-  1. Create a `concept_brief_[feature].md` or `research_[topic].md` artifact in the brain artifacts folder (for current session use).
+  1. Create a `concept_brief_[feature].md` or `research_[topic].md` artifact in the brain artifacts folder using `write_to_file` with `IsArtifact: true`.
   2. **ALSO** write the same deliverable to `.agents/tmp/research/research_[topic].md` (for cross-session handoff). Create the directory if it doesn't exist.
+     * **CRITICAL CLI RULE**: Do NOT use `write_to_file` with `IsArtifact: false` to create this persistent file. Doing so triggers a blocking IDE diff preview. You MUST use terminal commands (`Copy-Item` on Windows or `cp` on Linux) to copy the finalized artifact from the brain directory over to `.agents/tmp/research/`.
   3. The artifact MUST include the E2E Workflow Map from Phase 2.
   4. The artifact MUST end with a **Handoff Block** (see template below).
 - **Handoff**: If the research concludes the idea is viable, recommend the user run `/analysis` to produce a proper implementation plan. Do NOT generate an `implementation_plan.md` from this workflow — research lacks the system impact analysis and adversarial review required for a quality plan.

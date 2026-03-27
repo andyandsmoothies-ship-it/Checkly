@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../models/wizard_starter_packs.dart';
+import 'criterion_editor.dart';
 
 /// Wizard Step 3: Build criteria per section.
 /// Shows ONE section at a time with pill navigation at the top.
@@ -245,12 +246,14 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
               ...section.criteria.asMap().entries.map((ce) {
                 final ci = ce.key;
                 final criterion = ce.value;
-                return _CriterionRow(
+                return CriterionEditor(
+                  key: ValueKey(criterion),
                   criterion: criterion,
-                  index: ci,
-                  scoringMode: widget.scoringMode,
                   onRemove: () => _removeCriterion(ci),
-                  onChanged: widget.onChanged,
+                  onChanged: () {
+                    setState(() {});
+                    widget.onChanged();
+                  },
                 );
               }),
 
@@ -289,6 +292,12 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                             final c = EditableCriterion(
                                 inputType: sc.inputType, points: sc.points);
                             c.labelCtrl.text = sc.label;
+                            // Q1: pre-populate two options so the V6 choice guard
+                            // doesn't block save for survey single_choice chips.
+                            if (sc.inputType == 'single_choice' ||
+                                sc.inputType == 'multi_choice') {
+                              c.choiceOptions = ['Yes', 'No'];
+                            }
                             section.criteria.add(c);
                           });
                           widget.onChanged();
@@ -315,114 +324,3 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
 }
 
 
-// ── Criterion row (simplified) ──
-
-const _inputTypes = [
-  ('pass_fail', 'Pass / Fail'),
-  ('numeric', 'Numeric Count'),
-  ('scale', 'Scale (0–5)'),
-  ('text', 'Text Note'),
-  ('single_choice', 'Single Choice'),
-  ('multi_choice', 'Multi Choice'),
-];
-
-class _CriterionRow extends StatefulWidget {
-  final EditableCriterion criterion;
-  final int index;
-  final String scoringMode;
-  final VoidCallback onRemove;
-  final VoidCallback onChanged;
-
-  const _CriterionRow({
-    required this.criterion,
-    required this.index,
-    required this.scoringMode,
-    required this.onRemove,
-    required this.onChanged,
-  });
-
-  @override
-  State<_CriterionRow> createState() => _CriterionRowState();
-}
-
-class _CriterionRowState extends State<_CriterionRow> {
-  bool get _isScored =>
-      widget.scoringMode != 'survey' &&
-      widget.criterion.inputType != 'text' &&
-      widget.criterion.inputType != 'single_choice' &&
-      widget.criterion.inputType != 'multi_choice';
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Criterion number
-          Padding(
-            padding: const EdgeInsets.only(top: 14, right: 8),
-            child: Text(
-              '${widget.index + 1}.',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-
-          // Label
-          Expanded(
-            flex: 3,
-            child: TextFormField(
-              controller: widget.criterion.labelCtrl,
-              onChanged: (_) => widget.onChanged(),
-              decoration: const InputDecoration(
-                labelText: 'Criterion label',
-                isDense: true,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-
-          // Input type
-          DropdownMenu<String>(
-            initialSelection: widget.criterion.inputType,
-            width: 140,
-            inputDecorationTheme: const InputDecorationTheme(isDense: true),
-            label: const Text('Type'),
-            dropdownMenuEntries: _inputTypes
-                .map((t) => DropdownMenuEntry(value: t.$1, label: t.$2))
-                .toList(),
-            onSelected: (v) {
-              if (v != null) {
-                setState(() => widget.criterion.inputType = v);
-                widget.onChanged();
-              }
-            },
-          ),
-          const SizedBox(width: 8),
-
-          // Points (only for scored modes)
-          if (_isScored)
-            SizedBox(
-              width: 56,
-              child: TextFormField(
-                controller: widget.criterion.pointsCtrl,
-                onChanged: (_) => widget.onChanged(),
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Pts',
-                  isDense: true,
-                ),
-              ),
-            ),
-
-          // Remove
-          IconButton(
-            icon: const Icon(Icons.close, size: 18),
-            onPressed: widget.onRemove,
-            tooltip: 'Remove criterion',
-          ),
-        ],
-      ),
-    );
-  }
-}

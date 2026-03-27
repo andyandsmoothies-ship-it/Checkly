@@ -54,6 +54,10 @@ You MUST NOT guess the root cause of an error.
 
 ## Phase 4: Deliverable (The Handoff)
 - **Handoff**: Instruct the user to take the `failure_report_[topic].md` artifact and feed it to the `/implement` Builder agent to execute the fix.
+- **Gotcha Proposal (MANDATORY)**: At the very bottom of the `failure_report`, you MUST add a section titled `### Gotcha Addition Proposal`.
+  - If the root cause was a project-specific constraint or a non-obvious learning, draft a Markdown table row exactly matching the format of `.agents/rules/project-gotchas.md`.
+  - If it was just a generic syntax error, simply state: "No new gotcha detected."
+  - This guarantees the human can review and approve new rules without you blindly modifying the root architecture file.
 
 ---
 

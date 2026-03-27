@@ -10,8 +10,10 @@ description: The Core Builder Implementation Workflow.
 # /implement Workflow
 
 ## Step 0: Init
+- **Workflow Calibration**: If you are just starting this session, you MUST use `view_file` to read the entirety of this `implement.md` file right now to load the strict `@@SCAN` checkpoints into your active context.
 - Run Pre-Flight Check from `governance-rules.md`. This makes sure you don't write code that breaks project rules.
-- Create `thinking_log_[topic].md` FIRST before any other file. This keeps your internal reasoning separate from structured outputs.
+- Create `thinking_log_[topic].md` FIRST before any other file. 
+  - **MANDATORY LOG STRUCTURE**: Your thinking log MUST rigidly capture the output of every single `@@SCAN` block defined below. Create headers for `## Phase 1`, `## Phase 2`, `## Phase 3 (Pre-Code)`, `## Phase 3 (Post-Code)`, and `## Phase 4`, and answer the `@@SCAN` questions directly under them. Do NOT use it as a free-form scratchpad.
 - If a task list is needed → create `task.md` FIRST. This gives you a stable checklist to track progress.
 
 ## Phase 1: Deep Discovery
@@ -84,6 +86,9 @@ Review your own changes from 4 angles. State findings for each:
 
 **`walkthrough_[topic].md`** must include:
 - **Decision Log** (only when the plan had multiple proposed features): a table showing each with ✅ Implemented / ⏳ Deferred / ❌ Rejected and a one-line reason. This stops future sessions from re-proposing rejected ideas.
+- **Gotcha Removal/Edit Proposal (MANDATORY)**: At the very bottom, add a section evaluating `.agents/rules/project-gotchas.md`. Did your refactor just eliminate the need for an existing workaround? Did you modernize an architecture that makes a Gotcha obsolete? 
+  - If yes, explicitly propose which Gotcha (e.g., #4) should be deleted or edited, and provide the exact new Markdown table row. Wait for human approval before editing the rules file.
+  - If no, simply state: "No existing gotchas made obsolete."
 - **Verification Handoff** per scenario: Steps / Expected / Blast Radius. The QA agent uses this to run `/verify`.
 
 Run `git diff --name-only` one final time to confirm only planned files were changed before handing off.

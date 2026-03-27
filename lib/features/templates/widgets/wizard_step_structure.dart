@@ -61,35 +61,67 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
         ),
         const SizedBox(height: 24),
 
-        // Sections List
-        ...widget.sections.asMap().entries.map((e) {
-          final i = e.key;
-          final section = e.value;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: section.titleCtrl,
-                    onChanged: (_) => widget.onChanged(),
-                    decoration: InputDecoration(
-                      labelText: 'Section ${i + 1}',
-                      prefixIcon: const Icon(Icons.drag_indicator),
-                      border: const OutlineInputBorder(),
+        // Q2: empty state — shows when user hasn't added any sections yet
+        if (widget.sections.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.view_agenda_outlined,
+                    size: 64,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No sections yet',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => _removeSection(i),
-                  tooltip: 'Remove section',
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    'Sections are the main topics of your audit.\nAdd one above or pick from the suggestions below.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-        }),
+          )
+        // Sections List (when non-empty)
+        else
+          ...widget.sections.asMap().entries.map((e) {
+            final i = e.key;
+            final section = e.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: section.titleCtrl,
+                      onChanged: (_) => widget.onChanged(),
+                      decoration: InputDecoration(
+                        labelText: 'Section ${i + 1}',
+                        prefixIcon: const Icon(Icons.drag_indicator),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => _removeSection(i),
+                    tooltip: 'Remove section',
+                  ),
+                ],
+              ),
+            );
+          }),
 
         const SizedBox(height: 8),
         Align(

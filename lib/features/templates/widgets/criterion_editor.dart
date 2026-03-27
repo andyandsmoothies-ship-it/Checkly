@@ -112,6 +112,9 @@ class CriterionEditor extends StatelessWidget {
                           selected == 'single_choice' ||
                           selected == 'multi_choice') {
                         criterion.pointsCtrl.clear();
+                      } else if (criterion.pointsCtrl.text.trim().isEmpty) {
+                        // Restore default when switching back to a scored type.
+                        criterion.pointsCtrl.text = '10';
                       }
                       onChanged();
                       _openDrawer(context);
