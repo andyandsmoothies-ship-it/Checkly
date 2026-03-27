@@ -51,11 +51,12 @@ description: The Core Builder Implementation Workflow.
 
 - Run `flutter analyze` / `dotnet build` after **every single file change**. Catching errors early is faster than debugging a broken build at the end.
 - If ATDD tests exist (from `/atdd`): your goal is to turn them GREEN. Do NOT modify the QA's test code — only fix your implementation.
+- **MANDATORY STATE TESTING**: You MUST write a failing test for EVERY state defined in the Implementation Plan's State Matrix (Loading, Empty, Error, Success) and EVERY Business Logic Rule before writing the implementation code.
 - Follow the TDD inner loop per component: write a failing test → write code to pass it → refactor. This builds quality in, not inspected out later.
 - After each component turns GREEN: immediately check it for architecture compliance, null handling, edge cases, and import legality. Fix violations now — not in a post-review phase.
 - If the task shifts (e.g., API → DB → UI), re-scan `.agents/skills/` for new matching skills. Drop irrelevant ones to save context.
 
-> **@@SCAN**: (1) Did you follow TDD for each component? (2) Are ATDD tests GREEN (if they existed)? (3) Did you run the inline quality gate after each component?
+> **@@SCAN**: (1) Did you test every state in the State Matrix BEFORE coding? (2) Did you follow TDD for each component? (3) Did you run the inline quality gate after each component?
 
 ## Phase 4: Self-Review
 > Only use rules and skills already loaded in Phase 1. Do NOT scan `.agents/rules/` or `.agents/skills/` broadly here — it wastes context.
@@ -65,16 +66,18 @@ Review your own changes from 4 angles. State findings for each:
 1. **Security & Architecture**: Does the code break any workspace rules? Any illegal imports or wrong package dependencies?
 2. **Logic & Correctness**: Are nulls handled? Edge cases covered? Did you meet every acceptance criterion?
 3. **Concurrency**: Idempotency must come from DB Unique Constraints — not app-layer `AnyAsync`/`Exists` checks, which are race-prone. `SaveChangesAsync` belongs only at the top-level Handler, not inside domain services.
-4. **Coverage Gate** — for every `[NEW]` handler created this session:
-   - ✅ A happy-path test must exist (200/201/204)
-   - ✅ A primary error-path test must exist (404/403/409/400)
-   - ❌ "Existing suite is still green" does NOT count as coverage for new code
-   - If either is missing → write it now before moving to Phase 5. (See Gotcha #12)
+4. **Coverage Gate** — for every `[NEW]` or `[MODIFY]` component/handler touched this session:
+   - ✅ A **Success State** (Happy Path) test must exist (e.g., 200/201/204 or valid UI).
+   - ✅ An **Error State** test must exist (e.g., 404/403/409/400, or UI error boundary).
+   - ✅ An **Empty State** test must exist (e.g., empty arrays/nulls handled gracefully).
+   - ❌ "Existing suite is still green" does NOT count as coverage for new code.
+   - If ANY are missing → write them now before moving to Phase 5. (See Gotcha #12)
+   - 🛡️ **Track A Exemption:** If the task was purely cosmetic (e.g., CSS tweaks, padding, copy edits) and contained **zero logical branches or data mutations**, you are explicitly permitted to skip the State Matrix tests. You must state `[SCAN Exemption: Cosmetic Only]` in your review.
 
 - Run `git diff --name-only`. If you edited files not in the plan → fix it. Scope creep breaks other features silently.
 - Re-read the `## Verification Plan` in `implementation_plan_[topic].md`. Run each named test. Confirm GREEN. If a test from the plan is missing from the diff → it was skipped. Write it now.
 
-> **@@SCAN**: (1) All 4 review angles covered? (2) Happy + error-path tests exist for every [NEW] handler? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
+> **@@SCAN**: (1) All 4 review angles covered? (2) Do structural tests exist for Success, Error, and Empty states for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
 
 ## Phase 5: Handoff
 
