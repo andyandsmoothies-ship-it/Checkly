@@ -35,6 +35,7 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 ## Phase 2: Feasibility & System Impact Audit
 - **Instruction**: Evaluate the business logic and system impact against all workspace rules in `.agents/rules/`.
 - **System Impact Audit**: You MUST actively search for cross-feature conflicts. **Action**: Identify the core database tables, shared services, or global states this new epic touches. **You must use file-search tools (`grep_search`, `codebase_search`) to find all existing usages of those components in the workspace.** 
+- **Action (Boolean Integrity)**: If any feature in this epic involves conditional logic or state rules, explicitly define if it is an **ALLOWLIST** (only X is true, everything else is false) or a **BLOCKLIST** (only X is false, everything else is true). Do not leave boundary conditions mathematically ambiguous.
 - **Action**: Identify logical flaws, unhandled edge cases, security risks, side-effects, and deviations from established project standards.
 
 > **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) What existing features could break? (2) Which workspace rules from `.agents/rules/` constrain this epic? (3) Did you use file-search tools to find ALL existing usages of the affected components?

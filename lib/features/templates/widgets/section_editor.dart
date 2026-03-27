@@ -34,6 +34,11 @@ class SectionEditor extends StatelessWidget {
   /// Survey and Checklist modes. Null means no constraint (Builder default).
   final String? scoringMode;
 
+  /// Global feature flags — gates CCP/Risk toggle visibility in criterion drawer.
+  /// Defaults to false (toggles hidden) when not passed (sub-section recursion).
+  final bool globalCcpEnabled;
+  final bool globalRiskEnabled;
+
   /// True when the current scoring mode allows sub-sections.
   /// Survey and Checklist modes enforce a flat structure.
   bool get _allowSubSections =>
@@ -58,6 +63,8 @@ class SectionEditor extends StatelessWidget {
     required this.onChanged,
     this.isWizardMode = false,
     this.scoringMode,             // optional, null → no constraint
+    this.globalCcpEnabled = false,
+    this.globalRiskEnabled = false,
   });
 
   @override
@@ -311,6 +318,8 @@ class SectionEditor extends StatelessWidget {
                   criterion: c,
                   errors: cErrors,
                   scoringMode: scoringMode,
+                  globalCcpEnabled: globalCcpEnabled,
+                  globalRiskEnabled: globalRiskEnabled,
                   onRemove: () => onRemoveCriterion(ci),
                   onChanged: onChanged,
                 ),
@@ -456,6 +465,8 @@ class SectionEditor extends StatelessWidget {
                 criterion: c,
                 errors: cErrors,
                 scoringMode: scoringMode,
+                globalCcpEnabled: globalCcpEnabled,
+                globalRiskEnabled: globalRiskEnabled,
                 onRemove: () => onRemoveCriterion(ci),
                 onChanged: onChanged,
               ),

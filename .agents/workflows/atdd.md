@@ -15,6 +15,9 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
+> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now. Use it to track all phases of this workflow. Update your progress `[ ]` to `[x]` continuously. Do NOT proceed to Phase 1 until this file is created.
+
+> [!IMPORTANT]
 > You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing scenarios. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
 > **Raw Data Requirement**: To fulfill the user's need for raw analysis data, this log MUST contain a structured Markdown table titled `# Test Case Derivation Data`. 
 > Columns must be: `Scenario Hypothesis | Rejected/Approved | Reason (Cite Rule/Spec) | Final Gherkin Title`. 

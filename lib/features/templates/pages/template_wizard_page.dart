@@ -423,6 +423,8 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                 sections: _sections,
                 scoringMode: _scoringMode,
                 currentSectionIndex: _currentSectionIndex,
+                ccpEnabled: _ccpOverride,
+                riskEnabled: _riskOverride,
                 onChanged: _markDirty,
                 onSectionChanged: (i) => setState(() => _currentSectionIndex = i),
               ),

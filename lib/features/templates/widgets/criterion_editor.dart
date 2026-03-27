@@ -8,6 +8,8 @@ class CriterionEditor extends StatelessWidget {
   final EditableCriterion criterion;
   final List<String> errors;
   final String? scoringMode; // optional — filters input type bottom sheet
+  final bool globalCcpEnabled;  // gates CCP toggle visibility
+  final bool globalRiskEnabled; // gates Risk toggle visibility
 
   final VoidCallback onRemove;
   final VoidCallback onChanged;
@@ -17,6 +19,8 @@ class CriterionEditor extends StatelessWidget {
     required this.criterion,
     this.errors = const [],
     this.scoringMode,
+    this.globalCcpEnabled = false,
+    this.globalRiskEnabled = false,
     required this.onRemove,
     required this.onChanged,
   });
@@ -360,35 +364,60 @@ class CriterionEditor extends StatelessWidget {
                   ),
                 const SizedBox(height: 16),
 
-                // CCP / Risk toggles — only for scored input types (Gotcha #11)
-                if (criterion.inputType != 'text' &&
-                    criterion.inputType != 'single_choice' &&
-                    criterion.inputType != 'multi_choice') ...[
-                  const Divider(),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Critical Control Point (CCP)'),
-                    subtitle: const Text(
-                      'Failure zeros this entire section score',
-                    ),
-                    value: criterion.isCcp,
-                    onChanged: (v) {
-                      setSheetState(() => criterion.isCcp = v);
-                      onChanged();
-                    },
-                  ),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Risk'),
-                    subtitle: const Text('Failure zeros the entire audit score'),
-                    value: criterion.isRisk,
-                    onChanged: (v) {
-                      setSheetState(() => criterion.isRisk = v);
-                      onChanged();
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                ],
+                // CCP / Risk toggles — two-gate logic:
+                // Gate 1 (BLOCKLIST): survey + checklist always hide both toggles.
+                // Gate 2 (ALLOWLIST + data preservation, Gotcha #6):
+                //   show iff globalEnabled OR criterion already carries the flag.
+                // Gotcha #11: non-scored input types (text/choice) always hide.
+                () {
+                  final inputTypeScored =
+                      criterion.inputType != 'text' &&
+                      criterion.inputType != 'single_choice' &&
+                      criterion.inputType != 'multi_choice';
+                  final modeAllows =
+                      scoringMode != 'survey' && scoringMode != 'checklist';
+                  final showCcp = modeAllows &&
+                      inputTypeScored &&
+                      (globalCcpEnabled || criterion.isCcp);
+                  final showRisk = modeAllows &&
+                      inputTypeScored &&
+                      (globalRiskEnabled || criterion.isRisk);
+
+                  if (!showCcp && !showRisk) return const SizedBox.shrink();
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Divider(),
+                      if (showCcp)
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Critical Control Point (CCP)'),
+                          subtitle: const Text(
+                            'Failure zeros this entire section score',
+                          ),
+                          value: criterion.isCcp,
+                          onChanged: (v) {
+                            setSheetState(() => criterion.isCcp = v);
+                            onChanged();
+                          },
+                        ),
+                      if (showRisk)
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Risk'),
+                          subtitle:
+                              const Text('Failure zeros the entire audit score'),
+                          value: criterion.isRisk,
+                          onChanged: (v) {
+                            setSheetState(() => criterion.isRisk = v);
+                            onChanged();
+                          },
+                        ),
+                      const SizedBox(height: 8),
+                    ],
+                  );
+                }(),
               ],
             ),
           ),

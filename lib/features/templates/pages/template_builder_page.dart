@@ -625,6 +625,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                         errorKeyPrefix: sKey,
                         errorKeys: _errorKeys,
                         scoringMode: _scoringMode,
+                        globalCcpEnabled: _ccpOverride,
+                        globalRiskEnabled: _riskOverride,
                         onRemoveSection: () => _removeSection(i),
                         onAddCriterion: (inputType) =>
                             _addCriterionToGroup(section, inputType),

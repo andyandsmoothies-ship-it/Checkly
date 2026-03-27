@@ -91,3 +91,11 @@ Review your own changes from 4 angles. State findings for each:
 - **Verification Handoff** per scenario: Steps / Expected / Blast Radius. The QA agent uses this to run `/verify`.
 
 Run `git diff --name-only` one final time to confirm only planned files were changed before handing off.
+
+> **🛡️ ARTIFACT PRE-FLIGHT (MANDATORY — do this BEFORE git commit):**
+> Run `list_dir` on `C:\Users\HP\.gemini\antigravity\brain\{conversation-id}\` and visually confirm that **every** artifact listed in the task.md Phase 5 checkboxes exists as a real file on disk.
+> - ✅ `walkthrough_[topic].md` — visible in listing
+> - ✅ `executed_tests_[topic].md` — visible in listing
+> - ✅ `task.md` — visible in listing
+>
+> **If any file is missing → create it before committing.** A `[x]` checkbox in task.md does NOT prove the file was created. See Gotcha #20.

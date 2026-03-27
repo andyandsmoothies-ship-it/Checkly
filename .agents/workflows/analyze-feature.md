@@ -33,6 +33,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 ## Phase 1.5: Requirement Deconstruction (First Principles)
 - **Instruction**: Strip the requirement down to its absolute core. What is the fundamental business value being created or protected?
 - **Action**: Explicitly define the *Strict Boundaries* of the feature. State exactly what this feature MUST do, and explicitly state what is OUT OF SCOPE (YAGNI).
+- **Action (Boolean Integrity)**: If the feature involves conditional logic or state rules, explicitly define if it is an **ALLOWLIST** (only X is true, everything else is false) or a **BLOCKLIST** (only X is false, everything else is true). Do not leave boundary conditions mathematically ambiguous.
 - **Action**: Formulate the core underlying logic or state transition independently of the code implementation.
 
 > **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) What is the core business value? (2) What is explicitly OUT OF SCOPE for this tactical feature? (3) What is the fundamental state transition required?
