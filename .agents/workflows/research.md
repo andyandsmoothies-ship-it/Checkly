@@ -59,15 +59,20 @@ description: Architect's Strategic Research Workflow for System Architecture.
      * **CRITICAL CLI RULE**: Do NOT use `write_to_file` with `IsArtifact: false` to create this persistent file. Doing so triggers a blocking IDE diff preview. You MUST use terminal commands (`Copy-Item` on Windows or `cp` on Linux) to copy the finalized artifact from the brain directory over to `.agents/tmp/research/`.
   3. The artifact MUST include the E2E Workflow Map from Phase 2.
   4. The artifact MUST end with a **Handoff Block** (see template below).
-- **Handoff**: If the research concludes the idea is viable, recommend the user run `/analysis` to produce a proper implementation plan. Do NOT generate an `implementation_plan.md` from this workflow — research lacks the system impact analysis and adversarial review required for a quality plan.
-- **Final Message**: You MUST print the absolute file path to the `.agents/tmp/research/` deliverable so the user can paste it into the next `/analysis` session.
+- **Effort Sizing & Triage (CRITICAL)**: You must explicitly classify the size of the original idea before handoff:
+  - **Sprint / Theme**: Spans multiple unrelated domains (e.g., UX redesign + database migration). MUST recommend using the `shaping` skill to slice it into Epics before analysis.
+  - **Epic (Track C)**: A cohesive but massive system change. Recommend `/analyze-epic`.
+  - **Feature (Track A/B)**: A scoped UI tweak, logic branch, or bugfix. Recommend `/analyze-feature`.
+- **Handoff**: If the idea is viable, mandate the specific workflow or skill the user should run next based on the Effort Sizing above. Do NOT generate an `implementation_plan.md` from this workflow — research lacks the system impact analysis required for a quality plan.
+- **Final Message**: You MUST print the absolute file path to the `.agents/tmp/research/` deliverable so the user can paste it into the next session.
 
 ### Handoff Block Template (MANDATORY at end of deliverable)
 ```markdown
 ---
 ## Handoff Block
 - **Verdict**: Viable / Needs Redesign / Reject
-- **Recommended Next**: `/analysis` or `/implement`
+- **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
+- **Recommended Next**: `shaping` skill | `/analyze-epic` | `/analyze-feature`
 - **Persistent Path**: `.agents/tmp/research/research_[topic].md`
 - **Blind Spots**: [3 items from Phase 3]
 - **Conflicts**: [items from Phase 3, or NONE]
