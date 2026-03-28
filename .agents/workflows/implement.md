@@ -12,7 +12,20 @@ description: The Core Builder Implementation Workflow.
 - **Workflow Calibration**: If you are just starting this session, you MUST use `view_file` to read the entirety of this `implement.md` file right now to load the strict `@@SCAN` checkpoints into your active context.
 - Run Pre-Flight Check from `governance-rules.md`. This makes sure you don't write code that breaks project rules.
 - **INTERNAL LOGGING**: You must rigorously process the output of every single `@@SCAN` block defined below in your internal chain of thought. Do NOT use it as a free-form scratchpad.
-- **MANDATORY ARTIFACT**: You MUST create a `task.md` artifact FIRST before writing any code. Do not skip this under any circumstances. This gives you a stable checklist to track progress and prevents task amnesia.
+- **MANDATORY ARTIFACT**: You MUST create a `task.md` artifact FIRST before writing any code using this exact schema — do not invent a different format:
+  ```
+  # Task: [Feature / Bug / Topic Name]
+  Workflow: /implement | Track: [A / B1 / B2 / C]
+  ## Phases
+  - [ ] Phase 1: Deep Discovery
+  - [ ] Phase 2: Planning
+  - [ ] Phase 3: Coding
+  - [ ] Phase 4: Self-Review
+  - [ ] Phase 5: Handoff
+  ## Artifact Inventory
+  | Status | File Path | Type |
+  |--------|-----------|------|
+  ```
 
 ## Phase 1: Deep Discovery
 - Read config files (`.csproj`, `pubspec.yaml`, etc.) to understand the current project state before touching anything.
@@ -74,6 +87,9 @@ Review your own changes from 4 angles. State findings for each:
 - Re-read the `## Verification Plan` in `implementation_plan_[topic].md`. Run each named test. Confirm GREEN. If a test from the plan is missing from the diff → it was skipped. Write it now.
 
 > **@@SCAN** PAUSE and INTERNALLY evaluate: (1) All 4 review angles covered? (2) Do structural tests exist for Success, Error, and Empty states for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
+
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before this phase is complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and all files modified so far. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
 
 ## Phase 5: Handoff
 

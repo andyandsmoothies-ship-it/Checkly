@@ -69,7 +69,11 @@ Synthesize findings into a structured audit report.
 
 ### Phase 6: Deliverable
 - Output `audit_code_report_[date-time].md` artifact into the agent's `brain/` folder.
+- **Physical Verification**: Run `list_dir` on the brain/artifact directory and confirm the report file is visible on disk before handing off.
 - **Handoff**: Route all issues to `/implement` (code quality fixes are always Track B — mechanical).
+
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all 6 phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the current severity table state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
 
 ---
 
@@ -81,6 +85,7 @@ Before concluding this workflow and replying to the user, you MUST self-audit yo
 2. **Template Check**: Did I include the mandatory `# Requirement Summary` section in every artifact? → Cite: the exact artifact name and its first heading.
 3. **Tracking Update**: Did I update `task.md` with an `# Artifact Inventory` listing every generated file as [NEW]/[MOD]/[DEL]? → Cite: the specific task.md entry added.
 4. **Integrity Audit**: Did I include the mandatory context/attribution block (skills loaded, rules applied) in my final response? → Cite: the exact skills and rules referenced.
+5. **Physical Verification (Anti-Optimistic-Checkboxing)**: Run `list_dir` on the brain/artifact directory right now. Confirm every `[NEW]` file in the `## Artifact Inventory` of `task.md` appears in the listing. → Cite: the directory path checked and the file names confirmed visible.
 
-You are strictly FORBIDDEN from handing off this task to the user until all 4 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
+You are strictly FORBIDDEN from handing off this task to the user until all 5 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
 </strict-instruction>

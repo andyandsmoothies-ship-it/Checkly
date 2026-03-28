@@ -21,7 +21,21 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 > [!IMPORTANT]
 > You must establish a clear internal reasoning trace before starting your analysis. Keep your thinking rigorous but internal.
 > 
-> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now before proceeding to Phase 1. Use it to track your progress through the phases below. Do not skip this.
+> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now before proceeding to Phase 1, using this exact schema:
+> ```
+> # Task: [Feature / Bug / Topic Name]
+> Workflow: /analyze-feature | Track: [A / B1 / B2 / C]
+> ## Phases
+> - [ ] Phase 1: Skill Loading
+> - [ ] Phase 1.5: Requirement Deconstruction
+> - [ ] Phase 2: Blast Radius Review
+> - [ ] Phase 2.5: Edge Case & State Matrix
+> - [ ] Phase 3: Deliverable
+> - [ ] Phase 4: Route Implementation
+> ## Artifact Inventory
+> | Status | File Path | Type |
+> |--------|-----------|------|
+> ```
 
 ## Phase 1: Skill Loading (Precision Focus)
 - **Instruction**: Do not act as a generic AI. You MUST assume the persona of the exact specialist needed for this scoped task.
@@ -94,6 +108,10 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 Before concluding this workflow and replying to the user, you MUST ensure you have produced the physical artifacts required for the next agent in the chain.
 
 - **Mandatory Output**: You must explicitly output the literal file path of the generated implementation plan.
+- **Physical Verification**: Run `list_dir` on the brain/artifact directory and confirm the `implementation_plan_[topic].md` file is visible on disk before handing off.
 
 You are strictly FORBIDDEN from subjectively grading your own work. The human or the auditor agent will perform the verification.
 </strict-instruction>
+
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before this phase is complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and key decisions made so far. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*

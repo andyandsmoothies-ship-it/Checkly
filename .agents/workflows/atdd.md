@@ -15,7 +15,18 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 
 ## Pre-Flight Setup (ANTI-POISONING MANDATE)
 > [!IMPORTANT]
-> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now. Use it to track all phases of this workflow. Update your progress `[ ]` to `[x]` continuously. Do NOT proceed to Phase 1 until this file is created.
+> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now using this exact schema. Update progress `[ ]` → `[/]` → `[x]` continuously. Do NOT proceed to Phase 1 until this file is created.
+> ```
+> # Task: [Feature / Acceptance Test Topic]
+> Workflow: /atdd | Track: [B2 / C]
+> ## Phases
+> - [ ] Phase 1: Spec Discovery & Persona
+> - [ ] Phase 2: SDET Execution
+> - [ ] Phase 3: Deliverable
+> ## Artifact Inventory
+> | Status | File Path | Type |
+> |--------|-----------|------|
+> ```
 
 > [!IMPORTANT]
 > You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing scenarios. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
@@ -116,3 +127,6 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 - **Infrastructure Map (MANDATORY)**: The specs artifact MUST include a Test Infrastructure Map section following the template from `atdd-quality-gates` skill Gate 5.
 - **Key Principle**: The Gherkin scenarios and failing tests produced by this workflow ARE the TDD spec-tests. The Builder's `/implement` workflow should treat them as the RED starting point — go straight to GREEN, do not re-specify.
 - **Handoff**: If an `implementation_plan_[topic].md` exists from a prior `/analysis` workflow, you MUST modify it by injecting your authored test names directly into its `## Verification Plan` section under a new `### ATDD Constraints` subheading. This mathematically forces the Builder's Phase 4 Drift Check to verify them. If NO plan exists, do NOT generate one — recommend the user run `/analysis` first.
+
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the Smoke Gate table state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*

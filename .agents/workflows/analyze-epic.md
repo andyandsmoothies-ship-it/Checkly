@@ -22,7 +22,20 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 > [!IMPORTANT]
 > You must establish a clear internal reasoning trace before starting your analysis. Do NOT pollute structured artifacts with internal monologue.
 > 
-> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now before proceeding to Phase 1. Use it to track your progress through the phases below. Do not skip this.
+> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now before proceeding to Phase 1, using this exact schema:
+> ```
+> # Task: [Epic Name]
+> Workflow: /analyze-epic | Track: C
+> ## Phases
+> - [ ] Phase 1: Technical Discovery & Reuse Audit
+> - [ ] Phase 2: Feasibility & System Impact Audit
+> - [ ] Phase 3: Adversarial Review (Red Team)
+> - [ ] Phase 4: Deliverable
+> - [ ] Phase 5: Task Slicing & Dispatch
+> ## Artifact Inventory
+> | Status | File Path | Type |
+> |--------|-----------|------|
+> ```
 
 ## Phase 1: Technical Discovery & Reuse Audit
 - **Instruction**: Assume the role of a Principal Software Engineer. Your first job is to determine if we should build this at all.
@@ -85,6 +98,10 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 Before concluding this workflow and replying to the user, you MUST ensure you have produced the physical artifacts required for the next agent in the chain.
 
 - **Mandatory Output**: You must explicitly output the literal file path of the generated architecture document.
+- **Physical Verification**: Run `list_dir` on the brain/artifact directory and confirm the `analysis_epic_[topic].md` file is visible on disk before handing off.
 
 You are strictly FORBIDDEN from subjectively grading your own work. The human or the auditor agent will perform the verification.
 </strict-instruction>
+
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all 5 phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the current slice table state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*

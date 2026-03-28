@@ -88,6 +88,7 @@ Before concluding this workflow and replying to the user, you MUST self-audit yo
 2. **Template Check**: Did I include the mandatory `# Requirement Summary` section in every artifact? → Cite: the exact artifact name and its first heading.
 3. **Tracking Update**: Did I update `task.md` with an `# Artifact Inventory` listing every generated file as [NEW]/[MOD]/[DEL]? → Cite: the specific task.md entry added.
 4. **Integrity Audit**: Did I include the mandatory context/attribution block (skills loaded, rules applied) in my final response? → Cite: the exact skills and rules referenced.
+5. **Physical Verification (Anti-Optimistic-Checkboxing)**: Run `list_dir` on the brain/artifact directory right now. Confirm every `[NEW]` file in the `## Artifact Inventory` of `task.md` appears in the listing. → Cite: the directory path checked and the file names confirmed visible.
 
-You are strictly FORBIDDEN from handing off this task to the user until all 4 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
+You are strictly FORBIDDEN from handing off this task to the user until all 5 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
 </strict-instruction>

@@ -54,3 +54,6 @@ description: Verification gate for any upstream workflow — validates that anal
 **Skill Refresh**: Re-scan `.agents/skills/` for any broad code-review or security skills to ensure no long-term debt was introduced.
 **Deliverable**: Create `walkthrough_[topic]_[date-time].md` containing the EDD **Executed Evidence**. Provide the exact terminal logs, test summaries, and screenshots representing concrete scenarios (e.g., Scenario 1, Scenario 2) that prove the EDD Expectations were successfully met. Avoid generative narratives. Use a unique name per verification to preserve history. This is for the human counterpart to see *what* was verified, not to decide *if* it should be.
 </strict-instruction>
+
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the CI gate result state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*

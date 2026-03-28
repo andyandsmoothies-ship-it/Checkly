@@ -16,7 +16,20 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 > [!IMPORTANT]
 > You must internally structure your reasoning before investigating. Do NOT pollute structured artifacts with internal monologue.
 > 
-> **MANDATORY ARTIFACT**: You MUST create a `task.md` document right now before investigating the codebase. This guarantees you will correctly satisfy Question 3 in the Final Phase Self-Correction Gate.
+> **MANDATORY ARTIFACT**: You MUST create a `task.md` document right now before investigating the codebase, using this exact schema:
+> ```
+> # Task: [Bug / Error Topic Name]
+> Workflow: /diagnose | Track: [A / B1 / B2 / C]
+> ## Phases
+> - [ ] Phase 1: Symptom Isolation
+> - [ ] Phase 2: Skill & Rule Discovery
+> - [ ] Phase 3: Resolution Plan
+> - [ ] Phase 4: Deliverable Handoff
+> ## Artifact Inventory
+> | Status | File Path | Type |
+> |--------|-----------|------|
+> ```
+> This guarantees you will correctly satisfy Question 3 in the Final Phase Self-Correction Gate.
 > 
 > **MANDATORY REASONING PHASES**: You must process these progressively in your context:
 > `## 1. Initial Hypothesis`: Brainstorm potential causes (Code, DB, Navigation, etc.) BEFORE reading deep code.
@@ -61,6 +74,9 @@ You MUST NOT guess the root cause of an error.
   - If it was just a generic syntax error, simply state: "No new gotcha detected."
   - This guarantees the human can review and approve new rules without you blindly modifying the root architecture file.
 
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and your current hypothesis/evidence state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
+
 ---
 
 ## Final Phase: Self-Correction Gate (CRITICAL)
@@ -71,6 +87,7 @@ Before concluding this workflow and replying to the user, you MUST self-audit yo
 2. **Template Check**: Did I include the mandatory `# Requirement Summary` section in every artifact? → Cite: the exact artifact name and its first heading.
 3. **Tracking Update**: Did I update `task.md` with an `# Artifact Inventory` listing every generated file as [NEW]/[MOD]/[DEL]? → Cite: the specific task.md entry added.
 4. **Integrity Audit**: Did I include the mandatory context/attribution block (skills loaded, rules applied) in my final response? → Cite: the exact skills and rules referenced.
+5. **Physical Verification (Anti-Optimistic-Checkboxing)**: Run `list_dir` on the brain/artifact directory right now. Confirm every `[NEW]` file in the `## Artifact Inventory` of `task.md` appears in the listing. → Cite: the directory path checked and the file names confirmed visible.
 
-You are strictly FORBIDDEN from handing off this task to the user until all 4 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
+You are strictly FORBIDDEN from handing off this task to the user until all 5 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
 </strict-instruction>

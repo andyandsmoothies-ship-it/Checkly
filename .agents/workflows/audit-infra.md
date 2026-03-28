@@ -75,7 +75,11 @@ Synthesize findings into a structured audit report.
 
 ### Phase 6: Deliverable
 - Output `audit_infra_report_[date-time].md` artifact into the agent's `brain/` folder.
+- **Physical Verification**: Run `list_dir` on the brain/artifact directory and confirm the report file is visible on disk before handing off.
 - **Handoff (Task Routing)**:
   - 🔴 **Critical** → route to `/analysis` first (may need design changes)
   - 🟡 **Warning** → route to `/implement` directly (known fix patterns)
   - 🟢 **Optimization** → batch into a single `/implement` pass
+
+> [!CAUTION]
+> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all 6 phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the current severity table state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
