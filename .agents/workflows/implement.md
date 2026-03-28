@@ -106,7 +106,7 @@ Review your own changes from 4 angles. State findings for each:
   - If no, simply state: "No existing gotchas made obsolete."
 - **Verification Handoff** per scenario: Steps / Expected / Blast Radius. The QA agent uses this to run `/verify`.
 
-Run `git diff --name-only` one final time to confirm only planned files were changed before handing off.
+Run `cmd /c git diff --name-only` one final time to confirm only planned files were changed.
 
 > **🛡️ ARTIFACT PRE-FLIGHT (MANDATORY — do this BEFORE git commit):**
 > Run `list_dir` on `C:\Users\HP\.gemini\antigravity\brain\{conversation-id}\` and visually confirm that **every** artifact listed in the task.md Phase 5 checkboxes exists as a real file on disk.

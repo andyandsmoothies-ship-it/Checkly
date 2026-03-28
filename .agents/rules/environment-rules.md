@@ -6,7 +6,9 @@ trigger: always_on
 
 # Environment Rules
 
-ENV: Windows.
-Always use 'cmd /c' for all shell executions to ensure the process terminates correctly and sends an EOF signal.
-Example: Use 'cmd /c pip list' instead of just 'pip list'.
-Avoid interactive shells. If a persistent session is needed, use 'cmd /k' but ensure the command is self-terminating.
+> Shell execution rules live in `GEMINI.md §1`. Git command rules live in `GEMINI.md §8`.
+
+**Quick reference:**
+- Always prefix commands with `cmd /c` — ensures EOF signal is sent.
+- Chain commands with `;` inside one `cmd /c` call. Never use `&&`.
+- No interactive shells. If a persistent session is needed, use `cmd /k` with a self-terminating command.

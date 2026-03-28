@@ -6,32 +6,181 @@ trigger: always_on
 
 # Project Gotchas & Lessons — Checkly
 
-> **AI INSTRUCTION (MANDATORY TOOLING & OPS CAPTURE)**: This rule MUST catch all issues, even small ones, encountered while going through the thinking process. For example, if editing a file with a specific tool hangs and you use another simpler tool as a workaround, this kind of mechanical/operational friction MUST be updated and documented here as a formal Gotcha rule. Do not limit this file to just code-level architectural constraints.
+> **AI INSTRUCTION (MANDATORY):** Before writing any code or running any tool, scan this file for gotchas relevant to your current task using the **Trigger when** keywords. Do not rely on memory — read the relevant entry in full.
 
-## CRITICAL GOTCHAS
+---
 
-| # | Category | Description |
-|---|----------|-------------|
-| 1 | Layout | **Nested Scaffold + FAB invisibility:** `_MainShell` (ShellRoute) wraps pages in a Scaffold with `extendBody: true` and a 96px bottom nav bar. Child pages have their OWN inner Scaffold. Any `floatingActionButton` in the inner Scaffold MUST have `Padding(bottom: 80)` or it renders behind the nav bar and is invisible. |
-| 2 | Gesture | **FloatingActionButton inside PopupMenuButton:** Do NOT wrap a `FloatingActionButton(onPressed: ...)` inside `PopupMenuButton.child`. The FAB's InkResponse absorbs tap events. Use `showMenu()` programmatically from the FAB's `onPressed` instead. |
-| 3 | Routing | **Route registration order matters:** Specific routes (e.g., `/api/submissions/survey-results`) MUST be registered BEFORE catch-all routes (e.g., `/api/submissions/{id}`), otherwise the catch-all swallows the request and tries to parse `survey-results` as a GUID. |
-| 4 | EF Core | **Explicit `HasColumnName` required:** This project uses explicit `HasColumnName("snake_case")` in `AppDbContext` for ALL columns. EF will NOT auto-map `ScoringMode` → `scoring_mode`. Forgetting this causes silent column mismatches. |
-| 5 | Scoring | **Survey mode = null TotalScore:** Survey submissions intentionally have `TotalScore = null`. Any analytics query averaging scores MUST filter `WHERE scoring_mode != 'survey'` or `WHERE total_score IS NOT NULL` to avoid division errors. |
-| 6 | Sync | **New DTO fields must flow through sync pipeline:** When adding a field to Template or Submission, you must update: (1) Entity, (2) DbContext mapping, (3) Server DTO record, (4) ALL endpoint projections, (5) Sync endpoint projection, (6) Flutter DTO class + fromJson. Missing any one causes the field to silently drop during offline sync. Verified pattern: `ScoringLogicConfig`, `DisplayNoun`. |
-| 7 | Snapshot | **Denormalized fields need dual writes:** Snapshot fields (e.g., `TemplateTitle`, `DisplayNoun`) must be written in BOTH `CreateSubmission` AND `FinalizeSubmission`. Missing either causes null snapshots for draft-then-finalize flows vs direct-complete flows. |
-| 8 | Analytics | **SectionScores is jsonb, not relational:** `Submission.SectionScores` stores `{"Section": {"score": 82, "maxScore": 100}}` as jsonb. Cannot use EF `GroupBy` on dynamic keys — must load the jsonb strings and parse in C#. GIN index (`jsonb_path_ops`) enables future raw SQL queries. |
-| 9 | Migration | **EF migration generator picks up all pending changes:** Running `dotnet ef migrations add` captures ALL unmigrated model changes, not just the one you intended. Review the generated migration file before committing — remove unrelated changes or split into separate migrations. |
-| 10 | Bottom Nav | **Bottom nav label is template-agnostic:** The bottom nav tab cannot change per-template because the user isn't viewing a template context when they see the nav. Label must be generic (e.g., `'ACTIVITY'`), not mode-specific. |
-| 11 | Templates | **Non-scored input types need explicit exclusion:** `text`, `single_choice`, and `multi_choice` are data-collection only. Every location that checks `pointsWeight` or shows points MUST exclude these types. Pattern appeared in 4 places: V6 save guard, criterion badge, template detail badge, save payload. When adding new UI that references `pointsWeight`, always check `inputType` first. |
-| 12 | Testing | **Every [NEW] handler requires at least 2 tests before handoff:** A new endpoint is NOT done until there is a passing test for (1) the happy path and (2) the primary error path (404, 403, 409, or 400). The existing test suite going green does NOT count — it only proves you didn't break old behavior. Applies even for "Track B1" slices. Learned: Infra Slices 2&3, `GetStore.cs` and `DeleteArea.cs` were shipped green but untested. |
-| 13 | Audit | **AuditSectionCard lazy-section rendering:** `audit_form_page.dart` renders exactly ONE `AuditSectionCard` at a time (`template.groups[_currentSection]`). Only a single section is ever in the widget tree. Do NOT "optimize" this by rendering all sections with `Visibility` or `IndexedStack` — that would build and hold all criterion rows simultaneously, destroying the perf model. The swipe/nav bar updates `_currentSection` via `setState` which swap-renders the one active card. |
-| 14 | Drift/Performance | **Drift Query OOM Invariant:** Every function in a `*_queries.dart` or `*_manager.dart` DAO MUST satisfy one of: (1) use `selectOnly + count()/avg()`, (2) have an explicit `..limit(n)`, or (3) have a comment explicitly justifying why the result set is bounded. Any bare `.select().get()` without one of these three is an automatic OOM violation. For `GROUP BY ... HAVING AVG()`, use `customSelect` raw SQL — Drift 2.x does not expose `.having()` on `selectOnly()` results. The Verification gate MUST grep for bare `.get()` in DAO files before approving. |
-| 15 | Routing | **Navigating from outside the ShellRoute to a Shell-child route:** Pages rendered outside the `ShellRoute` (e.g., Wizard, on-boarding) MUST NOT use `context.go('/templates/:id')` directly — this renders the target as a top-level route, bypassing the shell (no bottom nav, no back button). **Safe pattern**: `final router = GoRouter.of(context); router.go('/templates'); Future.microtask(() => router.push('/templates/$id'));` — restores the shell first, then pushes the detail page. Always capture `router` before the microtask to satisfy `use_build_context_synchronously`. |
-| 16 | Agent Tooling | **AI Tooling & Operational Friction:** (Example) If a specific tool (like reading a massive file) hangs or fails during the agent's thinking process, the agent must immediately pivot to a simpler/alternative tool. Any operational or mechanical failure encountered while attempting a task should be treated as a valid "Gotcha." Do not force failing tools; document the constraint and pivot. |
-| 17 | Widgets | **GlobalKey rebuild destroys Focus & BuildContext:** Never use `?? GlobalKey()` inline inside a `build()` method. Every call creates a new key instance, so Flutter's reconciler unmounts the old element on every rebuild — destroying `TextField` focus (1-char typing bug) and detaching `BuildContext` from its `InheritedWidget` ancestors (causes `MediaQuery.of(context)` null crash). **Fix**: use `ObjectKey(model)` tied to the stable data object identity. This pattern applies to both standard `build()` and any helper methods that emit widget trees (e.g., `_buildWizardContent`). |
-| 18 | Agent Tooling | **CRLF Exact Match & PowerShell Escaping:** This workspace predominantly uses Windows CRLF (`\r\n`) line endings, but **individual files can vary** — files created by tools or checked out with different Git settings may be LF (`\n`) only. Do not assume all files are CRLF. Always use `view_file` to confirm actual content before running `replace_file_content`; the tool's viewer strips line endings so exact-match failures reveal a CRLF/LF mismatch. Do NOT use PowerShell `regex -replace` for multiline content with special characters. If a file is small, read it and write it back wholesale. |
-| 19 | Templates | **Scoring Modes & Sub-sections Allowlist:** Sub-sections are an explicit ALLOWLIST only, restricted to `penalty`, `accumulation`, and `null` mode. ALL other scoring modes unconditionally forbid sub-sections. AI agents frequently hallucinate this as a blocklist and try to allow unknown or arbitrary modes. Treat it strictly as an exclusive allowlist. |
-| 20 | Agent Workflow | **Artifact Amnesia — task.md checkbox ≠ artifact exists:** Marking a Phase 5 artifact checkbox `[x]` in `task.md` does NOT prove the file was created. Agents frequently write placeholder text like `(see below)` or mark checkboxes optimistically, then commit without creating the artifact. **Mandatory fix**: Before every Phase 5 commit, run `list_dir` on the brain conversation directory (`C:\Users\HP\.gemini\antigravity\brain\{conversation-id}\`) and visually confirm each required artifact file (`walkthrough_*.md`, `executed_tests_*.md`) appears in the listing. If the file is absent → create it BEFORE committing. A commit that ships a task.md checkbox marked done but the artifact file missing is a workflow violation. |
-| 21 | Agent Tooling | **PowerShell does not support `&&` for command chaining:** `&&` is a bash/cmd operator. In PowerShell it causes an immediate `ParserError: The token '&&' is not a valid statement separator in this version.` — the command silently fails with no Git action taken. **Fix**: chain commands with `;` (e.g., `git add ...; git commit -m "..."`) or split into two separate `run_command` calls. Never use `&&` in `run_command` on this Windows/PowerShell workspace. |
-| 22 | Agent Tooling | **Dart lint: no leading underscores on local variables:** Dart's `no_leading_underscores_for_local_identifiers` lint fires on any local variable (inside a function body, closure, or IIFE) that starts with `_`. The `_` prefix is only valid for class-level private members. When computing visibility logic inside an IIFE or `StatefulBuilder` callback (e.g., `final _showCcp = ...`), use unprefixed names (`final showCcp = ...`). This lint error requires a second edit pass and is easy to miss. **Fix**: never use `_` prefix for local variables, only for class fields and methods. |
-| 23 | Agent Tooling | **Mixed LF/CRLF per-file in same workspace:** Even though the project is predominantly CRLF, individual files can be LF-only (e.g., files created without `core.autocrlf`, files from certain tool outputs, or files with `* text eol=lf` gitattributes overrides). `multi_replace_file_content` will fail on ALL chunks if even one chunk has a line-ending mismatch. **Detection**: if a `multi_replace_file_content` fails with "target content not found," immediately `view_file` and try `replace_file_content` with the exact content seen in the viewer (which normalizes display). **Rule**: never assume a file is CRLF just because the project is. Always verify by checking whether previous `replace_file_content` calls on that specific file used `\r\n` or `\n`. |
+## How to Add a New Gotcha
+> Use this exact format. Do NOT use table rows. Place the entry in the correct severity section. Tag `[HYPOTHESIS]` if unverified; strip the tag after 3+ confirmed occurrences.
+
+```markdown
+### Gotcha N: [Memorable Short Title] [HYPOTHESIS if unverified]
+**Trigger when:** [Comma-separated keywords: e.g., routing, EF Core, Flutter widgets, git, CRLF]
+**Problem:** [One sentence — what breaks and why]
+**Fix:** [Exact action, command, or code snippet]
+**Evidence:** Confirmed [N] time(s) — [brief note on context of confirmation]
+```
+
+---
+
+## 🔴 Critical — Agent Tooling & Workflow Violations
+> These fire during the agent's own meta-operations (file edits, git, artifact management). Check these FIRST before operating any tool.
+
+### Gotcha 20: Artifact Amnesia — Checkbox ≠ File Exists on Disk
+**Trigger when:** Completing any phase, marking task.md checkboxes, running git commit
+**Problem:** Marking `[x]` in `task.md` does NOT prove the file was physically created on disk.
+**Fix:** Before any commit, run `list_dir` on the brain conversation directory and confirm every `[NEW]` artifact appears in the listing. If absent → create it before continuing.
+**Evidence:** Confirmed 3+ times.
+
+### Gotcha 21: PowerShell Cannot Use `&&` for Command Chaining
+**Trigger when:** Running git commands, chaining terminal commands
+**Problem:** `&&` is invalid in PowerShell — the command silently fails with a `ParserError`.
+**Fix:** `cmd /c git add -A ; git commit -m "..."` — chain with `;` inside one `cmd /c` call. See GEMINI.md §8.
+**Evidence:** Confirmed 5+ times.
+
+### Gotcha 8-git: `git add` with Individual File Paths Hangs Indefinitely
+**Trigger when:** Staging files for commit, constructing git add commands
+**Problem:** Long per-file `git add` argument lists hang the process waiting for EOF — zombie processes persist for hours.
+**Fix:** Always use `git add -A`. Never list individual file paths.
+**Evidence:** Confirmed — 20+ hour hanging processes observed.
+
+### Gotcha 18: CRLF/LF Mismatch Breaks Exact-Match Replace
+**Trigger when:** Using `replace_file_content` or `multi_replace_file_content`
+**Problem:** Individual files may be LF-only even though the project is predominantly CRLF, causing "target content not found" failures.
+**Fix:** Run `view_file` first to confirm content. If match fails → use the exact characters from the viewer output. Never assume CRLF.
+**Evidence:** Confirmed 3+ times.
+
+### Gotcha 23: `multi_replace_file_content` Fails ALL Chunks on Any LF/CRLF Mismatch
+**Trigger when:** Using `multi_replace_file_content` with multiple chunks
+**Problem:** One mismatched chunk fails the entire call silently — no indication of which chunk caused it.
+**Fix:** If multi-replace fails, switch to single-chunk `replace_file_content` per edit.
+**Evidence:** Confirmed 2+ times. Related to Gotcha 18.
+
+### Gotcha 16: Pivot Immediately on Failing Tools — Do Not Force-Retry
+**Trigger when:** Any tool call errors, hangs, or produces unexpected output
+**Problem:** Retrying the same failing tool with identical parameters burns context with no progress.
+**Fix:** On any tool failure, immediately use the simplest alternative. Add a new gotcha if the constraint isn't documented.
+**Evidence:** Confirmed — recurring operational pattern.
+
+---
+
+## 🔴 Critical — Code Architecture (Build-Breaking or Silent Data Corruption)
+> These cause broken builds or silent data bugs that survive testing. Check before touching any backend, routing, or sync code.
+
+### Gotcha 3: Route Registration Order — Specific Before Catch-All
+**Trigger when:** Adding or modifying ASP.NET Core routes, registering new endpoints
+**Problem:** A catch-all route (e.g., `/{id}`) registered before a specific route swallows the request and tries to parse the path segment as a GUID.
+**Fix:** Always register specific named routes BEFORE parameterized/catch-all routes in `*Endpoints.cs`.
+**Evidence:** Confirmed — caused a production routing failure.
+
+### Gotcha 4: Every Column Needs Explicit `HasColumnName` in AppDbContext
+**Trigger when:** Adding properties to any EF Core entity, running migrations
+**Problem:** EF will NOT auto-map `ScoringMode` → `scoring_mode`; missing `HasColumnName` causes silent column mismatches.
+**Fix:** Add `HasColumnName("snake_case_name")` in `AppDbContext` for every new entity property before migrating.
+**Evidence:** Confirmed — silent data bug that surfaces at query time.
+
+### Gotcha 6: New DTO Fields Must Flow Through All 6 Sync Pipeline Steps
+**Trigger when:** Adding any field to Template or Submission entity/DTO
+**Problem:** Missing any one of 6 steps causes the field to silently drop during offline sync with a green build.
+**Fix:** Update in order: (1) Entity, (2) DbContext mapping, (3) Server DTO, (4) all endpoint projections, (5) sync endpoint projection, (6) Flutter DTO + `fromJson`.
+**Evidence:** Confirmed 3+ times.
+
+### Gotcha 7: Snapshot Fields Need Dual Writes — Create AND Finalize
+**Trigger when:** Adding denormalized snapshot fields to Submission
+**Problem:** Writing only in `CreateSubmission` OR `FinalizeSubmission` leaves the field null for one of the two submission flows.
+**Fix:** Always write new snapshot fields in BOTH `CreateSubmission` AND `FinalizeSubmission`.
+**Evidence:** Confirmed — caused null snapshots in production flows.
+
+### Gotcha 14: Drift OOM — Every DAO Query Must Be Bounded
+**Trigger when:** Writing or modifying `*_queries.dart`, `*_manager.dart`, `*_dao.dart`
+**Problem:** Unbounded `.select().get()` loads an entire table into memory — an OOM violation at scale.
+**Fix:** Every DAO query MUST use (1) `selectOnly + count()/avg()`, (2) `..limit(n)`, or (3) a comment justifying the bounded result. Use `customSelect` raw SQL for `GROUP BY ... HAVING AVG()` — Drift 2.x has no `.having()`.
+**Evidence:** Confirmed — enforced architectural invariant.
+
+### Gotcha 15: Navigation from Outside ShellRoute Must Restore Shell First
+**Trigger when:** Navigating from Wizard, onboarding, or any page outside the ShellRoute
+**Problem:** `context.go('/route')` from outside a ShellRoute renders the target without bottom nav or back button.
+**Fix:** `final router = GoRouter.of(context); router.go('/shell-root'); Future.microtask(() => router.push('/target/$id'));` — capture `router` before the microtask to satisfy `use_build_context_synchronously`.
+**Evidence:** Confirmed — caused missing shell navigation in Wizard flow.
+
+---
+
+## 🟡 Important — Domain Logic (Compile-Safe but Behaviorally Incorrect)
+> These produce green builds but wrong runtime behavior. Check before designing any feature that touches scoring, templates, or testing.
+
+### Gotcha 5: Survey Mode = null TotalScore — Filter Before Averaging
+**Trigger when:** Writing analytics queries, averaging scores, building score reports
+**Problem:** Survey submissions have `TotalScore = null` by design — averaging without filtering causes division errors.
+**Fix:** Add `WHERE scoring_mode != 'survey'` or `WHERE total_score IS NOT NULL` to every score aggregation query.
+**Evidence:** Confirmed.
+
+### Gotcha 8: SectionScores is JSONB — Cannot Use EF GroupBy
+**Trigger when:** Querying `Submission.SectionScores`, writing section-level analytics
+**Problem:** EF cannot translate `GroupBy` on dynamic jsonb keys — it will fail at runtime.
+**Fix:** Load the jsonb strings and parse in C#. Use a GIN index (`jsonb_path_ops`) for future raw SQL.
+**Evidence:** Confirmed — architectural constraint.
+
+### Gotcha 9: EF Migration Generator Captures ALL Pending Model Changes
+**Trigger when:** Running `dotnet ef migrations add`
+**Problem:** The generator bundles ALL unmigrated DbContext changes, not just the intended one.
+**Fix:** Review the generated migration immediately — remove unrelated changes or split into separate migrations.
+**Evidence:** Confirmed — multiple unintended bundling incidents.
+
+### Gotcha 11: Non-Scored Input Types Must Be Excluded from Points Logic
+**Trigger when:** Checking `pointsWeight`, building scoring UI, adding criterion badges
+**Problem:** `text`, `single_choice`, and `multi_choice` are data-collection only — touching `pointsWeight` without an `inputType` check shows incorrect points for these types.
+**Fix:** Always check `inputType` before rendering or computing `pointsWeight`.
+**Evidence:** Confirmed — pattern appeared in 4 separate locations.
+
+### Gotcha 12: Every New Handler Requires at Least 2 Tests Before Handoff
+**Trigger when:** Completing any new endpoint handler, declaring a slice done
+**Problem:** A green existing test suite does NOT cover new handler behavior.
+**Fix:** Every new handler needs: (1) happy-path test (200/201/204) and (2) primary error-path test (404/403/409/400). Applies to Track B1 slices.
+**Evidence:** Confirmed — `GetStore.cs`, `DeleteArea.cs` shipped untested.
+
+### Gotcha 19: Sub-sections Are ALLOWLIST-Only — Not a Blocklist
+**Trigger when:** Implementing sub-section logic, configuring scoring mode constraints
+**Problem:** AI agents hallucinate sub-section restrictions as a blocklist — sub-sections are ALLOWLIST-only.
+**Fix:** `mode IN ('penalty', 'accumulation', null)` → allowed. All other modes → unconditionally forbidden.
+**Evidence:** Confirmed — hallucinated as a blocklist multiple times.
+
+---
+
+## 🟢 Reference — UI/UX Patterns (User-Visible Bugs)
+> These cause visible layout or interaction failures. Check when building Flutter UI, especially within the Shell or Wizard context.
+
+### Gotcha 1: Nested Scaffold FAB Renders Behind Bottom Nav Bar
+**Trigger when:** Adding `floatingActionButton` to any child page inside `_MainShell`
+**Problem:** `_MainShell` uses `extendBody: true` with a 96px nav bar — an inner Scaffold FAB renders behind it invisibly.
+**Fix:** Wrap the FAB with `Padding(padding: EdgeInsets.only(bottom: 80))`.
+**Evidence:** Confirmed — invisible FABs across multiple pages.
+
+### Gotcha 2: FAB Inside PopupMenuButton Absorbs Tap Events
+**Trigger when:** Building menus triggered from a FAB
+**Problem:** `FloatingActionButton` inside `PopupMenuButton.child` — the FAB's InkResponse absorbs all taps, the menu never opens.
+**Fix:** Call `showMenu()` programmatically from the FAB's `onPressed` instead.
+**Evidence:** Confirmed.
+
+### Gotcha 10: Bottom Nav Label Must Be Template-Agnostic
+**Trigger when:** Making bottom nav tab labels context-sensitive or mode-specific
+**Problem:** The user has no template context when the nav bar is visible, so mode-specific labels are always wrong.
+**Fix:** Use a generic label (e.g., `'ACTIVITY'`). Never use `'AUDIT'` or `'SURVEY'`.
+**Evidence:** Confirmed — architectural constraint.
+
+### Gotcha 13: AuditSectionCard Renders ONE Section at a Time — Do Not Optimize
+**Trigger when:** Modifying `audit_form_page.dart`, attempting to optimize section rendering
+**Problem:** Replacing `template.groups[_currentSection]` with `Visibility` or `IndexedStack` builds all sections simultaneously, destroying the deliberate single-section performance model.
+**Fix:** Do not change this pattern — `setState` on `_currentSection` is the intentional swap-render mechanism.
+**Evidence:** Confirmed — intentional perf design, not an accident.
+
+### Gotcha 17: GlobalKey Inline in `build()` Destroys Focus and BuildContext
+**Trigger when:** Assigning keys to widgets inside `build()` or helper methods
+**Problem:** `?? GlobalKey()` inline creates a new key on every rebuild, causing Flutter to unmount/remount the element — breaks TextField focus and crashes `MediaQuery.of(context)`.
+**Fix:** Use `ObjectKey(model)` tied to the stable data object. Never inline `GlobalKey()` in `build()`.
+**Evidence:** Confirmed — caused 1-char typing regression and null crash.
+
+### Gotcha 22: Dart Lint: No Leading Underscores on Local Variables
+**Trigger when:** Writing Dart local variables inside functions, closures, or IIFE callbacks
+**Problem:** `no_leading_underscores_for_local_identifiers` lint fires on `_` prefixed local variables — `_` is class-private only.
+**Fix:** Use unprefixed local names (`final showCcp`, not `final _showCcp`).
+**Evidence:** Confirmed — frequent second-pass lint fix in `StatefulBuilder` callbacks.

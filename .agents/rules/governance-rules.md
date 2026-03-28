@@ -1,32 +1,24 @@
 ---
 name: Governance Rules
-description: Core coding philosophy for the AI. Forbids full file rewrites (Surgical Strike Mandate), forces reuse of existing code (Anti-MacGyver), and defines self-maintenance rules.
+description: Project-specific coding governance — shared-code reuse mandate and self-curation rules.
 trigger: always_on
 ---
 
 # Governance Rules
 
-## The Surgical Strike Mandate (Preventing Comprehension Debt)
-- **Problem**: "Just Regenerating" entire files destroys institutional context (hidden edge cases, vendor quirks) and creates massive Comprehension Debt for human reviewers.
-- **Rule**: You are STRICTLY FORBIDDEN from rewriting an entire file or massive function from scratch just to implement a missing feature.
-- **Action**: You MUST use surgical, targeted edits. Preserve the existing code structure, even if it looks slightly "messy." Only re-architect lines if specifically ordered to perform a refactor.
+> The Surgical Strike Mandate (no full file rewrites) is defined globally in `GEMINI.md §2`.
+> The Learning Loop (hypothesis tagging, knowledge extraction) is defined globally in `GEMINI.md §4`.
 
 ## The Anti-MacGyver Protocol (STRICT)
-Before implementing ANY local utility behavior, routing logic, data transformation, or UI component:
-- **Rule**: You MUST execute a `grep_search` within `server/Common/` or `lib/_shared/`.
-- **Purpose**: You must prove you are using the project's existing "Stove" (canonical tools) before you are allowed to build a "Lighter" (custom local logic).
-- **Prohibition**: Do not write custom date parsers, unauthorized navigation extensions, or ad-hoc security guards. Use what exists.
+Before implementing ANY local utility, routing logic, data transformation, or UI component:
+- **Rule**: Run `grep_search` within `server/Common/` or `lib/_shared/` first.
+- **Purpose**: Prove you are using the project's existing canonical tools before building custom logic.
+- **Prohibition**: No custom date parsers, unauthorized navigation extensions, or ad-hoc security guards.
 
-## Self-Maintenance & Governance
-### Post-Task Reflection & Self-Curation (ALWAYS-ON)
-After completing any significant implementation, debug, or refactor, assess whether a new LESSON, GOTCHA, or PATTERN was discovered that must be preserved.
+## Post-Task Self-Curation (ALWAYS-ON)
+After any significant implementation, debug, or refactor, assess whether a new lesson was discovered.
 
-1. **Target File**: Update `.agents/rules/project-gotchas.md`. Do NOT use `AGENTS.md`.
-2. **Curation Rules (Preventing Bloat & Comprehension Debt)**:
-   - **DO ADD**: Highly specific, project-breaking quirks or vendor-specific edge cases. This acts as our defense against future AI "cleanups" breaking production.
-   - **DO ADD**: Architectural decisions that deviate from standard tutorials.
-   - **DO ADD**: Undocumented library bugs or workarounds specific to this stack.
-   - **DO NOT ADD**: Generic C#, Dart, or Flutter knowledge.
-   - **DO NOT ADD**: One-off typos or syntax errors that the compiler caught.
-   - **DO NOT ADD**: Features or business logic already documented in `platform-rules.md`.
-3. **Self-Prune**: Before finishing, review `.agents/rules/project-gotchas.md`. Consolidate duplicates, delete outdated rules, keep the file lean.
+1. **Target file**: `.agents/rules/project-gotchas.md`. Do NOT use `AGENTS.md`.
+2. **DO ADD**: Project-breaking quirks, vendor-specific edge cases, architectural deviations.
+3. **DO NOT ADD**: Generic C#/Dart/Flutter knowledge, one-off syntax errors, business logic already in `platform-rules.md`.
+4. **Self-Prune**: Consolidate duplicates, delete outdated entries. Keep the file lean.
