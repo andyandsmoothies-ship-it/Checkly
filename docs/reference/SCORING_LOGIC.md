@@ -88,11 +88,14 @@ When the template scoring config has `confirm_correct: true`:
 - Confirmed state shows solid green; unconfirmed shows a primary-themed outline
 
 
-## 5. Survey Mode (No Scoring)
+## 5. Survey and Checklist Modes (Builder Constraints)
 
-When `scoringMode == 'survey'`, the scoring engine skips all calculation — `totalScore` is `null`.
+To prevent novice users from creating mathematically invalid templates (e.g., trying to assign point deductions to a Survey), the Template Builder UI enforces strict **Smart Constraints** via the Blueprint Wizard.
 
-- **No live score HUD** — the score display is hidden in the audit form
+When a template is created as a `survey` or `checklist`:
+- **Sub-sections are Physically Disabled**: The `+ Add Sub-Section` button is greyed out. Surveys and checklists strictly enforce a flat, 2-level hierarchy (Sections → Criteria) to ensure quick field operation.
+- **Scored Input Types are Greyed Out**: Users are blocked from selecting `pass_fail`, `numeric`, `fault_count`, or `scale` in the criterion designer.
+- **Scoring Engine Bypass**: If `scoringMode == 'survey'`, the scoring engine skips all calculation (`totalScore = null`). The live points HUD is hidden in the audit form.
 - **Answers stored normally** — `Answer.Value` holds the selected option label (or comma-separated for multi-choice)
 - **Analytics endpoint**: `GET /api/submissions/survey-results?templateId={id}` — admin-only, aggregates option counts per criterion
 - **Choice input types**: `single_choice` (pick one) and `multi_choice` (select all that apply) — options stored in `criteria.metadata` as `{"options": ["A","B","C"]}`

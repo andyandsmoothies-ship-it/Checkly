@@ -114,6 +114,7 @@ flowchart LR
 
 | Requirement | Detail |
 |-------------|--------|
+| **Guided Template Wizard** | New templates start with a 4-option Blueprint Modal (Audit, Assessment, Survey, Checklist) that smart-configures scoring logic and UI constraints. |
 | **Templates** | CRUD with nested sections (groups) and criteria. **Soft-delete** (`IsActive = false`) |
 | **Groups / Criteria** | Managed within templates. **Soft-delete** — historical submissions retain answers linked to deactivated criteria |
 | **Stores** | CRUD with address, GPS coordinates, area assignment (FK to `areas`). **Soft-delete** (`IsActive = false`) |

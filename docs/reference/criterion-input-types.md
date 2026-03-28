@@ -8,15 +8,18 @@
 
 ## The 7 Input Types
 
-| Input Type | Category | Points Field Shown | CCP/Risk Toggles | Special Editor | Notes |
-|------------|----------|--------------------|------------------|----------------|-------|
-| `pass_fail` | ✅ **Scored** | Editable number | ✅ Shown | None | Binary: pass or fail |
-| `numeric` | ✅ **Scored** | Editable number | ✅ Shown | None | Free numeric entry |
-| `fault_count` | ✅ **Scored** | Editable number | ✅ Shown | None | Count of observed faults |
-| `scale` | ✅ **Scored** | Auto-synced (read-only) | ✅ Shown | Scale Options editor | Points = highest option's value |
-| `text` | ❌ **Unscored** | Hidden | ❌ Hidden | None | Data collection only |
-| `single_choice` | ❌ **Unscored** | Hidden | ❌ Hidden | Choice Options editor (≥ 2 options required) | Data collection only |
-| `multi_choice` | ❌ **Unscored** | Hidden | ❌ Hidden | Choice Options editor (≥ 2 options required) | Data collection only |
+| Input Type | Category | Points Field Shown | CCP/Risk | Mode Availability | Special Editor | Notes |
+|------------|----------|--------------------|----------|-------------------|----------------|-------|
+| `pass_fail` | ✅ **Scored** | Editable number | ✅ Shown | **Audit / Assessment ONLY** | None | Binary: pass or fail |
+| `numeric` | ✅ **Scored** | Editable number | ✅ Shown | **Audit / Assessment ONLY** | None | Free numeric entry |
+| `fault_count` | ✅ **Scored** | Editable number | ✅ Shown | **Audit / Assessment ONLY** | None | Count of observed faults |
+| `scale` | ✅ **Scored** | Read-only | ✅ Shown | **Audit / Assessment ONLY** | Scale Options | Max option |
+| `text` | ❌ **Unscored** | Hidden | ❌ Hidden | **ALL Modes** | None | Data collection |
+| `single_choice` | ❌ **Unscored** | Hidden | ❌ Hidden | **ALL Modes** | Choice Options | Data collection |
+| `multi_choice` | ❌ **Unscored** | Hidden | ❌ Hidden | **ALL Modes** | Choice Options | Data collection |
+
+> [!CAUTION]
+> **Blueprint Constraint**: If the template is created as a `survey` or `checklist` (Option 3 & 4 in the Blueprint Wizard), the UI physically disables/greys out the 4 scored input types above to prevent data corruption.
 
 ---
 
