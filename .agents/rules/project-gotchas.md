@@ -64,9 +64,9 @@ trigger: always_on
 
 ### Gotcha 24: Background `git commit` on Windows Is Slow — Not Hung
 **Trigger when:** Running `git commit` as a background command, checking command_status, declaring a commit "hung"
-**Problem:** `git commit` on this Windows environment routinely takes **2–3 minutes** to complete with no output. Checking `command_status` at 20s, 60s, or even 90s and seeing `Status: RUNNING` with no output is **normal** — not a hang. Prematurely declaring it hung causes false "Commit pending" warnings in walkthroughs, confusing the user.
-**Fix:** After `git commit`, wait a **minimum of 3 minutes** (use `WaitDurationSeconds: 180`) before concluding it is hung. Only then try to terminate and split. Do NOT write "Commit pending" warnings unless `command_status` returns RUNNING at the 3-minute mark.
-**Evidence:** Confirmed 1 time — `git commit` for `blueprint_selection_modal.dart` appeared hung at 90s but succeeded silently; next command showed "nothing to commit, working tree clean."
+**Problem:** `git commit` on this Windows environment completes quickly but the background runner can show `Status: RUNNING` for up to ~60 seconds with no output. Checking at 20–30s and seeing no output is **normal** — not a hang. Prematurely declaring it hung causes false "Commit pending" warnings in walkthroughs, confusing the user.
+**Fix:** After `git commit`, wait **1 minute** (`WaitDurationSeconds: 60`) before concluding it is hung. If still RUNNING at 60s → run `git log --oneline -1` to check if it silently succeeded. Only declare a true hang if the log shows no new commit after 60s.
+**Evidence:** Confirmed 2 times — commit completed in seconds but `WaitDurationSeconds: 180` caused unnecessary 3-minute stall; screenshot confirmed instant completion.
 
 ---
 
