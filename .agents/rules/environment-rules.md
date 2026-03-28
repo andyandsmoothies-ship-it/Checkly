@@ -1,5 +1,7 @@
 ---
-trigger: always
+name: Environment Rules
+description: System rules for Windows shell execution to prevent interactive terminal hanging.
+trigger: always_on
 ---
 
 # Environment Rules

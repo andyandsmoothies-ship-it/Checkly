@@ -1,4 +1,6 @@
 ---
+name: Orchestration Standards
+description: Rules for AI agents on how to run workflows, manage context decay, load skills, and perform pre-flight checks.
 trigger: model_decision
 ---
 

@@ -1,5 +1,7 @@
 ---
-trigger: manual
+name: Artifact Protocol
+description: Strict rules for generating, formatting, and naming markdown artifacts (.md files), diagnosing logs, and bypassing IDE file locks.
+trigger: model_decision
 ---
 
 # Artifact Protocol

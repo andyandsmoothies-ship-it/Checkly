@@ -1,5 +1,7 @@
 ---
-trigger: manual
+name: Governance Rules
+description: Core coding philosophy for the AI. Forbids full file rewrites (Surgical Strike Mandate), forces reuse of existing code (Anti-MacGyver), and defines self-maintenance rules.
+trigger: always_on
 ---
 
 # Governance Rules
