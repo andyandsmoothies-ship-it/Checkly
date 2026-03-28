@@ -325,3 +325,222 @@ The system tracks key actions (SM transfers, user edits, store changes) via `sys
 - **Service**: [systemLogService.ts](file:///c:/Users/HP/Documents/GitHub/checkly-smart/src/entities/notification/api/systemLogService.ts) — `getEntityLogs()`, `getMyActivityLogs()`
 - **Menu**: Profile page → "My Activity" menu item (all roles)
 - **Preloading**: `useRoutePreloader.ts` includes `ActivityHistory` for all 4 roles
+
+---
+
+## 11. Template Wizard Workflow & Constraints
+
+This section maps the UI widgets and logical constraints enforced during template creation based on the user's initial Blueprint choice (Audit, Assessment, Survey, Checklist).
+
+### Visual Literal UI Element Map
+*(This mindmap breaks down the exact UI widgets, buttons, and inputs per screen based on your Blueprint Selection)*
+
+![UI Element Mindmap & Guide with Examples](https://www.plantuml.com/plantuml/png/rLRRJjj047ttLynBwoGj9TnU8eJ8nK1KRi9G-X09RUo9lMAzQ-skWRJgJ_G7glvXFw6pYHrY6gfAHQhwailCUCxCcJaZxnlBjCsuZ3EMUxl6JWNkULB529yzW1FsmBCYk-QnJM5pf-rzyNRNow0MN6AM2sOHhladfkEHR5mD8H2OeRJqQ0wluR3WCJQzLWlESikLDB11raqAxHOnjx0ENMFG6FU82sj1Q367ZGuzpoKCvKGvQmly1TWfoz0dJrxOqZL04sa-orztz2a-KNhgmq2hF5RtyX5YiqFVkeXieR4C3p5oEPOHJEbw0zquXZB0XvwLSyUy2pyiaWIDnHZwAS-D_mYpLNOIHXfHFW7wwCCHiXXr3QMlkKLTnwaAACPhoqKu7kdVtOnY5_VZszVlC4025YhX4IWffkz6CdZeLCL3upstKOgo2MjxBY4qpZN5TpMoPWtif12Mvm8NPImwwYbhLGPXYcW9pJ8kAg8MnSCn6wEepsFs6owdEULqH2qNFMUIIigPCJSJIWcDlgAPSoOZR8xauwAuA1CnWT0ur2pcCgaAFrTSMbE2GkF3C1psZeCQEKTCcnGrv2YPi1KvE-tS6fWe3UaquIZnBMpCJ8NaPCsgxlhdFbog977OgxAxFJCBgasaD89Lq7vLubn9cdQar2sjoWaogl70aGVLJ4gS2svk_mHeJjglCASA3ZZPWWU-W0YaTQRGKl2IrBOx54fKm0NUSRol4GbxqFOXq9fuwJ4foqKjImYa8UqO0bO2CcPJf0zESm739cYdPQgk4EeU-gGfpQgUAXtmH38dm2VsGw76bEPvjXSXpn3b2PmGBtHxlENRiqMtPviq4nRw3gTqVFefHhU2c__ozfHTlD3nSUsMGoQ6_91sYeG5CJTiB33sctznemPbaje67oWTqVPCY5Xm8vZBRyACXPXP1YHqFVs71wcarzqQ8aBWJPGg7k58BfRcoRMwaZCXniySewFXO12SDbTTahghljDBljy9TjQSWJEwzoiK-s8gh5UwKeHLo3xIIyNynU8d)
+
+---
+
+### Detailed Step Differences
+
+Steps 2, 3, and 4 change based on Option 1-4. Steps 1 and 5 stay visually identical across all modes.
+
+#### Step 1: Name & Category
+**Blueprint Impact:** None. All 4 options render identically.
+*   **Input Field:** `Template Name`
+*   **Input Field:** `Description (optional)`
+*   **Dropdown:** `Category` 
+
+---
+
+#### Step 2: Structure
+**Blueprint Impact:** Only changes the text inside the *ActionChips*.
+*   **Header text:** "Define your template sections"
+*   **List of Input Fields:** `Section Name` (Defaults to 1 blank row)
+*   **Button:** `+ Add Section` (Ghost Add Button)
+*   **Header:** "Suggested topics:"
+*   **List of ActionChips:** (Text changes based on mode: Audit topics vs Survey topics)
+
+---
+
+#### Step 3: Build Criteria
+**Blueprint Impact:** Toggles the "Points" UI text, Info Banners, and Sub-section capability.
+
+**3A. The Main Screen (Inline View)**
+*   **Top Navigation:** Horizontal list of `ChoiceChips` (Section 1, Section 2, etc.)
+*   **Header Text:** E.g., "Section 1 of 2", "[Section Name]", "[X] criteria"
+*   **Condition Banner:**
+    *   *If Option 1 or 2 (Audit/Assessment):* **Hidden.**
+    *   *If Option 3 (Survey):* **Visible.** "Survey Mode — Sub-sections and scoring logic are disabled."
+    *   *If Option 4 (Checklist):* **Visible.** "Checklist Mode — Keep it flat with Pass / Fail or choice inputs."
+*   **Rows area:** List of `CriterionEditor` rows (if any have been added).
+    *   Each row shows: Criterion text, Input Type text.
+    *   *If Option 1 or 2:* Shows **[X] pts** text next to the criterion.
+    *   *If Option 3 or 4:* Points text is **hidden**.
+*   **Button:** `+ Add Criterion` (Ghost Add Button)
+*   **Divider:** `— OR —`
+*   **Button:** `+ Add Sub-Section` (Ghost Add Button)
+    *   *If Option 1 or 2:* **Visible** and clickable.
+    *   *If Option 3 or 4:* **Visible but Disabled** (Clicking shows a toast: "Sub-sections require Penalty or Accumulation mode").
+    *   💡 **Guidance Note (Structural Layout)**: 
+        *   **When to use Sub-sections:** Use them *only* for deep logic in Audits (Option 1). **Example:** Section: "Kitchen" -> Sub-section: "Prep Area" -> Criterion: "Temp Check".
+        *   **When NOT to use:** If your tool is a flat Checklist (Option 4) or Survey (Option 3), sub-sections will unnecessarily complicate data analysis. Keep it flat.
+*   **Button:** `Add Multiple Criteria` (Outlined Button)
+*   **Header:** "Suggested criteria:"
+*   **List of ActionChips:** (Suggestions filtered by Section Name and Blueprint mode)
+
+**3B. The Criterion Editor (Bottom Sheet Drawer)**
+*(This modal slides up when you tap "+ Add Criterion" or tap an existing row)*
+
+*   **Header:** "Edit Criterion"
+*   **Input Field:** `Criterion Label`
+*   **Input Field:** `Description (optional)`
+*   **Button:** `Input Type` ActionChip (Opens a secondary modal to pick pass/fail, text, scale, etc.)
+    *   💡 **Guidance Note (Best Practices):** 
+        *   **For Audit (Option 1):** Rely heavily on `pass_fail` to ensure binary compliance data. **Example:** *Is the prep area clean?* (Yes/No)
+        *   **For Assessment (Option 2):** Use the `scale` type (Maturity Matrix) to grade performance. **Example:** *Team Hygiene Culture* (1-star, 2-stars, 3-stars)
+        *   **For Survey (Option 3):** Exclusively use `single_choice` and `multi_choice` to collect standard feedback. **Example:** *Facility Satisfaction* (Good, Neutral, Poor)
+*   **Points Input & Advanced Config Zone:**
+    *   *If Option 1 or 2 (Audit/Assessment) AND Input Type = Pass/Fail:* 
+        *   **Input Field:** `Points` (Default: 10)
+    *   *If Option 1 or 2 AND Input Type = Scale:*
+        *   **List of Rows:** `Label` and `Pts` inputs for each scale step.
+    *   *If Option 3 or 4 (Survey/Checklist):*
+        *   The Points input field is **completely hidden from the screen.**
+    *   💡 **Guidance Note (Scoring):** If using Penalty mode, larger point values mean a harsher punishment for failing that item. **Example:** A minor uniform fault loses `10pts`, but a major hygiene fault loses `50pts`.
+*   **Feature Flag Toggles:**
+    *   *If Option 1 or 2 (Audit/Assessment):*
+        *   **Toggle Switch:** `Critical Control Point (CCP)` (Visible if global feature enabled)
+        *   **Toggle Switch:** `High Risk Item` (Visible if global feature enabled)
+    *   *If Option 3 or 4 (Survey/Checklist):*
+        *   Both toggle switches are **completely hidden from the screen.**
+    *   💡 **Guidance Note (Combining CCP & RISK):**
+        *   **Use CCP for local failure:** Combine a CCP toggle with `pass_fail` hygiene/safety checks. Failing it instantly drops the *Section* score to 0%, but the rest of the audit survives. **Example:** Undercooked Meat (Fails the entirety of the 'Kitchen' section, but 'Dining Room' passes).
+        *   **Use RISK for system failure:** Combine a RISK toggle with `pass_fail` life-safety or legal violations. Failing it instantly drops the *entire Audit* score to 0%. **Example:** Blocked Fire Exit (Fails the entire store audit instantly).
+
+---
+
+#### Step 4: Review
+**Blueprint Impact:** Changes mathematical validation and toggles "Advanced Config" rows.
+
+*   **Header:** "Final Review"
+*   **Validation Banner:**
+    *   *If Option 1 or 2:* Enforces "Every scored criterion must have points > 0".
+    *   *If Option 3 or 4:* Only enforces "Must have labels". Math checks are skipped.
+    *   💡 **Guidance Note (Validation Gates):** If the screen flashes red, you likely left a scoring gap. **Example:** You added a `pass_fail` item but left points at `0`. The system mathematically verifies your template here so a broken tool never reaches your field auditors.
+*   **Card:** "Structure Summary" (Lists sections and items)
+*   **Card:** "Advanced Settings"
+    *   **Toggle Switch:** `Allow Camera Uploads`
+    *   **Toggle Switch:** `Require Assessor Signature`
+    *   *If Option 1 or 2 (Audit/Assessment):*
+        *   **Toggle Switch:** `Enable Global CCP`
+        *   **Toggle Switch:** `Enable Global Risk Flags`
+    *   *If Option 3 or 4 (Survey/Checklist):*
+        *   The two toggles above are **completely hidden from the screen.**
+
+---
+
+#### Step 5: Success
+**Blueprint Impact:** None. All 4 options render identically.
+*   **Animation:** Green Checkmark
+*   **Header Text:** "Template Created Successfully"
+*   **Button:** `Go to Template Dashboard`
+*   **Button:** `Start Audit Now`
+
+---
+
+## 12. Template Structural Combinations & Gating Rules
+
+The blueprint chosen in Step 1 strictly dictates what mathematical points, structural depth (sub-sections), and input types are allowed. The UI actively gates users to ensure they cannot create broken or logically invalid templates.
+
+### The Combination Rules Matrix
+
+| Blueprint Option | Sub-sections Allowed? | Points/Weights Allowed? | CCP & Risk Allowed? | Recommended Input Types |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. Audit (Penalty)** | ✅ Yes (Deep) | ✅ Yes | ✅ Yes | `pass_fail`, `number` |
+| **2. Assessment (Accum.)** | ✅ Yes (Deep) | ✅ Yes | ✅ Yes | `scale` |
+| **3. Survey** | ❌ No (Flat) | ❌ No | ❌ No | `single_choice`, `multi_choice`, `text` |
+| **4. Checklist** | ❌ No (Flat) | ❌ No | ❌ No | `pass_fail`, `signature`, `text` |
+
+*(Note: "Flat" means criteria attach directly to the Section, you cannot create a folder inside a folder).*
+
+### Visual Structural Trees
+
+This 4-branch architectural mindmap demonstrates exactly how these templates look when fully built out, showing the difference between deep, math-heavy audits and flat, point-blind surveys and checklists.
+
+![Template Combination Map](https://www.plantuml.com/plantuml/png/VPNFRjf04CRlFCMSgWI1oBzUK2E5cDAWb0HXeXnQ52sxOtk5lUlkhabugpv3dwop1bF0LcyOptupy_jcntVMCUCogKJ6ybORvfZbANC80yCJwP2xmg1jjTfjUCwTr0ek-p0eX7HmDaJCEp15nLAtWGbpoJd5jI6aKxl8H-buWWe-GSWYT1l_dWAAPTVkWWPz27Gg87JQi1ZBW3O4XdARdSZ8I16ZXIzmy-Tty5Fzo9crRn6JQGS-N-JETY08fhVFJukw_7qVlajLbxtgmzSF9rLSI9kWEHQzlDYgpiRXOoMxxufE3gMYap3JEeEp4U4wRvt8NrFLgTR6Wdt7t9tAa_gnACKF1Ba0PsCLQSBbQK8cFr3Kj6_wC97MeW2RoCXPuBfGFeKgiYKQOaBo850KfVRYzFpdFdn3XOQbyAGTMZhfyCDrm9S5FNXHbck3Od7eEdKze9pMPgZsrWyuBxA2-fThRFO_AApJ6Hhwpwmbnvf1tdq_SL8vs-Jz4BjeEVCvjA9A_M_imtLtoGmvTELxxPL0UtMgL7IO8u6Qe3EIsrPz28Q6Qk_E4rF0N6RuByE8MTSRhEDUcEhtcbbJeoE2GKyibJPhiFyLgK1GB4F7ufEPzPpPEpEYX9nYvC1AWOUyII4ip1etsm7hR36XmtIpDwX6-rMR5OrrJaMWgc0VuPpf5EagEcaZnYkaDCifll54aq5qdxNtulP12e7ruI5auomtUetb88m5icg0QkplQSeYIRs-sEfc7pEQebbPA6YKIO86oSbT5JNU4wP8mi28t5molcgu4zKhY0p-AgZ_pMblJJUX4funlmmg-siK3foXL462V4M-kygSChfxdz8Q9Vx82nzPisTaD27J4Jnewhd1dHULQcf0-CLnF39rKmv11ymcyC2Ke0BY1iVyxWKlNOBUoouQB9dBD0KXBJUOiot3QgtyfmQ_xYHT1GXbhBewYXhyUSwnt9exugKviMB--x9etQ4Iku_GNm00)
+
+### Detailed Real-World Scenarios
+
+#### The Deep Audit (Blueprint Option 1)
+**Scenario**: Monthly Store Hygiene & Safety Audit.
+**Goal**: Start at 100% and mathematically deduct points for every failure. Needs deep hierarchy because a store is physically large.
+*   **Template:** "Monthly Hygiene Audit" (Penalty Mode)
+    *   **Section 1: Kitchen & Food Safety** (Deep Structure required for spatial breakdown)
+        *   **Sub-section A: Cold Storage**
+            *   👉 *Criterion 1:* "All fridges are operating below 4°C"
+                *   **Input Type**: `pass_fail`
+                *   **Points Input**: `50 pts` (Heavy penalty)
+                *   **Flags**: `Critical Control Point (CCP) = ON` *(Rationale: If fridges fail, the entire "Kitchen" section is compromised and drops to 0%, but the Dining Room can still pass).*
+            *   👉 *Criterion 2:* "Temperature logs are signed by manager"
+                *   **Input Type**: `pass_fail`
+                *   **Points Input**: `10 pts` (Minor admin penalty)
+                *   **Flags**: None
+        *   **Sub-section B: Cooking Line**
+            *   👉 *Criterion 3:* "Fire extinguishers are unblocked and certified"
+                *   **Input Type**: `pass_fail`
+                *   **Points Input**: `100 pts` 
+                *   **Flags**: `High Risk Item = ON` *(Rationale: Strict legal/safety violation. Failing this drops the entire Audit score to 0% instantly).*
+    *   **Section 2: Dining Room** *(Example of mixing deep and flat structures)*
+        *   👉 *Criterion 4:* "Floors are swept and mopped"
+            *   **Input Type**: `scale` (e.g., 3-stars)
+            *   **Points Input**: `[3-stars: 0pt deduction], [2-stars: 5pt deduction], [1-star: 15pt deduction]`
+
+#### The Assessment (Blueprint Option 2)
+**Scenario**: Quarterly Team Review.
+**Goal**: Start at 0% and accumulate points based on performance.
+*   **Template:** "Q3 Team Performance Assessment" (Accumulation Mode)
+    *   **Section 1: Customer Service Culture**
+        *   **Sub-section A: Handling Complaints**
+            *   👉 *Criterion 1:* "De-escalates angry customers"
+                *   **Input Type**: `scale` (Maturity matrix styling)
+                *   **Points Input**: `[Needs Training: 0pts], [Capable: 10pts], [Expert: 25pts]`
+        *   **Sub-section B: Greeting Operations**
+            *   👉 *Criterion 2:* "Greets customers within 10 seconds"
+                *   **Input Type**: `pass_fail`
+                *   **Points Input**: `15 pts` (Awarded if passed)
+    *   **Section 2: Speed Metrics** *(Flat Structure)*
+        *   👉 *Criterion 3:* "Drive-Thru Time Average"
+            *   **Input Type**: `scale` (Options: Fast, Avg, Slow)
+            *   **Points Input**: `[Fast: 20pts], [Avg: 10pts], [Slow: 0pts]`
+
+#### The Flat Survey (Blueprint Option 3)
+**Scenario**: Employee Satisfaction Feedback 2026.
+**Goal**: purely collect qualitative feedback. No math, no compliance, no punishments.
+*   **Template:** "Employee Satisfaction 2026" (Survey Mode)
+    *   **Section 1: Work Experience** *(UI completely disables Sub-sections to keep data clean)*
+        *   👉 *Criterion 1:* "How satisfied are you with your role?"
+            *   **Input Type**: `single_choice` (Options: Very Satisfied, Neutral, Not Satisfied)
+            *   **UI Restraint**: Points input is completely **hidden**. CCP/Risk toggles are **hidden**.
+        *   👉 *Criterion 2:* "What tools do you need to do your job better?"
+            *   **Input Type**: `text`
+    *   **Section 2: Manager Feedback**
+        *   👉 *Criterion 3:* "Manager Leadership Rating"
+            *   **Input Type**: `scale` (1-star, 2-star, 3-star)
+            *   **UI Restraint**: Points input is completely **hidden**.
+
+#### The Flat Checklist (Blueprint Option 4)
+**Scenario**: Daily Opening Procedures.
+**Goal**: Fast, binary compliance. The UI forces everything to be "flat" and hides point weights to keep it fast.
+*   **Template:** "Daily Opening Duties" (Checklist Mode)
+    *   **Section 1: Front of House (FOH)** *(UI completely disables Sub-sections)*
+        *   👉 *Criterion 1:* "Unlock main entrance doors"
+            *   **Input Type**: `pass_fail`
+            *   **UI Restraint**: Points field is **hidden** (User doesn't need to care about math here).
+        *   👉 *Criterion 2:* "Turn on digital menu boards"
+            *   **Input Type**: `pass_fail`
+    *   **Section 2: Cash Handling**
+        *   👉 *Criterion 3:* "Morning Till Discrepancy"
+            *   **Input Type**: `number`
+            *   **UI Restraint**: Points field is **hidden**.
+    *   **Section 3: Sign Off**
+        *   👉 *Criterion 4:* "Opening Manager Signature"
+            *   **Input Type**: `signature`
