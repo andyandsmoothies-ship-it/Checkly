@@ -77,6 +77,11 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 5.15 | Dirty State — Structural | Add a section or criterion → Tap Back | "Discard changes?" dialog appears. | [ ] |
 | 5.16 | Dirty State — Clean Exit | Open existing template (no edits) → Tap Back | Navigates back immediately. No dialog. | [ ] |
 | 5.17 | Dirty State — Save Clears | Edit title → Save → Tap Back | Navigates back immediately (dirty cleared on save). | [ ] |
+| 5.18 | Guide Rails — Sub-sections (Slice 2) | Set mode to Survey or Checklist | "Add Sub-Section" button is entirely hidden from all sections. | [ ] |
+| 5.19 | Guide Rails — Input Filter (Slice 3) | Add criterion → Set type to Text, Single Choice, or Multi Choice | "Points Weight" field disappears from the row. | [ ] |
+| 5.20 | Guide Rails — CCP/Risk Block (Slice 4) | Set mode to Survey or Checklist → Expand a criterion | CCP and Risk toggles are stripped/hidden entirely. | [ ] |
+| 5.21 | Guide Rails — CCP/Risk Allow (Slice 4) | Mode=Penalty → Disable Global CCP in rules → Add new criterion | The CCP toggle does not appear on the new criterion. | [ ] |
+| 5.22 | Guide Rails — Data Preserve (Slice 4) | Mode=Penalty → Criterion has CCP=true → Disable Global CCP | The CCP toggle **remains visible** on that specific criterion. | [ ] |
 
 ## Module 6: Audit Form Execution
 **Focus**: Collapsible sections, answering criteria, and form validation.
