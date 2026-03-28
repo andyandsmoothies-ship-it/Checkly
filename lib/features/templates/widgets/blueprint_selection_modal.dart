@@ -6,30 +6,34 @@ class BlueprintSelectionModal extends StatelessWidget {
   static const _blueprints = [
     (
       mode: 'penalty',
-      icon: Icons.verified_outlined,
-      title: 'Compliance Audit',
-      subtitle: 'Start at 100% — deduct for faults found',
+      icon: Icons.grading_outlined,
+      title: 'Audit & Inspection',
+      subtitle:
+          'Best for compliance. You get a final % score by starting perfect and deducting points for every issue found.',
       color: Color(0xFF1565C0),
     ),
     (
       mode: 'accumulation',
-      icon: Icons.trending_up,
-      title: 'Training Assessment',
-      subtitle: 'Start at 0% — earn points for correct answers',
+      icon: Icons.assignment_turned_in_outlined,
+      title: 'Scored Assessment',
+      subtitle:
+          'Best for evaluations. You build a total points score from zero by earning points for successes.',
       color: Color(0xFF2E7D32),
     ),
     (
       mode: 'survey',
-      icon: Icons.forum_outlined,
-      title: 'Feedback Survey',
-      subtitle: 'Collect responses without scoring',
+      icon: Icons.dynamic_form_outlined,
+      title: 'Form & Survey',
+      subtitle:
+          'Best for data collection. You receive pure text and media responses. No scores or pass/fail grades are calculated.',
       color: Color(0xFF7B1FA2),
     ),
     (
       mode: 'checklist',
-      icon: Icons.checklist,
-      title: 'Custom Checklist',
-      subtitle: 'Simple pass/fail checks for daily tasks',
+      icon: Icons.fact_check_outlined,
+      title: 'Basic Checklist',
+      subtitle:
+          'Best for daily routines. You get a lightweight completion report using simple pass/fail or yes/no checks.',
       color: Color(0xFFE65100),
     ),
   ];
