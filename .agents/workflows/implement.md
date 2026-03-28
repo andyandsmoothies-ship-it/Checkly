@@ -34,7 +34,7 @@ description: The Core Builder Implementation Workflow.
   - [ ] Blast radius identified? Tells you what else might break.
   - [ ] Verification steps are concrete (exact commands or test names)? Vague steps can't be verified.
 - **Codebase Spot-Check**: Use `grep_search`/`view_file` to confirm at least ONE plan claim against real code. Plans go stale — always verify. If a claim contradicts the code → **STOP** and flag to the user before proceeding.
-- **YAGNI Gate**: Ask yourself — is this solving a real problem today, or a future one? If the change adds complexity without a clear, present benefit → show the user a Before/After trade-off table and let them decide. Do not silently implement things you think are net-negative.
+- **YAGNI Gate**: Ask yourself — is this solving a real problem today, or a future one? If the change adds complexity without a clear, present benefit → show the user a Before/After trade-off table and let them decide.
 
 > **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Does the plan pass all checklist items? (2) What was the spot-check result? (3) Does it pass the YAGNI gate?
 

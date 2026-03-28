@@ -75,12 +75,12 @@ Synthesize findings into a structured audit report.
 
 ## Final Phase: Self-Correction Gate (CRITICAL)
 <strict-instruction>
-Before concluding this workflow and replying to the user, you MUST self-audit your output against the global rules of this specific project. You are required to literally type out the following checklist in your final message:
+Before concluding this workflow and replying to the user, you MUST self-audit your output. Each item requires a **one-line evidence citation** — not a bare Yes/No:
 
-1. **Thinking Process Check**: Did I isolate my internal reasoning into a dedicated thinking log file as dictated by this project's artifact rules? (Yes/No)
-2. **Template Check**: Did I include the mandatory header sections (e.g., `# Requirement Summary`) required by this project? (Yes/No)
-3. **Tracking Update**: Did I update the primary task tracking document with an inventory of my generated artifacts? (Yes/No)
-4. **Integrity Audit**: Did I include the mandatory attribution/compliance block in my final response? (Yes/No)
+1. **Thinking Process Check**: Did I isolate my internal reasoning into a separate `thinking_log_[topic].md` artifact? → Cite: `thinking_log` file path created.
+2. **Template Check**: Did I include the mandatory `# Requirement Summary` section in every artifact? → Cite: the exact artifact name and its first heading.
+3. **Tracking Update**: Did I update `task.md` with an `# Artifact Inventory` listing every generated file as [NEW]/[MOD]/[DEL]? → Cite: the specific task.md entry added.
+4. **Integrity Audit**: Did I include the mandatory context/attribution block (skills loaded, rules applied) in my final response? → Cite: the exact skills and rules referenced.
 
-You are strictly FORBIDDEN from handing off this task to the user until you have achieved 'Yes' on all 4 checks. If any answer is 'No', use your file tools to correct the mistake immediately.
+You are strictly FORBIDDEN from handing off this task to the user until all 4 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
 </strict-instruction>
