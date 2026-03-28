@@ -73,7 +73,7 @@ class BlueprintSelectionModal extends StatelessWidget {
                     crossAxisCount: size.width > 600 ? 2 : 1,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
-                    childAspectRatio: size.width > 600 ? 2.2 : 3.2,
+                    childAspectRatio: size.width > 600 ? 1.8 : 2.4,
                     children: _blueprints.map((bp) {
                       return _BlueprintCard(
                         icon: bp.icon,
@@ -150,6 +150,8 @@ class _BlueprintCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),

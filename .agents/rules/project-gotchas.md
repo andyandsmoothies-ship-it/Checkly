@@ -62,6 +62,12 @@ trigger: always_on
 **Fix:** On any tool failure, immediately use the simplest alternative. Add a new gotcha if the constraint isn't documented.
 **Evidence:** Confirmed — recurring operational pattern.
 
+### Gotcha 24: Background `git commit` on Windows Is Slow — Not Hung
+**Trigger when:** Running `git commit` as a background command, checking command_status, declaring a commit "hung"
+**Problem:** `git commit` on this Windows environment routinely takes **2–3 minutes** to complete with no output. Checking `command_status` at 20s, 60s, or even 90s and seeing `Status: RUNNING` with no output is **normal** — not a hang. Prematurely declaring it hung causes false "Commit pending" warnings in walkthroughs, confusing the user.
+**Fix:** After `git commit`, wait a **minimum of 3 minutes** (use `WaitDurationSeconds: 180`) before concluding it is hung. Only then try to terminate and split. Do NOT write "Commit pending" warnings unless `command_status` returns RUNNING at the 3-minute mark.
+**Evidence:** Confirmed 1 time — `git commit` for `blueprint_selection_modal.dart` appeared hung at 90s but succeeded silently; next command showed "nothing to commit, working tree clean."
+
 ---
 
 ## 🔴 Critical — Code Architecture (Build-Breaking or Silent Data Corruption)
