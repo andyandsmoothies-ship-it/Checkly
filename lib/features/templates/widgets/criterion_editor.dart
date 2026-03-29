@@ -114,14 +114,27 @@ class CriterionEditor extends StatelessWidget {
                     );
                     if (selected != null && context.mounted) {
                       criterion.inputType = selected;
-                      // Clear points for non-scored types
+                      // Reset irrelevant data when switching types to guarantee 
+                      // structural data integrity (prevent hidden payload corruption)
                       if (selected == 'text' ||
                           selected == 'single_choice' ||
                           selected == 'multi_choice') {
                         criterion.pointsCtrl.clear();
+                        
+                        // Critical P0 fix: Scrub CCP/Risk flags if type becomes unscored. 
+                        // The UI hides the toggles, so the in-memory value MUST be zeroed 
+                        // manually to avoid sending hidden 'true' flags to the backend.
+                        criterion.isCcp = false;
+                        criterion.isRisk = false;
                       } else if (criterion.pointsCtrl.text.trim().isEmpty) {
                         // Restore default when switching back to a scored type.
                         criterion.pointsCtrl.text = '10';
+                      }
+
+                      // Trim memory bloat to ensure clean structural payloads
+                      if (selected != 'scale') criterion.scaleOptions.clear();
+                      if (selected != 'single_choice' && selected != 'multi_choice') {
+                        criterion.choiceOptions.clear();
                       }
 
                       if (selected == 'scale') {
