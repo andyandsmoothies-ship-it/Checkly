@@ -66,6 +66,25 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
     super.dispose();
   }
 
+  /// Loads assignable stores and shows a SnackBar on network failure.
+  /// Silent empty-list is worse than a visible error — Sentinel observation.
+  Future<void> _loadStores() async {
+    try {
+      final stores = await widget.loadStores(
+        assignableAs: 'store_manager',
+      );
+      if (mounted) setState(() => assignableStores = stores);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not load stores. Check your connection.'),
+          ),
+        );
+      }
+    }
+  }
+
   void _markDirty() {
     if (!isDirty) setState(() => isDirty = true);
   }
@@ -254,10 +273,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
                 onChanged: (v) async {
                   // Lazy-load stores on first switch to store_manager
                   if (v == 'store_manager' && selectedRole != 'store_manager') {
-                    final stores = await widget.loadStores(
-                      assignableAs: 'store_manager',
-                    );
-                    if (mounted) setState(() => assignableStores = stores);
+                    await _loadStores(); // error-handled, shows SnackBar on failure
                   }
                   if (mounted) {
                     setState(() {

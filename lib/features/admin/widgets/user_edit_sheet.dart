@@ -62,9 +62,24 @@ class _UserEditSheetState extends State<UserEditSheet> {
 
     // Pre-load stores if the user is already a store_manager
     if (selectedRole == 'store_manager') {
-      widget.loadStores().then((stores) {
-        if (mounted) setState(() => assignableStores = stores);
-      });
+      _loadStores();
+    }
+  }
+
+  /// Loads assignable stores and shows a SnackBar on network failure.
+  /// Silent empty-list is worse than a visible error — Sentinel observation.
+  Future<void> _loadStores() async {
+    try {
+      final stores = await widget.loadStores();
+      if (mounted) setState(() => assignableStores = stores);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not load stores. Check your connection.'),
+          ),
+        );
+      }
     }
   }
 
@@ -143,8 +158,7 @@ class _UserEditSheetState extends State<UserEditSheet> {
                 _markDirty();
                 // Lazy-load stores only on the first switch to store_manager
                 if (v == 'store_manager' && selectedRole != 'store_manager') {
-                  final stores = await widget.loadStores();
-                  if (mounted) setState(() => assignableStores = stores);
+                  await _loadStores(); // error-handled, shows SnackBar on failure
                 }
                 if (mounted) {
                   setState(() {
