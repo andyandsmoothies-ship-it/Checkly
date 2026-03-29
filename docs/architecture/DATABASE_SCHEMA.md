@@ -4,7 +4,7 @@
 
 > [!WARNING]
 > **Offline Database Architecture Shift (Drift v3)**
-> The Flutter client is migrating from Drift v2 to Drift v3. The legacy `sqlite3_flutter_libs` package is completely obsolete and conflicts with modern Android builds. Native `sqlite3` bindings must be used instead. Do not rely on old Drift initialization patterns.
+> The Flutter client is actively migrating from Drift v2 to Drift v3. **Phase 1 Complete**: The legacy `sqlite3_flutter_libs` package has been completely removed because it conflicts with modern Android builds. We now use Native `sqlite3` build hooks. Do not revert to old Drift initialization patterns.
 
 ---
 
