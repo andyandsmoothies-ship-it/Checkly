@@ -45,3 +45,8 @@ When you open or modify a file matching a pattern below, **auto-load** the assoc
 | `Program.cs`, `*Module.cs` | `dependency-injection` |
 | `pubspec.yaml`, `*.csproj` | `migration-workflow` |
 | `project-gotchas.md` modified | `vertical-slice-completeness` |
+
+## Targeted Workflow Pacing (Context Protection)
+You are strictly forbidden from executing an entire multi-phase workflow in a single response cycle. You must pace your execution using targeted logical gates:
+1. **The Plan Gate:** You MUST stop generation and yield to the user after completing the Discovery & Planning phases (e.g., Phase 2). Explicitly ask for approval on your proposed architecture, files, and `task.md` before writing any code.
+2. **The Verification Gate:** You MUST stop generation and yield to the user after completing the Coding & Self-Review phases (e.g., Phase 4). Explicitly ask the user if they want to manually test the implementation or review the code before you finalize commits and write handoff artifacts.

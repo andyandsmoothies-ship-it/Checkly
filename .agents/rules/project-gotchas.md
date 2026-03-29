@@ -44,11 +44,11 @@ trigger: always_on
 **Fix:** Always use `git add -A`. Never list individual file paths.
 **Evidence:** Confirmed — 20+ hour hanging processes observed.
 
-### Gotcha 18: CRLF/LF Mismatch Breaks Exact-Match Replace
-**Trigger when:** Using `replace_file_content` or `multi_replace_file_content`
-**Problem:** Individual files may be LF-only even though the project is predominantly CRLF, causing "target content not found" failures.
-**Fix:** Run `view_file` first to confirm content. If match fails → use the exact characters from the viewer output. Never assume CRLF.
-**Evidence:** Confirmed 3+ times.
+### Gotcha 18: CRLF/LF Mismatch — grep_search AND replace Tools Silently Fail
+**Trigger when:** Using `replace_file_content`, `multi_replace_file_content`, OR `grep_search` on any `.cs`, `.dart`, or `.md` file in this project
+**Problem:** CRLF-encoded files cause two distinct failure modes: (1) `replace_file_content` fails with "target content not found", and (2) `grep_search` returns **no results** even when the pattern physically exists in the file. Both are silent — no error is raised, making false negatives indistinguishable from true negatives.
+**Fix:** Always fall back to `view_file` for spot-checks when `grep_search` produces suspiciously empty results. For EF Core specifically: if `grep_search` finds no `HasFilter`/`HasIndex` in `AppDbContext.cs` but the `AppDbContextModelSnapshot.cs` shows those indexes, the fluent config IS present — the snapshot is auto-generated FROM the fluent config and cannot diverge.
+**Evidence:** Confirmed 4+ times — CRLF mismatch in replace tools (3×); `grep_search` false negative on `HasFilter`/`HasIndex` in `AppDbContext.cs` during `/verify` (1×, 2026-03-29).
 
 ### Gotcha 23: `multi_replace_file_content` Fails ALL Chunks on Any LF/CRLF Mismatch
 **Trigger when:** Using `multi_replace_file_content` with multiple chunks
