@@ -65,22 +65,41 @@ Future<void> showAuditCriterionSheet(
                       ),
 
                       // Title
-                      Text(
-                        criterion.label,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (criterion.description != null &&
-                          criterion.description!.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          criterion.description!,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              criterion.label,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                          if (criterion.description != null &&
+                              criterion.description!.isNotEmpty)
+                            IconButton(
+                              icon: const Icon(Icons.info_outline),
+                              onPressed: () {
+                                showDialog(
+                                  context: ctx,
+                                  builder: (dialogCtx) => AlertDialog(
+                                    title: const Text('Criterion Description'),
+                                    content: SingleChildScrollView(
+                                      child: Text(criterion.description!),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(dialogCtx),
+                                        child: const Text('CLOSE'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                        ],
+                      ),
                       const SizedBox(height: 16),
 
                       // Input based on type
@@ -225,35 +244,31 @@ Future<void> showAuditCriterionSheet(
                       if ((ccpEnabled || riskEnabled) &&
                           _isScored(criterion.inputType)) ...[
                         const SizedBox(height: 12),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
                           children: [
                             if (ccpEnabled)
-                              Expanded(
-                                child: AuditCcpRiskButton(
-                                  label: 'CCP',
-                                  icon: Icons.shield,
-                                  active: answer?.isCcp ?? false,
-                                  activeColor: theme.colorScheme.error,
-                                  onTap: () {
-                                    final newVal = !(answer?.isCcp ?? false);
-                                    manager.setCcp(criterion.id, newVal);
-                                  },
-                                ),
+                              AuditCcpRiskButton(
+                                label: 'CCP',
+                                icon: Icons.shield,
+                                active: answer?.isCcp ?? false,
+                                activeColor: theme.colorScheme.error,
+                                onTap: () {
+                                  final newVal = !(answer?.isCcp ?? false);
+                                  manager.setCcp(criterion.id, newVal);
+                                },
                               ),
-                            if (ccpEnabled && riskEnabled)
-                              const SizedBox(width: 8),
                             if (riskEnabled)
-                              Expanded(
-                                child: AuditCcpRiskButton(
-                                  label: 'RISK',
-                                  icon: Icons.warning_amber_rounded,
-                                  active: answer?.isRisk ?? false,
-                                  activeColor: AppTheme.warning,
-                                  onTap: () {
-                                    final newVal = !(answer?.isRisk ?? false);
-                                    manager.setRisk(criterion.id, newVal);
-                                  },
-                                ),
+                              AuditCcpRiskButton(
+                                label: 'RISK',
+                                icon: Icons.warning_amber_rounded,
+                                active: answer?.isRisk ?? false,
+                                activeColor: AppTheme.warning,
+                                onTap: () {
+                                  final newVal = !(answer?.isRisk ?? false);
+                                  manager.setRisk(criterion.id, newVal);
+                                },
                               ),
                           ],
                         ),

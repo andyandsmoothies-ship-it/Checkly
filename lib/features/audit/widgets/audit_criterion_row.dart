@@ -311,41 +311,32 @@ class AuditCcpRiskButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Material(
-      color: active ? activeColor : theme.colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
+    return FilterChip(
+      label: Text(label),
+      avatar: Icon(
+        icon,
+        size: 16,
+        color: active ? Colors.white : theme.colorScheme.onSurfaceVariant,
+      ),
+      selected: active,
+      selectedColor: activeColor,
+      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+      labelStyle: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.2,
+        color: active ? Colors.white : theme.colorScheme.onSurfaceVariant,
+      ),
+      checkmarkColor: Colors.white,
+      showCheckmark: false,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        child: Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: active
-                    ? Colors.white
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
-                  color: active
-                      ? Colors.white
-                      : theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
+        side: BorderSide(
+          color: active ? activeColor : Colors.transparent,
         ),
       ),
+      onSelected: (_) => onTap(),
     );
   }
 }

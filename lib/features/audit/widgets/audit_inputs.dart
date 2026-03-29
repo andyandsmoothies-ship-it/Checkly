@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../../_shared/theme/app_theme.dart';
 import '../../templates/models/template_dto.dart';
 
 // ============================================================
@@ -19,20 +20,40 @@ class AuditPassFailInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return SegmentedButton<String>(
-      emptySelectionAllowed: true,
-      segments: const [
-        ButtonSegment(value: 'conform', label: Text('Conform')),
-        ButtonSegment(value: 'non_conform', label: Text('Non-Conform')),
-      ],
-      selected: value != null ? {value!} : {},
-      onSelectionChanged: (s) => onChanged(s.first),
-      style: ButtonStyle(
-        visualDensity: VisualDensity.compact,
-        textStyle: WidgetStateProperty.all(
-          theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+    return Row(
+      children: [
+        Expanded(
+          child: ChoiceChip(
+            label: const Center(child: Text('Conform')),
+            selected: value == 'conform',
+            selectedColor: AppTheme.success,
+            labelStyle: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: value == 'conform' ? Colors.white : theme.colorScheme.onSurface,
+            ),
+            checkmarkColor: Colors.white,
+            onSelected: (selected) {
+              if (selected) onChanged('conform');
+            },
+          ),
         ),
-      ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: ChoiceChip(
+            label: const Center(child: Text('Non-Conform')),
+            selected: value == 'non_conform',
+            selectedColor: theme.colorScheme.error,
+            labelStyle: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: value == 'non_conform' ? Colors.white : theme.colorScheme.onSurface,
+            ),
+            checkmarkColor: Colors.white,
+            onSelected: (selected) {
+              if (selected) onChanged('non_conform');
+            },
+          ),
+        ),
+      ],
     );
   }
 }
