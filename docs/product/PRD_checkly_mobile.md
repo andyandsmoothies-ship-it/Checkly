@@ -363,7 +363,7 @@ flowchart TD
 | ERD & Delete Strategy | [research_erd_delete_strategy.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_erd_delete_strategy.md) |
 | UAT Test Cases | [uat_test_cases.md](file:///C:/Users/HP/.gemini/antigravity/brain/2653279f-659a-487a-9f3c-bfe41a3b674d/uat_test_cases.md.resolved) |
 | Web Admin Research | [research_web_admin_enterprise.md](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/research_web_admin_enterprise.md) |
-| Database Schema | [DATABASE_SCHEMA.md](file:///c:/Users/HP/Documents/GitHub/Checkly/docs/DATABASE_SCHEMA.md) |
+| Database Schema | [DATABASE_SCHEMA.md](file:///C:/Users/HP/Documents/GitHub/Checkly/docs/architecture/DATABASE_SCHEMA.md) |
 | Scoring Engine KI | [scoring_engine.md](file:///C:/Users/HP/.gemini/antigravity/knowledge/unified_scoring_and_audit_logic/artifacts/scoring_engine.md) |
 | Access Control Strategy KI | [access_control_strategy.md](file:///C:/Users/HP/.gemini/antigravity/knowledge/infrastructure_and_security_standards/artifacts/access_control_strategy.md) |
 | Supabase Live Schema | MCP project ID: `prginlmdoeikzytnioka` |
