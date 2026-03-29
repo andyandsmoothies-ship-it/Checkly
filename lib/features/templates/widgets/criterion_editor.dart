@@ -459,65 +459,71 @@ class CriterionEditor extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      criterion.labelCtrl.text.isEmpty
-                          ? 'Untitled criterion'
-                          : criterion.labelCtrl.text,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: criterion.labelCtrl.text.isEmpty
-                            ? theme.colorScheme.onSurfaceVariant
-                            : null,
-                        fontStyle: criterion.labelCtrl.text.isEmpty
-                            ? FontStyle.italic
-                            : FontStyle.normal,
-                      ),
-                    ),
-                  ),
-                  // Points/CCP/RISK badges (always visible)
-                  // Only show points badge for scored input types
-                  if (criterion.pointsCtrl.text.isNotEmpty &&
-                      criterion.inputType != 'text' &&
-                      criterion.inputType != 'single_choice' &&
-                      criterion.inputType != 'multi_choice') ...[
-                    const SizedBox(width: 4),
-                    Text(
-                      '${criterion.pointsCtrl.text}pt',
-                      style: AppFonts.serifStyle(
-                        fontSize: 11,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                  // Input type badge — unified, using the same labels as the selector
-                  const SizedBox(width: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.secondaryContainer.withValues(
-                        alpha: 0.5,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          inputTypeIcon(criterion.inputType),
-                          size: 10,
-                          color: theme.colorScheme.onSecondaryContainer,
-                        ),
-                        const SizedBox(width: 3),
                         Text(
-                          inputTypeLabel(criterion.inputType).toUpperCase(),
+                          criterion.labelCtrl.text.isEmpty
+                              ? 'Untitled criterion'
+                              : criterion.labelCtrl.text,
                           style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: theme.colorScheme.onSecondaryContainer,
+                            fontSize: 13,
+                            color: criterion.labelCtrl.text.isEmpty
+                                ? theme.colorScheme.onSurfaceVariant
+                                : null,
+                            fontStyle: criterion.labelCtrl.text.isEmpty
+                                ? FontStyle.italic
+                                : FontStyle.normal,
                           ),
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            if (criterion.pointsCtrl.text.isNotEmpty &&
+                                criterion.inputType != 'text' &&
+                                criterion.inputType != 'single_choice' &&
+                                criterion.inputType != 'multi_choice') ...[
+                              Text(
+                                '${criterion.pointsCtrl.text}pt',
+                                style: AppFonts.serifStyle(
+                                  fontSize: 11,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.secondaryContainer.withValues(
+                                  alpha: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    inputTypeIcon(criterion.inputType),
+                                    size: 10,
+                                    color: theme.colorScheme.onSecondaryContainer,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    inputTypeLabel(criterion.inputType).toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w700,
+                                      color: theme.colorScheme.onSecondaryContainer,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -537,6 +543,7 @@ class CriterionEditor extends StatelessWidget {
                     ),
                     padding: EdgeInsets.zero,
                   ),
+                  const SizedBox(width: 2),
                   const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
                 ],
               ),

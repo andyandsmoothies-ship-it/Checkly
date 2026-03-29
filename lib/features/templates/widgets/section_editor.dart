@@ -157,7 +157,7 @@ class SectionEditor extends StatelessWidget {
                   onChanged: (_) => onChanged(),
                 ),
               ),
-              // Gap 6: count badge (XS â€¢ YC) â€” root sections only
+              // Gap 6: count badge (XS • YC) — root sections only
               if (isRoot)
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -169,7 +169,7 @@ class SectionEditor extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '${subCount}S â€¢ ${critCount}C',
+                    '${subCount}S • ${critCount}C',
                     style: AppFonts.serifStyle(
                       fontSize: 10,
                       color: AppTheme.charcoal.withValues(alpha: 0.5),
