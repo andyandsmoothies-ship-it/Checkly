@@ -27,6 +27,17 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Development");
 
+        // Suppress Serilog re-initialisation. Program.cs runs CreateBootstrapLogger() at the
+        // top level on every WebApplicationFactory build. When the static Log.Logger is already
+        // frozen from a previous factory instance, a second call throws InvalidOperationException.
+        // Clearing the logging providers here prevents any Serilog sink from being re-wired and
+        // routes all test logging to /dev/null.
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddConsole();
+        });
+
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(

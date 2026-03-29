@@ -26,12 +26,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
-// Stage 1: Bootstrap logger — captures startup errors before DI
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+// Stage 1: Bootstrap logger — captures startup errors before DI.
+// Guard: CreateBootstrapLogger() freezes Log.Logger. Integration tests spin up multiple
+// WebApplicationFactory instances which each re-execute these top-level statements.
+// The static flag prevents crashing with "logger already frozen" on repeated entry.
+if (Log.Logger.GetType().Name == "SilentLogger")
+{
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .CreateBootstrapLogger();
+}
 
 try
 {

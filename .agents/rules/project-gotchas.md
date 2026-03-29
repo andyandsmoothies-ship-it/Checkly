@@ -80,10 +80,15 @@ trigger: always_on
 **Fix:** Never run a terminal command without understanding its termination condition. If a command runs longer than 60 seconds (like linting or git staging), use `command_status`, evaluate if it's deadlocked expecting user input, and abort/kill it immediately if it is. Always use explicit timeouts or non-interactive flags.
 **Evidence:** Confirmed — 41+ hour hanging `git add` process observed.
 
+### Gotcha 27: Serilog Bootstrap Logger Freezes — Test Factory Re-Entry Crash
+**Trigger when:** Integration tests, WebApplicationFactory, Serilog, multiple factories, `WithWebHostBuilder`
+**Problem:** `Program.cs` calls `Log.Logger = ... .CreateBootstrapLogger()` at the top level. `CreateBootstrapLogger()` freezes the static `Log.Logger`. When xUnit runs multiple tests that each call `_factory.WithWebHostBuilder(...)`, a new `WebApplicationFactory` is built, which re-executes Program.cs top-level statements — `CreateBootstrapLogger()` then throws `InvalidOperationException: The logger is already frozen`.
+**Fix:** Guard the bootstrap logger assignment with `if (Log.Logger.GetType().Name == "SilentLogger")` so it only runs on first entry. The default Serilog logger is `SilentLogger`; after `CreateBootstrapLogger()` sets it, subsequent executions skip the block safely.
+**Evidence:** Confirmed 1× — caused 18/105 test failures (TESTERROR on fixture construction) in `SurveyResultsTests`, `ResilienceTests`, and `AreaEndpointMigrationTests`.
+
 ---
 
 ## 🔴 Critical — Code Architecture (Build-Breaking or Silent Data Corruption)
-> These cause broken builds or silent data bugs that survive testing. Check before touching any backend, routing, or sync code.
 
 ### Gotcha 3: Route Registration Order — Specific Before Catch-All
 **Trigger when:** Adding or modifying ASP.NET Core routes, registering new endpoints
