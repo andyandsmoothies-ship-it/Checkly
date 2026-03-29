@@ -24,14 +24,13 @@ dependencies:
 
   # HTTP & Storage
   dio: ^5.8.0+1
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^10.0.0
 
   # Design
   google_fonts: ^8.0.2
 
   # Charts
   fl_chart: ^0.70.2
-
   # Maps (OpenStreetMap — free, no API key)
   flutter_map: ^7.0.2
   latlong2: ^0.9.1

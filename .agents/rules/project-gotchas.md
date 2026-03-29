@@ -44,6 +44,12 @@ trigger: always_on
 **Fix:** Always use `git add -A`. Never list individual file paths.
 **Evidence:** Confirmed — 20+ hour hanging processes observed.
 
+### Gotcha 25: `grep_search` Treats Pipes `|` as Literals Without IsRegex
+**Trigger when:** Using `grep_search` to find multiple concepts separated by `|`
+**Problem:** A query like `fl_chart|flutter_map` with `IsRegex: false` searches for the literal text containing the pipe character, silently returning 0 results (false negative).
+**Fix:** Always set `IsRegex: true` when using `|` or regex metacharacters in `grep_search`.
+**Evidence:** Confirmed 1x — Resulted in falsely classifying 3 critical packages as completely unused and breaking the build upon removal.
+
 ### Gotcha 18: CRLF/LF Mismatch — grep_search AND replace Tools Silently Fail
 **Trigger when:** Using `replace_file_content`, `multi_replace_file_content`, OR `grep_search` on any `.cs`, `.dart`, or `.md` file in this project
 **Problem:** CRLF-encoded files cause two distinct failure modes: (1) `replace_file_content` fails with "target content not found", and (2) `grep_search` returns **no results** even when the pattern physically exists in the file. Both are silent — no error is raised, making false negatives indistinguishable from true negatives.

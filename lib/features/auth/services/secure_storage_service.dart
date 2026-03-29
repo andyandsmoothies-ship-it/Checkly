@@ -12,7 +12,9 @@ class SecureStorageService {
   final FlutterSecureStorage _storage;
 
   SecureStorageService({FlutterSecureStorage? storage})
-    : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage(
+        aOptions: AndroidOptions(migrateOnAlgorithmChange: true),
+      );
 
   // ---------- Token ----------
   Future<void> saveToken(String token) =>
