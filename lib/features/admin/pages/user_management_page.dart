@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/services/store_api_service.dart';
 import '../services/admin_api_service.dart';
 import '../widgets/user_card.dart';
+import '../widgets/user_create_sheet.dart';
+import '../widgets/user_edit_sheet.dart';
 
 final _di = GetIt.instance;
 
@@ -160,228 +161,19 @@ class _UserManagementPageState extends State<UserManagementPage> {
     }
   }
 
-  void _showEditSheet(Map<String, dynamic> user) async {
-    String? selectedRole = user['role'] as String?;
-    String? selectedStoreId = user['storeId'] as String?;
-    String? selectedAreaId = user['areaId'] as String?;
-
-    // Load all active stores (with manager names for annotated dropdown)
-    List<Map<String, dynamic>> assignableStores = [];
-    if (selectedRole == 'store_manager') {
-      assignableStores = await _loadStores();
-    }
-
-    if (!mounted) return;
-
-    showModalBottomSheet(
+  void _showEditSheet(Map<String, dynamic> user) {
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       isDismissible: false,
-      builder: (ctx) {
-        var isDirty = false;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            void markDirty() {
-              if (!isDirty) setSheetState(() => isDirty = true);
-            }
-
-            return UnsavedChangesGuard(
-              isDirty: isDirty,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24,
-                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                user['fullName'] ?? 'Unknown',
-                                style: Theme.of(ctx).textTheme.titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.w700),
-                              ),
-                              Text(
-                                user['email'] ?? '',
-                                style: Theme.of(ctx).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      color: Theme.of(
-                                        ctx,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.maybePop(ctx),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Role dropdown
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedRole,
-                      borderRadius: BorderRadius.circular(12),
-                      decoration: const InputDecoration(
-                        labelText: 'Role',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                        DropdownMenuItem(
-                          value: 'auditor',
-                          child: Text('Auditor'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'store_manager',
-                          child: Text('Store Manager'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'area_manager',
-                          child: Text('Area Manager'),
-                        ),
-                      ],
-                      onChanged: (v) async {
-                        markDirty();
-                        // Reload assignable stores when switching to SM
-                        if (v == 'store_manager' &&
-                            selectedRole != 'store_manager') {
-                          assignableStores = await _loadStores();
-                        }
-                        setSheetState(() {
-                          selectedRole = v;
-                          if (v == 'admin' || v == 'auditor') {
-                            selectedStoreId = null;
-                            selectedAreaId = null;
-                          } else if (v == 'store_manager') {
-                            selectedAreaId = null;
-                          } else if (v == 'area_manager') {
-                            selectedStoreId = null;
-                          }
-                        });
-                      },
-                    ),
-
-                    // Store dropdown (only for store_manager)
-                    if (selectedRole == 'store_manager') ...[
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        initialValue:
-                            assignableStores.any(
-                              (s) => s['id'] == selectedStoreId,
-                            )
-                            ? selectedStoreId
-                            : null,
-                        borderRadius: BorderRadius.circular(12),
-                        decoration: const InputDecoration(
-                          labelText: 'Assigned Store',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: [
-                          const DropdownMenuItem(
-                            value: null,
-                            child: Text('— None —'),
-                          ),
-                          ...assignableStores.map((s) {
-                            final mgr = s['managerName'] as String?;
-                            final label = mgr != null
-                                ? '${s['name']} (SM: $mgr)'
-                                : '${s['name']} (Vacant)';
-                            return DropdownMenuItem(
-                              value: s['id'] as String,
-                              child: Text(label),
-                            );
-                          }),
-                        ],
-                        onChanged: (v) =>
-                            setSheetState(() => selectedStoreId = v),
-                      ),
-                    ],
-
-                    // Area dropdown (only for area_manager)
-                    if (selectedRole == 'area_manager') ...[
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        initialValue:
-                            _areas.any((a) => a['id'] == selectedAreaId)
-                            ? selectedAreaId
-                            : null,
-                        borderRadius: BorderRadius.circular(12),
-                        decoration: const InputDecoration(
-                          labelText: 'Assigned Area',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: [
-                          const DropdownMenuItem(
-                            value: null,
-                            child: Text('— None —'),
-                          ),
-                          ..._areas.map((a) {
-                            final mgr = a['managerName'] as String?;
-                            final label = mgr != null
-                                ? '${a['name']} (AM: $mgr)'
-                                : '${a['name']} (Vacant)';
-                            return DropdownMenuItem(
-                              value: a['id'] as String,
-                              child: Text(label),
-                            );
-                          }),
-                        ],
-                        onChanged: (v) =>
-                            setSheetState(() => selectedAreaId = v),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-
-                    // Save button
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: () => _saveUser(
-                          user['id'] as String,
-                          role: selectedRole,
-                          storeId: selectedStoreId,
-                          areaId: selectedAreaId,
-                        ),
-                        icon: const Icon(Icons.save),
-                        label: const Text('Save Changes'),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Reset Password button
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () => _showResetPasswordDialog(
-                          ctx,
-                          user['id'] as String,
-                          user['fullName'] as String? ?? 'this user',
-                        ),
-                        icon: const Icon(Icons.lock_reset),
-                        label: const Text('Reset Password'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+      builder: (_) => UserEditSheet(
+        user: user,
+        areas: _areas,
+        loadStores: _loadStores,
+        onSave: ({required userId, role, storeId, areaId}) =>
+            _saveUser(userId, role: role, storeId: storeId, areaId: areaId),
+        onResetPassword: _showResetPasswordDialog,
+      ),
     );
   }
 
@@ -570,333 +362,33 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  void _showCreateUserSheet() {
-    final nameCtrl = TextEditingController();
-    final emailCtrl = TextEditingController();
-    final passCtrl = TextEditingController();
-    String selectedRole = 'auditor';
-    String? selectedStoreId;
-    String? selectedAreaId;
-    List<Map<String, dynamic>> assignableStores = [];
-    bool isSubmitting = false;
-    String? nameError;
-    String? emailError;
-    String? passwordError;
-
-    showModalBottomSheet(
+  Future<void> _showCreateUserSheet() async {
+    final created = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       isDismissible: false,
-      builder: (ctx) {
-        var isDirty = false;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            void markDirty() {
-              if (!isDirty) setSheetState(() => isDirty = true);
-            }
-
-            return UnsavedChangesGuard(
-              isDirty: isDirty,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24,
-                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Create New User',
-                            style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () => Navigator.maybePop(ctx),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      TextField(
-                        controller: nameCtrl,
-                        decoration: InputDecoration(
-                          labelText: 'Full Name',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.person),
-                          errorText: nameError,
-                        ),
-                        textCapitalization: TextCapitalization.words,
-                        onChanged: (_) {
-                          markDirty();
-                          if (nameError != null) {
-                            setSheetState(() => nameError = null);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 12),
-
-                      TextField(
-                        controller: emailCtrl,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.email),
-                          errorText: emailError,
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        onChanged: (_) {
-                          markDirty();
-                          if (emailError != null) {
-                            setSheetState(() => emailError = null);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 12),
-
-                      TextField(
-                        controller: passCtrl,
-                        decoration: InputDecoration(
-                          labelText: 'Temporary Password',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.lock),
-                          errorText: passwordError,
-                          helperText: passwordError == null
-                              ? 'Min 8 chars: uppercase, digit, special char'
-                              : null,
-                        ),
-                        obscureText: true,
-                        onChanged: (_) {
-                          if (passwordError != null) {
-                            setSheetState(() => passwordError = null);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 12),
-
-                      DropdownButtonFormField<String>(
-                        initialValue: selectedRole,
-                        borderRadius: BorderRadius.circular(12),
-                        decoration: const InputDecoration(
-                          labelText: 'Role',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'auditor',
-                            child: Text('Auditor'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'store_manager',
-                            child: Text('Store Manager'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'area_manager',
-                            child: Text('Area Manager'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'admin',
-                            child: Text('Admin'),
-                          ),
-                        ],
-                        onChanged: (v) async {
-                          // Load assignable stores when switching to SM
-                          if (v == 'store_manager' &&
-                              selectedRole != 'store_manager') {
-                            assignableStores = await _loadStores(
-                              assignableAs: 'store_manager',
-                            );
-                          }
-                          setSheetState(() {
-                            selectedRole = v ?? 'auditor';
-                            if (v == 'admin' || v == 'auditor') {
-                              selectedStoreId = null;
-                              selectedAreaId = null;
-                            } else if (v == 'store_manager') {
-                              selectedAreaId = null;
-                            } else if (v == 'area_manager') {
-                              selectedStoreId = null;
-                            }
-                          });
-                        },
-                      ),
-
-                      // Store dropdown (only for store_manager)
-                      if (selectedRole == 'store_manager') ...[
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          initialValue: selectedStoreId,
-                          borderRadius: BorderRadius.circular(12),
-                          decoration: const InputDecoration(
-                            labelText: 'Assigned Store',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: [
-                            const DropdownMenuItem(
-                              value: null,
-                              child: Text('— None —'),
-                            ),
-                            ...assignableStores.map(
-                              (s) => DropdownMenuItem(
-                                value: s['id'] as String,
-                                child: Text(s['name'] as String),
-                              ),
-                            ),
-                          ],
-                          onChanged: (v) =>
-                              setSheetState(() => selectedStoreId = v),
-                        ),
-                      ],
-
-                      // Area dropdown (only for area_manager)
-                      if (selectedRole == 'area_manager') ...[
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          initialValue: selectedAreaId,
-                          borderRadius: BorderRadius.circular(12),
-                          decoration: const InputDecoration(
-                            labelText: 'Assigned Area',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: [
-                            const DropdownMenuItem(
-                              value: null,
-                              child: Text('— None —'),
-                            ),
-                            ..._areas.map(
-                              (a) => DropdownMenuItem(
-                                value: a['id'] as String,
-                                child: Text(a['name'] as String),
-                              ),
-                            ),
-                          ],
-                          onChanged: (v) =>
-                              setSheetState(() => selectedAreaId = v),
-                        ),
-                      ],
-                      const SizedBox(height: 20),
-
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: isSubmitting
-                              ? null
-                              : () async {
-                                  final name = nameCtrl.text.trim();
-                                  final email = emailCtrl.text.trim();
-                                  final pass = passCtrl.text;
-
-                                  // Client-side required field validation
-                                  String? nErr;
-                                  String? eErr;
-                                  String? pErr;
-                                  if (name.isEmpty) {
-                                    nErr = 'Full name is required';
-                                  }
-                                  if (email.isEmpty) eErr = 'Email is required';
-                                  if (pass.isEmpty) {
-                                    pErr = 'Password is required';
-                                  }
-
-                                  if (nErr != null ||
-                                      eErr != null ||
-                                      pErr != null) {
-                                    setSheetState(() {
-                                      nameError = nErr;
-                                      emailError = eErr;
-                                      passwordError = pErr;
-                                    });
-                                    return;
-                                  }
-
-                                  setSheetState(() {
-                                    isSubmitting = true;
-                                    nameError = null;
-                                    emailError = null;
-                                    passwordError = null;
-                                  });
-
-                                  try {
-                                    await _di<AdminApiService>().createUser(
-                                      email: email,
-                                      password: pass,
-                                      fullName: name,
-                                      role: selectedRole,
-                                      storeId: selectedStoreId,
-                                      areaId: selectedAreaId,
-                                    );
-                                    if (ctx.mounted) {
-                                      Navigator.of(ctx).pop();
-                                      ScaffoldMessenger.of(ctx).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'User created successfully',
-                                          ),
-                                          backgroundColor: AppTheme.success,
-                                        ),
-                                      );
-                                    }
-                                    if (mounted) _loadData();
-                                  } catch (e) {
-                                    String? serverMsg;
-                                    int? statusCode;
-                                    if (e is DioException) {
-                                      statusCode = e.response?.statusCode;
-                                      final data = e.response?.data;
-                                      serverMsg = data is Map
-                                          ? data['message']?.toString()
-                                          : data?.toString() ?? e.message;
-                                    } else {
-                                      serverMsg = e.toString();
-                                    }
-
-                                    // Route error to the correct field
-                                    final msg = serverMsg?.toLowerCase() ?? '';
-                                    setSheetState(() {
-                                      isSubmitting = false;
-                                      if (statusCode == 409 ||
-                                          msg.contains('email')) {
-                                        emailError = serverMsg;
-                                      } else if (msg.contains('password')) {
-                                        passwordError = serverMsg;
-                                      } else {
-                                        // Fallback: show under password as last field
-                                        passwordError = serverMsg;
-                                      }
-                                    });
-                                  }
-                                },
-                          icon: isSubmitting
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.person_add),
-                          label: Text(
-                            isSubmitting ? 'Creating...' : 'Create User',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
+      builder: (_) => UserCreateSheet(
+        areas: _areas,
+        loadStores: _loadStores,
+        onCreate: ({
+          required email,
+          required password,
+          required fullName,
+          required role,
+          storeId,
+          areaId,
+        }) =>
+            _di<AdminApiService>().createUser(
+              email: email,
+              password: password,
+              fullName: fullName,
+              role: role,
+              storeId: storeId,
+              areaId: areaId,
+            ),
+      ),
     );
+    if (created == true && mounted) _loadData();
   }
 
   @override
