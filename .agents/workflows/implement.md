@@ -61,9 +61,9 @@ description: The Core Builder Implementation Workflow.
 > Skipping this block is a workflow violation.
 
 - **The Cheap Verifier Gate**: Before declaring any code complete and moving to ATDD or UI testing, you MUST run a fast semantic check. For Dart: `cmd /c flutter analyze lib/path/to/feature`. For C#: `cmd /c dotnet build server/Checkly.Api.csproj --no-restore`. If this fails, fix it locally before burning context on complex driver tests.
-- If ATDD tests exist (from `/atdd`): your goal is to turn them GREEN. Do NOT modify the QA's test code — only fix your implementation.
+- **The Red/Green Context Split (MANDATORY)**: If an ATDD test exists, or if a test fails during your work, your goal is to turn it GREEN. **You are STRICTLY FORBIDDEN from modifying the test file to make it pass.** This prevents the "Marking Your Own Homework" paradox. If a test fails, your implementation is wrong. The test is an immutable constraint during the `/implement` phase.
 - **MANDATORY STATE TESTING**: You MUST write a failing test for EVERY state defined in the Implementation Plan's State Matrix (Loading, Empty, Error, Success) and EVERY Business Logic Rule before writing the implementation code.
-- Follow the TDD inner loop per component: write a failing test → write code to pass it → refactor. This builds quality in, not inspected out later.
+- Follow the TDD inner loop per component: write a failing test → write code to pass it → refactor. Once implementation begins, the test is immutable.
 - After each component turns GREEN: immediately check it for architecture compliance, null handling, edge cases, and import legality. Fix violations now — not in a post-review phase.
 - If the task shifts (e.g., API → DB → UI), re-scan `.agents/skills/` for new matching skills. Drop irrelevant ones to save context.
 

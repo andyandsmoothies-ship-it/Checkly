@@ -75,6 +75,13 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'checkly_local.db'));
-    return NativeDatabase.createInBackground(file);
+    return NativeDatabase.createInBackground(file, setup: (db) {
+      // Diagnostic check for JSON1 extension (required for JSONB columns)
+      try {
+        db.execute("SELECT json_valid('{}')");
+      } catch (e) {
+        throw Exception('FATAL: Compiled sqlite3 binary is missing JSON1 extension support. $e');
+      }
+    });
   });
 }

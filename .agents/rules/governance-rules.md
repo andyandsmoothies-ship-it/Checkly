@@ -15,6 +15,11 @@ Before implementing ANY local utility, routing logic, data transformation, or UI
 - **Purpose**: Prove you are using the project's existing canonical tools before building custom logic.
 - **Prohibition**: No custom date parsers, unauthorized navigation extensions, or ad-hoc security guards.
 
+## The Marking Your Own Homework Paradox (STRICT)
+Under no circumstances may you write or modify a test and its corresponding implementation in the exact same prompt cycle or workflow phase.
+- **Rule**: Tests are immutable constraints during implementation. If a test is failing, fix the code, not the test. 
+- **Purpose**: Prevents AI agents from unconsciously writing meaningless, self-fulfilling tests that echo their own buggy logic to achieve a false "green build."
+
 ## Post-Task Self-Curation (ALWAYS-ON)
 After any significant implementation, debug, or refactor, assess whether a new lesson was discovered.
 
