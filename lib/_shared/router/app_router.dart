@@ -24,7 +24,6 @@ import '../../features/admin/pages/store_management_page.dart';
 import '../../features/admin/pages/system_logs_page.dart';
 import '../../features/admin/pages/schedule_audit_page.dart';
 import '../../features/admin/pages/area_management_page.dart';
-import '../../features/profile/pages/activity_history_page.dart';
 import '../../features/analytics/pages/analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
 import '../../features/templates/pages/template_builder_page.dart';
@@ -154,10 +153,6 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/admin/areas',
       builder: (context, state) => const AreaManagementPage(),
-    ),
-    GoRoute(
-      path: '/activity',
-      builder: (context, state) => const ActivityHistoryPage(),
     ),
 
     // Legacy redirects: old routes → new routes
