@@ -38,8 +38,12 @@ public static class SyncTemplates
         DateTimeOffset since,
         ClaimsPrincipal user,
         AppDbContext db,
-        CancellationToken ct)
+        CancellationToken ct,
+        int syncLimit = 500)
     {
+        // Clamp syncLimit to a safe maximum to prevent accidental OOM on initial sync
+        var limit = Math.Clamp(syncLimit, 1, 2000);
+
         var isAdmin = user.IsInRole("admin");
 
         // Base query
@@ -64,6 +68,7 @@ public static class SyncTemplates
             .Select(t => new TemplateDto(
                 t.Id, t.Title, t.Description, t.Type, t.Version,
                 t.ScoringLogicConfig, t.DisplayNoun, t.IsActive, t.CreatedAt, t.UpdatedAt))
+            .Take(limit)
             .ToListAsync(ct);
 
         var groups = await db.Groups
@@ -72,6 +77,7 @@ public static class SyncTemplates
                 g.Id, g.TemplateId, g.ParentId, g.Title, g.Description,
                 g.Weight, g.MaxDeductionPoints, g.MinusPerFault, g.OrderIndex, g.Metadata,
                 g.IsActive, g.UpdatedAt))
+            .Take(limit)
             .ToListAsync(ct);
 
         var criteria = await db.Criteria
@@ -79,6 +85,7 @@ public static class SyncTemplates
             .Select(c => new CriterionDto(
                 c.Id, c.Label, c.Description, c.InputType, c.PointsWeight,
                 c.IsCcp, c.IsRisk, c.MinusImpact, c.OrderIndex, c.Metadata))
+            .Take(limit)
             .ToListAsync(ct);
 
         return TypedResults.Ok(new SyncResponse(

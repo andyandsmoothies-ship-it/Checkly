@@ -403,6 +403,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("GroupId");
 
+                    b.HasIndex("IsActive")
+                        .HasFilter("is_active = true");
+
                     b.ToTable("criteria", (string)null);
                 });
 
@@ -472,6 +475,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnName("weight");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsActive")
+                        .HasFilter("is_active = true");
 
                     b.HasIndex("ParentId");
 
@@ -1028,6 +1034,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsActive")
+                        .HasFilter("is_active = true");
 
                     b.ToTable("templates", (string)null);
                 });

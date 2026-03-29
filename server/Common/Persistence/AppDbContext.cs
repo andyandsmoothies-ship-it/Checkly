@@ -148,6 +148,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .HasColumnType("xid")
                 .ValueGeneratedOnAddOrUpdate()
                 .IsConcurrencyToken();
+
+            // Performance indexes
+            e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
         });
     }
 
@@ -180,6 +183,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithMany(g => g.Children)
                 .HasForeignKey(x => x.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Performance indexes
+            e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
         });
     }
 
@@ -208,6 +214,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithMany(g => g.Criteria)
                 .HasForeignKey(x => x.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Performance indexes
+            e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
         });
     }
 
