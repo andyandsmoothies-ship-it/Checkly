@@ -5,7 +5,7 @@ namespace Checkly.Api.Features.Photos;
 /// </summary>
 public static class PhotoEndpoints
 {
-    public static void MapPhotoEndpoints(this WebApplication app)
+    public static IEndpointConventionBuilder MapPhotoEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/api/photos")
             .WithTags("Photos")
@@ -17,5 +17,7 @@ public static class PhotoEndpoints
 
         group.MapGet("/{submissionId}/{fileName}", GetPhoto.HandleAsync)
             .WithName("GetPhoto");
+
+        return group;
     }
 }

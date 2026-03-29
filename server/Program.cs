@@ -40,8 +40,8 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     // Stage 2: Full Serilog with DI + appsettings config
-    builder.Services.AddSerilog((services, lc) => lc
-        .ReadFrom.Configuration(builder.Configuration)
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .Enrich.WithMachineName()
@@ -50,7 +50,7 @@ try
 
     // --- Database ---
     builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") ?? "",
             npgsqlOptions =>
             {
                 npgsqlOptions.EnableRetryOnFailure(
@@ -104,13 +104,32 @@ try
     // --- Application Services ---
     builder.Services.AddRequestTimeouts(options => {
         options.DefaultPolicy = new Microsoft.AspNetCore.Http.Timeouts.RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(30) };
+        options.AddPolicy("LongRunning", new Microsoft.AspNetCore.Http.Timeouts.RequestTimeoutPolicy { Timeout = TimeSpan.FromMinutes(2) });
     });
     builder.Services.AddRateLimiter(options =>
     {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        options.OnRejected = async (context, token) =>
+        {
+            context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+            await context.HttpContext.Response.WriteAsJsonAsync(new ProblemDetails
+            {
+                Status = 429,
+                Title = "Too Many Requests",
+                Type = "https://tools.ietf.org/html/rfc6585#section-4",
+                Detail = "Server is at capacity. Please retry after a moment.",
+                Extensions = { ["correlationId"] = Guid.NewGuid().ToString("N")[..12] }
+            }, options: null, contentType: "application/problem+json", cancellationToken: token);
+        };
         options.AddConcurrencyLimiter("SyncPolicy", limiterOptions =>
         {
             limiterOptions.PermitLimit = 50;
+            limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            limiterOptions.QueueLimit = 0;
+        });
+        options.AddConcurrencyLimiter("UploadPolicy", limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 20;
             limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
             limiterOptions.QueueLimit = 0;
         });
@@ -155,6 +174,14 @@ try
         app.MapOpenApi();
     }
 
+    // Diagnostic endpoint — only available in Development/Test environments,
+    // never mapped in Production. Used by ResilienceTests to exercise GlobalExceptionHandler.
+    if (!app.Environment.IsProduction())
+    {
+        app.MapGet("/api/test-error", () => { throw new NotImplementedException("Integration test hook."); })
+           .ExcludeFromDescription();
+    }
+
     if (!app.Environment.IsDevelopment())
     {
         app.UseHttpsRedirection();
@@ -180,8 +207,12 @@ try
     app.MapAuthEndpoints();
     app.MapTemplateEndpoints();
     app.MapStoreEndpoints();
-    app.MapSubmissionEndpoints().RequireRateLimiting("SyncPolicy");
-    app.MapPhotoEndpoints();
+    app.MapSubmissionEndpoints()
+        .RequireRateLimiting("SyncPolicy")
+        .WithRequestTimeout("LongRunning");
+    app.MapPhotoEndpoints()
+        .RequireRateLimiting("UploadPolicy")
+        .WithRequestTimeout("LongRunning");
     app.MapActionPlanEndpoints();
     app.MapNotificationEndpoints();
     app.MapAdminEndpoints();
@@ -194,6 +225,7 @@ try
 catch (Exception ex)
 {
     Log.Fatal(ex, "Checkly API terminated unexpectedly");
+    throw;
 }
 finally
 {
