@@ -1,5 +1,0 @@
-{
-  "artifactType":  "ARTIFACT_TYPE_OTHER",
-  "summary":  "Comprehensive screen-by-screen fine-tuning guide comparing the original checkly-smart PWA with the new Flutter app. Covers 7 screens: Dashboard, Audit Form, Action Plans, Templates, Profile, Audits List, and Notifications. For each screen, documents the exact PWA behavior, visual patterns, interaction details, and specific implementation instructions for the Flutter builder. Includes embedded screenshots from the live PWA and a prioritized gap list with 4 priority tiers.",
-  "updatedAt":  "2026-03-11T08:36:02.286022700Z"
-}

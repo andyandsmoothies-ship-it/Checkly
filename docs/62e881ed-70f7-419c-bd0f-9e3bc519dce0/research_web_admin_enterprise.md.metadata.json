@@ -1,5 +1,0 @@
-{
-  "artifactType":  "ARTIFACT_TYPE_OTHER",
-  "summary":  "Research artifact analyzing web admin portal needs for enterprise scale (1000+ stores). Evaluates which roles need web access (Admin YES, Area Manager YES, Store Manager MAYBE, Auditor NO). Recommends Flutter Web as technology choice for code reuse. Proposes a responsive layout strategy: same Dart codebase, different scaffold for mobile vs web. Covers per-role web features, technology options (Flutter Web vs React vs Next.js), and a phased rollout approach.",
-  "updatedAt":  "2026-03-12T02:08:02.495009300Z"
-}

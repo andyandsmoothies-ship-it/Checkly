@@ -1,5 +1,0 @@
-{
-  "artifactType":  "ARTIFACT_TYPE_OTHER",
-  "summary":  "Comprehensive backend and database architecture plan for the Flutter UDAT mobile app. Covers the Local-First Data Architecture (Drift/SQLite as primary data layer with Supabase as remote sync target), full local database schema design for all 14 tables, data flow patterns (Read Path, Write Path, Sync Path), conflict resolution strategy, auth architecture, Edge Function compatibility, photo storage strategy, background sync design, security model translation (RLS-to-local-guards), and a gap analysis identifying items the user might have missed.",
-  "updatedAt":  "2026-03-10T11:18:56.283591400Z"
-}

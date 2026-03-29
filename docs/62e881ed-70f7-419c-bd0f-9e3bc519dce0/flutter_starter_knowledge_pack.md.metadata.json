@@ -1,5 +1,0 @@
-{
-  "artifactType":  "ARTIFACT_TYPE_OTHER",
-  "summary":  "Complete knowledge transfer checklist for starting the Flutter project. Organized into 5 tiers: Tier 1 (Critical — must copy before writing any code), Tier 2 (Reference — needed during development), Tier 3 (Backend — shared infrastructure, no changes needed), Tier 4 (Optional — nice-to-have later), and Tier 5 (Not Needed — stays with the React project). Each item includes the source file path, what to extract, and how to use it in the Flutter project.",
-  "updatedAt":  "2026-03-10T11:24:19.343722900Z"
-}
