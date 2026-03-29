@@ -154,3 +154,12 @@ For refactors reducing file size by >30% or extracting logic:
 - **Complex Logic**: For state machines, data flows, or multi-step processes, you MUST provide a visual diagram (Mermaid/Draw.io) in the Functional Spec or Implementation Plan.
 - **Skill Usage**: Use `drawio-diagrams` skill to generate and embed these diagrams.
 - **Editable Source**: Always provide the `open_drawio_mermaid` call for future editing.
+
+---
+
+## 5. Dependency Management Protocol
+
+### The "No Blind Upgrades" Rule
+- **Rule**: Never run `flutter pub upgrade` or `dotnet update` blindly.
+- **Context**: Upgrading core packages (like `connectivity_plus`, `go_router`, `flutter_secure_storage`) often introduces massive breaking changes (e.g., Android Gradle Plugin bumps, Jetpack Security rewrites) that destroy the build.
+- **Action**: All major dependency version bumps MUST be treated as architecture-level features (Track C). They require a dedicated ATDD branch, rigorous isolated testing, and a functional specification document outlining the breaking changes.

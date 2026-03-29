@@ -50,3 +50,8 @@ When you open or modify a file matching a pattern below, **auto-load** the assoc
 You are strictly forbidden from executing an entire multi-phase workflow in a single response cycle. You must pace your execution using targeted logical gates:
 1. **The Plan Gate:** You MUST stop generation and yield to the user after completing the Discovery & Planning phases (e.g., Phase 2). Explicitly ask for approval on your proposed architecture, files, and `task.md` before writing any code.
 2. **The Verification Gate:** You MUST stop generation and yield to the user after completing the Coding & Self-Review phases (e.g., Phase 4). Explicitly ask the user if they want to manually test the implementation or review the code before you finalize commits and write handoff artifacts.
+
+## Structural Diagnosis Mandate (Anti-Hallucination)
+Graph optimization matters more than prompt or instruction tuning. If a failure is structural, fixing the logic won't help.
+- **Rule:** If you fail a task, test, or compilation step 2 times in a row, you are **FORBIDDEN** from blinding rewriting the code again. 
+- **Action:** You MUST pause and run a structural trace. Ask: "Am I executing the right file?", "Is the component wired to the router?", "Did an earlier workflow phase fail silently?" Verify the overarching architecture and workflow trace before tweaking the implementation logic.

@@ -60,7 +60,7 @@ description: The Core Builder Implementation Workflow.
 > ```
 > Skipping this block is a workflow violation.
 
-- Run `flutter analyze` / `dotnet build` after **every single file change**. Catching errors early is faster than debugging a broken build at the end.
+- **The Cheap Verifier Gate**: Before declaring any code complete and moving to ATDD or UI testing, you MUST run a fast semantic check. For Dart: `cmd /c flutter analyze lib/path/to/feature`. For C#: `cmd /c dotnet build server/Checkly.Api.csproj --no-restore`. If this fails, fix it locally before burning context on complex driver tests.
 - If ATDD tests exist (from `/atdd`): your goal is to turn them GREEN. Do NOT modify the QA's test code — only fix your implementation.
 - **MANDATORY STATE TESTING**: You MUST write a failing test for EVERY state defined in the Implementation Plan's State Matrix (Loading, Empty, Error, Success) and EVERY Business Logic Rule before writing the implementation code.
 - Follow the TDD inner loop per component: write a failing test → write code to pass it → refactor. This builds quality in, not inspected out later.

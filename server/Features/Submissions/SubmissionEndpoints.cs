@@ -5,7 +5,7 @@ namespace Checkly.Api.Features.Submissions;
 /// </summary>
 public static class SubmissionEndpoints
 {
-    public static void MapSubmissionEndpoints(this WebApplication app)
+    public static IEndpointConventionBuilder MapSubmissionEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/api/submissions")
             .WithTags("Submissions")
@@ -31,5 +31,7 @@ public static class SubmissionEndpoints
 
         group.MapPut("/{id}/finalize", FinalizeSubmission.HandleAsync)
             .WithName("FinalizeSubmission");
+
+        return group;
     }
 }

@@ -544,3 +544,16 @@ This 4-branch architectural mindmap demonstrates exactly how these templates loo
     *   **Section 3: Sign Off**
         *   👉 *Criterion 4:* "Opening Manager Signature"
             *   **Input Type**: `signature`
+
+---
+
+## 13. AI Agent Orchestration & SDLC
+
+The Checkly platform utilizes autonomous AI agents (Antigravity OS) for implementation and testing. The core engineering workflows are strictly paced to prevent context decay and hallucination.
+
+### Key SDLC execution rules:
+1. **The Paced Execution Loop**: Agents must stop generation and request human approval after the Planning phase, and again after the Coding phase. Full autonomous end-to-end execution is forbidden.
+2. **Structural Diagnosis Mandate**: If an agent fails a task or compilation twice, it must halt and run a structural trace (e.g. verifying architecture routing) rather than blindly tuning code or prompts.
+3. **Cheap Verifier Gates**: Before declaring a component complete or moving to intensive ATDD testing, agents must pass rapid, semantic build checks (`flutter analyze` or `dotnet build`).
+
+> **For full AI operational rules**, refer to the `.agents/rules/orchestration-standards.md` file in the root workspace.

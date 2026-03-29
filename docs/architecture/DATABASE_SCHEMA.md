@@ -2,6 +2,10 @@
 
 > **Database**: PostgreSQL 18.3 | **ORM**: Entity Framework Core 10 | **Schema**: `public`
 
+> [!WARNING]
+> **Offline Database Architecture Shift (Drift v3)**
+> The Flutter client is migrating from Drift v2 to Drift v3. The legacy `sqlite3_flutter_libs` package is completely obsolete and conflicts with modern Android builds. Native `sqlite3` bindings must be used instead. Do not rely on old Drift initialization patterns.
+
 ---
 
 ## Table Overview

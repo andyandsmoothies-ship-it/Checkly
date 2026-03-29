@@ -15,6 +15,9 @@ using Checkly.Api.Features.UserGroups;
 using Checkly.Api.Features.Templates;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
+using Checkly.Api.Common.Exceptions;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
@@ -47,7 +50,14 @@ try
 
     // --- Database ---
     builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+            npgsqlOptions =>
+            {
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorCodesToAdd: null);
+            }));
 
     // --- ASP.NET Identity ---
     builder.Services.AddIdentityCore<AppUser>(options =>
@@ -92,6 +102,22 @@ try
         .AddPolicy("AreaManagerAccess", policy => policy.RequireRole("admin", "area_manager"));
 
     // --- Application Services ---
+    builder.Services.AddRequestTimeouts(options => {
+        options.DefaultPolicy = new Microsoft.AspNetCore.Http.Timeouts.RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(30) };
+    });
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        options.AddConcurrencyLimiter("SyncPolicy", limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 50;
+            limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            limiterOptions.QueueLimit = 0;
+        });
+    });
+    builder.Services.AddProblemDetails();
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
     builder.Services.AddScoped<TokenService>();
     builder.Services.AddScoped<Register.Handler>();
     builder.Services.AddScoped<Login.Handler>();
@@ -141,33 +167,9 @@ try
             "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
     });
 
-    app.UseExceptionHandler(errorApp =>
-    {
-        errorApp.Run(async context =>
-        {
-            var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-            var correlationId = Guid.NewGuid().ToString("N")[..12];
-
-            Log.Error(exception,
-                "Unhandled exception {CorrelationId} for {Method} {Path}",
-                correlationId, context.Request.Method, context.Request.Path);
-
-            var problem = new ProblemDetails
-            {
-                Title = "An unexpected error occurred",
-                Status = StatusCodes.Status500InternalServerError,
-                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-                Extensions = { ["correlationId"] = correlationId }
-            };
-
-            if (app.Environment.IsDevelopment())
-                problem.Detail = exception?.Message;
-
-            context.Response.StatusCode = 500;
-            context.Response.ContentType = "application/problem+json";
-            await context.Response.WriteAsJsonAsync(problem);
-        });
-    });
+    app.UseExceptionHandler();
+    app.UseRequestTimeouts();
+    app.UseRateLimiter();
 
     app.UseCors();
     app.UseAuthentication();
@@ -178,7 +180,7 @@ try
     app.MapAuthEndpoints();
     app.MapTemplateEndpoints();
     app.MapStoreEndpoints();
-    app.MapSubmissionEndpoints();
+    app.MapSubmissionEndpoints().RequireRateLimiting("SyncPolicy");
     app.MapPhotoEndpoints();
     app.MapActionPlanEndpoints();
     app.MapNotificationEndpoints();

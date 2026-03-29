@@ -14,6 +14,7 @@ description: >
 
 > [!NOTE]
 > **Related skills:** For language-agnostic circuit breaker theory, see `circuit-breaker-pattern`. This skill covers .NET-specific Polly v8 resilience pipelines.
+> **Canonical Reference:** [Building Resilient Cloud Applications With .NET (Milan Jovanovic)](https://www.milanjovanovic.tech/blog/building-resilient-cloud-applications-with-dotnet)
 
 ## Core Principles
 
@@ -114,6 +115,20 @@ public sealed class OrderRepository(
     public async Task<Order?> GetByIdAsync(Guid id, CancellationToken ct)
     {
         return await pipeline.ExecuteAsync(
+            async token => await db.Orders.FindAsync([id], token),
+            ct);
+}
+
+// Alternative: Inject ResiliencePipelineProvider when DI keys aren't an option
+public sealed class LegacyOrderRepository(
+    AppDbContext db,
+    ResiliencePipelineProvider<string> pipelineProvider)
+{
+    private readonly ResiliencePipeline _pipeline = pipelineProvider.GetPipeline("database");
+
+    public async Task<Order?> GetByIdAsync(Guid id, CancellationToken ct)
+    {
+        return await _pipeline.ExecuteAsync(
             async token => await db.Orders.FindAsync([id], token),
             ct);
     }

@@ -74,6 +74,12 @@ trigger: always_on
 **Fix:** After `git commit`, wait **1 minute** (`WaitDurationSeconds: 60`) before concluding it is hung. If still RUNNING at 60s → run `git log --oneline -1` to check if it silently succeeded. Only declare a true hang if the log shows no new commit after 60s.
 **Evidence:** Confirmed 2 times — commit completed in seconds but `WaitDurationSeconds: 180` caused unnecessary 3-minute stall; screenshot confirmed instant completion.
 
+### Gotcha 26: Cost-Aware Tool Tooling — Dynamic Terminal Loops
+**Trigger when:** Running any background terminal command (git, flutter, dotnet)
+**Problem:** Dynamic execution increases system-level overhead. Running terminal commands without explicit termination conditions causes infinite hanging processes that burn context and stall workflows.
+**Fix:** Never run a terminal command without understanding its termination condition. If a command runs longer than 60 seconds (like linting or git staging), use `command_status`, evaluate if it's deadlocked expecting user input, and abort/kill it immediately if it is. Always use explicit timeouts or non-interactive flags.
+**Evidence:** Confirmed — 41+ hour hanging `git add` process observed.
+
 ---
 
 ## 🔴 Critical — Code Architecture (Build-Breaking or Silent Data Corruption)
