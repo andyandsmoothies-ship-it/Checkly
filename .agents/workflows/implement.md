@@ -118,10 +118,14 @@ Review your own changes from 4 angles. State findings for each:
 
 Run `cmd /c git diff --name-only` one final time to confirm only planned files were changed.
 
-> **🛡️ ARTIFACT PRE-FLIGHT (MANDATORY — do this BEFORE git commit):**
-> Run `list_dir` on `C:\Users\HP\.gemini\antigravity\brain\{conversation-id}\` and visually confirm that **every** artifact listed in the task.md Phase 5 checkboxes exists as a real file on disk.
-> - ✅ `walkthrough_[topic].md` — visible in listing
-> - ✅ `executed_tests_[topic].md` — visible in listing
-> - ✅ `task.md` — visible in listing
+> [!IMPORTANT]
+> **🛡️ ARTIFACT PRE-FLIGHT — Hard Verification Gate (Script-Enforced):**
+> Before committing to git, you MUST pass the verification script:
+> ```
+> cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
+> ```
+> - **Exit Code 0 (✅ PASS):** Proceed to `git add -A ; git commit`.
+> - **Exit Code 1 (❌ FAIL):** Read the error lines. Fix ONLY what was reported. Run again.
+> - **2-Strike Rule:** If the script fails twice on the same error — write `handoff_[topic].md` and block the commit. Tell the user: *"Hard gate failed twice. Blocked on: [exact error]."*
 >
-> **If any file is missing → create it before committing.** A `[x]` checkbox in task.md does NOT prove the file was created. See Gotcha #20.
+> A `[x]` checkbox in task.md does NOT prove files exist. The script proves it.

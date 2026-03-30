@@ -78,12 +78,27 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 ---
 
-## Final Phase: Self-Correction Gate
+## Final Phase: Hard Verification Gate (Script-Enforced)
+
+> [!IMPORTANT]
+> **No honor system.** You are FORBIDDEN from self-certifying completion with "Yes/No" answers. A deterministic script performs the audit instead. Follow these steps exactly.
+
 <strict-instruction>
-Self-audit against global rules. Explicitly type out and answer:
-1. **Thinking Process Check**: Internal reasoning isolated? (Yes/No)
-2. **Template Check**: Mandatory header sections included? (Yes/No)
-3. **Tracking Update**: Task tracking updated? (Yes/No)
-4. **Integrity Audit**: Handoff block included? (Yes/No)
-Do not proceed until 'Yes' on all 4. 
+
+**Step 1 — Run the verification script:**
+```
+cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
+```
+Substitute `{App Data Directory}` and `{Conversation ID}` with the values injected in your system context at session start.
+
+**Step 2 — Interpret the result:**
+- **Exit Code 0 (✅ PASS):** The workflow is officially complete. Share the script's output summary with the user and stop.
+- **Exit Code 1 (❌ FAIL):** Read the exact error lines the script printed. Fix ONLY what the script reported. Run the script again.
+
+**Step 3 — 2-Strike Rule:**
+If the script fails **twice** on the same error after your fixes, you have hit an unresolvable blocker.
+- STOP immediately.
+- Write `handoff_[topic].md` describing the script error, what you tried, and what remains.
+- Tell the user: *"Hard gate failed twice. Blocked on: [exact error]. See handoff file."*
+
 </strict-instruction>

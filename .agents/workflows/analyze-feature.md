@@ -101,9 +101,15 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 ---
 
-## Final Phase: Artifact Handoff
+## Final Phase: Artifact Handoff (Hard Gate)
 - **Mandatory Output**: Explicitly output literal file path of implementation plan.
-- **Physical Verification**: Run `list_dir` on brain/artifact directory and confirm `implementation_plan_[topic].md` is visible before handoff.
+- **Hard Physical Verification**: Run the verification script — do NOT use `list_dir` as a substitute:
+  ```
+  cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
+  ```
+  - **Exit Code 0 (✅ PASS):** Tell the user the plan is ready and output the file path.
+  - **Exit Code 1 (❌ FAIL):** Read the exact error. Fix ONLY what was reported. Run again.
+  - **2-Strike Rule:** Two consecutive failures → write `handoff_[topic].md` and tell the user: *"Hard gate failed twice. Blocked on: [exact error]."*
 
 > [!CAUTION]
 > **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before this phase is complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and key decisions made so far. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
