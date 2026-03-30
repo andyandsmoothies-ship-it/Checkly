@@ -80,15 +80,27 @@ For each `DIFF_CHECKABLE` gotcha:
 
 ---
 
-## Final Phase: Self-Correction Gate (CRITICAL)
+## Final Phase: Hard Verification Gate (Script-Enforced)
+
+> [!IMPORTANT]
+> **No honor system.** You are FORBIDDEN from self-certifying completion with "Yes/No" answers. A deterministic script performs the audit instead. Follow these steps exactly.
+
 <strict-instruction>
-Before concluding this workflow and replying to the user, you MUST self-audit your output. Each item requires a **one-line evidence citation** — not a bare Yes/No:
 
-1. **Thinking Process Check**: Did I isolate my internal reasoning into a separate `thinking_log_[topic].md` artifact? → Cite: `thinking_log` file path created.
-2. **Template Check**: Did I include the mandatory `# Requirement Summary` section in every artifact? → Cite: the exact artifact name and its first heading.
-3. **Tracking Update**: Did I update `task.md` with an `# Artifact Inventory` listing every generated file as [NEW]/[MOD]/[DEL]? → Cite: the specific task.md entry added.
-4. **Integrity Audit**: Did I include the mandatory context/attribution block (skills loaded, rules applied) in my final response? → Cite: the exact skills and rules referenced.
-5. **Physical Verification (Anti-Optimistic-Checkboxing)**: Run `list_dir` on the brain/artifact directory right now. Confirm every `[NEW]` file in the `## Artifact Inventory` of `task.md` appears in the listing. → Cite: the directory path checked and the file names confirmed visible.
+**Step 1 — Run the verification script:**
+```
+cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
+```
+Substitute `{App Data Directory}` and `{Conversation ID}` with the values injected in your system context at session start.
 
-You are strictly FORBIDDEN from handing off this task to the user until all 5 evidences are produced. If any evidence is missing → use your file tools to correct the artifact immediately, then cite it.
+**Step 2 — Interpret the result:**
+- **Exit Code 0 (✅ PASS):** The workflow is officially complete. Share the script's output summary with the user and stop.
+- **Exit Code 1 (❌ FAIL):** Read the exact error lines the script printed. Fix ONLY what the script reported. Run the script again.
+
+**Step 3 — 2-Strike Rule:**
+If the script fails **twice** on the same error after your fixes, you have hit an unresolvable blocker.
+- STOP immediately.
+- Write `handoff_[topic].md` describing the script error, what you tried, and what remains.
+- Tell the user: *"Hard gate failed twice. Blocked on: [exact error]. See handoff file."*
+
 </strict-instruction>

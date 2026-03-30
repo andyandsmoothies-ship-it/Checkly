@@ -57,3 +57,30 @@ description: Verification gate for any upstream workflow — validates that anal
 
 > [!CAUTION]
 > **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the CI gate result state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
+
+---
+
+## Final Phase: Hard Verification Gate (Script-Enforced)
+
+> [!IMPORTANT]
+> **No honor system.** You are FORBIDDEN from self-certifying completion with "Yes/No" answers. A deterministic script performs the audit instead. Follow these steps exactly.
+
+<strict-instruction>
+
+**Step 1 — Run the verification script:**
+```
+cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
+```
+Substitute `{App Data Directory}` and `{Conversation ID}` with the values injected in your system context at session start.
+
+**Step 2 — Interpret the result:**
+- **Exit Code 0 (✅ PASS):** The workflow is officially complete. Share the script's output summary with the user and stop.
+- **Exit Code 1 (❌ FAIL):** Read the exact error lines the script printed. Fix ONLY what the script reported. Run the script again.
+
+**Step 3 — 2-Strike Rule:**
+If the script fails **twice** on the same error after your fixes, you have hit an unresolvable blocker.
+- STOP immediately.
+- Write `handoff_[topic].md` describing the script error, what you tried, and what remains.
+- Tell the user: *"Hard gate failed twice. Blocked on: [exact error]. See handoff file."*
+
+</strict-instruction>
