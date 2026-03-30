@@ -55,3 +55,10 @@ You are strictly forbidden from executing an entire multi-phase workflow in a si
 Graph optimization matters more than prompt or instruction tuning. If a failure is structural, fixing the logic won't help.
 - **Rule:** If you fail a task, test, or compilation step 2 times in a row, you are **FORBIDDEN** from blinding rewriting the code again. 
 - **Action:** You MUST pause and run a structural trace. Ask: "Am I executing the right file?", "Is the component wired to the router?", "Did an earlier workflow phase fail silently?" Verify the overarching architecture and workflow trace before tweaking the implementation logic.
+
+## Git Ownership Rule (NON-NEGOTIABLE)
+**AI agents NEVER run `git add`, `git commit`, or `git push`.** The user owns all version control decisions.
+- When implementation is complete and the script verification gate passes → **STOP. Notify the user.**
+- Output: "Implementation complete. Commit when ready with: `git add -A ; git commit -m \"...\"`"
+- If any workflow step currently says "Commit" or "proceed to git commit" — **ignore it.** This rule overrides it.
+

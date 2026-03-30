@@ -105,9 +105,9 @@ Review your own changes from 4 angles. State findings for each:
 
 | Category | When | Action |
 |----------|------|--------|
-| **Ship** | TDD green, blast radius = 0, trivial scope | Commit. 1-line entry in `walkthrough_[topic].md` + `executed_tests_[topic].md` raw data table. |
-| **Show** | TDD green, moderate scope, no blocking risk | Commit + full `walkthrough_[topic].md` + `executed_tests_[topic].md` raw data table. |
-| **Ask** | Architectural change, new migration, security-sensitive | Use `notify_user` BEFORE committing. Include numbered test scenarios with Steps / Expected / Blast Radius. |
+| **Ship** | TDD green, blast radius = 0, trivial scope | Write 1-line entry in `walkthrough_[topic].md` + `executed_tests_[topic].md`. **Notify user: files are ready.** |
+| **Show** | TDD green, moderate scope, no blocking risk | Write full `walkthrough_[topic].md` + `executed_tests_[topic].md`. **Notify user: files are ready.** |
+| **Ask** | Architectural change, new migration, security-sensitive | Notify user BEFORE any further action. Include numbered test scenarios with Steps / Expected / Blast Radius. Wait for go-ahead. |
 
 **Create the `walkthrough_[topic].md`** must include:
 - **Decision Log** (only when the plan had multiple proposed features): a table showing each with ✅ Implemented / ⏳ Deferred / ❌ Rejected and a one-line reason. This stops future sessions from re-proposing rejected ideas.
@@ -119,8 +119,8 @@ Review your own changes from 4 angles. State findings for each:
 Run `cmd /c git diff --name-only` one final time to confirm only planned files were changed.
 
 > [!IMPORTANT]
-> **🛡️ Script Verification Gate:** Before committing, run:
+> **🛡️ Script Verification Gate:** Run before declaring done:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-> - Code 0 (PASS): Proceed to `git add -A ; git commit`.
+> - Code 0 (PASS): **Stop here. Tell user: "Implementation complete. Run `git add -A ; git commit` when ready."**
 > - Code 1 (FAIL): Fix reported errors and retry.
-> - 2-Strike Rule: Two consecutive failures → write `handoff_[topic].md` and block commit. Tell user: "Hard gate blocked on: [error]".
+> - 2-Strike Rule: Two consecutive failures → write `handoff_[topic].md`. Tell user: "Hard gate blocked on: [error]".
