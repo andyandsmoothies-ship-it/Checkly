@@ -275,3 +275,19 @@ Remove dead code → dotnet test → commit
 | Pre-release hardening | All 7 | Full cleanup before a release |
 | CI warning threshold exceeded | 3 | Focus on analyzer warnings only |
 | Tech debt sprint | 4, 5 | Dead code and TODO resolution |
+
+---
+
+## Hard Verification Gate (MANDATORY)
+
+After completing the full 7-step pipeline (or any subset), run EXACTLY:
+
+```
+cmd /c python .agents/scripts/verify_clean_compilation.py server
+```
+
+- **Exit 0 (PASS):** Build is clean. Declare cleanup complete.
+- **Exit 1 (FAIL):** Errors or warnings remain. Fix every reported diagnostic before declaring done.
+- **2-Strike Rule:** Same error fails twice → STOP. Write `handoff_desloppify.md` and escalate.
+
+> This gate cannot be bypassed. A "clean" de-sloppify session requires a provably zero-warning build.

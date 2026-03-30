@@ -328,3 +328,19 @@ public async Task CreateOrder_PersistsOrderToDatabase()
 | Parameterized test cases | `[Theory]` with `[InlineData]` or `[MemberData]` |
 | Test data setup | Builder pattern |
 | Shared expensive fixture | `IClassFixture<T>` with `IAsyncLifetime` |
+
+---
+
+## Hard Verification Gate (MANDATORY)
+
+After writing or modifying any `*Tests.cs` files, run EXACTLY:
+
+```
+cmd /c python .agents/scripts/verify_aaa_pattern.py server\Tests
+```
+
+- **Exit 0 (PASS):** All `[Fact]` and `[Theory]` methods have exactly one `// Act` comment.
+- **Exit 1 (FAIL):** Missing or duplicate `// Act` markers found. Fix every listed violation.
+- **2-Strike Rule:** Same violation fails twice → STOP. Write `handoff_tests.md` and escalate.
+
+> Pass a specific test file path instead of the directory to check only the files you just wrote.

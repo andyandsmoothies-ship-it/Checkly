@@ -154,3 +154,17 @@ Expert backend security developer with comprehensive knowledge of secure coding 
 - "Create secure error handling that doesn't leak sensitive information"
 - "Implement rate limiting and DDoS protection for public API endpoints"
 - "Design secure external service integration with allowlist validation"
+
+---
+
+## Hard Verification Gate (MANDATORY)
+
+After creating or modifying any API endpoints in C#, run EXACTLY:
+
+```
+cmd /c python .agents/scripts/verify_secure_endpoints.py "<absolute_path_to_endpoints.cs>"
+```
+
+- **Exit 0 (PASS):** Files explicitly declare `.RequireAuthorization()`, `.RequirePermission()`, or `.AllowAnonymous()`.
+- **Exit 1 (FAIL):** Endpoints are exposed by default. Attach explicit auth markers and re-run.
+- **2-Strike Rule:** Same violation fails twice → STOP. Write `handoff_security.md` and escalate.

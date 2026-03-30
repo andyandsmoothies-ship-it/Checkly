@@ -375,3 +375,17 @@ public interface ICustomerRepository { Task<Customer?> GetByIdAsync(Guid id); }
 | Mediator vs raw handlers in CA | Mediator for pipeline behaviors (validation, logging); raw handlers for simplicity |
 | When to add Domain events | When side effects (notifications, audit) should be decoupled from the main flow |
 | Evolving from VSA to CA | When handlers start needing shared domain logic that does not belong in Common/ |
+
+---
+
+## Hard Verification Gate (MANDATORY)
+
+After adding or modifying `.csproj` project references or package references, run EXACTLY:
+
+```
+cmd /c python .agents/scripts/verify_dependency_graph.py "<absolute_path_to_solution_dir>"
+```
+
+- **Exit 0 (PASS):** Domain layer is independent, references point inward.
+- **Exit 1 (FAIL):** Architecture rules violated. Undo the forbidden project/package reference.
+- **2-Strike Rule:** Same violation fails twice → STOP. Write `handoff_architecture.md` and escalate.

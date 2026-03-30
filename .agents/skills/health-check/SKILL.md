@@ -318,3 +318,19 @@ and Security is D (high-severity CVE). Overall GPA: 2.1 — Needs Work.
 | Before hiring/onboarding | Full Health Check | All 8 — sets baseline for new team member |
 | After cleanup sprint | Targeted | Re-grade dimensions that were cleaned up |
 | Executive summary needed | Full Health Check | All 8 with GPA summary |
+
+---
+
+## Hard Verification Gate (MANDATORY)
+
+After producing the health report artifact, run EXACTLY:
+
+```
+cmd /c python .agents/scripts/verify_health_math.py "<absolute_path_to_report.md>"
+```
+
+- **Exit 0 (PASS):** All 8 dimensions present, GPA math is correct. Report is valid.
+- **Exit 1 (FAIL):** Missing dimension or GPA mismatch. Fix the report and re-run.
+- **2-Strike Rule:** Same error fails twice → STOP. Write `handoff_healthcheck.md` and escalate.
+
+> The GPA must be computed using A=4.0, B=3.0, C=2.0, D=1.0, F=0.0. Partial letter grades (B+, C-) are allowed but are always rounded to the base letter for GPA purposes.
