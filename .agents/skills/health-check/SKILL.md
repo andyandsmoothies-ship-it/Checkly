@@ -326,7 +326,7 @@ and Security is D (high-severity CVE). Overall GPA: 2.1 — Needs Work.
 After producing the health report artifact, run EXACTLY:
 
 ```
-cmd /c python .agents/scripts/verify_health_math.py "<absolute_path_to_report.md>"
+cmd /c python .agents/skills/health-check/verify_health_math.py "<absolute_path_to_report.md>"
 ```
 
 - **Exit 0 (PASS):** All 8 dimensions present, GPA math is correct. Report is valid.

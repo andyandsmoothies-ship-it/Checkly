@@ -162,7 +162,7 @@ Expert backend security developer with comprehensive knowledge of secure coding 
 After creating or modifying any API endpoints in C#, run EXACTLY:
 
 ```
-cmd /c python .agents/scripts/verify_secure_endpoints.py "<absolute_path_to_endpoints.cs>"
+cmd /c python .agents/skills/backend-security-coder/verify_secure_endpoints.py "<absolute_path_to_endpoints.cs>"
 ```
 
 - **Exit 0 (PASS):** Files explicitly declare `.RequireAuthorization()`, `.RequirePermission()`, or `.AllowAnonymous()`.

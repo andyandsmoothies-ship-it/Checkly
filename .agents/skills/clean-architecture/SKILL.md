@@ -383,7 +383,7 @@ public interface ICustomerRepository { Task<Customer?> GetByIdAsync(Guid id); }
 After adding or modifying `.csproj` project references or package references, run EXACTLY:
 
 ```
-cmd /c python .agents/scripts/verify_dependency_graph.py "<absolute_path_to_solution_dir>"
+cmd /c python .agents/skills/clean-architecture/verify_dependency_graph.py "<absolute_path_to_solution_dir>"
 ```
 
 - **Exit 0 (PASS):** Domain layer is independent, references point inward.

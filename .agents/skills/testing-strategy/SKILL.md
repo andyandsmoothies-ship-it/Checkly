@@ -336,7 +336,7 @@ public async Task CreateOrder_PersistsOrderToDatabase()
 After writing or modifying any `*Tests.cs` files, run EXACTLY:
 
 ```
-cmd /c python .agents/scripts/verify_aaa_pattern.py server\Tests
+cmd /c python .agents/skills/testing-strategy/verify_aaa_pattern.py server\Tests
 ```
 
 - **Exit 0 (PASS):** All `[Fact]` and `[Theory]` methods have exactly one `// Act` comment.

@@ -283,7 +283,7 @@ Remove dead code → dotnet test → commit
 After completing the full 7-step pipeline (or any subset), run EXACTLY:
 
 ```
-cmd /c python .agents/scripts/verify_clean_compilation.py server
+cmd /c python .agents/skills/de-sloppify/verify_clean_compilation.py server
 ```
 
 - **Exit 0 (PASS):** Build is clean. Declare cleanup complete.
