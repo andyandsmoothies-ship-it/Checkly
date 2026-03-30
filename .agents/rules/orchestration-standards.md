@@ -7,31 +7,28 @@ trigger: model_decision
 # Orchestration Standards
 
 ## Mandatory Integrity Audit & Context Attribution
-Before ANY technical implementation, research, or audit, you MUST perform a mental (or explicit) audit. Every response involving code changes or architectural analysis SHOULD include a brief checklist and attribution block at the start or end of your message:
-- **Skills Checked**: [List paths to SKILL.md files viewed]
-- **Rules Compliance**: [Confirm coding patterns follow project governance and orchestration rules]
-- **Context Inventory**: [Explicitly list all `.md` rule files, MCP schemas, or documentation URLs you referenced to produce this response/artifact]
+Before any implementation or analysis, include this checklist in your response:
+- **Skills Checked**: [List paths to SKILL.md]
+- **Rules Compliance**: [Confirm project governance adherence]
+- **Context Inventory**: [List rules, docs, or MCP schemas referenced]
 
-## The Context Flushing Rule (Combating Context Decay)
-LLMs suffer from context decay; instructions given earlier in long sessions lose their weight. Do not rely on conversational memory for long-running tasks.
-- **Action**: Whenever you cross a new `/task_boundary` or shift to a new phase of work, you MUST physically re-read (`view_file`) the canonical `implementation_plan.md` and applicable workspace rules.
-- **Purpose**: This refreshes the exact "shape of the container" at the top of your context window, erasing the time-bias decay. Treat `.md` artifacts as the true "Externalized Memory".
+## Context Flushing Rule (Combating Context Decay)
+LLMs suffer from context decay over long sessions.
+- **Action**: At every `/task_boundary` or phase shift, physically re-read (`view_file`) the canonical `implementation_plan.md` and workspace rules.
+- **Purpose**: Erase time bias. Treat `.md` artifacts as true memory.
 
 ## Pre-Flight Check (CANONICAL)
-<pre-flight-check>
-Before ANY workflow response that involves analysis, design, or implementation:
-- [ ] Is this more than a 2-minute task? → Create `task_boundary`
-- [ ] Does the answer have >5 paragraphs or require design? → Create an artifact
-- [ ] **Skill Inventory**: Match the task to modular skills in `.agents/skills/`.
-- [ ] **Rules Conflict**: Confirm no existing logic in `.agents/rules/platform-rules.md` or `.agents/rules/project-gotchas.md` conflicts.
-- [ ] **Layer Check**: Identify target layer (Server / Flutter / Shared) before planning.
-</pre-flight-check>
+Before ANY workflow response involving analysis, design, or implementation:
+- [ ] > 2-minute task? → Create `task_boundary`
+- [ ] > 5 paragraphs or requires design? → Create artifact
+- [ ] **Skill Inventory**: Load modular skills from `.agents/skills/`.
+- [ ] **Rules Conflict**: Check `.agents/rules/platform-rules.md` and `project-gotchas.md`.
+- [ ] **Layer Check**: Identify target layer (Server / Flutter / Shared).
 
 ## Skill Inventory Protocol (STRICT)
-Before ANY technical implementation or research:
-1. **Discovery**: Match the task to available skills in `.agents/skills/` (e.g., `clean_coder`, `systematic-debugging`).
-2. **Invocation**: For project-specific business logic, refer to the Rules in `.agents/rules/`. For cross-project behaviors, refer to the Skills in `.agents/skills/`.
-3. **Task-Based Application**: Apply the patterns defined in the relevant Rule or Skill for the current task.
+1. **Discovery**: Match task to `.agents/skills/`.
+2. **Invocation**: Business logic = Rules (`.agents/rules/`). General patterns = Skills (`.agents/skills/`).
+3. **Application**: Apply patterns explicitly to the current task.
 
 ## Skill Auto-Router (AUTOMATIC)
 When you open or modify a file matching a pattern below, **auto-load** the associated skills without waiting for keyword discovery. This overrides manual skill search for known file types.
@@ -47,18 +44,17 @@ When you open or modify a file matching a pattern below, **auto-load** the assoc
 | `project-gotchas.md` modified | `vertical-slice-completeness` |
 
 ## Targeted Workflow Pacing (Context Protection)
-You are strictly forbidden from executing an entire multi-phase workflow in a single response cycle. You must pace your execution using targeted logical gates:
-1. **The Plan Gate:** You MUST stop generation and yield to the user after completing the Discovery & Planning phases (e.g., Phase 2). Explicitly ask for approval on your proposed architecture, files, and `task.md` before writing any code.
-2. **The Verification Gate:** You MUST stop generation and yield to the user after completing the Coding & Self-Review phases (e.g., Phase 4). Explicitly ask the user if they want to manually test the implementation or review the code before you finalize commits and write handoff artifacts.
+NEVER execute a multi-phase workflow in one response. Use gates:
+1. **Plan Gate**: After Planning (Phase 2) → STOP. Ask user to approve architecture, files, and `task.md` before coding.
+2. **Verification Gate**: After Self-Review (Phase 4) → STOP. Ask user to manually test or review code before final handoff.
 
 ## Structural Diagnosis Mandate (Anti-Hallucination)
-Graph optimization matters more than prompt or instruction tuning. If a failure is structural, fixing the logic won't help.
-- **Rule:** If you fail a task, test, or compilation step 2 times in a row, you are **FORBIDDEN** from blinding rewriting the code again. 
-- **Action:** You MUST pause and run a structural trace. Ask: "Am I executing the right file?", "Is the component wired to the router?", "Did an earlier workflow phase fail silently?" Verify the overarching architecture and workflow trace before tweaking the implementation logic.
+- **Rule:** If a task, test, or build fails 2 times, you are **FORBIDDEN** from blindly rewriting the code.
+- **Action:** Pause. Run a structural trace: "Right file?", "Wired to router?", "Did an earlier phase fail?". Fix architecture, not just logic.
 
 ## Git Ownership Rule (NON-NEGOTIABLE)
-**AI agents NEVER run `git add`, `git commit`, or `git push`.** The user owns all version control decisions.
-- When implementation is complete and the script verification gate passes → **STOP. Notify the user.**
-- Output: "Implementation complete. Commit when ready with: `git add -A ; git commit -m \"...\"`"
-- If any workflow step currently says "Commit" or "proceed to git commit" — **ignore it.** This rule overrides it.
+**AI agents NEVER run `git add`, `git commit`, or `git push`.**
+- Upon completion (Phase 5/Handoff) → **STOP. Notify user.**
+- Output: "Implementation complete. Commit when ready: `git add -A ; git commit -m '...'`"
+- Ignore any legacy "commit" instructions in workflows.
 
