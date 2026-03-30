@@ -27,7 +27,7 @@ class SectionEditor extends StatelessWidget {
 
   /// When true and depth==0, renders without the ExpansionTile header
   /// (title TextField, badge, delete button). Wizard injects this flag
-  /// to avoid visual redundancy â€” it manages section context separately.
+  /// to avoid visual redundancy — it manages section context separately.
   final bool isWizardMode;
 
   /// The current scoring mode — used to gate sub-section creation for
@@ -345,7 +345,7 @@ class SectionEditor extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Center(
                     child: Text(
-                      'â€” OR â€”',
+                      '— OR —',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,

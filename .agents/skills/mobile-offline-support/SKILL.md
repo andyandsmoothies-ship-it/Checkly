@@ -1,7 +1,5 @@
 ---
 name: mobile-offline-support
----
-name: mobile-offline-support
 description: >
   Implement offline-first mobile apps with local storage, sync strategies, and
   conflict resolution. Covers AsyncStorage, Realm, SQLite, and background sync
