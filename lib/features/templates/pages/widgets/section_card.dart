@@ -90,6 +90,34 @@ class SectionCard extends StatelessWidget {
                 ),
               ),
 
+              // Info icon — on-demand section description (only when present)
+              if (group.description != null &&
+                  group.description!.isNotEmpty) ...[
+                const SizedBox(width: 4),
+                GestureDetector(
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (dialogCtx) => AlertDialog(
+                      title: const Text('Section Description'),
+                      content: SingleChildScrollView(
+                        child: Text(group.description!),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogCtx),
+                          child: const Text('CLOSE'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                  ),
+                ),
+              ],
+
               // Weight badge (root sections only)
               if (group.weight != null && isRoot)
                 Container(
