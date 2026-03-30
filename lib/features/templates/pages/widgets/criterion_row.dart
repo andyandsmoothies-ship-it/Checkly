@@ -5,11 +5,12 @@ import '../../../../_shared/theme/app_theme.dart';
 import '../../models/template_dto.dart';
 import 'flag_badge.dart';
 
-/// Dense criterion row with label, points badge, and CCP/RISK flags.
+/// Dense criterion row with label, points badge, CCP/RISK flags,
+/// and an optional `ⓘ` info icon.
 ///
-/// **Preview-only** — descriptions and interactive inputs are intentionally
-/// omitted. This widget acts as a compressed Table-of-Contents row in the
-/// Template Detail preview page.
+/// **Preview-only** — interactive inputs are intentionally omitted.
+/// Descriptions are accessible on-demand via the `ⓘ` icon to keep
+/// the row compact by default.
 class CriterionRow extends StatelessWidget {
   final CriterionDto criterion;
 
@@ -72,6 +73,34 @@ class CriterionRow extends StatelessWidget {
           if (criterion.isRisk) ...[
             const SizedBox(width: 6),
             FlagBadge(label: 'RISK', color: theme.colorScheme.error),
+          ],
+
+          // Info icon — on-demand rubric access (only when description exists)
+          if (criterion.description != null &&
+              criterion.description!.isNotEmpty) ...[
+            const SizedBox(width: 4),
+            GestureDetector(
+              onTap: () => showDialog(
+                context: context,
+                builder: (dialogCtx) => AlertDialog(
+                  title: const Text('Criterion Description'),
+                  content: SingleChildScrollView(
+                    child: Text(criterion.description!),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogCtx),
+                      child: const Text('CLOSE'),
+                    ),
+                  ],
+                ),
+              ),
+              child: Icon(
+                Icons.info_outline,
+                size: 16,
+                color: theme.colorScheme.primary.withValues(alpha: 0.5),
+              ),
+            ),
           ],
         ],
       ),
