@@ -3,15 +3,18 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../manager/template_manager.dart';
+import 'widgets/criterion_row.dart';
 import 'widgets/overview_card.dart';
 import 'widgets/section_card.dart';
 
 final _di = GetIt.instance;
 
-/// Template detail page — premium "Apothecary" read-only view.
+/// Template detail page — premium "Apothecary" read-only preview.
 ///
-/// Shows a template overview card with scoring rules summary,
-/// then flat section cards with dense criteria rows.
+/// Top-level sections are paginated into horizontal, swipeable [TabBar]
+/// tabs to prevent infinite-scroll fatigue and OOM crashes on large
+/// templates. Each tab renders its own isolated [ListView] of collapsed
+/// sub-sections (dense Table-of-Contents mode).
 class TemplateDetailPage extends StatefulWidget {
   final String templateId;
 
@@ -63,18 +66,67 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
             );
           }
 
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-            children: [
-              // 1. Overview card
-              OverviewCard(tree: tree),
-              const SizedBox(height: 20),
+          // Edge case: template has no sections defined yet
+          if (tree.groups.isEmpty) {
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              children: [
+                OverviewCard(tree: tree),
+                const SizedBox(height: 24),
+                Center(
+                  child: Text(
+                    'No sections defined.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            );
+          }
 
-              // 2. Section cards
-              ...tree.groups.map(
-                (group) => SectionCard(group: group, depth: 0),
-              ),
-            ],
+          // Main layout: pinned header → sticky TabBar → isolated TabBarViews
+          return DefaultTabController(
+            length: tree.groups.length,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Pinned overview card — always visible above the tabs
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: OverviewCard(tree: tree),
+                ),
+                const SizedBox(height: 12),
+
+                // Scrollable horizontal tab bar: one tab per top-level section
+                TabBar(
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  tabs: tree.groups
+                      .map((g) => Tab(text: g.title))
+                      .toList(),
+                ),
+
+                // Each tab gets its own isolated, independently-scrollable ListView
+                Expanded(
+                  child: TabBarView(
+                    children: tree.groups.map((group) {
+                      return ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                        children: [
+                          // Rare: direct criteria attached to the top-level group
+                          ...group.criteria.map(
+                            (c) => CriterionRow(criterion: c),
+                          ),
+                          // Sub-sections rendered as depth-1 (non-root) SectionCards
+                          ...group.children.map(
+                            (sub) => SectionCard(group: sub, depth: 1),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),

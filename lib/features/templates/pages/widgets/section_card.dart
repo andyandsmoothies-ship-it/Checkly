@@ -7,7 +7,23 @@ import '../../../../_shared/theme/app_theme.dart';
 import '../../models/template_dto.dart';
 import 'criterion_row.dart';
 
+// ---------------------------------------------------------------------------
+// Helper: recursively count all criteria under a group tree
+// ---------------------------------------------------------------------------
+int _totalCriteriaCount(GroupDto group) {
+  return group.criteria.length +
+      group.children.fold(
+        0,
+        (sum, child) => sum + _totalCriteriaCount(child),
+      );
+}
+
 /// Expandable section card that recursively renders sub-sections.
+///
+/// In the new Tab-Pagination layout, [SectionCard] is always called
+/// with [depth] ≥ 1 (top-level sections are rendered as Tabs, not Cards).
+/// Defaults to *collapsed* so the preview acts as a compressed Table of
+/// Contents — auditors expand only what they care about.
 class SectionCard extends StatelessWidget {
   final GroupDto group;
   final int depth;
@@ -18,6 +34,26 @@ class SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isRoot = depth == 0;
+
+    // Build subtitle: "X criteria • Y pts max"
+    final criteriaCount = _totalCriteriaCount(group);
+    final subtitleParts = <String>[];
+    if (criteriaCount > 0) subtitleParts.add('$criteriaCount criteria');
+
+    double? maxPts;
+    if (group.metadata != null) {
+      try {
+        final meta = json.decode(group.metadata!) as Map<String, dynamic>;
+        maxPts = (meta['subsection_max_points'] as num?)?.toDouble();
+      } catch (_) {}
+    }
+    maxPts ??= group.maxDeductionPoints;
+    if (maxPts != null) {
+      subtitleParts.add('${maxPts.toStringAsFixed(0)} pts max');
+    }
+
+    final subtitleText =
+        subtitleParts.isNotEmpty ? subtitleParts.join(' • ') : null;
 
     return Container(
       margin: EdgeInsets.only(left: isRoot ? 0 : 12, bottom: isRoot ? 12 : 8),
@@ -34,7 +70,8 @@ class SectionCard extends StatelessWidget {
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          initiallyExpanded: true,
+          // Default collapsed — preview is a compressed Table of Contents
+          initiallyExpanded: false,
           tilePadding: const EdgeInsets.symmetric(horizontal: 16),
           childrenPadding: const EdgeInsets.only(bottom: 8),
           shape: const RoundedRectangleBorder(),
@@ -52,37 +89,6 @@ class SectionCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // Sub-section metadata (max points / minus per fault)
-              if (!isRoot) ...[
-                if (group.metadata != null) ...[
-                  Builder(
-                    builder: (context) {
-                      try {
-                        final meta =
-                            json.decode(group.metadata!)
-                                as Map<String, dynamic>;
-                        final maxPts = meta['subsection_max_points'];
-                        if (maxPts != null) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: Text(
-                              '${maxPts}pt max',
-                              style: AppFonts.serifStyle(
-                                fontSize: 11,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        debugPrint('Metadata display parse: $e');
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ],
-              ],
 
               // Weight badge (root sections only)
               if (group.weight != null && isRoot)
@@ -106,6 +112,16 @@ class SectionCard extends StatelessWidget {
                 ),
             ],
           ),
+          // Dense summary: visible at a glance without expanding
+          subtitle: subtitleText != null
+              ? Text(
+                  subtitleText,
+                  style: AppFonts.serifStyle(
+                    fontSize: 11,
+                    color: AppTheme.sageGray,
+                  ),
+                )
+              : null,
           children: [
             // Criteria rows
             ...group.criteria.map((c) => CriterionRow(criterion: c)),
