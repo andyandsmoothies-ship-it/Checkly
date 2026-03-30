@@ -10,9 +10,9 @@ description: The Core Builder Implementation Workflow.
 
 ## Step 0: Init
 - **Workflow Calibration**: If you are just starting this session, you MUST use `view_file` to read the entirety of this `implement.md` file right now to load the strict `@@SCAN` checkpoints into your active context.
-- Run Pre-Flight Check from `governance-rules.md`. This makes sure you don't write code that breaks project rules.
-- **INTERNAL LOGGING**: You must rigorously process the output of every single `@@SCAN` block defined below in your internal chain of thought. Do NOT use it as a free-form scratchpad.
-- **MANDATORY ARTIFACT**: You MUST create a `task.md` artifact FIRST before writing any code using this exact schema — do not invent a different format:
+- Run Pre-Flight Check from `governance-rules.md`.
+- **INTERNAL LOGGING**: Process `@@SCAN` block output internally. Do not use as scratchpad.
+- **MANDATORY ARTIFACT**: You MUST create a `task.md` artifact FIRST before writing any code using this exact schema:
   ```
   # Task: [Feature / Bug / Topic Name]
   Workflow: /implement | Track: [A / B1 / B2 / C]
@@ -30,8 +30,8 @@ description: The Core Builder Implementation Workflow.
 ## Phase 1: Deep Discovery
 - Read config files (`.csproj`, `pubspec.yaml`, etc.) to understand the current project state before touching anything.
 - **MANDATORY SKILLS**: You MUST ALWAYS load the `tdd` skill before coding. If working in .NET, you MUST also load `testing-strategy`.
-- **DYNAMIC SKILLS**: Derive 2-3 keywords from the request → scan `.agents/skills/` → load the top 1-2 matching `SKILL.md` files. Loading the right skill early prevents mistakes later.
-- Match the task to rules in `.agents/rules/`. You need to know which rules apply before you plan.
+- **DYNAMIC SKILLS**: Derive 2-3 keywords from the request → scan `.agents/skills/` → load the top 1-2 matching `SKILL.md` files.
+- Match task to rules in `.agents/rules/`.
 
 > **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Which skills & rules did you load? (2) What are the core files and dependencies?
 
@@ -39,17 +39,24 @@ description: The Core Builder Implementation Workflow.
 - Check if an `implementation_plan_[topic].md` (from `/analysis`) or `specs_[topic].md` (from `/atdd`) is in context.
   - **If yes**: read them and run the Plan Quality Checklist below. The specs file gives you the exact tests you must make GREEN — read it before coding.
   - **If no**: load `technical-specification` skill, generate a lightweight `implementation_plan.md`, and get approval before coding.
-- **Plan Quality Checklist** — each item must be answered, not just checked:
-  - [ ] Clear goal statement (1 paragraph)? Needed so you know what "done" looks like.
-  - [ ] Files listed with `[NEW]`/`[MODIFY]`/`[DELETE]`? Needed so you don't edit unplanned files.
-  - [ ] DB/Schema/migration addressed (or N/A)? Missed migrations cause silent data bugs.
-  - [ ] Idempotency & transaction boundaries stated? Prevents race conditions and double-saves.
-  - [ ] Blast radius identified? Tells you what else might break.
-  - [ ] Verification steps are concrete (exact commands or test names)? Vague steps can't be verified.
-- **Codebase Spot-Check**: Use `grep_search`/`view_file` to confirm at least ONE plan claim against real code. Plans go stale — always verify. If a claim contradicts the code → **STOP** and flag to the user before proceeding.
-- **YAGNI Gate**: Ask yourself — is this solving a real problem today, or a future one? If the change adds complexity without a clear, present benefit → show the user a Before/After trade-off table and let them decide.
+- **Plan Quality Checklist** — answer each item:
+  - [ ] Clear goal statement (1 paragraph)?
+  - [ ] Files listed with `[NEW]`/`[MODIFY]`/`[DELETE]`?
+  - [ ] DB/Schema/migration addressed (or N/A)?
+  - [ ] Idempotency & transaction boundaries stated?
+  - [ ] Blast radius identified?
+  - [ ] Verification steps are concrete (exact commands or test names)?
+- **Codebase Spot-Check**: Use `grep_search`/`view_file` to confirm ONE plan claim against real code. If contradicted → **STOP** and flag to user.
+- **YAGNI Gate**: Is this solving a real problem today? If it adds complexity without clear benefit → show Before/After trade-off table.
 
 > **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Does the plan pass all checklist items? (2) What was the spot-check result? (3) Does it pass the YAGNI gate?
+
+## Phase 2.5: The QA TDD Handoff Gate (MANDATORY YIELD)
+> [!CAUTION]
+> **Anti-Bias Protocol:** The Builder Agent (@Forge) is strictly forbidden from writing both the tests and the implementation. To prevent test-hacking, the unit test boundaries must be set by QA.
+- **Action:** BEFORE entering Phase 3, you MUST stop generation and yield to the user.
+- **Message:** "Plan is ready. Please take this plan to the QA Agent (@Sentinel) and ask them to write the failing TDD / Unit Tests based on these contracts. Return here and type 'Tests are red' when complete."
+- **DO NOT WRITE ANY PRODUCTION CODE UNTIL THE USER CONFIRMS THE TESTS ARE WRITTEN.**
 
 ## Phase 3: Coding
 > **@@SCAN — Pre-Code (MANDATORY)** — state all three before writing the first line:
@@ -60,14 +67,13 @@ description: The Core Builder Implementation Workflow.
 > ```
 > Skipping this block is a workflow violation.
 
-- **The Cheap Verifier Gate**: Before declaring any code complete and moving to ATDD or UI testing, you MUST run a fast semantic check. For Dart: `cmd /c flutter analyze lib/path/to/feature`. For C#: `cmd /c dotnet build server/Checkly.Api.csproj --no-restore`. If this fails, fix it locally before burning context on complex driver tests.
-- **The Red/Green Context Split (MANDATORY)**: If an ATDD test exists, or if a test fails during your work, your goal is to turn it GREEN. **You are STRICTLY FORBIDDEN from modifying the test file to make it pass.** This prevents the "Marking Your Own Homework" paradox. If a test fails, your implementation is wrong. The test is an immutable constraint during the `/implement` phase.
-- **MANDATORY STATE TESTING**: You MUST write a failing test for EVERY state defined in the Implementation Plan's State Matrix (Loading, Empty, Error, Success) and EVERY Business Logic Rule before writing the implementation code.
-- Follow the TDD inner loop per component: write a failing test → write code to pass it → refactor. Once implementation begins, the test is immutable.
-- After each component turns GREEN: immediately check it for architecture compliance, null handling, edge cases, and import legality. Fix violations now — not in a post-review phase.
-- If the task shifts (e.g., API → DB → UI), re-scan `.agents/skills/` for new matching skills. Drop irrelevant ones to save context.
+- **The Cheap Verifier Gate**: Before declaring code complete, run a fast semantic check. Dart: `cmd /c flutter analyze lib/path/to/feature`. C#: `cmd /c dotnet build server/Checkly.Api.csproj --no-restore`. Fix locally.
+- **The Red/Green Context Split (MANDATORY)**: @Sentinel provided failing tests. Turn them GREEN. **DO NOT MODIFY test files.**
+- Follow TDD inner loop: Run QA test → write code to pass it → refactor.
+- Post-Green Check: Check architecture compliance, null handling, edge cases, import legality. Fix immediately.
+- If task shifts domains, re-scan `.agents/skills/` and drop irrelevant ones.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you test every state in the State Matrix BEFORE coding? (2) Did you follow TDD for each component? (3) Did you run the inline quality gate after each component?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you follow Red/Green split natively? (2) Did you run inline quality gate per component?
 
 ## Phase 4: Self-Review
 Review your own changes from 4 angles. State findings for each:
@@ -83,8 +89,8 @@ Review your own changes from 4 angles. State findings for each:
    - If ANY are missing → write them now before moving to Phase 5. (See Gotcha #12)
    - 🛡️ **Track A Exemption:** If the task was purely cosmetic (e.g., CSS tweaks, padding, copy edits) and contained **zero logical branches or data mutations**, you are explicitly permitted to skip the State Matrix tests. You must state `[SCAN Exemption: Cosmetic Only]` in your review.
 
-- Run `git diff --name-only`. If you edited files not in the plan → fix it. Scope creep breaks other features silently.
-- Re-read the `## Verification Plan` in `implementation_plan_[topic].md`. Run each named test. Confirm GREEN. If a test from the plan is missing from the diff → it was skipped. Write it now.
+- Run `git diff --name-only`. Revert unplanned edits.
+- Run each test from the `## Verification Plan`. Confirm GREEN.
 
 > **@@SCAN** PAUSE and INTERNALLY evaluate: (1) All 4 review angles covered? (2) Do structural tests exist for Success, Error, and Empty states for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
 
@@ -101,7 +107,7 @@ Review your own changes from 4 angles. State findings for each:
 
 **Create the `walkthrough_[topic].md`** must include:
 - **Decision Log** (only when the plan had multiple proposed features): a table showing each with ✅ Implemented / ⏳ Deferred / ❌ Rejected and a one-line reason. This stops future sessions from re-proposing rejected ideas.
-- **Gotcha Removal/Edit Proposal (MANDATORY)**: At the very bottom, add a section evaluating `.agents/rules/project-gotchas.md`. Did your refactor just eliminate the need for an existing workaround? Did you modernize an architecture that makes a Gotcha obsolete? 
+- **Gotcha Removal/Edit Proposal (MANDATORY)**: At the very bottom, add a section evaluating the `GEMINI.override.md` files located inside the feature folders you just modified. Did your refactor just eliminate the need for an existing workaround? Did you modernize an architecture that makes a Gotcha obsolete? 
   - If yes, explicitly propose which Gotcha (e.g., #4) should be deleted or edited, and provide the exact new Markdown table row. Wait for human approval before editing the rules file.
   - If no, simply state: "No existing gotchas made obsolete."
 - **Verification Handoff** per scenario: Steps / Expected / Blast Radius. The QA agent uses this to run `/verify`.

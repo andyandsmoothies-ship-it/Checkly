@@ -13,10 +13,10 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > This is the **Discovery & Architecture** workflow — used to explore new ideas or libraries before writing code.
 > Handoff usually goes to `/analysis` or directly to `/implement`.
 
-## Pre-Flight Setup (ANTI-POISONING MANDATE)
+## Pre-Flight Setup
 > [!IMPORTANT]
-> You must synthesize your internal reasoning rigorously BEFORE starting your research deliverables. Do NOT pollute structured artifacts with internal monologue.
-> **Raw Data Requirement**: You must internally track your reasoning via: `Hypothesis | Source/Doc Checked | Rejected/Approved | Architectural Implication`. This ensures the user has raw analysis data mirroring your internal logic loop.
+> Synthesize internal reasoning BEFORE starting deliverables. Do NOT pollute artifacts with internal monologue.
+> **Raw Data Requirement**: Track reasoning via table: `Hypothesis | Source Checked | Rejected/Approved | Architectural Implication`.
 
 ## Phase 1: Skill & Persona Alignment
 - **Instruction**: Assume the role of a Senior Architect.
@@ -26,21 +26,20 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > **@@SCAN** Before context mapping, PAUSE and INTERNALLY evaluate: (1) Which skills did you load? (2) What modern patterns or libraries did you discover?
 
 ## Phase 2: E2E Context Mapping (MANDATORY)
-- **Instruction**: Before evaluating ANY solution, you MUST map the **full context** that this feature or decision touches. Never evaluate an option in isolation — understand the complete picture first.
+- **Instruction**: Map full context (upstream triggers + downstream effects) before evaluating options.
 - **Action**:
-  1. **Map the full scope**: Identify everything this decision touches from start to finish — not just the immediate change, but the upstream triggers and downstream effects.
-  2. **Document the current state**: How does the system handle this today? Where are the friction points, errors, or workarounds?
-  3. **Identify handoff points**: Where must a user (or a system) leave one context and go to another to complete their intent? Each handoff is a potential friction point or failure mode.
-- **Output**: A structured summary showing the full context. Adapt the format to the topic (e.g., lifecycle table, integration diagram, data flow, dependency map, cost comparison).
-- **Why**: A solution that works for one part of the picture may break another part entirely. The context map ensures every proposed option is stress-tested against the full scope before recommendation.
+  1. **Map full scope**: Identify everything this decision touches.
+  2. **Document current state**: How is it handled today? Identify friction points.
+  3. **Identify handoff points**: Where must user/system leave one context for another?
+- **Output**: Structured summary of full E2E context map.
 
 > **@@SCAN** Before feasibility check, PAUSE and INTERNALLY evaluate: (1) Did you map the full E2E scope (upstream triggers + downstream effects)? (2) What are the handoff points / friction points you identified?
 
-## Phase 3: Blind-Spot & Conflict Detection (SCAN Protocol)
-- **Instruction**: Operate as an adversarial "Explorer". Your goal is to find why the proposed pattern will fail or what assumptions are dangerous.
+## Phase 3: Blind-Spot & Conflict Detection
+- **Instruction**: Act as adversarial "Explorer". Find failure points.
 - **Action**: 
-  1. Identify exactly 3 **BLIND SPOTS** — things you or the user do *not* currently know about how this tech will behave in this specific stack.
-  2. Identify at least 1 **`!!! CONFLICT`** — an existing architectural rule in `.agents/rules/` or project gotcha that explicitly clashes with this new idea. If none exist, prove why.
+  1. Identify exactly 3 **BLIND SPOTS**.
+  2. Identify ≥1 **`!!! CONFLICT`** with architectural rules in `.agents/rules/` or project gotchas.
 
 > **@@SCAN** Before feasibility check, PAUSE and INTERNALLY evaluate: (1) What are the 3 Blind Spots? (2) What is the `!!! CONFLICT` or risk to existing rules?
 
@@ -52,19 +51,18 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > **@@SCAN** Before writing deliverable, PAUSE and INTERNALLY evaluate: (1) Does the idea violate any workspace rules? (2) Is the recommendation Viable, Needs Redesign, or Reject?
 
 ## Phase 5: Deliverable (The Handoff)
-- **Requirement**: Always output a structured artifact that **persists across sessions**.
+- **Requirement**: Output structured artifact that persists across sessions.
 - **Action**:
-  1. Create a `concept_brief_[feature].md` or `research_[topic].md` artifact in the brain artifacts folder using `write_to_file` with `IsArtifact: true`.
-  2. **ALSO** write the same deliverable to `.agents/tmp/research/research_[topic].md` (for cross-session handoff). Create the directory if it doesn't exist.
-     * **CRITICAL CLI RULE**: Do NOT use `write_to_file` with `IsArtifact: false` to create this persistent file. Doing so triggers a blocking IDE diff preview. You MUST use terminal commands (`Copy-Item` on Windows or `cp` on Linux) to copy the finalized artifact from the brain directory over to `.agents/tmp/research/`.
-  3. The artifact MUST include the E2E Workflow Map from Phase 2.
-  4. The artifact MUST end with a **Handoff Block** (see template below).
-- **Effort Sizing & Triage (CRITICAL)**: You must explicitly classify the size of the original idea before handoff:
-  - **Sprint / Theme**: Spans multiple unrelated domains (e.g., UX redesign + database migration). MUST recommend using the `shaping` skill to slice it into Epics before analysis.
-  - **Epic (Track C)**: A cohesive but massive system change. Recommend `/analyze-epic`.
-  - **Feature (Track A/B)**: A scoped UI tweak, logic branch, or bugfix. Recommend `/analyze-feature`.
-- **Handoff**: If the idea is viable, mandate the specific workflow or skill the user should run next based on the Effort Sizing above. Do NOT generate an `implementation_plan.md` from this workflow — research lacks the system impact analysis required for a quality plan.
-- **Final Message**: You MUST print the absolute file path to the `.agents/tmp/research/` deliverable so the user can paste it into the next session.
+  1. Create `research_[topic].md` artifact using `write_to_file` (IsArtifact: true).
+  2. Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal (`Copy-Item` / `cp`). Do NOT use `write_to_file` with IsArtifact: false for this path.
+  3. Include E2E Workflow Map from Phase 2.
+  4. End with **Handoff Block**.
+- **Effort Sizing**:
+  - **Sprint/Theme**: Multiple domains -> recommend `shaping` skill.
+  - **Epic (Track C)**: Massive change -> recommend `/analyze-epic`.
+  - **Feature (Track A/B)**: Scoped change -> recommend `/analyze-feature`.
+- **Handoff**: Recommend next workflow. Do NOT generate `implementation_plan.md`.
+- **Final Message**: Print absolute file path to `.agents/tmp/research/` deliverable.
 
 ### Handoff Block Template (MANDATORY at end of deliverable)
 ```markdown
@@ -80,14 +78,12 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 ---
 
-## Final Phase: Self-Correction Gate (CRITICAL)
+## Final Phase: Self-Correction Gate
 <strict-instruction>
-Before concluding this workflow and replying to the user, you MUST self-audit your output against the global rules of this specific project. You are required to literally type out the following checklist in your final message:
-
-1. **Thinking Process Check**: Did I isolate my internal reasoning properly (avoiding polluting the final deliverable)? (Yes/No)
-2. **Template Check**: Did I include the mandatory header sections (e.g., `# Requirement Summary`) required by this project? (Yes/No)
-3. **Tracking Update**: Did I update the primary task tracking document with an inventory of my generated artifacts? (Yes/No)
-4. **Integrity Audit**: Did I include the mandatory attribution/compliance block in my final response? (Yes/No)
-
-You are strictly FORBIDDEN from handing off this task to the user until you have achieved 'Yes' on all 4 checks. If any answer is 'No', use your file tools to correct the mistake immediately.
+Self-audit against global rules. Explicitly type out and answer:
+1. **Thinking Process Check**: Internal reasoning isolated? (Yes/No)
+2. **Template Check**: Mandatory header sections included? (Yes/No)
+3. **Tracking Update**: Task tracking updated? (Yes/No)
+4. **Integrity Audit**: Handoff block included? (Yes/No)
+Do not proceed until 'Yes' on all 4. 
 </strict-instruction>

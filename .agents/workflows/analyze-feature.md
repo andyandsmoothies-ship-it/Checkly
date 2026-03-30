@@ -11,17 +11,15 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 ## Step 0: Context Initialization (CRITICAL FAIL-SAFE)
 > [!IMPORTANT]
-> Before you draft any plans, you MUST verify you fully understand the global governance rules.
-> **Rule**: If you do not currently have the exact contents of `.agents/rules/governance-rules.md` in your active memory, you MUST use the `view_file` tool to read it right now. Do not proceed to Phase 1 until confirming adherence.
+> If you do not have `.agents/rules/governance-rules.md` in active memory, `view_file` it now. Do not proceed until confirming adherence.
 
 > [!NOTE]
 > This is the **Tactical Dispatcher** workflow. It is designed for Small/Medium tasks (Track A/B) or individual slices handed down from an Epic. It bypasses architectural heavy-lifting to strictly focus on generating an immediate, safe Implementation Plan.
 
-## Pre-Flight Setup (ANTI-POISONING MANDATE)
+## Pre-Flight Setup
 > [!IMPORTANT]
-> You must establish a clear internal reasoning trace before starting your analysis. Keep your thinking rigorous but internal.
-> 
-> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now before proceeding to Phase 1, using this exact schema:
+> Define a reasoning trace. Do NOT pollute artifacts with internal monologue.
+> **MANDATORY ARTIFACT**: Create `task.md` right now before Phase 1 using this schema:
 > ```
 > # Task: [Feature / Bug / Topic Name]
 > Workflow: /analyze-feature | Track: [A / B1 / B2 / C]
@@ -38,36 +36,36 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 > ```
 
 ## Phase 1: Skill Loading (Precision Focus)
-- **Instruction**: Do not act as a generic AI. You MUST assume the persona of the exact specialist needed for this scoped task.
-- **Action**: Search `.agents/skills/` to find the 1-2 skills that perfectly match this feature (e.g., `ui-ux-designer`, `react-patterns`, `postgres-best-practices`).
-- **Load**: Use `view_file` to read the specific `SKILL.md` files. You will let the loaded skill dictate your approach for the rest of this workflow.
+- **Instruction**: Assume the persona of the exact specialist needed.
+- **Action**: Search `.agents/skills/` to find 1-2 matching skills.
+- **Load**: `view_file` the `SKILL.md` files and let them dictate your approach.
 
-> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) Which strict, tactical skill(s) did you load? (2) Are you following that skill's specific methodology?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Which strict, tactical skill(s) did you load? (2) Are you following its methodology?
 
 ## Phase 1.5: Requirement Deconstruction (First Principles)
-- **Instruction**: Strip the requirement down to its absolute core. What is the fundamental business value being created or protected?
-- **Action**: Explicitly define the *Strict Boundaries* of the feature. State exactly what this feature MUST do, and explicitly state what is OUT OF SCOPE (YAGNI).
-- **Action (Boolean Integrity)**: If the feature involves conditional logic or state rules, explicitly define if it is an **ALLOWLIST** (only X is true, everything else is false) or a **BLOCKLIST** (only X is false, everything else is true). Do not leave boundary conditions mathematically ambiguous.
-- **Action**: Formulate the core underlying logic or state transition independently of the code implementation.
+- **Instruction**: Strip the requirement down. What is the fundamental business value?
+- **Action**: Explicitly define *Strict Boundaries*. State what it MUST do and what is OUT OF SCOPE (YAGNI).
+- **Boolean Integrity**: Define if conditional logic is ALLOWLIST or BLOCKLIST.
+- **Action**: Formulate core logic independently of code implementation.
 
-> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) What is the core business value? (2) What is explicitly OUT OF SCOPE for this tactical feature? (3) What is the fundamental state transition required?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Core business value? (2) OUT OF SCOPE? (3) Fundamental state transition?
 
 ## Phase 2: Tactical Blast Radius Review
-- **Instruction**: Even tiny features break things. You must identify exactly what you might step on.
-- **Action**: Check `.agents/rules/project-gotchas.md`. Does this feature conflict with any known project gotcha (e.g., FAB padding, navigation routing order, EF Core snake_case)?
-- **Action**: If modifying an existing function/component, verify its callers before proceeding to ensure you aren't breaking an upstream dependency.
+- **Instruction**: Identify exactly what you might step on.
+- **Action**: Consult your actively loaded `GEMINI.md` Context Cascade for constraints.
+- **Action**: Verify callers of existing modified functions to prevent upstream breakage.
 
-> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) Which specific rule from `project-gotchas.md` applies here, if any? (2) Did you check the current callers of the code you are modifying?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Applicable gotcha rule? (2) Checked callers?
 
 ## Phase 2.5: Edge Case & State Matrix
-- **Instruction**: Enterprise-grade code does not fail silently. You must define the resilience boundaries before writing any implementation code.
-- **Action**: Generate a strict **State Matrix** identifying how the feature behaves in 4 critical extremes:
-  - **Loading State:** What happens during network latency or async initialization?
-  - **Empty State:** What renders or returns if the targeted record/list does not exist?
-  - **Error State:** How does the UI/Handler respond to 404s, 500s, or validation failures? (Are we using showErrorToast / Domain Errors?)
-  - **Success State:** What is the exact happy-path mutation?
+- **Instruction**: Define resilience boundaries before coding.
+- **Action**: Define 4 critical extremes:
+  - **Loading State:** Network latency / async init.
+  - **Empty State:** Target record missing.
+  - **Error State:** 404s, 500s, validation failures.
+  - **Success State:** Exact happy-path mutation.
 
-> **@@SCAN** Before proceeding, PAUSE and INTERNALLY evaluate: (1) Have you fully defined the Loading, Empty, Error, and Success states for this scoped feature? (2) Are there any unhandled silent failures?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Defined all 4 states? (2) Any unhandled silent failures?
 
 ## Phase 3: Deliverable (Enterprise-Grade Tactical Plan)
 - **Requirement**: You MUST generate an `implementation_plan_[topic].md` artifact. This plan must be deeply analytical but narrowly scoped to the tactical objective.
@@ -103,15 +101,9 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 ---
 
-## Final Phase: Artifact Handoff (CRITICAL)
-<strict-instruction>
-Before concluding this workflow and replying to the user, you MUST ensure you have produced the physical artifacts required for the next agent in the chain.
-
-- **Mandatory Output**: You must explicitly output the literal file path of the generated implementation plan.
-- **Physical Verification**: Run `list_dir` on the brain/artifact directory and confirm the `implementation_plan_[topic].md` file is visible on disk before handing off.
-
-You are strictly FORBIDDEN from subjectively grading your own work. The human or the auditor agent will perform the verification.
-</strict-instruction>
+## Final Phase: Artifact Handoff
+- **Mandatory Output**: Explicitly output literal file path of implementation plan.
+- **Physical Verification**: Run `list_dir` on brain/artifact directory and confirm `implementation_plan_[topic].md` is visible before handoff.
 
 > [!CAUTION]
 > **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before this phase is complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and key decisions made so far. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*

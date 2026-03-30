@@ -10,16 +10,16 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 
 > [!NOTE]
 > This is a **Pre-PR Quality Gate** — run it before submitting code for review.
-> It dynamically reads the project's `project-gotchas.md` and enforces automatable rules.
-> This workflow is **project-agnostic**: it works for any project that follows the `.agents/rules/project-gotchas.md` convention.
+> It dynamically reads the project's actively loaded `GEMINI.md` Context Cascade and enforces automatable rules.
+> This workflow is **project-agnostic**: it works for any project that follows the `GEMINI.md` cascade convention.
 
 ## Phase 1: Scope Detection
 - **Action**: Run `git diff --name-only` (or equivalent) to identify all files modified in the current working set.
-- **Action**: Read `.agents/rules/project-gotchas.md` to load the project's known gotchas.
+- **Action**: Consult your actively loaded `GEMINI.md` Context Cascade to load the project's known gotchas.
 - **Output**: A list of modified files and a parsed gotcha inventory.
 
 ## Phase 2: Gotcha Classification
-- **Action**: For each gotcha in `project-gotchas.md`, classify it into one of:
+- **Action**: For each gotcha in your loaded `GEMINI.md` context, classify it into one of:
 
 | Classification | Meaning | Example |
 |----------------|---------|---------|

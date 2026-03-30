@@ -13,9 +13,9 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > This is the **Acceptance Test-Driven Development (ATDD)** workflow — used to define acceptance tests for complex/high-risk features before coding begins.
 > It sits between `/analysis` and `/implement`. Do NOT confuse with TDD (unit tests during coding) — ATDD defines WHAT the feature must do at the acceptance level; TDD proves HOW the internal code works.
 
-## Pre-Flight Setup (ANTI-POISONING MANDATE)
+## Pre-Flight Setup
 > [!IMPORTANT]
-> **MANDATORY ARTIFACT**: You MUST explicitly create a `task.md` document right now using this exact schema. Update progress `[ ]` → `[/]` → `[x]` continuously. Do NOT proceed to Phase 1 until this file is created.
+> **MANDATORY ARTIFACT**: Create `task.md` right now using this schema. Update `[ ]` → `[/]` → `[x]` continuously. Do NOT proceed until created:
 > ```
 > # Task: [Feature / Acceptance Test Topic]
 > Workflow: /atdd | Track: [B2 / C]
@@ -29,10 +29,8 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > ```
 
 > [!IMPORTANT]
-> You MUST immediately create a `thinking_log_[topic].md` artifact using `write_to_file` BEFORE writing scenarios. All internal reasoning, hypothesis generation, and rejected ideas must go there. Do NOT pollute structured artifacts with internal monologue.
-> **Raw Data Requirement**: To fulfill the user's need for raw analysis data, this log MUST contain a structured Markdown table titled `# Test Case Derivation Data`. 
-> Columns must be: `Scenario Hypothesis | Rejected/Approved | Reason (Cite Rule/Spec) | Final Gherkin Title`. 
-> ALL internal reasoning and hypothesis generation for test cases must be recorded in this tabular format so the user can easily extract the raw logical data.
+> MUST create `thinking_log_[topic].md` via `write_to_file` BEFORE writing scenarios. All internal reasoning goes here.
+> **Raw Data Requirement**: Include Table: `# Test Case Derivation Data` (Columns: `Scenario Hypothesis | Rejected/Approved | Reason (Cite Rule/Spec) | Final Gherkin Title`). All reasoning must be tabulated.
 
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
@@ -50,21 +48,21 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 
 ### 2a. Scenario Authoring (Write scenarios BEFORE code)
 
-- **Requirement**: Translate business requirements into formal Gherkin scenarios (Given/When/Then).
-- **Rule (Anti-Hallucination)**: Every scenario MUST include a comment citing the exact line or rule from `.agents/rules/` or the user's prompt that justifies its existence. If you cannot cite a business source, you are hallucinating it — delete it.
-- **Rule (Negative Coverage)**: For each happy-path scenario, write at least one negative or boundary case (e.g., wrong role → 403, missing field → 400, duplicate entry → 409).
-- **Rule (Spec-Readable Names)**: Scenario names must read like specifications a non-engineer can understand. Bad: `Test1`, `CreateStore_Works`. Good: `Auditor_Cannot_Delete_Template`, `Submission_With_Empty_Sections_Returns_ValidationError`.
-- **Checkpoint & Assumptions (Document & Proceed)**: Do NOT pause to ask the user routine questions about test optimization, minor technical choices, or non-conflicting edge cases (e.g., "Should I test X input type as well?"). 
-  - **Rule**: Default to the most comprehensive and safest testing strategy based on `.agents/rules/` and industry best practices.
-  - **Action**: Document any assumptions you made in an **"Assumptions & Design Choices"** block within your output or artifact.
-  - **Gate**: Proceed immediately to **Phase 2b** (Writing code). ONLY use `notify_user` to halt execution if you discover a massive, unresolvable contradiction in the business requirement that makes the feature impossible to test or logic completely ambiguous.
+- **Requirement**: Translate requirements into Gherkin scenarios (Given/When/Then).
+- **Rule (Anti-Hallucination)**: Every scenario MUST cite exact line/rule from `.agents/rules/` or prompt. If no source, delete it.
+- **Rule (Negative Coverage)**: For each happy-path, write ≥1 negative/boundary case (e.g. 403, 400).
+- **Rule (Spec-Readable Names)**: e.g. `Auditor_Cannot_Delete_Template`. No `Test1`.
+- **Checkpoint & Assumptions**: Do NOT ask user about routine optimizations.
+  - Default to safest strategy based on rules.
+  - Document assumptions in "Assumptions & Design Choices" block.
+  - Proceed immediately to Phase 2b. Use `notify_user` ONLY for unresolvable business contradictions.
 
 ### 2b. Test Implementation (One scenario at a time)
 > [!IMPORTANT]
 > **@@SCAN — Pre-Test Governance Anchor (MANDATORY)**
 > Before writing the first test, explicitly state all three:
 > 1. **Active Platform Rules**: Which testing framework and conventions apply (xUnit, Testcontainers, AppDriver pattern etc.).
-> 2. **Active Gotchas**: Any entries from `project-gotchas.md` relevant to the entities or endpoints under test. Write `NONE` if none apply.
+> 2. **Active Gotchas**: Any entries from your actively loaded `GEMINI.md` Context Cascade relevant to the entities or endpoints under test. Write `NONE` if none apply.
 > 3. **Active Skills**: Which skills from Phase 1 are still in scope. Drop irrelevant ones now.
 >
 > **Required output before first test method:**
@@ -77,14 +75,14 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 
 
 
-- **Requirement**: For each approved scenario, write the corresponding test code. Iterate vertically — one scenario → one test → verify RED → next.
-- **Rule (No-Code Mandate)**: Sentinel CANNOT write or modify production code. Sentinel writes test code only.
-- **Rule (Single Concern)**: Each test method tests exactly ONE acceptance criterion. Extract setup into helper methods that fail with clear messages. See `atdd-quality-gates` skill Gate 2.
-- **Rule (Max Chain ≤ 5)**: A test must not contain more than 5 sequential HTTP calls or DB operations. See `atdd-quality-gates` skill Gate 2.
-- **Rule (Behavior, Not Shape)**: Each test must verify a *business rule* or *user-visible behavior* — not data types, property names, or echoed input values. See `atdd-quality-gates` skill Gate 7 for examples.
-- **Rule (Meaningful Assertions)**: Assertions must prove something non-trivial. `Assert.NotNull()` or `Assert.True(response.IsSuccessStatusCode)` without checking WHAT was returned are flops.
-- **Rule (Test Independence)**: Each test must set up its own state. Tests MUST NOT depend on execution order or side effects of other tests.
-- **Action**: Write each test, run it, confirm it fails RED for a business reason, then move to the next scenario.
+- **Requirement**: Iterate vertically: one scenario → one test → verify RED → next.
+- **Rule (No-Code Mandate)**: Sentinel writes test code ONLY. No production code.
+- **Rule (Single Concern)**: Test ONE acceptance criterion. Extract setup.
+- **Rule (Max Chain ≤ 5)**: Max 5 HTTP/DB calls per test.
+- **Rule (Behavior, Not Shape)**: Verify business rules, not property names.
+- **Rule (Meaningful Assertions)**: Assert WHAT returned. No bare `Assert.NotNull()`.
+- **Rule (Test Independence)**: Set up own state. No cross-test dependencies.
+- **Action**: Write test, run it, confirm RED for business reason, move to next scenario.
 
 ### 2c. Smoke Gate (RED for the Right Reason)
 
@@ -112,21 +110,21 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 > **@@SCAN** Before declaring tests complete, answer: (1) Did ALL test failures classify as Business (not Infra)? (2) Were any ACs deferred with Skip-With-Reason? (3) Did you run the Saboteur Protocol — what did you sabotage and did the tests catch it?
 
 > [!CAUTION]
-> AI agents act like water flowing to the path of least resistance. They will write tests that just "run" rather than tests that "mean something". To prove the tests actually enforce intent, you must perform manual mutation testing.
+> AI agents write tests that just "run". You MUST prove they enforce intent via manual mutation testing.
 
-- **Action**: Before declaring test coverage complete, the Sentinel MUST intentionally sabotage one piece of core business logic in the source code (e.g., change a `>=` to a `<`, remove a validation check, or alter a required property).
-- **Execution**: Run the tests.
-- **Pass/Fail**: If the tests still PASS despite the sabotaged code, the tests are weak ("leaky container"). Sentinel must reject the tests and force the Builder to write stronger assertions. Only when the tests successfully FAIL on sabotaged code are they considered stable.
-- **Cleanup**: Revert the sabotage in the source code immediately after the check.
+- **Action**: Sentinel MUST sabotage one piece of core business logic in source code (e.g. `>=` to `<`, remove validation).
+- **Execution**: Run tests.
+- **Pass/Fail**: If tests PASS on sabotaged code, reject tests and write stronger assertions. Tests MUST FAIL.
+- **Cleanup**: Revert sabotage in source code immediately.
 
 > **@@SCAN** Before handoff, answer: (1) Does the specs artifact include the Test Infrastructure Map? (2) Are all tests RED for business reasons only? (3) Did you append Test Constraints to the implementation plan?
 
 ## Phase 3: Deliverable (The Handoff)
-- **Requirement**: Output the failed test evidence and specifications.
-- **Action**: Create a `specs_[feature].md` artifact AND a separate `test_cases_[feature].md` artifact. The `test_cases` artifact MUST contain ONLY a raw Markdown data table of all approved Test Cases (Columns: `ID | Scenario Name | Given (State) | When (Trigger) | Then (Assertion)`). Do not bloat the specs file with this data. Commit the failing test code to the test project.
-- **Infrastructure Map (MANDATORY)**: The specs artifact MUST include a Test Infrastructure Map section following the template from `atdd-quality-gates` skill Gate 5.
-- **Key Principle**: The Gherkin scenarios and failing tests produced by this workflow ARE the TDD spec-tests. The Builder's `/implement` workflow should treat them as the RED starting point — go straight to GREEN, do not re-specify.
-- **Handoff**: If an `implementation_plan_[topic].md` exists from a prior `/analysis` workflow, you MUST modify it by injecting your authored test names directly into its `## Verification Plan` section under a new `### ATDD Constraints` subheading. This mathematically forces the Builder's Phase 4 Drift Check to verify them. If NO plan exists, do NOT generate one — recommend the user run `/analysis` first.
+- **Requirement**: Output failed test evidence and specifications.
+- **Action**: Create `specs_[feature].md` AND `test_cases_[feature].md`. `test_cases` MUST be ONLY a raw Markdown table of approved ACs. Do not bloat specs. Commit failing tests to project.
+- **Infrastructure Map**: Specs must include Test Infrastructure Map template from `atdd-quality-gates`.
+- **Key Principle**: These Gherkin/failing tests ARE the ATDD spec. Builder goes straight to GREEN from here.
+- **Handoff**: Inject authored test names into `implementation_plan_[topic].md` under `### ATDD Constraints`. If no plan exists, do not generate one.
 
 > [!CAUTION]
 > **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the Smoke Gate table state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*

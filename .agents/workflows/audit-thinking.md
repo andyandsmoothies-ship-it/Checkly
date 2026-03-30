@@ -5,20 +5,20 @@ description: Systematic evaluation of AI reasoning logs (thinking, planning, and
 
 @[.agents/rules/orchestration-standards.md]
 @[.agents/rules/governance-rules.md]
-@[.agents/rules/project-gotchas.md]
+@[GEMINI.md]
 
 # /audit-thinking Workflow
 
 ## Step 0: Target Acquisition
 - The user will provide the absolute path to a `.md` reasoning artifact AND state which workflow generated it (e.g., "From the `/implement` workflow"). 
 - **Wait for Input**: Do not proceed until the exact log path and parent workflow are supplied.
-- Load the core workspace constraints (`project-gotchas.md` and `governance-rules.md`).
+- Load the core workspace constraints (`GEMINI.md` cascade).
 - Use `view_file` to explicitly load the `.md` file of the parent workflow (e.g., `.agents/workflows/implement.md`) into your active context so you know what structural outputs the Builder AI was supposed to produce.
 
 ## Phase 1: Context Ingestion & Evaluation
 - Use `view_file` to read the target logic document from top to bottom.
 - Immediately evaluate the document against the **6-Point Quality Rubric**:
-  1. **Context Adherence:** Did the Builder AI explicitly reference relevant `project-gotchas.md` rules as constraints for its solution?
+  1. **Context Adherence:** Did the Builder AI explicitly reference relevant `GEMINI.md` rules as constraints for its solution?
   2. **YAGNI Gate (You Aren't Gonna Need It):** Does the proposed solution introduce unnecessary architectural complexity (e.g., global state managers for local state, complex abstractions instead of simple functions)?
   3. **Scientific Method (For Diagnostics):** Does the log jump straight to a fix, or does it follow a `Hypothesis → Evidence → Root Cause` loop? Did it prove its assumptions?
   4. **Blast Radius Awareness:** Did the Builder anticipate what else its changes will break (frontend/backend sync, migrations, test suites)?
@@ -30,7 +30,7 @@ description: Systematic evaluation of AI reasoning logs (thinking, planning, and
 - Assign an overarching **Grade (A to F)** to the logic quality.
   - **A (Pass - Great)**: Strong First Principles analysis with trade-offs; actively cites rules; avoids YAGNI violations; covers edge cases; pristine Protocol Compliance.
   - **B (Pass - Good)**: Strong logic, but implicitly handles rules without stating them; minor edge case omissions; mostly protocol-compliant.
-  - **C (Fail - Rework Required)**: Ignores `project-gotchas.md`; patches a symptom instead of the root cause; jumps to conclusions; introduces mild over-engineering; skipped mandatory workflow protocols.
+  - **C (Fail - Rework Required)**: Ignores `GEMINI.md` cascade; patches a symptom instead of the root cause; jumps to conclusions; introduces mild over-engineering; skipped mandatory workflow protocols.
   - **F (Fail - High Risk)**: Unacceptably lazy analysis (band-aids); dangerous architectural drift; massive over-engineering; blind to the blast radius; ignored parent workflow entirely.
 
 ## Phase 3: Deliverable (The Audit Report)
