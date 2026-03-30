@@ -37,7 +37,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 > [!IMPORTANT]
 > A design choice violating a heuristic does NOT automatically mean it needs fixing — context matters. Note justified tradeoffs as exceptions, not issues.
 
-> **@@SCAN** Before consolidating findings, answer: (1) Did you complete the Double Pass Pattern? (2) How many violations were found per severity level? (3) Were any justified tradeoffs documented?
+> **@@SCAN**: (1) Double Pass completed? (2) Violations per severity? (3) Justified tradeoffs documented?
 
 ## Phase 4: Consolidate & Deliver
 - **Action**: Group similar issues, remove duplicates, and prioritize by severity.
@@ -49,29 +49,11 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
   5. **Exceptions & Tradeoffs**: Documented justified violations
 - **Handoff**: If fixes are needed, recommend the user route them through `/analysis` → `/implement` → `/verify`.
 
----
+## Final Phase: Script Verification Gate
+Run EXACTLY:
+`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
-## Final Phase: Hard Verification Gate (Script-Enforced)
+- Code 0 (PASS): Workflow complete. Share summary and stop.
+- Code 1 (FAIL): Fix reported errors and retry.
+- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
 
-> [!IMPORTANT]
-> **No honor system.** You are FORBIDDEN from self-certifying completion with "Yes/No" answers. A deterministic script performs the audit instead. Follow these steps exactly.
-
-<strict-instruction>
-
-**Step 1 — Run the verification script:**
-```
-cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
-```
-Substitute `{App Data Directory}` and `{Conversation ID}` with the values injected in your system context at session start.
-
-**Step 2 — Interpret the result:**
-- **Exit Code 0 (✅ PASS):** The workflow is officially complete. Share the script's output summary with the user and stop.
-- **Exit Code 1 (❌ FAIL):** Read the exact error lines the script printed. Fix ONLY what the script reported. Run the script again.
-
-**Step 3 — 2-Strike Rule:**
-If the script fails **twice** on the same error after your fixes, you have hit an unresolvable blocker.
-- STOP immediately.
-- Write `handoff_[topic].md` describing the script error, what you tried, and what remains.
-- Tell the user: *"Hard gate failed twice. Blocked on: [exact error]. See handoff file."*
-
-</strict-instruction>

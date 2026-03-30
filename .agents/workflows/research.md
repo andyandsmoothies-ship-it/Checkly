@@ -23,7 +23,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 - **Skill Discovery**: Derive 2-3 technical keywords from the research topic (e.g., "first-principles", "challenge assumptions"). Use `grep_search` on `.agents/skills/` to find skills matching those keywords. Load ONLY the top 1-2 most relevant architectural `SKILL.md` files. Declare which skills were loaded.
 - **Action**: Query `context7` or perform web searches to gather modern patterns.
 
-> **@@SCAN** Before context mapping, PAUSE and INTERNALLY evaluate: (1) Which skills did you load? (2) What modern patterns or libraries did you discover?
+> **@@SCAN**: (1) Which skills loaded? (2) Modern patterns discovered?
 
 ## Phase 2: E2E Context Mapping (MANDATORY)
 - **Instruction**: Map full context (upstream triggers + downstream effects) before evaluating options.
@@ -33,7 +33,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
   3. **Identify handoff points**: Where must user/system leave one context for another?
 - **Output**: Structured summary of full E2E context map.
 
-> **@@SCAN** Before feasibility check, PAUSE and INTERNALLY evaluate: (1) Did you map the full E2E scope (upstream triggers + downstream effects)? (2) What are the handoff points / friction points you identified?
+> **@@SCAN**: (1) Full E2E scope mapped (upstream + downstream)? (2) Handoff/friction points identified?
 
 ## Phase 3: Blind-Spot & Conflict Detection
 - **Instruction**: Act as adversarial "Explorer". Find failure points.
@@ -41,14 +41,14 @@ description: Architect's Strategic Research Workflow for System Architecture.
   1. Identify exactly 3 **BLIND SPOTS**.
   2. Identify ≥1 **`!!! CONFLICT`** with architectural rules in `.agents/rules/` or project gotchas.
 
-> **@@SCAN** Before feasibility check, PAUSE and INTERNALLY evaluate: (1) What are the 3 Blind Spots? (2) What is the `!!! CONFLICT` or risk to existing rules?
+> **@@SCAN**: (1) 3 Blind Spots named? (2) CONFLICT with existing rules identified?
 
 ## Phase 4: Feasibility & Rules Check
 - **Instruction**: Evaluate the idea against the project's rigid constraints.
 - **Skill Refresh**: If the research shifted domains (e.g., started as "which database?" but now involves "auth architecture"), re-scan `.agents/skills/` for skills matching the new concern. Load 1-2 if relevant.
 - **Action**: Read the workspace rules in `.agents/rules/`. Does the proposed idea violate any existing architecture or security constraints?
 
-> **@@SCAN** Before writing deliverable, PAUSE and INTERNALLY evaluate: (1) Does the idea violate any workspace rules? (2) Is the recommendation Viable, Needs Redesign, or Reject?
+> **@@SCAN**: (1) Workspace rule violations? (2) Verdict: Viable / Needs Redesign / Reject?
 
 ## Phase 5: Deliverable (The Handoff)
 - **Requirement**: Output structured artifact that persists across sessions.
@@ -78,27 +78,10 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 ---
 
-## Final Phase: Hard Verification Gate (Script-Enforced)
+## Final Phase: Script Verification Gate
+Run EXACTLY:
+`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
-> [!IMPORTANT]
-> **No honor system.** You are FORBIDDEN from self-certifying completion with "Yes/No" answers. A deterministic script performs the audit instead. Follow these steps exactly.
-
-<strict-instruction>
-
-**Step 1 — Run the verification script:**
-```
-cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
-```
-Substitute `{App Data Directory}` and `{Conversation ID}` with the values injected in your system context at session start.
-
-**Step 2 — Interpret the result:**
-- **Exit Code 0 (✅ PASS):** The workflow is officially complete. Share the script's output summary with the user and stop.
-- **Exit Code 1 (❌ FAIL):** Read the exact error lines the script printed. Fix ONLY what the script reported. Run the script again.
-
-**Step 3 — 2-Strike Rule:**
-If the script fails **twice** on the same error after your fixes, you have hit an unresolvable blocker.
-- STOP immediately.
-- Write `handoff_[topic].md` describing the script error, what you tried, and what remains.
-- Tell the user: *"Hard gate failed twice. Blocked on: [exact error]. See handoff file."*
-
-</strict-instruction>
+- Code 0 (PASS): Workflow complete. Share summary and stop.
+- Code 1 (FAIL): Fix reported errors and retry.
+- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".

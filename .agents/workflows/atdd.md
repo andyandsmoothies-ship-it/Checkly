@@ -117,7 +117,7 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 - **Pass/Fail**: If tests PASS on sabotaged code, reject tests and write stronger assertions. Tests MUST FAIL.
 - **Cleanup**: Revert sabotage in source code immediately.
 
-> **@@SCAN** Before handoff, answer: (1) Does the specs artifact include the Test Infrastructure Map? (2) Are all tests RED for business reasons only? (3) Did you append Test Constraints to the implementation plan?
+> **@@SCAN**: (1) Specs include Test Infrastructure Map? (2) All tests RED for business reasons only? (3) Test Constraints appended to implementation plan?
 
 ## Phase 3: Deliverable (The Handoff)
 - **Requirement**: Output failed test evidence and specifications.
@@ -127,31 +127,12 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 - **Handoff**: Inject authored test names into `implementation_plan_[topic].md` under `### ATDD Constraints`. If no plan exists, do not generate one.
 
 > [!CAUTION]
-> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the Smoke Gate table state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
+> **Clean Handoff**: Before context limit, write `handoff_[topic].md` listing completed phases + Smoke Gate state.
 
----
+## Final Phase: Script Verification Gate
+Run EXACTLY:
+`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
-## Final Phase: Hard Verification Gate (Script-Enforced)
-
-> [!IMPORTANT]
-> **No honor system.** You are FORBIDDEN from self-certifying completion with "Yes/No" answers. A deterministic script performs the audit instead. Follow these steps exactly.
-
-<strict-instruction>
-
-**Step 1 — Run the verification script:**
-```
-cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
-```
-Substitute `{App Data Directory}` and `{Conversation ID}` with the values injected in your system context at session start.
-
-**Step 2 — Interpret the result:**
-- **Exit Code 0 (✅ PASS):** The workflow is officially complete. Share the script's output summary with the user and stop.
-- **Exit Code 1 (❌ FAIL):** Read the exact error lines the script printed. Fix ONLY what the script reported. Run the script again.
-
-**Step 3 — 2-Strike Rule:**
-If the script fails **twice** on the same error after your fixes, you have hit an unresolvable blocker.
-- STOP immediately.
-- Write `handoff_[topic].md` describing the script error, what you tried, and what remains.
-- Tell the user: *"Hard gate failed twice. Blocked on: [exact error]. See handoff file."*
-
-</strict-instruction>
+- Code 0 (PASS): Workflow complete. Share summary and stop.
+- Code 1 (FAIL): Fix reported errors and retry.
+- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".

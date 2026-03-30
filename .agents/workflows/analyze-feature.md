@@ -40,7 +40,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 - **Action**: Search `.agents/skills/` to find 1-2 matching skills.
 - **Load**: `view_file` the `SKILL.md` files and let them dictate your approach.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Which strict, tactical skill(s) did you load? (2) Are you following its methodology?
+> **@@SCAN**: (1) Skills loaded? (2) Following skill methodology?
 
 ## Phase 1.5: Requirement Deconstruction (First Principles)
 - **Instruction**: Strip the requirement down. What is the fundamental business value?
@@ -48,14 +48,14 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 - **Boolean Integrity**: Define if conditional logic is ALLOWLIST or BLOCKLIST.
 - **Action**: Formulate core logic independently of code implementation.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Core business value? (2) OUT OF SCOPE? (3) Fundamental state transition?
+> **@@SCAN**: (1) Core business value? (2) OUT OF SCOPE defined? (3) Fundamental state transition?
 
 ## Phase 2: Tactical Blast Radius Review
 - **Instruction**: Identify exactly what you might step on.
 - **Action**: Consult your actively loaded `GEMINI.md` Context Cascade for constraints.
 - **Action**: Verify callers of existing modified functions to prevent upstream breakage.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Applicable gotcha rule? (2) Checked callers?
+> **@@SCAN**: (1) Applicable gotcha rule? (2) Callers checked?
 
 ## Phase 2.5: Edge Case & State Matrix
 - **Instruction**: Define resilience boundaries before coding.
@@ -65,7 +65,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
   - **Error State:** 404s, 500s, validation failures.
   - **Success State:** Exact happy-path mutation.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Defined all 4 states? (2) Any unhandled silent failures?
+> **@@SCAN**: (1) All 4 states defined? (2) Unhandled silent failures?
 
 ## Phase 3: Deliverable (Enterprise-Grade Tactical Plan)
 - **Requirement**: You MUST generate an `implementation_plan_[topic].md` artifact. This plan must be deeply analytical but narrowly scoped to the tactical objective.
@@ -102,14 +102,12 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 ---
 
 ## Final Phase: Artifact Handoff (Hard Gate)
-- **Mandatory Output**: Explicitly output literal file path of implementation plan.
-- **Hard Physical Verification**: Run the verification script — do NOT use `list_dir` as a substitute:
-  ```
-  cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
-  ```
-  - **Exit Code 0 (✅ PASS):** Tell the user the plan is ready and output the file path.
-  - **Exit Code 1 (❌ FAIL):** Read the exact error. Fix ONLY what was reported. Run again.
-  - **2-Strike Rule:** Two consecutive failures → write `handoff_[topic].md` and tell the user: *"Hard gate failed twice. Blocked on: [exact error]."*
+- Output literal file path of implementation plan.
+- Run the verification script (do NOT substitute `list_dir`):
+  `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+  - Code 0 (PASS): Tell user plan is ready and output the path.
+  - Code 1 (FAIL): Fix reported errors and retry.
+  - 2-Strike Rule: Two consecutive failures → write `handoff_[topic].md`. Tell user: "Hard gate blocked on: [error]".
 
 > [!CAUTION]
-> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before this phase is complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and key decisions made so far. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
+> **Clean Handoff**: Before context limit, write `handoff_[topic].md` listing completed phases, remaining phases, and key decisions.

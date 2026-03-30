@@ -37,7 +37,7 @@ description: The Core Builder Implementation Workflow.
 - **DYNAMIC SKILLS**: Derive 2-3 keywords from the request → scan `.agents/skills/` → load the top 1-2 matching `SKILL.md` files.
 - Match task to rules in `.agents/rules/`.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Which skills & rules did you load? (2) What are the core files and dependencies?
+> **@@SCAN**: (1) Skills & rules loaded? (2) Core files and dependencies?
 
 ## Phase 2: Planning (THE GATE)
 - Check if an `implementation_plan_[topic].md` (from `/analysis`) or `specs_[topic].md` (from `/atdd`) is in context.
@@ -53,7 +53,7 @@ description: The Core Builder Implementation Workflow.
 - **Codebase Spot-Check**: Use `grep_search`/`view_file` to confirm ONE plan claim against real code. If contradicted → **STOP** and flag to user.
 - **YAGNI Gate**: Is this solving a real problem today? If it adds complexity without clear benefit → show Before/After trade-off table.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Does the plan pass all checklist items? (2) What was the spot-check result? (3) Does it pass the YAGNI gate?
+> **@@SCAN**: (1) Plan passes all checklist items? (2) Spot-check result? (3) Passes YAGNI gate?
 
 ## Phase 2.5: The QA TDD Handoff Gate (MANDATORY YIELD)
 > [!CAUTION]
@@ -77,7 +77,7 @@ description: The Core Builder Implementation Workflow.
 - Post-Green Check: Check architecture compliance, null handling, edge cases, import legality. Fix immediately.
 - If task shifts domains, re-scan `.agents/skills/` and drop irrelevant ones.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you follow Red/Green split natively? (2) Did you run inline quality gate per component?
+> **@@SCAN**: (1) Red/Green split followed? (2) Inline quality gate run per component?
 
 ## Phase 4: Self-Review
 Review your own changes from 4 angles. State findings for each:
@@ -96,7 +96,7 @@ Review your own changes from 4 angles. State findings for each:
 - Run `git diff --name-only`. Revert unplanned edits.
 - Run each test from the `## Verification Plan`. Confirm GREEN.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) All 4 review angles covered? (2) Do structural tests exist for Success, Error, and Empty states for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
+> **@@SCAN**: (1) All 4 review angles covered? (2) Success/Error/Empty tests exist for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
 
 > [!CAUTION]
 > **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before this phase is complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and all files modified so far. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
@@ -119,13 +119,8 @@ Review your own changes from 4 angles. State findings for each:
 Run `cmd /c git diff --name-only` one final time to confirm only planned files were changed.
 
 > [!IMPORTANT]
-> **🛡️ ARTIFACT PRE-FLIGHT — Hard Verification Gate (Script-Enforced):**
-> Before committing to git, you MUST pass the verification script:
-> ```
-> cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"
-> ```
-> - **Exit Code 0 (✅ PASS):** Proceed to `git add -A ; git commit`.
-> - **Exit Code 1 (❌ FAIL):** Read the error lines. Fix ONLY what was reported. Run again.
-> - **2-Strike Rule:** If the script fails twice on the same error — write `handoff_[topic].md` and block the commit. Tell the user: *"Hard gate failed twice. Blocked on: [exact error]."*
->
-> A `[x]` checkbox in task.md does NOT prove files exist. The script proves it.
+> **🛡️ Script Verification Gate:** Before committing, run:
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - Code 0 (PASS): Proceed to `git add -A ; git commit`.
+> - Code 1 (FAIL): Fix reported errors and retry.
+> - 2-Strike Rule: Two consecutive failures → write `handoff_[topic].md` and block commit. Tell user: "Hard gate blocked on: [error]".
