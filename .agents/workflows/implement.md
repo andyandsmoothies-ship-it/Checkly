@@ -8,6 +8,10 @@ description: The Core Builder Implementation Workflow.
 
 # /implement Workflow
 
+> [!CAUTION]
+> **THE PHASE 2.5 MANDATORY YIELD (HARD STOP)**
+> You are strictly forbidden from executing this entire workflow in a single run. You MUST stop generation and yield to the user precisely at **Phase 2.5**. Do NOT write any production code (Phase 3) until the user explicitly returns and confirms the Sentinel (QA) agent has written the failing TDD tests.
+
 ## Step 0: Init
 - **Workflow Calibration**: If you are just starting this session, you MUST use `view_file` to read the entirety of this `implement.md` file right now to load the strict `@@SCAN` checkpoints into your active context.
 - Run Pre-Flight Check from `governance-rules.md`.
