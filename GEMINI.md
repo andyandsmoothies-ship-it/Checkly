@@ -24,7 +24,7 @@ After any significant implementation, debug, or refactor, assess whether a new l
 ## 2. Platform Architecture
 
 - **Purpose**: Mobile-first audit/inspection platform with offline-first capabilities.
-- **Frontend**: Flutter (Dart) — PWA-ready, offline-first with Dexie.js (IndexedDB).
+- **Frontend**: Flutter (Dart) — Mobile-first, offline-first with Drift (ORM) + SQLite (sqlite3) for local persistence.
 - **Backend**: ASP.NET Core (.NET 10) Minimal API — feature-sliced, no controllers.
 - **Database**: PostgreSQL (Self-Hosted), accessed through EF Core.
 - **Auth**: ASP.NET Core Identity (JWT Bearer) for authentication and server-side RBAC.
