@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,14 +10,12 @@ import '../../../_shared/theme/app_fonts.dart';
 
 final _di = GetIt.instance;
 
-/// Profile page — role-aware menu, stats, theme toggle, sign out.
-/// Matches PWA Profile spec (§6 research doc).
+/// Profile page — role-aware sectioned settings, theme toggle, sign out.
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final auth = _di<AuthManager>();
     final user = auth.currentUser;
 
@@ -29,49 +28,63 @@ class ProfilePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
-          // ── Profile Card ──
-          _ProfileCard(initials: initials, email: email, role: role),
+          // ── Identity Header (horizontal) ──
+          _ProfileHeader(initials: initials, email: email, role: role),
           const SizedBox(height: 24),
 
-          // ── Stats Row ──
-          _StatsRow(role: role),
-          const SizedBox(height: 24),
+          // ── Management Section ──
+          _SettingsSectionGroup(items: _managementItems(context, role)),
+          const SizedBox(height: 12),
 
-          // ── Menu Items ──
-          ..._buildMenuItems(context, role),
-          const SizedBox(height: 24),
+          // ── General Section (Activity + Notifications + Theme) ──
+          _SettingsSectionGroup(
+            items: [
+              _MenuItemData(
+                icon: Icons.history,
+                label: 'My Activity',
+                description: 'View your recent actions',
+                route: '/activity',
+              ),
+              _MenuItemData(
+                icon: Icons.notifications_outlined,
+                label: 'Notifications',
+                description: 'View all notifications',
+                route: '/activity',
+              ),
+            ],
+            themeToggle: true,
+          ),
+          const SizedBox(height: 12),
 
-          // ── Theme Toggle ──
-          _ThemeToggle(),
+          // ── Support Section ──
+          _SettingsSectionGroup(
+            items: [
+              _MenuItemData(
+                icon: Icons.menu_book_outlined,
+                label: 'Documentation',
+                description: 'Guides and user manuals',
+              ),
+              _MenuItemData(
+                icon: Icons.help_outline,
+                label: 'Help',
+                description: 'Get support and learn more',
+              ),
+            ],
+          ),
           const SizedBox(height: 24),
 
           // ── Sign Out ──
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () async {
-                await auth.logout();
-                if (context.mounted) context.go('/login');
-              },
-              icon: const Icon(Icons.logout),
-              label: const Text('SIGN OUT'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-                side: BorderSide(color: theme.colorScheme.error),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-            ),
-          ),
+          _SignOutTile(),
           const SizedBox(height: 16),
 
           // ── Version ──
           Center(
             child: Text(
               'Checkly v1.0.0',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.5,
-                ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -83,83 +96,49 @@ class ProfilePage extends StatelessWidget {
 
   String _getInitials(String email) {
     final local = email.split('@').first;
-    if (local.length >= 2) return local.substring(0, 2).toUpperCase();
-    return local.toUpperCase();
+    return local.length >= 2
+        ? local.substring(0, 2).toUpperCase()
+        : local.toUpperCase();
   }
 
-  List<Widget> _buildMenuItems(BuildContext context, String role) {
-    final items = <_MenuItem>[];
-
-    // Role-conditional items
+  List<_MenuItemData> _managementItems(BuildContext context, String role) {
+    final items = <_MenuItemData>[];
     if (role == 'admin') {
-      items.add(
-        const _MenuItem(
-          icon: Icons.admin_panel_settings,
-          label: 'Admin Dashboard',
-          description: 'Manage users and approvals',
-          route: '/admin/dashboard',
-        ),
-      );
+      items.add(_MenuItemData(
+        icon: Icons.admin_panel_settings,
+        label: 'Admin Dashboard',
+        description: 'Manage users and approvals',
+        route: '/admin/dashboard',
+      ));
     }
     if (role == 'area_manager') {
-      items.add(
-        const _MenuItem(
-          icon: Icons.map_outlined,
-          label: 'My Region',
-          description: 'View stores in your area',
-          route: '/analytics',
-        ),
-      );
+      items.add(_MenuItemData(
+        icon: Icons.map_outlined,
+        label: 'My Region',
+        description: 'View stores in your area',
+        route: '/analytics',
+      ));
     }
     if (role == 'store_manager') {
-      items.add(
-        const _MenuItem(
-          icon: Icons.store,
-          label: 'My Store',
-          description: 'View your store details',
-          route: '/analytics',
-        ),
-      );
+      items.add(_MenuItemData(
+        icon: Icons.store,
+        label: 'My Store',
+        description: 'View your store details',
+        route: '/analytics',
+      ));
     }
-
-    // Common items
-    items.addAll(const [
-      _MenuItem(
-        icon: Icons.history,
-        label: 'My Activity',
-        description: 'View your recent actions',
-        route: '/activity',
-      ),
-      _MenuItem(
-        icon: Icons.notifications_outlined,
-        label: 'Notifications',
-        description: 'View all notifications',
-        route: '/activity',
-      ),
-      _MenuItem(
-        icon: Icons.menu_book_outlined,
-        label: 'Documentation',
-        description: 'Guides and user manuals',
-      ),
-      _MenuItem(
-        icon: Icons.help_outline,
-        label: 'Help',
-        description: 'Get support and learn more',
-      ),
-    ]);
-
     return items;
   }
 }
 
-// ── Profile Card ──
+// ── Identity Header (horizontal) ──────────────────────────────────────────────
 
-class _ProfileCard extends StatelessWidget {
+class _ProfileHeader extends StatelessWidget {
   final String initials;
   final String email;
   final String role;
 
-  const _ProfileCard({
+  const _ProfileHeader({
     required this.initials,
     required this.email,
     required this.role,
@@ -170,53 +149,57 @@ class _ProfileCard extends StatelessWidget {
     final theme = Theme.of(context);
     final roleColor = _roleColor(role, theme);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.warmCream,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.5)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 36,
-              backgroundColor: theme.colorScheme.primary,
-              child: Text(
-                initials,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  color: theme.colorScheme.onPrimary,
-                  fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: theme.colorScheme.primary,
+            child: Text(
+              initials,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  email,
+                  style: AppFonts.serifStyle(
+                    fontSize: 15,
+                    color: AppTheme.charcoal,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              email,
-              style: AppFonts.serifStyle(
-                fontSize: 18,
-                color: AppTheme.charcoal,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: roleColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                _roleLabel(role),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: roleColor,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: roleColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _roleLabel(role),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: roleColor,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -238,144 +221,96 @@ class _ProfileCard extends StatelessWidget {
   };
 }
 
-// ── Stats Row ──
+// ── Sectioned Settings Card ────────────────────────────────────────────────────
 
-class _StatsRow extends StatelessWidget {
-  final String role;
-
-  const _StatsRow({required this.role});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    // Labels change per role
-    final auditLabel = switch (role) {
-      'store_manager' => 'Store Audits',
-      'area_manager' => 'Region Audits',
-      _ => 'My Audits',
-    };
-
-    return Row(
-      children: [
-        Expanded(
-          child: _StatColumn(label: auditLabel, value: '—', theme: theme),
-        ),
-        _divider(theme),
-        Expanded(
-          child: _StatColumn(
-            label: 'Avg Audit Score',
-            value: '—',
-            theme: theme,
-          ),
-        ),
-        _divider(theme),
-        Expanded(
-          child: _StatColumn(label: 'This Month', value: '—', theme: theme),
-        ),
-      ],
-    );
-  }
-
-  Widget _divider(ThemeData theme) => Container(
-    width: 1,
-    height: 40,
-    color: AppTheme.sageGray.withValues(alpha: 0.5),
-  );
-}
-
-class _StatColumn extends StatelessWidget {
-  final String label;
-  final String value;
-  final ThemeData theme;
-
-  const _StatColumn({
-    required this.label,
-    required this.value,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ── Menu Item ──
-
-class _MenuItem extends StatelessWidget {
+class _MenuItemData {
   final IconData icon;
   final String label;
   final String description;
   final String? route;
 
-  const _MenuItem({
+  _MenuItemData({
     required this.icon,
     required this.label,
     required this.description,
     this.route,
   });
+}
+
+class _SettingsSectionGroup extends StatelessWidget {
+  final List<_MenuItemData> items;
+  final bool themeToggle;
+
+  const _SettingsSectionGroup({
+    required this.items,
+    this.themeToggle = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasContent = items.isNotEmpty || themeToggle;
+    if (!hasContent) return const SizedBox.shrink();
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 1),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppTheme.sageGray.withValues(alpha: 0.3)),
-        ),
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
-      child: ListTile(
-        leading: Icon(icon, color: theme.colorScheme.primary),
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-        subtitle: Text(
-          description,
-          style: TextStyle(
-            fontSize: 12,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-        onTap: () {
-          if (route != null) {
-            context.push(route!);
-          } else {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Coming soon')));
-          }
-        },
+      child: Column(
+        children: [
+          for (int i = 0; i < items.length; i++) ...[
+            _MenuTile(data: items[i]),
+            if (i < items.length - 1 || themeToggle)
+              Divider(
+                height: 1,
+                indent: 56,
+                color: theme.colorScheme.outlineVariant,
+              ),
+          ],
+          if (themeToggle) _ThemeToggleTile(),
+        ],
       ),
     );
   }
 }
 
-// ── Theme Toggle ──
+// ── Individual Menu Tile ───────────────────────────────────────────────────────
 
-class _ThemeToggle extends StatelessWidget {
+class _MenuTile extends StatelessWidget {
+  final _MenuItemData data;
+
+  const _MenuTile({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: Icon(data.icon, color: theme.colorScheme.primary),
+      title: Text(data.label, style: const TextStyle(fontWeight: FontWeight.w500)),
+      subtitle: Text(
+        data.description,
+        style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
+      ),
+      trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        if (data.route != null) {
+          context.push(data.route!);
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Coming soon')));
+        }
+      },
+    );
+  }
+}
+
+// ── Theme Toggle Tile (embedded in General section) ────────────────────────────
+
+class _ThemeToggleTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -385,30 +320,94 @@ class _ThemeToggle extends StatelessWidget {
       listenable: themeManager,
       builder: (context, _) {
         final isDark = themeManager.themeMode == ThemeMode.dark;
-
-        return Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: theme.colorScheme.outlineVariant),
+        return ListTile(
+          leading: Icon(
+            isDark ? Icons.dark_mode : Icons.light_mode,
+            color: theme.colorScheme.primary,
           ),
-          child: ListTile(
-            leading: Icon(
-              isDark ? Icons.dark_mode : Icons.light_mode,
-              color: theme.colorScheme.primary,
-            ),
-            title: const Text(
-              'Theme',
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-            subtitle: Text(isDark ? 'Dark mode' : 'Light mode'),
-            trailing: Switch(
-              value: isDark,
-              onChanged: (_) => themeManager.toggleTheme(),
-            ),
+          title: const Text('Theme', style: TextStyle(fontWeight: FontWeight.w500)),
+          subtitle: Text(isDark ? 'Dark mode' : 'Light mode'),
+          trailing: Switch(
+            value: isDark,
+            onChanged: (_) {
+              HapticFeedback.lightImpact();
+              themeManager.toggleTheme();
+            },
           ),
         );
       },
     );
+  }
+}
+
+// ── Sign Out Tile ──────────────────────────────────────────────────────────────
+
+class _SignOutTile extends StatefulWidget {
+  @override
+  State<_SignOutTile> createState() => _SignOutTileState();
+}
+
+class _SignOutTileState extends State<_SignOutTile> {
+  bool _loading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: _loading
+          ? SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: theme.colorScheme.error,
+              ),
+            )
+          : Icon(Icons.logout, color: theme.colorScheme.error),
+      title: Text(
+        'SIGN OUT',
+        style: TextStyle(
+          color: theme.colorScheme.error,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onTap: _loading ? null : () => _confirmSignOut(context),
+    );
+  }
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final router = GoRouter.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(
+              'Sign Out',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    setState(() => _loading = true);
+    final auth = _di<AuthManager>();
+    try {
+      await auth.logout();
+      if (mounted) router.go('/login');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 }

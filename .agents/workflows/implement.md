@@ -62,6 +62,18 @@ description: The Core Builder Implementation Workflow.
 > [!CAUTION]
 > **Anti-Bias Protocol:** The Builder (@Forge) CANNOT write both tests and implementation. QA must set the test boundaries.
 - **Create Artifact:** Extract test contracts into a new `test_contracts_[topic].md` brain artifact. **MANDATORY:** Include a "Dependency Context Array" listing every service/manager the touched files depend on, plus their exact import paths, so QA can mock them instantly.
+- **Contract Format (MANDATORY):** Every contract entry MUST include all fields below. Incomplete contracts force QA to guess and are rejected:
+  ```markdown
+  ## Contract N: [Name]
+  **ID**: `Entity_Action_ExpectedOutcome`
+  **Exact Text/Key**: `'SIGN OUT'` ← copy exact string from source file + line number
+  **State Matrix**:
+  - Happy Path: [exact assertion]
+  - Error State: [exact assertion on failure]
+  - Empty/Cancel State: [exact assertion]
+  **Private Method Access**: N/A | Use `@visibleForTesting` on `[MethodName]`
+  **Why RED now**: [reason + source line number]
+  ```
 - **Yield:** Stop generation immediately after creating the artifact. Do NOT enter Phase 3.
 - **Message:** "Plan is ready. Pass `test_contracts_[topic].md` to the QA Agent (@Sentinel) for failing TDD tests. Type 'tests are red' when done."
 - **Hold:** DO NOT write production code until the user confirms tests are red.

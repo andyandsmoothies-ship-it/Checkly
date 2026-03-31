@@ -36,15 +36,24 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
   - **React / Frontend**: Load `frontend-testing` (for Jest, React Testing Library, Cypress).
   - **Flutter / Native Apps**: Load `mobile-app-testing` (for widget tests, integration_test, Detox).
 - **Rule (Dependency Context)**: If the implementation plan requires mocking complex managers or services (like GetIt dependencies), check if the plan provides a **Dependency Context Array** (exact file paths to those services). If it doesn't, use `grep_search` to find the exact import paths before writing code. Do not guess folder names (e.g., `models` vs `model`).
+- **Contract Validation Checklist (MANDATORY)**: Before writing a single test, validate every contract entry has all required fields. If ANY field is missing → **STOP** and ask the Builder to complete the contract:
+  - [ ] **Exact Text/Key** specified? (e.g., the literal `'SIGN OUT'` string — not paraphrased)
+  - [ ] **State Matrix** defined? (Happy Path + Error State + Empty/Cancel State)
+  - [ ] **Private Method Access** stated? (`N/A` or `@visibleForTesting on [Method]`)
+  - [ ] **Why RED now** includes a source line number?
 - **Action**: If you see missing contracts or undefined signatures in the plan that make test writing impossible, **STOP** and ask the user to clarify.
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you read the implementation plan? (2) Which testing skills did you load based on the tech stack? (3) Are the proposed contracts clear enough to write tests against?
+> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you read the implementation plan? (2) Which testing skills did you load based on the tech stack? (3) Are ALL contract fields validated against the checklist above?
 
 ## Phase 2: Test Authoring (The Red Phase)
 - **Requirement**: Write the actual test files (`.spec.ts`, `_test.dart`, `*Tests.cs`) targeting the new feature.
 - **Rule (Ghost Protocol)**: Sentinel CANNOT write or modify production code in the `lib/`, `src/`, or `server/` folders. Sentinel writes test code only. **Exception**: You are explicitly allowed to edit production files solely to import `meta` and add `@visibleForTesting` (or equivalent `.NET` `InternalsVisibleTo`) to expose private methods needed for testing. 
 - **Rule (The Mirror Function Trap)**: NEVER copy-paste production logic into a test file to bypass access modifiers. Testing cloned functions decouples the test from production reality. If a private method must be unit-tested directly, use the exception above to expose it and test the *real* method.
 - **Rule (Mocking Standards)**: NEVER write manual `Fake` or `Mock` classes from scratch for complex dependencies. You must use a mocking library (e.g., `mocktail` in Flutter, `NSubstitute` in .NET) to auto-generate mocks that perfectly match interface signatures.
+- **Rule (Exhaustive Mocking)**: When mocking services, stub all **public** readable properties/getters (e.g., `themeMode`), not just methods. **NEVER stub `@protected` members** (e.g., `ChangeNotifier.hasListeners`) — accessing them from outside the class hierarchy triggers `invalid_use_of_protected_member`. Mocktail handles listener attachment internally; only `addListener`/`removeListener` stubs are needed.
+- **Rule (Viewport Occlusion - Flutter)**: Always call `await tester.ensureVisible(finder)` before tapping items inside scrollables (`ListView`, etc.) to prevent off-screen hit-test failures.
+- **Rule (Explicit Finders)**: Avoid brittle text-matching predicates for structural elements like dialog buttons. Mandate explicit `Key` usage in the test contract and use `find.byKey()`.
+- **Rule (Lambda Parameters - Dart)**: Never use `(_, __)` double-underscore lambdas. Modern `flutter_lints` ≥ 4.0 flags `__` as `unnecessary_underscores`. Use real parameter names (e.g., `(context, state)`) or a single `_` if only one parameter is unused.
 - **Rule (State Matrix)**: Your tests MUST aggressively cover:
   1. The **Happy Path** (Success State - 200 OK, expected view renders).
   2. The **Error State** (Validation failures, 404s, 403s, expected exceptions).
