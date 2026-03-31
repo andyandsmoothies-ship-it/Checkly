@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../auth/manager/auth_manager.dart';
 import '../../../_shared/theme/theme_manager.dart';
-import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 
 final _di = GetIt.instance;
@@ -19,9 +18,10 @@ class ProfilePage extends StatelessWidget {
     final auth = _di<AuthManager>();
     final user = auth.currentUser;
 
+    final displayName = user?.fullName ?? user?.email ?? 'user@checkly.app';
     final email = user?.email ?? 'user@checkly.app';
     final role = user?.role ?? 'auditor';
-    final initials = _getInitials(email);
+    final initials = getInitials(user?.fullName ?? email);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile'), centerTitle: true),
@@ -29,7 +29,7 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
           // ── Identity Header (horizontal) ──
-          _ProfileHeader(initials: initials, email: email, role: role),
+          _ProfileHeader(initials: initials, email: displayName, role: role),
           const SizedBox(height: 24),
 
           // ── Management Section ──
@@ -94,11 +94,25 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  String _getInitials(String email) {
-    final local = email.split('@').first;
-    return local.length >= 2
-        ? local.substring(0, 2).toUpperCase()
-        : local.toUpperCase();
+  @visibleForTesting
+  String getInitials(String input) {
+    if (input.contains('@')) {
+      final local = input.split('@').first;
+      return local.length >= 2
+          ? local.substring(0, 2).toUpperCase()
+          : local.toUpperCase();
+    }
+
+    final parts = input.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2) {
+      return (parts.first[0] + parts.last[0]).toUpperCase();
+    } else if (parts.isNotEmpty && parts.first.isNotEmpty) {
+      final name = parts.first;
+      return name.length >= 2
+          ? name.substring(0, 2).toUpperCase()
+          : name.toUpperCase();
+    }
+    return '??';
   }
 
   List<_MenuItemData> _managementItems(BuildContext context, String role) {
@@ -173,7 +187,7 @@ class _ProfileHeader extends StatelessWidget {
                   email,
                   style: AppFonts.serifStyle(
                     fontSize: 15,
-                    color: AppTheme.charcoal,
+                    color: theme.colorScheme.onSurface,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -348,22 +362,11 @@ class _SignOutTile extends StatefulWidget {
 }
 
 class _SignOutTileState extends State<_SignOutTile> {
-  bool _loading = false;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
-      leading: _loading
-          ? SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: theme.colorScheme.error,
-              ),
-            )
-          : Icon(Icons.logout, color: theme.colorScheme.error),
+      leading: Icon(Icons.logout, color: theme.colorScheme.error),
       title: Text(
         'SIGN OUT',
         style: TextStyle(
@@ -371,24 +374,23 @@ class _SignOutTileState extends State<_SignOutTile> {
           fontWeight: FontWeight.w600,
         ),
       ),
-      onTap: _loading ? null : () => _confirmSignOut(context),
+      onTap: () => _confirmSignOut(context),
     );
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
-    final router = GoRouter.of(context);
-    final confirmed = await showDialog<bool>(
+    await showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogCtx) => AlertDialog(
         title: const Text('Sign Out'),
         content: const Text('Are you sure you want to sign out?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(dialogCtx).pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => _di<AuthManager>().logout(),
             child: Text(
               'Sign Out',
               style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -397,17 +399,5 @@ class _SignOutTileState extends State<_SignOutTile> {
         ],
       ),
     );
-
-    if (confirmed != true) return;
-    if (!mounted) return;
-
-    setState(() => _loading = true);
-    final auth = _di<AuthManager>();
-    try {
-      await auth.logout();
-      if (mounted) router.go('/login');
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
   }
 }

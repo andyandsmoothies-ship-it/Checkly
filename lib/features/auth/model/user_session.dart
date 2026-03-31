@@ -5,12 +5,14 @@ class UserSession {
   final String email;
   final String role;
   final String token;
+  final String? fullName;
 
   const UserSession({
     required this.userId,
     required this.email,
     required this.role,
     required this.token,
+    this.fullName,
   });
 
   factory UserSession.fromJson(Map<String, dynamic> json) => UserSession(
@@ -18,6 +20,7 @@ class UserSession {
     email: json['email'] as String,
     role: json['role'] as String,
     token: json['token'] as String,
+    fullName: json['fullName'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -25,5 +28,6 @@ class UserSession {
     'email': email,
     'role': role,
     'token': token,
+    'fullName': fullName,
   };
 }

@@ -34,6 +34,8 @@ import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
 import 'package:checkly/features/profile/pages/profile_page.dart';
 import 'package:checkly/_shared/theme/theme_manager.dart';
+import 'package:checkly/_shared/theme/app_theme.dart';
+
 
 // ── Mock Declarations ─────────────────────────────────────────────────────────
 // mocktail auto-generates correct overrides matching all interface signatures.
@@ -260,5 +262,128 @@ void main() {
         );
       },
     );
+  });
+
+  // ─── Contract: Dark Mode Compatibility ────────────────────────────────────
+
+  group('ProfilePage — Dark Mode Compatibility', () {
+    testWidgets(
+      'ProfilePage_EmailText_UsesOnSurfaceColor — email text color must adapt to theme brightness',
+      (tester) async {
+        // VALID RED: Email text color is hardcoded to AppTheme.charcoal on line 176 of profile_page.dart.
+        // Fix needed: Change Color to theme.colorScheme.onSurface (or variant).
+        final darkTheme = AppTheme.dark;
+        _registerDi(user: _adminUser);
+
+        // We use a custom pump here to inject the DARK theme specifically
+        await tester.pumpWidget(
+          MaterialApp.router(
+            theme: darkTheme,
+            routerConfig: GoRouter(
+              initialLocation: '/profile',
+              routes: [
+                GoRoute(
+                  path: '/profile',
+                  builder: (context, state) => const ProfilePage(),
+                ),
+              ],
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final emailTextFinder = find.text('admin@test.com');
+        final textWidget = tester.widget<Text>(emailTextFinder);
+        final color = textWidget.style?.color;
+
+        expect(
+          color,
+          isNot(AppTheme.charcoal),
+          reason: 'Email text color should not be hardcoded to charcoal in dark mode.',
+        );
+
+        expect(
+          color,
+          darkTheme.colorScheme.onSurface,
+          reason:
+              'Email text color should match theme.colorScheme.onSurface in dark mode.',
+        );
+      },
+    );
+  });
+
+  // ─── Contract: Real Name Display ──────────────────────────────────────────
+
+  group('ProfilePage — Real Name Display', () {
+    testWidgets(
+      'ProfilePage_DisplayName_ShowsFullName — header must prefer fullName over email',
+      (tester) async {
+        // VALID RED: ProfilePage currently only binds to user.email (line 22).
+        // Fix needed: update build() to use user.fullName ?? user.email.
+        const userWithName = UserSession(
+          userId: '3',
+          email: 'test@checkly.app',
+          role: 'auditor',
+          token: 'token',
+          fullName: 'Anh Tuan',
+        );
+
+        _registerDi(user: userWithName);
+        await pumpProfilePage(tester);
+
+        expect(
+          find.text('Anh Tuan'),
+          findsOneWidget,
+          reason: 'Full name "Anh Tuan" should be visible in the header.',
+        );
+        expect(
+          find.text('test@checkly.app'),
+          findsNothing,
+          reason: 'Email should be hidden when fullName is present.',
+        );
+      },
+    );
+
+
+    testWidgets(
+      'ProfilePage_DisplayName_FallsBackToEmail — header must show email when fullName is null',
+      (tester) async {
+        // Contract 1: Empty/Cancel State
+        const userNoName = UserSession(
+          userId: '4',
+          email: 'no-name@checkly.app',
+          role: 'auditor',
+          token: 'token',
+          fullName: null,
+        );
+
+        _registerDi(user: userNoName);
+        await pumpProfilePage(tester);
+
+        expect(
+          find.text('no-name@checkly.app'),
+          findsOneWidget,
+          reason: 'Email should be visible when fullName is null.',
+        );
+      },
+    );
+
+    test('ProfilePage_Initials_FromFullName — getInitials must handle name-to-initials logic', () {
+      // Contract 2: Full coverage
+      const page = ProfilePage();
+
+      // Case 1: Full name (First Last)
+      expect(page.getInitials('John Doe'), 'JD');
+      expect(page.getInitials('Anh Tuan'), 'AT');
+
+      // Case 2: Single name
+      expect(page.getInitials('Alice'), 'AL');
+
+      // Case 3: Multiple names
+      expect(page.getInitials('John Doe Smith'), 'JS');
+
+      // Case 4: Fallback (Email)
+      expect(page.getInitials('john@doe.com'), 'JO');
+    });
   });
 }

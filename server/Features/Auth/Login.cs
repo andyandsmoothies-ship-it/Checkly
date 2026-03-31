@@ -13,7 +13,7 @@ namespace Checkly.Api.Features.Auth;
 public static class Login
 {
     public record Request(string Email, string Password);
-    public record Response(Guid UserId, string Email, string Role, string Token);
+    public record Response(Guid UserId, string Email, string Role, string Token, string? FullName);
 
     internal sealed class Handler(
         UserManager<AppUser> userManager,
@@ -53,10 +53,16 @@ public static class Login
                 return TypedResults.Problem("User has no assigned role.", statusCode: 500);
             }
 
+            // Get profile for full name
+            var fullName = await db.Profiles
+                .Where(p => p.Id == user.Id)
+                .Select(p => p.FullName)
+                .FirstOrDefaultAsync(ct);
+
             // Generate token
             var token = tokenService.GenerateToken(user.Id, user.Email!, userRole);
 
-            return TypedResults.Ok(new Response(user.Id, user.Email!, userRole, token));
+            return TypedResults.Ok(new Response(user.Id, user.Email!, userRole, token, fullName));
         }
     }
 }
