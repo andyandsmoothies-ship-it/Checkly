@@ -64,7 +64,7 @@ def find_files_by_prefix(directory: str, prefix: str) -> list[str]:
         return [
             os.path.join(directory, name)
             for name in os.listdir(directory)
-            if name.lower().startswith(prefix.lower())
+            if name.lower().startswith(prefix.lower()) and name.lower().endswith(".md")
         ]
     except FileNotFoundError:
         return []

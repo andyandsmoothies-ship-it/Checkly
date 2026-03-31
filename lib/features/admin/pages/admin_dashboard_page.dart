@@ -51,8 +51,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           _templateCount = templates.length;
         });
       }
-    } catch (_) {
-      // API unavailable — keep defaults
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load dashboard stats: $e')),
+        );
+      }
     }
   }
 
@@ -70,7 +74,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ? _manager.dashboardState as AdminDashboardState
               : null;
 
-          return ListView(
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
               // Subtitle
@@ -117,7 +124,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   Expanded(
                     child: _AdminStat(
                       icon: Icons.hourglass_empty,
-                      label: 'PENDING',
+                      label: 'OPEN PLANS',
                       value: isLoading
                           ? '—'
                           : '${adminState?.openActionPlans ?? 0}',
@@ -173,6 +180,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 onTap: () => context.push('/admin/schedule'),
               ),
             ],
+          ),
+            ),
           );
         },
       ),

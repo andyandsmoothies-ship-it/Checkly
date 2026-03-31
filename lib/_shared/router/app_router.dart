@@ -233,6 +233,7 @@ class _MainShell extends StatelessWidget {
     if (location.startsWith('/plans')) return 2;
     if (location.startsWith('/templates')) return 3;
     if (location.startsWith('/profile')) return 4;
+    if (location.startsWith('/admin')) return 4;
     return 0; // /home
   }
 

@@ -173,6 +173,7 @@ When you encounter existing code that lacks tests, do NOT attempt a full rewrite
 These apply regardless of language, framework, or platform:
 
 - **Avoid Raw Selectors** — Do not assert against implementation-specific identifiers (e.g., CSS class names, widget keys, internal method names). Assert against *observable behavior* (status codes, returned values, visible state).
+- **The Mirror Function Trap** — NEVER copy-paste production logic into a test file to bypass access modifiers. Testing cloned functions completely decouples the test from production reality. If a private method must be unit-tested directly, import `package:meta/meta.dart` (or `.NET` `InternalsVisibleTo`) and annotate the real production method with `@visibleForTesting` to expose it.
 - **Abstraction Layer** — If your project has a shared test helper, driver, or factory (e.g., `WebApplicationFactory`, `WidgetTester`, `AppDriver`, `render()`), always use it. Never bypass your project's established test scaffolding.
 - **Naming Convention** — Test names must read as specifications: `Entity_Action_ExpectedOutcome` (e.g., `Auditor_SubmitWithMissingField_Returns400`, `Cart_Checkout_DecreasesStock`). Never use `Test1`, `MyTest`, or `It_Works`.
 - **One Assertion Per Concept** — Each test should prove exactly one behavioral claim. Multiple assertions are acceptable only if they all verify the same logical outcome.

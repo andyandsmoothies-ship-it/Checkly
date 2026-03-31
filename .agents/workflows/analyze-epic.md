@@ -32,7 +32,7 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 > - [ ] Phase 5: Task Slicing & Dispatch
 > ## Artifact Inventory
 > | Status | File Path | Type |
-> |--------|-----------|------|
+> | [NEW]  | brain/.../epic_plan_[topic].md | Epic Plan |
 > ```
 
 ## Phase 1: Technical Discovery & Reuse Audit
@@ -78,8 +78,8 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 - **Action**: 
   1. `view_file` `.agents/skills/use-case-slicing/SKILL.md`.
   2. Slice epic into independent Track A or Track B slices.
-  3. Append Slices to `analysis_epic_[topic].md`.
-- **Handoff**: Present the slice list to the user with a **Dispatch Table** using this exact format:
+  3. Append Slices to the `analysis_epic_[topic].md` artifact.
+- **Handoff**: Give `analysis_epic_[topic].md` to the user with a **Dispatch Table**:
 
   | Slice | Track | Dispatch Chain |
   |-------|-------|----------------|
@@ -93,10 +93,14 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 > **Clean Handoff**: Before context limit, write `handoff_[topic].md` listing completed phases + slice table state. Tell user: "Context limit reached. Resume from handoff file."
 
 ## Final Phase: Script Verification Gate
+
+> [!IMPORTANT]
+> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
+
 Run EXACTLY:
 `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
-- Code 0 (PASS): Workflow complete. Share summary and stop.
+- Code 0 (PASS): Workflow complete. Tell user to pass `analysis_epic_[topic].md` to next agent.
 - Code 1 (FAIL): Fix reported errors and retry.
 - 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
 

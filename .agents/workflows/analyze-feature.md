@@ -32,7 +32,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 > - [ ] Phase 4: Route Implementation
 > ## Artifact Inventory
 > | Status | File Path | Type |
-> |--------|-----------|------|
+> | [NEW]  | brain/.../implementation_plan_[topic].md | Plan |
 > ```
 
 ## Phase 1: Skill Loading (Precision Focus)
@@ -75,6 +75,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
   - **Business Logic Rules:** The core business rules and constraints derived from your First Principles analysis.
   - **Proposed Changes:** Grouped by file with [NEW]/[MODIFY]/[DELETE].
   - **System Impact:** Brief note on how you are avoiding the blast radius identified in Phase 2.
+  - **Dependency Context Array:** A list of every service/manager the touched files depend on, along with their exact import paths, so the QA agent can mock them without hallucinating.
   - **Behavioral Expectations (EDD):** Brief, explicit rules for testing interactions.
   - **Verification Plan:** Exact steps to prove it works in the local environment.
 
@@ -96,16 +97,20 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
   | Edge cases | Few, easily enumerated | Many, easy to miss without formal test writing |
   | Risk | Low — failure is visible and recoverable | High — silent corruption or data loss |
 
-- **Handoff (B1):** Instruct the user to run `/implement` directly.
-- **Handoff (B2):** Instruct the user to run `/atdd` first, then `/implement`.
+- **Handoff (B1):** Pass `implementation_plan_[topic].md` to the user for `/implement`.
+- **Handoff (B2):** Pass `implementation_plan_[topic].md` to the user for `/atdd`.
 
 ---
 
 ## Final Phase: Artifact Handoff (Hard Gate)
 - Output literal file path of implementation plan.
+
+> [!IMPORTANT]
+> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
+
 - Run the verification script (do NOT substitute `list_dir`):
   `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-  - Code 0 (PASS): Tell user plan is ready and output the path.
+  - Code 0 (PASS): Tell user to pass `implementation_plan_[topic].md` to next agent.
   - Code 1 (FAIL): Fix reported errors and retry.
   - 2-Strike Rule: Two consecutive failures → write `handoff_[topic].md`. Tell user: "Hard gate blocked on: [error]".
 

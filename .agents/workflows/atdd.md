@@ -25,7 +25,8 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > - [ ] Phase 3: Deliverable
 > ## Artifact Inventory
 > | Status | File Path | Type |
-> |--------|-----------|------|
+> | [NEW]  | brain/.../thinking_log_[topic].md | Log |
+> | [NEW]  | brain/.../test_contracts_[topic].md | Contracts |
 > ```
 
 > [!IMPORTANT]
@@ -124,15 +125,19 @@ If an AC **cannot be tested** due to a pre-existing bug or missing infrastructur
 - **Action**: Create `specs_[feature].md` AND `test_cases_[feature].md`. `test_cases` MUST be ONLY a raw Markdown table of approved ACs. Do not bloat specs. Commit failing tests to project.
 - **Infrastructure Map**: Specs must include Test Infrastructure Map template from `atdd-quality-gates`.
 - **Key Principle**: These Gherkin/failing tests ARE the ATDD spec. Builder goes straight to GREEN from here.
-- **Handoff**: Inject authored test names into `implementation_plan_[topic].md` under `### ATDD Constraints`. If no plan exists, do not generate one.
+- **Handoff**: Add test names to `implementation_plan_[topic].md`. Pass `test_cases_[topic].md` to user for Builder handoff.
 
 > [!CAUTION]
 > **Clean Handoff**: Before context limit, write `handoff_[topic].md` listing completed phases + Smoke Gate state.
 
 ## Final Phase: Script Verification Gate
+
+> [!IMPORTANT]
+> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
+
 Run EXACTLY:
 `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
-- Code 0 (PASS): Workflow complete. Share summary and stop.
+- Code 0 (PASS): Workflow complete. Tell user to pass test artifacts to Builder.
 - Code 1 (FAIL): Fix reported errors and retry.
 - 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".

@@ -61,7 +61,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
   - **Sprint/Theme**: Multiple domains -> recommend `shaping` skill.
   - **Epic (Track C)**: Massive change -> recommend `/analyze-epic`.
   - **Feature (Track A/B)**: Scoped change -> recommend `/analyze-feature`.
-- **Handoff**: Recommend next workflow. Do NOT generate `implementation_plan.md`.
+- **Handoff**: Hand `research_[topic].md` to the user and recommend next workflow.
 - **Final Message**: Print absolute file path to `.agents/tmp/research/` deliverable.
 
 ### Handoff Block Template (MANDATORY at end of deliverable)
@@ -82,6 +82,6 @@ description: Architect's Strategic Research Workflow for System Architecture.
 Run EXACTLY:
 `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
-- Code 0 (PASS): Workflow complete. Share summary and stop.
+- Code 0 (PASS): Workflow complete. Tell user to pass artifact to next agent.
 - Code 1 (FAIL): Fix reported errors and retry.
 - 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".

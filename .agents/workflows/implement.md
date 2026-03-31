@@ -23,12 +23,15 @@ description: The Core Builder Implementation Workflow.
   ## Phases
   - [ ] Phase 1: Deep Discovery
   - [ ] Phase 2: Planning
+  - [ ] Phase 2.5: QA TDD Handoff Gate
   - [ ] Phase 3: Coding
   - [ ] Phase 4: Self-Review
   - [ ] Phase 5: Handoff
   ## Artifact Inventory
   | Status | File Path | Type |
   |--------|-----------|------|
+  | [NEW]  | brain/.../walkthrough_[topic].md | Result |
+  | [NEW]  | brain/.../executed_tests_[topic].md | Test Log |
   ```
 
 ## Phase 1: Deep Discovery
@@ -57,10 +60,11 @@ description: The Core Builder Implementation Workflow.
 
 ## Phase 2.5: The QA TDD Handoff Gate (MANDATORY YIELD)
 > [!CAUTION]
-> **Anti-Bias Protocol:** The Builder Agent (@Forge) is strictly forbidden from writing both the tests and the implementation. To prevent test-hacking, the unit test boundaries must be set by QA.
-- **Action:** BEFORE entering Phase 3, you MUST stop generation and yield to the user.
-- **Message:** "Plan is ready. Please take this plan to the QA Agent (@Sentinel) and ask them to write the failing TDD / Unit Tests based on these contracts. Return here and type 'Tests are red' when complete."
-- **DO NOT WRITE ANY PRODUCTION CODE UNTIL THE USER CONFIRMS THE TESTS ARE WRITTEN.**
+> **Anti-Bias Protocol:** The Builder (@Forge) CANNOT write both tests and implementation. QA must set the test boundaries.
+- **Create Artifact:** Extract test contracts into a new `test_contracts_[topic].md` brain artifact. **MANDATORY:** Include a "Dependency Context Array" listing every service/manager the touched files depend on, plus their exact import paths, so QA can mock them instantly.
+- **Yield:** Stop generation immediately after creating the artifact. Do NOT enter Phase 3.
+- **Message:** "Plan is ready. Pass `test_contracts_[topic].md` to the QA Agent (@Sentinel) for failing TDD tests. Type 'tests are red' when done."
+- **Hold:** DO NOT write production code until the user confirms tests are red.
 
 ## Phase 3: Coding
 > **@@SCAN — Pre-Code (MANDATORY)** — state all three before writing the first line:
@@ -117,6 +121,9 @@ Review your own changes from 4 angles. State findings for each:
 - **Verification Handoff** per scenario: Steps / Expected / Blast Radius. The QA agent uses this to run `/verify`.
 
 Run `cmd /c git diff --name-only` one final time to confirm only planned files were changed.
+
+> [!IMPORTANT]
+> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
 
 > [!IMPORTANT]
 > **🛡️ Script Verification Gate:** Run before declaring done:

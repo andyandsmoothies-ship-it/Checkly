@@ -24,7 +24,8 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
   - [ ] Phase 4: Handoff
   ## Artifact Inventory
   | Status | File Path | Type |
-  |--------|-----------|------|
+  | [NEW]  | brain/.../executed_tests_[topic].md | Red Tests |
+  | [NEW]  | brain/.../walkthrough_[topic].md | Summary |
   ```
 
 ## Phase 1: Blueprint Ingestion
@@ -34,13 +35,16 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
   - **.NET / C# Backend**: Load `testing-strategy` (for xUnit v3, WebApplicationFactory, Verify).
   - **React / Frontend**: Load `frontend-testing` (for Jest, React Testing Library, Cypress).
   - **Flutter / Native Apps**: Load `mobile-app-testing` (for widget tests, integration_test, Detox).
+- **Rule (Dependency Context)**: If the implementation plan requires mocking complex managers or services (like GetIt dependencies), check if the plan provides a **Dependency Context Array** (exact file paths to those services). If it doesn't, use `grep_search` to find the exact import paths before writing code. Do not guess folder names (e.g., `models` vs `model`).
 - **Action**: If you see missing contracts or undefined signatures in the plan that make test writing impossible, **STOP** and ask the user to clarify.
 
 > **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Did you read the implementation plan? (2) Which testing skills did you load based on the tech stack? (3) Are the proposed contracts clear enough to write tests against?
 
 ## Phase 2: Test Authoring (The Red Phase)
 - **Requirement**: Write the actual test files (`.spec.ts`, `_test.dart`, `*Tests.cs`) targeting the new feature.
-- **Rule (Ghost Protocol)**: Sentinel CANNOT write or modify production code in the `lib/`, `src/`, or `server/` folders. Sentinel writes test code only. You must mock or assume the existance of the exact classes defined in the plan.
+- **Rule (Ghost Protocol)**: Sentinel CANNOT write or modify production code in the `lib/`, `src/`, or `server/` folders. Sentinel writes test code only. **Exception**: You are explicitly allowed to edit production files solely to import `meta` and add `@visibleForTesting` (or equivalent `.NET` `InternalsVisibleTo`) to expose private methods needed for testing. 
+- **Rule (The Mirror Function Trap)**: NEVER copy-paste production logic into a test file to bypass access modifiers. Testing cloned functions decouples the test from production reality. If a private method must be unit-tested directly, use the exception above to expose it and test the *real* method.
+- **Rule (Mocking Standards)**: NEVER write manual `Fake` or `Mock` classes from scratch for complex dependencies. You must use a mocking library (e.g., `mocktail` in Flutter, `NSubstitute` in .NET) to auto-generate mocks that perfectly match interface signatures.
 - **Rule (State Matrix)**: Your tests MUST aggressively cover:
   1. The **Happy Path** (Success State - 200 OK, expected view renders).
   2. The **Error State** (Validation failures, 404s, 403s, expected exceptions).
@@ -75,6 +79,10 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 ---
 
 ## Final Phase: Script Verification Gate
+
+> [!IMPORTANT]
+> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
+
 Run EXACTLY:
 `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
