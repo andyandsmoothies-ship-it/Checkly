@@ -77,6 +77,9 @@ description: The Core Builder Implementation Workflow.
 
 - **The Cheap Verifier Gate**: Before declaring code complete, run a fast semantic check. Dart: `cmd /c flutter analyze lib/path/to/feature`. C#: `cmd /c dotnet build server/Checkly.Api.csproj --no-restore`. Fix locally.
 - **The Red/Green Context Split (MANDATORY)**: @Sentinel provided failing tests. Turn them GREEN. **DO NOT MODIFY test files.**
+  > [!CAUTION]
+  > **The Mirror Function Trap**
+  > Do not turn tests green if they rely on mirrored/cloned production logic. If a test file declares a replica of a private production method, reject it. Expose the actual production method using the language's standard testing access modifier, delete the clone, and test the real code.
 - Follow TDD inner loop: Run QA test → write code to pass it → refactor.
 - Post-Green Check: Check architecture compliance, null handling, edge cases, import legality. Fix immediately.
 - If task shifts domains, re-scan `.agents/skills/` and drop irrelevant ones.

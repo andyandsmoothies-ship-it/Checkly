@@ -58,6 +58,14 @@ These are two different things that often happen at the same time. Don't confuse
 > [!IMPORTANT]
 > When specs arrive from the `/atdd` workflow, they ARE the RED starting point. Do not re-specify what ATDD already defined — go straight to GREEN. BDD (ATDD) defines the *edges of the box* at the macro level; TDD *fills it in* at the micro level. They are nested: a high-level BDD scenario fails first, prompting the developer into the granular TDD Red-Green-Refactor cycle to implement the underlying logic.
 
+## Anti-Pattern: The Mirror Function Trap
+
+**DO NOT copy-paste private production methods into your test file.**
+
+When testing private logic during the RED phase, never declare a clone of the production function inside the test file just to make it compile. Testing a clone decouples the test from reality—it will pass even if the real system breaks.
+
+**Correct approach:** Test observable behavior through the public API. If you must test a private internal method directly, expose the real production logic using your language's standard testing access modifier. Never write business logic inside a test namespace.
+
 ## Anti-Pattern: Horizontal Slices
 
 **DO NOT write all tests first, then all implementation.** This is "horizontal slicing" — treating RED as "write all tests" and GREEN as "write all code."

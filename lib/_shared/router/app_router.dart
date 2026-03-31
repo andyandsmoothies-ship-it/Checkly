@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meta/meta.dart';
 
 import '../../features/auth/manager/auth_manager.dart';
 import '../../features/auth/model/auth_state.dart';
@@ -221,6 +222,16 @@ String? _authRedirect(BuildContext context, GoRouterState state) {
   return null;
 }
 
+@visibleForTesting
+int shellIndexFromLocation(String location) {
+  if (location.startsWith('/activity')) return 1;
+  if (location.startsWith('/plans')) return 2;
+  if (location.startsWith('/templates')) return 3;
+  if (location.startsWith('/profile')) return 4;
+  if (location.startsWith('/admin')) return 4;
+  return 0; // /home
+}
+
 /// Main shell with 5-tab bottom navigation matching PWA.
 /// Tabs: Home | Audits | Actions | Templates | Profile
 class _MainShell extends StatelessWidget {
@@ -228,19 +239,10 @@ class _MainShell extends StatelessWidget {
 
   const _MainShell({required this.child});
 
-  static int _indexFromLocation(String location) {
-    if (location.startsWith('/activity')) return 1;
-    if (location.startsWith('/plans')) return 2;
-    if (location.startsWith('/templates')) return 3;
-    if (location.startsWith('/profile')) return 4;
-    if (location.startsWith('/admin')) return 4;
-    return 0; // /home
-  }
-
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    final currentIndex = _indexFromLocation(location);
+    final currentIndex = shellIndexFromLocation(location);
 
     return Scaffold(
       body: child,
