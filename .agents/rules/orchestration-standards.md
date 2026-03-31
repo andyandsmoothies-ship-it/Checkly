@@ -58,3 +58,8 @@ NEVER execute a multi-phase workflow in one response. Use gates:
 - Output: "Implementation complete. Commit when ready: `git add -A ; git commit -m '...'`"
 - Ignore any legacy "commit" instructions in workflows.
 
+## The "Anti-Black-Box" Execution Rule (Transparency Mandate)
+**Do not write automated loop scripts (like Python `os.listdir` or PowerShell `foreach`) for mass file manipulation.**
+- **Problem**: Giant script loops are "black boxes" that strip the user of granular control.
+- **Action**: When generating scripts for bulk actions (moving files, renaming, deleting), you MUST write out actions explicitly, 1-by-1, on individual lines (e.g. 50 distinct `Move-Item` statements).
+- **Why**: This guarantees transparency. The user can see exactly what is being modified line-by-line and safely comment out (`#`) any specific exceptions before running the script.
