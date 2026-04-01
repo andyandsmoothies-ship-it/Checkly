@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../_shared/utils/isolate_parser.dart';
 import '../model/store_dto.dart';
 
 /// API service for store endpoints.
@@ -25,12 +26,17 @@ class StoreApiService {
     if (exceptUser != null) params['except_user'] = exceptUser;
     if (includeInactive) params['includeInactive'] = 'true';
 
-    final response = await _dio.get('/stores', queryParameters: params);
-    final data = response.data;
-    final list = (data is List) ? data : (data['items'] as List<dynamic>);
-    return list
-        .map((j) => StoreDto.fromJson(j as Map<String, dynamic>))
-        .toList();
+    final response = await _dio.get(
+      '/stores',
+      queryParameters: params,
+      options: Options(responseType: ResponseType.plain),
+    );
+    
+    return IsolateParser.parseList<StoreDto>(
+      json: response.data,
+      parser: StoreDto.fromJson,
+      listKey: 'items', // IsolateParser gracefully falls back to flat list if data is not a Map
+    );
   }
 
   /// POST /stores — create a new store.

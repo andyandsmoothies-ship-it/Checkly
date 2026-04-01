@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../_shared/utils/isolate_parser.dart';
 import '../models/template_dto.dart';
 
 /// API service for template endpoints.
@@ -10,12 +11,15 @@ class TemplateApiService {
 
   /// GET /templates — returns list of [TemplateDto].
   Future<List<TemplateDto>> getTemplates() async {
-    final response = await _dio.get('/templates');
-    final data = response.data as Map<String, dynamic>;
-    final list = data['items'] as List<dynamic>;
-    return list
-        .map((j) => TemplateDto.fromJson(j as Map<String, dynamic>))
-        .toList();
+    final response = await _dio.get(
+      '/templates',
+      options: Options(responseType: ResponseType.plain),
+    );
+    return IsolateParser.parseList<TemplateDto>(
+      json: response.data,
+      parser: TemplateDto.fromJson,
+      listKey: 'items',
+    );
   }
 
   /// GET /templates/{id} → TemplateTreeDto (nested tree)

@@ -41,6 +41,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Topology** | MANDATORY: Parse config files (`.csproj`, `pubspec.yaml`). |
+| **Step 0 Nuke** | IF structure refactor -> MANDATORY: Remove unused imports, dead props, and commented code *before* planning logic. Protects token context. |
 | **Skill Load** | MANDATORY: Load `tdd`. IF `dotnet` THEN Load `testing-strategy`. |
 | **Dynamic Skills**| Derive 2-3 keywords -> search `.agents/skills/` -> Load Top 2. |
 
@@ -82,8 +83,9 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Test Ingestion** | IF returning from Phase 2.5 -> MANDATORY: Use `view_file` or `grep_search` to read `executed_tests_[topic].md` AND the physical test files created by QA. Understand exact assertions before coding. |
-| **Cheap Verify** | Run structural validation (e.g. `flutter analyze`, `dotnet build --no-restore`). Fix before declaring complete. |
+| **Cheap Verify** | Run structural validation (e.g. `flutter analyze`, `dotnet build --no-restore`). Fix before declaring complete. File writes alone != Success. |
 | **Red/Green Loop**| IF `Sentinel` gives RED test -> write PROD code to make GREEN -> Refactor. PROHIBITED: Modifying test files. |
+| **Refactor Safety**| IF (renaming/moving code) THEN `grep_search` is NOT an AST. MUST explicitly search 4 ways: 1) Direct calls, 2) Types, 3) String literals, 4) Test Mocks. |
 | **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
 
 > **@@SCAN**: (1) Red/Green split respected? (2) Inline verify gate run?

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../_shared/utils/isolate_parser.dart';
 import '../model/submission_dto.dart';
 import '../pages/survey_results_page.dart';
 
@@ -25,12 +26,14 @@ class SubmissionApiService {
     final response = await _dio.get(
       '/submissions',
       queryParameters: {'page': page, 'pageSize': pageSize},
+      options: Options(responseType: ResponseType.plain),
     );
-    final data = response.data as Map<String, dynamic>;
-    final list = data['items'] as List<dynamic>;
-    return list
-        .map((j) => SubmissionDto.fromJson(j as Map<String, dynamic>))
-        .toList();
+    
+    return IsolateParser.parseList<SubmissionDto>(
+      json: response.data,
+      parser: SubmissionDto.fromJson,
+      listKey: 'items',
+    );
   }
 
   /// GET /submissions/{id} — returns [SubmissionDetailDto].
@@ -109,11 +112,13 @@ class SubmissionApiService {
         'page': page,
         'pageSize': pageSize,
       },
+      options: Options(responseType: ResponseType.plain),
     );
-    final data = response.data as Map<String, dynamic>;
-    final list = data['items'] as List<dynamic>;
-    return list
-        .map((j) => SubmissionDto.fromJson(j as Map<String, dynamic>))
-        .toList();
+    
+    return IsolateParser.parseList<SubmissionDto>(
+      json: response.data,
+      parser: SubmissionDto.fromJson,
+      listKey: 'items',
+    );
   }
 }

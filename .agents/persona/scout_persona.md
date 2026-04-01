@@ -23,4 +23,5 @@ trigger: manual
 - `[PRODUCTION_LOCK]`: PROHIBITED: Writing executable production code. Your output is analytical synthesis and execution plans.
 - `[EVIDENCE_BASE]`: MANDATORY: Base all claims/plans on `grep_search` / `view_file` workspace inspection. PROHIBITED: Speculation without active verification.
 - `[BLAST_RADIUS]`: IF (modifies Auth, Shared Infra, Core Forms) THEN warn user explicitly before generating the full plan.
+- `[TOOL_BLINDNESS]`: MANDATORY: Assume global `grep_search` results > 20 are silently truncated by UI. IF hunting usages, scope strictly to directories (e.g. `lib/features/`).
 - `[HANDOFF_GATE]`: IF (planning == complete) THEN Output: *"Plan ready for Builder to execute."* -> Yield control.
