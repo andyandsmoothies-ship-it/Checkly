@@ -10,50 +10,48 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 # Workflow: /ux-heuristic-eval
 
 > [!NOTE]
-> This is the **UX Heuristic Evaluation** workflow — a systematic review of UI screens against Jakob Nielsen's 10 Usability Heuristics to find usability and experience problems.
-> Based on the [NN/G guide](https://www.nngroup.com/articles/how-to-conduct-a-heuristic-evaluation/).
+> Systematic UX review against Nielsen's 10 Heuristics. Role: **Senior UX Evaluator**.
 
+## Phase 1: Preparation & Scope
 
-## Phase 1: Preparation
-- **Instruction**: Assume the role of a Senior UX Evaluator.
-- **Skill**: Load the `ux-heuristic-evaluation` skill (`.agents/skills/ux-heuristic-evaluation/SKILL.md`). This is the primary reference for the 10 heuristics, severity scale, and evaluation protocol.
-- **Set the Scope**: Ask the user (or determine from context):
-  - Which screens, pages, or task flows to evaluate
-  - Which user group (e.g., admin, field auditor, viewer)
-  - Which device type (mobile, desktop, tablet)
+| Step | Execution Contract |
+|---|---|
+| **Skill Load** | MANDATORY: Load `ux-heuristic-evaluation` skill. |
+| **Scope Extract**| Identify Target Screen(s), User Group (e.g. Admin), and Device Type. IF missing -> Request from User. |
 
-> **@@SCAN** Before reading source code, answer: (1) What screens/flows are in scope? (2) Which user group and device type? (3) Did you load the ux-heuristic-evaluation skill?
+> **@@SCAN**: (1) Scope defined? (2) User/Device targeted? (3) Skill loaded?
 
 ## Phase 2: Source Code Walkthrough
-- **Instruction**: Before the heuristic pass, read the target page's source code to build a complete mental model of the page's behavior — what the user sees, what they can do, what feedback they receive, and what happens at every edge (loading, empty, error, offline). This mental model replaces the need for a screenshot and catches structural issues that visual inspection alone cannot reveal.
-- **Action**: Use `view_file` on the target page's source code. Trace widget trees, callbacks, and navigation flows.
 
-> **@@SCAN** Before heuristic evaluation, answer: (1) What is the page's complete behavior model (loading, empty, error, offline states)? (2) What user actions are available and what feedback do they trigger?
+| Step | Execution Contract |
+|---|---|
+| **Code Parse** | `view_file` on target UI source code. Trace callbacks, navigation, and state handlers. |
+| **State Mapping**| MANDATORY: Define page behavior under 4 extremes: `Loading`, `Empty`, `Error`, `Offline`. |
+| **Visual Bias** | PROHIBITED: Relying solely on screenshots. Code logic dictates UX. |
 
-## Phase 3: Evaluate
-- **Instruction**: Follow the skill's **Evaluation Protocol** (Double Pass Pattern). Walk through the scoped task flow as the target user, then evaluate against all 10 heuristics on the second pass.
-- **Documentation**: Use the skill's **Deliverable Format** for each violation found.
+> **@@SCAN**: (1) Loading/Empty/Error/Offline modeled? (2) Actions/Feedback traced?
+
+## Phase 3: Heuristic Double-Pass
+
+| Step | Execution Contract |
+|---|---|
+| **Pass 1: Flow** | Execute task conceptually as User Persona. |
+| **Pass 2: Audit**| Evaluate flow against 10 Heuristics. |
+| **Exceptions** | Mark deliberate design tradeoffs as "Justified Exceptions" (NOT violations). |
+
+> **@@SCAN**: (1) Double Pass executed? (2) Violations mapped to heuristics? (3) Tradeoffs documented?
+
+## Phase 4: Delivery Payload
+
+| Step | Execution Contract |
+|---|---|
+| **Aggregation** | Group issues. Sort by severity. Extract Top 3 Impact Fixes. |
+| **Artifact Gen** | Create `ux_heuristic_eval_[scope].md`. |
+| **Payload Schema**| `Summary` | `Scorecard (✅/⚠️/❌)` | `Sorted Findings` | `Top 3 Fix Priorities` | `Tradeoffs`. |
+| **Routing** | Output message: *"Route fixes through /analyze-feature -> /implement."* -> YIELD. |
 
 > [!IMPORTANT]
-> A design choice violating a heuristic does NOT automatically mean it needs fixing — context matters. Note justified tradeoffs as exceptions, not issues.
-
-> **@@SCAN**: (1) Double Pass completed? (2) Violations per severity? (3) Justified tradeoffs documented?
-
-## Phase 4: Consolidate & Deliver
-- **Action**: Group similar issues, remove duplicates, and prioritize by severity.
-- **Deliverable**: Create a `ux_heuristic_eval_[scope].md` artifact with:
-  1. **Evaluation Summary**: Scope, date, device, user group
-  2. **Findings**: All issues sorted by severity (highest first), using the skill's format
-  3. **Heuristic Scorecard**: Per-heuristic summary (✅ Good / ⚠️ Issues found / ❌ Critical violations)
-  4. **Top 3 Priority Fixes**: The most impactful issues to address first
-  5. **Exceptions & Tradeoffs**: Documented justified violations
-- **Handoff**: If fixes are needed, recommend the user route them through `/analysis` → `/implement` → `/verify`.
-
-## Final Phase: Script Verification Gate
-Run EXACTLY:
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-
-- Code 0 (PASS): Workflow complete. Share summary and stop.
-- Code 1 (FAIL): Fix reported errors and retry.
-- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
-
+> **Script Verification Gate**:
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Workflow complete. Share summary."*
+> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

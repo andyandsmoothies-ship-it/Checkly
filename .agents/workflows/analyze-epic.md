@@ -9,101 +9,78 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 
 # Workflow: /analyze-epic
 
-## Step 0: Context Initialization (CRITICAL FAIL-SAFE)
-> [!IMPORTANT]
-> If you do not have `.agents/rules/governance-rules.md` in active memory, `view_file` it now. Do not proceed until confirming adherence.
-
 > [!NOTE]
-> This is the **Deep Architecture Pipeline** — used for massive, multi-layer epics (Track C) that require extreme rigor, Red Team adversarial review, and formal use-case slicing. 
-> For simple features or bugs, abort this workflow and switch to `/analyze-feature`.
+> Deep Architecture Pipeline. Target: Massive, multi-layer epics (Track C). Requires Red Team adversarial review and formal slicing.
 
-## Pre-Flight Setup
-> [!IMPORTANT]
-> Define a reasoning trace. Do NOT pollute artifacts with internal monologue.
-> **MANDATORY ARTIFACT**: Create `task.md` right now before Phase 1 using this schema:
-> ```
-> # Task: [Epic Name]
-> Workflow: /analyze-epic | Track: C
-> ## Phases
-> - [ ] Phase 1: Technical Discovery & Reuse Audit
-> - [ ] Phase 2: Feasibility & System Impact Audit
-> - [ ] Phase 3: Adversarial Review (Red Team)
-> - [ ] Phase 4: Deliverable
-> - [ ] Phase 5: Task Slicing & Dispatch
-> ## Artifact Inventory
-> | Status | File Path | Type |
-> | [NEW]  | brain/.../epic_plan_[topic].md | Epic Plan |
-> ```
+## Phase 0: Initialization
 
-## Phase 1: Technical Discovery & Reuse Audit
-- **Instruction**: Assume Principal Software Engineer persona. Determine if we should build this.
-- **Consume Research**: Read `concept_brief_[topic].md` or `research_[topic].md` if provided.
-- **Skill Discovery**: Load architectural skills (e.g., `clean-architecture`). Declare loaded skills.
-- **Reuse vs. Build**: Use `grep_search` to determine if requirement can be met by configuring existing components.
-- **Alternatives**: Identify ≥2 viable architecture options before deciding.
+| Step | Execution Contract |
+|---|---|
+| **Governance** | IF `.agents/rules/governance-rules.md` NOT in memory THEN `view_file` it immediately. |
+| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Loaded skills? (2) Can this be reused? (3) Core entities/tables touched? (4) ≥2 alternatives identified?
+```markdown
+# Task: [Epic Name]
+Workflow: /analyze-epic | Track: C
+## Phases
+- [ ] Phase 1: Technical Discovery
+- [ ] Phase 2: Red Team Adversarial Review
+- [ ] Phase 3: Deliverable
+- [ ] Phase 4: Slicing Dispatch
+## Artifact Inventory
+| Status | File Path | Type |
+| [NEW]  | brain/.../analysis_epic_[topic].md | Epic Plan |
+```
 
-## Phase 2: Feasibility & System Impact Audit
-- **Instruction**: Evaluate logic against workspace rules in `.agents/rules/`.
-- **System Impact Audit**: Search for cross-feature conflicts. Identify core tables/services touched. **Use `grep_search` to find all usages.**
-- **Boolean Integrity**: If feature involves conditional logic, explicitly define ALLOWLIST vs BLOCKLIST. Do not leave ambiguous.
-- **Action**: Identify logical flaws, unhandled edge cases, security risks, and standards deviations.
+## Phase 1: Technical Discovery & Feasibility
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) What could break? (2) Which rules apply? (3) Did you file-search affected components?
+| Vector | Execution Contract |
+|---|---|
+| **Skill Load** | Load abstract architectural skills (e.g., `clean-architecture`). |
+| **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
+| **Options** | Explicitly define >= 2 architectural alternatives. |
+| **System Impact**| `grep_search` all core tables/services affected. Define ALLOWLIST vs BLOCKLIST conditional logic. |
 
-## Phase 3: Adversarial Review (Red Team)
-- **Instruction**: Switch to Red Team persona. Destroy proposed implementation plan before coding.
-- **Skill Refresh**: Re-scan `.agents/skills/` for error/concurrency skills. Load 1-2.
-- [ ] **Hostile Interrogation**: Run verification-loop Part C gate. Answer 3 failure questions.
-- [ ] **Resolution**: Mitigate failures or reject epic.
+> **@@SCAN**: (1) Component reuse verified? (2) >=2 Alternatives? (3) Core tables explicitly grepped?
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Hostile Interrogation run? (2) 3 failure scenarios? (3) Unmitigable failures?
+## Phase 2: Red Team Adversarial Review
 
-## Phase 4: The Deliverable (Production-Grade Architecture Document)
-- **Requirement**: You MUST create a rigorous, structured `analysis_epic_[topic].md` artifact. This is a Software Engineering Design Document.
-- **The artifact MUST include the following mandatory sections**:
-  1. **Executive Summary & Goals**: What are we building and why?
-  2. **Design Rationale & Alternatives**: Explicit trade-off matrix (max 3 options). State EXACTLY why alternatives were rejected.
-  3. **System Architecture & Data Flow**: Clear description of how the system will interact across the UI, Backend (API), and Database. Use a Mermaid diagram if complex.
-  4. **Database & Schema Changes**: Table modifications, migrations, and index strategies.
-  5. **API Contracts**: Request/Response payloads and endpoint designs.
-  6. **System Impact & Blast Radius**: List existing components at risk. **MANDATORY**: Define Rollback/Reversibility Strategy (e.g., feature toggles, backward-safe DB).
-  7. **Adversarial Review & Edge Cases**: The 3 Red Team failures and their mitigations. Error handling strategies (offline, timeouts, invalid data).
-  8. **Security & Permissions**: RLS, Auth, or authorization checks required.
-  9. **Observability**: How to prove it works in production? (Logging, telemetry hooks).
-  10. **Behavioral Expectations (EDD)**: You MUST generate 3-5 clear, plain-text expectations for the feature. Incorporate "Hostile Expectations" from the Red Team. 
+| Vector | Execution Contract |
+|---|---|
+| **Skill Swap** | Load `dotnet-resilience` / concurrency skills. |
+| **Hostile Gate** | Execute **Hostile Interrogation** (verification-loop Part C). Must output 3 hard failure conditions. |
+| **Resolution** | Define mitigations for all 3 failures OR reject the Epic. |
 
-> **@@SCAN** PAUSE and INTERNALLY evaluate: (1) Does artifact include ALL 10 sections? List skipped ones.
+> **@@SCAN**: (1) Hostile Interrogation run? (2) 3 Failure Scenarios? (3) Mitigations concrete?
 
-## Phase 5: Task Slicing & Dispatch
-- **Instruction**: Track C tasks must be sliced into Track A/B pieces. DO NOT hand to `/implement`.
-- **Action**: 
-  1. `view_file` `.agents/skills/use-case-slicing/SKILL.md`.
-  2. Slice epic into independent Track A or Track B slices.
-  3. Append Slices to the `analysis_epic_[topic].md` artifact.
-- **Handoff**: Give `analysis_epic_[topic].md` to the user with a **Dispatch Table**:
+## Phase 3: Production-Grade Deliverable
 
-  | Slice | Track | Dispatch Chain |
-  |-------|-------|----------------|
-  | Slice N — [name] | Track A or B | `/analyze-feature` → `/implement` OR `/analyze-feature` → `/atdd` → `/implement` |
+| Process | Execution Contract |
+|---|---|
+| **Artifact Gen** | Create `analysis_epic_[topic].md`. |
+| **10-Point Payload**| `1. Exec Summary`, `2. Decision Matrix`, `3. Sys Arch Flow (Mermaid)`, `4. DB Migrations`, `5. API Contracts`, `6. Blast Radius/Rollback Plan`, `7. Red Team Adversarial Log`, `8. Security/RLS`, `9. Observability Hooks`, `10. EDD Expectations`. |
 
-  - **Track A** (cosmetic, copy, UI-only with no logic branches): `/analyze-feature` → `/implement`
-  - **Track B** (new logic, state machine, recursive validation, data mutation): `/analyze-feature` → `/atdd` → `/implement`
-  - State clearly: "Do NOT dispatch Slice N+1 until Slice N is verified GREEN."
+> **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
+
+## Phase 4: Slicing & Dispatch Loop
 
 > [!CAUTION]
-> **Clean Handoff**: Before context limit, write `handoff_[topic].md` listing completed phases + slice table state. Tell user: "Context limit reached. Resume from handoff file."
+> **[DISPATCH_LOCK]**: PROHIBITED: Handoff of Track C Epic directly to `/implement`. MUST slice to Track A/B.
 
-## Final Phase: Script Verification Gate
+| Step | Execution Contract |
+|---|---|
+| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices. Append slices to `analysis_epic_[topic].md`. |
+| **Dispatch Map** | Generate Routing Table. `Slice N | Track A/B | Route Path`. |
+
+### Dispatch Map Schema
+- **Track A (Cosmetic/Static):** `/analyze-feature` -> `/implement`
+- **Track B (Logic/State/Mutation):** `/analyze-feature` -> `/atdd` -> `/implement`
+- **Mandate:** *"DO NOT dispatch Slice N+1 until Slice N is verified GREEN."*
 
 > [!IMPORTANT]
-> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
-
-Run EXACTLY:
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-
-- Code 0 (PASS): Workflow complete. Tell user to pass `analysis_epic_[topic].md` to next agent.
-- Code 1 (FAIL): Fix reported errors and retry.
-- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
-
+> **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> 
+> **Script Verification Gate**:
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Handoff complete."*
+> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

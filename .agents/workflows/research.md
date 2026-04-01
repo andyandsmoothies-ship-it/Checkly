@@ -10,86 +10,55 @@ description: Architect's Strategic Research Workflow for System Architecture.
 # Workflow: /research
 
 > [!NOTE]
-> This is the **Discovery & Architecture** workflow — used to explore new ideas or libraries before writing code.
-> Handoff usually goes to `/analysis` or directly to `/implement`.
+> Discovery & Architecture workflow. Used to explore ideas *before* spec writing. Handoff to `/analysis` or `/implement`.
 
-## Pre-Flight Setup
+## Phase 0: Pre-Flight
 > [!IMPORTANT]
-> Synthesize internal reasoning BEFORE starting deliverables. Do NOT pollute artifacts with internal monologue.
-> **Raw Data Requirement**: Track reasoning via table: `Hypothesis | Source Checked | Rejected/Approved | Architectural Implication`.
+> **[DATA_REQUIREMENT]**: Track reasoning exclusively via Matrix: `Hypothesis | Source Checked | Rejected/Approved | Architectural Implication`. PROHIBITED: Internal monologue in artifacts.
 
-## Phase 1: Skill & Persona Alignment
-- **Instruction**: Assume the role of a Senior Architect.
-- **Skill Discovery**: Derive 2-3 technical keywords from the research topic (e.g., "first-principles", "challenge assumptions"). Use `grep_search` on `.agents/skills/` to find skills matching those keywords. Load ONLY the top 1-2 most relevant architectural `SKILL.md` files. Declare which skills were loaded.
-- **Action**: Query `context7` or perform web searches to gather modern patterns.
+## Phase 1: Skill & E2E Context Alignment
 
-> **@@SCAN**: (1) Which skills loaded? (2) Modern patterns discovered?
+| Vector | Execution Contract |
+|---|---|
+| **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
+| **Discovery** | Query `context7` or web to gather modern patterns. |
+| **E2E Map** | MANDATORY: Map Upstream Triggers + Downstream Effects. Identify Status Quo friction. Map exact system Context Handoff points. |
 
-## Phase 2: E2E Context Mapping (MANDATORY)
-- **Instruction**: Map full context (upstream triggers + downstream effects) before evaluating options.
-- **Action**:
-  1. **Map full scope**: Identify everything this decision touches.
-  2. **Document current state**: How is it handled today? Identify friction points.
-  3. **Identify handoff points**: Where must user/system leave one context for another?
-- **Output**: Structured summary of full E2E context map.
+> **@@SCAN**: (1) Skills loaded/Patterns discovered? (2) Full E2E Scope mapped? (3) Friction points identified?
 
-> **@@SCAN**: (1) Full E2E scope mapped (upstream + downstream)? (2) Handoff/friction points identified?
+## Phase 2: Strategy Assessment
 
-## Phase 2.5: Competitive Analysis
-- **Instruction**: Do not default to the first viable option.
-- **Action**: Identify top 2-3 viable alternatives. Evaluate them against project constraints (Performance, Offline capabilities, Tech stack fit).
+| Vector | Execution Contract |
+|---|---|
+| **Comparables**| MANDATORY: Identify 2-3 top viable options. Evaluate against NFRs (Performance, Offline Limits, Tech Stack). |
+| **Blind Spots**| MANDATORY: Identify EXACTLY 3 blind spots regarding NFRs (payload size, memory). |
+| **Conflicts** | MANDATORY: Identify >= 1 Conflict with existing `.agents/rules/` or `GEMINI.md` gotchas. |
 
-> **@@SCAN**: (1) Top 2-3 alternatives identified? (2) Evaluated against constraints?
+> **@@SCAN**: (1) Alternatives evaluated? (2) 3 Blind spots cited? (3) >1 Rules Conflict cited?
 
-## Phase 3: Blind-Spot & Conflict Detection
-- **Instruction**: Act as adversarial "Explorer". Find failure points.
-- **Action**: 
-  1. Identify exactly 3 **BLIND SPOTS**. **MANDATORY**: Include check against Non-Functional Requirements (NFRs) like mobile payload size, offline limits, or memory.
-  2. Identify ≥1 **`!!! CONFLICT`** with architectural rules in `.agents/rules/` or project gotchas.
+## Phase 3: Deliverable & Sizing
 
-> **@@SCAN**: (1) 3 Blind Spots named? (2) NFR limits checked? (3) CONFLICT with existing rules identified?
+| Step | Execution Contract |
+|---|---|
+| **Artifact Gen** | Create `research_[topic].md` (IsArtifact: True). |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal `cp` command. |
+| **Payload Schema**| E2E Workflow Map + Comparative Decision Matrix. MUST end with strict `Handoff Block`. |
 
-## Phase 4: Feasibility & Rules Check
-- **Instruction**: Evaluate the idea against the project's rigid constraints.
-- **Skill Refresh**: If the research shifted domains (e.g., started as "which database?" but now involves "auth architecture"), re-scan `.agents/skills/` for skills matching the new concern. Load 1-2 if relevant.
-- **Action**: Read the workspace rules in `.agents/rules/`. Does the proposed idea violate any existing architecture or security constraints?
-
-> **@@SCAN**: (1) Workspace rule violations? (2) Verdict: Viable / Needs Redesign / Reject?
-
-## Phase 5: Deliverable (The Handoff)
-- **Requirement**: Output structured artifact that persists across sessions.
-- **Action**:
-  1. Create `research_[topic].md` artifact using `write_to_file` (IsArtifact: true).
-  2. Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal (`Copy-Item` / `cp`). Do NOT use `write_to_file` with IsArtifact: false for this path.
-  3. Include E2E Workflow Map from Phase 2.
-  4. **NEW**: Include Comparative Decision Matrix from Phase 2.5.
-  5. End with **Handoff Block**.
-- **Effort Sizing**:
-  - **Sprint/Theme**: Multiple domains -> recommend `shaping` skill.
-  - **Epic (Track C)**: Massive change -> recommend `/analyze-epic`.
-  - **Feature (Track A/B)**: Scoped change -> recommend `/analyze-feature`.
-- **Handoff**: Hand `research_[topic].md` to the user and recommend next workflow.
-- **Final Message**: Print absolute file path to `.agents/tmp/research/` deliverable.
-
-### Handoff Block Template (MANDATORY at end of deliverable)
+### Handoff Block Template (MANDATORY at EOF)
 ```markdown
 ---
 ## Handoff Block
 - **Verdict**: Viable / Needs Redesign / Reject
-- **PoC Scope**: Define strict PoC boundary if architectural risk remains high.
+- **PoC Scope**: [Define PoC boundary if highly risky]
 - **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
-- **Recommended Next**: `shaping` skill | `/analyze-epic` | `/analyze-feature`
+- **Recommended Next**: `shaping` | `/analyze-epic` | `/analyze-feature`
 - **Persistent Path**: `.agents/tmp/research/research_[topic].md`
-- **Blind Spots**: [3 items from Phase 3]
-- **Conflicts**: [items from Phase 3, or NONE]
+- **Blind Spots**: [3 explicit flaws]
+- **Conflicts**: [Explicit constraints broken]
 ```
 
----
-
-## Final Phase: Script Verification Gate
-Run EXACTLY:
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-
-- Code 0 (PASS): Workflow complete. Tell user to pass artifact to next agent.
-- Code 1 (FAIL): Fix reported errors and retry.
-- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
+> [!IMPORTANT]
+> **Script Verification Gate**:
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Workflow complete. Tell user to pass artifact to next agent."*
+> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

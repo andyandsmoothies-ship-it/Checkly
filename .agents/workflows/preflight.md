@@ -1,5 +1,5 @@
 ---
-description: Pre-PR quality gate — dynamically enforces project gotchas and vertical-slice completeness before code leaves the developer's machine.
+description: Pre-PR quality gate — dynamically enforces project gotchas and vertical-slice completeness.
 ---
 
 @[.agents/rules/orchestration-standards.md]
@@ -9,82 +9,56 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 # Workflow: /preflight
 
 > [!NOTE]
-> This is a **Pre-PR Quality Gate** — run it before submitting code for review.
-> It dynamically reads the project's actively loaded `GEMINI.md` Context Cascade and enforces automatable rules.
-> This workflow is **project-agnostic**: it works for any project that follows the `GEMINI.md` cascade convention.
+> Project-agnostic Pre-PR Quality Gate. Dynamically enforces `.agents/rules` and `GEMINI.md` cascade rules.
 
-## Phase 1: Scope Detection
-- **Action**: Run `git diff --name-only` (or equivalent) to identify all files modified in the current working set.
-- **Action**: Consult your actively loaded `GEMINI.md` Context Cascade to load the project's known gotchas.
-- **Output**: A list of modified files and a parsed gotcha inventory.
+## Phase 1: Scope & Rule Hydration
 
-## Phase 2: Gotcha Classification
-- **Action**: For each gotcha in your loaded `GEMINI.md` context, classify it into one of:
+| Vector | Execution Contract |
+|---|---|
+| **Git Diff** | Execute `git diff --name-only` -> identify active modified files. |
+| **Rule Load** | Parse dynamically loaded `GEMINI.md` Context Cascade for project gotchas. |
 
-| Classification | Meaning | Example |
-|----------------|---------|---------|
-| `GREP_CHECKABLE` | Can be verified with a file/pattern search | "Bare `.get()` in DAO files without `limit()`" |
-| `DIFF_CHECKABLE` | Can be verified by inspecting git diff for missing counterparts | "New DTO field must appear in 6 locations" |
-| `MANUAL_REVIEW` | Requires human/AI judgment; cannot be automated | "Bottom nav label must be generic" |
+## Phase 2: Dynamic Classification
 
-- **Output**: A classified gotcha table.
+| Vector | Execution Contract |
+|---|---|
+| **`GREP_CHECKABLE`**| Gotcha can be scanned via text pattern (e.g. missing `.limit()`). |
+| **`DIFF_CHECKABLE`**| Gotcha requires component parity (e.g. Entity field needs DTO field). |
+| **`MANUAL_REVIEW`** | Gotcha requires human judgment (e.g. UX label clarity). |
+| **Action** | Output distinct table classifying ALL loaded project gotchas into these 3 buckets. |
 
 ## Phase 3: Automated Enforcement
-For each `GREP_CHECKABLE` gotcha:
-1. Derive the grep pattern and target file glob from the gotcha description.
-2. Run `grep_search` against the modified files (from Phase 1).
-3. Score each match as PASS or FAIL.
 
-For each `DIFF_CHECKABLE` gotcha:
-1. Identify the "trigger" pattern (e.g., new property added to an Entity class).
-2. Search for the required counterpart patterns across the codebase.
-3. If any counterpart is missing → FAIL.
+| Vector | Execution Contract |
+|---|---|
+| **Grep Audit** | Run `grep_search` on `GREP_CHECKABLE` rules against modified files. Score PASS/FAIL. |
+| **Diff Audit** | Check codebase for `DIFF_CHECKABLE` counterparts. IF counterpart missing -> FAIL. |
 
-> **@@SCAN** Before reporting, answer: (1) How many gotchas were GREP_CHECKABLE? (2) How many FAIL results?
+> **@@SCAN**: (1) GREP gotchas count? (2) FAIL count?
 
-## Phase 4: Vertical-Slice Completeness (Conditional)
-- **Trigger**: Only runs if Phase 1 detected modifications to Entity, DTO, or Model files.
-- **Action**: Load the `vertical-slice-completeness` skill. Run the Layer Propagation Checklist against each modified entity/field.
-- **Output**: PASS/FAIL per entity-field pair.
+## Phase 4: Vertical-Slice Completeness
 
-## Phase 5: Report & Gate
-- **Action**: Generate a `preflight_report_[date].md` artifact with the following structure:
+| Vector | Execution Contract |
+|---|---|
+| **Trigger** | IF (modified files == Entities OR DTOs OR Models) THEN Execute. |
+| **Execution** | Load `vertical-slice-completeness` skill. Run Layer Propagation Checklist. Score PASS/FAIL. |
 
-```markdown
-# Preflight Report — [date]
+## Phase 5: Reporting & The Hard Gate
 
-## Summary
-- Total gotchas checked: [N]
-- PASS: [N] | FAIL: [N] | MANUAL_REVIEW: [N]
+| Step | Execution Contract |
+|---|---|
+| **Artifact Gen** | Create `preflight_report_[date].md`. |
+| **Payload Schema**| `Summary Counts` | `Automated Results Table (w/ rules & FAIL details)` | `Vertical-Slice Completeness Table` | `Manual Checkboxes [ ]`. |
 
-## Automated Results
-| # | Gotcha | Classification | Result | Details |
-|---|--------|---------------|--------|---------|
-| 1 | ... | GREP_CHECKABLE | ✅ PASS | ... |
-| 2 | ... | DIFF_CHECKABLE | ❌ FAIL | Missing in: ... |
+### Hard Gate Logic
+| State | Condition | Consequence |
+|---|---|---|
+| **BLOCK** | ANY automated test == `FAIL` | Recommend exact fix. Prohibit PR. |
+| **COND. PASS**| Only `MANUAL` items left | Yield for human checklist sign-off. |
+| **CLEAR** | All PASS | Recommend `/verify` or PR merge. |
 
-## Vertical-Slice Completeness
-| Entity | Field | Layers Verified | Missing |
-|--------|-------|----------------|---------|
-| ... | ... | 5/6 | Flutter fromJson |
-
-## Manual Review Checklist
-- [ ] Gotcha #X: [description]
-- [ ] Gotcha #Y: [description]
-```
-
-- **Gate Logic**:
-  - If ANY `GREP_CHECKABLE` or `DIFF_CHECKABLE` gotcha is FAIL → **BLOCK**. Recommend specific fixes.
-  - If only `MANUAL_REVIEW` items remain → **CONDITIONAL PASS**. Present checklist for human sign-off.
-  - If all PASS → **CLEAR**. Recommend proceeding to `/verify` or PR submission.
-
----
-
-## Final Phase: Script Verification Gate
-Run EXACTLY:
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-
-- Code 0 (PASS): Workflow complete. Share summary and stop.
-- Code 1 (FAIL): Fix reported errors and retry.
-- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
-
+> [!IMPORTANT]
+> **Script Verification Gate**:
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Handoff complete."*
+> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

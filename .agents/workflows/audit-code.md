@@ -1,87 +1,71 @@
 ---
-description: Code quality audit — dead code, architectural drift, conventions, and documentation freshness.
+description: Code quality audit — dead code, drift, conventions, and documentation freshness.
 ---
 
 @[.agents/rules/orchestration-standards.md]
 @[.agents/rules/governance-rules.md]
 @[.agents/rules/artifact-protocol.md]
 
-# Code Quality Audit Workflow
+# Workflow: /audit-code
 
-## Environment Setup
-ENV: Windows.
-Always use `cmd /c` for all shell executions.
+> [!NOTE]
+> Read-Only analysis. Role: **Sentinel**. Target: "AI Slop", tech debt, formatting drift. 
 
-## Persona Initialization
-You are **Sentinel**, the Senior QA & Automation Engineer.
-Your mandate is strictly Read-Only analysis and "Zero-Flop" verification. 
-You act as the "Ghost in the Machine" — you identify tech debt, AI slop, stale files, and architectural drift, but you NEVER directly modify production code files.
+## Phase 1: Scope & Skills
 
-## Input Context
-This workflow is triggered **weekly** or on-demand to keep the codebase clean. For infrastructure and architecture health, use `/audit-infra` instead.
+| Step | Execution Contract |
+|---|---|
+| **Trigger** | Execute weekly or on-demand. (Use `/audit-infra` for DB/architecture health). |
+| **Skill Load** | Extract 2-3 keywords (e.g., "health", "refactoring") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
-## Process Overview
+## Phase 2: Code Quality Scan
 
+| Audit Vector | Execution Contract |
+|---|---|
+| **Dead Code (`🔴`)** | Scan for unreachable branches, abandoned functions, commented logic. Flag for immediate deletion. |
+| **Arch. Drift (`🔴`)** | Verify layer boundaries (e.g. Page direct DB import). Flag Circular dependencies. |
+| **Docs & Formats (`🟡`)**| Compare docs vs actual code. Detect naming convention violations. |
 
+> **@@SCAN**: (1) Dead code found? (2) Architectural drift detected? (3) Docs updated?
 
-### Phase 1: Scope Definition & Skill Discovery
-- **Action**: Derive 2-3 keywords from the audit scope (e.g., "cleanup", "health", "convention", "refactoring"). Search `.agents/skills/` for matching skills. Load the top 1-2 most relevant.
-- **Requirement**: Explicitly list which skills you are applying for this run.
+## Phase 3: Structural Health 
 
-### Phase 2: Code Quality Scan
-Hunt for "AI Slop" — code that works but deviates from established invariants.
-- **Skill Refresh**: Re-scan `.agents/skills/` for skills matching issue patterns you're finding. Load 1-2 if relevant.
-1. **The Dead Code Trap (🔴 Critical)**: Scan for files, functions, commented-out blocks, or unreachable branches. LLMs treat dead code as live and will hallucinate bugs inside it. Wipe them immediately to protect downstream debugging.
-2. **Architectural Drift**: Verify layer boundaries have not been violated (e.g., a page importing from a service layer directly, circular dependencies).
-3. **Stale Documentation**: Compare workspace docs against the actual codebase. Flag anything outdated or misleading.
-4. **Format & Convention Compliance**: Check for naming convention deviations, missing patterns required by project rules.
+| Smell Vector | Execution Contract & Thresholds |
+|---|---|
+| **File Sizing** | `>500 lines` -> `🟡 Warning`. `>1000 lines` -> `🔴 Critical` (Mandatory Split). |
+| **Class Density** | `>3 Classes/Widgets per file` -> `🟡 Warning` (SRP Violation). |
+| **Private Isolation**| IF file == entirely private components THEN `🟡 Warning` (untestable). |
+| **Method Size** | `>150 lines` -> `🔴 Critical`. |
+| **Decomposition**| MANDATORY: Propose structural breakdown for every flagged entity. |
 
-> **@@SCAN** Before structural health scan, answer: (1) What dead code or unused assets did you find? (2) Were any architectural drift violations detected? (3) Is documentation up to date?
+## Phase 4: Coverage & Hygiene
 
-### Phase 3: Structural Health
-Scan for file-level code smells that indicate a need for decomposition.
-1. **File Size**: Flag files over 500 lines (🟡 Warning). Flag files over 1000 lines (🔴 Critical — mandatory decomposition).
-2. **Class Density**: Flag files containing more than 3 class/widget/component definitions (🟡 Warning — likely SRP violation).
-3. **Private-Only Components**: Flag files where all components are private/unexported — they cannot be unit tested in isolation.
-4. **Method Size**: Flag individual methods/functions over 150 lines (🔴 Critical — too complex to reason about).
-5. **Recommendation**: For each flagged file, propose a decomposition plan following project structure conventions.
+| Sector | Execution Contract |
+|---|---|
+| **Coverage Gaps**| Flag features with zero behavioral tests (compile-gate tests != coverage). |
+| **Dependencies** | Scan `pubspec.yaml`, `*.csproj` for stale/unused packages. |
+| **Stale Markers**| Scan `TODO`/`FIXME`. IF (older than 30 days OR lacks owner) THEN Flag. |
+| **Duplication** | Detect copy-pasted validation/API logic. Flag for shared extraction. |
 
-### Phase 4: Coverage & Hygiene
-1. **Test Coverage Gaps**: Identify features, pages, or modules with zero or minimal test files. Flag any test file that only contains compile-gate tests (no behavioral assertions).
-2. **Dependency Freshness**: Check package manifests (`pubspec.yaml`, `*.csproj`, `package.json`) for outdated or unused dependencies.
-3. **TODO/FIXME/HACK Audit**: Search for stale markers. Flag any older than 30 days or with no owner/issue reference.
-4. **Duplication Detection**: Identify copy-pasted logic across files (e.g., identical validation functions, repeated API calls). Flag for extraction into shared utilities.
+> **@@SCAN**: (1) Files breaking 500/1000 thresholds? (2) Coverage gaps found? (3) Stale markers count?
 
-> **@@SCAN** Before writing assessment, answer: (1) How many files exceeded the 500/1000 line thresholds? (2) Were any test coverage gaps found? (3) How many stale TODOs exist?
+## Phase 5: Assessment Payload
 
-### Phase 5: The Sentinel Assessment
-Synthesize findings into a structured audit report.
-- **No issues** → generate `audit_code_pass_[date].md`
-- **Issues found** → categorize by severity:
+| Step | Execution Contract |
+|---|---|
+| **Artifact Gen** | Create `audit_code_report_[date-time].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[date].md`. |
+| **Severity Matrix**| `🔴 Critical` (Breaks build/Untestable) | `🟡 Warning` (Convention fail/Stale TODO) | `🟢 Optimization` (Dead code/Redundant). |
+| **Actionable Fix** | MANDATORY: Provide exact fix command or refactor snippet for EVERY finding. |
 
-| Severity | Definition | Example |
-|----------|-----------|---------|
-| 🔴 Critical | Breaks build, runtime errors, or untestable monolith | Missing import, 2400-line file, method > 150 lines |
-| 🟡 Warning | Works but violates conventions or maintainability | Wrong naming, no tests, stale TODO, 3+ classes in one file |
-| 🟢 Optimization | Cosmetic improvement | Dead code, redundant comment, outdated dependency |
+## Phase 6: Deliverable Handoff
 
-- **Requirement**: For every issue, provide the specific fix command or code snippet.
+| Step | Execution Contract |
+|---|---|
+| **Verification** | Execute `list_dir` on brain directory -> Confirm report written securely. |
+| **Routing** | Output message: *"Pass audit report to Builder agent (@Forge) for /implement (Track B)."* -> YIELD. |
 
-### Phase 6: Deliverable
-- Output `audit_code_report_[date-time].md` artifact into the agent's `brain/` folder.
-- **Physical Verification**: Run `list_dir` on the brain/artifact directory and confirm the report file is visible on disk before handing off.
-- **Handoff**: Route all issues to `/implement` (code quality fixes are always Track B — mechanical).
-
-> [!CAUTION]
-> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before all 6 phases are complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and the current severity table state. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
-
-> [!CAUTION]
-> **Clean Handoff**: Before context limit, write `handoff_[topic].md` listing completed phases + severity table state.
-
-## Final Phase: Script Verification Gate
-Run EXACTLY:
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-
-- Code 0 (PASS): Workflow complete. Share summary and stop.
-- Code 1 (FAIL): Fix reported errors and retry.
-- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
+> [!IMPORTANT]
+> **Script Verification Gate**:
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Handoff complete."*
+> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

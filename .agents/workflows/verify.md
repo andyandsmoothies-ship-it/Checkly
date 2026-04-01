@@ -1,6 +1,6 @@
 ---
 name: Verification Workflow
-description: Verification gate for any upstream workflow — validates that analysis, research, implementation, or audit artifacts are correct, complete, and stable before declaring done.
+description: Universal verification gate proving upstream artifacts (code, plans, audits) are structurally sound, performant, and correctly implemented.
 ---
 
 @[.agents/rules/orchestration-standards.md]
@@ -9,59 +9,50 @@ description: Verification gate for any upstream workflow — validates that anal
 
 # Workflow: /verify
 
-> [!NOTE]
-> This workflow is the **universal verification gate**. It can follow ANY upstream workflow — `/implement`, `/analysis`, `/research`, or `/audit-*`. Its job is to prove that the upstream output is correct, complete, and stable.
+> [!CAUTION]
+> **[READ_ONLY_LOCK]**: The Sentinel persona is strictly READ-ONLY. PROHIBITED: "In-Flight Corrections" or executing `replace_file_content`. IF regression found THEN STOP -> trigger `/diagnose` -> handoff to Forge.
+
+## Phase 1: Context & Accountability Audit
+
+| Audit Vector | Execution Contract |
+|---|---|
+| **Skill Load** | Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills. |
+| **Side Effects** | MANDATORY: Assess code changes for framework state loss, missing locks, or illegal ghost imports based on `.agents/rules/`. |
+| **Verification**| MANDATORY: Semi-Formal Reasoning. Trace code path line-by-line. PROHIBITED: Assuming behavior based on function names. |
+| **Criteria Check**| `grep_search` upstream `implementation_plan.md` -> verify every AC is realized in code. Flag omissions. |
+| **EDD Proof** | MANDATORY: Demand **Executed Evidence** (logs, API responses). PROHIBITED: Accepting "Generative Evidence" (Builder claiming it works). |
+
+> **@@SCAN**: (1) Code path traced line-by-line? (2) All ACs verified against real code?
+
+## Phase 1.5: Adversarial Interrogation (Red Team)
+
+| Interrogation Vector | Execution Contract |
+|---|---|
+| **Hostile Gate** | Execute **Hostile Interrogation** (Part C of `verification-loop` skill). Must answer 3 failure questions. |
+| **Drift OOM Scan**| IF (Flutter/Drift `*_queries.dart` / `*_manager.dart`) THEN SCAN for `.get()`. MUST possess limit OR aggregate OR explicit safety comment. IF missing -> FAIL (OOM violation). |
+| **Efficiency Eval** | MANDATORY: Evaluate N+1 queries, memory leaks, Big-O complexity. PROHIBITED: Declaring SUCCESS simply because tests pass if UX degrades. |
+
+> **@@SCAN**: (1) Hostile Interrogation run? (2) Drift OOM Scan executed (if applicable)?
+
+## Phase 2: Continuous Integration (CI) Gate
+
+| Step | Execution Contract |
+|---|---|
+| **Execution** | Stop Dev Servers -> Run strict build & test pipeline (`npm run build`, `dotnet build`, etc.). |
+| **Pass/Fail Logic**| IF (Tests Green AND Zero Warnings) -> Proceed Phase 3. IF (Any Fail/Warning) -> **MANDATORY TRANSITION**: `/diagnose`. Do NOT ask permission. |
+
+> **@@SCAN**: (1) Build passed with zero warnings? (2) IF failed -> transitioned to `/diagnose`?
+
+## Phase 3: Deliverable (Continuous Verification)
+
+| Step | Execution Contract |
+|---|---|
+| **Skill Refresh** | Re-scan `.agents/skills/` for code-review/security skills to detect slow-burn tech debt. |
+| **Artifact Form** | Create `walkthrough_[topic]_[time].md`. Include EDD Executed Evidence (terminal logs/test outputs). |
+| **Handoff Lock** | Write `handoff_[topic].md` (Phases + Gate State) before context dilution. |
 
 > [!IMPORTANT]
-> **CRITICAL RULE**: The Sentinel persona is strictly **READ-ONLY**. You are absolutely FORBIDDEN from making "In-Flight Corrections" or issuing any file modification tool calls (e.g. `replace_file_content`) within this workflow. Your job is pure discovery. If a bug or regression is found, you MUST stop execution, transition to `/diagnose`, generate a failure report, and instruct the user to run `/implement` for the actual fix.
-
-
-## Phase 1: Context & Side Effect Audit
-<strict-instruction>
-**Skill Discovery**: Derive 2-3 keywords from the changes being verified. Use `grep_search` on `.agents/skills/` to find any relevant verification, testing, or code-review skills. Load the top 1-2 `SKILL.md` files.
-**Action**: Consult `.agents/rules/` to proactively check your recent code changes for unintended side effects (e.g., framework state loss, missing locks, or illegal ghost imports).
-**Semi-Formal Reasoning Checklist**: You must explicitly write down what the code modifies, trace the exact execution path of the modified code line-by-line, and prove your conclusion with specific evidence from the local files. Do not skip reading the actual source files and assuming behavior based on names.
-**First Principles Check**: Before running builds, verify that the *right thing* was produced:
-  1. Read the upstream artifact (`implementation_plan.md`, `analysis_[topic].md`, `concept_brief_[topic].md`, or `audit_*_report.md`).
-  2. For each acceptance criterion or finding, use `grep_search` / `view_file` to confirm it is addressed in the actual deliverable.
-  3. If any criterion is missing or contradicts the codebase → flag as a gap before declaring verification complete.
-**Expectation-Driven Development (EDD) Proof**:
-  - Locate the "Behavioral Expectations" formulated during the analysis phase.
-  - You MUST act as an **Adversarial Reviewer** (Sentinel persona). Do NOT accept "Generative Evidence" (the builder merely claiming it works).
-  - You MUST demand **Executed Evidence**: exact terminal logs, API responses, or database query results proving the expectation is met. If the output is missing, you must run the code to verify.
-- [ ] **Hostile Interrogation**: Run the **Hostile Interrogation** gate from `verification-loop` skill (Part C) to evaluate the codebase against domain scale extremes. Do not proceed until the 3 failure questions are answered. If the code cannot survive without proper defenses, flag it as a deployment failure.
-- [ ] **Drift OOM Scan** *(Flutter/Drift projects only)*: For any file matching `*_queries.dart`, `*_manager.dart`, or `*_dao.dart` modified in this change, run `grep_search` for `.get()`. Every hit MUST satisfy one of: (1) preceded by `..limit(n)`, (2) inside a `selectOnly` query using `count()/avg()`, or (3) has an explicit comment justifying why the result set is bounded. Any bare `.select().get()` without one of these three is an **automatic OOM violation** — flag as FAIL and transition to `/diagnose` immediately. Do NOT proceed to CI.
-**Non-Testable Accountability (UX & Efficiency)**:
-  - DO NOT rely solely on test coverage. 100% coverage represents what executes, not what matters.
-  - You MUST evaluate the changes for Big-O complexity, database query inefficiency (N+1), memory leaks, and UX degradation. If the code passes tests but wastes system resources or creates a poor user experience, flag it as a failure.
-</strict-instruction>
-
-> **@@SCAN** Before running CI, answer: (1) Did you trace the modified code line-by-line? (2) Did you verify ALL acceptance criteria from the upstream artifact against real code? (3) Did you run the Hostile Interrogation gate (verification-loop Part C)?
-
-## Phase 2: CI Gate — Validation & Output Parsing
-<strict-instruction>
-**Action**: Stop any running development servers. Run the project's standard build and test commands (e.g., `npm run build`, `dotnet build`, `make test`).
-**Pass/Fail Protocol**:
-- **PASS**: All tests green, zero warnings in build output. Proceed to Phase 3.
-- **FAIL**: Any error, test failure, or structural warning. **Action**: You MUST automatically transition to the `/diagnose` workflow. Do not ask for permission. Treat the failure as a regression to be fixed before retry.
-</strict-instruction>
-
-> **@@SCAN**: (1) Build passed with zero warnings? (2) If failed, did you transition to `/diagnose`?
-
-## Phase 3: Continuous Verification (Knowledge Sharing)
-<strict-instruction>
-**Action**: If the build is green, treat this phase as a "Show" (Show and Tell) for knowledge sharing rather than a blocking gate.
-**Skill Refresh**: Re-scan `.agents/skills/` for any broad code-review or security skills to ensure no long-term debt was introduced.
-**Deliverable**: Create `walkthrough_[topic]_[date-time].md` containing the EDD **Executed Evidence**. Provide the exact terminal logs, test summaries, and screenshots representing concrete scenarios (e.g., Scenario 1, Scenario 2) that prove the EDD Expectations were successfully met. Avoid generative narratives. Use a unique name per verification to preserve history. This is for the human counterpart to see *what* was verified, not to decide *if* it should be.
-</strict-instruction>
-
-> [!CAUTION]
-> **Clean Handoff**: Before context limit, write `handoff_[topic].md` listing completed phases + CI gate state.
-
-## Final Phase: Script Verification Gate
-Run EXACTLY:
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-
-- Code 0 (PASS): Workflow complete. Share summary and stop.
-- Code 1 (FAIL): Fix reported errors and retry.
-- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
+> **Script Verification Gate**:
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Workflow complete. Share summary."*
+> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
