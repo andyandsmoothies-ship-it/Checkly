@@ -14,7 +14,7 @@ public static class SubmissionAccessGuard
     /// Returns true if the user can access a submission with the given storeId and auditorId.
     /// </summary>
     public static async Task<bool> CanAccessAsync(
-        ClaimsPrincipal user, Guid? storeId, Guid? auditorId,
+        ClaimsPrincipal user, Guid? storeId, Guid? areaId, Guid? auditorId,
         AppDbContext db, CancellationToken ct)
     {
         if (!Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
@@ -27,7 +27,7 @@ public static class SubmissionAccessGuard
             "admin" => true,
             "auditor" => auditorId == userId,
             "store_manager" => await IsUserStoreAsync(userId, storeId, db, ct),
-            "area_manager" => await IsUserAreaAsync(userId, storeId, db, ct),
+            "area_manager" => await IsUserAreaAsync(userId, storeId, areaId, db, ct),
             _ => false
         };
     }
@@ -39,11 +39,14 @@ public static class SubmissionAccessGuard
         return profile?.StoreId == storeId;
     }
 
-    private static async Task<bool> IsUserAreaAsync(Guid userId, Guid? storeId, AppDbContext db, CancellationToken ct)
+    private static async Task<bool> IsUserAreaAsync(Guid userId, Guid? storeId, Guid? areaId, AppDbContext db, CancellationToken ct)
     {
-        if (storeId is null) return false;
+        if (storeId is null && areaId is null) return false;
         var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == userId, ct);
         if (profile?.AreaId is null) return false;
+
+        if (areaId.HasValue) return areaId.Value == profile.AreaId;
+
         var store = await db.Stores.AsNoTracking().FirstOrDefaultAsync(s => s.Id == storeId, ct);
         return store?.AreaId == profile.AreaId;
     }

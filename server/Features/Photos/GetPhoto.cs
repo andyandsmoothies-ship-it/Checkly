@@ -34,7 +34,7 @@ public static class GetPhoto
             if (submission is not null)
             {
                 var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-                    user, submission.StoreId, submission.AuditorId, db, ct);
+                    user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
                 if (!hasAccess)
                     return TypedResults.Forbid();
             }

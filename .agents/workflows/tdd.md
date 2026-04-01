@@ -83,7 +83,7 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 > **Tests are written and Red.**
 > 
 > *To the Product Owner: Please swap back to your chat with Forge (the Builder Agent) and send this exact message:*
-> "The QA Agent has written the TDD tests. The tests are red for the right reasons. Proceed to Phase 3: Coding and turn them green."
+> "Here is the result of tdd, check and continue"
 
 ---
 

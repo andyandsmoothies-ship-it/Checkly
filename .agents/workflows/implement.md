@@ -70,7 +70,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 |---|---|
 | **Artifact Create**| Export `test_contracts_[topic].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
 | **Contract Format**| Strict Template: `ID`, `Exact Text/Key` (with line #), `State Matrix` (Happy/Error/Empty), `Private Method Access`, `Why RED now`. |
-| **Execution Lock** | PROHIBITED: Entering Phase 3. MANDATORY: Output message: *"Plan ready. Pass test_contracts_[topic].md to QA Agent (@Sentinel) for failing tests. Type 'tests are red' when done."* -> YIELD. |
+| **Execution Lock** | PROHIBITED: Entering Phase 3. MANDATORY: Output message: *"Plan ready. Run /tdd with QA Agent (@Sentinel) for failing tests. When done, reply here: 'Here is the result of tdd, check and continue'."* -> YIELD. |
 
 ## Phase 3: Coding
 
@@ -81,6 +81,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 | Step | Execution Contract |
 |---|---|
+| **Test Ingestion** | IF returning from Phase 2.5 -> MANDATORY: Use `view_file` or `grep_search` to read `executed_tests_[topic].md` AND the physical test files created by QA. Understand exact assertions before coding. |
 | **Cheap Verify** | Run structural validation (e.g. `flutter analyze`, `dotnet build --no-restore`). Fix before declaring complete. |
 | **Red/Green Loop**| IF `Sentinel` gives RED test -> write PROD code to make GREEN -> Refactor. PROHIBITED: Modifying test files. |
 | **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |

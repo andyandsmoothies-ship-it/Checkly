@@ -1,0 +1,74 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:03.94]     Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_WrongStore_Returns403 [FAIL]
+  Failed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_WrongStore_Returns403 [3 s]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Forbidden
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_WrongStore_Returns403() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SyncSubmissionsEndpointTests.cs:line 188
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:04.02]     Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_MissingTenantScope_Returns400 [FAIL]
+[xUnit.net 00:00:04.11]     Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_CorrectStore_Returns200 [FAIL]
+[xUnit.net 00:00:04.23]     Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_WithSince_ReturnsOnlyDelta [FAIL]
+[xUnit.net 00:00:04.29]     Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsAdmin_NoScopeRequired_Returns200 [FAIL]
+[xUnit.net 00:00:04.37]     Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_Pagination_RespectsPageSize [FAIL]
+[xUnit.net 00:00:04.45]     Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_VoidedRecord_HasVoidFields [FAIL]
+  Failed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_MissingTenantScope_Returns400 [73 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_MissingTenantScope_Returns400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SyncSubmissionsEndpointTests.cs:line 247
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_CorrectStore_Returns200 [96 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_CorrectStore_Returns200() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SyncSubmissionsEndpointTests.cs:line 164
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_WithSince_ReturnsOnlyDelta [112 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_WithSince_ReturnsOnlyDelta() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SyncSubmissionsEndpointTests.cs:line 105
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsAdmin_NoScopeRequired_Returns200 [62 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsAdmin_NoScopeRequired_Returns200() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SyncSubmissionsEndpointTests.cs:line 203
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_Pagination_RespectsPageSize [79 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_Pagination_RespectsPageSize() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SyncSubmissionsEndpointTests.cs:line 224
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_VoidedRecord_HasVoidFields [83 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_VoidedRecord_HasVoidFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SyncSubmissionsEndpointTests.cs:line 131
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     7, Passed:     0, Skipped:     0, Total:     7, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)

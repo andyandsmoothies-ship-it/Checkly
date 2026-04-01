@@ -71,5 +71,8 @@ public static class TemplateEndpoints
 
         syncGroup.MapGet("/templates", SyncTemplates.HandleAsync)
             .WithName("SyncTemplates");
+
+        syncGroup.MapGet("/submissions", Checkly.Api.Features.Submissions.SyncSubmissions.HandleAsync)
+            .WithName("SyncSubmissions");
     }
 }

@@ -28,7 +28,7 @@ public static class GetSubmission
 
         // --- IDOR Protection: Verify the user has access to this submission ---
         var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-            user, submission.StoreId, submission.AuditorId, db, ct);
+            user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
 
         if (!hasAccess)
             return TypedResults.Forbid();

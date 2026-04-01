@@ -28,7 +28,7 @@ public static class UploadPhoto
 
         // IDOR: Verify the caller can access this submission
         var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-            user, submission.StoreId, submission.AuditorId, db, ct);
+            user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
         if (!hasAccess)
             return TypedResults.Forbid();
 
