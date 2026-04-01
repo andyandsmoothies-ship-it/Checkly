@@ -46,9 +46,10 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 - **Instruction**: Strip the requirement down. What is the fundamental business value?
 - **Action**: Explicitly define *Strict Boundaries*. State what it MUST do and what is OUT OF SCOPE (YAGNI).
 - **Boolean Integrity**: Define if conditional logic is ALLOWLIST or BLOCKLIST.
+- **Alternatives**: Identify ≥1 alternative tactical approach (e.g., extend existing vs create new).
 - **Action**: Formulate core logic independently of code implementation.
 
-> **@@SCAN**: (1) Core business value? (2) OUT OF SCOPE defined? (3) Fundamental state transition?
+> **@@SCAN**: (1) Core business value? (2) OUT OF SCOPE defined? (3) Alternative approach identified?
 
 ## Phase 2: Tactical Blast Radius Review
 - **Instruction**: Identify exactly what you might step on.
@@ -71,10 +72,11 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 - **Requirement**: You MUST generate an `implementation_plan_[topic].md` artifact. This plan must be deeply analytical but narrowly scoped to the tactical objective.
 - **Action**: Output the plan containing:
   - **Executive Summary & Scope:** What are we building, and what is strictly out of scope?
+  - **Decision Rationale:** Brief explanation of why this implementation path is optimal over the alternative.
   - **State Matrix & Resilience:** The 4-state matrix (Loading, Empty, Error, Success) defining error boundaries.
   - **Business Logic Rules:** The core business rules and constraints derived from your First Principles analysis.
   - **Proposed Changes:** Grouped by file with [NEW]/[MODIFY]/[DELETE].
-  - **System Impact:** Brief note on how you are avoiding the blast radius identified in Phase 2.
+  - **System Impact:** How blast radius is avoided. **MANDATORY**: Define Tactical Rollback Plan (e.g., Git revert safety, feature toggle).
   - **Dependency Context Array:** A list of every service/manager the touched files depend on, along with their exact import paths, so the QA agent can mock them without hallucinating.
   - **Behavioral Expectations (EDD):** Brief, explicit rules for testing interactions.
   - **Verification Plan:** Exact steps to prove it works in the local environment.

@@ -35,13 +35,19 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 > **@@SCAN**: (1) Full E2E scope mapped (upstream + downstream)? (2) Handoff/friction points identified?
 
+## Phase 2.5: Competitive Analysis
+- **Instruction**: Do not default to the first viable option.
+- **Action**: Identify top 2-3 viable alternatives. Evaluate them against project constraints (Performance, Offline capabilities, Tech stack fit).
+
+> **@@SCAN**: (1) Top 2-3 alternatives identified? (2) Evaluated against constraints?
+
 ## Phase 3: Blind-Spot & Conflict Detection
 - **Instruction**: Act as adversarial "Explorer". Find failure points.
 - **Action**: 
-  1. Identify exactly 3 **BLIND SPOTS**.
+  1. Identify exactly 3 **BLIND SPOTS**. **MANDATORY**: Include check against Non-Functional Requirements (NFRs) like mobile payload size, offline limits, or memory.
   2. Identify ≥1 **`!!! CONFLICT`** with architectural rules in `.agents/rules/` or project gotchas.
 
-> **@@SCAN**: (1) 3 Blind Spots named? (2) CONFLICT with existing rules identified?
+> **@@SCAN**: (1) 3 Blind Spots named? (2) NFR limits checked? (3) CONFLICT with existing rules identified?
 
 ## Phase 4: Feasibility & Rules Check
 - **Instruction**: Evaluate the idea against the project's rigid constraints.
@@ -56,7 +62,8 @@ description: Architect's Strategic Research Workflow for System Architecture.
   1. Create `research_[topic].md` artifact using `write_to_file` (IsArtifact: true).
   2. Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal (`Copy-Item` / `cp`). Do NOT use `write_to_file` with IsArtifact: false for this path.
   3. Include E2E Workflow Map from Phase 2.
-  4. End with **Handoff Block**.
+  4. **NEW**: Include Comparative Decision Matrix from Phase 2.5.
+  5. End with **Handoff Block**.
 - **Effort Sizing**:
   - **Sprint/Theme**: Multiple domains -> recommend `shaping` skill.
   - **Epic (Track C)**: Massive change -> recommend `/analyze-epic`.
@@ -69,6 +76,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 ---
 ## Handoff Block
 - **Verdict**: Viable / Needs Redesign / Reject
+- **PoC Scope**: Define strict PoC boundary if architectural risk remains high.
 - **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
 - **Recommended Next**: `shaping` skill | `/analyze-epic` | `/analyze-feature`
 - **Persistent Path**: `.agents/tmp/research/research_[topic].md`

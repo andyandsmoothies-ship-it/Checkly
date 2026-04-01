@@ -132,8 +132,8 @@ class _Greeting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hour = DateTime.now().hour;
-    final name =
-        GetIt.instance<AuthManager>().currentUser?.email.split('@').first ?? '';
+    final user = GetIt.instance<AuthManager>().currentUser;
+    final name = user?.fullName ?? user?.email.split('@').first ?? '';
     final timeGreeting = hour < 12
         ? 'Good Morning'
         : hour < 18
