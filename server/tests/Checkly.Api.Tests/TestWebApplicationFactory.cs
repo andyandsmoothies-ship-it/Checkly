@@ -59,7 +59,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
+            db.Database.Migrate();
 
             // Seed a bootstrap admin so tests can create admin users via the API
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();

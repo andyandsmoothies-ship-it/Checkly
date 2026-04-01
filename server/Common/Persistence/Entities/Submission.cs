@@ -42,6 +42,9 @@ public sealed class Submission
     public string? TemplateSnapshot { get; set; }
     public int? TemplateVersion { get; set; }
 
+    public string? VoidReason { get; set; }
+    public DateTimeOffset? VoidedAt { get; set; }
+
     // Navigation properties
     public Template? Template { get; set; }
     public Store? Store { get; set; }

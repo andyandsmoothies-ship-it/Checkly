@@ -817,6 +817,14 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("VoidReason")
+                        .HasColumnType("text")
+                        .HasColumnName("void_reason");
+
+                    b.Property<DateTimeOffset?>("VoidedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("voided_at");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuditorId");
