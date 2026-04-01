@@ -1,5 +1,4 @@
 ---
-name: Feature Analysis Workflow
 description: Lightweight, Tactical Analysis for Standard Features and Bugs (Track A/B).
 ---
 
@@ -16,7 +15,6 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 | Step | Execution Contract |
 |---|---|
-| **Governance** | IF `.agents/rules/governance-rules.md` NOT in memory THEN `view_file` it immediately. |
 | **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
 
 ```markdown
