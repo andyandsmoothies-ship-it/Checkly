@@ -341,7 +341,43 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
             children: [
               // ── Status Timeline ──
               ActionTimeline.fromStatus(plan.status),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+
+              if (plan.rootCause == 'SYSTEM_VOID')
+                Container(
+                  margin: const EdgeInsets.only(bottom: 24),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer.withValues(
+                      alpha: 0.3,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: theme.colorScheme.error.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: theme.colorScheme.error,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'This action plan was automatically closed because the parent audit was voided.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onErrorContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              const SizedBox(height: 8),
 
               // ── Info Section ──
               _InfoCard(
@@ -381,7 +417,9 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               const SizedBox(height: 16),
 
               // ── Root Cause ──
-              if (plan.rootCause != null && plan.rootCause!.isNotEmpty) ...[
+              if (plan.rootCause != null &&
+                  plan.rootCause!.isNotEmpty &&
+                  plan.rootCause != 'SYSTEM_VOID') ...[
                 _SectionHeader(title: 'Root Cause'),
                 Card(
                   child: Padding(

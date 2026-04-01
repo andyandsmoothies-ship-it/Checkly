@@ -45,6 +45,8 @@ class SubmissionDao {
     completedAt: row.completedAt,
     templateSnapshot: row.templateSnapshot,
     templateVersion: row.templateVersion,
+    voidReason: row.voidReason,
+    voidedAt: row.voidedAt,
   );
 
   CachedSubmissionsCompanion _dtoToCompanion(SubmissionDto dto) =>
@@ -64,5 +66,7 @@ class SubmissionDao {
         completedAt: Value(dto.completedAt),
         templateSnapshot: Value(dto.templateSnapshot),
         templateVersion: Value(dto.templateVersion),
+        voidReason: Value(dto.voidReason),
+        voidedAt: Value(dto.voidedAt),
       );
 }

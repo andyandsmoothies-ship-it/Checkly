@@ -198,9 +198,10 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
               : item.totalScore! >= 60
               ? AppTheme.warning
               : theme.colorScheme.error)
-        : theme.colorScheme.onSurfaceVariant;
+        : (item.isVoided ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.onSurfaceVariant);
 
-    final isPending = item.reviewStatus == null;
+    final isVoided = item.isVoided;
+    final isPending = item.reviewStatus == null && !isVoided;
 
     showModalBottomSheet(
       context: context,
@@ -268,6 +269,23 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
               _metadataRow(Icons.calendar_today, 'Date', dateStr),
               if (item.notes != null && item.notes!.isNotEmpty)
                 _metadataRow(Icons.notes, 'Notes', item.notes!),
+
+              if (isVoided) ...[
+                const SizedBox(height: 12),
+                _metadataRow(
+                  Icons.block_flipped,
+                  'Status',
+                  'VOIDED',
+                ),
+                if (item.voidReason != null)
+                  _metadataRow(Icons.info_outline, 'Reason', item.voidReason!),
+                if (item.voidedAt != null)
+                  _metadataRow(
+                    Icons.access_time,
+                    'Voided On',
+                    DateFormat('dd/MM/yyyy HH:mm').format(item.voidedAt!),
+                  ),
+              ],
 
               // Review status badge
               if (item.reviewStatus != null) ...[

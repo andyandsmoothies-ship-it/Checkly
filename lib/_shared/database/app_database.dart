@@ -39,12 +39,13 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
       await m.createAll();
+      await _createVoidTriggers(customStatement);
     },
     onUpgrade: (Migrator m, int from, int to) async {
       if (from < 2) {
@@ -67,8 +68,42 @@ class AppDatabase extends _$AppDatabase {
       if (from < 6) {
         await m.addColumn(cachedActionPlans, cachedActionPlans.storeId);
       }
+      if (from < 7) {
+        // Void Audits (Slice 4)
+        await m.addColumn(cachedSubmissions, cachedSubmissions.voidReason);
+        await m.addColumn(cachedSubmissions, cachedSubmissions.voidedAt);
+        await m.addColumn(cachedActionPlans, cachedActionPlans.rootCause);
+        
+        await _createVoidTriggers(customStatement);
+      }
     },
   );
+
+  static Future<void> _createVoidTriggers(void Function(String) executor) async {
+    // AFTER UPDATE trigger: Handles status changes for existing submissions.
+    executor('''
+      CREATE TRIGGER IF NOT EXISTS tr_void_submissions_update
+      AFTER UPDATE ON cached_submissions 
+      WHEN NEW.status = 'voided'
+      BEGIN
+        UPDATE cached_action_plans 
+        SET status = 'closed', root_cause = 'SYSTEM_VOID' 
+        WHERE submission_id = NEW.id AND status != 'closed';
+      END;
+    ''');
+
+    // AFTER INSERT trigger: Handles new submissions (synced deltas) that arrive as voided.
+    executor('''
+      CREATE TRIGGER IF NOT EXISTS tr_void_submissions_insert
+      AFTER INSERT ON cached_submissions 
+      WHEN NEW.status = 'voided'
+      BEGIN
+        UPDATE cached_action_plans 
+        SET status = 'closed', root_cause = 'SYSTEM_VOID' 
+        WHERE submission_id = NEW.id AND status != 'closed';
+      END;
+    ''');
+  }
 }
 
 LazyDatabase _openConnection() {

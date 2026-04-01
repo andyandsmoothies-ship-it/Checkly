@@ -2905,6 +2905,28 @@ class $CachedSubmissionsTable extends CachedSubmissions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _voidReasonMeta = const VerificationMeta(
+    'voidReason',
+  );
+  @override
+  late final GeneratedColumn<String> voidReason = GeneratedColumn<String>(
+    'void_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _voidedAtMeta = const VerificationMeta(
+    'voidedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> voidedAt = GeneratedColumn<DateTime>(
+    'voided_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2923,6 +2945,8 @@ class $CachedSubmissionsTable extends CachedSubmissions
     reviewStatus,
     templateSnapshot,
     templateVersion,
+    voidReason,
+    voidedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3056,6 +3080,18 @@ class $CachedSubmissionsTable extends CachedSubmissions
         ),
       );
     }
+    if (data.containsKey('void_reason')) {
+      context.handle(
+        _voidReasonMeta,
+        voidReason.isAcceptableOrUnknown(data['void_reason']!, _voidReasonMeta),
+      );
+    }
+    if (data.containsKey('voided_at')) {
+      context.handle(
+        _voidedAtMeta,
+        voidedAt.isAcceptableOrUnknown(data['voided_at']!, _voidedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -3129,6 +3165,14 @@ class $CachedSubmissionsTable extends CachedSubmissions
         DriftSqlType.int,
         data['${effectivePrefix}template_version'],
       ),
+      voidReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}void_reason'],
+      ),
+      voidedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}voided_at'],
+      ),
     );
   }
 
@@ -3156,6 +3200,8 @@ class CachedSubmission extends DataClass
   final String? reviewStatus;
   final String? templateSnapshot;
   final int? templateVersion;
+  final String? voidReason;
+  final DateTime? voidedAt;
   const CachedSubmission({
     required this.id,
     this.templateId,
@@ -3173,6 +3219,8 @@ class CachedSubmission extends DataClass
     this.reviewStatus,
     this.templateSnapshot,
     this.templateVersion,
+    this.voidReason,
+    this.voidedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3218,6 +3266,12 @@ class CachedSubmission extends DataClass
     }
     if (!nullToAbsent || templateVersion != null) {
       map['template_version'] = Variable<int>(templateVersion);
+    }
+    if (!nullToAbsent || voidReason != null) {
+      map['void_reason'] = Variable<String>(voidReason);
+    }
+    if (!nullToAbsent || voidedAt != null) {
+      map['voided_at'] = Variable<DateTime>(voidedAt);
     }
     return map;
   }
@@ -3266,6 +3320,12 @@ class CachedSubmission extends DataClass
       templateVersion: templateVersion == null && nullToAbsent
           ? const Value.absent()
           : Value(templateVersion),
+      voidReason: voidReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(voidReason),
+      voidedAt: voidedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(voidedAt),
     );
   }
 
@@ -3291,6 +3351,8 @@ class CachedSubmission extends DataClass
       reviewStatus: serializer.fromJson<String?>(json['reviewStatus']),
       templateSnapshot: serializer.fromJson<String?>(json['templateSnapshot']),
       templateVersion: serializer.fromJson<int?>(json['templateVersion']),
+      voidReason: serializer.fromJson<String?>(json['voidReason']),
+      voidedAt: serializer.fromJson<DateTime?>(json['voidedAt']),
     );
   }
   @override
@@ -3313,6 +3375,8 @@ class CachedSubmission extends DataClass
       'reviewStatus': serializer.toJson<String?>(reviewStatus),
       'templateSnapshot': serializer.toJson<String?>(templateSnapshot),
       'templateVersion': serializer.toJson<int?>(templateVersion),
+      'voidReason': serializer.toJson<String?>(voidReason),
+      'voidedAt': serializer.toJson<DateTime?>(voidedAt),
     };
   }
 
@@ -3333,6 +3397,8 @@ class CachedSubmission extends DataClass
     Value<String?> reviewStatus = const Value.absent(),
     Value<String?> templateSnapshot = const Value.absent(),
     Value<int?> templateVersion = const Value.absent(),
+    Value<String?> voidReason = const Value.absent(),
+    Value<DateTime?> voidedAt = const Value.absent(),
   }) => CachedSubmission(
     id: id ?? this.id,
     templateId: templateId.present ? templateId.value : this.templateId,
@@ -3358,6 +3424,8 @@ class CachedSubmission extends DataClass
     templateVersion: templateVersion.present
         ? templateVersion.value
         : this.templateVersion,
+    voidReason: voidReason.present ? voidReason.value : this.voidReason,
+    voidedAt: voidedAt.present ? voidedAt.value : this.voidedAt,
   );
   CachedSubmission copyWithCompanion(CachedSubmissionsCompanion data) {
     return CachedSubmission(
@@ -3395,6 +3463,10 @@ class CachedSubmission extends DataClass
       templateVersion: data.templateVersion.present
           ? data.templateVersion.value
           : this.templateVersion,
+      voidReason: data.voidReason.present
+          ? data.voidReason.value
+          : this.voidReason,
+      voidedAt: data.voidedAt.present ? data.voidedAt.value : this.voidedAt,
     );
   }
 
@@ -3416,7 +3488,9 @@ class CachedSubmission extends DataClass
           ..write('completedAt: $completedAt, ')
           ..write('reviewStatus: $reviewStatus, ')
           ..write('templateSnapshot: $templateSnapshot, ')
-          ..write('templateVersion: $templateVersion')
+          ..write('templateVersion: $templateVersion, ')
+          ..write('voidReason: $voidReason, ')
+          ..write('voidedAt: $voidedAt')
           ..write(')'))
         .toString();
   }
@@ -3439,6 +3513,8 @@ class CachedSubmission extends DataClass
     reviewStatus,
     templateSnapshot,
     templateVersion,
+    voidReason,
+    voidedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -3459,7 +3535,9 @@ class CachedSubmission extends DataClass
           other.completedAt == this.completedAt &&
           other.reviewStatus == this.reviewStatus &&
           other.templateSnapshot == this.templateSnapshot &&
-          other.templateVersion == this.templateVersion);
+          other.templateVersion == this.templateVersion &&
+          other.voidReason == this.voidReason &&
+          other.voidedAt == this.voidedAt);
 }
 
 class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
@@ -3479,6 +3557,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
   final Value<String?> reviewStatus;
   final Value<String?> templateSnapshot;
   final Value<int?> templateVersion;
+  final Value<String?> voidReason;
+  final Value<DateTime?> voidedAt;
   final Value<int> rowid;
   const CachedSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -3497,6 +3577,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.reviewStatus = const Value.absent(),
     this.templateSnapshot = const Value.absent(),
     this.templateVersion = const Value.absent(),
+    this.voidReason = const Value.absent(),
+    this.voidedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedSubmissionsCompanion.insert({
@@ -3516,6 +3598,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.reviewStatus = const Value.absent(),
     this.templateSnapshot = const Value.absent(),
     this.templateVersion = const Value.absent(),
+    this.voidReason = const Value.absent(),
+    this.voidedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        status = Value(status),
@@ -3537,6 +3621,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Expression<String>? reviewStatus,
     Expression<String>? templateSnapshot,
     Expression<int>? templateVersion,
+    Expression<String>? voidReason,
+    Expression<DateTime>? voidedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3556,6 +3642,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       if (reviewStatus != null) 'review_status': reviewStatus,
       if (templateSnapshot != null) 'template_snapshot': templateSnapshot,
       if (templateVersion != null) 'template_version': templateVersion,
+      if (voidReason != null) 'void_reason': voidReason,
+      if (voidedAt != null) 'voided_at': voidedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3577,6 +3665,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Value<String?>? reviewStatus,
     Value<String?>? templateSnapshot,
     Value<int?>? templateVersion,
+    Value<String?>? voidReason,
+    Value<DateTime?>? voidedAt,
     Value<int>? rowid,
   }) {
     return CachedSubmissionsCompanion(
@@ -3596,6 +3686,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       reviewStatus: reviewStatus ?? this.reviewStatus,
       templateSnapshot: templateSnapshot ?? this.templateSnapshot,
       templateVersion: templateVersion ?? this.templateVersion,
+      voidReason: voidReason ?? this.voidReason,
+      voidedAt: voidedAt ?? this.voidedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3651,6 +3743,12 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     if (templateVersion.present) {
       map['template_version'] = Variable<int>(templateVersion.value);
     }
+    if (voidReason.present) {
+      map['void_reason'] = Variable<String>(voidReason.value);
+    }
+    if (voidedAt.present) {
+      map['voided_at'] = Variable<DateTime>(voidedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3676,6 +3774,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
           ..write('reviewStatus: $reviewStatus, ')
           ..write('templateSnapshot: $templateSnapshot, ')
           ..write('templateVersion: $templateVersion, ')
+          ..write('voidReason: $voidReason, ')
+          ..write('voidedAt: $voidedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9390,6 +9490,8 @@ typedef $$CachedSubmissionsTableCreateCompanionBuilder =
       Value<String?> reviewStatus,
       Value<String?> templateSnapshot,
       Value<int?> templateVersion,
+      Value<String?> voidReason,
+      Value<DateTime?> voidedAt,
       Value<int> rowid,
     });
 typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
@@ -9410,6 +9512,8 @@ typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
       Value<String?> reviewStatus,
       Value<String?> templateSnapshot,
       Value<int?> templateVersion,
+      Value<String?> voidReason,
+      Value<DateTime?> voidedAt,
       Value<int> rowid,
     });
 
@@ -9499,6 +9603,16 @@ class $$CachedSubmissionsTableFilterComposer
 
   ColumnFilters<int> get templateVersion => $composableBuilder(
     column: $table.templateVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get voidReason => $composableBuilder(
+    column: $table.voidReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get voidedAt => $composableBuilder(
+    column: $table.voidedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -9591,6 +9705,16 @@ class $$CachedSubmissionsTableOrderingComposer
     column: $table.templateVersion,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get voidReason => $composableBuilder(
+    column: $table.voidReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get voidedAt => $composableBuilder(
+    column: $table.voidedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedSubmissionsTableAnnotationComposer
@@ -9667,6 +9791,14 @@ class $$CachedSubmissionsTableAnnotationComposer
     column: $table.templateVersion,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get voidReason => $composableBuilder(
+    column: $table.voidReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get voidedAt =>
+      $composableBuilder(column: $table.voidedAt, builder: (column) => column);
 }
 
 class $$CachedSubmissionsTableTableManager
@@ -9725,6 +9857,8 @@ class $$CachedSubmissionsTableTableManager
                 Value<String?> reviewStatus = const Value.absent(),
                 Value<String?> templateSnapshot = const Value.absent(),
                 Value<int?> templateVersion = const Value.absent(),
+                Value<String?> voidReason = const Value.absent(),
+                Value<DateTime?> voidedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion(
                 id: id,
@@ -9743,6 +9877,8 @@ class $$CachedSubmissionsTableTableManager
                 reviewStatus: reviewStatus,
                 templateSnapshot: templateSnapshot,
                 templateVersion: templateVersion,
+                voidReason: voidReason,
+                voidedAt: voidedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9763,6 +9899,8 @@ class $$CachedSubmissionsTableTableManager
                 Value<String?> reviewStatus = const Value.absent(),
                 Value<String?> templateSnapshot = const Value.absent(),
                 Value<int?> templateVersion = const Value.absent(),
+                Value<String?> voidReason = const Value.absent(),
+                Value<DateTime?> voidedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion.insert(
                 id: id,
@@ -9781,6 +9919,8 @@ class $$CachedSubmissionsTableTableManager
                 reviewStatus: reviewStatus,
                 templateSnapshot: templateSnapshot,
                 templateVersion: templateVersion,
+                voidReason: voidReason,
+                voidedAt: voidedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

@@ -95,6 +95,8 @@ class SubmissionDto {
   final DateTime? scheduledAt;
   final String? templateSnapshot;
   final int? templateVersion;
+  final String? voidReason;
+  final DateTime? voidedAt;
 
   const SubmissionDto({
     required this.id,
@@ -118,7 +120,12 @@ class SubmissionDto {
     this.scheduledAt,
     this.templateSnapshot,
     this.templateVersion,
+    this.voidReason,
+    this.voidedAt,
   });
+
+  /// Whether this audit has been voided.
+  bool get isVoided => status == 'voided';
 
   /// Whether this audit is overdue (scheduled but past its date).
   bool get isOverdue =>
@@ -154,6 +161,10 @@ class SubmissionDto {
         : null,
     templateSnapshot: json['templateSnapshot'] as String?,
     templateVersion: json['templateVersion'] as int?,
+    voidReason: json['voidReason'] as String?,
+    voidedAt: json['voidedAt'] != null
+        ? DateTime.parse(json['voidedAt'] as String)
+        : null,
   );
 }
 
@@ -174,6 +185,8 @@ class SubmissionDetailDto {
   final List<AnswerDto> answers;
   final String? templateSnapshot;
   final int? templateVersion;
+  final String? voidReason;
+  final DateTime? voidedAt;
 
   const SubmissionDetailDto({
     required this.id,
@@ -191,6 +204,8 @@ class SubmissionDetailDto {
     required this.answers,
     this.templateSnapshot,
     this.templateVersion,
+    this.voidReason,
+    this.voidedAt,
   });
 
   factory SubmissionDetailDto.fromJson(Map<String, dynamic> json) =>
@@ -214,6 +229,10 @@ class SubmissionDetailDto {
             .toList(),
         templateSnapshot: json['templateSnapshot'] as String?,
         templateVersion: json['templateVersion'] as int?,
+        voidReason: json['voidReason'] as String?,
+        voidedAt: json['voidedAt'] != null
+            ? DateTime.parse(json['voidedAt'] as String)
+            : null,
       );
 }
 

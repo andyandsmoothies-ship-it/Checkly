@@ -474,9 +474,12 @@ class _AuditCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isOverdue = submission.isOverdue;
+    final isVoided = submission.isVoided;
     final isScheduled = submission.status == 'scheduled' && !isOverdue;
     final isDraft = submission.status == 'draft';
-    final color = _scoreColor(submission.totalScore, theme);
+    final color = isVoided
+        ? theme.colorScheme.onSurfaceVariant
+        : _scoreColor(submission.totalScore, theme);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -490,7 +493,9 @@ class _AuditCard extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isOverdue
+                color: isVoided
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : isOverdue
                     ? theme.colorScheme.error.withValues(alpha: 0.1)
                     : isScheduled
                     ? theme.colorScheme.primary.withValues(alpha: 0.08)
@@ -499,7 +504,13 @@ class _AuditCard extends StatelessWidget {
                     : theme.colorScheme.primary.withValues(alpha: 0.1),
               ),
               child: Center(
-                child: isOverdue
+                child: isVoided
+                    ? Icon(
+                        Icons.block_flipped,
+                        size: 22,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      )
+                    : isOverdue
                     ? Icon(
                         Icons.warning_amber_rounded,
                         size: 22,
@@ -621,6 +632,23 @@ class _AuditCard extends StatelessWidget {
         case 'scheduled':
           bg = theme.colorScheme.primary.withAlpha(20);
           fg = theme.colorScheme.primary;
+        case 'voided':
+          bg = theme.colorScheme.surfaceContainerHighest;
+          fg = theme.colorScheme.onSurfaceVariant;
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              'VOIDED',
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: fg,
+              ),
+            ),
+          );
         default:
           bg = AppTheme.oatmeal.withValues(alpha: 0.5);
           fg = theme.colorScheme.onSurfaceVariant;
