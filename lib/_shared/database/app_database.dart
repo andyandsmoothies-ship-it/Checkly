@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:meta/meta.dart';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -77,6 +78,16 @@ class AppDatabase extends _$AppDatabase {
         await _createVoidTriggers(customStatement);
       }
     },
+    beforeOpen: (details) async {
+      // GC: silently prune stale audits on every DB open.
+      // Errors swallowed — a GC failure must NEVER crash startup.
+      try {
+        await _pruneStaleAudits();
+      } catch (e) {
+        // ignore: avoid_print
+        print('[GC] pruneStaleAudits failed: $e');
+      }
+    },
   );
 
   static Future<void> _createVoidTriggers(void Function(String) executor) async {
@@ -104,6 +115,38 @@ class AppDatabase extends _$AppDatabase {
       END;
     ''');
   }
+
+  // ── GC: 90-day TTL pruning ──
+
+  Future<void> _pruneStaleAudits() async {
+    // Drift stores DateTime as INTEGER (seconds since Unix epoch unless configured otherwise).
+    // Instead of doing column math `/ 1000` in SQL causing full table scans,
+    // we evaluate the 90-day cutoff in Dart and pass it as a bind variable.
+    // This allows SQLite to use indexes on `completed_at` and `voided_at`.
+    final cutoffSeconds = DateTime.now().subtract(const Duration(days: 90)).millisecondsSinceEpoch ~/ 1000;
+
+    // 1. Delete linked action plans first (FK child-before-parent ordering).
+    await customStatement('''
+      DELETE FROM cached_action_plans
+      WHERE submission_id IN (
+        SELECT id FROM cached_submissions
+        WHERE (status = 'completed' AND completed_at < ?)
+           OR (status = 'voided'    AND voided_at   < ?)
+      )
+    ''', [cutoffSeconds, cutoffSeconds]);
+
+    // 2. Delete stale submissions.
+    await customStatement('''
+      DELETE FROM cached_submissions
+      WHERE (status = 'completed' AND completed_at < ?)
+         OR (status = 'voided'    AND voided_at   < ?)
+    ''', [cutoffSeconds, cutoffSeconds]);
+  }
+
+  /// Public testing entry point. Do NOT call from production code.
+  /// Prevents Mirror Function Trap — tests call this rather than duplicating SQL.
+  @visibleForTesting
+  Future<void> pruneStaleAuditsForTesting() => _pruneStaleAudits();
 }
 
 LazyDatabase _openConnection() {

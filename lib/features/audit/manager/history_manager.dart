@@ -18,8 +18,11 @@ class HistoryManager extends ChangeNotifier {
 
   HistoryManager({SubmissionApiService? api, SubmissionDao? dao})
     : _api = api ?? _di<SubmissionApiService>() {
-    final db = _di<DatabaseService>().db;
-    _dao = dao ?? SubmissionDao(db);
+    if (dao != null) {
+      _dao = dao;
+    } else {
+      _dao = SubmissionDao(_di<DatabaseService>().db);
+    }
   }
 
   // ---------- State ----------
@@ -108,5 +111,35 @@ class HistoryManager extends ChangeNotifier {
     }
     notifyListeners();
     return updated;
+  }
+
+  // ---------- Cloud Archive (GC Pillar A) ----------
+
+  /// Whether the 90-day archive contains remote records not present in local cache.
+  final hasArchivedRecords = ValueNotifier<bool>(false);
+
+  /// Results returned by the last successful cloud archive search.
+  final archivedSubmissions = ValueNotifier<List<SubmissionDto>>([]);
+
+  /// Non-null when the last archive search failed.
+  String? archiveError;
+
+  /// Queries the server for audits whose terminal event occurred > 90 days ago.
+  /// On success: populates [archivedSubmissions] and sets [hasArchivedRecords].
+  /// On failure: sets [archiveError]; [hasArchivedRecords] is deliberately preserved
+  /// so the banner stays visible (per spec AC5c — banner persists on network failure).
+  Future<void> searchCloudArchive() async {
+    archiveError = null;
+    try {
+      final cutoff = DateTime.now().subtract(const Duration(days: 90));
+      final results = await _api.searchArchive(before: cutoff);
+      archivedSubmissions.value = results;
+      hasArchivedRecords.value = results.isNotEmpty;
+    } catch (e) {
+      archiveError = 'Failed to load archive: $e';
+      // hasArchivedRecords intentionally NOT reset — banner must persist.
+    } finally {
+      notifyListeners();
+    }
   }
 }

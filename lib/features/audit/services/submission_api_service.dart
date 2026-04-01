@@ -93,4 +93,27 @@ class SubmissionApiService {
         .map((j) => SurveyQuestionResult.fromJson(j as Map<String, dynamic>))
         .toList();
   }
+
+  /// GET /submissions?completedBefore=...&page=...&pageSize=...
+  /// Returns archived submissions whose terminal event predates [before].
+  /// Server applies caller's RBAC scope automatically.
+  Future<List<SubmissionDto>> searchArchive({
+    required DateTime before,
+    int page = 1,
+    int pageSize = 50,
+  }) async {
+    final response = await _dio.get(
+      '/submissions',
+      queryParameters: {
+        'completedBefore': before.toIso8601String(),
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    final data = response.data as Map<String, dynamic>;
+    final list = data['items'] as List<dynamic>;
+    return list
+        .map((j) => SubmissionDto.fromJson(j as Map<String, dynamic>))
+        .toList();
+  }
 }

@@ -293,6 +293,58 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
               const SizedBox(height: 8),
 
+              // ── Cloud Archive Banner (GC Pillar A) ──
+              ValueListenableBuilder<bool>(
+                valueListenable: manager.hasArchivedRecords,
+                builder: (context, hasArchived, _) {
+                  if (!hasArchived) return const SizedBox.shrink();
+                  return Container(
+                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.archive_outlined,
+                          size: 20,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Some older audits were archived to save space.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => manager.searchCloudArchive(),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text('Search archive'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
               // Grouped list
               Expanded(
                 child: _filtered.isEmpty
