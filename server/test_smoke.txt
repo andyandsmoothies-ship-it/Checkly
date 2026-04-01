@@ -1,0 +1,70 @@
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:03.99]     Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_MissingVoidReason_Returns400 [FAIL]
+  Failed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_MissingVoidReason_Returns400 [3 s]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_MissingVoidReason_Returns400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\VoidSubmissionEndpointTests.cs:line 297
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:04.12]     Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_CascadesActionPlansToClosed [FAIL]
+[xUnit.net 00:00:04.19]     Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WithDraftStatus_Returns400 [FAIL]
+[xUnit.net 00:00:04.26]     Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAuditor_Returns403 [FAIL]
+[xUnit.net 00:00:04.32]     Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_Idempotent_ReturnsOkWithoutDoubleWrite [FAIL]
+[xUnit.net 00:00:04.40]     Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WritesSystemLog [FAIL]
+[xUnit.net 00:00:04.56]     Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAdmin_WithCompleted_Returns204 [FAIL]
+  Failed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_CascadesActionPlansToClosed [130 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: NoContent
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_CascadesActionPlansToClosed() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\VoidSubmissionEndpointTests.cs:line 172
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WithDraftStatus_Returns400 [65 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WithDraftStatus_Returns400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\VoidSubmissionEndpointTests.cs:line 244
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAuditor_Returns403 [76 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Forbidden
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAuditor_Returns403() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\VoidSubmissionEndpointTests.cs:line 262
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_Idempotent_ReturnsOkWithoutDoubleWrite [57 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: NoContent
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_Idempotent_ReturnsOkWithoutDoubleWrite() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\VoidSubmissionEndpointTests.cs:line 139
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WritesSystemLog [80 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: NoContent
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WritesSystemLog() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\VoidSubmissionEndpointTests.cs:line 204
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAdmin_WithCompleted_Returns204 [68 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: NoContent
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAdmin_WithCompleted_Returns204() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\VoidSubmissionEndpointTests.cs:line 113
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     7, Passed:     1, Skipped:     0, Total:     8, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)

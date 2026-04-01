@@ -25,14 +25,11 @@ description: Acceptance Test-Driven Development — defines acceptance tests bef
 > - [ ] Phase 3: Deliverable
 > ## Artifact Inventory
 > | Status | File Path | Type |
-> | [NEW]  | brain/.../thinking_log_[topic].md | Log |
 > | [NEW]  | brain/.../test_contracts_[topic].md | Contracts |
 > ```
 
 > [!IMPORTANT]
-> MUST create `thinking_log_[topic].md` via `write_to_file` BEFORE writing scenarios. All internal reasoning goes here.
-> **Raw Data Requirement**: Include Table: `# Test Case Derivation Data` (Columns: `Scenario Hypothesis | Rejected/Approved | Reason (Cite Rule/Spec) | Final Gherkin Title`). All reasoning must be tabulated.
-
+> Do NOT start writing scenarios until you have completely understood the upstream spec and context.
 ## Phase 1: Spec Discovery & Persona
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
 - **Skill Loading (MANDATORY)**: Load the `atdd-quality-gates` skill from `.agents/skills/atdd-quality-gates/SKILL.md`. This skill contains the checklists, templates, and rules you must follow in Phase 2. Declare that it was loaded.

@@ -1,5 +1,5 @@
 ---
-description: The Core Builder Implementation Workflow.
+description: The Core Builder Implementation Workflow
 ---
 
 @[.agents/rules/orchestration-standards.md]
@@ -9,140 +9,119 @@ description: The Core Builder Implementation Workflow.
 # /implement Workflow
 
 > [!CAUTION]
-> **THE PHASE 2.5 MANDATORY YIELD (HARD STOP)**
-> You are strictly forbidden from executing this entire workflow in a single run. You MUST stop generation and yield to the user precisely at **Phase 2.5**. Do NOT write any production code (Phase 3) until the user explicitly returns and confirms the Sentinel (QA) agent has written the failing TDD tests.
+> **[PHASE_2.5_YIELD_LOCK]**: PROHIBITED: Executing this entire workflow in a single run. MANDATORY: Yield at **Phase 2.5**. PROHIBITED: Writing production code (Phase 3) until user explicitly confirms Sentinel (QA) has written GREEN/RED tests.
 
-## Step 0: Init
-- **Workflow Calibration**: If you are just starting this session, you MUST use `view_file` to read the entirety of this `implement.md` file right now to load the strict `@@SCAN` checkpoints into your active context.
-- Run Pre-Flight Check from `governance-rules.md`.
-- **INTERNAL LOGGING**: Process `@@SCAN` block output internally. Do not use as scratchpad.
-- **MANDATORY ARTIFACT**: You MUST create a `task.md` artifact FIRST before writing any code using this exact schema:
-  ```
-  # Task: [Feature / Bug / Topic Name]
-  Workflow: /implement | Track: [A / B1 / B2 / C]
-  ## Phases
-  - [ ] Phase 1: Deep Discovery
-  - [ ] Phase 2: Planning
-  - [ ] Phase 2.5: QA TDD Handoff Gate
-  - [ ] Phase 3: Coding
-  - [ ] Phase 4: Self-Review
-  - [ ] Phase 5: Handoff
-  ## Artifact Inventory
-  | Status | File Path | Type |
-  |--------|-----------|------|
-  | [NEW]  | brain/.../walkthrough_[topic].md | Result |
-  | [NEW]  | brain/.../executed_tests_[topic].md | Test Log |
-  ```
+## Phase 0: Init & Calibration
+| Step | Execution Contract |
+|---|---|
+| **Context Load** | `view_file(implement.md)` -> load `@@SCAN` checkpoints into active context. |
+| **Governance** | Run Pre-Flight check (`governance-rules.md`). Process `@@SCAN` internally. |
+| **Task Tracking**| MANDATORY: Create `task.md` using strict template BEFORE coding. |
+
+```markdown
+# Task: [Name]
+Workflow: /implement | Track: [A / B1 / B2 / C]
+
+## Phases
+- [ ] Phase 1: Deep Discovery
+- [ ] Phase 2: Planning
+- [ ] Phase 2.5: QA TDD Handoff Gate
+- [ ] Phase 3: Coding
+- [ ] Phase 4: Self-Review
+- [ ] Phase 5: Handoff
+
+## Artifact Inventory
+| Status | File Path | Type |
+|--------|-----------|------|
+| [NEW]  | brain/.../walkthrough_[topic].md | Result |
+| [NEW]  | brain/.../executed_tests_[topic].md | Test Log |
+```
 
 ## Phase 1: Deep Discovery
-- Read config files (`.csproj`, `pubspec.yaml`, etc.) to understand the current project state before touching anything.
-- **MANDATORY SKILLS**: You MUST ALWAYS load the `tdd` skill before coding. If working in .NET, you MUST also load `testing-strategy`.
-- **DYNAMIC SKILLS**: Derive 2-3 keywords from the request → scan `.agents/skills/` → load the top 1-2 matching `SKILL.md` files.
-- Match task to rules in `.agents/rules/`.
+| Step | Execution Contract |
+|---|---|
+| **Topology** | MANDATORY: Parse config files (`.csproj`, `pubspec.yaml`). |
+| **Skill Load** | MANDATORY: Load `tdd`. IF `dotnet` THEN Load `testing-strategy`. |
+| **Dynamic Skills**| Derive 2-3 keywords -> search `.agents/skills/` -> Load Top 2. |
 
-> **@@SCAN**: (1) Skills & rules loaded? (2) Core files and dependencies?
+> **@@SCAN**: (1) Skills/rules loaded? (2) Core files/dependencies scanned?
 
 ## Phase 2: Planning (THE GATE)
-- Check if an `implementation_plan_[topic].md` (from `/analysis`) or `specs_[topic].md` (from `/atdd`) is in context.
-  - **If yes**: read them and run the Plan Quality Checklist below. The specs file gives you the exact tests you must make GREEN — read it before coding.
-  - **If no**: load `technical-specification` skill, generate a lightweight `implementation_plan.md`, and get approval before coding.
-- **Plan Quality Checklist** — answer each item:
-  - [ ] Clear goal statement (1 paragraph)?
-  - [ ] Files listed with `[NEW]`/`[MODIFY]`/`[DELETE]`?
-  - [ ] DB/Schema/migration addressed (or N/A)?
-  - [ ] Idempotency & transaction boundaries stated?
-  - [ ] Blast radius identified?
-  - [ ] Verification steps are concrete (exact commands or test names)?
-- **Codebase Spot-Check**: Use `grep_search`/`view_file` to confirm ONE plan claim against real code. If contradicted → **STOP** and flag to user.
-- **YAGNI Gate**: Is this solving a real problem today? If it adds complexity without clear benefit → show Before/After trade-off table.
+| Step | Execution Contract |
+|---|---|
+| **Artifact Check**| IF `implementation_plan.md` OR `specs.md` exists -> Execute Quality Checklist. ELSE -> load `technical-specification` + generate lightweight plan -> Yield Approval. |
+| **Verification** | Spot-check 1 plan claim against source via `grep_search`. IF False -> STOP. |
+| **YAGNI Gate** | IF feature adds complexity without business value -> Create Before/After tradeoff table. |
 
-> **@@SCAN**: (1) Plan passes all checklist items? (2) Spot-check result? (3) Passes YAGNI gate?
+### Plan Quality Checklist
+- [ ] Goal stated? (1 paragraph)
+- [ ] File delta (`[NEW]`, `[MOD]`, `[DEL]`) defined?
+- [ ] Identity DB/Schema migrations?
+- [ ] Transaction boundaries & idempotency defined?
+- [ ] Blast radius identified?
+- [ ] Verification steps concrete?
 
-## Phase 2.5: The QA TDD Handoff Gate (MANDATORY YIELD)
+> **@@SCAN**: (1) Passes Plan Quality Checklist? (2) Spot-check Result? (3) Passes YAGNI?
+
+## Phase 2.5: QA TDD Handoff (MANDATORY YIELD)
 > [!CAUTION]
-> **Anti-Bias Protocol:** The Builder (@Forge) CANNOT write both tests and implementation. QA must set the test boundaries.
-- **Create Artifact:** Extract test contracts into a new `test_contracts_[topic].md` brain artifact. **MANDATORY:** Include a "Dependency Context Array" listing every service/manager the touched files depend on, plus their exact import paths, so QA can mock them instantly.
-- **Contract Format (MANDATORY):** Every contract entry MUST include all fields below. Incomplete contracts force QA to guess and are rejected:
-  ```markdown
-  ## Contract N: [Name]
-  **ID**: `Entity_Action_ExpectedOutcome`
-  **Exact Text/Key**: `'SIGN OUT'` ← copy exact string from source file + line number
-  **State Matrix**:
-  - Happy Path: [exact assertion]
-  - Error State: [exact assertion on failure]
-  - Empty/Cancel State: [exact assertion]
-  **Private Method Access**: N/A | Use `@visibleForTesting` on `[MethodName]`
-  **Why RED now**: [reason + source line number]
-  ```
-- **Yield:** Stop generation immediately after creating the artifact. Do NOT enter Phase 3.
-- **Message:** "Plan is ready. Pass `test_contracts_[topic].md` to the QA Agent (@Sentinel) for failing TDD tests. Type 'tests are red' when done."
-- **Hold:** DO NOT write production code until the user confirms tests are red.
+> **Anti-Bias Protocol:** Builder CANNOT write own tests.
+| Step | Execution Contract |
+|---|---|
+| **Artifact Create**| Export `test_contracts_[topic].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
+| **Contract Format**| Strict Template: `ID`, `Exact Text/Key` (with line #), `State Matrix` (Happy/Error/Empty), `Private Method Access`, `Why RED now`. |
+| **Execution Lock** | PROHIBITED: Entering Phase 3. MANDATORY: Output message: *"Plan ready. Pass test_contracts_[topic].md to QA Agent (@Sentinel) for failing tests. Type 'tests are red' when done."* -> YIELD. |
 
 ## Phase 3: Coding
-> **@@SCAN — Pre-Code (MANDATORY)** — state all three before writing the first line:
-> ```
-> [SCAN] Active rules: <list>
-> [SCAN] Applicable gotchas: <list or NONE>
-> [SCAN] Active skills: <list>
-> ```
-> Skipping this block is a workflow violation.
 
-- **The Cheap Verifier Gate**: Before declaring code complete, run a fast semantic check. Dart: `cmd /c flutter analyze lib/path/to/feature`. C#: `cmd /c dotnet build server/Checkly.Api.csproj --no-restore`. Fix locally.
-- **The Red/Green Context Split (MANDATORY)**: @Sentinel provided failing tests. Turn them GREEN. **DO NOT MODIFY test files.**
-  > [!CAUTION]
-  > **The Mirror Function Trap**
-  > Do not turn tests green if they rely on mirrored/cloned production logic. If a test file declares a replica of a private production method, reject it. Expose the actual production method using the language's standard testing access modifier, delete the clone, and test the real code.
-- Follow TDD inner loop: Run QA test → write code to pass it → refactor.
-- Post-Green Check: Check architecture compliance, null handling, edge cases, import legality. Fix immediately.
-- If task shifts domains, re-scan `.agents/skills/` and drop irrelevant ones.
+> **@@SCAN — Pre-Code (MANDATORY)**  -> State before line 1:
+> `[SCAN] Active rules: <list>`
+> `[SCAN] Applicable gotchas: <list or NONE>`
+> `[SCAN] Active skills: <list>`
 
-> **@@SCAN**: (1) Red/Green split followed? (2) Inline quality gate run per component?
+| Step | Execution Contract |
+|---|---|
+| **Cheap Verify** | Run structural validation (e.g. `flutter analyze`, `dotnet build --no-restore`). Fix before declaring complete. |
+| **Red/Green Loop**| IF `Sentinel` gives RED test -> write PROD code to make GREEN -> Refactor. PROHIBITED: Modifying test files. |
+| **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
+
+> **@@SCAN**: (1) Red/Green split respected? (2) Inline verify gate run?
 
 ## Phase 4: Self-Review
-Review your own changes from 4 angles. State findings for each:
+Review from 4 angles & state findings:
+1. **Security/Arch**: Check package dependency/illegal imports.
+2. **Logic Check**: Null handling? Acceptance criteria met?
+3. **Concurrency**: Verify Idempotency is at DB/Top-layer, not mid-layer.
+4. **Coverage Gate**: Every `[NEW]`/`[MOD]` component must have:
+   - ✅ Happy Path Test (e.g. 200/201)
+   - ✅ Error State Test (e.g. 400/403)
+   - ✅ Empty State Test (e.g. Nulls)
+   - *Exemption*: Purely cosmetic (`[SCAN Exemption: Cosmetic Only]`)
 
-1. **Security & Architecture**: Does the code break any workspace rules? Any illegal imports or wrong package dependencies?
-2. **Logic & Correctness**: Are nulls handled? Edge cases covered? Did you meet every acceptance criterion?
-3. **Concurrency**: Idempotency must come from DB Unique Constraints — not app-layer `AnyAsync`/`Exists` checks, which are race-prone. `SaveChangesAsync` belongs only at the top-level Handler, not inside domain services.
-4. **Coverage Gate** — for every `[NEW]` or `[MODIFY]` component/handler touched this session:
-   - ✅ A **Success State** (Happy Path) test must exist (e.g., 200/201/204 or valid UI).
-   - ✅ An **Error State** test must exist (e.g., 404/403/409/400, or UI error boundary).
-   - ✅ An **Empty State** test must exist (e.g., empty arrays/nulls handled gracefully).
-   - ❌ "Existing suite is still green" does NOT count as coverage for new code.
-   - If ANY are missing → write them now before moving to Phase 5. (See Gotcha #12)
-   - 🛡️ **Track A Exemption:** If the task was purely cosmetic (e.g., CSS tweaks, padding, copy edits) and contained **zero logical branches or data mutations**, you are explicitly permitted to skip the State Matrix tests. You must state `[SCAN Exemption: Cosmetic Only]` in your review.
+| Step | Execution Contract |
+|---|---|
+| **Diff Check** | `git diff --name-only`. Revert unplanned. |
+| **Handoff Trap** | IF Context Limit Approaching: Create `handoff_[topic].md` (Completed, Remaining, Modded files) -> Notify User -> YIELD. |
 
-- Run `git diff --name-only`. Revert unplanned edits.
-- Run each test from the `## Verification Plan`. Confirm GREEN.
-
-> **@@SCAN**: (1) All 4 review angles covered? (2) Success/Error/Empty tests exist for every touched component? (3) `git diff` is clean? (4) Verdict: Ship / Show / Ask?
-
-> [!CAUTION]
-> **Clean Handoff Protocol**: If you are nearing your context limit or hit a blocking error before this phase is complete, do NOT silently stop. Write a `handoff_[topic].md` listing completed phases, remaining phases, and all files modified so far. Then tell the user: *"Context limit reached. Resume from `handoff_[topic].md` in a new session."*
+> **@@SCAN**: (1) All 4 angles reviewed? (2) State tests exist? (3) `git diff` clean? (4) Verdict (Ship/Show/Ask)?
 
 ## Phase 5: Handoff
 
-| Category | When | Action |
-|----------|------|--------|
-| **Ship** | TDD green, blast radius = 0, trivial scope | Write 1-line entry in `walkthrough_[topic].md` + `executed_tests_[topic].md`. **Notify user: files are ready.** |
-| **Show** | TDD green, moderate scope, no blocking risk | Write full `walkthrough_[topic].md` + `executed_tests_[topic].md`. **Notify user: files are ready.** |
-| **Ask** | Architectural change, new migration, security-sensitive | Notify user BEFORE any further action. Include numbered test scenarios with Steps / Expected / Blast Radius. Wait for go-ahead. |
+| State | Condition | Result Action |
+|---|---|---|
+| **Ship** | Green TDD, Blast Radius 0, Trivial | Add line to `walkthrough.md` + `executed_tests.md` -> Notify Ready. |
+| **Show** | Green TDD, Moderate Scope | Write FULL `walkthrough.md` + `executed_tests.md` -> Notify Ready. |
+| **Ask** | Arch change, Security, Migration | Notify user BEFORE action. List numbered scenarios -> Wait go-ahead. |
 
-**Create the `walkthrough_[topic].md`** must include:
-- **Decision Log** (only when the plan had multiple proposed features): a table showing each with ✅ Implemented / ⏳ Deferred / ❌ Rejected and a one-line reason. This stops future sessions from re-proposing rejected ideas.
-- **Gotcha Removal/Edit Proposal (MANDATORY)**: At the very bottom, add a section evaluating the `GEMINI.override.md` files located inside the feature folders you just modified. Did your refactor just eliminate the need for an existing workaround? Did you modernize an architecture that makes a Gotcha obsolete? 
-  - If yes, explicitly propose which Gotcha (e.g., #4) should be deleted or edited, and provide the exact new Markdown table row. Wait for human approval before editing the rules file.
-  - If no, simply state: "No existing gotchas made obsolete."
-- **Verification Handoff** per scenario: Steps / Expected / Blast Radius. The QA agent uses this to run `/verify`.
-
-Run `cmd /c git diff --name-only` one final time to confirm only planned files were changed.
+### Artifact Payload: `walkthrough_[topic].md`
+- **Decision Log**: Table showing proposed vs implemented/rejected.
+- **Gotcha Protocol**: Evaluate if changes obsolete a `GEMINI.override.md` rule. IF Yes -> Propose table row edit. IF No -> State "No existing gotchas obsolete."
+- **Verification Map**: Steps/Expected/Radius for QA Agent.
 
 > [!IMPORTANT]
-> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
-
-> [!IMPORTANT]
-> **🛡️ Script Verification Gate:** Run before declaring done:
+> **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> 
+> **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-> - Code 0 (PASS): **Stop here. Tell user: "Implementation complete. Run `git add -A ; git commit` when ready."**
-> - Code 1 (FAIL): Fix reported errors and retry.
-> - 2-Strike Rule: Two consecutive failures → write `handoff_[topic].md`. Tell user: "Hard gate blocked on: [error]".
+> - `Code 0`: *"Implementation complete. Run git commit when ready."*
+> - `Code 1`: Fix block -> retry. (Fail twice = Write Handoff).

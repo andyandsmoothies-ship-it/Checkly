@@ -32,6 +32,9 @@ public static class SubmissionEndpoints
         group.MapPut("/{id}/finalize", FinalizeSubmission.HandleAsync)
             .WithName("FinalizeSubmission");
 
+        group.MapPost("/{id}/void", VoidSubmission.HandleAsync)
+            .WithName("VoidSubmission");
+
         return group;
     }
 }

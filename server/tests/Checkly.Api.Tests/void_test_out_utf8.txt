@@ -1,0 +1,136 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.3)
+[xUnit.net 00:00:00.20]   Discovering: Checkly.Api.Tests
+[xUnit.net 00:00:00.25]   Discovered:  Checkly.Api.Tests
+[xUnit.net 00:00:00.28]   Starting:    Checkly.Api.Tests
+[14:09:28 INF] Starting Checkly API
+[14:09:28 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:28 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:28 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:28 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:29 ERR] An error occurred using the connection to database 'checkly_test' on server 'tcp://localhost:5432'. {"EventId": {"Id": 20004, "Name": "Microsoft.EntityFrameworkCore.Database.Connection.ConnectionError"}, "SourceContext": "Microsoft.EntityFrameworkCore.Database.Connection", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:29 ERR] An error occurred using the connection to database 'checkly_test' on server 'tcp://localhost:5432'. {"EventId": {"Id": 20004, "Name": "Microsoft.EntityFrameworkCore.Database.Connection.ConnectionError"}, "SourceContext": "Microsoft.EntityFrameworkCore.Database.Connection", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:29 ERR] An exception occurred while iterating over the results of a query for context type 'Checkly.Api.Common.Persistence.AppDbContext'.
+Npgsql.PostgresException (0x80004005): 3D000: database "checkly_test" does not exist
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+  Exception data:
+    Severity: FATAL
+    SqlState: 3D000
+    MessageText: database "checkly_test" does not exist
+    File: postinit.c
+    Line: 1016
+    Routine: InitPostgres {"EventId": {"Id": 10100, "Name": "Microsoft.EntityFrameworkCore.Query.QueryIterationFailed"}, "SourceContext": "Microsoft.EntityFrameworkCore.Query", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+Npgsql.PostgresException (0x80004005): 3D000: database "checkly_test" does not exist
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+  Exception data:
+    Severity: FATAL
+    SqlState: 3D000
+    MessageText: database "checkly_test" does not exist
+    File: postinit.c
+    Line: 1016
+    Routine: InitPostgres
+[14:09:29 ERR] ReminderService tick failed {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+Npgsql.PostgresException (0x80004005): 3D000: database "checkly_test" does not exist
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Checkly.Api.Common.Services.ReminderService.SendDeadlineReminders(AppDbContext db, CancellationToken ct) in C:\Users\HP\Documents\GitHub\Checkly\server\Common\Services\ReminderService.cs:line 59
+   at Checkly.Api.Common.Services.ReminderService.ExecuteAsync(CancellationToken stoppingToken) in C:\Users\HP\Documents\GitHub\Checkly\server\Common\Services\ReminderService.cs:line 37
+  Exception data:
+    Severity: FATAL
+    SqlState: 3D000
+    MessageText: database "checkly_test" does not exist
+    File: postinit.c
+    Line: 1016
+    Routine: InitPostgres
+[14:09:31 INF] HTTP POST /api/auth/login responded 200 in 293.0662 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFL7", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/submissions/35c02c36-c979-400a-ad89-f14930c0b089/void responded 400 in 60.3820 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFL8", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_MissingVoidReason_Returns400 [4 s]
+[14:09:32 INF] HTTP POST /api/auth/login responded 200 in 97.0019 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFL9", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/submissions/83fbef1c-6e43-40df-b551-a6331dd1e4f6/void responded 204 in 116.9277 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLA", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/auth/login responded 200 in 109.9820 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLB", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/submissions/a514a682-fc0e-4bd0-bef5-3e4cf347aa03/void responded 400 in 4.7181 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLC", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/auth/register responded 201 in 100.1735 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLD", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/submissions/f8c26f62-6ac1-4393-99b3-0fe16c039cc4/void responded 403 in 2.5789 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLE", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/auth/login responded 200 in 75.2155 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLF", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/submissions/587ddb89-3fb0-4621-b090-10919da70e09/void responded 204 in 7.5577 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLG", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/submissions/587ddb89-3fb0-4621-b090-10919da70e09/void responded 204 in 2.3951 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLH", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/auth/login responded 200 in 90.5293 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLI", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:32 INF] HTTP POST /api/submissions/4c0a496d-fc60-445e-9580-aaca39321e7d/void responded 204 in 7.5021 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLJ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:33 INF] HTTP POST /api/auth/login responded 200 in 91.4969 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLK", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:33 INF] HTTP POST /api/submissions/0687a7f9-dfaf-4402-925d-29f929665ce7/void responded 404 in 3.9856 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLL", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:33 INF] HTTP POST /api/auth/login responded 200 in 81.8318 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLM", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:33 INF] HTTP POST /api/submissions/577d27fe-7c96-4e5e-9393-bd601acf9c6e/void responded 204 in 6.6771 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKFNMFHBFLN", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:09:33 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[xUnit.net 00:00:05.47]   Finished:    Checkly.Api.Tests
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_CascadesActionPlansToClosed [353 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WithDraftStatus_Returns400 [122 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAuditor_Returns403 [114 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_Idempotent_ReturnsOkWithoutDoubleWrite [151 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WritesSystemLog [124 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_NotFound_Returns404 [99 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAdmin_WithCompleted_Returns204 [107 ms]
+
+Test Run Successful.
+Total tests: 8
+     Passed: 8
+ Total time: 6.0683 Seconds
