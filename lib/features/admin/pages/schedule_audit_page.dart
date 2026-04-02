@@ -370,7 +370,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
                   style: AppFonts.displayStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.charcoal.withValues(alpha: 0.4),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                     letterSpacing: 2,
                   ),
                 ),
@@ -488,7 +488,7 @@ class _DropdownCard extends StatelessWidget {
                   style: AppFonts.displayStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.charcoal.withValues(alpha: 0.4),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                     letterSpacing: 2,
                   ),
                 ),

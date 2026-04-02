@@ -112,7 +112,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                         style: AppFonts.displayStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.charcoal.withValues(alpha: 0.5),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -153,7 +153,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                   style: AppFonts.displayStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.charcoal.withValues(alpha: 0.4),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                     letterSpacing: 3,
                   ),
                 ),
@@ -175,7 +175,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                         'No audits found for this store.',
                         style: AppFonts.displayStyle(
                           fontSize: 14,
-                          color: AppTheme.charcoal.withValues(alpha: 0.5),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -227,14 +227,14 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                           style: AppFonts.displayStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.charcoal,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         subtitle: Text(
                           '${s.auditorName ?? 'Unknown'} • ${_formatDate(s.createdAt)}',
                           style: AppFonts.displayStyle(
                             fontSize: 12,
-                            color: AppTheme.charcoal.withValues(alpha: 0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ),
                       ),
@@ -281,7 +281,7 @@ class _MetricChip extends StatelessWidget {
           '$value $label',
           style: AppFonts.displayStyle(
             fontSize: 13,
-            color: AppTheme.charcoal.withValues(alpha: 0.6),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
       ],

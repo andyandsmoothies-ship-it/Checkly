@@ -43,7 +43,7 @@ class OverviewCard extends StatelessWidget {
                   style: AppFonts.serifStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.charcoal,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),

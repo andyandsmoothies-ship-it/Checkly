@@ -67,7 +67,7 @@ class StatBlock extends StatelessWidget {
             value,
             style: AppFonts.serifStyle(
               fontSize: height > 140 ? 36 : 24,
-              color: AppColors.charcoal,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           SizedBox(height: height > 140 ? 8 : 4),
@@ -76,7 +76,7 @@ class StatBlock extends StatelessWidget {
             style: AppFonts.displayStyle(
               fontSize: uppercaseLabel ? 10 : 14,
               fontWeight: FontWeight.w500,
-              color: AppColors.charcoal.withValues(
+              color: Theme.of(context).colorScheme.onSurface.withValues(
                 alpha: uppercaseLabel ? 0.6 : 0.8,
               ),
               letterSpacing: uppercaseLabel ? -0.5 : 0,

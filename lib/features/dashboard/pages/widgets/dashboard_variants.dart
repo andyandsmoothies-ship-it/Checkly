@@ -255,7 +255,7 @@ class AdminDashboardVariant extends StatelessWidget {
                 'Mission Control',
                 style: AppFonts.serifStyle(
                   fontSize: 26,
-                  color: AppTheme.charcoal,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 4),
@@ -264,7 +264,7 @@ class AdminDashboardVariant extends StatelessWidget {
                 style: AppFonts.displayStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
-                  color: AppTheme.charcoal.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   letterSpacing: 1.5,
                 ),
               ),
@@ -400,7 +400,7 @@ class _HeroCard extends StatelessWidget {
                       title,
                       style: AppFonts.serifStyle(
                         fontSize: 16,
-                        color: AppTheme.charcoal,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -415,7 +415,7 @@ class _HeroCard extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right,
-                color: AppTheme.charcoal.withValues(alpha: 0.3),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
             ],
           ),
@@ -503,7 +503,7 @@ class _DashboardStatCard extends StatelessWidget {
                     child: Icon(
                       Icons.chevron_right,
                       size: 16,
-                      color: AppTheme.charcoal.withValues(alpha: 0.3),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
                   ),
                 ],
@@ -513,7 +513,7 @@ class _DashboardStatCard extends StatelessWidget {
                 value,
                 style: AppFonts.serifStyle(
                   fontSize: 32,
-                  color: AppTheme.charcoal,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 2),
@@ -522,7 +522,7 @@ class _DashboardStatCard extends StatelessWidget {
                 style: AppFonts.displayStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.charcoal.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   letterSpacing: 1,
                 ),
               ),
@@ -533,7 +533,7 @@ class _DashboardStatCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontSize: 9,
                     fontWeight: FontWeight.w500,
-                    color: AppTheme.charcoal.withValues(alpha: 0.35),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35),
                     letterSpacing: 0.5,
                   ),
                 ),

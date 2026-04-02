@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 import '../theme/app_fonts.dart';
 
 /// Uppercase tracked section header — "RECENT SCANS", "AUDITS", etc.
@@ -28,7 +27,7 @@ class SectionHeader extends StatelessWidget {
         style: AppFonts.displayStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: AppColors.charcoal.withValues(alpha: 0.4),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
           letterSpacing: 3,
         ),
       ),

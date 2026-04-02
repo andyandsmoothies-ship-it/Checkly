@@ -158,7 +158,7 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                           style: AppFonts.displayStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.charcoal,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         subtitle: Text(
@@ -168,7 +168,7 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                           ].join(' • '),
                           style: AppFonts.displayStyle(
                             fontSize: 12,
-                            color: AppTheme.charcoal.withValues(alpha: 0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

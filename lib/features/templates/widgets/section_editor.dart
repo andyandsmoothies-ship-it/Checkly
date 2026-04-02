@@ -172,7 +172,7 @@ class SectionEditor extends StatelessWidget {
                     '${subCount}S • ${critCount}C',
                     style: AppFonts.serifStyle(
                       fontSize: 10,
-                      color: AppTheme.charcoal.withValues(alpha: 0.5),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),

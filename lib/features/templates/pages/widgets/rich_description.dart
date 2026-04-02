@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/theme/app_fonts.dart';
-import '../../../../_shared/theme/app_theme.dart';
+// Removed AppTheme import
 
 /// Rich description renderer that parses lines and applies premium styling.
 class RichDescription extends StatelessWidget {
@@ -28,7 +28,7 @@ class RichDescription extends StatelessWidget {
               style: AppFonts.displayStyle(
                 fontSize: 14,
                 fontWeight: trimmed.endsWith(':') ? FontWeight.w700 : null,
-                color: AppTheme.charcoal.withValues(
+                color: Theme.of(context).colorScheme.onSurface.withValues(
                   alpha: trimmed.endsWith(':') ? 0.8 : 0.6,
                 ),
                 height: 1.5,
@@ -57,7 +57,7 @@ class RichDescription extends StatelessWidget {
                     children: _parseLine(content, theme),
                     style: AppFonts.displayStyle(
                       fontSize: 13.5,
-                      color: AppTheme.charcoal.withValues(alpha: 0.7),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       height: 1.5,
                     ),
                   ),
@@ -81,9 +81,9 @@ class RichDescription extends StatelessWidget {
       spans.add(
         TextSpan(
           text: action,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w800,
-            color: AppTheme.charcoal,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       );

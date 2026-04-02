@@ -477,7 +477,7 @@ class _StoreGroup extends StatelessWidget {
               style: AppFonts.displayStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.charcoal.withValues(alpha: 0.4),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 letterSpacing: 3,
               ),
             ),

@@ -47,7 +47,7 @@ class TemplateFooter extends StatelessWidget {
                 '$totalPoints PTS',
                 style: AppFonts.serifStyle(
                   fontSize: 14,
-                  color: AppTheme.charcoal,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -71,7 +71,7 @@ class TemplateFooter extends StatelessWidget {
                     fontSize: 14,
                     color: (totalDensity - 100).abs() < 0.01
                         ? AppTheme.success
-                        : AppTheme.charcoal,
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),

@@ -794,7 +794,7 @@ class _KpiCard extends StatelessWidget {
                         child: Icon(
                           Icons.info_outline,
                           size: 14,
-                          color: AppTheme.charcoal.withValues(alpha: 0.3),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
                         ),
                       ),
                   ],
@@ -804,7 +804,7 @@ class _KpiCard extends StatelessWidget {
                   value,
                   style: AppFonts.serifStyle(
                     fontSize: 28,
-                    color: AppTheme.charcoal,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -813,7 +813,7 @@ class _KpiCard extends StatelessWidget {
                   style: AppFonts.displayStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.charcoal.withValues(alpha: 0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     letterSpacing: 1,
                   ),
                 ),

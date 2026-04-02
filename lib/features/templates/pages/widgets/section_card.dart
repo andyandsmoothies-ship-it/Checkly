@@ -85,7 +85,7 @@ class SectionCard extends StatelessWidget {
                   style: AppFonts.displayStyle(
                     fontSize: isRoot ? 15 : 13,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.charcoal,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),

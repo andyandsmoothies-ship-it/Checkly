@@ -22,7 +22,7 @@ class RuleBadge extends StatelessWidget {
         style: AppFonts.displayStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: AppTheme.charcoal.withValues(alpha: 0.6),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         ),
       ),
     );
