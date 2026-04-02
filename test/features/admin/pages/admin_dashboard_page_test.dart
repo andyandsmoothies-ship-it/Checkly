@@ -45,7 +45,6 @@ _MockDashboardManager _setupManager() {
   when(() => m.loadStats()).thenAnswer((_) async {});
   when(() => m.addListener(any())).thenReturn(null);
   when(() => m.removeListener(any())).thenReturn(null);
-  when(() => m.hasListeners).thenReturn(false);
   return m;
 }
 

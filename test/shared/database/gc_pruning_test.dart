@@ -1,4 +1,4 @@
-import 'package:drift/drift.dart';
+﻿import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -7,10 +7,10 @@ import 'package:checkly/_shared/database/app_database.dart';
 // ============================================================
 // Test Plan: 90-Day SQLite Garbage Collector (Pillar A)
 //  
-// AC1 — Happy Path: completed/voided records > 90 days are pruned (submissions + action plans)
-// AC2 — Preservation: records < 90 days are NOT pruned
-// AC3 — NULL Safety: records with NULL completedAt/voidedAt are NOT pruned
-// AC4 — Status Safety: draft/scheduled records are NEVER pruned regardless of age
+// AC1 â€” Happy Path: completed/voided records > 90 days are pruned (submissions + action plans)
+// AC2 â€” Preservation: records < 90 days are NOT pruned
+// AC3 â€” NULL Safety: records with NULL completedAt/voidedAt are NOT pruned
+// AC4 â€” Status Safety: draft/scheduled records are NEVER pruned regardless of age
 // ============================================================
 
 void main() {
@@ -25,7 +25,7 @@ void main() {
   });
 
   // Helper: insert a submission and linked action plan.
-  Future<void> _seedSubmissionWithPlan(
+  Future<void> seedSubmissionWithPlan(
     String id, {
     required String status,
     DateTime? completedAt,
@@ -52,13 +52,13 @@ void main() {
     );
   }
 
-  // ── AC1: Happy Path (GC prunes stale completed + voided) ──
+  // â”€â”€ AC1: Happy Path (GC prunes stale completed + voided) â”€â”€
 
   test(
-    'AC1a — GC_PruneStaleCompletedAudits: completed record > 90 days is deleted on db open',
+    'AC1a â€” GC_PruneStaleCompletedAudits: completed record > 90 days is deleted on db open',
     () async {
       final staleDate = DateTime.now().subtract(const Duration(days: 91));
-      await _seedSubmissionWithPlan('sub-stale-completed',
+      await seedSubmissionWithPlan('sub-stale-completed',
           status: 'completed', completedAt: staleDate);
 
       // Act: Trigger pruning logic directly. 
@@ -77,10 +77,10 @@ void main() {
   );
 
   test(
-    'AC1b — GC_PruneStaleVoidedAudits: voided record > 90 days is deleted on db open',
+    'AC1b â€” GC_PruneStaleVoidedAudits: voided record > 90 days is deleted on db open',
     () async {
       final staleDate = DateTime.now().subtract(const Duration(days: 91));
-      await _seedSubmissionWithPlan('sub-stale-voided',
+      await seedSubmissionWithPlan('sub-stale-voided',
           status: 'voided', voidedAt: staleDate);
 
       await db.pruneStaleAuditsForTesting();
@@ -95,13 +95,13 @@ void main() {
     },
   );
 
-  // ── AC2: Preservation (recent audits NOT pruned) ──
+  // â”€â”€ AC2: Preservation (recent audits NOT pruned) â”€â”€
 
   test(
-    'AC2 — GC_PreservesRecentAudits: completed record < 90 days is NOT deleted',
+    'AC2 â€” GC_PreservesRecentAudits: completed record < 90 days is NOT deleted',
     () async {
       final recentDate = DateTime.now().subtract(const Duration(days: 30));
-      await _seedSubmissionWithPlan('sub-recent',
+      await seedSubmissionWithPlan('sub-recent',
           status: 'completed', completedAt: recentDate);
 
       await db.pruneStaleAuditsForTesting();
@@ -112,10 +112,10 @@ void main() {
     },
   );
 
-  // ── AC3: NULL Safety ──
+  // â”€â”€ AC3: NULL Safety â”€â”€
 
   test(
-    'AC3 — GC_NullCompletedAt_NoDelete: completed record with NULL completedAt is NOT pruned',
+    'AC3 â€” GC_NullCompletedAt_NoDelete: completed record with NULL completedAt is NOT pruned',
     () async {
       await db.into(db.cachedSubmissions).insert(
         CachedSubmissionsCompanion.insert(
@@ -130,14 +130,14 @@ void main() {
 
       final subs = await db.select(db.cachedSubmissions).get();
       expect(subs.any((s) => s.id == 'sub-null-completed'), isTrue,
-          reason: 'NULL completedAt must be SQLite-safe — row must survive pruning');
+          reason: 'NULL completedAt must be SQLite-safe â€” row must survive pruning');
     },
   );
 
-  // ── AC4: Status Safety (draft/scheduled never pruned) ──
+  // â”€â”€ AC4: Status Safety (draft/scheduled never pruned) â”€â”€
 
   test(
-    'AC4 — GC_NeverPrunesDraftOrScheduled: draft and scheduled records are immune regardless of age',
+    'AC4 â€” GC_NeverPrunesDraftOrScheduled: draft and scheduled records are immune regardless of age',
     () async {
       // Seed very old draft and scheduled records
       final ancientDate = DateTime.now().subtract(const Duration(days: 365));

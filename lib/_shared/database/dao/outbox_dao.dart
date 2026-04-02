@@ -31,7 +31,8 @@ class OutboxDao {
                 s.syncStatus.equals('pending') &
                 (s.nextRetryAt.isNull() | s.nextRetryAt.isSmallerOrEqualValue(now)),
           )
-          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]))
+          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)])
+          ..limit(100))
         .get();
   }
 

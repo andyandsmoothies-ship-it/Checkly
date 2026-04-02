@@ -23,7 +23,7 @@ void main() {
         // Act
         final result = await IsolateParser.parseList(
           json: jsonString,
-          parser: (json) => json as Map<String, dynamic>,
+          parser: (json) => json,
         );
 
         // Assert
@@ -53,7 +53,7 @@ void main() {
         // Act
         final result = await IsolateParser.parseList(
           json: massiveJson,
-          parser: (json) => json as Map<String, dynamic>,
+          parser: (json) => json,
         );
 
         // Assert
@@ -72,7 +72,7 @@ void main() {
         final result = await IsolateParser.parseList(
           json: jsonString,
           listKey: 'items',
-          parser: (json) => json as Map<String, dynamic>,
+          parser: (json) => json,
         );
 
         // Assert
@@ -91,7 +91,7 @@ void main() {
         final result = await IsolateParser.parseList(
           json: jsonString,
           listKey: null,
-          parser: (json) => json as Map<String, dynamic>,
+          parser: (json) => json,
         );
 
         // Assert

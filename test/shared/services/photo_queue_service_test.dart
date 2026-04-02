@@ -40,6 +40,7 @@ void main() {
       localPath: '/tmp/1.jpg',
       createdAt: DateTime.now().subtract(const Duration(days: 1)),
       syncStatus: 'pending',
+      retryCount: 0,
     );
     final photo2 = PendingPhoto(
       id: 'p2',
@@ -47,6 +48,7 @@ void main() {
       localPath: '/tmp/2.jpg',
       createdAt: DateTime.now(),
       syncStatus: 'pending',
+      retryCount: 0,
     );
 
     when(() => mockOutboxDao.getPhotosForSubmission('sub-1'))
@@ -77,6 +79,7 @@ void main() {
       localPath: '/tmp/missing.jpg',
       createdAt: DateTime.now().subtract(const Duration(days: 1)),
       syncStatus: 'pending',
+      retryCount: 0,
     );
     final photo2 = PendingPhoto(
       id: 'p2',
@@ -84,6 +87,7 @@ void main() {
       localPath: '/tmp/valid.jpg',
       createdAt: DateTime.now(),
       syncStatus: 'pending',
+      retryCount: 0,
     );
 
     when(() => mockOutboxDao.getPhotosForSubmission('sub-1'))
@@ -116,6 +120,7 @@ void main() {
       localPath: '/tmp/1.jpg',
       createdAt: DateTime.now().subtract(const Duration(days: 1)),
       syncStatus: 'pending',
+      retryCount: 0,
     );
     final photo2 = PendingPhoto(
       id: 'p2',
@@ -123,6 +128,7 @@ void main() {
       localPath: '/tmp/2.jpg',
       createdAt: DateTime.now(),
       syncStatus: 'pending',
+      retryCount: 0,
     );
 
     when(() => mockOutboxDao.getPhotosForSubmission('sub-1'))
