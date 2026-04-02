@@ -1,7 +1,9 @@
 using System.Text.Json;
+using System.Collections.Generic;
+using System.Linq;
 using Checkly.Api.Common.Persistence.Entities;
 
-namespace Checkly.Api.Features.ActionPlans;
+namespace Checkly.Api.Common.Services;
 
 /// <summary>
 /// Evaluates which answers should trigger an Action Plan based on
@@ -61,7 +63,7 @@ public static class ActionPlanEvaluator
             "value_in" => trigger.Values is not null
                 && answer.Value is not null
                 && trigger.Values.Any(v =>
-                    answer.Value.Split(',', StringSplitOptions.TrimEntries)
+                    answer.Value.Split(',', System.StringSplitOptions.TrimEntries)
                         .Contains(v)),
 
             "numeric_lt" => trigger.Threshold.HasValue
@@ -123,7 +125,7 @@ public static class ActionPlanEvaluator
     }
 
     private sealed record TriggerRule(
-        string Condition,
+        string? Condition,
         List<string>? Values,
         decimal? Threshold);
 }

@@ -1,8 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Checkly.Api.Features.ActionPlans;
+namespace Checkly.Api.Common.Services;
 
 /// <summary>
 /// Shared service for auto-creating action plans from triggered answers.

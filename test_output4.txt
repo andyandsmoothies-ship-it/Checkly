@@ -1,0 +1,17 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.Submissions.CreateSubmissionDirectTests.CreateSubmission_StatusCompleted_TriggersSectionScoresAndAnalytics [4 s]
+  Error Message:
+   System.Exception : Request failed with BadRequest and body: {"error":"Score verification failed","clientScore":100,"serverScore":0,"reason":null}
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.CreateSubmissionDirectTests.CreateSubmission_StatusCompleted_TriggersSectionScoresAndAnalytics() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\CreateSubmissionDirectTests.cs:line 67
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)

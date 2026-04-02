@@ -4,8 +4,6 @@ using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
-using Checkly.Api.Features.ActionPlans;
-using Checkly.Api.Features.Submissions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -203,98 +201,33 @@ public static class FinalizeSubmission
             scoringMode: scoringMode,
             scoringLogicConfig: scoringLogicConfig);
 
-        // Atomic flush: submission update + answers + audit log + action plans in one transaction
-        await db.SaveChangesAsync(ct);
-
-        // 8. Explode SectionScores JSON into relational rows (skip for survey mode)
-        if (scoringMode != "survey" && !string.IsNullOrEmpty(request.SectionScores))
+        var strategy = db.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
         {
-            try
-            {
-                var sectionsDoc = JsonDocument.Parse(request.SectionScores);
-                foreach (var prop in sectionsDoc.RootElement.EnumerateObject())
-                {
-                    var sectionTitle = prop.Name;
-                    var sectionScore = prop.Value.TryGetProperty("score", out var sc) ? sc.GetDecimal() : 0m;
-                    var sectionMax = prop.Value.TryGetProperty("maxScore", out var mx) ? mx.GetDecimal() : 0m;
+            // Start explicit transaction to guarantee all 3 saves complete atomically
+            await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
-                    db.SubmissionSectionScores.Add(new SubmissionSectionScore
-                    {
-                        Id = Guid.NewGuid(),
-                        SubmissionId = submission.Id,
-                        StoreId = submission.StoreId,
-                        TemplateId = submission.TemplateId,
-                        SectionTitle = sectionTitle,
-                        Score = sectionScore,
-                        MaxScore = sectionMax,
-                        Ratio = sectionMax > 0 ? Math.Round(sectionScore / sectionMax, 4) : null,
-                        IsCcpFailed = false, // ISSUE: CCP flag derivation deferred — requires group-level is_ccp aggregation during section score explosion
-                        Weight = null, // ISSUE: Weight derivation deferred — requires matching SectionTitle to group.title for weight lookup
-                        CreatedAt = now
-                    });
-                }
-
-                await db.SaveChangesAsync(ct);
-            }
-            catch (JsonException)
-            {
-                // Malformed JSON → skip section score rows silently
-            }
-        }
-
-        // 9. Upsert StoreAnalyticsSnapshot
-        if (submission.StoreId.HasValue)
-        {
-            var thirtyDaysAgo = now.AddDays(-30);
-            var storeIdVal = submission.StoreId.Value;
-
-            // Recalculate 30-day metrics from live data
-            var recentSubs = await db.Submissions
-                .Where(s => s.StoreId == storeIdVal
-                    && s.Status == "completed"
-                    && s.CompletedAt >= thirtyDaysAgo
-                    && s.TotalScore.HasValue)
-                .ToListAsync(ct);
-
-            var totalAudits = recentSubs.Count;
-            var avgScore = totalAudits > 0
-                ? Math.Round(recentSubs.Average(s => s.TotalScore!.Value), 1)
-                : 0m;
-
-            var openAPs = await db.ActionPlans
-                .CountAsync(ap => ap.StoreId == storeIdVal && ap.Status == "open", ct);
-            var overdueAPs = await db.ActionPlans
-                .CountAsync(ap => ap.StoreId == storeIdVal
-                    && ap.Status == "open"
-                    && ap.Deadline.HasValue
-                    && ap.Deadline < now, ct);
-
-            var snapshot = await db.StoreAnalyticsSnapshots
-                .FirstOrDefaultAsync(s => s.StoreId == storeIdVal, ct);
-
-            if (snapshot is null)
-            {
-                snapshot = new StoreAnalyticsSnapshot { StoreId = storeIdVal };
-                db.StoreAnalyticsSnapshots.Add(snapshot);
-            }
-
-            snapshot.AvgScore30d = avgScore;
-            snapshot.TotalAudits30d = totalAudits;
-            snapshot.OpenActionPlans = openAPs;
-            snapshot.OverdueActionPlans = overdueAPs;
-            snapshot.LastAuditScore = submission.TotalScore;
-            snapshot.LastAuditAt = submission.CompletedAt;
-            snapshot.UpdatedAt = now;
-
+            // Atomic flush 1: submission update + answers + audit log + action plans
             await db.SaveChangesAsync(ct);
-        }
 
-        return TypedResults.Ok(new SubmissionDto(
-            submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
-            submission.StoreId, submission.StoreName, submission.AuditorId,
-            submission.AuditorName, submission.Status, submission.TotalScore,
-            submission.SectionScores, submission.Notes,
-            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
-            submission.TemplateVersion));
+            // 8. Explode SectionScores JSON into relational rows (skip for survey mode)
+            if (scoringMode != "survey")
+            {
+                await SectionScoreExploder.ExplodeAsync(submission.Id, submission.StoreId, submission.TemplateId, request.SectionScores, db, now, ct);
+            }
+
+            // 9. Upsert StoreAnalyticsSnapshot
+            await StoreAnalyticsUpdater.UpdateMetricsAsync(submission.StoreId, submission, db, now, ct);
+
+            await transaction.CommitAsync(ct);
+
+            return TypedResults.Ok(new SubmissionDto(
+                submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
+                submission.StoreId, submission.StoreName, submission.AuditorId,
+                submission.AuditorName, submission.Status, submission.TotalScore,
+                submission.SectionScores, submission.Notes,
+                submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
+                submission.TemplateVersion));
+        });
     }
 }

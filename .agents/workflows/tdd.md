@@ -68,7 +68,8 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 > A failing test is only valuable if it fails for a **Business Reason**. If it fails because of a syntax error, bad import, or a broken test runner, it is totally useless to the Builder and wastes their context limit.
 
 - **Action**: Compile and run the tests using your terminal (e.g., `dotnet test`, `flutter test`, `npm run test`).
-- **Gate Verdict**: Look at the terminal output. 
+  - *Tip for .NET*: After running tests, execute `powershell -ExecutionPolicy Bypass -File scripts\CollectTestResults.ps1` to easily parse the test outcomes into a clean CSV instead of reading truncated terminal logs.
+- **Gate Verdict**: Look at the terminal output or parsed CSV. 
   - ✅ **Valid Red**: The test fails because `MethodNotFound`, `NotImplementedException`, or `Expected 200 but got 404` (because the endpoint does not physically exist yet). -> **Proceed to Phase 4**.
   - ❌ **Invalid Syntax**: The test fails to compile due to a missing semicolon, incorrect syntax in the test file itself, or a broken import path not specified in the plan. -> **Fix it and re-run immediately.**
 - You must repeat this loop until you prove 100% of the tests are syntactically valid and failing purely because the logic implementation is missing.

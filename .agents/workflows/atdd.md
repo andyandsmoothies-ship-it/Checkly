@@ -69,7 +69,7 @@ Workflow: /atdd | Track: [B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Pre-Flight** | Run Infrastructure Checklist from `atdd-quality-gates` Gate 1. |
-| **Classification**| Run all tests. Classify failures -> Table `Test Name | Status | Type (Business/Infra) | Error Summary`. |
+| **Classification**| Run all tests. IF `.NET` -> Execute `powershell -ExecutionPolicy Bypass -File scripts\CollectTestResults.ps1` to easily parse the test outcomes into a clean CSV instead of reading truncated terminal logs. Classify failures -> Table `Test Name | Status | Type (Business/Infra) | Error Summary`. |
 | **Gate Verdict** | IF (All == Business) -> Proceed to 2d. IF (Any == Infra/Ambiguous) -> Fix -> Re-run. |
 
 ### 2d/2e. Deferred ACs & Saboteur Protocol

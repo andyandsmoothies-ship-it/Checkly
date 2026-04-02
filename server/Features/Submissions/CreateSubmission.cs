@@ -4,7 +4,6 @@ using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
-using Checkly.Api.Features.ActionPlans;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -99,40 +98,7 @@ public static class CreateSubmission
             .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
             .ToListAsync(ct);
 
-        // Build template snapshot JSON
-        var snapshotModel = new TemplateSnapshotModel
-        {
-            SnapshotVersion = 1,
-            Title = template.Title,
-            Version = template.Version,
-            ScoringLogicConfig = template.ScoringLogicConfig,
-            DisplayNoun = template.DisplayNoun,
-            Groups = groups.Select(g => new SnapshotGroup
-            {
-                Id = g.Id,
-                Title = g.Title,
-                Weight = g.Weight,
-                MaxDeductionPoints = g.MaxDeductionPoints,
-                MinusPerFault = g.MinusPerFault,
-                OrderIndex = g.OrderIndex,
-                ParentId = g.ParentId,
-                Metadata = g.Metadata,
-                Criteria = criteria.Where(c => c.GroupId == g.Id).Select(c => new SnapshotCriterion
-                {
-                    Id = c.Id,
-                    GroupId = c.GroupId,
-                    Label = c.Label,
-                    InputType = c.InputType,
-                    PointsWeight = c.PointsWeight,
-                    IsCcp = c.IsCcp,
-                    IsRisk = c.IsRisk,
-                    MinusImpact = c.MinusImpact,
-                    OrderIndex = c.OrderIndex,
-                    Metadata = c.Metadata
-                }).ToList()
-            }).ToList()
-        };
-        var templateSnapshotJson = JsonSerializer.Serialize(snapshotModel);
+        var templateSnapshotJson = TemplateSnapshotBuilder.BuildSnapshot(template, groups, criteria);
 
         // Scoring verification — only for completed submissions
         decimal? serverScore = null;
@@ -230,55 +196,69 @@ public static class CreateSubmission
             TemplateVersion = template.Version
         };
 
-        db.Submissions.Add(submission);
-
-        // Create answers — only for completed submissions
-        if (!isDraft && !isScheduled && request.Answers is not null)
+        var strategy = db.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
         {
-            var answers = request.Answers.Select(a => new Answer
+            db.Submissions.Add(submission);
+
+            await using var transaction = await db.Database.BeginTransactionAsync(ct);
+
+            // Create answers — only for completed submissions
+            if (!isDraft && !isScheduled && request.Answers is not null)
             {
-                Id = Guid.NewGuid(),
-                SubmissionId = submission.Id,
-                CriteriaId = a.CriteriaId,
-                Value = a.Value,
-                NumericValue = a.NumericValue,
-                Note = a.Note,
-                PhotoUrl = a.PhotoUrl,
-                IsRepeatedError = a.IsRepeatedError,
-                CriteriaLabel = criteria.FirstOrDefault(c => c.Id == a.CriteriaId)?.Label,
-                CreatedAt = now,
-                UpdatedAt = now
-            }).ToList();
+                var answers = request.Answers.Select(a => new Answer
+                {
+                    Id = Guid.NewGuid(),
+                    SubmissionId = submission.Id,
+                    CriteriaId = a.CriteriaId,
+                    Value = a.Value,
+                    NumericValue = a.NumericValue,
+                    Note = a.Note,
+                    PhotoUrl = a.PhotoUrl,
+                    IsRepeatedError = a.IsRepeatedError,
+                    CriteriaLabel = criteria.FirstOrDefault(c => c.Id == a.CriteriaId)?.Label,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                }).ToList();
 
-            db.Answers.AddRange(answers);
+                db.Answers.AddRange(answers);
 
-            // --- S1: Auto-create action plans for triggered answers (stages only, no flush) ---
-            await ActionPlanService.AutoCreateAsync(
-                submission.Id, submission.StoreId,
-                answers, criteria, groups, now, db, ct,
-                scoringMode: submissionScoringMode,
-                scoringLogicConfig: template.ScoringLogicConfig);
+                // --- S1: Auto-create action plans for triggered answers (stages only, no flush) ---
+                await ActionPlanService.AutoCreateAsync(
+                    submission.Id, submission.StoreId,
+                    answers, criteria, groups, now, db, ct,
+                    scoringMode: submissionScoringMode,
+                    scoringLogicConfig: template.ScoringLogicConfig);
+            }
 
-            // Atomic flush: submission + answers + action plans in one transaction
+            AuditLogger.Log(db, user, "submission_started", "Submission", submission.Id,
+                message: $"Submission created with status '{submission.Status}' for store '{submission.StoreName}'",
+                userEmail: user.FindFirstValue(ClaimTypes.Email));
+
+            // Atomic flush 1: submission + answers + action plans + audit log
             await db.SaveChangesAsync(ct);
-        }
-        else
-        {
-            // Draft or scheduled — just save the submission (no answers)
-            await db.SaveChangesAsync(ct);
-        }
 
-        AuditLogger.Log(db, user, "submission_started", "Submission", submission.Id,
-            message: $"Submission created with status '{submission.Status}' for store '{submission.StoreName}'",
-            userEmail: user.FindFirstValue(ClaimTypes.Email));
-        await db.SaveChangesAsync(ct);
+            if (!isDraft && !isScheduled)
+            {
+                // --- S2: Explode SectionScores JSON into relational rows (skip for survey mode) ---
+                if (submissionScoringMode != "survey")
+                {
+                    await SectionScoreExploder.ExplodeAsync(submission.Id, submission.StoreId, submission.TemplateId, request.SectionScores, db, now, ct);
+                }
 
-        return TypedResults.Created($"/api/submissions/{submission.Id}", new SubmissionDto(
-            submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
-            submission.StoreId, submission.StoreName, submission.AuditorId,
-            submission.AuditorName, submission.Status, submission.TotalScore,
-            submission.SectionScores, submission.Notes,
-            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
-            submission.TemplateVersion));
+                // --- S3: Upsert StoreAnalyticsSnapshot ---
+                await StoreAnalyticsUpdater.UpdateMetricsAsync(submission.StoreId, submission, db, now, ct);
+            }
+
+            await transaction.CommitAsync(ct);
+
+            return TypedResults.Created($"/api/submissions/{submission.Id}", new SubmissionDto(
+                submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
+                submission.StoreId, submission.StoreName, submission.AuditorId,
+                submission.AuditorName, submission.Status, submission.TotalScore,
+                submission.SectionScores, submission.Notes,
+                submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
+                submission.TemplateVersion));
+        });
     }
 }

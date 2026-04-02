@@ -104,6 +104,7 @@ Review from 4 angles & state findings:
 
 | Step | Execution Contract |
 |---|---|
+| **Test Analytics**| IF `.NET` -> Run `powershell -ExecutionPolicy Bypass -File scripts\CollectTestResults.ps1` to extract detailed pass/fail analytics. Read the resulting CSV to debug failures rather than relying solely on truncated terminal logs. |
 | **Diff Check** | `git diff --name-only`. Revert unplanned. |
 | **Handoff Trap** | IF Context Limit Approaching: Create `handoff_[topic].md` (Completed, Remaining, Modded files) -> Notify User -> YIELD. |
 
