@@ -11,9 +11,9 @@ class SubmissionDao {
 
   /// Read all cached submissions.
   Future<List<SubmissionDto>> getAllSubmissions() async {
-    final rows = await (_db.select(
-      _db.cachedSubmissions,
-    )..orderBy([(s) => OrderingTerm.desc(s.createdAt)])).get();
+    final rows = await (_db.select(_db.cachedSubmissions)
+      ..orderBy([(s) => OrderingTerm.desc(s.createdAt)])
+      ..limit(500)).get();
     return rows.map(_rowToDto).toList();
   }
 

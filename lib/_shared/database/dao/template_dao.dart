@@ -134,11 +134,20 @@ class TemplateDao {
     final allGroups = await getGroupsForTemplate(templateId);
     final rootGroups = allGroups.where((g) => g.parentId == null).toList();
 
-    Future<List<GroupDto>> buildTree(List<CachedGroup> groups) async {
+    // Gotcha prevention: Pre-fetch ALL criteria assigned to this template's groups to avert an N+1 recursive loop!
+    final groupIds = allGroups.map((g) => g.id).toList();
+    final allCriteria = groupIds.isEmpty 
+        ? <CachedCriteriaData>[] 
+        : await (_db.select(_db.cachedCriteria)
+            ..where((c) => c.groupId.isIn(groupIds))
+            ..orderBy([(c) => OrderingTerm.asc(c.orderIndex)])).get();
+
+    List<GroupDto> buildTree(List<CachedGroup> groups) {
       final result = <GroupDto>[];
       for (final g in groups) {
         final children = allGroups.where((c) => c.parentId == g.id).toList();
-        final criteria = await getCriteriaForGroup(g.id);
+        final criteria = allCriteria.where((c) => c.groupId == g.id).toList();
+        
         result.add(
           GroupDto(
             id: g.id,
@@ -149,7 +158,7 @@ class TemplateDao {
             minusPerFault: g.minusPerFault,
             orderIndex: g.orderIndex,
             metadata: g.metadata,
-            children: await buildTree(children),
+            children: buildTree(children),
             criteria: criteria
                 .map(
                   (c) => CriterionDto(
@@ -181,7 +190,7 @@ class TemplateDao {
       isActive: t.isActive,
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
-      groups: await buildTree(rootGroups),
+      groups: buildTree(rootGroups),
     );
   }
 

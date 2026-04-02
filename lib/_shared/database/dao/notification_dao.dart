@@ -11,18 +11,19 @@ class NotificationDao {
 
   /// Read all cached notifications, newest first.
   Future<List<NotificationDto>> getAllNotifications() async {
-    final rows = await (_db.select(
-      _db.cachedNotifications,
-    )..orderBy([(n) => OrderingTerm.desc(n.createdAt)])).get();
+    final rows = await (_db.select(_db.cachedNotifications)
+      ..orderBy([(n) => OrderingTerm.desc(n.createdAt)])
+      ..limit(500)).get();
     return rows.map(_rowToDto).toList();
   }
 
   /// Count of unread notifications.
   Future<int> unreadCount() async {
-    final rows = await (_db.select(
-      _db.cachedNotifications,
-    )..where((n) => n.readAt.isNull())).get();
-    return rows.length;
+    final countExp = countAll();
+    final query = _db.selectOnly(_db.cachedNotifications)
+      ..addColumns([countExp])
+      ..where(_db.cachedNotifications.readAt.isNull());
+    return await query.map((row) => row.read(countExp)).getSingle() ?? 0;
   }
 
   /// Upsert a batch of notifications into cache.

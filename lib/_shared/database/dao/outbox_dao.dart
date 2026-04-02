@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../app_database.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// DAO for the transactional outbox — pending submissions, answers, and photos.
 class OutboxDao {
@@ -40,7 +41,8 @@ class OutboxDao {
   Future<List<PendingSubmission>> getPendingByStatus(String status) async {
     return (_db.select(_db.pendingSubmissions)
           ..where((s) => s.syncStatus.equals(status))
-          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]))
+          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)])
+          ..limit(100))
         .get();
   }
 
@@ -100,15 +102,21 @@ class OutboxDao {
   /// Emits whenever the submissions table changes (combined with a point-in-time
   /// photo count). Used to drive the UX Red Badge.
   Stream<int> watchExhaustedCount() {
-    return (_db.select(_db.pendingSubmissions)
-          ..where((s) => s.syncStatus.equals('exhausted')))
-        .watch()
-        .asyncMap((subRows) async {
-          final photoRows = await (_db.select(_db.pendingPhotos)
-                ..where((p) => p.syncStatus.equals('exhausted')))
-              .get();
-          return subRows.length + photoRows.length;
-        });
+    final subCount = countAll();
+    final subStream = (_db.selectOnly(_db.pendingSubmissions)
+          ..addColumns([subCount])
+          ..where(_db.pendingSubmissions.syncStatus.equals('exhausted')))
+        .map((row) => row.read(subCount) ?? 0)
+        .watchSingle();
+
+    final photoCount = countAll();
+    final photoStream = (_db.selectOnly(_db.pendingPhotos)
+          ..addColumns([photoCount])
+          ..where(_db.pendingPhotos.syncStatus.equals('exhausted')))
+        .map((row) => row.read(photoCount) ?? 0)
+        .watchSingle();
+
+    return Rx.combineLatest2(subStream, photoStream, (int a, int b) => a + b);
   }
 
   /// Reset all exhausted records in both tables back to `pending`.
@@ -200,7 +208,8 @@ class OutboxDao {
 
   /// Count of pending submissions (for badge/indicator).
   Future<int> pendingCount() async {
-    final rows = await _db.select(_db.pendingSubmissions).get();
-    return rows.length;
+    final countExp = countAll();
+    final query = _db.selectOnly(_db.pendingSubmissions)..addColumns([countExp]);
+    return await query.map((row) => row.read(countExp)).getSingle() ?? 0;
   }
 }
