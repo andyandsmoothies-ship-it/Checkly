@@ -24,7 +24,9 @@ description: Engineering standards — architecture, security, and verification 
 - **Navigation**: GoRouter declarative routing
 - **DI**: GetIt service locator (singleton managers, scoped services)
 - **Database (Drift)**: All unpaginated `.get()` queries MUST include a `.limit(n)` boundary to prevent OOM violations on large datasets.
+- **Database (Drift) Aggregations**: Always use native SQLite aggregations (e.g., `countAll()`) instead of `.get().length` to count records. This is mandatory to prevent offline Out-Of-Memory (OOM) crashes on devices with large datasets.
 - **Build**: `flutter analyze` + `flutter test` must pass before handoff
+- **Layouts**: The `_MainShell` root layout must use a `Stack` (not a column) with `extendBody: true` to ensure the Floating Action Button (FAB) and glassmorphism nav bars anchor correctly.
 
 #### Flutter Feature Structure
 ```
@@ -116,6 +118,11 @@ src/entities/[entity]/
 - **CORS**: Middleware ordering: `UseCors()` → `UseAuthentication()` → `UseAuthorization()`.
 - **Policies**: `AdminOnly`, `AuditorAccess`, `StoreManagerAccess`, `AreaManagerAccess`.
 - **IDOR Guard**: `SubmissionAccessGuard` (`Common/SubmissionAccessGuard.cs`) — reusable guard for all submission-scoped resources. Uses `Guid.TryParse` for defense-in-depth. Role-based access: admin→all, auditor→owns, store_manager→their store, area_manager→their area.
+
+### Media & Storage Security
+- **File Limits**: All media upload endpoints (`UploadPhoto`) must strictly enforce a maximum file size of **15MB**.
+- **MIME Whitelisting**: Strict MIME-type whitelisting is mandatory for all inbound files (e.g., `.jpg`, `.jpeg`, `.png`, `.webp`, `.heic`). Reject any other format with a `400 Bad Request` to prevent arbitrary file upload execution (A03: Injection/DoS).
+- **Path Traversal Defense**: All APIs streaming files (e.g., `GetPhoto`) MUST bind lookup parameters via strict typed `Guid` checking and sanitize output paths against `..`, `/`, and `\` injection.
 
 ### Server API Standards
 - **Pagination**: All list endpoints MUST return `PagedResult<T>` (from `Common/PagedResult.cs`). Use `page`/`pageSize` query params with defaults (page=1, pageSize=50) and enforced max (200). Pattern: `Skip((page-1)*pageSize).Take(pageSize)` + `CountAsync`.

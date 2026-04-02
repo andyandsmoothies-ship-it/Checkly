@@ -12,6 +12,8 @@
 
 The Checkly database contains **24 tables** organized into 3 categories:
 
+> **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
+
 | Category | Tables | Purpose |
 |----------|--------|---------|
 | **Business Domain** | 16 tables | Core audit workflow data |
@@ -174,6 +176,8 @@ A completed (or in-progress) audit execution.
 | `section_scores` | jsonb? | Per-section score breakdown: `{"Section": {"score": 82, "maxScore": 100}}` |
 | `status` | text | `draft`, `completed`, `approved`, `rejected` |
 | `review_status` | text? | Admin/AM review disposition |
+| `void_reason` | text? | Reason for voiding the submission |
+| `voided_at` | timestamptz? | When the submission was voided |
 | `notes` | text? | General notes on the submission |
 | `gps_lat` | decimal? | Auditor's GPS latitude at submission |
 | `gps_lng` | decimal? | Auditor's GPS longitude at submission |
@@ -208,9 +212,12 @@ Individual responses to each criteria within a submission.
 | `criteria_id` | UUID (FK → criteria) | Which criteria this answers |
 | `value` | text? | `pass`, `fail`, `na`, option label (single choice), or comma-separated labels (multi choice) |
 | `numeric_value` | decimal? | Fault count (for numeric criteria) |
+| `is_failure` | boolean | True if this answer constitutes a failure |
+| `criteria_label` | text? | Snapshot of the criteria text at answer time |
 | `photo_url` | text? | Path to evidence photo |
 | `note` | text? | Auditor's comment |
 | `created_at` | timestamptz | Record creation |
+| `updated_at` | timestamptz | Last update |
 
 ---
 

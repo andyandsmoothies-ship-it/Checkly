@@ -29,6 +29,8 @@ class AppTheme {
       brightness: Brightness.light,
       error: AppColors.destructive,
       surface: AppColors.warmCream,
+    ).copyWith(
+      primaryContainer: AppColors.softPeach,
     );
 
     return _buildTheme(colorScheme);
@@ -47,7 +49,8 @@ class AppTheme {
   }
 
   static ThemeData _buildTheme(ColorScheme colorScheme) {
-    final textTheme = GoogleFonts.manropeTextTheme();
+    final baseTextTheme = ThemeData(brightness: colorScheme.brightness).textTheme;
+    final textTheme = GoogleFonts.manropeTextTheme(baseTextTheme);
 
     return ThemeData(
       useMaterial3: true,

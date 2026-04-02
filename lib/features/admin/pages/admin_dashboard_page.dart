@@ -208,7 +208,7 @@ class _AdminStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); // ignore: unused_local_variable
+    final theme = Theme.of(context);
 
     return AnimatedOpacity(
       opacity: dimmed ? 0.4 : 1.0,
@@ -216,11 +216,11 @@ class _AdminStat extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: filled ? AppTheme.softPeach : Colors.white,
+          color: filled ? theme.colorScheme.primaryContainer : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: filled
               ? null
-              : Border.all(color: AppTheme.sageGray.withValues(alpha: 0.5)),
+              : Border.all(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
@@ -230,7 +230,7 @@ class _AdminStat extends StatelessWidget {
               value,
               style: AppFonts.serifStyle(
                 fontSize: 28,
-                color: AppTheme.charcoal,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
@@ -239,7 +239,7 @@ class _AdminStat extends StatelessWidget {
               style: AppFonts.displayStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.charcoal.withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 letterSpacing: 0.5,
               ),
             ),

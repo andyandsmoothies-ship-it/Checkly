@@ -94,14 +94,14 @@
 | GetTopFailures | `Features/Analytics/GetTopFailures.cs` | Groups answers by criteria across submissions |
 | GetStoreDashboard | `Features/Stores/GetStoreDashboard.cs` | Recent audits, avg score, open APs for a store |
 | StoreAnalyticsSnapshot | `Features/Submissions/FinalizeSubmission.cs` | Upserts 30-day snapshot on finalize |
-| Photos | `Features/Photos/` | Photo upload/download scoped to submission |
+| Photos | `Features/Photos/` | Photo upload restricted to 15MB, valid MIME rules, and IDOR validation scoped to submission ownership |
 | ActionPlans | `Features/ActionPlans/` | Created from triggered answers on finalize |
 | Sync | `Features/Submissions/SyncTemplates.cs` | Template sync for offline submission creation |
 
 ### Deletion Policy
 - **Never deleted** — submissions are immutable audit records
 - Status transitions: `draft` → `completed` (irreversible)
-- `ReviewStatus`: `pending` → `approved`/`rejected` (admin only)
+- `ReviewStatus`: `pending` → `approved`/`rejected` / `void` (Admin only. Voiding effectively soft-deletes the audit across Analytics and UI views).
 
 ---
 
