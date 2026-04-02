@@ -1,37 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-/// Produces a compact, meaningful summary of an API response body.
-/// - Map: shows keys, array lengths, and first-item preview
-/// - List: shows count + first item
-/// - Primitive: shows value directly
-String _summarize(dynamic data) {
-  if (data is Map<String, dynamic>) {
-    final parts = <String>[];
-    for (final entry in data.entries) {
-      if (entry.value is List) {
-        final list = entry.value as List;
-        final firstItem = list.isNotEmpty
-            ? _truncate(list.first.toString(), 120)
-            : 'empty';
-        parts.add('${entry.key}: List[${list.length}] → $firstItem');
-      } else {
-        parts.add('${entry.key}: ${_truncate(entry.value.toString(), 80)}');
-      }
-    }
-    return '{${parts.join(', ')}}';
-  }
-  if (data is List) {
-    final first = data.isNotEmpty
-        ? _truncate(data.first.toString(), 120)
-        : 'empty';
-    return 'List[${data.length}] → $first';
-  }
-  return data?.toString() ?? 'null';
-}
 
-String _truncate(String s, int max) =>
-    s.length > max ? '${s.substring(0, max)}…' : s;
 
 /// API base URL — configurable via `--dart-define=API_BASE_URL=...`.
 /// Defaults to Android emulator localhost mapping for development.
@@ -67,7 +37,7 @@ Dio createDio({String? baseUrl}) {
           debugPrint(
             '[API] ← ${response.statusCode} ${response.requestOptions.path}',
           );
-          debugPrint('[API]    ${_summarize(response.data)}');
+          // debugPrint('[API]    ${_summarize(response.data)}'); // Disabled to reduce console spam
           handler.next(response);
         },
         onError: (error, handler) {
@@ -75,9 +45,9 @@ Dio createDio({String? baseUrl}) {
             '[API] ✖ ${error.response?.statusCode ?? "?"} '
             '${error.requestOptions.path}: ${error.message}',
           );
-          if (error.response?.data != null) {
-            debugPrint('[API]    ${_summarize(error.response!.data)}');
-          }
+          // if (error.response?.data != null) {
+          //   debugPrint('[API]    ${_summarize(error.response!.data)}');
+          // }
           handler.next(error);
         },
       ),

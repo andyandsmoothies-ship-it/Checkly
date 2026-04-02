@@ -68,7 +68,7 @@ class HistoryManager extends ChangeNotifier {
           error = 'Failed to load audit history (offline)';
         }
       }
-    } catch (e) {
+    } catch (_) {
       error = 'Failed to load audit history';
     } finally {
       isLoading.value = false;

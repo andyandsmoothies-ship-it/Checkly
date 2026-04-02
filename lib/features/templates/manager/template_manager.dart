@@ -70,7 +70,7 @@ class TemplateManager extends ChangeNotifier {
           error = 'Failed to load templates (offline)';
         }
       }
-    } catch (e) {
+    } catch (_) {
       error = 'Failed to load templates';
     } finally {
       isLoading.value = false;
