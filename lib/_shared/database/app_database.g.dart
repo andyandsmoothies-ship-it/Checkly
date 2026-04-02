@@ -5559,17 +5559,6 @@ class $PendingSubmissionsTable extends PendingSubmissions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _retryCountMeta = const VerificationMeta(
     'retryCount',
   );
@@ -5593,6 +5582,17 @@ class $PendingSubmissionsTable extends PendingSubmissions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5606,9 +5606,9 @@ class $PendingSubmissionsTable extends PendingSubmissions
     idempotencyKey,
     syncStatus,
     syncError,
-    createdAt,
     retryCount,
     nextRetryAt,
+    createdAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5704,14 +5704,6 @@ class $PendingSubmissionsTable extends PendingSubmissions
         syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
       );
     }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
     if (data.containsKey('retry_count')) {
       context.handle(
         _retryCountMeta,
@@ -5726,6 +5718,14 @@ class $PendingSubmissionsTable extends PendingSubmissions
           _nextRetryAtMeta,
         ),
       );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
     }
     return context;
   }
@@ -5780,10 +5780,6 @@ class $PendingSubmissionsTable extends PendingSubmissions
         DriftSqlType.string,
         data['${effectivePrefix}sync_error'],
       ),
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
       retryCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}retry_count'],
@@ -5792,6 +5788,10 @@ class $PendingSubmissionsTable extends PendingSubmissions
         DriftSqlType.dateTime,
         data['${effectivePrefix}next_retry_at'],
       ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
     );
   }
 
@@ -5814,9 +5814,9 @@ class PendingSubmission extends DataClass
   final String idempotencyKey;
   final String syncStatus;
   final String? syncError;
-  final DateTime createdAt;
   final int retryCount;
   final DateTime? nextRetryAt;
+  final DateTime createdAt;
   const PendingSubmission({
     required this.id,
     required this.templateId,
@@ -5829,9 +5829,9 @@ class PendingSubmission extends DataClass
     required this.idempotencyKey,
     required this.syncStatus,
     this.syncError,
-    required this.createdAt,
     required this.retryCount,
     this.nextRetryAt,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5857,11 +5857,11 @@ class PendingSubmission extends DataClass
     if (!nullToAbsent || syncError != null) {
       map['sync_error'] = Variable<String>(syncError);
     }
-    map['created_at'] = Variable<DateTime>(createdAt);
     map['retry_count'] = Variable<int>(retryCount);
     if (!nullToAbsent || nextRetryAt != null) {
       map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
     }
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -5888,11 +5888,11 @@ class PendingSubmission extends DataClass
       syncError: syncError == null && nullToAbsent
           ? const Value.absent()
           : Value(syncError),
-      createdAt: Value(createdAt),
       retryCount: Value(retryCount),
       nextRetryAt: nextRetryAt == null && nullToAbsent
           ? const Value.absent()
           : Value(nextRetryAt),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -5913,9 +5913,9 @@ class PendingSubmission extends DataClass
       idempotencyKey: serializer.fromJson<String>(json['idempotencyKey']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       syncError: serializer.fromJson<String?>(json['syncError']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       retryCount: serializer.fromJson<int>(json['retryCount']),
       nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -5933,9 +5933,9 @@ class PendingSubmission extends DataClass
       'idempotencyKey': serializer.toJson<String>(idempotencyKey),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'syncError': serializer.toJson<String?>(syncError),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
       'retryCount': serializer.toJson<int>(retryCount),
       'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -5951,9 +5951,9 @@ class PendingSubmission extends DataClass
     String? idempotencyKey,
     String? syncStatus,
     Value<String?> syncError = const Value.absent(),
-    DateTime? createdAt,
     int? retryCount,
     Value<DateTime?> nextRetryAt = const Value.absent(),
+    DateTime? createdAt,
   }) => PendingSubmission(
     id: id ?? this.id,
     templateId: templateId ?? this.templateId,
@@ -5968,9 +5968,9 @@ class PendingSubmission extends DataClass
     idempotencyKey: idempotencyKey ?? this.idempotencyKey,
     syncStatus: syncStatus ?? this.syncStatus,
     syncError: syncError.present ? syncError.value : this.syncError,
-    createdAt: createdAt ?? this.createdAt,
     retryCount: retryCount ?? this.retryCount,
     nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
+    createdAt: createdAt ?? this.createdAt,
   );
   PendingSubmission copyWithCompanion(PendingSubmissionsCompanion data) {
     return PendingSubmission(
@@ -5995,13 +5995,13 @@ class PendingSubmission extends DataClass
           ? data.syncStatus.value
           : this.syncStatus,
       syncError: data.syncError.present ? data.syncError.value : this.syncError,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       retryCount: data.retryCount.present
           ? data.retryCount.value
           : this.retryCount,
       nextRetryAt: data.nextRetryAt.present
           ? data.nextRetryAt.value
           : this.nextRetryAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -6019,9 +6019,9 @@ class PendingSubmission extends DataClass
           ..write('idempotencyKey: $idempotencyKey, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('syncError: $syncError, ')
-          ..write('createdAt: $createdAt, ')
           ..write('retryCount: $retryCount, ')
-          ..write('nextRetryAt: $nextRetryAt')
+          ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -6039,9 +6039,9 @@ class PendingSubmission extends DataClass
     idempotencyKey,
     syncStatus,
     syncError,
-    createdAt,
     retryCount,
     nextRetryAt,
+    createdAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -6058,9 +6058,9 @@ class PendingSubmission extends DataClass
           other.idempotencyKey == this.idempotencyKey &&
           other.syncStatus == this.syncStatus &&
           other.syncError == this.syncError &&
-          other.createdAt == this.createdAt &&
           other.retryCount == this.retryCount &&
-          other.nextRetryAt == this.nextRetryAt);
+          other.nextRetryAt == this.nextRetryAt &&
+          other.createdAt == this.createdAt);
 }
 
 class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
@@ -6075,9 +6075,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
   final Value<String> idempotencyKey;
   final Value<String> syncStatus;
   final Value<String?> syncError;
-  final Value<DateTime> createdAt;
   final Value<int> retryCount;
   final Value<DateTime?> nextRetryAt;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const PendingSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -6091,9 +6091,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     this.idempotencyKey = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.syncError = const Value.absent(),
-    this.createdAt = const Value.absent(),
     this.retryCount = const Value.absent(),
     this.nextRetryAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingSubmissionsCompanion.insert({
@@ -6108,9 +6108,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     required String idempotencyKey,
     this.syncStatus = const Value.absent(),
     this.syncError = const Value.absent(),
-    required DateTime createdAt,
     this.retryCount = const Value.absent(),
     this.nextRetryAt = const Value.absent(),
+    required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        templateId = Value(templateId),
@@ -6130,9 +6130,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Expression<String>? idempotencyKey,
     Expression<String>? syncStatus,
     Expression<String>? syncError,
-    Expression<DateTime>? createdAt,
     Expression<int>? retryCount,
     Expression<DateTime>? nextRetryAt,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6147,9 +6147,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
       if (idempotencyKey != null) 'idempotency_key': idempotencyKey,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (syncError != null) 'sync_error': syncError,
-      if (createdAt != null) 'created_at': createdAt,
       if (retryCount != null) 'retry_count': retryCount,
       if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6166,9 +6166,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Value<String>? idempotencyKey,
     Value<String>? syncStatus,
     Value<String?>? syncError,
-    Value<DateTime>? createdAt,
     Value<int>? retryCount,
     Value<DateTime?>? nextRetryAt,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return PendingSubmissionsCompanion(
@@ -6183,9 +6183,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
       idempotencyKey: idempotencyKey ?? this.idempotencyKey,
       syncStatus: syncStatus ?? this.syncStatus,
       syncError: syncError ?? this.syncError,
-      createdAt: createdAt ?? this.createdAt,
       retryCount: retryCount ?? this.retryCount,
       nextRetryAt: nextRetryAt ?? this.nextRetryAt,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6226,14 +6226,14 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     if (syncError.present) {
       map['sync_error'] = Variable<String>(syncError.value);
     }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
     if (retryCount.present) {
       map['retry_count'] = Variable<int>(retryCount.value);
     }
     if (nextRetryAt.present) {
       map['next_retry_at'] = Variable<DateTime>(nextRetryAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -6255,9 +6255,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
           ..write('idempotencyKey: $idempotencyKey, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('syncError: $syncError, ')
-          ..write('createdAt: $createdAt, ')
           ..write('retryCount: $retryCount, ')
           ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6874,17 +6874,6 @@ class $PendingPhotosTable extends PendingPhotos
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _retryCountMeta = const VerificationMeta(
     'retryCount',
   );
@@ -6908,6 +6897,17 @@ class $PendingPhotosTable extends PendingPhotos
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -6916,9 +6916,9 @@ class $PendingPhotosTable extends PendingPhotos
     localPath,
     syncStatus,
     syncError,
-    createdAt,
     retryCount,
     nextRetryAt,
+    createdAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6974,14 +6974,6 @@ class $PendingPhotosTable extends PendingPhotos
         syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
       );
     }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
     if (data.containsKey('retry_count')) {
       context.handle(
         _retryCountMeta,
@@ -6996,6 +6988,14 @@ class $PendingPhotosTable extends PendingPhotos
           _nextRetryAtMeta,
         ),
       );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
     }
     return context;
   }
@@ -7030,10 +7030,6 @@ class $PendingPhotosTable extends PendingPhotos
         DriftSqlType.string,
         data['${effectivePrefix}sync_error'],
       ),
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
       retryCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}retry_count'],
@@ -7042,6 +7038,10 @@ class $PendingPhotosTable extends PendingPhotos
         DriftSqlType.dateTime,
         data['${effectivePrefix}next_retry_at'],
       ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
     );
   }
 
@@ -7058,9 +7058,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
   final String localPath;
   final String syncStatus;
   final String? syncError;
-  final DateTime createdAt;
   final int retryCount;
   final DateTime? nextRetryAt;
+  final DateTime createdAt;
   const PendingPhoto({
     required this.id,
     required this.pendingSubmissionId,
@@ -7068,9 +7068,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
     required this.localPath,
     required this.syncStatus,
     this.syncError,
-    required this.createdAt,
     required this.retryCount,
     this.nextRetryAt,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7085,11 +7085,11 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
     if (!nullToAbsent || syncError != null) {
       map['sync_error'] = Variable<String>(syncError);
     }
-    map['created_at'] = Variable<DateTime>(createdAt);
     map['retry_count'] = Variable<int>(retryCount);
     if (!nullToAbsent || nextRetryAt != null) {
       map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
     }
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -7105,11 +7105,11 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
       syncError: syncError == null && nullToAbsent
           ? const Value.absent()
           : Value(syncError),
-      createdAt: Value(createdAt),
       retryCount: Value(retryCount),
       nextRetryAt: nextRetryAt == null && nullToAbsent
           ? const Value.absent()
           : Value(nextRetryAt),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -7127,9 +7127,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
       localPath: serializer.fromJson<String>(json['localPath']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       syncError: serializer.fromJson<String?>(json['syncError']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       retryCount: serializer.fromJson<int>(json['retryCount']),
       nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -7142,9 +7142,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
       'localPath': serializer.toJson<String>(localPath),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'syncError': serializer.toJson<String?>(syncError),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
       'retryCount': serializer.toJson<int>(retryCount),
       'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -7155,9 +7155,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
     String? localPath,
     String? syncStatus,
     Value<String?> syncError = const Value.absent(),
-    DateTime? createdAt,
     int? retryCount,
     Value<DateTime?> nextRetryAt = const Value.absent(),
+    DateTime? createdAt,
   }) => PendingPhoto(
     id: id ?? this.id,
     pendingSubmissionId: pendingSubmissionId ?? this.pendingSubmissionId,
@@ -7165,9 +7165,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
     localPath: localPath ?? this.localPath,
     syncStatus: syncStatus ?? this.syncStatus,
     syncError: syncError.present ? syncError.value : this.syncError,
-    createdAt: createdAt ?? this.createdAt,
     retryCount: retryCount ?? this.retryCount,
     nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
+    createdAt: createdAt ?? this.createdAt,
   );
   PendingPhoto copyWithCompanion(PendingPhotosCompanion data) {
     return PendingPhoto(
@@ -7181,13 +7181,13 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
           ? data.syncStatus.value
           : this.syncStatus,
       syncError: data.syncError.present ? data.syncError.value : this.syncError,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       retryCount: data.retryCount.present
           ? data.retryCount.value
           : this.retryCount,
       nextRetryAt: data.nextRetryAt.present
           ? data.nextRetryAt.value
           : this.nextRetryAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -7200,9 +7200,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
           ..write('localPath: $localPath, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('syncError: $syncError, ')
-          ..write('createdAt: $createdAt, ')
           ..write('retryCount: $retryCount, ')
-          ..write('nextRetryAt: $nextRetryAt')
+          ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -7215,9 +7215,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
     localPath,
     syncStatus,
     syncError,
-    createdAt,
     retryCount,
     nextRetryAt,
+    createdAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -7229,9 +7229,9 @@ class PendingPhoto extends DataClass implements Insertable<PendingPhoto> {
           other.localPath == this.localPath &&
           other.syncStatus == this.syncStatus &&
           other.syncError == this.syncError &&
-          other.createdAt == this.createdAt &&
           other.retryCount == this.retryCount &&
-          other.nextRetryAt == this.nextRetryAt);
+          other.nextRetryAt == this.nextRetryAt &&
+          other.createdAt == this.createdAt);
 }
 
 class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
@@ -7241,9 +7241,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
   final Value<String> localPath;
   final Value<String> syncStatus;
   final Value<String?> syncError;
-  final Value<DateTime> createdAt;
   final Value<int> retryCount;
   final Value<DateTime?> nextRetryAt;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const PendingPhotosCompanion({
     this.id = const Value.absent(),
@@ -7252,9 +7252,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
     this.localPath = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.syncError = const Value.absent(),
-    this.createdAt = const Value.absent(),
     this.retryCount = const Value.absent(),
     this.nextRetryAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingPhotosCompanion.insert({
@@ -7264,9 +7264,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
     required String localPath,
     this.syncStatus = const Value.absent(),
     this.syncError = const Value.absent(),
-    required DateTime createdAt,
     this.retryCount = const Value.absent(),
     this.nextRetryAt = const Value.absent(),
+    required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        pendingSubmissionId = Value(pendingSubmissionId),
@@ -7279,9 +7279,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
     Expression<String>? localPath,
     Expression<String>? syncStatus,
     Expression<String>? syncError,
-    Expression<DateTime>? createdAt,
     Expression<int>? retryCount,
     Expression<DateTime>? nextRetryAt,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -7292,9 +7292,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
       if (localPath != null) 'local_path': localPath,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (syncError != null) 'sync_error': syncError,
-      if (createdAt != null) 'created_at': createdAt,
       if (retryCount != null) 'retry_count': retryCount,
       if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -7306,9 +7306,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
     Value<String>? localPath,
     Value<String>? syncStatus,
     Value<String?>? syncError,
-    Value<DateTime>? createdAt,
     Value<int>? retryCount,
     Value<DateTime?>? nextRetryAt,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return PendingPhotosCompanion(
@@ -7318,9 +7318,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
       localPath: localPath ?? this.localPath,
       syncStatus: syncStatus ?? this.syncStatus,
       syncError: syncError ?? this.syncError,
-      createdAt: createdAt ?? this.createdAt,
       retryCount: retryCount ?? this.retryCount,
       nextRetryAt: nextRetryAt ?? this.nextRetryAt,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -7348,14 +7348,14 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
     if (syncError.present) {
       map['sync_error'] = Variable<String>(syncError.value);
     }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
     if (retryCount.present) {
       map['retry_count'] = Variable<int>(retryCount.value);
     }
     if (nextRetryAt.present) {
       map['next_retry_at'] = Variable<DateTime>(nextRetryAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -7372,9 +7372,9 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
           ..write('localPath: $localPath, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('syncError: $syncError, ')
-          ..write('createdAt: $createdAt, ')
           ..write('retryCount: $retryCount, ')
           ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -11007,9 +11007,9 @@ typedef $$PendingSubmissionsTableCreateCompanionBuilder =
       required String idempotencyKey,
       Value<String> syncStatus,
       Value<String?> syncError,
-      required DateTime createdAt,
       Value<int> retryCount,
       Value<DateTime?> nextRetryAt,
+      required DateTime createdAt,
       Value<int> rowid,
     });
 typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
@@ -11025,9 +11025,9 @@ typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
       Value<String> idempotencyKey,
       Value<String> syncStatus,
       Value<String?> syncError,
-      Value<DateTime> createdAt,
       Value<int> retryCount,
       Value<DateTime?> nextRetryAt,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
@@ -11153,11 +11153,6 @@ class $$PendingSubmissionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<int> get retryCount => $composableBuilder(
     column: $table.retryCount,
     builder: (column) => ColumnFilters(column),
@@ -11165,6 +11160,11 @@ class $$PendingSubmissionsTableFilterComposer
 
   ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
     column: $table.nextRetryAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11283,11 +11283,6 @@ class $$PendingSubmissionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get retryCount => $composableBuilder(
     column: $table.retryCount,
     builder: (column) => ColumnOrderings(column),
@@ -11295,6 +11290,11 @@ class $$PendingSubmissionsTableOrderingComposer
 
   ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
     column: $table.nextRetryAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -11351,9 +11351,6 @@ class $$PendingSubmissionsTableAnnotationComposer
   GeneratedColumn<String> get syncError =>
       $composableBuilder(column: $table.syncError, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
   GeneratedColumn<int> get retryCount => $composableBuilder(
     column: $table.retryCount,
     builder: (column) => column,
@@ -11363,6 +11360,9 @@ class $$PendingSubmissionsTableAnnotationComposer
     column: $table.nextRetryAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   Expression<T> pendingAnswersRefs<T extends Object>(
     Expression<T> Function($$PendingAnswersTableAnnotationComposer a) f,
@@ -11462,9 +11462,9 @@ class $$PendingSubmissionsTableTableManager
                 Value<String> idempotencyKey = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> nextRetryAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion(
                 id: id,
@@ -11478,9 +11478,9 @@ class $$PendingSubmissionsTableTableManager
                 idempotencyKey: idempotencyKey,
                 syncStatus: syncStatus,
                 syncError: syncError,
-                createdAt: createdAt,
                 retryCount: retryCount,
                 nextRetryAt: nextRetryAt,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -11496,9 +11496,9 @@ class $$PendingSubmissionsTableTableManager
                 required String idempotencyKey,
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
-                required DateTime createdAt,
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> nextRetryAt = const Value.absent(),
+                required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion.insert(
                 id: id,
@@ -11512,9 +11512,9 @@ class $$PendingSubmissionsTableTableManager
                 idempotencyKey: idempotencyKey,
                 syncStatus: syncStatus,
                 syncError: syncError,
-                createdAt: createdAt,
                 retryCount: retryCount,
                 nextRetryAt: nextRetryAt,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -12001,9 +12001,9 @@ typedef $$PendingPhotosTableCreateCompanionBuilder =
       required String localPath,
       Value<String> syncStatus,
       Value<String?> syncError,
-      required DateTime createdAt,
       Value<int> retryCount,
       Value<DateTime?> nextRetryAt,
+      required DateTime createdAt,
       Value<int> rowid,
     });
 typedef $$PendingPhotosTableUpdateCompanionBuilder =
@@ -12014,9 +12014,9 @@ typedef $$PendingPhotosTableUpdateCompanionBuilder =
       Value<String> localPath,
       Value<String> syncStatus,
       Value<String?> syncError,
-      Value<DateTime> createdAt,
       Value<int> retryCount,
       Value<DateTime?> nextRetryAt,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
@@ -12085,11 +12085,6 @@ class $$PendingPhotosTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<int> get retryCount => $composableBuilder(
     column: $table.retryCount,
     builder: (column) => ColumnFilters(column),
@@ -12097,6 +12092,11 @@ class $$PendingPhotosTableFilterComposer
 
   ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
     column: $table.nextRetryAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12158,11 +12158,6 @@ class $$PendingPhotosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get retryCount => $composableBuilder(
     column: $table.retryCount,
     builder: (column) => ColumnOrderings(column),
@@ -12170,6 +12165,11 @@ class $$PendingPhotosTableOrderingComposer
 
   ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
     column: $table.nextRetryAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12223,9 +12223,6 @@ class $$PendingPhotosTableAnnotationComposer
   GeneratedColumn<String> get syncError =>
       $composableBuilder(column: $table.syncError, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
   GeneratedColumn<int> get retryCount => $composableBuilder(
     column: $table.retryCount,
     builder: (column) => column,
@@ -12235,6 +12232,9 @@ class $$PendingPhotosTableAnnotationComposer
     column: $table.nextRetryAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   $$PendingSubmissionsTableAnnotationComposer get pendingSubmissionId {
     final $$PendingSubmissionsTableAnnotationComposer composer =
@@ -12295,9 +12295,9 @@ class $$PendingPhotosTableTableManager
                 Value<String> localPath = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> nextRetryAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingPhotosCompanion(
                 id: id,
@@ -12306,9 +12306,9 @@ class $$PendingPhotosTableTableManager
                 localPath: localPath,
                 syncStatus: syncStatus,
                 syncError: syncError,
-                createdAt: createdAt,
                 retryCount: retryCount,
                 nextRetryAt: nextRetryAt,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12319,9 +12319,9 @@ class $$PendingPhotosTableTableManager
                 required String localPath,
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
-                required DateTime createdAt,
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> nextRetryAt = const Value.absent(),
+                required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => PendingPhotosCompanion.insert(
                 id: id,
@@ -12330,9 +12330,9 @@ class $$PendingPhotosTableTableManager
                 localPath: localPath,
                 syncStatus: syncStatus,
                 syncError: syncError,
-                createdAt: createdAt,
                 retryCount: retryCount,
                 nextRetryAt: nextRetryAt,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

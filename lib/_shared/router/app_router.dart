@@ -31,6 +31,7 @@ import '../../features/templates/pages/template_builder_page.dart';
 import '../../features/templates/pages/template_wizard_page.dart';
 import '../../features/notifications/pages/notification_drawer_page.dart';
 import '../../features/audit/pages/survey_results_page.dart';
+import '../database/dao/outbox_dao.dart';
 
 final _di = GetIt.instance;
 
@@ -245,8 +246,61 @@ class _MainShell extends StatelessWidget {
     final currentIndex = shellIndexFromLocation(location);
 
     return Scaffold(
-      body: child,
-      extendBody: true,
+      body: Column(
+        children: [
+          Expanded(child: child),
+          // --- Pillar D: Exhausted Sync Data Safety Net ---
+          StreamBuilder<int>(
+            stream: _di<OutboxDao>().watchExhaustedCount(),
+            initialData: 0,
+            builder: (context, snapshot) {
+              final count = snapshot.data ?? 0;
+              if (count == 0) return const SizedBox.shrink();
+
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                color: Theme.of(context).colorScheme.error,
+                child: SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.cloud_off, color: Colors.white, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          '$count unsynced record${count > 1 ? 's' : ''} exhausted',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Tap to requeue: clears nextRetryAt and retryCount
+                          _di<OutboxDao>().requeueExhausted();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text('RETRY'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          // Spacer for BottomNavigationBar (extendBody: true pushes behind it)
+          const SizedBox(height: 96),
+        ],
+      ),
+      extendBody: false, // Turned off so the Column spans the exact visible area above the nav bar
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         child: BackdropFilter(

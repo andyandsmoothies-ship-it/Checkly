@@ -150,7 +150,7 @@ class CachedNotifications extends Table {
 // ============================================================
 
 /// Pending audit submissions queued for sync.
-/// syncStatus: 'pending', 'submission_synced', 'photos_pending', 'fully_synced', 'error'.
+/// syncStatus: 'pending', 'submission_synced', 'photos_pending', 'fully_synced', 'exhausted', 'error'.
 class PendingSubmissions extends Table {
   TextColumn get id => text()();
   TextColumn get templateId => text()();
@@ -163,6 +163,8 @@ class PendingSubmissions extends Table {
   TextColumn get idempotencyKey => text()();
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   TextColumn get syncError => text().nullable()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get nextRetryAt => dateTime().nullable()(); // UTC — evaluated by SyncEngine
   DateTimeColumn get createdAt => dateTime()();
 
   @override
@@ -187,7 +189,7 @@ class PendingAnswers extends Table {
 }
 
 /// Photo files awaiting upload after submission sync.
-/// syncStatus: 'pending', 'uploaded', 'error'.
+/// syncStatus: 'pending', 'uploaded', 'exhausted', 'error'.
 class PendingPhotos extends Table {
   TextColumn get id => text()();
   TextColumn get pendingSubmissionId =>
@@ -196,6 +198,8 @@ class PendingPhotos extends Table {
   TextColumn get localPath => text()();
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   TextColumn get syncError => text().nullable()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get nextRetryAt => dateTime().nullable()(); // UTC — evaluated by PhotoQueueService
   DateTimeColumn get createdAt => dateTime()();
 
   @override

@@ -37,8 +37,9 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **Skill Load** | Extract Persona -> Load 1-2 matching skills from `.agents/skills/`. |
 | **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). |
 | **Trade-Off Analysis** | Identify >= 1 alternative "Ideal Enterprise" approach. Explicitly list the Pros, Cons, and Blast Radius to justify the pragmatic choice over the ideal choice. |
+| **Risk Assessment** | Formally assess the technical and operational risks of the chosen approach, and document mitigation strategies. |
 
-> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Pros/Cons of Ideal vs Pragmatic approaches explicitly mapped?
+> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Pros/Cons of Ideal vs Pragmatic approaches explicitly mapped? (4) Risk Assessment included?
 
 ## Phase 2: Resilience & Blast Radius
 
@@ -55,7 +56,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | Process | Execution Contract |
 |---|---|
 | **Artifact Generation** | Create `implementation_plan_[topic].md`. |
-| **Payload Schema**| MUST INCLUDE: `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Verification Plan`. |
+| **Payload Schema**| MUST INCLUDE: `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Risk Assessment`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Verification Plan`. |
 
 ## Phase 4: Route Implementation (The ATDD Gate)
 

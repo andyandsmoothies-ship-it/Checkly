@@ -12,9 +12,12 @@
 
 import 'dart:async';
 
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // --- IMPORTS (will fail until implemented) ---
+import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
+import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
@@ -110,22 +113,29 @@ void main() {
   late FakeAuthCheck auth;
   late SyncEngine engine;
 
+  late OutboxDao outboxDao;
+  late AppDatabase testDb;
+
   setUp(() {
     connectivity = FakeConnectivityService();
     api = FakeSyncApi();
     outbox = FakeOutbox();
     auth = FakeAuthCheck();
+    testDb = AppDatabase.forTesting(NativeDatabase.memory());
+    outboxDao = OutboxDao(testDb);
     engine = SyncEngine(
       connectivity: connectivity,
       api: api,
       outbox: outbox,
       auth: auth,
+      outboxDao: outboxDao,
     );
   });
 
-  tearDown(() {
+  tearDown(() async {
     engine.dispose();
     connectivity.dispose();
+    await testDb.close();
   });
 
   // ================================================================
@@ -164,11 +174,30 @@ void main() {
   });
 
   // ================================================================
+  // Helper to sync test data into both FakeOutbox and OutboxDao
+  // ================================================================
+  Future<void> seedData(List<PendingSubmission> entries) async {
+    outbox.addAll(entries);
+    for (var e in entries) {
+      await outboxDao.insertSubmission(
+        PendingSubmissionsCompanion.insert(
+          id: e.idempotencyKey,
+          templateId: 't',
+          storeId: 's',
+          clientScore: 100.0,
+          idempotencyKey: e.idempotencyKey,
+          createdAt: e.createdAt,
+        ),
+      );
+    }
+  }
+
+  // ================================================================
   // Scenario 3: Outbox drains in FIFO order
   // Source: CORE_WORKFLOWS.md §7 Line 237, analysis §2.3 Edge Case #1
   // ================================================================
   test('S3: Outbox pushed in FIFO order by createdAt', () async {
-    outbox.addAll([
+    await seedData([
       _makePending('C', DateTime.utc(2026, 3, 11, 3)),
       _makePending('A', DateTime.utc(2026, 3, 11, 1)),
       _makePending('B', DateTime.utc(2026, 3, 11, 2)),
@@ -187,7 +216,7 @@ void main() {
   // Source: analysis §2.3 Edge Case #2
   // ================================================================
   test('S4: Partial failure stops at failed item, keeps remaining', () async {
-    outbox.addAll([
+    await seedData([
       _makePending('A', DateTime.utc(2026, 3, 11, 1)),
       _makePending('B', DateTime.utc(2026, 3, 11, 2)),
       _makePending('C', DateTime.utc(2026, 3, 11, 3)),
@@ -253,7 +282,7 @@ void main() {
   // ================================================================
   test('S8: Connectivity loss during sync transitions to offline', () async {
     // Add entries so sync takes time
-    outbox.addAll([_makePending('A', DateTime.utc(2026, 3, 11, 1))]);
+    await seedData([_makePending('A', DateTime.utc(2026, 3, 11, 1))]);
 
     // Make push slow and drop connectivity mid-way
     api.failOnPushId = 'A'; // Simulates failure (network drop)

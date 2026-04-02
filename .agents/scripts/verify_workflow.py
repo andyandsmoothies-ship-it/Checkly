@@ -35,11 +35,17 @@ REQUIRED_SECTIONS = {
     ],
     "implementation_plan": [
         r"##\s+proposed\s+changes",
+        r"##\s+risk\s+assessment",
         r"##\s+verification\s+plan",
     ],
     "walkthrough": [
         r"##\s+decision\s+log",
         r"##\s+verification\s+handoff",
+    ],
+    "analysis_epic": [
+        r"##\s+exec\s+summary|executive\s+summary",
+        r"##\s+decision\s+matrix",
+        r"##\s+risk\s+assessment",
     ],
 }
 

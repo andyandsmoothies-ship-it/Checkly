@@ -20,6 +20,21 @@ class OutboxDao {
         .get();
   }
 
+  /// Get submissions eligible for sync — `pending` status AND
+  /// `nextRetryAt IS NULL OR nextRetryAt <= now` (Pillar D backoff gate).
+  /// Items with a future `nextRetryAt` are invisible to the SyncEngine.
+  Future<List<PendingSubmission>> getEligiblePending() async {
+    final now = DateTime.now().toUtc();
+    return (_db.select(_db.pendingSubmissions)
+          ..where(
+            (s) =>
+                s.syncStatus.equals('pending') &
+                (s.nextRetryAt.isNull() | s.nextRetryAt.isSmallerOrEqualValue(now)),
+          )
+          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]))
+        .get();
+  }
+
   /// Get pending submissions by sync status.
   Future<List<PendingSubmission>> getPendingByStatus(String status) async {
     return (_db.select(_db.pendingSubmissions)
@@ -33,11 +48,13 @@ class OutboxDao {
     await _db.into(_db.pendingSubmissions).insert(entry);
   }
 
-  /// Update sync status of a submission.
+  /// Update sync status of a submission, with optional backoff fields.
   Future<void> updateSyncStatus(
     String id,
     String status, {
     String? error,
+    int? retryCount,
+    DateTime? nextRetryAt,
   }) async {
     await (_db.update(
       _db.pendingSubmissions,
@@ -45,6 +62,8 @@ class OutboxDao {
       PendingSubmissionsCompanion(
         syncStatus: Value(status),
         syncError: Value(error),
+        retryCount: retryCount != null ? Value(retryCount) : const Value.absent(),
+        nextRetryAt: Value(nextRetryAt), // Always write — allows nulling to null
       ),
     );
   }
@@ -70,6 +89,51 @@ class OutboxDao {
     if (row != null) {
       await removeSubmission(row.id);
     }
+  }
+
+  // ============================================================
+  // Exhaustion Stream + Recovery
+  // ============================================================
+
+  /// Stream of the total count of exhausted records across both tables.
+  /// Emits whenever the submissions table changes (combined with a point-in-time
+  /// photo count). Used to drive the UX Red Badge.
+  Stream<int> watchExhaustedCount() {
+    return (_db.select(_db.pendingSubmissions)
+          ..where((s) => s.syncStatus.equals('exhausted')))
+        .watch()
+        .asyncMap((subRows) async {
+          final photoRows = await (_db.select(_db.pendingPhotos)
+                ..where((p) => p.syncStatus.equals('exhausted')))
+              .get();
+          return subRows.length + photoRows.length;
+        });
+  }
+
+  /// Reset all exhausted records in both tables back to `pending`.
+  /// Clears `retryCount` and `nextRetryAt` — they become eligible immediately.
+  Future<void> requeueExhausted() async {
+    await (_db.update(_db.pendingSubmissions)
+          ..where((s) => s.syncStatus.equals('exhausted')))
+        .write(
+          const PendingSubmissionsCompanion(
+            syncStatus: Value('pending'),
+            retryCount: Value(0),
+            nextRetryAt: Value(null),
+            syncError: Value(null),
+          ),
+        );
+
+    await (_db.update(_db.pendingPhotos)
+          ..where((p) => p.syncStatus.equals('exhausted')))
+        .write(
+          const PendingPhotosCompanion(
+            syncStatus: Value('pending'),
+            retryCount: Value(0),
+            nextRetryAt: Value(null),
+            syncError: Value(null),
+          ),
+        );
   }
 
   // ============================================================
@@ -111,16 +175,20 @@ class OutboxDao {
         .get();
   }
 
-  /// Update sync status of a photo (uploaded / error).
+  /// Update sync status of a photo, with optional backoff fields.
   Future<void> updatePhotoSyncStatus(
     String id,
     String status, {
     String? error,
+    int? retryCount,
+    DateTime? nextRetryAt,
   }) async {
     await (_db.update(_db.pendingPhotos)..where((p) => p.id.equals(id))).write(
       PendingPhotosCompanion(
         syncStatus: Value(status),
         syncError: Value(error),
+        retryCount: retryCount != null ? Value(retryCount) : const Value.absent(),
+        nextRetryAt: Value(nextRetryAt),
       ),
     );
   }

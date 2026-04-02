@@ -74,6 +74,7 @@ void configureDependencies() {
       api: SyncApiAdapter(di<Dio>()),
       outbox: OutboxAdapter(di<OutboxDao>()),
       auth: AuthCheckAdapter(di<AuthManager>()),
+      outboxDao: di<OutboxDao>(),
     ),
   );
 

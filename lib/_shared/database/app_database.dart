@@ -40,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -80,6 +80,13 @@ class AppDatabase extends _$AppDatabase {
       if (from < 8) {
         // Pillar C: add answerId to pending_photos for server-side answer patching.
         await m.addColumn(pendingPhotos, pendingPhotos.answerId);
+      }
+      if (from < 9) {
+        // Pillar D: SQLite-backed exponential backoff columns.
+        await m.addColumn(pendingSubmissions, pendingSubmissions.retryCount);
+        await m.addColumn(pendingSubmissions, pendingSubmissions.nextRetryAt);
+        await m.addColumn(pendingPhotos, pendingPhotos.retryCount);
+        await m.addColumn(pendingPhotos, pendingPhotos.nextRetryAt);
       }
     },
     beforeOpen: (details) async {

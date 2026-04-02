@@ -41,6 +41,7 @@ Workflow: /analyze-epic | Track: C
 | **Options** | Explicitly define >= 2 architectural alternatives. |
 | **System Impact**| `grep_search` all core tables/services affected. Define ALLOWLIST vs BLOCKLIST conditional logic. |
 | **Trade-Off Matrix**| MANDATORY: For each alternative, explicitly document Pros, Cons, and Blast Radius. Justify the chosen option over the ideal enterprise option. |
+| **Risk Assessment** | Formally assess the technical and operational risks of each decision/alternative, and document mitigation strategies. |
 
 > **@@SCAN**: (1) Component reuse verified? (2) >=2 Alternatives with Pros/Cons mapped? (3) Core tables explicitly grepped across BOTH lib/ and server/?
 
@@ -59,7 +60,7 @@ Workflow: /analyze-epic | Track: C
 | Process | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `analysis_epic_[topic].md`. |
-| **10-Point Payload**| `1. Exec Summary`, `2. Decision Matrix (Pros/Cons/Blast Radius per option)`, `3. Sys Arch Flow (Mermaid)`, `4. DB Migrations`, `5. API Contracts`, `6. Blast Radius/Rollback Plan`, `7. Red Team Adversarial Log`, `8. Security/RLS`, `9. Observability Hooks`, `10. EDD Expectations`. |
+| **11-Point Payload**| `1. Exec Summary`, `2. Decision Matrix (Pros/Cons/Blast Radius per option)`, `3. Risk Assessment (per decision)`, `4. Sys Arch Flow (Mermaid)`, `5. DB Migrations`, `6. API Contracts`, `7. Blast Radius/Rollback Plan`, `8. Red Team Adversarial Log`, `9. Security/RLS`, `10. Observability Hooks`, `11. EDD Expectations`. |
 
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
