@@ -2,6 +2,12 @@
 
 ## 1. Governance Rules
 
+### The 3-Step Database Migration Pipeline (STRICT)
+Under no circumstances may you rely on auto-migration (`db.Database.Migrate()`) or use `dotnet ef database update` blindly. We enforce the strict 3-Step Production Practice for all database schema changes:
+1. **Generate Script:** Run `dotnet ef migrations script -i -o update.sql` to export the raw SQL.
+2. **Apply Script:** Manually run the SQL script against the database using a DB tool.
+3. **Deploy Code:** Only start the server (`dotnet run`) *after* the DB schema has been strictly modified out-of-band.
+
 ### The Anti-MacGyver Protocol (STRICT)
 Before implementing ANY local utility, routing logic, data transformation, or UI component:
 - **Rule**: Run `grep_search` within `server/Common/` or `lib/_shared/` first.

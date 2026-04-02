@@ -178,6 +178,12 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
+
+        // Auto-apply pending database migrations to prevent Dirty Database Traps
+        // User requested to keep this fallback active while formally practicing the 3-step process.
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
     }
 
     // Diagnostic endpoint — only available in Development/Test environments,
