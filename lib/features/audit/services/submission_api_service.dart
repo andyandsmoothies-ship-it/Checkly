@@ -4,8 +4,10 @@ import '../../../_shared/utils/isolate_parser.dart';
 import '../model/submission_dto.dart';
 import '../pages/survey_results_page.dart';
 
+import '../../../_shared/services/sync_interfaces.dart';
+
 /// API service for submission endpoints.
-class SubmissionApiService {
+class SubmissionApiService implements PhotoApi {
   final Dio _dio;
 
   SubmissionApiService(this._dio);
@@ -62,6 +64,7 @@ class SubmissionApiService {
 
   /// POST /photos/upload/{submissionId} — multipart upload.
   /// [answerId] — if provided, the server patches the Answer row with the CDN URL.
+  @override
   Future<String> uploadPhoto(
     String submissionId,
     String filePath, {

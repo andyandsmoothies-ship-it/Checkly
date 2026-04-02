@@ -10,6 +10,7 @@ import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/dao/outbox_dao.dart'; // Kept as it's used
 import '../../../_shared/services/connectivity_service.dart'; // Kept as it's used
 import '../../../_shared/services/scoring_engine.dart'; // Kept as it's used
+import '../../../_shared/services/scoring_models.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../templates/models/template_dto.dart';
 import '../model/submission_dto.dart';

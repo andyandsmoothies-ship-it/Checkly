@@ -19,6 +19,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
+import 'package:checkly/_shared/services/sync_interfaces.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
 

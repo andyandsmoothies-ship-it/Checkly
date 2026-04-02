@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../../features/action_plans/model/action_plan_dto.dart';
 import '../../features/action_plans/manager/action_plan_manager.dart';
+import 'package:checkly/_shared/services/sync_interfaces.dart';
 import '../../features/auth/manager/auth_manager.dart';
 import '../../features/auth/model/auth_state.dart';
 import '../database/dao/outbox_dao.dart';
-import 'sync_engine.dart';
 
 // ============================================================
 // Concrete adapter: SyncApi → wraps SubmissionApiService + Dio

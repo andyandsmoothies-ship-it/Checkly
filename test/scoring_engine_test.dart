@@ -16,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 // --- IMPORT TARGET (will fail until implemented) ---
 // This import will cause a compile error → proves RED state.
 import 'package:checkly/_shared/services/scoring_engine.dart';
+import 'package:checkly/_shared/services/scoring_models.dart';
 
 void main() {
   late List<Map<String, dynamic>> vectors;

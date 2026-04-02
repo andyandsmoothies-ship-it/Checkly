@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import '../database/dao/outbox_dao.dart';
-import '../../features/audit/services/submission_api_service.dart';
+import 'sync_interfaces.dart';
 
 /// Backoff delay sequence in seconds: 1st, 2nd, 3rd, 4th failure.
 const List<int> _defaultBackoffDelays = [2, 4, 8, 60];
@@ -22,7 +22,7 @@ const List<int> _defaultBackoffDelays = [2, 4, 8, 60];
 ///   After 4 failures, status → `exhausted`. Returns `false`.
 class PhotoQueueService {
   final OutboxDao _outbox;
-  final SubmissionApiService _api;
+  final PhotoApi _api;
   final List<int> _backoffDelays;
 
   /// Injectable file-existence check — defaults to `File(path).existsSync()`.

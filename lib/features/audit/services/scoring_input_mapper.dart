@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../_shared/services/scoring_engine.dart';
+import '../../../_shared/services/scoring_models.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
 
