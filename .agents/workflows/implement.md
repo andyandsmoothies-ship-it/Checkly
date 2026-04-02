@@ -51,7 +51,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Artifact Check**| IF `implementation_plan.md` OR `specs.md` exists -> Execute Quality Checklist. ELSE -> load `technical-specification` + generate lightweight plan -> Yield Approval. |
-| **Verification** | Spot-check 1 plan claim against source via `grep_search`. IF False -> STOP. |
+| **Verification** | Spot-check 1 plan claim against source via `grep_search`. IF plan references an API/DTO: verify claim holds in BOTH `server/` AND `lib/`. IF False → STOP. |
 | **YAGNI Gate** | IF feature adds complexity without business value -> Create Before/After tradeoff table. |
 
 ### Plan Quality Checklist

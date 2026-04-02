@@ -22,9 +22,9 @@ description: Architect's Strategic Research Workflow for System Architecture.
 |---|---|
 | **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
 | **Discovery** | Query `context7` or web to gather modern patterns. |
-| **E2E Map** | MANDATORY: Map Upstream Triggers + Downstream Effects. Identify Status Quo friction. Map exact system Context Handoff points. |
+| **E2E Map** | MANDATORY: Map Upstream Triggers + Downstream Effects. Identify Status Quo friction. Map exact system Context Handoff points. If touching API/DTO/DB, `grep_search` BOTH `lib/` and `server/` — never treat either side as a black box. |
 
-> **@@SCAN**: (1) Skills loaded/Patterns discovered? (2) Full E2E Scope mapped? (3) Friction points identified?
+> **@@SCAN**: (1) Skills loaded/Patterns discovered? (2) Full E2E Scope mapped across BOTH lib/ and server/? (3) Friction points identified?
 
 ## Phase 2: Strategy Assessment
 

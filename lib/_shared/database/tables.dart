@@ -192,6 +192,7 @@ class PendingPhotos extends Table {
   TextColumn get id => text()();
   TextColumn get pendingSubmissionId =>
       text().references(PendingSubmissions, #id)();
+  TextColumn get answerId => text().nullable()(); // links to PendingAnswers.id for server-side patching
   TextColumn get localPath => text()();
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   TextColumn get syncError => text().nullable()();

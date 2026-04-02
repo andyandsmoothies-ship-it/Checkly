@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../../features/action_plans/model/action_plan_dto.dart';
 import '../../features/action_plans/manager/action_plan_manager.dart';
@@ -16,13 +18,33 @@ class SyncApiAdapter implements SyncApi {
 
   SyncApiAdapter(this._dio);
 
+  /// Returns true if [url] is a local device file path that must not reach
+  /// the backend database.
+  bool _isLocalPath(String url) =>
+      url.startsWith('/') || url.startsWith('file://');
+
   @override
   Future<void> pushSubmission(PendingSubmission submission) async {
-    // The SyncEngine provides the raw payload (JSON string) from the outbox.
-    // We POST it directly with the idempotency key header.
+    // Decode the stored JSON string and strip local file paths from photoUrl
+    // fields so they never pollute the backend Postgres database.
+    final payload =
+        Map<String, dynamic>.from(jsonDecode(submission.payload) as Map);
+
+    final answers = payload['answers'];
+    if (answers is List) {
+      for (final a in answers) {
+        if (a is Map<String, dynamic>) {
+          final url = a['photoUrl'];
+          if (url is String && _isLocalPath(url)) {
+            a['photoUrl'] = null;
+          }
+        }
+      }
+    }
+
     await _dio.post(
       '/submissions',
-      data: submission.payload,
+      data: payload,
       options: Options(
         headers: {'X-Idempotency-Key': submission.idempotencyKey},
         contentType: Headers.jsonContentType,

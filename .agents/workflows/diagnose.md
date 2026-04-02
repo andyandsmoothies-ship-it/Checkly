@@ -37,10 +37,10 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Vector | Execution Contract |
 |---|---|
 | **Context Trace** | IF (stack_trace == missing) THEN MANDATORY: Request trace from user. PROHIBITED: Debugging blind from static code. |
-| **Targeting** | MANDATORY: Use `view_file` targeted lines or `grep_search` targeted functions. PROHIBITED: Reading entire long files (Attention Bias failure). |
+| **Targeting** | MANDATORY: Use `view_file` targeted lines or `grep_search` targeted functions. PROHIBITED: Reading entire long files (Attention Bias failure). IF symptom crosses API/DTO/DB boundary: `grep_search` BOTH `lib/` and `server/` — the bug may live on the opposite side of the call. |
 | **Formal Reasoning**| MANDATORY: Output: 1. `Premises` (actual read contents), 2. `Execution Trace` (file+line path), 3. `Formal Conclusion` (proof). |
 
-> **@@SCAN**: (1) Exact file/line identified? (2) Execution trace proves path? (3) Root cause conclusion supported by execution trace?
+> **@@SCAN**: (1) Exact file/line identified? (2) Execution trace proves path? (3) If API/DB involved: were BOTH lib/ and server/ searched? (4) Root cause conclusion supported by execution trace?
 
 ## Phase 2: Skill & Rule Discovery
 

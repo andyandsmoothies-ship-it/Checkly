@@ -36,25 +36,26 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 |---|---|
 | **Skill Load** | Extract Persona -> Load 1-2 matching skills from `.agents/skills/`. |
 | **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). |
-| **Logic Integ.** | Define IF condition == ALLOWLIST or BLOCKLIST. Identify >= 1 alternative tactical approach. |
+| **Trade-Off Analysis** | Identify >= 1 alternative "Ideal Enterprise" approach. Explicitly list the Pros, Cons, and Blast Radius to justify the pragmatic choice over the ideal choice. |
 
-> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Alternative approach stated?
+> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Pros/Cons of Ideal vs Pragmatic approaches explicitly mapped?
 
 ## Phase 2: Resilience & Blast Radius
 
 | Vector | Execution Contract |
 |---|---|
 | **Radius Check** | Traverse `GEMINI.md` cascade for constraints. Verify upstream callers of modified functions. |
+| **Boundary Check** | If touching an API, DTO, or DB Schema, MANDATORY `grep_search` across BOTH `lib/` (Flutter) AND `server/` (C#). Never treat the server as a black box. |
 | **State Matrix** | MANDATORY: Define the 4 System Extremes -> `Loading`, `Empty`, `Error`, `Success`. |
 
-> **@@SCAN**: (1) Upstream callers checked? (2) 4-State Matrix defined?
+> **@@SCAN**: (1) Upstream callers checked? (2) Both C# and Dart API boundaries explicitly mapped via `grep_search`? (3) 4-State Matrix defined?
 
 ## Phase 3: Tactical Plan Deliverable
 
 | Process | Execution Contract |
 |---|---|
 | **Artifact Generation** | Create `implementation_plan_[topic].md`. |
-| **Payload Schema**| MUST INCLUDE: `Executive Summary & YAGNI`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Dependency Context Array`, `EDD Expectations`, `Verification Plan`. |
+| **Payload Schema**| MUST INCLUDE: `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Verification Plan`. |
 
 ## Phase 4: Route Implementation (The ATDD Gate)
 

@@ -40,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -76,6 +76,10 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(cachedActionPlans, cachedActionPlans.rootCause);
         
         await _createVoidTriggers(customStatement);
+      }
+      if (from < 8) {
+        // Pillar C: add answerId to pending_photos for server-side answer patching.
+        await m.addColumn(pendingPhotos, pendingPhotos.answerId);
       }
     },
     beforeOpen: (details) async {

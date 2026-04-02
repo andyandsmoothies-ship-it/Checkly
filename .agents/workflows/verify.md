@@ -19,10 +19,10 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | **Skill Load** | Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills. |
 | **Side Effects** | MANDATORY: Assess code changes for framework state loss, missing locks, or illegal ghost imports based on `.agents/rules/`. |
 | **Verification**| MANDATORY: Semi-Formal Reasoning. Trace code path line-by-line. PROHIBITED: Assuming behavior based on function names. |
-| **Criteria Check**| `grep_search` upstream `implementation_plan.md` -> verify every AC is realized in code. Flag omissions. |
+| **Criteria Check**| `grep_search` upstream `implementation_plan.md` → verify every AC is realized in code. If AC involves API/DTO: verify realization exists in BOTH `server/` and `lib/`. Flag omissions. |
 | **EDD Proof** | MANDATORY: Demand **Executed Evidence** (logs, API responses). PROHIBITED: Accepting "Generative Evidence" (Builder claiming it works). |
 
-> **@@SCAN**: (1) Code path traced line-by-line? (2) All ACs verified against real code?
+> **@@SCAN**: (1) Code path traced line-by-line? (2) All ACs verified against real code on both stacks?
 
 ## Phase 1.5: Adversarial Interrogation (Red Team)
 

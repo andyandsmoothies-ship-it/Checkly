@@ -36,6 +36,7 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
   - **React / Frontend**: Load `frontend-testing` (for Jest, React Testing Library, Cypress).
   - **Flutter / Native Apps**: Load `mobile-app-testing` (for widget tests, integration_test, Detox).
 - **Rule (Dependency Context)**: If the implementation plan requires mocking complex managers or services (like GetIt dependencies), check if the plan provides a **Dependency Context Array** (exact file paths to those services). If it doesn't, use `grep_search` to find the exact import paths before writing code. Do not guess folder names (e.g., `models` vs `model`).
+- **Rule (Cross-Stack Boundary Check)**: If the plan touches an API route or DTO, MANDATORY `grep_search` BOTH `server/Features/` for the C# handler AND `lib/` for the Dart API service client. Verify route path, HTTP verb, and parameter types match on both sides before writing a single test. A test written against a mismatched contract will produce a false red.
 - **Contract Validation Checklist (MANDATORY)**: Before writing a single test, validate every contract entry has all required fields. If ANY field is missing → **STOP** and ask the Builder to complete the contract:
   - [ ] **Exact Text/Key** specified? (e.g., the literal `'SIGN OUT'` string — not paraphrased)
   - [ ] **State Matrix** defined? (Happy Path + Error State + Empty/Cancel State)

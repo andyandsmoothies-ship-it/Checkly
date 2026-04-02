@@ -60,13 +60,21 @@ class SubmissionApiService {
     return SubmissionDto.fromJson(response.data as Map<String, dynamic>);
   }
 
-  /// POST /photos/upload — multipart upload
-  Future<String> uploadPhoto(String submissionId, String filePath) async {
+  /// POST /photos/upload/{submissionId} — multipart upload.
+  /// [answerId] — if provided, the server patches the Answer row with the CDN URL.
+  Future<String> uploadPhoto(
+    String submissionId,
+    String filePath, {
+    String? answerId,
+  }) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath),
     });
+    // Route uses path segment /upload/{submissionId} — NOT query param.
+    // Optional answerId appended as query param for server-side answer patching.
+    final query = answerId != null ? '?answerId=$answerId' : '';
     final response = await _dio.post(
-      '/photos/upload?submissionId=$submissionId',
+      '/photos/upload/$submissionId$query',
       data: formData,
     );
     return (response.data as Map<String, dynamic>)['url'] as String;

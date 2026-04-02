@@ -5,14 +5,17 @@ using Checkly.Api.Common.Persistence;
 namespace Checkly.Api.Features.Photos;
 
 /// <summary>
-/// POST /api/photos/upload — saves photo to filesystem.
+/// POST /api/photos/upload/{submissionId} — saves photo to filesystem.
 /// Files stored at: data/photos/{submissionId}/{filename}
 /// IDOR: Validates caller can access the submission.
+/// If [answerId] is provided, the Answer row is patched with the CDN URL,
+/// completing the two-phase media upload link.
 /// </summary>
 public static class UploadPhoto
 {
     public static async Task<IResult> HandleAsync(
         Guid submissionId,
+        Guid? answerId, // Optional: links upload to a specific Answer row
         IFormFile file,
         ClaimsPrincipal user,
         AppDbContext db,
@@ -43,6 +46,19 @@ public static class UploadPhoto
         await file.CopyToAsync(stream, ct);
 
         var photoUrl = $"/api/photos/{submissionId}/{fileName}";
+
+        // Canonical answer patching: update the Answer row with the CDN URL.
+        // This is the core of the two-phase media upload — the backend heals
+        // the data relationship at the point of media ingestion.
+        if (answerId.HasValue)
+        {
+            var answer = await db.Answers.FindAsync(new object[] { answerId.Value }, ct);
+            if (answer != null && answer.SubmissionId == submissionId)
+            {
+                answer.PhotoUrl = photoUrl;
+                await db.SaveChangesAsync(ct);
+            }
+        }
 
         return TypedResults.Created(photoUrl, new { url = photoUrl, fileName, size = file.Length });
     }

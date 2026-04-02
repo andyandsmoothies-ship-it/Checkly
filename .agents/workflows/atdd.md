@@ -38,9 +38,10 @@ Workflow: /atdd | Track: [B2 / C]
 |---|---|
 | **Skill Load** | MANDATORY: Load `atdd-quality-gates` skill. |
 | **Dynamic Skills**| Derive 2-3 keywords -> search `.agents/skills/` -> Load Top 2. |
-| **Verification** | MANDATORY: Read upstream `analysis_[topic].md`. Execute `grep_search` / `view_file` to confirm entities/endpoints mentioned actually exist. IF Discrepancy THEN Flag to user -> STOP. |
+| **Verification** | MANDATORY: Read upstream `analysis_[topic].md`. Execute `grep_search` / `view_file` to confirm entities/endpoints mentioned actually exist. **If spec mentions an API contract: verify the route exists in `server/` AND a corresponding Dart client call exists in `lib/`.** IF Discrepancy THEN Flag to user → STOP. |
+| **Gap Analysis** | MANDATORY: Play the Adversary. Independent of the upstream spec, ask: "What edge cases, state leaks, migrations, or boundary errors did the Architect forget?" Define minimally 2 ACs that are NOT explicitly requested by the spec to act as a safety net. |
 
-> **@@SCAN**: (1) `atdd-quality-gates` loaded? (2) Spec verified against codebase? (3) Discrepancies found?
+> **@@SCAN**: (1) `atdd-quality-gates` loaded? (2) API routes confirmed in BOTH server/ and lib/? (3) Discrepancies found? (4) Gap Analysis ACs defined?
 
 ## Phase 2: SDET Execution
 

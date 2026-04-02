@@ -101,11 +101,28 @@ class OutboxDao {
     await _db.into(_db.pendingPhotos).insert(photo);
   }
 
-  /// Get all photos for a pending submission.
+  /// Get all photos for a pending submission, ordered FIFO by createdAt.
   Future<List<PendingPhoto>> getPhotosForSubmission(String submissionId) async {
     return (_db.select(
       _db.pendingPhotos,
-    )..where((p) => p.pendingSubmissionId.equals(submissionId))).get();
+    )
+          ..where((p) => p.pendingSubmissionId.equals(submissionId))
+          ..orderBy([(p) => OrderingTerm.asc(p.createdAt)]))
+        .get();
+  }
+
+  /// Update sync status of a photo (uploaded / error).
+  Future<void> updatePhotoSyncStatus(
+    String id,
+    String status, {
+    String? error,
+  }) async {
+    await (_db.update(_db.pendingPhotos)..where((p) => p.id.equals(id))).write(
+      PendingPhotosCompanion(
+        syncStatus: Value(status),
+        syncError: Value(error),
+      ),
+    );
   }
 
   // ============================================================

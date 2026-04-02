@@ -29,17 +29,26 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **Database**: PostgreSQL (Self-Hosted), accessed through EF Core.
 - **Auth**: ASP.NET Core Identity (JWT Bearer) for authentication and server-side RBAC.
 
-### Project Structure
-| Layer | Path | Purpose |
-|:------|:-----|:--------|
-| Server | `server/` | ASP.NET Core Minimal API |
-| Server Features | `server/Features/{Feature}/` | Feature folders (endpoints, DTOs) |
-| Server Entities | `server/Common/Persistence/Entities/` | EF Core entity classes |
-| Server DbContext | `server/Common/Persistence/AppDbContext.cs` | Central DbContext with explicit `HasColumnName` |
-| Flutter App | `lib/` | Feature-Sliced Design (FSD) |
-| Flutter Features | `lib/features/{feature}/` | Pages, models, managers, services |
-| Flutter Shared | `lib/_shared/` | Router, widgets, database, services |
-| Docs | `docs/` | Reference documentation |
+### Project Structure & Blast Radius Map
+AI Agents MUST use this map during Discovery (`/analyze-feature`) to immediately assess the risk of proposed file modifications.
+
+**🔴 High Blast Radius (Core State & Infrastructure)**
+*Extreme Caution: Modifying these impacts global data integrity, distributed sync, or system-wide auth.*
+- `server/Common/Persistence/AppDbContext.cs` — The central EF Core / Postgres mapping schema.
+- `server/Common/Persistence/Entities/` — Global database models.
+- `lib/_shared/database/` — Flutter local SQLite schemas and Drift migrations.
+- `lib/_shared/services/` — Global background services (e.g., Sync Engine, Connectivity).
+
+**🟡 Medium Blast Radius (Cross-Feature Shared Logic)**
+*Caution: Modifying these changes UI behavior or routing sequences across multiple independent features.*
+- `server/Common/` (excluding DB) — Shared guards, error handlers, and middleware.
+- `lib/_shared/widgets/` — Universal UI components.
+- `lib/_shared/router/` — Global navigation.
+
+**🟢 Isolated Scope (Feature-Sliced Design)**
+*Safe: Fully encapsulated. Modifying one feature does not break another. Focused tests apply.*
+- `server/Features/{Name}/` — Backend handlers, endpoints, and localized DTOs.
+- `lib/features/{name}/` — Frontend UI pages, dedicated managers, and API services.
 
 ### Endpoint Pattern (Server)
 Every feature endpoint follows this exact pattern. Endpoints are registered in `*Endpoints.cs` files using `MapGet`/`MapPost`/`MapPut`.
@@ -99,3 +108,6 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
 - **Gotcha 15: Navigation from Outside ShellRoute Must Restore Shell First**
   - **Problem:** `context.go('/route')` outside a ShellRoute renders without the bottom nav.
   - **Fix:** Capture `GoRouter.of(context)`, go to `/shell-root`, then microtask `push('/target')`.
+- **Gotcha 17: Offline-First Distributed Sync Requires Full-Stack Verification**
+  - **Problem:** When decoupling a mobile feature into asynchronous phases (e.g., Sync JSON, then Sync Media), treating the backend API as a black box leads to database corruption (e.g., syncing local device paths into a canonical Postgres database).
+  - **Fix:** ALWAYS verify the backend API endpoints explicitly support the sequence inversion. Do not assume the backend handles out-of-order data associations automatically. Verify route signatures (segment vs query) and DTO payload mutability before approving an architectural plan.

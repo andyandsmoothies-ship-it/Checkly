@@ -40,8 +40,9 @@ Workflow: /analyze-epic | Track: C
 | **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
 | **Options** | Explicitly define >= 2 architectural alternatives. |
 | **System Impact**| `grep_search` all core tables/services affected. Define ALLOWLIST vs BLOCKLIST conditional logic. |
+| **Trade-Off Matrix**| MANDATORY: For each alternative, explicitly document Pros, Cons, and Blast Radius. Justify the chosen option over the ideal enterprise option. |
 
-> **@@SCAN**: (1) Component reuse verified? (2) >=2 Alternatives? (3) Core tables explicitly grepped?
+> **@@SCAN**: (1) Component reuse verified? (2) >=2 Alternatives with Pros/Cons mapped? (3) Core tables explicitly grepped across BOTH lib/ and server/?
 
 ## Phase 2: Red Team Adversarial Review
 
@@ -58,7 +59,7 @@ Workflow: /analyze-epic | Track: C
 | Process | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `analysis_epic_[topic].md`. |
-| **10-Point Payload**| `1. Exec Summary`, `2. Decision Matrix`, `3. Sys Arch Flow (Mermaid)`, `4. DB Migrations`, `5. API Contracts`, `6. Blast Radius/Rollback Plan`, `7. Red Team Adversarial Log`, `8. Security/RLS`, `9. Observability Hooks`, `10. EDD Expectations`. |
+| **10-Point Payload**| `1. Exec Summary`, `2. Decision Matrix (Pros/Cons/Blast Radius per option)`, `3. Sys Arch Flow (Mermaid)`, `4. DB Migrations`, `5. API Contracts`, `6. Blast Radius/Rollback Plan`, `7. Red Team Adversarial Log`, `8. Security/RLS`, `9. Observability Hooks`, `10. EDD Expectations`. |
 
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
