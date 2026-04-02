@@ -67,3 +67,30 @@ MigrationStrategy(beforeOpen: (details) async { ... })
 ```dart
 import 'package:meta/meta.dart';
 ```
+
+---
+
+## Gotcha: Drift OOM Risk (Unbounded `.get()`)
+
+**Problem:** Using `.get()` on a Drift query without applying `.limit(N)` instructs SQLite to load every matching record into memory simultaneously. In an offline-first app, tables like `pending_submissions` or `pending_photos` can silently accumulate thousands of records. When background sync runs, an unbounded `.get()` will immediately trigger an Out-Of-Memory (OOM) crash on lower-end mobile devices.
+
+**Fix:** ALWAYS append a deterministic `.limit(N)` (e.g., 50 or 100) when fetching lists of entities meant for processing loops. Never assume a "pending" queue is small.
+
+```dart
+// WRONG ❌ — OOM Crash waiting to happen
+Future<List<PendingSubmission>> getEligiblePending() async {
+  return (_db.select(_db.pendingSubmissions)
+        ..where((s) => s.syncStatus.equals('pending')))
+      .get();
+}
+
+// CORRECT ✅ — Safe batch processing bounds
+Future<List<PendingSubmission>> getEligiblePending() async {
+  return (_db.select(_db.pendingSubmissions)
+        ..where((s) => s.syncStatus.equals('pending'))
+        ..limit(100)) // Bounded batch
+      .get();
+}
+```
+
+**Discovered in:** Pillar D Sync Engine. Verification identified `OutboxDao.getEligiblePending()` loading unbounded rows to evaluate exponential backoff.

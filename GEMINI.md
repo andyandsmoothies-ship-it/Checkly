@@ -19,6 +19,10 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **DO ADD**: Project-breaking quirks, vendor-specific edge cases, architectural deviations.
 - **DO NOT ADD**: Generic C#/Dart/Flutter knowledge, one-off syntax errors.
 
+### Artifact Density & Formatting (STRICT)
+- **Rule**: All generated markdown artifacts (plans, specs, walkthroughs) MUST be structurally dense and hyper-concise to optimize for AI token parsing.
+- **Prohibition**: No conversational filler, polite preamble, or redundant paragraphs. Use strict logic gates, tables, and bullet lists.
+
 ---
 
 ## 2. Platform Architecture

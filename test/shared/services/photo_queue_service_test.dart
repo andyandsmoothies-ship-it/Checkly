@@ -137,7 +137,7 @@ void main() {
     when(() => mockApi.uploadPhoto(any(), '/tmp/1.jpg', answerId: any(named: 'answerId')))
         .thenThrow(DioException(requestOptions: RequestOptions(path: ''))); // Network exception
         
-    when(() => mockOutboxDao.updatePhotoSyncStatus('p1', 'error', error: any(named: 'error')))
+    when(() => mockOutboxDao.updatePhotoSyncStatus('p1', 'pending', error: any(named: 'error'), retryCount: 1, nextRetryAt: any(named: 'nextRetryAt')))
         .thenAnswer((_) async {});
 
     final service = PhotoQueueService(mockOutboxDao, mockApi, fileExists: (_) => true);
@@ -145,8 +145,8 @@ void main() {
 
     expect(result, isFalse); // Network fail correctly returns false 
     
-    // Status updated wrapper to error
-    verify(() => mockOutboxDao.updatePhotoSyncStatus('p1', 'error', error: any(named: 'error'))).called(1);
+    // Status updated wrapper to pending with backoff
+    verify(() => mockOutboxDao.updatePhotoSyncStatus('p1', 'pending', error: any(named: 'error'), retryCount: 1, nextRetryAt: any(named: 'nextRetryAt'))).called(1);
     
     // Photo 2 never attempted
     verifyNever(() => mockApi.uploadPhoto(any(), '/tmp/2.jpg', answerId: any(named: 'answerId')));

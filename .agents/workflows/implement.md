@@ -84,7 +84,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 |---|---|
 | **Test Ingestion** | IF returning from Phase 2.5 -> MANDATORY: Use `view_file` or `grep_search` to read `executed_tests_[topic].md` AND the physical test files created by QA. Understand exact assertions before coding. |
 | **Cheap Verify** | Run structural validation (e.g. `flutter analyze`, `dotnet build --no-restore`). Fix before declaring complete. File writes alone != Success. |
-| **Red/Green Loop**| IF `Sentinel` gives RED test -> write PROD code to make GREEN -> Refactor. PROHIBITED: Modifying test files. |
+| **Strict TDD (Legacy)**| IF altering legacy boundaries -> MANDATORY: Update legacy test FIRST (turn RED) -> THEN write PROD code (turn GREEN). |
+| **Red/Green Loop**| IF `Sentinel` gives RED test -> write PROD code to make GREEN -> Refactor. PROHIBITED: Modifying test files unless executing the strict legacy TDD clause above. |
 | **Refactor Safety**| IF (renaming/moving code) THEN `grep_search` is NOT an AST. MUST explicitly search 4 ways: 1) Direct calls, 2) Types, 3) String literals, 4) Test Mocks. |
 | **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
 

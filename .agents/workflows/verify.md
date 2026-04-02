@@ -38,7 +38,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 | Step | Execution Contract |
 |---|---|
-| **Execution** | Stop Dev Servers -> Run strict build & test pipeline (`npm run build`, `dotnet build`, etc.). |
+| **Execution** | Stop Dev Servers -> Run ALL tests globally (`flutter test`, `dotnet test`). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions broke. |
 | **Pass/Fail Logic**| IF (Tests Green AND Zero Warnings) -> Proceed Phase 3. IF (Any Fail/Warning) -> **MANDATORY TRANSITION**: `/diagnose`. Do NOT ask permission. |
 
 > **@@SCAN**: (1) Build passed with zero warnings? (2) IF failed -> transitioned to `/diagnose`?
