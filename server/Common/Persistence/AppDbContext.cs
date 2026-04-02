@@ -80,6 +80,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
             // Performance indexes
             e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
         });
     }
 
@@ -151,6 +152,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
             // Performance indexes
             e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
         });
     }
 
@@ -186,6 +188,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
             // Performance indexes
             e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
         });
     }
 
@@ -217,6 +220,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
             // Performance indexes
             e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
         });
     }
 
@@ -270,6 +274,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             // Performance indexes
             e.HasIndex(x => x.AuditorId);
             e.HasIndex(x => x.CreatedAt).IsDescending();
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
             e.HasIndex(x => new { x.Status, x.ReviewStatus });
             e.HasIndex(x => new { x.StoreId, x.CreatedAt }).IsDescending(false, true);
             e.HasIndex(x => new { x.TemplateId, x.ScoringMode });
@@ -321,6 +326,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             // Composite index for fast Top Failures analytics query (concept brief Phase A mandate)
             e.HasIndex(x => new { x.IsFailure, x.CriteriaId })
                 .HasDatabaseName("IX_answers_is_failure_criteria_id");
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
         });
     }
 
@@ -381,6 +387,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             // Performance indexes
             e.HasIndex(x => new { x.StoreId, x.Status });
             e.HasIndex(x => x.Deadline);
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
         });
     }
 

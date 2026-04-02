@@ -129,6 +129,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("Deadline");
 
+                    b.HasIndex("UpdatedAt");
+
                     b.HasIndex("StoreId", "Status");
 
                     b.HasIndex("SubmissionId", "AnswerId")
@@ -217,6 +219,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("CriteriaId");
 
                     b.HasIndex("SubmissionId");
+
+                    b.HasIndex("UpdatedAt");
 
                     b.HasIndex("IsFailure", "CriteriaId")
                         .HasDatabaseName("IX_answers_is_failure_criteria_id");
@@ -406,6 +410,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("IsActive")
                         .HasFilter("is_active = true");
 
+                    b.HasIndex("UpdatedAt");
+
                     b.ToTable("criteria", (string)null);
                 });
 
@@ -482,6 +488,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("ParentId");
 
                     b.HasIndex("TemplateId");
+
+                    b.HasIndex("UpdatedAt");
 
                     b.ToTable("groups", (string)null);
                 });
@@ -638,6 +646,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("IsActive")
                         .HasFilter("is_active = true");
+
+                    b.HasIndex("UpdatedAt");
 
                     b.ToTable("stores", (string)null);
                 });
@@ -835,6 +845,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("IdempotencyKey")
                         .IsUnique()
                         .HasFilter("idempotency_key IS NOT NULL");
+
+                    b.HasIndex("UpdatedAt");
 
                     b.HasIndex("Status", "ReviewStatus");
 
@@ -1045,6 +1057,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("IsActive")
                         .HasFilter("is_active = true");
+
+                    b.HasIndex("UpdatedAt");
 
                     b.ToTable("templates", (string)null);
                 });

@@ -19,25 +19,29 @@ public static class GetPhoto
         IWebHostEnvironment env,
         CancellationToken ct)
     {
-        var filePath = Path.Combine(env.ContentRootPath, "data", "photos", submissionId, fileName);
+        if (!Guid.TryParse(submissionId, out var parsedSubmissionId))
+            return TypedResults.BadRequest();
+
+        // Prevent Path Traversal (e.g. ../../appsettings)
+        if (fileName.Contains("..") || fileName.Contains('/') || fileName.Contains('\\'))
+            return TypedResults.BadRequest();
+
+        var filePath = Path.Combine(env.ContentRootPath, "data", "photos", parsedSubmissionId.ToString(), fileName);
 
         if (!File.Exists(filePath))
             return TypedResults.NotFound();
 
         // IDOR: Look up submission to verify ownership
-        if (Guid.TryParse(submissionId, out var subId))
-        {
-            var submission = await db.Submissions
-                .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == subId, ct);
+        var submission = await db.Submissions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == parsedSubmissionId, ct);
 
-            if (submission is not null)
-            {
-                var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-                    user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
-                if (!hasAccess)
-                    return TypedResults.Forbid();
-            }
+        if (submission is not null)
+        {
+            var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
+                user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
+            if (!hasAccess)
+                return TypedResults.Forbid();
         }
 
         var contentType = Path.GetExtension(fileName).ToLowerInvariant() switch

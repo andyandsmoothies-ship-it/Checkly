@@ -25,6 +25,16 @@ public static class UploadPhoto
         if (file.Length == 0)
             return TypedResults.BadRequest(new { error = "Empty file" });
 
+        // DoS Prevention: Enforce 15MB absolute maximum boundary.
+        if (file.Length > 15 * 1024 * 1024)
+            return TypedResults.BadRequest(new { error = "File exceeds 15MB limit" });
+
+        // Extension Spoofing / Arbitrary File Trust Prevention
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".heic" };
+        if (!allowedExtensions.Contains(ext))
+            return TypedResults.BadRequest(new { error = "Unsupported file type" });
+
         var submission = await db.Submissions.FindAsync(submissionId);
         if (submission is null)
             return TypedResults.NotFound(new { error = "Submission not found" });
