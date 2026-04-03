@@ -76,6 +76,46 @@ def find_files_by_prefix(directory: str, prefix: str) -> list[str]:
         return []
 
 
+def get_active_artifacts(session_dir: str) -> list[str]:
+    """Extracts explicit, scoped artifact paths from the active task.md Inventory."""
+    task_path = find_file(session_dir, "task.md")
+    if not task_path:
+        return []
+    
+    with open(task_path, encoding="utf-8") as f:
+        content = f.read()
+
+    inventory_match = re.search(
+        r"##\s+artifact\s+inventory.*?(\|.*?\n)+",
+        content,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not inventory_match:
+        return []
+
+    # Find [NEW], [MOD], or [DEL] entries
+    rows = re.findall(
+        r"\|\s*\[(?:NEW|MOD|DEL)\]\s*\|\s*([^\|]+)\|",
+        inventory_match.group(0),
+        re.IGNORECASE,
+    )
+    
+    active_files = []
+    norm_session = os.path.normcase(os.path.abspath(session_dir))
+
+    for raw_path in rows:
+        file_path = raw_path.strip()
+        if not file_path.lower().endswith(".md"):
+            continue
+            
+        norm_file = os.path.normcase(os.path.abspath(file_path))
+        # Ensure it is a valid brain artifact inside this specific session folder
+        if norm_session in norm_file and os.path.isfile(file_path):
+            active_files.append(file_path)
+            
+    return active_files
+
+
 errors: list[str] = []
 warnings: list[str] = []
 
@@ -184,14 +224,22 @@ def check_artifact_inventory(session_dir: str) -> None:
 
 def check_artifact_sections(session_dir: str) -> None:
     print("\n[CHECK 3] Scanning artifact files for mandatory section headers...")
+    
+    active_artifacts = get_active_artifacts(session_dir)
+    if not active_artifacts:
+        warn("No active artifacts found in inventory (or missing). Skipping section scan.")
+        return
 
     for prefix, required_patterns in REQUIRED_SECTIONS.items():
         if prefix == "task" or not required_patterns:
             continue
 
-        matching_files = find_files_by_prefix(session_dir, prefix)
+        matching_files = [
+            f for f in active_artifacts
+            if os.path.basename(f).lower().startswith(prefix.lower())
+        ]
+        
         if not matching_files:
-            # Not every artifact type will exist in every session — that's fine.
             continue
 
         for file_path in matching_files:
@@ -221,18 +269,22 @@ def check_artifact_sections(session_dir: str) -> None:
 def check_forensic_evidence(session_dir: str) -> None:
     print("\n[CHECK 4] Scanning analytical artifacts for Proof-of-Work logs...")
     
-    try:
-        artifacts = [f for f in os.listdir(session_dir) if f.endswith(".md") and not f.startswith("task") and not f.startswith("handoff") and not f.startswith("preflight")]
-    except FileNotFoundError:
-        return
+    active_artifacts = get_active_artifacts(session_dir)
+    
+    artifacts_to_check = [
+        f for f in active_artifacts
+        if not os.path.basename(f).lower().startswith("task") 
+        and not os.path.basename(f).lower().startswith("handoff") 
+        and not os.path.basename(f).lower().startswith("preflight")
+    ]
 
-    if not artifacts:
+    if not artifacts_to_check:
         print("       ✅ No analytical artifacts found to check.")
         return
         
-    for name in artifacts:
+    for file_path in artifacts_to_check:
+        name = os.path.basename(file_path)
         if any(k in name.lower() for k in ["research", "analysis", "audit", "diagnose", "failure_report", "walkthrough"]):
-            file_path = os.path.join(session_dir, name)
             with open(file_path, encoding="utf-8") as f:
                 content = f.read().lower()
                 
