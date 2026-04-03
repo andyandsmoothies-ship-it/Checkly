@@ -74,6 +74,10 @@ public static class ListSubmissions
 
         var total = await query.CountAsync(ct);
 
+        // Overflow guard: if the requested skip exceeds total rows, return empty page without hitting DB
+        if ((long)(page - 1) * pageSize >= total)
+            return TypedResults.Ok(new PagedResult<SubmissionDto>([], total, page, pageSize));
+
         var submissions = await query
             .OrderByDescending(s => s.CreatedAt)
             .Skip((page - 1) * pageSize)

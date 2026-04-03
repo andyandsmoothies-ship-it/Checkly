@@ -40,6 +40,10 @@ public static class ListActionPlans
 
         var total = await query.CountAsync(ct);
 
+        // Overflow guard: if the requested skip exceeds total rows, return empty page without hitting DB
+        if ((long)(page - 1) * pageSize >= total)
+            return TypedResults.Ok(new PagedResult<ActionPlanDto>([], total, page, pageSize));
+
         var plans = await query
             .OrderByDescending(ap => ap.CreatedAt)
             .Skip((page - 1) * pageSize)

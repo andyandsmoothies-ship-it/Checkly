@@ -44,6 +44,10 @@ public static class ListTemplates
 
         var total = await query.CountAsync(ct);
 
+        // Overflow guard: if the requested skip exceeds total rows, return empty page without hitting DB
+        if ((long)(page - 1) * pageSize >= total)
+            return TypedResults.Ok(new PagedResult<TemplateDto>([], total, page, pageSize));
+
         var templates = await query
             .OrderBy(t => t.Title)
             .Skip((page - 1) * pageSize)

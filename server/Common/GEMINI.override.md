@@ -15,3 +15,17 @@
 - **Gotcha 27: Serilog Bootstrap Logger Freezes — Test Factory Re-Entry Crash**
   - **Problem:** `CreateBootstrapLogger()` freezes the static `Log.Logger`. When xUnit runs multiple tests, re-executing `Program.cs` throws `InvalidOperationException: The logger is already frozen`.
   - **Fix:** Guard the bootstrap logger assignment with `if (Log.Logger.GetType().Name == "SilentLogger")` so it only runs on first entry.
+
+- **Gotcha 29: `Answer.CriteriaId` Has a Hard Postgres FK — Cannot Use Random GUID in Test Seeding**
+  - **Problem:** Inserting an `Answer` row with a random `CriteriaId` for test isolation throws `23503 FK violation` on `answers.criteria_id`. The EF property is named `CriteriaId` (not `CriterionId`).
+  - **Fix:** Either seed a valid `Criterion` row first, OR test the behavior that naturally produces a `null` answer lookup (e.g., pass a non-existent `answerId` GUID to the API endpoint — the `FindAsync` returns null and no patch occurs, satisfying the same security assertion without any FK).
+
+- **Gotcha 28: Pagination `page` Int32 Overflow → 500 on OFFSET Arithmetic**
+  - **Problem:** `Math.Max(1, p)` floors at 1 but has NO upper bound. `?page=2147483647` causes `(page - 1) * pageSize` to overflow 32-bit int. EF Core passes a negative OFFSET to Npgsql → `ArgumentOutOfRangeException` → 500 Internal Server Error.
+  - **FIX (MANDATORY):** After `CountAsync`, add an overflow-safe guard before `.Skip()`:
+    ```csharp
+    if ((long)(page - 1) * pageSize >= total)
+        return TypedResults.Ok(new PagedResult<T>([], total, page, pageSize));
+    ```
+  - **Files:** `ListTemplates.cs`, `ListSubmissions.cs`, `ListStores.cs`, `ListActionPlans.cs` — all patched 2026-04-03.
+

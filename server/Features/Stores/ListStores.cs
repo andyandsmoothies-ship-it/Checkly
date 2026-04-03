@@ -101,6 +101,10 @@ public static class ListStores
 
         var total = await query.CountAsync(ct);
 
+        // Overflow guard: if the requested skip exceeds total rows, return empty page without hitting DB
+        if ((long)(page - 1) * pageSize >= total)
+            return TypedResults.Ok(new PagedResult<StoreDto>([], total, page, pageSize));
+
         var stores = await query
             .OrderBy(s => s.Name)
             .Skip((page - 1) * pageSize)

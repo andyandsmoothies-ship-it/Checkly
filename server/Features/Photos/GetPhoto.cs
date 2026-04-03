@@ -31,18 +31,20 @@ public static class GetPhoto
         if (!File.Exists(filePath))
             return TypedResults.NotFound();
 
-        // IDOR: Look up submission to verify ownership
+        // IDOR: Look up submission to verify ownership.
+        // V4 Ghost File Bypass fix: if submission is null (deleted), deny immediately.
+        // Previously: `if (submission is not null)` — null fell through to serve orphaned files (TOCTOU).
         var submission = await db.Submissions
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == parsedSubmissionId, ct);
 
-        if (submission is not null)
-        {
-            var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-                user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
-            if (!hasAccess)
-                return TypedResults.Forbid();
-        }
+        if (submission is null)
+            return TypedResults.NotFound(); // Submission deleted — orphaned file, deny access
+
+        var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
+            user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
+        if (!hasAccess)
+            return TypedResults.Forbid();
 
         var contentType = Path.GetExtension(fileName).ToLowerInvariant() switch
         {
