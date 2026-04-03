@@ -70,7 +70,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your `failure_report_[topic].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `## Forensic Evidence` logging all terminal tools/commands executed.
+> **Payload Schema:** Your `failure_report_[topic].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.
 >
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

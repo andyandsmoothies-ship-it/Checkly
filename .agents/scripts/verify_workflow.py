@@ -236,11 +236,11 @@ def check_forensic_evidence(session_dir: str) -> None:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read().lower()
                 
-            evidence_match = re.search(r"##\s+forensic\s+evidence(.*?)(?:##|\Z)", content, re.DOTALL)
+            evidence_match = re.search(r"<forensic_evidence>(.*?)</forensic_evidence>", content, re.DOTALL)
             
             if not evidence_match:
                 fail(
-                    f"'{name}' is missing the '## Forensic Evidence' block.\n"
+                    f"'{name}' is missing the '<forensic_evidence>' block.\n"
                     f"           Fix: Provide proof of executed commands (e.g. grep_search, test logs)."
                 )
                 continue

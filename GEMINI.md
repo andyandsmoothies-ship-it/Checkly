@@ -3,21 +3,27 @@
 ## 1. Governance Rules
 
 ### The 3-Step Database Migration Pipeline (STRICT)
+<SYSTEM_GUARD type="STRICT" name="DatabaseMigrationPipeline">
 Under no circumstances may you rely on auto-migration (`db.Database.Migrate()`) or use `dotnet ef database update` blindly. We enforce the strict 3-Step Production Practice for all database schema changes:
 1. **Generate Script:** Run `dotnet ef migrations script -i -o update.sql` to export the raw SQL.
 2. **Apply Script:** Manually run the SQL script against the database using a DB tool.
 3. **Deploy Code:** Only start the server (`dotnet run`) *after* the DB schema has been strictly modified out-of-band.
+</SYSTEM_GUARD>
 
 ### The Anti-MacGyver Protocol (STRICT)
+<SYSTEM_GUARD type="STRICT" name="AntiMacGyverProtocol">
 Before implementing ANY local utility, routing logic, data transformation, or UI component:
 - **Rule**: Run `grep_search` within `server/Common/` or `lib/_shared/` first.
 - **Purpose**: Prove you are using the project's existing canonical tools before building custom logic.
 - **Prohibition**: No custom date parsers, unauthorized navigation extensions, or ad-hoc security guards.
+</SYSTEM_GUARD>
 
 ### The Marking Your Own Homework Paradox (STRICT)
+<SYSTEM_GUARD type="STRICT" name="MarkingYourOwnHomeworkParadox">
 Under no circumstances may you write or modify a test and its corresponding implementation in the exact same prompt cycle or workflow phase.
 - **Rule**: Tests are immutable constraints during implementation. If a test is failing, fix the code, not the test. 
 - **Purpose**: Prevents AI agents from unconsciously writing meaningless, self-fulfilling tests that echo their own buggy logic to achieve a false "green build."
+</SYSTEM_GUARD>
 
 ### Post-Task Self-Curation (ALWAYS-ON)
 After any significant implementation, debug, or refactor, assess whether a new lesson was discovered.
@@ -26,8 +32,10 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **DO NOT ADD**: Generic C#/Dart/Flutter knowledge, one-off syntax errors.
 
 ### Artifact Density & Formatting (STRICT)
+<SYSTEM_GUARD type="STRICT" name="ArtifactDensityFormatting">
 - **Rule**: All generated markdown artifacts (plans, specs, walkthroughs) MUST be structurally dense and hyper-concise to optimize for AI token parsing.
 - **Prohibition**: No conversational filler, polite preamble, or redundant paragraphs. Use strict logic gates, tables, and bullet lists.
+</SYSTEM_GUARD>
 
 ---
 
@@ -126,15 +134,21 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
 ## 4. AI Environment & Tooling Protocols
 
 ### Monorepo Directory Activation (STRICT)
+<SYSTEM_GUARD type="STRICT" name="MonorepoDirectoryActivation">
 - **Rule:** NEVER run terminal commands from the project root. 
 - **Backend Tasks:** Must run with `Cwd: server/`.
 - **Frontend Tasks:** Must run with `Cwd: lib/` (or wherever `pubspec.yaml` lives).
+</SYSTEM_GUARD>
 
 ### Anti-Hang CLI Protocol (STRICT)
+<SYSTEM_GUARD type="STRICT" name="AntiHangCLIProtocol">
 - **Rule:** Interactive commands freeze headless AI terminals permanently, burning credits.
 - **PROHIBITED:** `dotnet run`, `dotnet watch`, `flutter run`.
 - **MANDATORY:** Check code safely via `dotnet build --no-restore`, `flutter analyze`, or `flutter test`.
+</SYSTEM_GUARD>
 
 ### Zero-Bloat Dependencies (STRICT)
+<SYSTEM_GUARD type="STRICT" name="ZeroBloatDependencies">
 - **Rule:** PROHIBITED from running `dotnet add package` or `flutter pub add` without explicit user approval.
 - **Action:** If solving logic problems, use existing utilities in `server/Common/` or `lib/_shared/`. Do not implicitly install third-party libraries.
+</SYSTEM_GUARD>

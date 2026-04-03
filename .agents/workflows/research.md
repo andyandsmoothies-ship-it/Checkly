@@ -45,7 +45,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 | **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal `cp` command. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `research_[topic].md` MUST INCLUDE: an `E2E Workflow Map`, a `Comparative Decision Matrix`, and `## Forensic Evidence` (proof of executed commands).
+> **Payload Schema:** Your generated `research_[topic].md` MUST INCLUDE: an `E2E Workflow Map`, a `Comparative Decision Matrix`, and strict `<forensic_evidence>` tags (proof of executed commands).
 > 
 > **Handoff Block Template** (Must be appended at the absolute EOF):
 > ```markdown

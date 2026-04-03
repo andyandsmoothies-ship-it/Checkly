@@ -123,7 +123,7 @@ Review from 4 angles & state findings:
 > **Walkthrough Schema:** Your `walkthrough_[topic].md` MUST INCLUDE: 
 > 1. `## Decision Log`: Table showing proposed vs implemented/rejected.
 > 2. `## Verification Handoff`: Steps/Expected/Radius for QA Agent.
-> 3. `## Forensic Evidence`: Proof of validation commands run (e.g., test outputs, flutter analyze).
+> 3. `<forensic_evidence>`: Proof of validation commands run (e.g., test outputs, flutter analyze) inside XML tags.
 > 4. `## Gotcha Protocol`: Propose `GEMINI.override.md` edit if obsolete rules exist.
 >
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
