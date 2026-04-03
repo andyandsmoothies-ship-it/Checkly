@@ -56,7 +56,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | Process | Execution Contract |
 |---|---|
 | **Artifact Generation** | Create `implementation_plan_[topic].md`. |
-| **Payload Schema**| MUST INCLUDE: `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Risk Assessment`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Verification Plan`. |
+| **Payload Schema**| MUST INCLUDE: `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Risk Assessment`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Verification Plan`, and `## Forensic Evidence` (list of terminal commands run). |
 
 ## Phase 4: Route Implementation (The ATDD Gate)
 

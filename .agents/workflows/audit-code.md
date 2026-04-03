@@ -16,6 +16,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute weekly or on-demand. (Use `/audit-infra` for DB/architecture health). |
+| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 keywords (e.g., "health", "refactoring") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
 ## Phase 2: Code Quality Scan

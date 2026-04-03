@@ -16,6 +16,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 
 | Step | Execution Contract |
 |---|---|
+| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | MANDATORY: Load `ux-heuristic-evaluation` skill. |
 | **Scope Extract**| Identify Target Screen(s), User Group (e.g. Admin), and Device Type. IF missing -> Request from User. |
 

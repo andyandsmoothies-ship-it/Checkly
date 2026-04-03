@@ -56,7 +56,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Skill Refresh** | IF (Root cause domain != Symptom domain) THEN Re-scan and load new Domain `SKILL.md`. |
-| **Artifact Gen** | Export `failure_report_[topic].md` (Root Cause + Explicit Trace + Proposed Fix). |
+| **Artifact Gen** | Export `failure_report_[topic].md` (Root Cause + Explicit Trace + Proposed Fix). MUST include `## Forensic Evidence` logging all terminal tools executed. |
 | **Constraint** | PROHIBITED: Making code changes directly in this workflow. |
 
 > **@@SCAN**: (1) File contains explicit execution trace? (2) Proposed fix strictly scoped to root cause?

@@ -16,6 +16,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 | Audit Vector | Execution Contract |
 |---|---|
+| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills. |
 | **Side Effects** | MANDATORY: Assess code changes for framework state loss, missing locks, or illegal ghost imports based on `.agents/rules/`. |
 | **Verification**| MANDATORY: Semi-Formal Reasoning. Trace code path line-by-line. PROHIBITED: Assuming behavior based on function names. |

@@ -29,9 +29,9 @@ import re
 REQUIRED_SECTIONS = {
     "task": [],  # task.md is structural; sections checked via checkbox logic below
     "research": [
-        r"##\s+executive\s+summary",
         r"##\s+handoff\s+block",
-        r"##\s+blind\s+spots",
+        r"blind\s+spots",
+        r"downsides\s+&\s+risks"
     ],
     "implementation_plan": [
         r"##\s+proposed\s+changes",
@@ -216,6 +216,46 @@ def check_artifact_sections(session_dir: str) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# CHECK 4 — Forensic Evidence (Proof of Work)
+# ─────────────────────────────────────────────────────────────────────────────
+def check_forensic_evidence(session_dir: str) -> None:
+    print("\n[CHECK 4] Scanning analytical artifacts for Proof-of-Work logs...")
+    
+    try:
+        artifacts = [f for f in os.listdir(session_dir) if f.endswith(".md") and not f.startswith("task") and not f.startswith("handoff") and not f.startswith("preflight")]
+    except FileNotFoundError:
+        return
+
+    if not artifacts:
+        print("       ✅ No analytical artifacts found to check.")
+        return
+        
+    for name in artifacts:
+        if any(k in name.lower() for k in ["research", "analysis", "audit", "diagnose", "failure_report", "walkthrough"]):
+            file_path = os.path.join(session_dir, name)
+            with open(file_path, encoding="utf-8") as f:
+                content = f.read().lower()
+                
+            evidence_match = re.search(r"##\s+forensic\s+evidence(.*?)(?:##|\Z)", content, re.DOTALL)
+            
+            if not evidence_match:
+                fail(
+                    f"'{name}' is missing the '## Forensic Evidence' block.\n"
+                    f"           Fix: Provide proof of executed commands (e.g. grep_search, test logs)."
+                )
+                continue
+                
+            evidence_text = evidence_match.group(1).strip()
+            if len(evidence_text) < 30:
+                fail(
+                    f"'{name}' Forensic Evidence block is too shallow ({len(evidence_text)} chars).\n"
+                    f"           Fix: Provide explicit terminal/tool output to prove you did the work."
+                )
+            else:
+                print(f"       ✅ {name} — Forensic Evidence validated ({len(evidence_text)} bytes).")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -245,6 +285,7 @@ def main() -> None:
     check_task_md(session_dir)
     check_artifact_inventory(session_dir)
     check_artifact_sections(session_dir)
+    check_forensic_evidence(session_dir)
 
     print(f"\n{'='*60}")
 

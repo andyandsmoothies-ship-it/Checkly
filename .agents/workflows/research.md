@@ -20,8 +20,9 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Vector | Execution Contract |
 |---|---|
+| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
-| **Discovery** | Query `context7` or web to gather modern patterns. |
+| **Discovery** | IF (tech is very new/rare) THEN query Context7 MCP to save hallucination. ELSE rely on model baseline to save API credits. |
 | **E2E Map** | MANDATORY: Map Upstream Triggers + Downstream Effects. Identify Status Quo friction. Map exact system Context Handoff points. If touching API/DTO/DB, `grep_search` BOTH `lib/` and `server/` — never treat either side as a black box. |
 
 > **@@SCAN**: (1) Skills loaded/Patterns discovered? (2) Full E2E Scope mapped across BOTH lib/ and server/? (3) Friction points identified?
@@ -50,6 +51,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 ## Handoff Block
 - **Verdict**: Viable / Needs Redesign / Reject
 - **PoC Scope**: [Define PoC boundary if highly risky]
+- **Downsides & Risks**: [Explicitly list UX degradation, edge cases, maintenance burden]
 - **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
 - **Recommended Next**: `shaping` | `/analyze-epic` | `/analyze-feature`
 - **Persistent Path**: `.agents/tmp/research/research_[topic].md`

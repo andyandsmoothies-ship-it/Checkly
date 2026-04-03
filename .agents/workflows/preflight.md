@@ -16,6 +16,7 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 | Vector | Execution Contract |
 |---|---|
 | **Git Diff** | Execute `git diff --name-only` -> identify active modified files. |
+| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
 | **Rule Load** | Parse dynamically loaded `GEMINI.md` Context Cascade for project gotchas. |
 
 ## Phase 2: Dynamic Classification
