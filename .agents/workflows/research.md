@@ -43,22 +43,23 @@ description: Architect's Strategic Research Workflow for System Architecture.
 |---|---|
 | **Artifact Gen** | Create `research_[topic].md` (IsArtifact: True). |
 | **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal `cp` command. |
-| **Payload Schema**| E2E Workflow Map + Comparative Decision Matrix. MUST end with strict `Handoff Block`. |
-
-### Handoff Block Template (MANDATORY at EOF)
-```markdown
----
-## Handoff Block
-- **Verdict**: Viable / Needs Redesign / Reject
-- **PoC Scope**: [Define PoC boundary if highly risky]
-- **Downsides & Risks**: [Explicitly list UX degradation, edge cases, maintenance burden]
-- **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
-- **Recommended Next**: `shaping` | `/analyze-epic` | `/analyze-feature`
-- **Persistent Path**: `.agents/tmp/research/research_[topic].md`
-- **Blind Spots**: [3 explicit flaws]
-- **Conflicts**: [Explicit constraints broken]
-```
-
+### Final Generation Mandate (Suffix)
+> [!IMPORTANT]
+> **Payload Schema:** Your generated `research_[topic].md` MUST INCLUDE: an `E2E Workflow Map`, a `Comparative Decision Matrix`, and `## Forensic Evidence` (proof of executed commands).
+> 
+> **Handoff Block Template** (Must be appended at the absolute EOF):
+> ```markdown
+> ---
+> ## Handoff Block
+> - **Verdict**: Viable / Needs Redesign / Reject
+> - **PoC Scope**: [Define PoC boundary if highly risky]
+> - **Downsides & Risks**: [Explicitly list UX degradation, maintenance burden]
+> - **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
+> - **Recommended Next**: `shaping` | `/analyze-epic` | `/analyze-feature`
+> - **Persistent Path**: `.agents/tmp/research/research_[topic].md`
+> - **Blind Spots**: [3 explicit flaws]
+> - **Conflicts**: [Explicit constraints broken]
+> ```
 > [!IMPORTANT]
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`

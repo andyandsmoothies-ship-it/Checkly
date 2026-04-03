@@ -118,12 +118,14 @@ Review from 4 angles & state findings:
 | **Show** | Green TDD, Moderate Scope | Write FULL `walkthrough.md` + `executed_tests.md` -> Notify Ready. |
 | **Ask** | Arch change, Security, Migration | Notify user BEFORE action. List numbered scenarios -> Wait go-ahead. |
 
-### Artifact Payload: `walkthrough_[topic].md`
-- **Decision Log**: Table showing proposed vs implemented/rejected.
-- **Gotcha Protocol**: Evaluate if changes obsolete a `GEMINI.override.md` rule. IF Yes -> Propose table row edit. IF No -> State "No existing gotchas obsolete."
-- **Verification Map**: Steps/Expected/Radius for QA Agent.
-
+### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
+> **Walkthrough Schema:** Your `walkthrough_[topic].md` MUST INCLUDE: 
+> 1. `## Decision Log`: Table showing proposed vs implemented/rejected.
+> 2. `## Verification Handoff`: Steps/Expected/Radius for QA Agent.
+> 3. `## Forensic Evidence`: Proof of validation commands run (e.g., test outputs, flutter analyze).
+> 4. `## Gotcha Protocol`: Propose `GEMINI.override.md` edit if obsolete rules exist.
+>
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate**:

@@ -56,7 +56,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Skill Refresh** | IF (Root cause domain != Symptom domain) THEN Re-scan and load new Domain `SKILL.md`. |
-| **Artifact Gen** | Export `failure_report_[topic].md` (Root Cause + Explicit Trace + Proposed Fix). MUST include `## Forensic Evidence` logging all terminal tools executed. |
+| **Artifact Gen** | Export `failure_report_[topic].md`. |
 | **Constraint** | PROHIBITED: Making code changes directly in this workflow. |
 
 > **@@SCAN**: (1) File contains explicit execution trace? (2) Proposed fix strictly scoped to root cause?
@@ -68,7 +68,12 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | **Gotcha Protocol**| MANDATORY: Append `### Gotcha Addition Proposal` to report. IF (project-specific logic) THEN Propose bullet point for `GEMINI.override.md`. ELSE -> State "No new gotcha detected". |
 | **Routing** | Output message: *"Pass failure_report_[topic].md to Builder agent (@Forge) for /implement."* -> YIELD. |
 
+### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
+> **Payload Schema:** Your `failure_report_[topic].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `## Forensic Evidence` logging all terminal tools/commands executed.
+>
+> **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> 
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > - `Code 0`: *"Handoff complete."*

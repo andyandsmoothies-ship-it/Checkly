@@ -119,5 +119,22 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
   - **Problem:** `context.go('/route')` outside a ShellRoute renders without the bottom nav.
   - **Fix:** Capture `GoRouter.of(context)`, go to `/shell-root`, then microtask `push('/target')`.
 - **Gotcha 17: Offline-First Distributed Sync Requires Full-Stack Verification**
-  - **Problem:** When decoupling a mobile feature into asynchronous phases (e.g., Sync JSON, then Sync Media), treating the backend API as a black box leads to database corruption (e.g., syncing local device paths into a canonical Postgres database).
   - **Fix:** ALWAYS verify the backend API endpoints explicitly support the sequence inversion. Do not assume the backend handles out-of-order data associations automatically. Verify route signatures (segment vs query) and DTO payload mutability before approving an architectural plan.
+
+---
+
+## 4. AI Environment & Tooling Protocols
+
+### Monorepo Directory Activation (STRICT)
+- **Rule:** NEVER run terminal commands from the project root. 
+- **Backend Tasks:** Must run with `Cwd: server/`.
+- **Frontend Tasks:** Must run with `Cwd: lib/` (or wherever `pubspec.yaml` lives).
+
+### Anti-Hang CLI Protocol (STRICT)
+- **Rule:** Interactive commands freeze headless AI terminals permanently, burning credits.
+- **PROHIBITED:** `dotnet run`, `dotnet watch`, `flutter run`.
+- **MANDATORY:** Check code safely via `dotnet build --no-restore`, `flutter analyze`, or `flutter test`.
+
+### Zero-Bloat Dependencies (STRICT)
+- **Rule:** PROHIBITED from running `dotnet add package` or `flutter pub add` without explicit user approval.
+- **Action:** If solving logic problems, use existing utilities in `server/Common/` or `lib/_shared/`. Do not implicitly install third-party libraries.

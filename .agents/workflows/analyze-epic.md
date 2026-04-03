@@ -50,8 +50,8 @@ Workflow: /analyze-epic | Track: C
 | Vector | Execution Contract |
 |---|---|
 | **Skill Swap** | Load `dotnet-resilience` / concurrency skills. |
-| **Hostile Gate** | Execute **Hostile Interrogation** (verification-loop Part C). Must output 3 hard failure conditions. |
-| **Resolution** | Define mitigations for all 3 failures OR reject the Epic. |
+| **Virtual Readers**| MANDATORY: Execute **Virtual Reader Scoring**. Roast the architectural plan via 3 Personas: 1) DB Architect, 2) Security Auditor, 3) Junior Dev (maintenance burden). Score each out of 10. IF any score < 7 -> FAIL. |
+| **Resolution** | Define mitigations for every low score/flaw OR reject the Epic entirely. |
 
 > **@@SCAN**: (1) Hostile Interrogation run? (2) 3 Failure Scenarios? (3) Mitigations concrete?
 
@@ -60,8 +60,6 @@ Workflow: /analyze-epic | Track: C
 | Process | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `analysis_epic_[topic].md`. |
-| **11-Point Payload**| `1. Exec Summary`, `2. Decision Matrix (Pros/Cons/Blast Radius per option)`, `3. Risk Assessment (per decision)`, `4. Sys Arch Flow (Mermaid)`, `5. DB Migrations`, `6. API Contracts`, `7. Blast Radius/Rollback Plan`, `8. Red Team Adversarial Log`, `9. Security/RLS`, `10. Observability Hooks`, `11. EDD Expectations`. |
-
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
 ## Phase 4: Slicing & Dispatch Loop
@@ -79,7 +77,10 @@ Workflow: /analyze-epic | Track: C
 - **Track B (Logic/State/Mutation):** `/analyze-feature` -> `/atdd` -> `/implement`
 - **Mandate:** *"DO NOT dispatch Slice N+1 until Slice N is verified GREEN."*
 
+### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
+> **Payload Schema:** Your generated `analysis_epic_[topic].md` MUST INCLUDE: `1. Exec Summary`, `2. Decision Matrix`, `3. Risk Assessment`, `4. Sys Arch Flow (Mermaid)`, `5. DB Migrations`, `6. API Contracts`, `7. Blast Radius/Rollback Plan`, `8. Red Team Adversarial Log`, `9. Security/RLS`, `10. Observability Hooks`, `11. EDD Expectations`, and `12. ## Forensic Evidence` (terminal log proof).
+>
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate**:

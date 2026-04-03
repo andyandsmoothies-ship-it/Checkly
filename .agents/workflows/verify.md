@@ -29,7 +29,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 | Interrogation Vector | Execution Contract |
 |---|---|
-| **Hostile Gate** | Execute **Hostile Interrogation** (Part C of `verification-loop` skill). Must answer 3 failure questions. |
+| **Hostile Gate** | MANDATORY: Execute **Virtual Reader Scoring**. Roast the code via 3 Personas: 1) DB Architect (N+1, ops), 2) Security Auditor (IDOR, payloads), 3) Junior Dev (Coupling, unreadable logic). Score each out of 10. IF any score < 7 -> trigger `/diagnose`. |
 | **Drift OOM Scan**| IF (Flutter/Drift `*_queries.dart` / `*_manager.dart`) THEN SCAN for `.get()`. MUST possess limit OR aggregate OR explicit safety comment. IF missing -> FAIL (OOM violation). |
 | **Efficiency Eval** | MANDATORY: Evaluate N+1 queries, memory leaks, Big-O complexity. PROHIBITED: Declaring SUCCESS simply because tests pass if UX degrades. |
 
