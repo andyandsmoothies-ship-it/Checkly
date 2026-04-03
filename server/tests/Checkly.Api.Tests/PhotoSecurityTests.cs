@@ -96,6 +96,9 @@ public class PhotoSecurityTests : IClassFixture<TestWebApplicationFactory>
         var response = await authClient.PostAsync($"/api/photos/upload/{subId}", content);
 
         // Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        // P0.6 Fix: Magic byte check now fires BEFORE extension check.
+        // Zero-byte payload fails content validation → 415 UnsupportedMediaType.
+        // 415 is semantically more precise than 400 for a content-type mismatch.
+        Assert.Equal(HttpStatusCode.UnsupportedMediaType, response.StatusCode);
     }
 }

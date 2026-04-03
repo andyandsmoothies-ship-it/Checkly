@@ -1,0 +1,51 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithPhpWebshellRenamedAsJpg_ReturnsUnsupportedMediaType [7 s]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: UnsupportedMediaType
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithPhpWebshellRenamedAsJpg_ReturnsUnsupportedMediaType() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Security\MagicByteTests.cs:line 99
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithNullBytesHeader_ReturnsUnsupportedMediaType [158 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: UnsupportedMediaType
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithNullBytesHeader_ReturnsUnsupportedMediaType() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Security\MagicByteTests.cs:line 203
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithExeRenamedAsJpg_ReturnsUnsupportedMediaType [134 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: UnsupportedMediaType
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithExeRenamedAsJpg_ReturnsUnsupportedMediaType() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Security\MagicByteTests.cs:line 84
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithExeContentTypeSpoofedAsJpeg_ReturnsUnsupportedMediaType [152 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: UnsupportedMediaType
+Actual:   BadRequest
+  Stack Trace:
+     at Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithExeContentTypeSpoofedAsJpeg_ReturnsUnsupportedMediaType() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Security\MagicByteTests.cs:line 114
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithTruncatedFile_ReturnsUnsupportedMediaType [133 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: UnsupportedMediaType
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithTruncatedFile_ReturnsUnsupportedMediaType() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Security\MagicByteTests.cs:line 188
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     5, Passed:     5, Skipped:     0, Total:    10, Duration: 8 s - Checkly.Api.Tests.dll (net10.0)

@@ -1,0 +1,16 @@
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:06.52]     Checkly.Api.Tests.PhotoSecurityTests.UploadPhoto_WithExecutableExtension_ReturnsBadRequest [FAIL]
+  Failed Checkly.Api.Tests.PhotoSecurityTests.UploadPhoto_WithExecutableExtension_ReturnsBadRequest [216 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   UnsupportedMediaType
+  Stack Trace:
+     at Checkly.Api.Tests.PhotoSecurityTests.UploadPhoto_WithExecutableExtension_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\PhotoSecurityTests.cs:line 99
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:   177, Skipped:     0, Total:   178, Duration: 11 s - Checkly.Api.Tests.dll (net10.0)

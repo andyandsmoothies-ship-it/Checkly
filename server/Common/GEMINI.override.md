@@ -29,3 +29,10 @@
     ```
   - **Files:** `ListTemplates.cs`, `ListSubmissions.cs`, `ListStores.cs`, `ListActionPlans.cs` — all patched 2026-04-03.
 
+- **Gotcha 30: IFormFile.OpenReadStream() Is Non-Seekable — Cannot Rewind**
+  - **Problem:** After reading bytes from `file.OpenReadStream()`, calling `stream.Position = 0` throws `NotSupportedException`. The ASP.NET Core multipart stream is forward-only.
+  - **Fix:** Use two separate `file.OpenReadStream()` calls: one for the header bytes inspection, one for `CopyToAsync` (or just call `file.CopyToAsync()` directly after the header read). `IFormFile` supports multiple stream opens.
+
+- **Gotcha 31: Changing Guard Ordering Cascades to Legacy Test Status Codes**
+  - **Problem:** When the magic byte check was moved BEFORE the extension check, the legacy test `UploadPhoto_WithExecutableExtension_ReturnsBadRequest` broke because null-byte payloads now hit the magic check first and return 415 instead of 400.
+  - **Fix:** Apply the Strict TDD Legacy clause — update the legacy test assertion to match the new correct status code. Always recheck `PhotoSecurityTests.cs` after any guard reordering in `UploadPhoto.cs`.
