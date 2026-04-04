@@ -31,6 +31,7 @@
 | **Layout Locking** | Root sections commit to flat criteria OR sub-sections, never both | `_SectionEditor` |
 | **Scored Choices Input** | Radio-tile selector for scored choice criteria (e.g., Poor=0/Good=5/Excellent=10) | `_ScaleInput` |
 | **Input Type Badge** | Colored badge on collapsed criterion row showing input type (YES·NO, 0·1·2, LOW→HIGH, 1 OF N, N OF N) | `_CriteriaEditor.build()` |
+| **Empty States** | Standardized fallback for empty datasets (icons, title, subtitle). Never use raw `Text`. | `ChecklyEmptyState` widget |
 
 ---
 

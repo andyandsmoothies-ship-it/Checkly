@@ -219,20 +219,21 @@ The app is designed for field auditors with unreliable connectivity. Users must 
 
 | Layer | Technology | What It Stores | Cleared on Logout? |
 |:------|:-----------|:---------------|:-------------------|
-| **Outbox** | IndexedDB (Dexie) | Queued submissions & photos | ❌ No — survives logout |
-| **Drafts** | localStorage | In-progress audit answers, template drafts | ❌ No |
-| **Query Cache** | localStorage (`checkly-query-cache`) | Cached API responses (templates, stores, submissions) | ✅ Yes |
-| **Auth Session** | localStorage | Cached role/status for instant remount | ✅ Yes |
+| **Outbox** | SQLite (Drift) | Queued submissions, action plan evidence, photos | ❌ No — survives logout |
+| **Drafts** | SQLite (Drift) | In-progress audit answers, template drafts | ❌ No |
+| **Query Cache** | Drift / Memory | Cached API responses (templates, stores, submissions) | ✅ Yes |
+| **Auth Session** | SecureStorage | Cached role/status & JWT for instant remount | ✅ Yes |
 
 ### What Works Offline
 
 | Feature | How |
 |:--------|:----|
-| App loads | Service Worker (Workbox) caches all JS/CSS/HTML bundles |
-| Start a new audit | Templates + stores cached with `gcTime: Infinity` |
-| Fill in answers | Draft saved to localStorage via `useAuditDraft` |
-| Submit audit | Queued to Dexie outbox with `_queued` flag |
-| Take photos | Saved to Dexie `photos` table |
+| App loads | Native Flutter app initialization |
+| Start a new audit | Templates + stores cached via Drift sync |
+| Fill in answers | Draft saved locally via `AuditManager` |
+| Submit audit | Queued to Drift outbox table |
+| Submit evidence | Queued to `PendingActionPlanUpdates` outbox |
+| Take photos | Saved to local filesystem + DB outbox references |
 
 ### What Requires Internet
 
