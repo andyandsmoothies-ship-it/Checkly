@@ -15,6 +15,7 @@ Before ANY workflow response involving analysis, design, or implementation:
 - [ ] > 1-minute task? → Create `task_boundary`
 - [ ] > 2 paragraphs or requires design? → Create artifact
 - [ ] **Skill Inventory**: Load modular skills from `.agents/skills/`.
+- [ ] **Proactive QA Triggers**: When discussing feature completion, proactively remind the user if they should run `[/ux-static-audit]` (for frontend text/UI changes) or hostile testing via the `red_team_playbook.md` (for backend/auth changes).
 
 ## Skill Inventory Protocol (STRICT)
 1. **Discovery**: Match task to `.agents/skills/`.
