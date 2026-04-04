@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
@@ -87,7 +88,7 @@ class AuditorDashboardVariant extends StatelessWidget {
                   label: 'Action Plans',
                   subtitle: 'ASSIGNED TO YOU',
                   value: '${state.openActionPlans}',
-                  color: const Color(0xFFFEEAD1),
+                  color: AppTheme.warningContainer,
                   iconColor: AppTheme.warning,
                   onTap: () => context.go('/plans?filter=open'),
                 ),
@@ -160,8 +161,8 @@ class ManagerDashboardVariant extends StatelessWidget {
             title:
                 '${state.overdueActionPlans} Overdue Action Plan${state.overdueActionPlans > 1 ? 's' : ''}',
             subtitle: '$contextLabel · Immediate attention needed',
-            color: Colors.red.withValues(alpha: 0.10),
-            iconColor: Colors.red,
+            color: AppColors.destructive.withValues(alpha: 0.10),
+            iconColor: AppColors.destructive,
             onTap: () => context.go('/plans?sort=urgent'),
           )
         else
@@ -185,7 +186,7 @@ class ManagerDashboardVariant extends StatelessWidget {
                 label: 'Action Plans',
                 subtitle: isArea ? 'IN YOUR AREA' : 'AT THIS STORE',
                 value: '${state.openActionPlans}',
-                color: const Color(0xFFFEEAD1),
+                color: AppTheme.warningContainer,
                 iconColor: AppTheme.warning,
                 onTap: () => context.go('/plans?filter=open'),
               ),
@@ -254,7 +255,7 @@ class AdminDashboardVariant extends StatelessWidget {
               Text(
                 'Mission Control',
                 style: AppFonts.serifStyle(
-                  fontSize: 26,
+                  fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -262,7 +263,7 @@ class AdminDashboardVariant extends StatelessWidget {
               Text(
                 'PLATFORM OVERVIEW',
                 style: AppFonts.displayStyle(
-                  fontSize: 11,
+                  fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
                   fontWeight: FontWeight.w500,
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   letterSpacing: 1.5,
@@ -282,7 +283,7 @@ class AdminDashboardVariant extends StatelessWidget {
                   label: 'Action Plans',
                   subtitle: 'ACROSS PLATFORM',
                   value: '${state.openActionPlans}',
-                  color: const Color(0xFFFEEAD1),
+                  color: AppTheme.warningContainer,
                   iconColor: AppTheme.warning,
                   onTap: () => context.go('/plans?filter=open'),
                 ),
@@ -310,8 +311,8 @@ class AdminDashboardVariant extends StatelessWidget {
                   label: 'Overdue',
                   subtitle: 'ACROSS PLATFORM',
                   value: '${state.overdueActionPlans}',
-                  color: Colors.red.withValues(alpha: 0.08),
-                  iconColor: Colors.red,
+                  color: AppColors.destructive.withValues(alpha: 0.08),
+                  iconColor: AppColors.destructive,
                   onTap: () => context.go('/plans?sort=urgent'),
                 ),
               ),
@@ -512,7 +513,7 @@ class _DashboardStatCard extends StatelessWidget {
               Text(
                 value,
                 style: AppFonts.serifStyle(
-                  fontSize: 32,
+                  fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize ?? 28,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -520,7 +521,7 @@ class _DashboardStatCard extends StatelessWidget {
               Text(
                 label.toUpperCase(),
                 style: AppFonts.displayStyle(
-                  fontSize: 10,
+                  fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   letterSpacing: 1,
@@ -531,7 +532,7 @@ class _DashboardStatCard extends StatelessWidget {
                 Text(
                   subtitle!,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontSize: 9,
+                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
                     fontWeight: FontWeight.w500,
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35),
                     letterSpacing: 0.5,
@@ -643,7 +644,7 @@ class _SubmissionRow extends StatelessWidget {
     final theme = Theme.of(ctx);
     final score = submission.totalScore;
     final scoreColor = score != null
-        ? (score >= 80 ? AppTheme.success : Colors.red)
+        ? (score >= 80 ? AppTheme.success : AppColors.destructive)
         : theme.colorScheme.onSurfaceVariant;
 
     return Card(
@@ -682,7 +683,10 @@ class _SubmissionRow extends StatelessWidget {
               if (score != null)
                 Text(
                   '${score.toStringAsFixed(0)}%',
-                  style: AppFonts.serifStyle(fontSize: 22, color: scoreColor),
+                  style: AppFonts.serifStyle(
+                    fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
+                    color: scoreColor,
+                  ),
                 )
               else
                 Container(

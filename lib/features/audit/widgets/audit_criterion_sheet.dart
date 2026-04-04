@@ -209,9 +209,9 @@ Future<void> showAuditCriterionSheet(
                               answer?.value == 'conform'
                                   ? 'Standard Verified'
                                   : 'Confirm Correct',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                fontSize: 15,
+                                fontSize: Theme.of(ctx).textTheme.bodyLarge?.fontSize,
                                 letterSpacing: 0.3,
                               ),
                             ),

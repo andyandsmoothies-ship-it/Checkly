@@ -20,6 +20,7 @@ class AppTheme {
   static const deepForest = AppColors.deepForest;
   static const success = AppColors.success;
   static const warning = AppColors.warning;
+  static const warningContainer = AppColors.warningContainer;
   static const info = AppColors.info;
 
   // ---------- Light Theme ----------

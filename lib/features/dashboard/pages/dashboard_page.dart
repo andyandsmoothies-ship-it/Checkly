@@ -52,7 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Theme.of(context).colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -146,7 +146,10 @@ class _Greeting extends StatelessWidget {
       children: [
         Text(
           greeting,
-          style: AppFonts.serifStyle(fontSize: 22, color: Colors.black87),
+          style: AppFonts.serifStyle(
+              fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
         ),
       ],
     );

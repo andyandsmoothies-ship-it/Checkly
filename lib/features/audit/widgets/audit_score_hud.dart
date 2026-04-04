@@ -147,7 +147,7 @@ class AuditScoreChip extends StatelessWidget {
     return Chip(
       label: Text(
         score != null ? '${score!.toStringAsFixed(1)}%' : 'Survey',
-        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+        style: TextStyle(fontWeight: FontWeight.w700, fontSize: Theme.of(context).textTheme.labelLarge?.fontSize),
       ),
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       visualDensity: VisualDensity.compact,

@@ -197,7 +197,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
                                   '${i + 1}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
-                                    fontSize: 13,
+                                    fontSize: theme.textTheme.labelSmall?.fontSize,
                                     color: isCurrent
                                         ? theme.colorScheme.primary
                                         : theme.colorScheme.onSurfaceVariant,
@@ -524,9 +524,9 @@ class _AuditFormPageState extends State<AuditFormPage> {
                         size: 16,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Saved',
-                        style: TextStyle(fontSize: 11),
+                        style: TextStyle(fontSize: Theme.of(context).textTheme.labelSmall?.fontSize),
                       ),
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,

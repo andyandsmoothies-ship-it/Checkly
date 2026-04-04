@@ -110,7 +110,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                       Text(
                         'Trailing 6-Month Avg Audit Score',
                         style: AppFonts.displayStyle(
-                          fontSize: 13,
+                          fontSize: theme.textTheme.labelSmall?.fontSize,
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
@@ -119,7 +119,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                       Text(
                         '${_avgScore.toStringAsFixed(1)}%',
                         style: AppFonts.serifStyle(
-                          fontSize: 40,
+                          fontSize: theme.textTheme.displaySmall?.fontSize ?? 40,
                           fontWeight: FontWeight.w700,
                           color: scoreColor(_avgScore, Theme.of(context)),
                         ),
@@ -151,7 +151,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                 Text(
                   'RECENT AUDITS',
                   style: AppFonts.displayStyle(
-                    fontSize: 11,
+                    fontSize: theme.textTheme.labelSmall?.fontSize,
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                     letterSpacing: 3,
@@ -174,7 +174,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                       child: Text(
                         'No audits found for this store.',
                         style: AppFonts.displayStyle(
-                          fontSize: 14,
+                          fontSize: theme.textTheme.bodyMedium?.fontSize,
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
                       ),
@@ -216,7 +216,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                           child: Text(
                             '${score.toStringAsFixed(0)}%',
                             style: AppFonts.serifStyle(
-                              fontSize: 13,
+                              fontSize: theme.textTheme.labelSmall?.fontSize ?? 13,
                               fontWeight: FontWeight.w700,
                               color: scoreColor(score, Theme.of(context)),
                             ),
@@ -225,7 +225,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                         title: Text(
                           s.templateTitle ?? 'Audit',
                           style: AppFonts.displayStyle(
-                            fontSize: 14,
+                            fontSize: theme.textTheme.bodyMedium?.fontSize,
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -233,7 +233,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                         subtitle: Text(
                           '${s.auditorName ?? 'Unknown'} • ${_formatDate(s.createdAt)}',
                           style: AppFonts.displayStyle(
-                            fontSize: 12,
+                            fontSize: theme.textTheme.bodySmall?.fontSize,
                             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ),
@@ -280,7 +280,7 @@ class _MetricChip extends StatelessWidget {
         Text(
           '$value $label',
           style: AppFonts.displayStyle(
-            fontSize: 13,
+            fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),

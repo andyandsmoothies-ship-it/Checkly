@@ -64,7 +64,6 @@ class AuditSectionCard extends StatelessWidget {
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
-                      fontSize: 9,
                     ),
                   ),
                 ),

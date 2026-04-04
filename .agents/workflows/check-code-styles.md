@@ -26,40 +26,12 @@ description: Execute a deterministic Python sweep on the Flutter UI codebase to 
 - [ ] Map all violations (e.g., `Colors.red` used instead of `AppTheme.error`) into a prioritized checklist.
 - [ ] Correlate with the `frontend-accessibility` rules to define exactly what the correct replacement code should be.
 
-## Phase 4: Reporting
-- [ ] Generate an artifact named `a11y_compliance_report.md`.
-- [ ] Format the report into a remediation punch list, explicitly stating the file names, line numbers, current bad practice, and the required Design System token replacement.
-- [ ] Present this report to the user.
-
 ## Phase 5: Guided Handoff (MANDATORY)
 > [!IMPORTANT]
-> MANDATORY: After presenting the report, you MUST output the following block verbatim so the user knows their exact next steps:
+> After presenting the report, output this block verbatim:
 
----
-**✅ Chunk [N] Scan Complete. Here is what to do next:**
-
-**Step 1 — Fix the code (Builder Agent)**
-Send the `a11y_compliance_report.md` to the Builder Agent with this instruction:
-> *"Fix all violations in this report. After fixing, re-run `python .agents\scripts\scrape_a11y.py --dir [CHUNK_DIRECTORY] --out .agents\tmp\a11y_chunk_v2.json` from the project root and confirm the output shows `Found 0 violations`."*
-
-**Step 2 — Verify the fix (you run this)**
-After the Builder says it is done, open your terminal at `C:\Users\HP\Documents\GitHub\Checkly` and run:
-```
-python .agents\scripts\scrape_a11y.py --dir [CHUNK_DIRECTORY] --out .agents\tmp\a11y_chunk_v2.json
-```
-✅ Success = `Found 0 violations`
-❌ Failure = Paste the new output back to the Builder to re-fix.
-
-**Step 3 — Compile check (you run this)**
-```
-flutter analyze lib\features\[CHUNK_DIRECTORY]
-```
-✅ Success = `No issues found!`
-
-**Step 4 — Visual check (optional but recommended)**
-Hot-reload your app on the emulator, screenshot the fixed screens, and run `/check-visuals` to confirm the colors look correct in both Light and Dark mode.
-
-**Step 5 — Continue to next chunk?**
-Reply *"yes, continue to Chunk [N+1]"* to scan the next module.
-
----
+**✅ Chunk [N] scan done. Next steps:**
+1. **Fix** → Send `a11y_compliance_report.md` to the Builder Agent (`/implement`).
+2. **Verify** → After the fix, run: `python .agents\scripts\scrape_a11y.py --dir [CHUNK_DIR] --out .agents\tmp\a11y_v2.json` → expect `Found 0 violations`.
+3. **Visual check** → Screenshot changed screens → run `/check-visuals`.
+4. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.

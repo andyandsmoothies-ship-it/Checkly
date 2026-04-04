@@ -158,9 +158,9 @@ class AuditStatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 10,
+          fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.5,
         ),
@@ -322,7 +322,7 @@ class AuditCcpRiskButton extends StatelessWidget {
       selectedColor: activeColor,
       backgroundColor: theme.colorScheme.surfaceContainerHighest,
       labelStyle: TextStyle(
-        fontSize: 12,
+        fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
         fontWeight: FontWeight.w900,
         letterSpacing: 1.2,
         color: active ? Colors.white : theme.colorScheme.onSurfaceVariant,

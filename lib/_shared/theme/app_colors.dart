@@ -14,6 +14,7 @@ class AppColors {
   static const destructive = Color(0xFFEF4444);
   static const success = Color(0xFF16A34A);
   static const warning = Color(0xFFF59E0B);
+  static const warningContainer = Color(0xFFFEEAD1); // Warm amber tint for stat card bg
   static const info = Color(0xFF0EA5E9);
 
   // ── Apothecary Palette ──

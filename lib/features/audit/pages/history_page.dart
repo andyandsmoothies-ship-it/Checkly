@@ -172,7 +172,7 @@ class _HistoryPageState extends State<HistoryPage> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Theme.of(context).colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -475,7 +475,7 @@ class _StoreGroup extends StatelessWidget {
             Text(
               storeName.toUpperCase(),
               style: AppFonts.displayStyle(
-                fontSize: 11,
+                fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 letterSpacing: 3,
@@ -580,7 +580,10 @@ class _AuditCard extends StatelessWidget {
                         submission.totalScore != null
                             ? submission.totalScore!.toStringAsFixed(0)
                             : '—',
-                        style: AppFonts.serifStyle(fontSize: 16, color: color),
+                        style: AppFonts.serifStyle(
+                            fontSize: Theme.of(context).textTheme.titleMedium?.fontSize ?? 16,
+                            color: color,
+                          ),
                       ),
               ),
             ),
@@ -631,7 +634,7 @@ class _AuditCard extends StatelessWidget {
                 child: Text(
                   'Start',
                   style: AppFonts.displayStyle(
-                    fontSize: 12,
+                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

@@ -132,8 +132,8 @@ class _AuditCard extends StatelessWidget {
               ? AppTheme.success
               : score >= 50
               ? AppTheme.warning
-              : Colors.red)
-        : Colors.grey;
+              : AppTheme.warning.withValues(alpha: 0.7))
+        : theme.colorScheme.onSurfaceVariant;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 6),

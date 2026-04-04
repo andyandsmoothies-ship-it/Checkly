@@ -363,7 +363,7 @@ class AuditScaleInput extends StatelessWidget {
                     Text(
                       '${points.toStringAsFixed(0)} pts',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: theme.textTheme.bodySmall?.fontSize,
                         fontWeight: FontWeight.w600,
                         color: isSelected
                             ? theme.colorScheme.primary

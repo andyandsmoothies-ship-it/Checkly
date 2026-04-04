@@ -26,4 +26,13 @@ description: Execute a screenshot-based visual and aesthetic audit using AI visi
 ## Phase 4: Reporting & Red Teaming
 - [ ] Generate a markdown artifact `visual_qa_report.md`.
 - [ ] For every identified flaw, map it directly back to the exact code file requiring editing.
-- [ ] Hand the report back to the user to either approve the design changes or hand off to the Builder.
+- [ ] Hand the report back to the user.
+
+## Phase 5: Guided Handoff (MANDATORY)
+> [!IMPORTANT]
+> After presenting the report, output this block verbatim:
+
+**✅ Chunk [N] visual review done. Next steps:**
+1. **Fix** → Send `visual_qa_report.md` to the Builder Agent (`/implement`).
+2. **Re-check** → After the fix, hot-reload the emulator, screenshot the same screens, and run `/check-visuals` again.
+3. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.

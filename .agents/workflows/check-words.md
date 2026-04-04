@@ -25,4 +25,12 @@ This workflow executes a deterministic, zero-hallucination UX audit on the Flutt
 ## Phase 4: Reporting
 1. Generate an artifact named `ux_copywriting_report.md`.
 2. Format the report grouping violations by Dart file, showcasing a clear tabular comparison between the current string and the recommended rewrite.
-3. Mark the workflow as complete and present the report to the user.
+3. Present the report to the user.
+
+## Phase 5: Guided Handoff (MANDATORY)
+> [!IMPORTANT]
+> After presenting the report, output this block verbatim:
+
+**✅ Chunk [N] tone audit done. Next steps:**
+1. **Fix** → Send `ux_copywriting_report.md` to the Builder Agent (`/implement`).
+2. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.

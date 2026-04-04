@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../auth/manager/auth_manager.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/theme/theme_manager.dart';
 import '../../../_shared/theme/app_fonts.dart';
 
@@ -186,7 +187,7 @@ class _ProfileHeader extends StatelessWidget {
                 Text(
                   email,
                   style: AppFonts.serifStyle(
-                    fontSize: 15,
+                    fontSize: theme.textTheme.titleSmall?.fontSize ?? 14,
                     color: theme.colorScheme.onSurface,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -219,10 +220,10 @@ class _ProfileHeader extends StatelessWidget {
   }
 
   Color _roleColor(String role, ThemeData theme) => switch (role) {
-    'admin' => Colors.red,
-    'auditor' => Colors.blue,
-    'store_manager' => Colors.green,
-    'area_manager' => Colors.amber.shade700,
+    'admin' => AppColors.destructive,
+    'auditor' => theme.colorScheme.primary,
+    'store_manager' => AppColors.success,
+    'area_manager' => AppColors.warning,
     _ => theme.colorScheme.primary,
   };
 
@@ -305,7 +306,7 @@ class _MenuTile extends StatelessWidget {
       title: Text(data.label, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(
         data.description,
-        style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
+        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
       ),
       trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
       onTap: () {

@@ -156,7 +156,7 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                         title: Text(
                           store.name,
                           style: AppFonts.displayStyle(
-                            fontSize: 14,
+                            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -167,7 +167,7 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                             if (store.address != null) store.address,
                           ].join(' • '),
                           style: AppFonts.displayStyle(
-                            fontSize: 12,
+                            fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                           maxLines: 1,
