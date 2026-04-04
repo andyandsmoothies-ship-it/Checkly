@@ -29,4 +29,37 @@ description: Execute a deterministic Python sweep on the Flutter UI codebase to 
 ## Phase 4: Reporting
 - [ ] Generate an artifact named `a11y_compliance_report.md`.
 - [ ] Format the report into a remediation punch list, explicitly stating the file names, line numbers, current bad practice, and the required Design System token replacement.
-- [ ] Present this report to the user and mark the workflow complete.
+- [ ] Present this report to the user.
+
+## Phase 5: Guided Handoff (MANDATORY)
+> [!IMPORTANT]
+> MANDATORY: After presenting the report, you MUST output the following block verbatim so the user knows their exact next steps:
+
+---
+**✅ Chunk [N] Scan Complete. Here is what to do next:**
+
+**Step 1 — Fix the code (Builder Agent)**
+Send the `a11y_compliance_report.md` to the Builder Agent with this instruction:
+> *"Fix all violations in this report. After fixing, re-run `python .agents\scripts\scrape_a11y.py --dir [CHUNK_DIRECTORY] --out .agents\tmp\a11y_chunk_v2.json` from the project root and confirm the output shows `Found 0 violations`."*
+
+**Step 2 — Verify the fix (you run this)**
+After the Builder says it is done, open your terminal at `C:\Users\HP\Documents\GitHub\Checkly` and run:
+```
+python .agents\scripts\scrape_a11y.py --dir [CHUNK_DIRECTORY] --out .agents\tmp\a11y_chunk_v2.json
+```
+✅ Success = `Found 0 violations`
+❌ Failure = Paste the new output back to the Builder to re-fix.
+
+**Step 3 — Compile check (you run this)**
+```
+flutter analyze lib\features\[CHUNK_DIRECTORY]
+```
+✅ Success = `No issues found!`
+
+**Step 4 — Visual check (optional but recommended)**
+Hot-reload your app on the emulator, screenshot the fixed screens, and run `/check-visuals` to confirm the colors look correct in both Light and Dark mode.
+
+**Step 5 — Continue to next chunk?**
+Reply *"yes, continue to Chunk [N+1]"* to scan the next module.
+
+---
