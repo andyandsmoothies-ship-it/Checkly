@@ -12,15 +12,16 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 > [!NOTE]
 > Systematic UX review against Nielsen's 10 Heuristics. Role: **Senior UX Evaluator**.
 
-## Phase 1: Preparation & Scope
+## Phase 1: Discovery, Chunking & Scope
 
 | Step | Execution Contract |
 |---|---|
 | **Task Tracking** | MANDATORY: Create `task.md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | MANDATORY: Load `ux-heuristic-evaluation` skill. |
-| **Scope Extract**| Identify Target Screen(s), User Group (e.g. Admin), and Device Type. IF missing -> Request from User. |
+| **Auto-Chunking**| Ask the user for the main sitemap or `router.dart`. Divide the app into logical "Chunks" (e.g. Login Flow). Present the chunks and ask the user to confirm starting with Chunk 1. |
+| **Scope Extract**| Document the Target Screen(s) for the current chunk, User Group (e.g. Admin), and Device Type. |
 
-> **@@SCAN**: (1) Scope defined? (2) User/Device targeted? (3) Skill loaded?
+> **@@SCAN**: (1) App chunked? (2) User/Device targeted? (3) Skill loaded?
 
 ## Phase 2: Source Code Walkthrough
 
