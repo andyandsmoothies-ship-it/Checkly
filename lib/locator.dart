@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '_shared/services/api_client.dart';
 import '_shared/database/database_service.dart';
 import '_shared/database/dao/outbox_dao.dart';
+import '_shared/database/dao/action_plan_outbox_dao.dart';
 import '_shared/services/connectivity_service.dart';
 import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
@@ -40,6 +41,9 @@ void configureDependencies() {
   di.registerLazySingleton<OutboxDao>(
     () => OutboxDao(di<DatabaseService>().db),
   );
+  di.registerLazySingleton<ActionPlanOutboxDao>(
+    () => ActionPlanOutboxDao(di<DatabaseService>().db),
+  );
   di.registerLazySingleton<GpsService>(() => GpsService());
 
   // ---------- Auth (Slice 2) ----------
@@ -75,6 +79,8 @@ void configureDependencies() {
       outbox: OutboxAdapter(di<OutboxDao>()),
       auth: AuthCheckAdapter(di<AuthManager>()),
       outboxDao: di<OutboxDao>(),
+      actionPlanApi: ActionPlanApiAdapter(di<Dio>()),
+      actionPlanOutboxDao: di<ActionPlanOutboxDao>(),
     ),
   );
 
@@ -83,6 +89,8 @@ void configureDependencies() {
     () => ActionPlanManager(
       api: ActionPlanApiAdapter(di<Dio>()),
       userRole: UserRoleAdapter(di<AuthManager>()),
+      connectivity: di<ConnectivityService>(),
+      outboxDao: di<ActionPlanOutboxDao>(),
     ),
   );
 

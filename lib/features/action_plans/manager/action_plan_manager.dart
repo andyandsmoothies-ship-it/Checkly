@@ -1,7 +1,12 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:uuid/uuid.dart';
 
+import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/database_service.dart';
+import '../../../_shared/database/dao/action_plan_outbox_dao.dart';
+import '../../../_shared/services/connectivity_service.dart';
 import '../model/action_plan_dto.dart';
 
 // ============================================================
@@ -63,12 +68,18 @@ final _di = GetIt.instance;
 class ActionPlanManager extends ChangeNotifier {
   final ActionPlanApi _api;
   final UserRoleProvider _userRole;
+  final ConnectivityService _connectivity;
+  final ActionPlanOutboxDao _outboxDao;
 
   ActionPlanManager({
     required ActionPlanApi api,
     required UserRoleProvider userRole,
+    required ConnectivityService connectivity,
+    required ActionPlanOutboxDao outboxDao,
   }) : _api = api,
-       _userRole = userRole;
+       _userRole = userRole,
+       _connectivity = connectivity,
+       _outboxDao = outboxDao;
 
   // ---------- List state ----------
   final actionPlans = ValueNotifier<List<ActionPlanDto>>([]);
@@ -124,6 +135,11 @@ class ActionPlanManager extends ChangeNotifier {
   /// SM submits correction evidence → status changes to `pending_verify`.
   ///
   /// Guards: role must be `store_manager`, status must be `open`.
+  ///
+  /// **Offline-first (P1 UX Fix):** If the device is offline, the payload is
+  /// written to `PendingActionPlanUpdates` (SQLite queue) and the in-memory
+  /// cache is updated optimistically so the UI reflects the change immediately.
+  /// When connectivity is restored, `SyncEngine` drains the queue.
   Future<ActionPlanDto> submitEvidence(
     ActionPlanDto plan, {
     required String correctionPlan,
@@ -133,11 +149,61 @@ class ActionPlanManager extends ChangeNotifier {
     _assertRole(['store_manager'], 'submit evidence');
     _assertStatus(plan, 'open', 'pending_verify');
 
-    return _api.updateActionPlan(plan.id, {
+    if (!_connectivity.isOnline) {
+      // --- Offline path: queue and optimistic update ---
+      const uuid = Uuid();
+      await _outboxDao.enqueue(
+        PendingActionPlanUpdatesCompanion(
+          id: Value(uuid.v4()),
+          actionPlanId: Value(plan.id),
+          correctionPlan: Value(correctionPlan),
+          evidenceNote: Value(evidenceNote),
+          createdAt: Value(DateTime.now().toUtc()),
+        ),
+      );
+
+      // Build the optimistic DTO so the UI transitions instantly
+      final optimistic = ActionPlanDto(
+        id: plan.id,
+        status: 'pending_verify',
+        criteriaLabel: plan.criteriaLabel,
+        groupTitle: plan.groupTitle,
+        storeName: plan.storeName,
+        storeManagerName: plan.storeManagerName,
+        rootCause: plan.rootCause,
+        correctionPlan: correctionPlan,
+        evidencePhotoUrl: plan.evidencePhotoUrl,
+        evidenceNote: evidenceNote,
+        closedAt: plan.closedAt,
+        verifierName: plan.verifierName,
+        deadline: plan.deadline,
+        createdAt: plan.createdAt,
+        updatedAt: DateTime.now(),
+      );
+
+      // Patch in-memory list so the UI reflects the change without a DB reload
+      final updated = actionPlans.value.map(
+        (p) => p.id == plan.id ? optimistic : p,
+      ).toList();
+      actionPlans.value = updated;
+
+      return optimistic;
+    }
+
+    // --- Online path: direct API call (original behavior) ---
+    final result = await _api.updateActionPlan(plan.id, {
       'status': 'pending_verify',
       'correctionPlan': correctionPlan,
       'evidenceNote': evidenceNote,
     });
+
+    // Patch in-memory list with the server response
+    final updated = actionPlans.value.map(
+      (p) => p.id == plan.id ? result : p,
+    ).toList();
+    actionPlans.value = updated;
+
+    return result;
   }
 
   /// Auditor/Admin closes a plan after verifying evidence.

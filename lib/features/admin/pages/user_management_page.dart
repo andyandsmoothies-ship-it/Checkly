@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/warm_chip.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/services/store_api_service.dart';
 import '../services/admin_api_service.dart';
@@ -486,8 +487,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
         : _users.where((u) => u['role'] == _selectedRole).toList();
 
     if (filtered.isEmpty) {
-      return const Center(
-        child: Text('No users found', style: TextStyle(color: Colors.grey)),
+      return const ChecklyEmptyState(
+        icon: Icons.group_off,
+        title: 'No users found',
+        subtitle: 'Try adjusting your search or role filter.',
       );
     }
 

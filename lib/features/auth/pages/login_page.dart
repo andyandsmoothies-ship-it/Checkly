@@ -210,11 +210,44 @@ class _LoginPageState extends State<LoginPage> {
                           )
                         : const Text('Sign In'),
                   ),
+                  const SizedBox(height: 16),
+
+                  // ---------- Forgot Password ----------
+                  TextButton(
+                    key: const Key('forgotPasswordButton'),
+                    onPressed: _showForgotPasswordDialog,
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _showForgotPasswordDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(Icons.lock_reset_outlined),
+        title: const Text('Reset Your Password'),
+        content: const Text(
+          'Contact your IT administrator or system manager to reset your password.\n\n'
+          'For assistance, reach out via your company\'s internal helpdesk.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Got it'),
+          ),
+        ],
       ),
     );
   }

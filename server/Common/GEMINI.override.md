@@ -36,3 +36,7 @@
 - **Gotcha 31: Changing Guard Ordering Cascades to Legacy Test Status Codes**
   - **Problem:** When the magic byte check was moved BEFORE the extension check, the legacy test `UploadPhoto_WithExecutableExtension_ReturnsBadRequest` broke because null-byte payloads now hit the magic check first and return 415 instead of 400.
   - **Fix:** Apply the Strict TDD Legacy clause — update the legacy test assertion to match the new correct status code. Always recheck `PhotoSecurityTests.cs` after any guard reordering in `UploadPhoto.cs`.
+
+- **Gotcha 32: Drift DAO Test Fakes Must Use `implements`, Never `extends`**
+  - **Problem:** Subclassing a Drift DAO (e.g., `class FakeDao extends ActionPlanOutboxDao`) and passing `null as dynamic` to the `super()` for the `AppDatabase` parameter causes a `LateInitializationError: Local 'engine' has not been initialized` at `setUp` time. The non-nullable `AppDatabase _db` field receives `null`, and any field access triggers an NPE before any test body runs.
+  - **Fix:** Always use `implements` for DAO test doubles: `class FakeDao implements ActionPlanOutboxDao { ... }`. Implement every method directly — no parent constructor is called, no DB is needed.

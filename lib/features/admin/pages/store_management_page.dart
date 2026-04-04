@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../stores/model/store_dto.dart';
@@ -491,8 +492,10 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
       );
     }
     if (_stores.isEmpty) {
-      return const Center(
-        child: Text('No stores yet', style: TextStyle(color: Colors.grey)),
+      return const ChecklyEmptyState(
+        icon: Icons.storefront_outlined,
+        title: 'No stores yet',
+        subtitle: 'Tap + to create your first store.',
       );
     }
 

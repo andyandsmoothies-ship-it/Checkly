@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 import 'system_log_detail_page.dart';
 
 final _di = GetIt.instance;
@@ -262,8 +263,10 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
       );
     }
     if (_logs.isEmpty) {
-      return const Center(
-        child: Text('No logs found', style: TextStyle(color: Colors.grey)),
+      return const ChecklyEmptyState(
+        icon: Icons.receipt_long_outlined,
+        title: 'No logs found',
+        subtitle: 'Try adjusting your filters or date range.',
       );
     }
 

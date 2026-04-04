@@ -7381,6 +7381,493 @@ class PendingPhotosCompanion extends UpdateCompanion<PendingPhoto> {
   }
 }
 
+class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
+    with TableInfo<$PendingActionPlanUpdatesTable, PendingActionPlanUpdate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PendingActionPlanUpdatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actionPlanIdMeta = const VerificationMeta(
+    'actionPlanId',
+  );
+  @override
+  late final GeneratedColumn<String> actionPlanId = GeneratedColumn<String>(
+    'action_plan_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _correctionPlanMeta = const VerificationMeta(
+    'correctionPlan',
+  );
+  @override
+  late final GeneratedColumn<String> correctionPlan = GeneratedColumn<String>(
+    'correction_plan',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _evidenceNoteMeta = const VerificationMeta(
+    'evidenceNote',
+  );
+  @override
+  late final GeneratedColumn<String> evidenceNote = GeneratedColumn<String>(
+    'evidence_note',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _syncErrorMeta = const VerificationMeta(
+    'syncError',
+  );
+  @override
+  late final GeneratedColumn<String> syncError = GeneratedColumn<String>(
+    'sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    actionPlanId,
+    correctionPlan,
+    evidenceNote,
+    syncStatus,
+    syncError,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pending_action_plan_updates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PendingActionPlanUpdate> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('action_plan_id')) {
+      context.handle(
+        _actionPlanIdMeta,
+        actionPlanId.isAcceptableOrUnknown(
+          data['action_plan_id']!,
+          _actionPlanIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_actionPlanIdMeta);
+    }
+    if (data.containsKey('correction_plan')) {
+      context.handle(
+        _correctionPlanMeta,
+        correctionPlan.isAcceptableOrUnknown(
+          data['correction_plan']!,
+          _correctionPlanMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_correctionPlanMeta);
+    }
+    if (data.containsKey('evidence_note')) {
+      context.handle(
+        _evidenceNoteMeta,
+        evidenceNote.isAcceptableOrUnknown(
+          data['evidence_note']!,
+          _evidenceNoteMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_evidenceNoteMeta);
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('sync_error')) {
+      context.handle(
+        _syncErrorMeta,
+        syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PendingActionPlanUpdate map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PendingActionPlanUpdate(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      actionPlanId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action_plan_id'],
+      )!,
+      correctionPlan: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}correction_plan'],
+      )!,
+      evidenceNote: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evidence_note'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      syncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_error'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PendingActionPlanUpdatesTable createAlias(String alias) {
+    return $PendingActionPlanUpdatesTable(attachedDatabase, alias);
+  }
+}
+
+class PendingActionPlanUpdate extends DataClass
+    implements Insertable<PendingActionPlanUpdate> {
+  final String id;
+  final String actionPlanId;
+  final String correctionPlan;
+  final String evidenceNote;
+  final String syncStatus;
+  final String? syncError;
+  final DateTime createdAt;
+  const PendingActionPlanUpdate({
+    required this.id,
+    required this.actionPlanId,
+    required this.correctionPlan,
+    required this.evidenceNote,
+    required this.syncStatus,
+    this.syncError,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['action_plan_id'] = Variable<String>(actionPlanId);
+    map['correction_plan'] = Variable<String>(correctionPlan);
+    map['evidence_note'] = Variable<String>(evidenceNote);
+    map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || syncError != null) {
+      map['sync_error'] = Variable<String>(syncError);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PendingActionPlanUpdatesCompanion toCompanion(bool nullToAbsent) {
+    return PendingActionPlanUpdatesCompanion(
+      id: Value(id),
+      actionPlanId: Value(actionPlanId),
+      correctionPlan: Value(correctionPlan),
+      evidenceNote: Value(evidenceNote),
+      syncStatus: Value(syncStatus),
+      syncError: syncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncError),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PendingActionPlanUpdate.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PendingActionPlanUpdate(
+      id: serializer.fromJson<String>(json['id']),
+      actionPlanId: serializer.fromJson<String>(json['actionPlanId']),
+      correctionPlan: serializer.fromJson<String>(json['correctionPlan']),
+      evidenceNote: serializer.fromJson<String>(json['evidenceNote']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      syncError: serializer.fromJson<String?>(json['syncError']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'actionPlanId': serializer.toJson<String>(actionPlanId),
+      'correctionPlan': serializer.toJson<String>(correctionPlan),
+      'evidenceNote': serializer.toJson<String>(evidenceNote),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+      'syncError': serializer.toJson<String?>(syncError),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  PendingActionPlanUpdate copyWith({
+    String? id,
+    String? actionPlanId,
+    String? correctionPlan,
+    String? evidenceNote,
+    String? syncStatus,
+    Value<String?> syncError = const Value.absent(),
+    DateTime? createdAt,
+  }) => PendingActionPlanUpdate(
+    id: id ?? this.id,
+    actionPlanId: actionPlanId ?? this.actionPlanId,
+    correctionPlan: correctionPlan ?? this.correctionPlan,
+    evidenceNote: evidenceNote ?? this.evidenceNote,
+    syncStatus: syncStatus ?? this.syncStatus,
+    syncError: syncError.present ? syncError.value : this.syncError,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PendingActionPlanUpdate copyWithCompanion(
+    PendingActionPlanUpdatesCompanion data,
+  ) {
+    return PendingActionPlanUpdate(
+      id: data.id.present ? data.id.value : this.id,
+      actionPlanId: data.actionPlanId.present
+          ? data.actionPlanId.value
+          : this.actionPlanId,
+      correctionPlan: data.correctionPlan.present
+          ? data.correctionPlan.value
+          : this.correctionPlan,
+      evidenceNote: data.evidenceNote.present
+          ? data.evidenceNote.value
+          : this.evidenceNote,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      syncError: data.syncError.present ? data.syncError.value : this.syncError,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingActionPlanUpdate(')
+          ..write('id: $id, ')
+          ..write('actionPlanId: $actionPlanId, ')
+          ..write('correctionPlan: $correctionPlan, ')
+          ..write('evidenceNote: $evidenceNote, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('syncError: $syncError, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    actionPlanId,
+    correctionPlan,
+    evidenceNote,
+    syncStatus,
+    syncError,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PendingActionPlanUpdate &&
+          other.id == this.id &&
+          other.actionPlanId == this.actionPlanId &&
+          other.correctionPlan == this.correctionPlan &&
+          other.evidenceNote == this.evidenceNote &&
+          other.syncStatus == this.syncStatus &&
+          other.syncError == this.syncError &&
+          other.createdAt == this.createdAt);
+}
+
+class PendingActionPlanUpdatesCompanion
+    extends UpdateCompanion<PendingActionPlanUpdate> {
+  final Value<String> id;
+  final Value<String> actionPlanId;
+  final Value<String> correctionPlan;
+  final Value<String> evidenceNote;
+  final Value<String> syncStatus;
+  final Value<String?> syncError;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const PendingActionPlanUpdatesCompanion({
+    this.id = const Value.absent(),
+    this.actionPlanId = const Value.absent(),
+    this.correctionPlan = const Value.absent(),
+    this.evidenceNote = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.syncError = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PendingActionPlanUpdatesCompanion.insert({
+    required String id,
+    required String actionPlanId,
+    required String correctionPlan,
+    required String evidenceNote,
+    this.syncStatus = const Value.absent(),
+    this.syncError = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       actionPlanId = Value(actionPlanId),
+       correctionPlan = Value(correctionPlan),
+       evidenceNote = Value(evidenceNote),
+       createdAt = Value(createdAt);
+  static Insertable<PendingActionPlanUpdate> custom({
+    Expression<String>? id,
+    Expression<String>? actionPlanId,
+    Expression<String>? correctionPlan,
+    Expression<String>? evidenceNote,
+    Expression<String>? syncStatus,
+    Expression<String>? syncError,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (actionPlanId != null) 'action_plan_id': actionPlanId,
+      if (correctionPlan != null) 'correction_plan': correctionPlan,
+      if (evidenceNote != null) 'evidence_note': evidenceNote,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (syncError != null) 'sync_error': syncError,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PendingActionPlanUpdatesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? actionPlanId,
+    Value<String>? correctionPlan,
+    Value<String>? evidenceNote,
+    Value<String>? syncStatus,
+    Value<String?>? syncError,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return PendingActionPlanUpdatesCompanion(
+      id: id ?? this.id,
+      actionPlanId: actionPlanId ?? this.actionPlanId,
+      correctionPlan: correctionPlan ?? this.correctionPlan,
+      evidenceNote: evidenceNote ?? this.evidenceNote,
+      syncStatus: syncStatus ?? this.syncStatus,
+      syncError: syncError ?? this.syncError,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (actionPlanId.present) {
+      map['action_plan_id'] = Variable<String>(actionPlanId.value);
+    }
+    if (correctionPlan.present) {
+      map['correction_plan'] = Variable<String>(correctionPlan.value);
+    }
+    if (evidenceNote.present) {
+      map['evidence_note'] = Variable<String>(evidenceNote.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (syncError.present) {
+      map['sync_error'] = Variable<String>(syncError.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingActionPlanUpdatesCompanion(')
+          ..write('id: $id, ')
+          ..write('actionPlanId: $actionPlanId, ')
+          ..write('correctionPlan: $correctionPlan, ')
+          ..write('evidenceNote: $evidenceNote, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('syncError: $syncError, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncMetaTable extends SyncMeta
     with TableInfo<$SyncMetaTable, SyncMetaData> {
   @override
@@ -7951,6 +8438,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $PendingSubmissionsTable(this);
   late final $PendingAnswersTable pendingAnswers = $PendingAnswersTable(this);
   late final $PendingPhotosTable pendingPhotos = $PendingPhotosTable(this);
+  late final $PendingActionPlanUpdatesTable pendingActionPlanUpdates =
+      $PendingActionPlanUpdatesTable(this);
   late final $SyncMetaTable syncMeta = $SyncMetaTable(this);
   late final $DraftAnswersTable draftAnswers = $DraftAnswersTable(this);
   @override
@@ -7968,6 +8457,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pendingSubmissions,
     pendingAnswers,
     pendingPhotos,
+    pendingActionPlanUpdates,
     syncMeta,
     draftAnswers,
   ];
@@ -12402,6 +12892,271 @@ typedef $$PendingPhotosTableProcessedTableManager =
       PendingPhoto,
       PrefetchHooks Function({bool pendingSubmissionId})
     >;
+typedef $$PendingActionPlanUpdatesTableCreateCompanionBuilder =
+    PendingActionPlanUpdatesCompanion Function({
+      required String id,
+      required String actionPlanId,
+      required String correctionPlan,
+      required String evidenceNote,
+      Value<String> syncStatus,
+      Value<String?> syncError,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$PendingActionPlanUpdatesTableUpdateCompanionBuilder =
+    PendingActionPlanUpdatesCompanion Function({
+      Value<String> id,
+      Value<String> actionPlanId,
+      Value<String> correctionPlan,
+      Value<String> evidenceNote,
+      Value<String> syncStatus,
+      Value<String?> syncError,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$PendingActionPlanUpdatesTableFilterComposer
+    extends Composer<_$AppDatabase, $PendingActionPlanUpdatesTable> {
+  $$PendingActionPlanUpdatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actionPlanId => $composableBuilder(
+    column: $table.actionPlanId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get correctionPlan => $composableBuilder(
+    column: $table.correctionPlan,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get evidenceNote => $composableBuilder(
+    column: $table.evidenceNote,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PendingActionPlanUpdatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PendingActionPlanUpdatesTable> {
+  $$PendingActionPlanUpdatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actionPlanId => $composableBuilder(
+    column: $table.actionPlanId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get correctionPlan => $composableBuilder(
+    column: $table.correctionPlan,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get evidenceNote => $composableBuilder(
+    column: $table.evidenceNote,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PendingActionPlanUpdatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PendingActionPlanUpdatesTable> {
+  $$PendingActionPlanUpdatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get actionPlanId => $composableBuilder(
+    column: $table.actionPlanId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get correctionPlan => $composableBuilder(
+    column: $table.correctionPlan,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get evidenceNote => $composableBuilder(
+    column: $table.evidenceNote,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncError =>
+      $composableBuilder(column: $table.syncError, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$PendingActionPlanUpdatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PendingActionPlanUpdatesTable,
+          PendingActionPlanUpdate,
+          $$PendingActionPlanUpdatesTableFilterComposer,
+          $$PendingActionPlanUpdatesTableOrderingComposer,
+          $$PendingActionPlanUpdatesTableAnnotationComposer,
+          $$PendingActionPlanUpdatesTableCreateCompanionBuilder,
+          $$PendingActionPlanUpdatesTableUpdateCompanionBuilder,
+          (
+            PendingActionPlanUpdate,
+            BaseReferences<
+              _$AppDatabase,
+              $PendingActionPlanUpdatesTable,
+              PendingActionPlanUpdate
+            >,
+          ),
+          PendingActionPlanUpdate,
+          PrefetchHooks Function()
+        > {
+  $$PendingActionPlanUpdatesTableTableManager(
+    _$AppDatabase db,
+    $PendingActionPlanUpdatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PendingActionPlanUpdatesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$PendingActionPlanUpdatesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PendingActionPlanUpdatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> actionPlanId = const Value.absent(),
+                Value<String> correctionPlan = const Value.absent(),
+                Value<String> evidenceNote = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PendingActionPlanUpdatesCompanion(
+                id: id,
+                actionPlanId: actionPlanId,
+                correctionPlan: correctionPlan,
+                evidenceNote: evidenceNote,
+                syncStatus: syncStatus,
+                syncError: syncError,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String actionPlanId,
+                required String correctionPlan,
+                required String evidenceNote,
+                Value<String> syncStatus = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PendingActionPlanUpdatesCompanion.insert(
+                id: id,
+                actionPlanId: actionPlanId,
+                correctionPlan: correctionPlan,
+                evidenceNote: evidenceNote,
+                syncStatus: syncStatus,
+                syncError: syncError,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PendingActionPlanUpdatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PendingActionPlanUpdatesTable,
+      PendingActionPlanUpdate,
+      $$PendingActionPlanUpdatesTableFilterComposer,
+      $$PendingActionPlanUpdatesTableOrderingComposer,
+      $$PendingActionPlanUpdatesTableAnnotationComposer,
+      $$PendingActionPlanUpdatesTableCreateCompanionBuilder,
+      $$PendingActionPlanUpdatesTableUpdateCompanionBuilder,
+      (
+        PendingActionPlanUpdate,
+        BaseReferences<
+          _$AppDatabase,
+          $PendingActionPlanUpdatesTable,
+          PendingActionPlanUpdate
+        >,
+      ),
+      PendingActionPlanUpdate,
+      PrefetchHooks Function()
+    >;
 typedef $$SyncMetaTableCreateCompanionBuilder =
     SyncMetaCompanion Function({
       required String entityType,
@@ -12756,6 +13511,11 @@ class $AppDatabaseManager {
       $$PendingAnswersTableTableManager(_db, _db.pendingAnswers);
   $$PendingPhotosTableTableManager get pendingPhotos =>
       $$PendingPhotosTableTableManager(_db, _db.pendingPhotos);
+  $$PendingActionPlanUpdatesTableTableManager get pendingActionPlanUpdates =>
+      $$PendingActionPlanUpdatesTableTableManager(
+        _db,
+        _db.pendingActionPlanUpdates,
+      );
   $$SyncMetaTableTableManager get syncMeta =>
       $$SyncMetaTableTableManager(_db, _db.syncMeta);
   $$DraftAnswersTableTableManager get draftAnswers =>

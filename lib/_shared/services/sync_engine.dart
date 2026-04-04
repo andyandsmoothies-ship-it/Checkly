@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
+import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'connectivity_service.dart';
 import 'sync_state.dart';
-
 import 'sync_interfaces.dart';
 
 // ============================================================
@@ -30,6 +31,8 @@ class SyncEngine {
   final Outbox _outbox;
   final AuthCheck _auth;
   final OutboxDao _outboxDao; // Direct DAO access for backoff writes
+  final ActionPlanApi _actionPlanApi; // For draining offline evidence queue
+  final ActionPlanOutboxDao _actionPlanOutboxDao;
 
   StreamSubscription<bool>? _connectivitySub;
 
@@ -44,11 +47,15 @@ class SyncEngine {
     required Outbox outbox,
     required AuthCheck auth,
     required OutboxDao outboxDao,
+    required ActionPlanApi actionPlanApi,
+    required ActionPlanOutboxDao actionPlanOutboxDao,
   }) : _connectivity = connectivity,
        _api = api,
        _outbox = outbox,
        _auth = auth,
-       _outboxDao = outboxDao {
+       _outboxDao = outboxDao,
+       _actionPlanApi = actionPlanApi,
+       _actionPlanOutboxDao = actionPlanOutboxDao {
     // Initialize state based on current connectivity
     if (!_connectivity.isOnline) {
       _state = SyncState.offline;
@@ -147,6 +154,31 @@ class SyncEngine {
       if (!_connectivity.isOnline) {
         _state = SyncState.offline;
         return;
+      }
+
+      // --- Action Plan Evidence Drain phase ---
+      // Drain any queued offline evidence submissions (P1 UX Fix).
+      final pendingEvidence = await _actionPlanOutboxDao.getEligiblePending();
+      for (final entry in pendingEvidence) {
+        if (!_connectivity.isOnline) {
+          _state = SyncState.offline;
+          return;
+        }
+        try {
+          await _actionPlanApi.updateActionPlan(entry.actionPlanId, {
+            'status': 'pending_verify',
+            'correctionPlan': entry.correctionPlan,
+            'evidenceNote': entry.evidenceNote,
+          });
+          await _actionPlanOutboxDao.remove(entry.id);
+        } catch (e) {
+          await _actionPlanOutboxDao.markExhausted(
+            entry.id,
+            e.toString(),
+          );
+          _state = SyncState.error;
+          return;
+        }
       }
 
       _state = SyncState.idle;

@@ -18,10 +18,13 @@ import 'package:flutter_test/flutter_test.dart';
 // --- IMPORTS (will fail until implemented) ---
 import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/sync_interfaces.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
+import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
+import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 
 // ============================================================
 // Fake dependencies for testing SyncEngine in isolation
@@ -107,6 +110,36 @@ class FakeAuthCheck implements AuthCheck {
 PendingSubmission _makePending(String key, DateTime createdAt) =>
     PendingSubmission(idempotencyKey: key, createdAt: createdAt, payload: '{}');
 
+// No-op stubs for the new SyncEngine injection points.
+class _FakeActionPlanApi implements ActionPlanApi {
+  @override
+  Future<ActionPlanDto> updateActionPlan(
+    String id,
+    Map<String, dynamic> fields,
+  ) async => ActionPlanDto(
+    id: id,
+    status: fields['status'] ?? 'open',
+    criteriaLabel: '',
+    groupTitle: '',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
+}
+
+class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
+  _FakeActionPlanOutboxDao();
+  @override
+  Future<List<PendingActionPlanUpdate>> getEligiblePending() async => [];
+  @override
+  Future<void> enqueue(PendingActionPlanUpdatesCompanion entry) async {}
+  @override
+  Future<void> remove(String id) async {}
+  @override
+  Future<void> markExhausted(String id, String error) async {}
+  @override
+  Future<int> pendingCount() async => 0;
+}
+
 void main() {
   late FakeConnectivityService connectivity;
   late FakeSyncApi api;
@@ -130,6 +163,8 @@ void main() {
       outbox: outbox,
       auth: auth,
       outboxDao: outboxDao,
+      actionPlanApi: _FakeActionPlanApi(),
+      actionPlanOutboxDao: _FakeActionPlanOutboxDao(),
     );
   });
 

@@ -16,6 +16,9 @@ import 'package:flutter_test/flutter_test.dart';
 // --- IMPORTS (will fail until implemented) ---
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
+import 'package:checkly/_shared/services/connectivity_service.dart';
+import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
+import 'package:checkly/_shared/database/app_database.dart';
 
 // ============================================================
 // Fake API and Auth for isolated testing
@@ -57,6 +60,41 @@ class FakeUserRole implements UserRoleProvider {
   String get role => currentRole;
 }
 
+/// Always-online connectivity stub — preserves original test behaviour.
+/// The online path calls the API, so existing assertions on api.lastUpdated hold.
+class FakeConnectivityService implements ConnectivityService {
+  bool online;
+  FakeConnectivityService({this.online = true});
+
+  @override
+  bool get isOnline => online;
+
+  @override
+  Stream<bool> get onConnectivityChanged => const Stream.empty();
+}
+
+/// No-op outbox DAO for unit tests — records enqueueing without a DB.
+class FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
+  final List<PendingActionPlanUpdatesCompanion> enqueued = [];
+
+  @override
+  Future<void> enqueue(PendingActionPlanUpdatesCompanion entry) async {
+    enqueued.add(entry);
+  }
+
+  @override
+  Future<List<PendingActionPlanUpdate>> getEligiblePending() async => [];
+
+  @override
+  Future<void> remove(String id) async {}
+
+  @override
+  Future<void> markExhausted(String id, String error) async {}
+
+  @override
+  Future<int> pendingCount() async => 0;
+}
+
 // Helper to create an ActionPlanDto with a given status and deadline.
 ActionPlanDto _makePlan({required String status, DateTime? deadline}) =>
     ActionPlanDto(
@@ -72,12 +110,21 @@ ActionPlanDto _makePlan({required String status, DateTime? deadline}) =>
 void main() {
   late FakeActionPlanApi api;
   late FakeUserRole userRole;
+  late FakeConnectivityService connectivity;
+  late FakeActionPlanOutboxDao outboxDao;
   late ActionPlanManager manager;
 
   setUp(() {
     api = FakeActionPlanApi();
     userRole = FakeUserRole('store_manager');
-    manager = ActionPlanManager(api: api, userRole: userRole);
+    connectivity = FakeConnectivityService(online: true); // online path by default
+    outboxDao = FakeActionPlanOutboxDao();
+    manager = ActionPlanManager(
+      api: api,
+      userRole: userRole,
+      connectivity: connectivity,
+      outboxDao: outboxDao,
+    );
   });
 
   // ================================================================

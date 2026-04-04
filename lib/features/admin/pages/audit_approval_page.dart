@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../audit/model/submission_dto.dart';
 import '../../audit/services/submission_api_service.dart';
 
@@ -478,24 +479,10 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
 
   Widget _buildList(List<SubmissionDto> items, {bool showActions = false}) {
     if (items.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.inbox_outlined,
-              size: 48,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'No audits found',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
+      return const ChecklyEmptyState(
+        icon: Icons.inbox_outlined,
+        title: 'No audits here',
+        subtitle: 'This queue is clear.',
       );
     }
 

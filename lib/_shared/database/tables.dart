@@ -235,3 +235,25 @@ class DraftAnswers extends Table {
   @override
   Set<Column> get primaryKey => {draftKey};
 }
+
+// ============================================================
+// Action Plan Outbox (offline evidence submission queue)
+// ============================================================
+
+/// Queued evidence submissions for action plans — written offline,
+/// drained by SyncEngine when connectivity is restored.
+///
+/// syncStatus: 'pending' | 'exhausted' | 'error'.
+class PendingActionPlanUpdates extends Table {
+  TextColumn get id => text()(); // client-generated UUID
+  TextColumn get actionPlanId => text()(); // links CachedActionPlans.id
+  TextColumn get correctionPlan => text()();
+  TextColumn get evidenceNote => text()();
+  TextColumn get syncStatus =>
+      text().withDefault(const Constant('pending'))();
+  TextColumn get syncError => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

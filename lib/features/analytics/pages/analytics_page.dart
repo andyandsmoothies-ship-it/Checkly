@@ -665,7 +665,13 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  if (_totalAudits == 0)
+                  if (_totalAudits == 0 && _activeFilterCount > 0)
+                    const ChecklyEmptyState(
+                      icon: Icons.search_off,
+                      title: 'No Match',
+                      subtitle: 'No audits match your current filters. Clear filters to see more.',
+                    )
+                  else if (_totalAudits == 0)
                     const ChecklyEmptyState(
                       icon: Icons.analytics_outlined,
                       title: 'No analytics yet',
