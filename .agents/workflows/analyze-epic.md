@@ -79,7 +79,7 @@ Workflow: /analyze-epic | Track: C
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `analysis_epic_[topic].md` MUST INCLUDE: `1. Exec Summary`, `2. Decision Matrix`, `3. Risk Assessment`, `4. Sys Arch Flow (Mermaid)`, `5. DB Migrations`, `6. API Contracts`, `7. Blast Radius/Rollback Plan`, `8. Red Team Adversarial Log`, `9. Security/RLS`, `10. Observability Hooks`, `11. EDD Expectations`, and `12. <forensic_evidence>` tags (terminal log proof).
+> **Payload Schema:** Your generated `analysis_epic_[topic].md` MUST INCLUDE: `1. <latent_space_scratchpad>` (to artificially expand test-time compute by thinking through tradeoffs and edge cases *before* concluding), `2. Exec Summary`, `3. Decision Matrix`, `4. Risk Assessment`, `5. Sys Arch Flow (Mermaid)`, `6. DB Migrations`, `7. API Contracts`, `8. Blast Radius/Rollback Plan`, `9. Red Team Adversarial Log`, `10. Security/RLS`, `11. Observability Hooks`, `12. EDD Expectations`, and `13. <forensic_evidence>` tags (terminal log proof).
 >
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

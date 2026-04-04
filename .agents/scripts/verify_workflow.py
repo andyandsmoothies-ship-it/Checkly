@@ -289,7 +289,30 @@ def check_forensic_evidence(session_dir: str) -> None:
                 content = f.read().lower()
                 
             evidence_match = re.search(r"<forensic_evidence>(.*?)</forensic_evidence>", content, re.DOTALL)
+            latent_match = re.search(r"<latent_space_scratchpad>(.*?)</latent_space_scratchpad>", content, re.DOTALL)
+            test_trace_match = re.search(r"<test_trace>(.*?)</test_trace>", content, re.DOTALL)
             
+            # 1. Enforce Latent Space Scratchpad on generative AI tasks (Discovery/Analysis)
+            if any(k in name.lower() for k in ["research", "analysis", "audit", "diagnose"]):
+                if not latent_match:
+                    fail(
+                        f"'{name}' is missing the '<latent_space_scratchpad>' block.\n"
+                        f"           Fix: Use <latent_space_scratchpad> at the top of the artifact to expand test-time compute and think through edge cases before planning."
+                    )
+                elif len(latent_match.group(1).strip()) < 50:
+                    fail(f"'{name}' Latent Scratchpad is too shallow. Expand your computational thinking before concluding.")
+
+            # 2. Enforce Test Trace feedback loop on Execution/QA Tasks
+            if any(k in name.lower() for k in ["walkthrough", "executed_tests", "test_contracts"]):
+                if not test_trace_match:
+                    fail(
+                        f"'{name}' is missing the '<test_trace>' block.\n"
+                        f"           Fix: You cannot self-certify fixes. Provide raw terminal test output (e.g., dotnet test / flutter analyze) as external feedback."
+                    )
+                elif len(test_trace_match.group(1).strip()) < 30:
+                    fail(f"'{name}' Test Trace is too shallow. Provide the actual compiler/test output.")
+
+            # 3. Enforce Forensic Evidence globally
             if not evidence_match:
                 fail(
                     f"'{name}' is missing the '<forensic_evidence>' block.\n"

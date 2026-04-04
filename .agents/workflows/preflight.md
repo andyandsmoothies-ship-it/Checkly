@@ -33,9 +33,10 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 | Vector | Execution Contract |
 |---|---|
 | **Grep Audit** | Run `grep_search` on `GREP_CHECKABLE` rules against modified files. Score PASS/FAIL. IF any modified file is an API, DTO, or DB: MANDATORY re-run `grep_search` against the opposite stack (`lib/` ↔ `server/`) to verify the counterpart is updated. |
+| **Secret Scan (🔴)**| MANDATORY: `grep_search` modified files for `sk_test`, `sk_live`, `password=`, or `Bearer`. IF `.env` exists in git diff → BLOCK. |
 | **Diff Audit** | Check codebase for `DIFF_CHECKABLE` counterparts. IF counterpart missing → FAIL. |
 
-> **@@SCAN**: (1) GREP gotchas count? (2) FAIL count? (3) If API/DTO modified: cross-stack counterpart confirmed?
+> **@@SCAN**: (1) GREP gotchas count? (2) FAIL count? (3) Any exposed secrets leaked? (4) Cross-stack counterpart confirmed?
 
 ## Phase 4: Vertical-Slice Completeness
 

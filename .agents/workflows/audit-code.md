@@ -25,9 +25,10 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 |---|---|
 | **Dead Code (`🔴`)** | Scan for unreachable branches, abandoned functions, commented logic. Flag for immediate deletion. |
 | **Arch. Drift (`🔴`)** | Verify layer boundaries (e.g. Page direct DB import). Flag Circular dependencies. |
+| **Exposed Secrets (`🔴`)**| MANDATORY: Scan codebase for hardcoded `sk_live`, `Bearer`, `password=`, or `.env` files. Flag for immediate secret rotation. |
 | **Docs & Formats (`🟡`)**| Compare docs vs actual code. Detect naming convention violations. |
 
-> **@@SCAN**: (1) Dead code found? (2) Architectural drift detected? (3) Docs updated?
+> **@@SCAN**: (1) Dead code found? (2) Architectural drift detected? (3) Secrets leaked? (4) Docs updated?
 
 ## Phase 3: Structural Health 
 

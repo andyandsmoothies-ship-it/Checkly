@@ -123,7 +123,8 @@ Review from 4 angles & state findings:
 > **Walkthrough Schema:** Your `walkthrough_[topic].md` MUST INCLUDE: 
 > 1. `## Decision Log`: Table showing proposed vs implemented/rejected.
 > 2. `## Verification Handoff`: Steps/Expected/Radius for QA Agent. (MANDATORY: Recommend running `@red_team_playbook.md` if feature is Track C, or backend Track B).
-> 3. `<forensic_evidence>`: Proof of validation commands run (e.g., test outputs, flutter analyze) inside XML tags.
+> 3. `<test_trace>`: MANDATORY for external feedback. You MUST provide the raw terminal execution output of your tests (e.g., `dotnet test` or `flutter analyze`) inside these XML tags. Self-certification of code fixes without terminal proof is prohibited.
+> 4. `<forensic_evidence>`: Proof of general validation/exploration commands run.
 > 4. `## Gotcha Protocol`: Propose `GEMINI.override.md` edit if obsolete rules exist.
 >
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
