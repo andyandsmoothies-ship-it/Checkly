@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../_shared/theme/app_theme.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../widgets/advanced_settings_card.dart';
@@ -213,19 +214,19 @@ class _WizardStepReviewState extends State<WizardStepReview> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.green.shade50,
+              color: AppTheme.successContainer,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.green.shade200),
+              border: Border.all(color: AppTheme.success.withValues(alpha: 0.4)),
             ),
             child: Row(
               children: [
-                Icon(Icons.check_circle_outline, color: Colors.green.shade700, size: 18),
+                Icon(Icons.check_circle_outline, color: AppTheme.success, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     '${widget.sections.length} sections, $_totalCriteria criteria — Production ready',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.green.shade800,
+                      color: AppTheme.success,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -237,19 +238,19 @@ class _WizardStepReviewState extends State<WizardStepReview> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.orange.shade50,
+              color: AppTheme.warningContainer,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange.shade200),
+              border: Border.all(color: AppTheme.warning.withValues(alpha: 0.4)),
             ),
             child: Row(
               children: [
-                Icon(Icons.warning_amber_outlined, color: Colors.orange.shade700, size: 18),
+                Icon(Icons.warning_amber_outlined, color: AppTheme.warning, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'Consider adding more — aim for 3+ sections with 5+ criteria for a thorough audit.',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.orange.shade800,
+                      color: AppTheme.warning,
                     ),
                   ),
                 ),

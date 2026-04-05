@@ -20,7 +20,7 @@ class RuleBadge extends StatelessWidget {
       child: Text(
         label,
         style: AppFonts.displayStyle(
-          fontSize: 11,
+          fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         ),

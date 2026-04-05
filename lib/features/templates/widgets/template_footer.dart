@@ -46,7 +46,7 @@ class TemplateFooter extends StatelessWidget {
               child: Text(
                 '$totalPoints PTS',
                 style: AppFonts.serifStyle(
-                  fontSize: 14,
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -68,7 +68,7 @@ class TemplateFooter extends StatelessWidget {
                 child: Text(
                   '${totalDensity.toStringAsFixed(1)}%',
                   style: AppFonts.serifStyle(
-                    fontSize: 14,
+                    fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                     color: (totalDensity - 100).abs() < 0.01
                         ? AppTheme.success
                         : Theme.of(context).colorScheme.onSurface,

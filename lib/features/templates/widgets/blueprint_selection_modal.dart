@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../_shared/theme/app_colors.dart';
+
 class BlueprintSelectionModal extends StatelessWidget {
   const BlueprintSelectionModal({super.key});
 
@@ -10,7 +12,7 @@ class BlueprintSelectionModal extends StatelessWidget {
       title: 'Audit & Inspection',
       tag: 'Best for compliance',
       subtitle: 'Starts at 100% and deducts points for every fault found.',
-      color: Color(0xFF1565C0),
+      color: BlueprintColors.audit,
     ),
     (
       mode: 'accumulation',
@@ -18,7 +20,7 @@ class BlueprintSelectionModal extends StatelessWidget {
       title: 'Scored Assessment',
       tag: 'Best for evaluations',
       subtitle: 'Builds from zero by earning points for each success.',
-      color: Color(0xFF2E7D32),
+      color: BlueprintColors.assessment,
     ),
     (
       mode: 'survey',
@@ -26,7 +28,7 @@ class BlueprintSelectionModal extends StatelessWidget {
       title: 'Form & Survey',
       tag: 'Best for data collection',
       subtitle: 'Captures responses with no scores or grades calculated.',
-      color: Color(0xFF7B1FA2),
+      color: BlueprintColors.survey,
     ),
     (
       mode: 'checklist',
@@ -34,7 +36,7 @@ class BlueprintSelectionModal extends StatelessWidget {
       title: 'Basic Checklist',
       tag: 'Best for daily routines',
       subtitle: 'Simple pass/fail checks with a completion report.',
-      color: Color(0xFFE65100),
+      color: BlueprintColors.checklist,
     ),
   ];
 

@@ -317,7 +317,7 @@ class _TypeSection extends StatelessWidget {
             Text(
               label,
               style: AppFonts.displayStyle(
-                fontSize: 11,
+                fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 letterSpacing: 3,
@@ -417,7 +417,6 @@ class _TemplateCard extends StatelessWidget {
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 10,
                               ),
                             ),
                           ),
@@ -431,7 +430,6 @@ class _TemplateCard extends StatelessWidget {
                         'Updated ${_timeAgo(template.updatedAt)}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: 11,
                         ),
                       ),
                     ),
@@ -527,15 +525,20 @@ class _TemplateCard extends StatelessWidget {
                       dense: true,
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
-                    child: ListTile(
-                      leading: Icon(Icons.delete_outline, color: Colors.red),
-                      title: Text(
-                        'Delete',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      dense: true,
+                    child: Builder(
+                      builder: (ctx) {
+                        final errorColor = Theme.of(ctx).colorScheme.error;
+                        return ListTile(
+                          leading: Icon(Icons.delete_outline, color: errorColor),
+                          title: Text(
+                            'Delete',
+                            style: TextStyle(color: errorColor),
+                          ),
+                          dense: true,
+                        );
+                      },
                     ),
                   ),
                 ],

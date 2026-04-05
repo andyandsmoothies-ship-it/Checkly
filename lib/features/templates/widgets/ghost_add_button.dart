@@ -53,7 +53,7 @@ class GhostAddButton extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: theme.textTheme.bodySmall?.fontSize,
                     fontWeight: FontWeight.w600,
                     color: tint.withValues(alpha: 0.7),
                   ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/theme/app_theme.dart';
 import 'expandable_setting_tile.dart';
 
 class AdvancedSettingsCard extends StatelessWidget {
@@ -125,7 +127,9 @@ class AdvancedSettingsCard extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4, bottom: 12),
               child: Text(
                 'Number of days to resolve each action plan (1–90).',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
 
@@ -162,7 +166,9 @@ class AdvancedSettingsCard extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 'Reminder days before deadline (1–30).',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
 
@@ -176,24 +182,23 @@ class AdvancedSettingsCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  color: AppColors.warningContainer,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.shade200),
+                  border: Border.all(color: AppTheme.warning.withValues(alpha: 0.4)),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.info_outline,
                       size: 18,
-                      color: Colors.amber.shade800,
+                      color: AppTheme.warning,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'These settings affect how audits are scored. Change with care.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.amber.shade900,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.warning,
                         ),
                       ),
                     ),
@@ -276,8 +281,7 @@ class AdvancedSettingsCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Survey mode — responses are collected without scoring.',
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.primary,
                         ),
                       ),

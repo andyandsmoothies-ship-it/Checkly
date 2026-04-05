@@ -380,7 +380,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Guided Creation', style: TextStyle(fontSize: 16)),
+                      Text('Guided Creation', style: theme.textTheme.titleMedium),
                       Text(
                         '${_currentStep + 1} of 5 — ${_stepTitles[_currentStep]}',
                         style: theme.textTheme.bodySmall?.copyWith(

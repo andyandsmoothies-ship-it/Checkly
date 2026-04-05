@@ -171,7 +171,7 @@ class SectionEditor extends StatelessWidget {
                   child: Text(
                     '${subCount}S • ${critCount}C',
                     style: AppFonts.serifStyle(
-                      fontSize: 10,
+                      fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
@@ -201,7 +201,7 @@ class SectionEditor extends StatelessWidget {
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.number,
                           style: AppFonts.serifStyle(
-                            fontSize: 12,
+                            fontSize: theme.textTheme.bodySmall?.fontSize,
                             color: theme.colorScheme.primary,
                           ),
                           decoration: const InputDecoration(
@@ -221,7 +221,7 @@ class SectionEditor extends StatelessWidget {
                       Text(
                         '%',
                         style: AppFonts.serifStyle(
-                          fontSize: 12,
+                          fontSize: theme.textTheme.bodySmall?.fontSize,
                           color: theme.colorScheme.primary,
                         ),
                       ),
@@ -231,7 +231,7 @@ class SectionEditor extends StatelessWidget {
             ],
           ),
           trailing: IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+            icon: Icon(Icons.delete_outline, color: theme.colorScheme.error, size: 20),
             onPressed: onRemoveSection,
           ),
           children: [
@@ -255,7 +255,7 @@ class SectionEditor extends StatelessWidget {
                               child: Text(
                                 msg,
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: theme.textTheme.bodySmall?.fontSize,
                                   color: theme.colorScheme.error,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -347,7 +347,7 @@ class SectionEditor extends StatelessWidget {
                     child: Text(
                       '— OR —',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: theme.textTheme.labelSmall?.fontSize,
                         fontWeight: FontWeight.w600,
                         color: theme.colorScheme.onSurfaceVariant.withValues(
                           alpha: 0.4,
@@ -441,7 +441,7 @@ class SectionEditor extends StatelessWidget {
                             child: Text(
                               msg,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: theme.textTheme.bodySmall?.fontSize,
                                 color: theme.colorScheme.error,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -490,7 +490,7 @@ class SectionEditor extends StatelessWidget {
                 child: Text(
                   '— OR —',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: theme.textTheme.labelSmall?.fontSize,
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                     letterSpacing: 2.0,

@@ -20,7 +20,7 @@ class FlagBadge extends StatelessWidget {
       child: Text(
         label,
         style: AppFonts.displayStyle(
-          fontSize: 9,
+          fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
           fontWeight: FontWeight.w700,
           color: color,
         ),

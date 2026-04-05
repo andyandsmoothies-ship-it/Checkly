@@ -132,7 +132,7 @@ class SectionCard extends StatelessWidget {
                   child: Text(
                     '${group.weight!.toStringAsFixed(0)}%',
                     style: AppFonts.serifStyle(
-                      fontSize: 13,
+                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                       fontWeight: FontWeight.w700,
                       color: theme.colorScheme.primary,
                     ),
@@ -145,7 +145,7 @@ class SectionCard extends StatelessWidget {
               ? Text(
                   subtitleText,
                   style: AppFonts.serifStyle(
-                    fontSize: 11,
+                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                     color: AppTheme.sageGray,
                   ),
                 )

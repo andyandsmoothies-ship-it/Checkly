@@ -586,7 +586,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                             child: Text(
                               '${_validationErrors!.totalCount} issue${_validationErrors!.totalCount == 1 ? '' : 's'} found. Fix before saving.',
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: theme.textTheme.bodySmall?.fontSize,
                                 fontWeight: FontWeight.w600,
                                 color: theme.colorScheme.onErrorContainer,
                               ),

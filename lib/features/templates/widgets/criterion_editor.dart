@@ -50,10 +50,9 @@ class CriterionEditor extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Edit Criterion',
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -157,16 +156,15 @@ class CriterionEditor extends StatelessWidget {
                   'Determines how the auditor will grade this item',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: 11,
                   ),
                 ),
                 const SizedBox(height: 16),
 
                 // Scale Options editor (only for scale type)
                 if (criterion.inputType == 'scale') ...[
-                  const Text(
+                  Text(
                     'Scale Options',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: Theme.of(ctx).textTheme.bodyMedium?.fontSize),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -232,7 +230,7 @@ class CriterionEditor extends StatelessWidget {
                             icon: Icon(
                               Icons.remove_circle_outline,
                               size: 18,
-                              color: Colors.red.shade400,
+                              color: Theme.of(ctx).colorScheme.error,
                             ),
                             onPressed: () {
                               criterion.scaleOptions.removeAt(idx);
@@ -270,9 +268,9 @@ class CriterionEditor extends StatelessWidget {
                 // Choice Options editor (for single_choice / multi_choice)
                 if (criterion.inputType == 'single_choice' ||
                     criterion.inputType == 'multi_choice') ...[
-                  const Text(
+                  Text(
                     'Choice Options',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: Theme.of(ctx).textTheme.bodyMedium?.fontSize),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -306,7 +304,7 @@ class CriterionEditor extends StatelessWidget {
                             icon: Icon(
                               Icons.remove_circle_outline,
                               size: 18,
-                              color: Colors.red.shade400,
+                              color: Theme.of(ctx).colorScheme.error,
                             ),
                             onPressed: () {
                               criterion.choiceOptions.removeAt(idx);
@@ -357,9 +355,9 @@ class CriterionEditor extends StatelessWidget {
                       criterion.pointsCtrl.text.isEmpty
                           ? '0'
                           : criterion.pointsCtrl.text,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: Theme.of(ctx).textTheme.titleMedium?.fontSize,
                       ),
                     ),
                     subtitle: const Text('Auto-set from highest scale option'),
@@ -465,10 +463,10 @@ class CriterionEditor extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.drag_indicator,
                     size: 16,
-                    color: Colors.grey,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -480,7 +478,7 @@ class CriterionEditor extends StatelessWidget {
                               ? 'Untitled criterion'
                               : criterion.labelCtrl.text,
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: theme.textTheme.bodySmall?.fontSize,
                             color: criterion.labelCtrl.text.isEmpty
                                 ? theme.colorScheme.onSurfaceVariant
                                 : null,
@@ -499,7 +497,7 @@ class CriterionEditor extends StatelessWidget {
                               Text(
                                 '${criterion.pointsCtrl.text}pt',
                                 style: AppFonts.serifStyle(
-                                  fontSize: 11,
+                                  fontSize: theme.textTheme.labelSmall?.fontSize,
                                   color: theme.colorScheme.primary,
                                 ),
                               ),
@@ -528,7 +526,6 @@ class CriterionEditor extends StatelessWidget {
                                   Text(
                                     inputTypeLabel(criterion.inputType).toUpperCase(),
                                     style: TextStyle(
-                                      fontSize: 9,
                                       fontWeight: FontWeight.w700,
                                       color: theme.colorScheme.onSecondaryContainer,
                                     ),
@@ -548,7 +545,7 @@ class CriterionEditor extends StatelessWidget {
                     icon: Icon(
                       Icons.delete_outline,
                       size: 18,
-                      color: Colors.red.shade400,
+                      color: theme.colorScheme.error,
                     ),
                     constraints: const BoxConstraints(
                       minWidth: 32,
@@ -557,7 +554,11 @@ class CriterionEditor extends StatelessWidget {
                     padding: EdgeInsets.zero,
                   ),
                   const SizedBox(width: 2),
-                  const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ],
               ),
             ),
@@ -582,7 +583,7 @@ class CriterionEditor extends StatelessWidget {
                             child: Text(
                               msg,
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: theme.textTheme.labelSmall?.fontSize,
                                 color: theme.colorScheme.error,
                                 fontWeight: FontWeight.w500,
                               ),

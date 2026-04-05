@@ -198,7 +198,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () async {
               Navigator.pop(ctx);
               await _callManager(
@@ -282,8 +282,8 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
+                    foregroundColor: Theme.of(context).colorScheme.error,
+                    side: BorderSide(color: Theme.of(context).colorScheme.error),
                   ),
                   onPressed: () => _showRejectDialog(plan),
                   child: const Text('Reject'),

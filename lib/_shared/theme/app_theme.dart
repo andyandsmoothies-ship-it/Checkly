@@ -19,6 +19,7 @@ class AppTheme {
   static const charcoal = AppColors.charcoal;
   static const deepForest = AppColors.deepForest;
   static const success = AppColors.success;
+  static const successContainer = AppColors.successContainer;
   static const warning = AppColors.warning;
   static const warningContainer = AppColors.warningContainer;
   static const info = AppColors.info;

@@ -282,7 +282,7 @@ class _StoreGroup extends StatelessWidget {
             Text(
               storeName.toUpperCase(),
               style: AppFonts.displayStyle(
-                fontSize: 11,
+                fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 letterSpacing: 3,

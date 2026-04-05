@@ -26,7 +26,7 @@ class RichDescription extends StatelessWidget {
             child: Text(
               trimmed,
               style: AppFonts.displayStyle(
-                fontSize: 14,
+                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                 fontWeight: trimmed.endsWith(':') ? FontWeight.w700 : null,
                 color: Theme.of(context).colorScheme.onSurface.withValues(
                   alpha: trimmed.endsWith(':') ? 0.8 : 0.6,
@@ -48,7 +48,7 @@ class RichDescription extends StatelessWidget {
                 '• ',
                 style: TextStyle(
                   color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                  fontSize: 16,
+                  fontSize: theme.textTheme.bodyLarge?.fontSize,
                 ),
               ),
               Expanded(
@@ -56,7 +56,7 @@ class RichDescription extends StatelessWidget {
                   text: TextSpan(
                     children: _parseLine(content, theme),
                     style: AppFonts.displayStyle(
-                      fontSize: 13.5,
+                      fontSize: theme.textTheme.bodyMedium?.fontSize,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       height: 1.5,
                     ),
