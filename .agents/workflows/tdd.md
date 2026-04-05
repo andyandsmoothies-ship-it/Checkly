@@ -72,7 +72,8 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 - **Gate Verdict**: Look at the parsed results instead of truncated terminal output.
   - ✅ **Valid Red**: The test fails because `MethodNotFound`, `NotImplementedException`, or `Expected 200 but got 404` (because the endpoint does not physically exist yet). -> **Proceed to Phase 4**.
   - ❌ **Invalid Syntax**: The test fails to compile due to a missing semicolon, incorrect syntax in the test file itself, or a broken import path not specified in the plan. -> **Fix it and re-run immediately.**
-- You must repeat this loop until you prove 100% of the tests are syntactically valid and failing purely because the logic implementation is missing.
+  - ❌ **Invalid Setup (The Arrange Rule)**: The test crashes during the `// Arrange` setup phase (e.g., seeding users, setting up auth tokens, registering dependencies) BEFORE hitting the business logic. -> **Fix the test setup and re-run immediately.**
+- You must repeat this loop until you prove 100% of the tests are syntactically valid, properly configured, and failing purely because the logic implementation is missing.
 
 > **@@SCAN**: (1) Tests physically executed? (2) Failing purely for missing implementation (Valid Red)?
 

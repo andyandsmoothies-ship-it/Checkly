@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Json;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
@@ -27,7 +28,17 @@ public static class CreateSubmission
         IConfiguration config,
         CancellationToken ct)
     {
-        var auditorId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var auditorId = request.AssignToAuditorId ?? callerId;
+
+        // Tactical 9/10 Fix: Prevent IDOR assignment if not an admin/manager
+        if (request.AssignToAuditorId.HasValue && request.AssignToAuditorId.Value != callerId)
+        {
+            if (!SubmissionAccessGuard.CanDelegate(user))
+            {
+                return TypedResults.Forbid();
+            }
+        }
 
         // Determine mode
         var requestedStatus = request.Status?.ToLowerInvariant() ?? "completed";
@@ -182,7 +193,7 @@ public static class CreateSubmission
             GpsVerifiedAt = request.GpsLat.HasValue ? now : null,
             CompletedAt = (isDraft || isScheduled) ? null : now,
             StartedAt = isDraft ? now : (isScheduled ? null : now),
-            ScheduledAt = request.ScheduledAt,
+            ScheduledAt = request.ScheduledAt?.ToUniversalTime(),
             CreatedAt = now,
             UpdatedAt = now,
             // Snapshot fields

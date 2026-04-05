@@ -50,4 +50,14 @@ public static class SubmissionAccessGuard
         var store = await db.Stores.AsNoTracking().FirstOrDefaultAsync(s => s.Id == storeId, ct);
         return store?.AreaId == profile.AreaId;
     }
+
+    /// <summary>
+    /// Returns true if the user is permitted to assign an audit to a different user.
+    /// Only admins and area managers are allowed to delegate.
+    /// </summary>
+    public static bool CanDelegate(ClaimsPrincipal user)
+    {
+        var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
+        return role is "admin" or "area_manager";
+    }
 }

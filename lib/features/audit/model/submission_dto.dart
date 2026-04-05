@@ -14,6 +14,7 @@ class CreateSubmissionRequest {
   final String? idempotencyKey;
   final String? status;
   final DateTime? scheduledAt;
+  final String? assignToAuditorId;
 
   const CreateSubmissionRequest({
     required this.templateId,
@@ -27,6 +28,7 @@ class CreateSubmissionRequest {
     this.idempotencyKey,
     this.status,
     this.scheduledAt,
+    this.assignToAuditorId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -41,6 +43,7 @@ class CreateSubmissionRequest {
     'idempotencyKey': idempotencyKey,
     if (status != null) 'status': status,
     if (scheduledAt != null) 'scheduledAt': scheduledAt!.toIso8601String(),
+    if (assignToAuditorId != null) 'assignToAuditorId': assignToAuditorId,
   };
 }
 

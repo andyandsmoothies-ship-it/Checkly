@@ -246,7 +246,8 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
           templateId: _selectedTemplateId!,
           storeId: _selectedStoreId!,
           status: 'scheduled',
-          scheduledAt: _scheduledDate,
+          scheduledAt: _scheduledDate.toUtc(),
+          assignToAuditorId: _selectedAuditorId,
         ),
       );
 

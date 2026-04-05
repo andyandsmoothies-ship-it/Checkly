@@ -14,7 +14,8 @@ public sealed record CreateSubmissionRequest(
     List<AnswerInput>? Answers,
     string? IdempotencyKey = null,
     string? Status = null,
-    DateTimeOffset? ScheduledAt = null);
+    DateTimeOffset? ScheduledAt = null,
+    Guid? AssignToAuditorId = null);
 
 public sealed record AnswerInput(
     Guid CriteriaId,

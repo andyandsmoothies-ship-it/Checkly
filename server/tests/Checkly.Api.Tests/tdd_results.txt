@@ -1,0 +1,857 @@
+Build started 4/5/2026 2:47:32 PM.
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.3)
+[xUnit.net 00:00:00.08]   Discovering: Checkly.Api.Tests
+[xUnit.net 00:00:00.14]   Discovered:  Checkly.Api.Tests
+[xUnit.net 00:00:00.18]   Starting:    Checkly.Api.Tests
+  Passed Checkly.Api.Tests.ScoringVerifierTests.C3_Progressive_Repeat_Capped_At_MaxDeduction [14 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.C4_Criterion_With_MinusImpact_Overrides_PointsWeight [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Verify_Populates_FailedCriteriaIds_Only_For_Faults [1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Ccp_Criterion_With_NonConform_Value_Zeros_Section [3 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Risk_Criterion_With_NonConform_Value_Triggers_Zero_Score [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Unscored_Inputs_Are_Excluded_From_FailedCriteriaIds(inputType: "single_choice") [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Unscored_Inputs_Are_Excluded_From_FailedCriteriaIds(inputType: "text") [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Unscored_Inputs_Are_Excluded_From_FailedCriteriaIds(inputType: "multi_choice") [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Weighted_Section_Deductions_Are_Capped_At_MaxDeductionPoints [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.C4_No_MinusImpact_Falls_Back_To_PointsWeight [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.C3_Progressive_Repeat_OFF_Uses_Linear_Deduction [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.C3_Progressive_Repeat_ON_Uses_Quadratic_Deduction [< 1 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Survey_Mode_Returns_Empty_FailedCriteriaIds [2 ms]
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Conform_Value_Does_Not_Trigger_Faults [< 1 ms]
+[14:47:33 INF] Starting Checkly API
+  Passed Checkly.Api.Tests.ScoringVerifierTests.Without_MaxDeductionPoints_Full_Deduction_Applied [< 1 ms]
+  Passed Checkly.Api.Tests.Submissions.TemplateSnapshotBuilderTests.BuildSnapshot_HandlesEmptyConfigurations [42 ms]
+  Passed Checkly.Api.Tests.Submissions.TemplateSnapshotBuilderTests.BuildSnapshot_MapsEntitiesToJsonCorrectly [7 ms]
+[14:47:35 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:35 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:35 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:35 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:36 ERR] An error occurred using the connection to database 'checkly_test' on server 'tcp://localhost:5432'. {"EventId": {"Id": 20004, "Name": "Microsoft.EntityFrameworkCore.Database.Connection.ConnectionError"}, "SourceContext": "Microsoft.EntityFrameworkCore.Database.Connection", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Starting Checkly API {"MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:37 INF] HTTP GET /api/templates responded 401 in 21.7645 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOQ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/user-groups responded 401 in 3.6327 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP4", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AuthTests.Unauthenticated_Request_Returns_401 [4 s]
+  Passed Checkly.Api.Tests.UserGroupTests.ListUserGroups_Unauthenticated_ReturnsUnauthorized [4 s]
+  Passed Checkly.Api.Tests.VoidAuditTests.Submission_StatusConstraint_AllowsVoided [4 s]
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 290.6046 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOO", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 ERR] Failed executing DbCommand (9ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = Guid), @p3='?', @p4='?', @p5='?' (DbType = Guid), @p6='?', @p7='?' (DbType = DateTime), @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Decimal), @p11='?' (DbType = Decimal), @p12='?' (DbType = DateTime), @p13='?', @p14='?', @p15='?', @p16='?' (DbType = DateTime), @p17='?', @p18='?' (DbType = Object), @p19='?' (DbType = DateTime), @p20='?', @p21='?' (DbType = Guid), @p22='?', @p23='?' (DbType = Guid), @p24='?' (DbType = Object), @p25='?', @p26='?' (DbType = Int32), @p27='?' (DbType = Decimal), @p28='?' (DbType = DateTime), @p29='?', @p30='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+INSERT INTO submissions (id, approved_at, approved_by, approver_name, auditor_email, auditor_id, auditor_name, completed_at, created_at, display_noun, gps_lat, gps_lng, gps_verified_at, idempotency_key, notes, review_status, scheduled_at, scoring_mode, section_scores, started_at, status, store_id, store_name, template_id, template_snapshot, template_title, template_version, total_score, updated_at, void_reason, voided_at)
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29, @p30); {"EventId": {"Id": 20102, "Name": "Microsoft.EntityFrameworkCore.Database.Command.CommandError"}, "SourceContext": "Microsoft.EntityFrameworkCore.Database.Command", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 136.9945 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOR", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 144.4424 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOP", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 ERR] An exception occurred in the database while saving changes for context type 'Checkly.Api.Common.Persistence.AppDbContext'.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 23514: new row for relation "submissions" violates check constraint "status_check"
+DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+  Exception data:
+    Severity: ERROR
+    SqlState: 23514
+    MessageText: new row for relation "submissions" violates check constraint "status_check"
+    Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+    SchemaName: public
+    TableName: submissions
+    ConstraintName: status_check
+    File: execMain.c
+    Line: 2081
+    Routine: ExecConstraints
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken) {"EventId": {"Id": 10000, "Name": "Microsoft.EntityFrameworkCore.Update.SaveChangesFailed"}, "SourceContext": "Microsoft.EntityFrameworkCore.Update", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 23514: new row for relation "submissions" violates check constraint "status_check"
+DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+  Exception data:
+    Severity: ERROR
+    SqlState: 23514
+    MessageText: new row for relation "submissions" violates check constraint "status_check"
+    Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+    SchemaName: public
+    TableName: submissions
+    ConstraintName: status_check
+    File: execMain.c
+    Line: 2081
+    Routine: ExecConstraints
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 136.6966 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOT", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 139.8815 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP0", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 142.4046 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOU", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 136.4064 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOS", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 151.5434 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IOV", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 119.4367 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP2", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 126.7225 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP3", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 127.4173 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP1", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Starting Checkly API
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 107.5015 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP6", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 110.0644 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP5", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/areas responded 403 in 44.0239 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP9", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates responded 403 in 28.4142 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPG", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/photos/d540b485-ec5e-42dd-b923-e3d2228c6183/..%2f..%2f..%2fetc%2fpasswd responded 400 in 45.2251 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPA", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/submissions/bf28a56f-efd1-4bb1-9d72-50c989854c30/void responded 400 in 41.5611 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPD", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/stores responded 400 in 69.4641 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP7", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.VoidAuditTests.Submission_StatusConstraint_RejectsInvalidStatus [71 ms]
+  Passed Checkly.Api.Tests.VoidAuditTests.Submission_Fields_CorrectColumnMapping [4 ms]
+  Passed Checkly.Api.Tests.AreaTests.Auditor_Cannot_Create_Area [4 s]
+  Passed Checkly.Api.Tests.TemplateTests.Auditor_Cannot_Create_Template [4 s]
+  Passed Checkly.Api.Tests.PhotoSecurityTests.GetPhoto_WithTraversalFileName_ReturnsBadRequest [4 s]
+[14:47:38 INF] HTTP POST /api/auth/register responded 403 in 2.9305 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPN", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 403 in 39.9848 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPQ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/stores responded 200 in 119.1907 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPC", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/stores responded 201 in 134.5483 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IP8", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/sync/submissions responded 403 in 57.1463 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPO", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 128.0432 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPB", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates responded 201 in 118.7914 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPF", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates responded 201 in 15.8082 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPR", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/user-groups responded 201 in 77.5199 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPP", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.StoreTests.CreateStore_NameTooLong_ReturnsBadRequest [4 s]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_MissingVoidReason_Returns400 [4 s]
+  Passed Checkly.Api.Tests.AuthTests.Admin_Can_Create_Another_Admin [149 ms]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_WrongStore_Returns403 [4 s]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageIntegerOverflow_ReturnsEmptyButSuccess(endpoint: "/api/stores") [3 s]
+[14:47:38 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 145.1913 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPE", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/admin/users responded 403 in 3.3874 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ0", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 122.0676 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPI", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 131.3679 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPK", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 129.7175 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPL", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 130.7359 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPM", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 138.1223 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPJ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP PUT /api/submissions/33a684c2-763b-4f43-b064-4ab598fd642a/finalize responded 403 in 56.4896 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ2", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/stores responded 201 in 6.7684 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ7", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 127.1516 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPT", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 124.5285 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPS", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP PUT /api/stores/8ff00d22-46b3-48fe-b31f-d8448671f15f responded 200 in 74.5500 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQA", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates/831e86f0-0532-4cc8-815b-d64e286d3b0c/groups responded 201 in 163.5313 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPV", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 158.9372 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ1", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 136.0971 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ5", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 130.3876 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPH", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 202.7722 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IPU", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 161.4602 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ4", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 170.3919 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ3", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/stores/8ff00d22-46b3-48fe-b31f-d8448671f15f responded 404 in 56.6529 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQE", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.UserGroupTests.CreateUserGroup_AsAdmin_ReturnsCreated [224 ms]
+  Passed Checkly.Api.Tests.AuthTests.Admin_Registration_Without_Admin_Token_Returns_403 [87 ms]
+  Passed Checkly.Api.Tests.AdminUserManagementTests.NonAdmin_Cannot_Create_User [4 s]
+  Passed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_ByNonOwner_ReturnsForbidden [5 s]
+  Passed Checkly.Api.Tests.Submissions.StoreAnalyticsUpdaterTests.UpdateMetricsAsync_CalculatesAveragesCorrectly [5 s]
+[14:47:38 INF] HTTP POST /api/templates/831e86f0-0532-4cc8-815b-d64e286d3b0c/groups/6dd97b52-fd6a-4497-9691-a43181f6d461/criteria responded 201 in 61.4156 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQF", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates/831e86f0-0532-4cc8-815b-d64e286d3b0c/groups/6dd97b52-fd6a-4497-9691-a43181f6d461/criteria responded 201 in 15.9286 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQN", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/action-plans responded 200 in 24.2164 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQL", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/submissions/57d5a062-adb8-47a3-97cc-ecf692f6b1c7/void responded 204 in 192.1201 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ9", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/areas responded 201 in 72.8561 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQG", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/photos/upload/ec381220-77b2-4cde-a486-50b50f4e505d responded 415 in 201.5571 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ6", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 177.5213 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQB", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/areas responded 409 in 7.0811 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQQ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 174.0100 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQC", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.StoreTests.GetStore_DeactivatedStore_ReturnsNotFound [317 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageIntegerOverflow_ReturnsEmptyButSuccess(endpoint: "/api/action-plans") [287 ms]
+  Passed Checkly.Api.Tests.Submissions.StoreAnalyticsUpdaterTests.UpdateMetricsAsync_SkipsIfStoreIdIsNull [70 ms]
+  Passed Checkly.Api.Tests.PhotoSecurityTests.UploadPhoto_WithExecutableExtension_ReturnsBadRequest [387 ms]
+  Passed Checkly.Api.Tests.AreaTests.Create_Area_With_Duplicate_Name_Returns_Conflict [394 ms]
+[14:47:38 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. {"EventId": {"Id": 10102, "Name": "Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning"}, "SourceContext": "Microsoft.EntityFrameworkCore.Query", "RequestId": "0HNKISUDL2IQS", "RequestPath": "/api/sync/templates", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Starting Checkly API
+[14:47:38 INF] Executed DbCommand (5ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @normalizedEmail
+LIMIT 2
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 122.7582 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQK", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 133.6884 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQI", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 128.9426 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQJ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. {"EventId": {"Id": 10102, "Name": "Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning"}, "SourceContext": "Microsoft.EntityFrameworkCore.Query", "RequestId": "0HNKISUDL2IQS", "RequestPath": "/api/sync/templates", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/sync/submissions responded 200 in 77.6668 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQP", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/user-groups responded 403 in 1.8550 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR1", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/templates responded 200 in 294.3087 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQ8", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 110.8879 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQO", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 139.8583 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQM", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_CascadesActionPlansToClosed [402 ms]
+  Passed Checkly.Api.Tests.AuthTests.Register_And_Login_Returns_Token [325 ms]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsAreaManager_CorrectArea_Returns200 [382 ms]
+  Passed Checkly.Api.Tests.UserGroupTests.CreateUserGroup_AsAuditor_ReturnsForbidden [347 ms]
+  Passed Checkly.Api.Tests.TemplateTests.Authenticated_User_Can_List_Templates [468 ms]
+[14:47:38 INF] HTTP POST /api/admin/users/90857e8c-7a3a-4cff-9cad-843178437a2c/reset-password responded 400 in 30.4145 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR0", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/stores responded 201 in 7.4665 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR7", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. {"EventId": {"Id": 10102, "Name": "Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning"}, "SourceContext": "Microsoft.EntityFrameworkCore.Query", "RequestId": "0HNKISUDL2IQS", "RequestPath": "/api/sync/templates", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/stores/9e9b3404-8195-44a9-888a-672ccdb08a9a responded 200 in 9.4511 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR9", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Starting Checkly API
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 144.7840 ms
+[14:47:38 INF] Setting HTTP status code 200.
+[14:47:38 INF] Setting HTTP status code 200.
+[14:47:38 INF] HTTP GET /api/photos/..%2f..%2fappsettings.json/some-file.jpg responded 400 in 9.8726 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRF", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/areas responded 201 in 18.3552 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRC", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 144.8111 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQD", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 157.1408 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQV", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP PUT /api/submissions/cd7b660f-c8e9-4f6a-9e6b-f6473fa0d037/finalize responded 200 in 117.2156 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR2", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/submissions responded 200 in 26.7466 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRE", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AdminUserManagementTests.Weak_Password_Rejected [350 ms]
+  Passed Checkly.Api.Tests.StoreTests.GetStore_ActiveStore_ReturnsOk [177 ms]
+  Passed Checkly.Api.Tests.AuthTests.Health_Endpoint_Returns_Healthy [48 ms]
+  Passed Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [5 s]
+  Passed Checkly.Api.Tests.PhotoSecurityTests.GetPhoto_WithNonGuidSubmissionId_ReturnsBadRequest [178 ms]
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 125.7672 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR5", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 122.3712 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR6", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/stores responded 201 in 6.9786 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRI", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/submissions/0041bdc4-d927-4150-8621-7fcdecc8a318/void responded 400 in 6.1498 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRJ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/stores responded 201 in 21.7173 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRG", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 132.1397 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR4", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/submissions responded 201 in 300.3776 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IQH", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 119.7426 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IR8", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates responded 201 in 8.1416 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRM", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/sync/submissions responded 400 in 3.1148 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRQ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP DELETE /api/areas/ac0650ff-4b08-4a07-ab6d-daf60be0b916 responded 409 in 15.0293 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRN", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/submissions responded 201 in 18.7025 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRL", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/user-groups responded 201 in 5.6149 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRS", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates/85419d04-be87-42b3-8eb6-2941b0b1e5e1/groups responded 201 in 15.9585 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRR", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 114.1546 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRB", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 137.5224 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRA", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/templates/85419d04-be87-42b3-8eb6-2941b0b1e5e1/groups/4b4f5b96-2413-4929-944d-1ae9c7f779f9/criteria responded 201 in 9.1828 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRV", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/user-groups responded 200 in 26.6324 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRT", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageIntegerOverflow_ReturnsEmptyButSuccess(endpoint: "/api/submissions") [197 ms]
+  Passed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_WithSnapshotPoisoning_UsesServerSnapshot [401 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WithDraftStatus_Returns400 [188 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S1_1_Creates_One_AP_Per_NonConform_Answer [5 s]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_MissingTenantScope_Returns400 [175 ms]
+[14:47:38 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/stores/c186bbec-8747-4e82-9415-137f598de397 responded 404 in 4.0201 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS6", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 130.3527 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRD", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/stores responded 200 in 44.5944 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS2", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Starting Checkly API
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 121.7497 ms
+[14:47:38 INF] Setting HTTP status code 201.
+[14:47:38 INF] Writing value of type 'Response' as Json.
+[14:47:38 INF] Setting HTTP status code 200.
+[14:47:38 INF] Writing value of type 'SubmissionDto' as Json.
+[14:47:38 INF] HTTP PUT /api/submissions/acb96e24-1c91-40ec-a357-e66a5d96bca3/finalize responded 200 in 91.7215 ms
+[14:47:38 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 131.6490 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRH", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 121.1307 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IRO", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP GET /api/templates responded 200 in 6.1885 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISB", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Starting Checkly API
+[14:47:38 INF] Executed DbCommand (1ms) [Parameters=[@p='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+SELECT t.id, t.created_at, t.created_by, t.description, t.display_noun, t.is_active, t.xmin, t.scoring_logic_config, t.title, t.type, t.updated_at, t.version
+FROM templates AS t
+WHERE t.id = @p
+LIMIT 1
+  Passed Checkly.Api.Tests.AreaTests.DeleteArea_WithActiveStores_ReturnsConflict [237 ms]
+  Passed Checkly.Api.Tests.UserGroupTests.ListUserGroups_AsAdmin_ReturnsOk [202 ms]
+  Passed Checkly.Api.Tests.StoreTests.GetStore_UnknownId_ReturnsNotFound [168 ms]
+  Passed Checkly.Api.Tests.TemplateTests.List_Stores_Returns_Ok [231 ms]
+  Passed Checkly.Api.Tests.UnitTest1.Test1 [< 1 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageIntegerOverflow_ReturnsEmptyButSuccess(endpoint: "/api/templates") [155 ms]
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 117.8081 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS0", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 114.8731 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS1", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/submissions/ef721537-0b49-4a1c-be34-4c243d791c10/void responded 403 in 0.8124 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISG", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/admin/users/d2ea6d78-78fb-4ee3-88c9-6889ef0aa0e4/reset-password responded 403 in 1.9002 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISI", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP PUT /api/submissions/9d093b09-d716-4cfe-8a68-cd3b6ad563d6 responded 200 in 36.2772 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISF", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 113.0847 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS8", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 146.8811 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS3", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/login responded 200 in 134.4800 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS5", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/submissions responded 201 in 15.1007 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISJ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP PUT /api/templates/a226938f-8c2b-4db7-80d2-159717998c7f/assignments responded 200 in 77.0404 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISD", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/auth/register responded 201 in 126.3351 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS7", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased. {"EventId": {"Id": 10102, "Name": "Microsoft.EntityFrameworkCore.Query.RowLimitingOperationWithoutOrderByWarning"}, "SourceContext": "Microsoft.EntityFrameworkCore.Query", "RequestId": "0HNKISUDL2ISN", "RequestPath": "/api/sync/templates", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] HTTP POST /api/user-groups responded 201 in 3.3616 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISP", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:38 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP PUT /api/submissions/381c007e-ba0d-48de-b3cd-005a059c97f8/finalize responded 200 in 26.9457 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISO", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/analytics/top-failures responded 200 in 125.4122 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS9", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/sync/templates responded 200 in 46.6470 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISN", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/submissions responded 201 in 18.4527 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISV", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/sync/submissions responded 200 in 40.1447 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISU", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/submissions responded 201 in 44.9625 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IST", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 130.7759 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISE", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP PUT /api/submissions/5c7c8770-03f9-4b74-b29e-aa3de128f558/finalize responded 200 in 22.0103 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT0", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AdminUserManagementTests.NonAdmin_Cannot_Reset_Password [302 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAuditor_Returns403 [192 ms]
+  Passed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.UpdateSubmission_WithAdminFieldInjection_DropsUnmappedFields [212 ms]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsStoreManager_CorrectStore_Returns200 [213 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.GetTopFailures_Uses_Semantic_IsFailure_Instead_Of_String_Matching [5 s]
+[14:47:39 INF] HTTP POST /api/submissions responded 201 in 21.6239 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT2", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 114.1641 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IS4", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 103.4140 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISL", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/stores responded 200 in 5.2542 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT5", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/stores responded 200 in 4.4300 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT8", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 109.7828 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISM", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 104.5911 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISR", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/areas responded 201 in 8.7751 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT9", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP PUT /api/submissions/bd471f64-7005-4bd2-a2f3-4b3f0bb85ee3/finalize responded 200 in 17.1955 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT6", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 110.6893 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISS", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 113.4574 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISQ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/areas responded 201 in 4.2327 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITE", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/areas responded 201 in 10.3378 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITD", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/submissions/8c0209bb-3831-4bd9-8110-47b3eff76691/void responded 204 in 7.2720 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITF", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/submissions/8c0209bb-3831-4bd9-8110-47b3eff76691/void responded 204 in 2.2339 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITI", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/stores responded 201 in 7.3916 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITH", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/stores responded 201 in 4.9716 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITK", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/stores responded 201 in 5.9687 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITL", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/submissions responded 201 in 18.8156 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITJ", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [330 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.F2_Survey_Mode_Skips_AP_Creation [247 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeUnderflow_ClampsToMin(endpoint: "/api/stores") [172 ms]
+  Passed Checkly.Api.Tests.ResilienceTests.SyncPolicy_AndUploadPolicy_AreRegisteredWithConcurrencyLimiters [265 ms]
+  Passed Checkly.Api.Tests.AreaTests.Admin_Can_Create_Area [285 ms]
+[14:47:39 INF] HTTP GET /api/submissions/survey-results responded 200 in 47.5306 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITC", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 107.9655 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT1", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 106.0387 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT4", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/photos/upload/77094c98-66d7-4327-82be-7ea35aef4489 responded 400 in 207.6960 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ISH", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/sync/submissions responded 200 in 4.7983 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITS", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 128.7535 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IT3", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_Idempotent_ReturnsOkWithoutDoubleWrite [158 ms]
+  Passed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_PenaltyTemplate_Returns_Distributions [1 s]
+  Passed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.CreateSubmission_WithAnswerFieldInjection_IgnoresServerDerivedFields [178 ms]
+  Passed Checkly.Api.Tests.PhotoSecurityTests.UploadPhoto_Exceeds15MB_ReturnsBadRequest [434 ms]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_WithSince_ReturnsOnlyDelta [149 ms]
+[14:47:39 INF] Starting Checkly API
+[14:47:39 INF] Setting HTTP status code 201.
+[14:47:39 INF] Writing value of type 'Response' as Json.
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 122.0941 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITG", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/stores responded 201 in 12.7627 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IU6", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 ERR] Unhandled exception acec873f0e85 for GET /api/test-error {"RequestId": "0HNKISUDL2ITM", "RequestPath": "/api/test-error", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+System.NotImplementedException: Integration test hook.
+   at Program.<>c.<<Main>$>b__0_11() in C:\Users\HP\Documents\GitHub\Checkly\server\Program.cs:line 193
+   at lambda_method6179(Closure, Object, HttpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Http.Timeouts.RequestTimeoutsMiddleware.<>c__DisplayClass5_0.<<Invoke>g__SetTimeoutAsync|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 117.6302 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITO", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 123.6888 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITN", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/templates responded 201 in 8.4716 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IU7", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 ERR] HTTP GET /api/test-error responded 500 in 21.9574 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITM", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/submissions responded 200 in 3.0817 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IUA", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 110.5043 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITP", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/submissions responded 200 in 1.9337 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IUC", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/templates/e2b502d0-a65e-43f4-891a-0db169535543/groups responded 201 in 9.6156 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IU9", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP PUT /api/action-plans/a7970af0-8d06-4318-a165-f6c06df443f1 responded 200 in 67.3725 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITV", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/templates/e2b502d0-a65e-43f4-891a-0db169535543/groups responded 201 in 12.4678 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IUD", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 114.9650 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITR", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Starting Checkly API
+[14:47:39 INF] User profile is available. Using 'C:\Users\HP\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+[14:47:39 INF] ReminderService started - interval: 12:00:00
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 143.0867 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2ITT", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/admin/users/7434b2ff-cc3b-4de9-a4ab-169d2622a248/reset-password responded 200 in 119.3183 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IU0", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeUnderflow_ClampsToMin(endpoint: "/api/submissions") [167 ms]
+  Passed Checkly.Api.Tests.ResilienceTests.ExceptionHandler_ReturnsRfc9110ProblemDetails [149 ms]
+  Passed Checkly.Api.Tests.AreaTests.List_Areas_Returns_Ok [182 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S2_3_Evidence_Rejected_Notifies_SM [247 ms]
+  Passed Checkly.Api.Tests.SubmissionTests.Get_Nonexistent_Submission_Returns_NotFound [623 ms]
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 108.1442 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IU4", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 119.0780 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2IU2", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.UserGroupTests.AddMembersToGroup_AsAdmin_ReturnsOk [465 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_WritesSystemLog [167 ms]
+  Passed Checkly.Api.Tests.AdminUserManagementTests.Admin_Can_Reset_Password [364 ms]
+  Passed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_OnAlreadyCompleted_ReturnsConflict [208 ms]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_AsAdmin_NoScopeRequired_Returns200 [189 ms]
+[14:47:39 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeUnderflow_ClampsToMin(endpoint: "/api/templates") [152 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S2_1_Evidence_Submitted_Creates_Notification [149 ms]
+  Passed Checkly.Api.Tests.AreaTests.DeleteArea_UnknownId_ReturnsNotFound [161 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_NotFound_Returns404 [166 ms]
+  Passed Checkly.Api.Tests.StoreAuthorizationTests.ListStores_AsAreaManager_ReturnsOnlyOwnArea [943 ms]
+[14:47:39 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AdminUserManagementTests.Reset_NonExistent_User_Returns_404 [166 ms]
+  Passed Checkly.Api.Tests.AreaMigrationTests.Profile_Has_AreaId_FK_Pointing_To_Area [326 ms]
+  Passed Checkly.Api.Tests.SubmissionTests.List_Notifications_Returns_Ok [209 ms]
+  Passed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_SurveyTemplate_Still_Returns_Correct_Distributions [421 ms]
+  Passed Checkly.Api.Tests.AreaMigrationTests.Multiple_Stores_Can_Point_To_Same_Area [65 ms]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_Pagination_RespectsPageSize [215 ms]
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeUnderflow_ClampsToMin(endpoint: "/api/action-plans") [169 ms]
+  Passed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.CreateSubmission_WithDuplicateIdempotencyKey_ReturnsOriginalUnchanged [230 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Finalize_Scored_Submission_Creates_Section_Score_Rows [571 ms]
+  Passed Checkly.Api.Tests.AreaMigrationTests.Store_Has_AreaId_FK_Pointing_To_Area [30 ms]
+  Passed Checkly.Api.Tests.VoidSubmissionEndpointTests.VoidSubmission_AsAdmin_WithCompleted_Returns204 [161 ms]
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AreaEndpointMigrationTests.AM_ListSubmissions_Filters_By_AreaId_FK [777 ms]
+  Passed Checkly.Api.Tests.AreaMigrationTests.Store_With_No_Area_Has_Null_AreaId [27 ms]
+  Passed Checkly.Api.Tests.AreaTests.DeleteArea_NoActiveStores_ReturnsNoContent [187 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S1_5_Idempotent_No_Duplicate_APs_On_Retry [235 ms]
+  Passed Checkly.Api.Tests.AreaMigrationTests.AreaId_FK_Works_Without_AreaCode_Column [32 ms]
+  Passed Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [649 ms]
+  Passed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_Auditor_Returns_Forbidden [135 ms]
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Starting Checkly API
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 101.4289 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J0O", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 96.0991 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J0Q", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 105.2839 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J0M", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/areas responded 201 in 4.8902 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J1B", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/admin/users responded 201 in 120.3932 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J0L", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 98.2542 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/admin/users responded 409 in 2.6780 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J1C", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/stores responded 201 in 5.5375 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J1D", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.SubmissionTests.List_ActionPlans_Returns_Ok [151 ms]
+  Passed Checkly.Api.Tests.SyncSubmissionsEndpointTests.SyncSubmissions_VoidedRecord_HasVoidFields [119 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNonIntegerParams_UsesDefaults(endpoint: "/api/stores") [119 ms]
+  Passed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_WithHostileFieldInjection_IgnoresPrivilegedFields [139 ms]
+  Passed Checkly.Api.Tests.AdminUserManagementTests.Duplicate_Email_Rejected [276 ms]
+[14:47:39 INF] HTTP POST /api/templates responded 201 in 5.8616 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/user-groups responded 201 in 6.9755 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/login responded 200 in 105.6840 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J10", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/stores/9303ee92-e390-4526-8e20-adc8d047234e/dashboard responded 200 in 74.4087 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J18", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/submissions/survey-results responded 400 in 1.0643 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J1G", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP PUT /api/templates/c8513c37-2176-454c-821c-d96cd0fabecb/assignments responded 200 in 10.0737 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 110.4047 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J14", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 104.8216 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J15", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP POST /api/auth/register responded 201 in 118.0131 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J12", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP PUT /api/action-plans/037ace29-993e-4e4a-9435-98864f2fb350 responded 200 in 4.9873 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J1J", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP GET /api/submissions responded 200 in 3.1848 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J1K", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] HTTP PUT /api/templates/c8513c37-2176-454c-821c-d96cd0fabecb/assignments responded 200 in 12.8209 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AreaEndpointMigrationTests.CreateStore_Accepts_AreaId_And_Returns_AreaName [137 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Store_Dashboard_Returns_Snapshot_Fields [189 ms]
+  Passed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_Without_TemplateId_Returns_BadRequest [111 ms]
+  Passed Checkly.Api.Tests.SubmissionTests.List_Submissions_Returns_Ok [126 ms]
+  Passed Checkly.Api.Tests.TemplateAssignmentTests.AssignTemplateToEmptyGroupList_ClearsAssignments [563 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S2_4_No_Notification_For_NonStatus_Updates [138 ms]
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:39 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNonIntegerParams_UsesDefaults(endpoint: "/api/templates") [123 ms]
+  Passed Checkly.Api.Tests.StoreAuthorizationTests.ListStores_AsAuditor_ReturnsAllActiveStores [379 ms]
+  Passed Checkly.Api.Tests.AreaTests.Admin_Can_Update_Area [260 ms]
+  Passed Checkly.Api.Tests.TemplateAssignmentTests.AssignTemplateToGroup_AsAdmin_ReturnsOk [112 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNonIntegerParams_UsesDefaults(endpoint: "/api/submissions") [108 ms]
+  Passed Checkly.Api.Tests.Submissions.SectionScoreExploderTests.Explode_SkipsOnMalformedJson [231 ms]
+[14:47:39 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Starting Checkly API
+[14:47:40 INF] Setting HTTP status code 201.
+[14:47:40 INF] Writing value of type 'Response' as Json.
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 91.9844 ms
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 97.0570 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J21", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 87.9288 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J25", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/submissions responded 201 in 9.8002 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J2E", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 89.0181 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J28", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP GET /api/action-plans responded 200 in 2.5243 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J2H", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/login responded 200 in 98.1356 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/templates responded 201 in 3.4404 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP PUT /api/submissions/c38e77b8-bac8-4b77-bbea-13d1987e0dea/finalize responded 200 in 12.0352 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J2G", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP GET /api/analytics/my-stats responded 200 in 53.4191 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J2D", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/login responded 200 in 80.8928 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J2B", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP GET /api/stores responded 200 in 49.4538 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J2F", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AdminUserManagementTests.Admin_Can_Create_User [195 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.F1_AP_Uses_Template_Configured_Deadline [159 ms]
+  Passed Checkly.Api.Tests.Submissions.SectionScoreExploderTests.Explode_AddsRowsToDbContext [27 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNonIntegerParams_UsesDefaults(endpoint: "/api/action-plans") [94 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Auditor_Can_Get_My_Stats [250 ms]
+  Passed Checkly.Api.Tests.AreaEndpointMigrationTests.ListStores_Search_By_Area_Name_Via_Join [282 ms]
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_With_InputTypes_Filter_Returns_Only_Matching_Criteria [273 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S2_2_Plan_Closed_Notifies_SM [116 ms]
+  Passed Checkly.Api.Tests.TemplateAssignmentTests.AssignTemplateToGroup_AsAuditor_ReturnsForbidden [192 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeOverflow_ClampsToMax(endpoint: "/api/templates") [96 ms]
+  Passed Checkly.Api.Tests.StoreAuthorizationTests.GetStoreDashboard_AsStoreManager_OtherStore_ReturnsForbidden [311 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S1_4_No_APs_For_Conform_Or_NA_Answers [111 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeOverflow_ClampsToMax(endpoint: "/api/action-plans") [82 ms]
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeOverflow_ClampsToMax(endpoint: "/api/stores") [97 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S1_2_AP_Deadline_Is_Seven_Days_From_Now [112 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Survey_Mode_Stamps_All_Answers_As_Not_Failure [332 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithPageSizeOverflow_ClampsToMax(endpoint: "/api/submissions") [84 ms]
+  Passed Checkly.Api.Tests.StoreAuthorizationTests.GetStoreDashboard_AsAuditor_ReturnsForbidden [235 ms]
+  Passed Checkly.Api.Tests.SubmissionActionPlanTests.S1_3_AP_Snapshots_Store_And_Criteria_Info [133 ms]
+  Passed Checkly.Api.Tests.Submissions.FinalizeSubmissionTransactionTests.Finalize_RollsBackEverything_IfSubsequentOperationsFail [494 ms]
+[14:47:40 INF] Starting Checkly API
+[14:47:40 INF] Setting HTTP status code 200.
+[14:47:40 INF] Writing value of type 'Response' as Json.
+[14:47:40 INF] HTTP POST /api/auth/login responded 200 in 70.2406 ms
+[14:47:40 INF] Setting HTTP status code 200.
+[14:47:40 INF] Writing value of type 'PagedResult`1' as Json.
+[14:47:40 INF] HTTP GET /api/templates responded 200 in 4.7487 ms
+[14:47:40 INF] Executed DbCommand (1ms) [Parameters=[@p='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+SELECT g.id, g.created_at, g.description, g.is_active, g.max_deduction_points, g.metadata, g.minus_per_fault, g.order_index, g.parent_id, g.template_id, g.title, g.updated_at, g.weight
+FROM groups AS g
+WHERE g.id = @p
+LIMIT 1
+[14:47:40 INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = Guid), @p4='?', @p5='?', @p6='?' (DbType = Object), @p7='?' (DbType = Decimal), @p8='?' (DbType = Int32), @p9='?' (DbType = Decimal), @p10='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+INSERT INTO criteria (id, created_at, description, group_id, input_type, label, metadata, minus_impact, order_index, points_weight, updated_at)
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10)
+RETURNING is_active, is_ccp, is_risk;
+[14:47:40 INF] Setting HTTP status code 201.
+[14:47:40 INF] Writing value of type '<>f__AnonymousType83`4' as Json.
+[14:47:40 INF] HTTP POST /api/templates/0c4bd603-8eee-46b5-9ca0-e483b128b045/groups/6fa08721-cd2c-4e1f-917b-959f22b7dea2/criteria responded 201 in 4.6695 ms
+[14:47:40 INF] Executed DbCommand (0ms) [Parameters=[@nameNormalized='?'], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM areas AS a
+    WHERE lower(a.name) = @nameNormalized)
+[14:47:40 INF] Executed DbCommand (0ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @normalizedEmail
+LIMIT 2
+[14:47:40 INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?', @p3='?', @p4='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+INSERT INTO areas (id, created_at, description, name, updated_at)
+VALUES (@p0, @p1, @p2, @p3, @p4);
+[14:47:40 INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+SELECT g.id, g.created_at, g.description, g.is_active, g.max_deduction_points, g.metadata, g.minus_per_fault, g.order_index, g.parent_id, g.template_id, g.title, g.updated_at, g.weight
+FROM groups AS g
+WHERE g.id = @p
+LIMIT 1
+[14:47:40 INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = Guid), @p5='?', @p6='?', @p7='?', @p8='?', @p9='?', @p10='?', @p11='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+INSERT INTO system_logs (id, action, category, created_at, entity_id, entity_type, level, message, path, trace_id, user_email, user_id)
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+[14:47:40 INF] Setting HTTP status code 201.
+[14:47:40 INF] Writing value of type 'AreaDto' as Json.
+[14:47:40 INF] HTTP POST /api/areas responded 201 in 4.5189 ms
+[14:47:40 INF] HTTP POST /api/templates/0c4bd603-8eee-46b5-9ca0-e483b128b045/groups/6596fac7-f16f-4ef5-b43c-ca619455464d/criteria responded 201 in 8.4126 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J42", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/areas responded 201 in 9.5143 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J43", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/stores responded 201 in 4.2353 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J45", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 80.0784 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J41", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP GET /api/stores responded 200 in 5.5090 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J47", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/login responded 200 in 75.9148 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J44", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/login responded 200 in 83.8304 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J46", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 93.2844 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J48", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 89.7520 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J49", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP GET /api/submissions responded 200 in 1.7654 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4D", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 83.9374 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4A", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/submissions responded 201 in 7.0297 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4C", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP PUT /api/admin/users/4fd9c72c-f02b-42d7-bcca-eeb941696d68 responded 200 in 6.1694 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4F", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP GET /api/stores/f31d67a9-55e7-42e4-9fa0-7fc88466d69e/dashboard responded 403 in 2.4957 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4H", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP PUT /api/submissions/db6e6e4c-5242-44bd-9050-dbac5665e4a7/finalize responded 200 in 16.2045 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4G", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP POST /api/auth/register responded 201 in 90.7180 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4E", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] HTTP GET /api/action-plans responded 200 in 2.8526 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J4K", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[xUnit.net 00:00:07.75]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:07.75]       Expected: Created
+[xUnit.net 00:00:07.75]       Actual:   InternalServerError
+[xUnit.net 00:00:07.75]       Stack Trace:
+[xUnit.net 00:00:07.75]         C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\CreateSubmissionSchedulingTests.cs(56,0): at Checkly.Api.Tests.Submissions.CreateSubmissionSchedulingTests.CreateSubmission_StatusScheduled_WithLocalTime_ConvertsToUtcAndPersists()
+[xUnit.net 00:00:07.75]         --- End of stack trace from previous location ---
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNoParams_UsesDefaults(endpoint: "/api/templates") [91 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNoParams_UsesDefaults(endpoint: "/api/stores") [88 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNoParams_UsesDefaults(endpoint: "/api/submissions") [97 ms]
+  Passed Checkly.Api.Tests.StoreAuthorizationTests.GetStoreDashboard_AsAreaManager_OtherArea_ReturnsForbidden [274 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Finalize_Stamps_IsFailure_Correctly_In_Db [317 ms]
+  Passed Checkly.Api.Tests.Security.PaginationVacuumCleanerRedTeamTests.Pagination_WithNoParams_UsesDefaults(endpoint: "/api/action-plans") [95 ms]
+  Failed Checkly.Api.Tests.Submissions.CreateSubmissionSchedulingTests.CreateSubmission_StatusScheduled_WithLocalTime_ConvertsToUtcAndPersists [366 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   InternalServerError
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.CreateSubmissionSchedulingTests.CreateSubmission_StatusScheduled_WithLocalTime_ConvertsToUtcAndPersists() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\CreateSubmissionSchedulingTests.cs:line 56
+--- End of stack trace from previous location ---
+[14:47:40 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[xUnit.net 00:00:07.83]       System.Exception : Registration failed (Forbidden): 
+[xUnit.net 00:00:07.83]       Stack Trace:
+[xUnit.net 00:00:07.83]         C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\TestWebApplicationFactory.cs(126,0): at Checkly.Api.Tests.TestWebApplicationFactory.RegisterUserAsync(HttpClient client, String email, String password, String fullName, String role, String adminToken)
+[xUnit.net 00:00:07.83]         C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\CreateSubmissionSchedulingTests.cs(77,0): at Checkly.Api.Tests.Submissions.CreateSubmissionSchedulingTests.CreateSubmission_StatusScheduled_AssignToAuditorId_CorrectlyDelegates()
+[xUnit.net 00:00:07.83]         --- End of stack trace from previous location ---
+[14:47:40 INF] Starting Checkly API
+[14:47:41 INF] HTTP GET /api/stores responded 200 in 38.8997 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J51", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP GET /api/analytics/area-leaderboard responded 200 in 37.4992 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J52", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Starting Checkly API
+[14:47:41 INF] Setting HTTP status code 201.
+[14:47:41 INF] Writing value of type '<>f__AnonymousType83`4' as Json.
+[14:47:41 INF] HTTP POST /api/templates/b4f9ba0b-efaa-4c75-8260-10e656e548d3/groups/9e53ef73-59e8-472e-9706-3ef356d53736/criteria responded 201 in 4.0659 ms
+[14:47:41 INF] Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @normalizedEmail
+LIMIT 2
+[14:47:41 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/auth/login responded 200 in 49.9562 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5I", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/auth/register responded 201 in 55.6892 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5J", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/submissions responded 201 in 9.3149 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5K", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP PUT /api/submissions/73f778e7-6802-4931-abdb-5ecebbb284cc/finalize responded 200 in 15.6609 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5L", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/submissions responded 201 in 8.3661 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5N", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP PUT /api/submissions/e5625c5d-8933-4346-8a7b-48ef4e75634b/finalize responded 200 in 13.7069 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5O", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP GET /api/analytics responded 200 in 120.7937 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5P", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/auth/login responded 200 in 63.4403 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5M", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/auth/login responded 200 in 76.1945 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5R", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/stores responded 201 in 3.5248 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5S", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/auth/register responded 201 in 82.3932 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5Q", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/templates responded 201 in 2.5100 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5T", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/templates/ec8b88ca-ca6a-44aa-a8c7-eb6307571034/groups responded 201 in 4.8267 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5U", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/templates/ec8b88ca-ca6a-44aa-a8c7-eb6307571034/groups responded 201 in 4.4862 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J60", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/templates/ec8b88ca-ca6a-44aa-a8c7-eb6307571034/groups/77e7f334-81d3-4bfe-8564-bb9247168f2c/criteria responded 201 in 3.3646 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J61", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/templates/ec8b88ca-ca6a-44aa-a8c7-eb6307571034/groups/77e7f334-81d3-4bfe-8564-bb9247168f2c/criteria responded 201 in 3.4544 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J62", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/submissions responded 201 in 16.6421 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J5V", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/templates/ec8b88ca-ca6a-44aa-a8c7-eb6307571034/groups/74266913-f175-43e2-9545-1b422412f5a3/criteria responded 201 in 3.4832 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J63", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Failed Checkly.Api.Tests.Submissions.CreateSubmissionSchedulingTests.CreateSubmission_StatusScheduled_AssignToAuditorId_CorrectlyDelegates [79 ms]
+  Error Message:
+   System.Exception : Registration failed (Forbidden): 
+  Stack Trace:
+     at Checkly.Api.Tests.TestWebApplicationFactory.RegisterUserAsync(HttpClient client, String email, String password, String fullName, String role, String adminToken) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\TestWebApplicationFactory.cs:line 126
+   at Checkly.Api.Tests.Submissions.CreateSubmissionSchedulingTests.CreateSubmission_StatusScheduled_AssignToAuditorId_CorrectlyDelegates() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\CreateSubmissionSchedulingTests.cs:line 77
+--- End of stack trace from previous location ---
+  Passed Checkly.Api.Tests.StoreAuthorizationTests.ListStores_AsStoreManager_ReturnsOnlyOwnStore [289 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.AM_Can_Access_Area_Leaderboard [279 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Auditor_Cannot_Access_Area_Leaderboard [148 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.GetTopFailures_Without_TemplateId_Returns_BadRequest [83 ms]
+  Passed Checkly.Api.Tests.Submissions.CreateSubmissionRedTeamTests.CreateSubmission_WithHostileDtoMassAssignment_IgnoresAdministrativeFields [366 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.GetAnalytics_With_AreaId_Returns_Scoped_Results [381 ms]
+  Passed Checkly.Api.Tests.Submissions.CreateSubmissionDirectTests.CreateSubmission_StatusCompleted_TriggersSectionScoresAndAnalytics [411 ms]
+[14:47:41 INF] Starting Checkly API
+[14:47:41 INF] HTTP POST /api/auth/login responded 200 in 73.6076 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J64", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/auth/register responded 201 in 64.1936 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J65", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/submissions responded 201 in 8.0258 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J66", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP PUT /api/submissions/f3d5d865-37a3-4756-8c6d-8bded8eccbf6/finalize responded 200 in 10.6359 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J67", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:41 INF] HTTP POST /api/auth/login responded 200 in 77.0059 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J68", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 90.2063 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6A", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP GET /api/analytics/top-failures responded 403 in 0.3290 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6B", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 88.0613 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J69", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/photos/upload/5579aac7-2517-495c-bf3f-71191de13512 responded 415 in 1.7443 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6D", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/login responded 200 in 82.6810 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6C", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/stores responded 201 in 4.9499 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6F", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates responded 201 in 3.7186 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6G", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/85d77ce6-c085-4844-b746-68947a1480a1/groups responded 201 in 6.3680 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6H", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 87.7075 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6E", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/85d77ce6-c085-4844-b746-68947a1480a1/groups responded 201 in 5.9091 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6I", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/photos/upload/3cb27686-e3d6-45d3-80ce-1b5cbc51fe60 responded 415 in 0.7511 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6J", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/85d77ce6-c085-4844-b746-68947a1480a1/groups/788e7848-2f2d-4e6a-a0a0-a967e192799d/criteria responded 201 in 3.9708 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6K", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/85d77ce6-c085-4844-b746-68947a1480a1/groups/788e7848-2f2d-4e6a-a0a0-a967e192799d/criteria responded 201 in 4.9427 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6M", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/85d77ce6-c085-4844-b746-68947a1480a1/groups/e9ecc4ef-b534-4741-89a2-8a94e226b5a5/criteria responded 201 in 3.7813 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6N", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/login responded 200 in 54.1841 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6O", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 77.4934 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6L", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/photos/upload/a9607f1d-c734-4d56-ba91-4510d7279f49 responded 201 in 8.1418 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6Q", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 68.7343 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6P", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/submissions responded 201 in 7.6883 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6S", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 65.0070 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6R", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP PUT /api/submissions/30bfc876-f845-42e8-8b1d-e557dc7b64da/finalize responded 200 in 22.8707 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6T", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/photos/upload/77916c8d-5c3c-4759-b122-d9673277580d responded 201 in 4.2957 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6U", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/login responded 200 in 89.4171 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J6V", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 92.5813 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J70", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/photos/upload/f9d4ec0e-092d-4144-9887-e2c6daf2fc32 responded 400 in 1.4332 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J72", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AnalyticsTests.Finalize_Survey_Submission_Creates_Zero_Section_Score_Rows [277 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Auditor_Cannot_Access_Top_Failures [171 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithPhpWebshellRenamedAsJpg_ReturnsUnsupportedMediaType [341 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithNullBytesHeader_ReturnsUnsupportedMediaType [96 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithValidPngMagicBytes_ReturnsCreated [94 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithPolyglotJpegPayload_ReturnsCreated [75 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Finalize_Submission_Updates_Store_Analytics_Snapshot [281 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithEmptyFile_ReturnsBadRequest [101 ms]
+[14:47:42 INF] HTTP GET /api/analytics responded 200 in 62.4775 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J71", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/register responded 201 in 68.3226 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J73", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/photos/upload/078c2251-fc17-433e-8c1a-b002cfa0c7a6 responded 201 in 4.4240 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J75", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/auth/login responded 200 in 54.0869 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J74", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates responded 201 in 2.6965 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J77", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/e0a3b19b-86be-4839-97a6-c20c05782150/groups responded 201 in 4.5625 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J78", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/e0a3b19b-86be-4839-97a6-c20c05782150/groups responded 201 in 4.8355 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J79", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/e0a3b19b-86be-4839-97a6-c20c05782150/groups/7d5c3c48-4546-433c-b895-2b2212190563/criteria responded 201 in 3.8547 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7A", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/e0a3b19b-86be-4839-97a6-c20c05782150/groups/7d5c3c48-4546-433c-b895-2b2212190563/criteria responded 201 in 3.6861 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7B", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP POST /api/templates/e0a3b19b-86be-4839-97a6-c20c05782150/groups/919cb4ae-a5e9-4889-8593-aebb5c033b71/criteria responded 201 in 3.0948 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7C", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] HTTP GET /api/analytics/top-failures responded 200 in 4.7869 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7D", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] Starting Checkly API
+[14:47:42 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:42 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP POST /api/auth/register responded 201 in 72.6704 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7L", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP GET /api/photos/983844f8-7050-4e56-98f3-44b95e396cf3/ghost_photo_v4.jpg responded 404 in 25.7913 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7M", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP POST /api/auth/register responded 201 in 83.6141 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7N", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP POST /api/auth/register responded 201 in 79.6604 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7O", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP GET /api/photos/1ba3f059-1997-4f20-85ea-4f61a35ee2db/photo_v1.jpg responded 403 in 2.8199 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7P", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+  Passed Checkly.Api.Tests.AnalyticsTests.GetAnalytics_Response_Shape_Unchanged_After_Refactor [155 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithValidJpegMagicBytes_ReturnsCreated [79 ms]
+  Passed Checkly.Api.Tests.AnalyticsTests.Admin_Can_Get_Top_Failures [88 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithExeRenamedAsJpg_ReturnsUnsupportedMediaType [71 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithExeContentTypeSpoofedAsJpeg_ReturnsUnsupportedMediaType [68 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithValidWebPMagicBytes_ReturnsCreated [92 ms]
+  Passed Checkly.Api.Tests.Security.MagicByteTests.UploadPhoto_WithTruncatedFile_ReturnsUnsupportedMediaType [80 ms]
+  Passed Checkly.Api.Tests.Security.PhotoIDORRedTeamTests.GetPhoto_AfterSubmissionDeleted_ReturnsForbiddenOrNotFound [338 ms]
+  Passed Checkly.Api.Tests.Security.PhotoIDORRedTeamTests.GetPhoto_ByCrosstenantUser_ReturnsForbidden [175 ms]
+[14:47:43 INF] HTTP POST /api/auth/register responded 201 in 88.3386 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7Q", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP GET /api/photos/a422d3b6-14e8-409a-bd1b-97077e0f5b08/photo.jpg responded 404 in 1.6637 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7R", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP GET /api/photos/20d27162-1100-4b71-a24c-361f3c64128d/photo.jpg responded 404 in 0.5211 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7S", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP GET /api/photos/5681f500-3a53-4301-a225-bae6657c3eda/photo.jpg responded 404 in 0.4649 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7T", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP POST /api/auth/register responded 201 in 78.2961 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7U", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] HTTP POST /api/photos/upload/db09af09-9668-45ae-9f7a-2af723ab1d76 responded 201 in 26.2355 ms {"SourceContext": "Serilog.AspNetCore.RequestLoggingMiddleware", "RequestId": "0HNKISUDL2J7V", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[14:47:43 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[xUnit.net 00:00:10.46]   Finished:    Checkly.Api.Tests
+  Passed Checkly.Api.Tests.Security.PhotoIDORRedTeamTests.GetPhoto_WithRandomNonExistentUuid_ReturnsNotFound [94 ms]
+  Passed Checkly.Api.Tests.Security.PhotoIDORRedTeamTests.UploadPhoto_WithForeignAnswerId_DoesNotPatchAnswer [126 ms]
+
+Total tests: 180
+     Passed: 178
+     Failed: 2
+ Total time: 11.0050 Seconds
+     1>Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" on node 1 (VSTest target(s)).
+     1>_VSTestConsole:
+         MSB4181: The "VSTestTask" task returned false but did not log an error.
+     1>Done Building Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (VSTest target(s)) -- FAILED.
+
+Build FAILED.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:11.59
