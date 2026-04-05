@@ -162,7 +162,7 @@ class _HistoryPageState extends State<HistoryPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => FractionallySizedBox(
+      builder: (sheetContext) => FractionallySizedBox(
         heightFactor: 0.9,
         child: Column(
           children: [
@@ -184,7 +184,7 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(context)),
+              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(sheetContext)),
             ),
           ],
         ),

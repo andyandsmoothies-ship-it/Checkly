@@ -43,7 +43,7 @@ class _DashboardPageState extends State<DashboardPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => FractionallySizedBox(
+      builder: (sheetContext) => FractionallySizedBox(
         heightFactor: 0.9,
         child: Column(
           children: [
@@ -64,7 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(context)),
+              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(sheetContext)),
             ),
           ],
         ),
