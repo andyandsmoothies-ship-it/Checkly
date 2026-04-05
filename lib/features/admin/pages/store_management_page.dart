@@ -256,9 +256,9 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                                         point: markerPos!,
                                         width: 40,
                                         height: 40,
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.location_on,
-                                          color: Colors.red,
+                                          color: Theme.of(ctx).colorScheme.primary,
                                           size: 40,
                                         ),
                                       ),
@@ -318,9 +318,9 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
   }) async {
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Store name is required'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('Store name is required'),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -361,7 +361,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -389,7 +389,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+              style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
               child: const Text('Deactivate'),
             ),
           ],
@@ -412,7 +412,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -479,7 +479,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
             Text('Failed to load stores', style: theme.textTheme.titleMedium),
             const SizedBox(height: 16),

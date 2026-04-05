@@ -90,16 +90,16 @@ class _HeatCell extends StatelessWidget {
 
   const _HeatCell({required this.score});
 
-  Color _cellColor() {
+  Color _cellColor(ThemeData theme) {
     if (score.avgScore >= 80) return AppTheme.success;
     if (score.avgScore >= 60) return AppTheme.warning;
-    return Colors.red;
+    return theme.colorScheme.error;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = _cellColor();
+    final color = _cellColor(theme);
 
     return Container(
       padding: const EdgeInsets.all(12),

@@ -117,7 +117,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                         Text(
                           'New Area',
                           style: AppFonts.displayStyle(
-                            fontSize: 18,
+                            fontSize: Theme.of(ctx).textTheme.titleLarge?.fontSize,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -186,7 +186,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(msg.toString()),
-                                backgroundColor: Colors.red,
+                                backgroundColor: Theme.of(context).colorScheme.error,
                               ),
                             );
                           }
@@ -245,7 +245,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                         Text(
                           'Edit Area',
                           style: AppFonts.displayStyle(
-                            fontSize: 18,
+                            fontSize: Theme.of(ctx).textTheme.titleLarge?.fontSize,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -308,7 +308,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Failed: $e'),
-                                backgroundColor: Colors.red,
+                                backgroundColor: Theme.of(context).colorScheme.error,
                               ),
                             );
                           }
@@ -380,7 +380,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
             Text('Failed to load areas', style: theme.textTheme.titleMedium),
             const SizedBox(height: 16),
@@ -485,7 +485,7 @@ class _AreaCard extends StatelessWidget {
                     Text(
                       name,
                       style: AppFonts.displayStyle(
-                        fontSize: 15,
+                        fontSize: Theme.of(context).textTheme.titleSmall?.fontSize,
                         fontWeight: FontWeight.w600,
                       ),
                       overflow: TextOverflow.ellipsis,

@@ -201,7 +201,7 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
                     _dateRange == null
                         ? 'Date Range'
                         : '${_fmt(_dateRange!.start)} – ${_fmt(_dateRange!.end)}',
-                    style: const TextStyle(fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   onPressed: _pickDateRange,
                 ),
@@ -220,7 +220,7 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
                     child: FilterChip(
                       label: Text(
                         level.toUpperCase(),
-                        style: const TextStyle(fontSize: 11),
+                        style: Theme.of(context).textTheme.labelSmall,
                       ),
                       selected: _levelFilter == level,
                       onSelected: (_) => _onLevelChanged(level),
@@ -250,7 +250,7 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
             Text('Failed to load logs', style: theme.textTheme.titleMedium),
             const SizedBox(height: 16),
@@ -364,7 +364,6 @@ class _LogCard extends StatelessWidget {
                         _formatTime(createdAt),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.outline,
-                          fontSize: 10,
                         ),
                       ),
                     ],
@@ -402,8 +401,9 @@ class _LevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final (Color bg, Color fg, IconData icon) = switch (level) {
-      'error' => (Colors.red.withValues(alpha: 0.15), Colors.red, Icons.error),
+      'error' => (theme.colorScheme.errorContainer, theme.colorScheme.error, Icons.error),
       'warn' => (
         AppTheme.warning.withValues(alpha: 0.15),
         AppTheme.warning,

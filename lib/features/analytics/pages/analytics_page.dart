@@ -712,7 +712,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           icon: Icons.warning_amber,
                           label: 'Overdue',
                           value: '$_overdueAPs',
-                          accentColor: Colors.red,
+                          accentColor: Theme.of(context).colorScheme.error,
                           tooltip: 'Action plans past their deadline',
                           onTap: () => context.go('/plans?sort=urgent'),
                         ),
@@ -809,7 +809,7 @@ class _KpiCard extends StatelessWidget {
                 Text(
                   value,
                   style: AppFonts.serifStyle(
-                    fontSize: 28,
+                    fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -817,7 +817,7 @@ class _KpiCard extends StatelessWidget {
                 Text(
                   label.toUpperCase(),
                   style: AppFonts.displayStyle(
-                    fontSize: 10,
+                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     letterSpacing: 1,

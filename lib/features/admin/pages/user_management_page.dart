@@ -133,7 +133,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+              style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
               child: const Text('Deactivate'),
             ),
           ],
@@ -148,7 +148,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(ban ? 'User deactivated' : 'User reactivated'),
-            backgroundColor: ban ? Colors.red : AppTheme.success,
+            backgroundColor: ban ? Theme.of(context).colorScheme.error : AppTheme.success,
           ),
         );
         _loadData();
@@ -156,7 +156,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     } on DioException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -252,7 +252,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Transfer failed: $retryErr'),
-                  backgroundColor: Colors.red,
+                  backgroundColor: Theme.of(context).colorScheme.error,
                 ),
               );
             }
@@ -262,14 +262,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed: ${e.message}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -469,7 +469,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
             Text('Failed to load users', style: theme.textTheme.titleMedium),
             const SizedBox(height: 16),

@@ -133,7 +133,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -155,7 +155,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
             child: const Text('Reject'),
           ),
         ],
@@ -171,9 +171,9 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Audit rejected'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: const Text('Audit rejected'),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
         _loadSubmissions();
@@ -181,7 +181,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -245,7 +245,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
                     child: Text(
                       scoreStr,
                       style: AppFonts.serifStyle(
-                        fontSize: 22,
+                        fontSize: theme.textTheme.headlineSmall?.fontSize,
                         fontWeight: FontWeight.w700,
                         color: scoreColor,
                       ),
@@ -569,7 +569,7 @@ class _ReviewCard extends StatelessWidget {
                       child: Text(
                         scoreStr,
                         style: AppFonts.serifStyle(
-                          fontSize: 14,
+                          fontSize: theme.textTheme.bodyMedium?.fontSize,
                           fontWeight: FontWeight.w700,
                           color: scoreColor,
                         ),
@@ -586,7 +586,7 @@ class _ReviewCard extends StatelessWidget {
                         Text(
                           item.storeName ?? 'Unknown Store',
                           style: AppFonts.displayStyle(
-                            fontSize: 15,
+                            fontSize: Theme.of(context).textTheme.titleSmall?.fontSize,
                             fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,

@@ -229,7 +229,7 @@ class _AdminStat extends StatelessWidget {
             Text(
               value,
               style: AppFonts.serifStyle(
-                fontSize: 28,
+                fontSize: theme.textTheme.headlineMedium?.fontSize,
                 color: theme.colorScheme.onSurface,
               ),
             ),
@@ -237,7 +237,7 @@ class _AdminStat extends StatelessWidget {
             Text(
               label,
               style: AppFonts.displayStyle(
-                fontSize: 10,
+                fontSize: theme.textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 letterSpacing: 0.5,

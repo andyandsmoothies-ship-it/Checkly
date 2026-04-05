@@ -285,7 +285,6 @@ class _CompactLogCard extends StatelessWidget {
                       _fmtTime(createdAt),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.outline,
-                        fontSize: 10,
                       ),
                     ),
                 ],
@@ -315,8 +314,9 @@ class _LevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final (Color bg, Color fg, IconData icon) = switch (level) {
-      'error' => (Colors.red.withValues(alpha: 0.15), Colors.red, Icons.error),
+      'error' => (theme.colorScheme.errorContainer, theme.colorScheme.error, Icons.error),
       'warn' => (
         AppTheme.warning.withValues(alpha: 0.15),
         AppTheme.warning,

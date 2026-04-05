@@ -17,12 +17,15 @@ class UserCard extends StatelessWidget {
     required this.onBanToggle,
   });
 
-  static const _roleColors = <String, Color>{
-    'admin': Colors.deepPurple,
-    'auditor': Colors.blue,
-    'store_manager': Colors.teal,
-    'area_manager': Colors.orange,
-  };
+  static Color _roleColor(String role, ThemeData theme) {
+    return switch (role) {
+      'admin' => theme.colorScheme.tertiary,
+      'auditor' => theme.colorScheme.primary,
+      'store_manager' => theme.colorScheme.secondary,
+      'area_manager' => theme.colorScheme.primaryContainer.withValues(alpha: 2.0),
+      _ => theme.colorScheme.onSurfaceVariant,
+    };
+  }
 
   static const _roleLabels = <String, String>{
     'admin': 'Admin',
@@ -39,7 +42,7 @@ class UserCard extends StatelessWidget {
     final fullName = user['fullName'] as String? ?? 'Unknown';
     final email = user['email'] as String? ?? '';
     final avatarUrl = user['avatarUrl'] as String?;
-    final roleColor = _roleColors[role] ?? Colors.grey;
+    final roleColor = _roleColor(role, theme);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -137,13 +140,13 @@ class UserCard extends StatelessWidget {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.15),
+                            color: theme.colorScheme.errorContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             'Inactive',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: Colors.red,
+                              color: theme.colorScheme.error,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

@@ -368,7 +368,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
                 Text(
                   'SCHEDULED DATE',
                   style: AppFonts.displayStyle(
-                    fontSize: 10,
+                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                     letterSpacing: 2,
@@ -422,19 +422,19 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         FilledButton.icon(
           onPressed: _isSubmitting ? null : _submit,
           icon: _isSubmitting
-              ? const SizedBox(
+              ? SizedBox(
                   width: 18,
                   height: 18,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 )
               : const Icon(Icons.send),
           label: Text(
             _isSubmitting ? 'Scheduling...' : 'Schedule Audit',
             style: AppFonts.displayStyle(
-              fontSize: 14,
+              fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -486,7 +486,7 @@ class _DropdownCard extends StatelessWidget {
                 Text(
                   label,
                   style: AppFonts.displayStyle(
-                    fontSize: 10,
+                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                     letterSpacing: 2,
