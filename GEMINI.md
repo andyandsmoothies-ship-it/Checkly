@@ -33,8 +33,8 @@ After any significant implementation, debug, or refactor, assess whether a new l
 
 ### Sketch-of-Thought (SoT) & Artifact Density (STRICT)
 <SYSTEM_GUARD type="STRICT" name="ArtifactDensityFormatting">
-- **Rule**: All generated markdown artifacts MUST operate in "Telegram Style" using mathematical/symbolic density.
-- **Enforcement**: Eradicate polite filler. Use logic gates (e.g., `IF auth_fails -> THEN /refresh`), tables, and bullet lists.
+- **Rule**: All generated markdown artifacts MUST prioritize concise, direct communication without omitting critical details.
+- **Enforcement**: Eradicate polite filler. Use structured formats like tables, bullet points, and markdown alerts to maximize readability and token efficiency.
 </SYSTEM_GUARD>
 
 ### First-Step Logical Reasoning (FSLR)
