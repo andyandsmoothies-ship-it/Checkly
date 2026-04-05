@@ -3,8 +3,6 @@ description: The Core Builder Implementation Workflow
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
 
 # /implement Workflow
 

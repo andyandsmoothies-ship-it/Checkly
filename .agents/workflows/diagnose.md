@@ -1,11 +1,8 @@
 ---
-name: Diagnostic Workflow
 description: High-Compliance Diagnostic Workflow for System Errors.
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /diagnose
 

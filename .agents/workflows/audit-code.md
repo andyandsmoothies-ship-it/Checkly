@@ -3,8 +3,6 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /audit-code
 

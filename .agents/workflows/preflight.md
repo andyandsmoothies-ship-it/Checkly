@@ -3,8 +3,6 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /preflight
 

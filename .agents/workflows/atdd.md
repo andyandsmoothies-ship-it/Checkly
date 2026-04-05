@@ -1,11 +1,8 @@
 ---
-name: ATDD Workflow
 description: Acceptance Test-Driven Development — defines acceptance tests BEFORE implementation begins.
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /atdd
 

@@ -1,12 +1,8 @@
 ---
-name: Verification Workflow
 description: Universal verification gate proving upstream artifacts (code, plans, audits) are structurally sound, performant, and correctly implemented.
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
-
 # Workflow: /verify
 
 > [!CAUTION]

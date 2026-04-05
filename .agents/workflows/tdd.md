@@ -3,8 +3,6 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /tdd
 
@@ -102,4 +100,3 @@ Run EXACTLY:
 - Code 0 (PASS): Workflow complete. Share summary and stop.
 - Code 1 (FAIL): Fix reported errors and retry.
 - 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
-

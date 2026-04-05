@@ -1,11 +1,8 @@
 ---
-name: Deep Epic Analysis Workflow
 description: Architect's Strategic Research Workflow for Massive Epic Systems (Track C).
 ---
 
 @[.agents/rules/orchestration-standards.md]
-@[.agents/rules/governance-rules.md]
-@[.agents/rules/artifact-protocol.md]
 
 # Workflow: /analyze-epic
 
