@@ -31,10 +31,16 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **DO ADD**: Project-breaking quirks, vendor-specific edge cases, architectural deviations.
 - **DO NOT ADD**: Generic C#/Dart/Flutter knowledge, one-off syntax errors.
 
-### Artifact Density & Formatting (STRICT)
+### Sketch-of-Thought (SoT) & Artifact Density (STRICT)
 <SYSTEM_GUARD type="STRICT" name="ArtifactDensityFormatting">
-- **Rule**: All generated markdown artifacts (plans, specs, walkthroughs) MUST be structurally dense and hyper-concise to optimize for AI token parsing.
-- **Prohibition**: No conversational filler, polite preamble, or redundant paragraphs. Use strict logic gates, tables, and bullet lists.
+- **Rule**: All generated markdown artifacts MUST operate in "Telegram Style" using mathematical/symbolic density.
+- **Enforcement**: Eradicate polite filler. Use logic gates (e.g., `IF auth_fails -> THEN /refresh`), tables, and bullet lists.
+</SYSTEM_GUARD>
+
+### First-Step Logical Reasoning (FSLR)
+<SYSTEM_GUARD type="STRICT" name="FirstStepLogicalReasoning">
+- **Rule**: Never generate code immediately during diagnostics or planning.
+- **Enforcement**: Your absolute first step MUST be a Boolean Logic Tree (the "Rationality Peak") proving you understand the state boundaries. Execute code only after the tree is mapped.
 </SYSTEM_GUARD>
 
 ---
