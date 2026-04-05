@@ -49,11 +49,13 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Artifact Check**| IF `implementation_plan.md` OR `specs.md` exists -> Execute Quality Checklist. ELSE -> load `technical-specification` + generate lightweight plan -> Yield Approval. |
+| **JIT Harness** | MANDATORY: Declare `[ACTIVE_SKILLS]` at the top of the plan. Drop all other RAG context. The AI is legally bound to this isolation cage for the session. |
 | **Verification** | Spot-check 1 plan claim against source via `grep_search`. IF plan references an API/DTO: verify claim holds in BOTH `server/` AND `lib/`. IF False → STOP. |
 | **YAGNI Gate** | IF feature adds complexity without business value -> Create Before/After tradeoff table. |
 
 ### Plan Quality Checklist
 - [ ] Goal stated? (1 paragraph)
+- [ ] JIT Harness (`[ACTIVE_SKILLS]`) declared?
 - [ ] File delta (`[NEW]`, `[MOD]`, `[DEL]`) defined?
 - [ ] Identity DB/Schema migrations?
 - [ ] Transaction boundaries & idempotency defined?
