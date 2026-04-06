@@ -92,7 +92,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 > **@@SCAN**: (1) Red/Green split respected? (2) Inline verify gate run?
 
 ## Phase 4: Self-Review
-Review from 4 angles & state findings:
+Review from 5 angles & state findings:
 1. **Security/Arch**: Check package dependency/illegal imports.
 2. **Logic Check**: Null handling? Acceptance criteria met?
 3. **Concurrency**: Verify Idempotency is at DB/Top-layer, not mid-layer.
@@ -101,6 +101,7 @@ Review from 4 angles & state findings:
    - ✅ Error State Test (e.g. 400/403)
    - ✅ Empty State Test (e.g. Nulls)
    - *Exemption*: Purely cosmetic (`[SCAN Exemption: Cosmetic Only]`)
+5. **Quality Gate**: No hardcoded UI colors, no rogue padding, zero unused imports, zero dead code.
 
 | Step | Execution Contract |
 |---|---|

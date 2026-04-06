@@ -51,6 +51,23 @@ class OutboxDao {
     await _db.into(_db.pendingSubmissions).insert(entry);
   }
 
+  /// Atomically inserts a submission and its answers in a single transaction.
+  ///
+  /// If answer insertion fails, the submission row is rolled back — preventing
+  /// zombie `pending_submissions` rows with no linked answers.
+  Future<void> insertSubmissionWithAnswers(
+    PendingSubmissionsCompanion submission,
+    List<PendingAnswersCompanion> answers,
+  ) async {
+    await _db.transaction(() async {
+      await _db.into(_db.pendingSubmissions).insert(submission);
+      await _db.batch((b) {
+        b.insertAll(_db.pendingAnswers, answers);
+      });
+    });
+  }
+
+
   /// Update sync status of a submission, with optional backoff fields.
   Future<void> updateSyncStatus(
     String id,

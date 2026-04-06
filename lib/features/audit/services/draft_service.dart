@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:drift/drift.dart';
 
@@ -50,7 +51,7 @@ class DraftService {
 
     // Check 14-day (336h) expiry — per ADR-001
     if (DateTime.now().difference(row.savedAt).inHours >= 336) {
-      await deleteDraft(draftKey);
+      await _deleteRowAndPhotos(row);
       return null;
     }
 
@@ -64,26 +65,35 @@ class DraftService {
         savedAt: row.savedAt,
       );
     } catch (_) {
-      // Corrupted draft — discard
-      await deleteDraft(draftKey);
+      // Corrupted draft — discard with photo cleanup
+      await _deleteRowAndPhotos(row);
       return null;
     }
   }
 
-  /// Cancels any pending save and deletes the draft.
+  /// Cancels any pending save and deletes the draft (including local photo files).
   Future<void> deleteDraft(String draftKey) async {
     _debounceTimer?.cancel();
-    await (_db.delete(
+    final row = await (_db.select(
       _db.draftAnswers,
-    )..where((t) => t.draftKey.equals(draftKey))).go();
+    )..where((t) => t.draftKey.equals(draftKey))).getSingleOrNull();
+    if (row != null) {
+      await _deleteRowAndPhotos(row);
+    }
   }
 
   /// Deletes all drafts older than 14 days (336 hours) — per ADR-001.
+  /// Also deletes any physical photo files referenced by expired drafts.
   Future<int> cleanExpired() async {
     final cutoff = DateTime.now().subtract(const Duration(hours: 336));
-    return await (_db.delete(
+    final expiredRows = await (_db.select(
       _db.draftAnswers,
-    )..where((t) => t.savedAt.isSmallerThanValue(cutoff))).go();
+    )..where((t) => t.savedAt.isSmallerThanValue(cutoff))).get();
+
+    for (final row in expiredRows) {
+      await _deleteRowAndPhotos(row);
+    }
+    return expiredRows.length;
   }
 
   /// Cancels any pending debounce timer.
@@ -102,6 +112,37 @@ class DraftService {
   }
 
   // ── Private ──
+
+  /// Deletes local photo files referenced by a draft row, then removes the
+  /// SQLite row. File-not-found is silently swallowed — the row is always deleted.
+  Future<void> _deleteRowAndPhotos(DraftAnswer row) async {
+    // Extract photoUrl values from the stored answers JSON
+    try {
+      final decoded = jsonDecode(row.answersJson) as Map<String, dynamic>;
+      for (final entry in decoded.values) {
+        if (entry is Map) {
+          final photoUrl = entry['photoUrl'];
+          if (photoUrl is String && photoUrl.isNotEmpty) {
+            try {
+              final file = File(photoUrl);
+              if (await file.exists()) {
+                await file.delete();
+              }
+            } catch (_) {
+              // File already gone or permission error — safe to ignore
+            }
+          }
+        }
+      }
+    } catch (_) {
+      // Malformed JSON — still proceed to delete the row
+    }
+
+    // Delete the SQLite row regardless of photo cleanup outcome
+    await (_db.delete(
+      _db.draftAnswers,
+    )..where((t) => t.draftKey.equals(row.draftKey))).go();
+  }
 
   Future<void> _upsert(
     String draftKey,

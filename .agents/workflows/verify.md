@@ -37,6 +37,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 | Step | Execution Contract |
 |---|---|
+| **Quality Sweep**| MANDATORY: Reject code with hardcoded colors, rogue padding, unused imports, or dead logic. |
 | **Execution** | Stop Dev Servers -> Run ALL tests globally (`flutter test`, `dotnet test`). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions broke. |
 | **Pass/Fail Logic**| IF (Tests Green AND Zero Warnings) -> Proceed Phase 3. IF (Any Fail/Warning) -> **MANDATORY TRANSITION**: `/diagnose`. Do NOT ask permission. |
 

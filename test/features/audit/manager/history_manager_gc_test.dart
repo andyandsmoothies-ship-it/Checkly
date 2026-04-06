@@ -5,7 +5,10 @@ import 'package:checkly/features/audit/manager/history_manager.dart';
 import 'package:checkly/features/audit/model/submission_dto.dart';
 import 'package:checkly/features/audit/services/submission_api_service.dart';
 import 'package:checkly/_shared/database/dao/submission_dao.dart';
-
+import 'package:get_it/get_it.dart';
+import 'package:checkly/_shared/database/dao/outbox_dao.dart';
+import 'package:checkly/features/audit/services/draft_service.dart';
+import 'package:checkly/_shared/services/connectivity_service.dart';
 // ── Test Plan: HistoryManager - Cloud Archive (AC5) ──
 // AC5 — Server Archive Filter:
 //   searchCloudArchive() calls the API with a `completedBefore` date 90 days ago
@@ -15,6 +18,9 @@ import 'package:checkly/_shared/database/dao/submission_dao.dart';
 
 class MockSubmissionApiService extends Mock implements SubmissionApiService {}
 class MockSubmissionDao extends Mock implements SubmissionDao {}
+class MockOutboxDao extends Mock implements OutboxDao {}
+class MockDraftService extends Mock implements DraftService {}
+class MockConnectivityService extends Mock implements ConnectivityService {}
 
 SubmissionDto _makeDto(String id) => SubmissionDto(
   id: id,
@@ -28,7 +34,19 @@ void main() {
   late MockSubmissionDao mockDao;
   late HistoryManager manager;
 
-  setUp(() {
+  setUp(() async {
+    await GetIt.I.reset();
+    final outbox = MockOutboxDao();
+    final draft = MockDraftService();
+    final conn = MockConnectivityService();
+    when(() => draft.getAllDraftKeys()).thenAnswer((_) async => <String>{});
+    when(() => conn.isOnline).thenReturn(true);
+    when(() => conn.onConnectivityChanged).thenAnswer((_) => const Stream.empty());
+
+    GetIt.I.registerSingleton<OutboxDao>(outbox);
+    GetIt.I.registerSingleton<DraftService>(draft);
+    GetIt.I.registerSingleton<ConnectivityService>(conn);
+
     mockApi = MockSubmissionApiService();
     mockDao = MockSubmissionDao();
 
@@ -38,7 +56,11 @@ void main() {
     when(() => mockDao.getAllSubmissions()).thenAnswer((_) async => []);
     when(() => mockDao.upsertSubmissions(any())).thenAnswer((_) async {});
 
-    manager = HistoryManager(api: mockApi, dao: mockDao);
+    manager = HistoryManager(api: mockApi, dao: mockDao, draftService: draft);
+  });
+
+  tearDown(() async {
+    await GetIt.I.reset();
   });
 
   group('HistoryManager - searchCloudArchive (AC5)', () {

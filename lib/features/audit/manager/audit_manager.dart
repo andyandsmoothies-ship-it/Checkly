@@ -390,24 +390,7 @@ class AuditManager extends ChangeNotifier {
       final now = DateTime.now();
       final submissionId = _uuid.v4();
 
-      // 1. Save to Drift outbox
-      await _outbox.insertSubmission(
-        PendingSubmissionsCompanion.insert(
-          id: submissionId,
-          idempotencyKey: idempotencyKey,
-          templateId: _template!.id,
-          storeId: _storeId!,
-          clientScore: _liveScore ?? 0.0,
-          sectionScores: Value(_buildSectionScoresJson()),
-          notes: Value(_notes),
-          gpsLat: Value(_gpsLat),
-          gpsLng: Value(_gpsLng),
-          createdAt: now,
-          syncStatus: Value('pending'),
-        ),
-      );
-
-      // 2. Save answers to outbox
+      // 1. Build answer companions
       final answerCompanions = _answers.values.map((a) {
         return PendingAnswersCompanion.insert(
           id: _uuid.v4(),
@@ -421,9 +404,26 @@ class AuditManager extends ChangeNotifier {
         );
       }).toList();
 
-      await _outbox.insertAnswers(answerCompanions);
+      // 2. Atomically persist submission + answers to outbox
+      await _outbox.insertSubmissionWithAnswers(
+        PendingSubmissionsCompanion.insert(
+          id: submissionId,
+          idempotencyKey: idempotencyKey,
+          templateId: _template!.id,
+          storeId: _storeId!,
+          clientScore: _liveScore ?? 0.0,
+          sectionScores: Value(_buildSectionScoresJson()),
+          notes: Value(_notes),
+          gpsLat: Value(_gpsLat),
+          gpsLng: Value(_gpsLng),
+          createdAt: now,
+          syncStatus: Value('pending'),
+        ),
+        answerCompanions,
+      );
 
-      // 2.5. Delete draft now that submission is safely in outbox
+      // 2.5. Delete draft now that submission is safely in outbox (atomic)
+
       if (_draftKey != null) {
         await _draftService.deleteDraft(_draftKey!);
         _draftSavedAt = null;
