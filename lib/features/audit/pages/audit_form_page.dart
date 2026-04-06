@@ -504,7 +504,10 @@ class _AuditFormPageState extends State<AuditFormPage> {
         return PopScope(
           canPop: !_hasChanges,
           onPopInvokedWithResult: (didPop, result) async {
-            if (didPop) return;
+            if (didPop) {
+              _di<AuditManager>().forceSave();
+              return;
+            }
             final shouldLeave = await showDialog<bool>(
               context: context,
               builder: (_) => AlertDialog(
@@ -526,7 +529,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
               ),
             );
             if (shouldLeave == true && context.mounted) {
-              Navigator.pop(context);
+              await _di<AuditManager>().forceSave();
+              if (context.mounted) Navigator.pop(context);
             }
           },
           child: Scaffold(

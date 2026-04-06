@@ -74,7 +74,14 @@ class AuditSingleChoiceInput extends StatelessWidget {
     if (criterion.metadata == null) return [];
     try {
       final meta = json.decode(criterion.metadata!) as Map<String, dynamic>;
-      return (meta['options'] as List?)?.cast<String>() ?? [];
+      final list = meta['options'] as List?;
+      if (list == null) return [];
+      
+      return list.map((e) {
+        if (e is String) return e;
+        if (e is Map) return (e['label'] as String?) ?? '';
+        return e.toString();
+      }).toList();
     } catch (_) {
       return [];
     }
@@ -139,7 +146,14 @@ class AuditMultiChoiceInput extends StatelessWidget {
     if (criterion.metadata == null) return [];
     try {
       final meta = json.decode(criterion.metadata!) as Map<String, dynamic>;
-      return (meta['options'] as List?)?.cast<String>() ?? [];
+      final list = meta['options'] as List?;
+      if (list == null) return [];
+      
+      return list.map((e) {
+        if (e is String) return e;
+        if (e is Map) return (e['label'] as String?) ?? '';
+        return e.toString();
+      }).toList();
     } catch (_) {
       return [];
     }

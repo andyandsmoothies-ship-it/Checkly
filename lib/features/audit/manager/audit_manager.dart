@@ -187,6 +187,10 @@ class AuditManager extends ChangeNotifier {
     // Check for existing draft
     _pendingDraft = await _draftService.loadDraft(_draftKey!);
 
+    if (_pendingDraft == null) {
+      _scheduleDraftSave();
+    }
+
     _recalculateScore();
     notifyListeners();
   }
@@ -351,7 +355,21 @@ class AuditManager extends ChangeNotifier {
       _draftService.deleteDraft(_draftKey!);
     }
     _pendingDraft = null;
+    _scheduleDraftSave();
     notifyListeners();
+  }
+
+  /// Forces an immediate synchronous lock to the local database, 
+  /// bypassing the 3-second debounce. Use this before teardown.
+  Future<void> forceSave() async {
+    if (_draftKey == null) return;
+    final answersMap = _answers.map((k, v) => MapEntry(k, v.toJson()));
+    await _draftService.flushSave(
+      draftKey: _draftKey!,
+      answersMap: answersMap,
+      notes: _notes,
+    );
+    _draftSavedAt = DateTime.now();
   }
 
   // ---------- Submit (offline-first) ----------

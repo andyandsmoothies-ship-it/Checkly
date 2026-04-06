@@ -1,6 +1,18 @@
 // Dart models matching backend Template DTOs.
 // See: server/Features/Templates/Dtos.cs
 
+import 'dart:convert';
+
+String? _parseJsonString(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value;
+  try {
+    return jsonEncode(value);
+  } catch (_) {
+    return value.toString();
+  }
+}
+
 /// Lightweight template for list views.
 class TemplateDto {
   final String id;
@@ -33,7 +45,7 @@ class TemplateDto {
     description: json['description'] as String?,
     type: json['type'] as String,
     version: json['version'] as int,
-    scoringLogicConfig: json['scoringLogicConfig'] as String?,
+    scoringLogicConfig: _parseJsonString(json['scoringLogicConfig']),
     displayNoun: json['displayNoun'] as String?,
     isActive: json['isActive'] as bool,
     createdAt: DateTime.parse(json['createdAt'] as String),
@@ -76,7 +88,7 @@ class TemplateTreeDto {
         description: json['description'] as String?,
         type: json['type'] as String,
         version: json['version'] as int,
-        scoringLogicConfig: json['scoringLogicConfig'] as String?,
+        scoringLogicConfig: _parseJsonString(json['scoringLogicConfig']),
         displayNoun: json['displayNoun'] as String?,
         isActive: json['isActive'] as bool,
         createdAt: DateTime.parse(json['createdAt'] as String),
@@ -121,7 +133,7 @@ class GroupDto {
     maxDeductionPoints: (json['maxDeductionPoints'] as num?)?.toDouble(),
     minusPerFault: (json['minusPerFault'] as num?)?.toDouble(),
     orderIndex: json['orderIndex'] as int,
-    metadata: json['metadata'] as String?,
+    metadata: _parseJsonString(json['metadata']),
     children:
         (json['children'] as List<dynamic>?)
             ?.map((g) => GroupDto.fromJson(g as Map<String, dynamic>))
@@ -171,6 +183,6 @@ class CriterionDto {
     isRisk: json['isRisk'] as bool,
     minusImpact: (json['minusImpact'] as num?)?.toDouble(),
     orderIndex: json['orderIndex'] as int,
-    metadata: json['metadata'] as String?,
+    metadata: _parseJsonString(json['metadata']),
   );
 }

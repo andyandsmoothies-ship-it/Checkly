@@ -30,6 +30,16 @@ class DraftService {
     });
   }
 
+  /// Forces an immediate save and cancels any pending debounce.
+  Future<void> flushSave({
+    required String draftKey,
+    required Map<String, Map<String, dynamic>> answersMap,
+    String? notes,
+  }) async {
+    _debounceTimer?.cancel();
+    await _upsert(draftKey, answersMap, notes);
+  }
+
   /// Loads an existing draft if available and not expired.
   Future<DraftData?> loadDraft(String draftKey) async {
     final row = await (_db.select(

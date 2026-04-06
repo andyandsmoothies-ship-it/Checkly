@@ -166,14 +166,84 @@ class HistoryManager extends ChangeNotifier {
     final draftKeys = await _draftService.getAllDraftKeys();
     if (draftKeys.isEmpty) return list;
 
-    return list.map((s) {
-      if (s.status != 'scheduled') return s;
+    final List<SubmissionDto> result = [];
+    final Set<String> processedDraftKeys = {};
+
+    for (final s in list) {
+      if (s.status != 'scheduled') {
+        result.add(s);
+        continue;
+      }
       final tId = s.templateId;
       final sId = s.storeId;
-      if (tId == null || sId == null) return s;
+      if (tId == null || sId == null) {
+        result.add(s);
+        continue;
+      }
       final prefix = '$tId:$sId:';
-      final hasLocalDraft = draftKeys.any((k) => k.startsWith(prefix));
-      return hasLocalDraft ? s.withStatus('draft') : s;
-    }).toList();
+      final matchedKey = draftKeys
+          .cast<String?>()
+          .firstWhere((k) => k!.startsWith(prefix), orElse: () => null);
+
+      if (matchedKey != null) {
+        result.add(s.withStatus('draft'));
+        processedDraftKeys.add(matchedKey);
+      } else {
+        result.add(s);
+      }
+    }
+
+    // Inject purely local ad-hoc drafts that have no server counterpart
+    final unseenKeys =
+        draftKeys.where((k) => !processedDraftKeys.contains(k)).toList();
+
+    if (unseenKeys.isNotEmpty) {
+      final db = _di<DatabaseService>().db;
+      for (final key in unseenKeys) {
+        final parts = key.split(':');
+        if (parts.length >= 2) {
+          final tId = parts[0];
+          final sId = parts[1];
+          String? tTitle;
+          String? sName;
+          DateTime savedAt = DateTime.now();
+
+          try {
+            final tRow = await (db.select(db.cachedTemplates)
+                  ..where((t) => t.id.equals(tId)))
+                .getSingleOrNull();
+            if (tRow != null) tTitle = tRow.title;
+
+            final sRow = await (db.select(db.cachedStores)
+                  ..where((s) => s.id.equals(sId)))
+                .getSingleOrNull();
+            if (sRow != null) sName = sRow.name;
+
+            final dRow = await (db.select(db.draftAnswers)
+                  ..where((d) => d.draftKey.equals(key)))
+                .getSingleOrNull();
+            if (dRow != null) savedAt = dRow.savedAt;
+          } catch (_) {}
+
+          result.insert(
+            0,
+            SubmissionDto(
+              id: 'local_draft_$key',
+              templateId: tId,
+              templateTitle: tTitle ?? 'Draft Audit',
+              storeId: sId,
+              storeName: sName ?? 'Unknown Store',
+              status: 'draft',
+              createdAt: savedAt,
+            ),
+          );
+        }
+      }
+
+      // Keep recent drafts at the top of the combined feed
+      result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    }
+
+    return result;
   }
 }

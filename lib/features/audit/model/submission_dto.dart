@@ -1,6 +1,18 @@
 // Dart models matching backend Submission DTOs.
 // See: server/Features/Submissions/Dtos.cs
 
+import 'dart:convert';
+
+String? _parseJsonString(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value;
+  try {
+    return jsonEncode(value);
+  } catch (_) {
+    return value.toString();
+  }
+}
+
 /// Request to create a submission — sent to POST /submissions.
 class CreateSubmissionRequest {
   final String templateId;
@@ -147,7 +159,7 @@ class SubmissionDto {
     auditorName: json['auditorName'] as String?,
     status: json['status'] as String,
     totalScore: (json['totalScore'] as num?)?.toDouble(),
-    sectionScores: json['sectionScores'] as String?,
+    sectionScores: _parseJsonString(json['sectionScores']),
     notes: json['notes'] as String?,
     reviewStatus: json['reviewStatus'] as String?,
     approvedBy: json['approvedBy'] as String?,
@@ -162,7 +174,7 @@ class SubmissionDto {
     scheduledAt: json['scheduledAt'] != null
         ? DateTime.parse(json['scheduledAt'] as String)
         : null,
-    templateSnapshot: json['templateSnapshot'] as String?,
+    templateSnapshot: _parseJsonString(json['templateSnapshot']),
     templateVersion: json['templateVersion'] as int?,
     voidReason: json['voidReason'] as String?,
     voidedAt: json['voidedAt'] != null
@@ -248,7 +260,7 @@ class SubmissionDetailDto {
         auditorName: json['auditorName'] as String?,
         status: json['status'] as String,
         totalScore: (json['totalScore'] as num?)?.toDouble(),
-        sectionScores: json['sectionScores'] as String?,
+        sectionScores: _parseJsonString(json['sectionScores']),
         notes: json['notes'] as String?,
         gpsLat: (json['gpsLat'] as num?)?.toDouble(),
         gpsLng: (json['gpsLng'] as num?)?.toDouble(),
@@ -259,7 +271,7 @@ class SubmissionDetailDto {
         answers: (json['answers'] as List<dynamic>)
             .map((a) => AnswerDto.fromJson(a as Map<String, dynamic>))
             .toList(),
-        templateSnapshot: json['templateSnapshot'] as String?,
+        templateSnapshot: _parseJsonString(json['templateSnapshot']),
         templateVersion: json['templateVersion'] as int?,
         voidReason: json['voidReason'] as String?,
         voidedAt: json['voidedAt'] != null

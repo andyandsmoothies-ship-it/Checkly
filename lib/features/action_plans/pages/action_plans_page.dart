@@ -223,7 +223,7 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                         actionButton:
                             _filter == 'all' && _countByStatus('all') == 0
                             ? FilledButton.icon(
-                                onPressed: () => context.go('/home'),
+                                onPressed: () => context.go('/templates'),
                                 icon: const Icon(Icons.play_arrow_rounded),
                                 label: const Text('Start an Audit'),
                               )

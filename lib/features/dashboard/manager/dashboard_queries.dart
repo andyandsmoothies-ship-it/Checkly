@@ -13,12 +13,10 @@ class DashboardQueries {
 
   // ── Auditor queries ──────────────────────────────────────────────
 
-  /// Count of submissions in 'draft' status (the auditor's in-progress audits).
+  /// Count of in-progress audits (draft_answers).
   Future<int> getDraftCount() async {
-    final count = _db.cachedSubmissions.id.count();
-    final query = _db.selectOnly(_db.cachedSubmissions)
-      ..addColumns([count])
-      ..where(_db.cachedSubmissions.status.equals('draft'));
+    final count = _db.draftAnswers.draftKey.count();
+    final query = _db.selectOnly(_db.draftAnswers)..addColumns([count]);
     final row = await query.getSingle();
     return row.read(count) ?? 0;
   }
