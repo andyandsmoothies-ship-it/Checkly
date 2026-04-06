@@ -376,6 +376,30 @@ class _HistoryPageState extends State<HistoryPage> {
                                 storeName: entry.key,
                                 submissions: entry.value,
                                 onStartAudit: (submission) async {
+                                  // Draft → resume directly without a server call
+                                  if (submission.status == 'draft') {
+                                    final tId = submission.templateId;
+                                    final sId = submission.storeId;
+                                    if (tId == null || sId == null) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Cannot resume — draft is missing template or store data.',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      return;
+                                    }
+                                    if (context.mounted) {
+                                      context.push(
+                                        '/audit?templateId=$tId&storeId=$sId',
+                                      );
+                                    }
+                                    return;
+                                  }
+                                  // Scheduled → standard server-transition flow
                                   try {
                                     await manager.startScheduledAudit(
                                       submission.id,
@@ -502,7 +526,8 @@ class _StoreGroup extends StatelessWidget {
             .map(
               (s) => _AuditCard(
                 submission: s,
-                onStartAudit: s.status == 'scheduled' && !s.isOverdue
+                onStartAudit: (s.status == 'scheduled' && !s.isOverdue) ||
+                        s.status == 'draft'
                     ? () => onStartAudit?.call(s)
                     : null,
               ),
@@ -619,8 +644,8 @@ class _AuditCard extends StatelessWidget {
               ),
             ),
 
-            // Action: Start Audit button OR status badge
-            if (isScheduled && onStartAudit != null) ...[
+            // Action: Start / Resume button OR status badge
+            if ((isScheduled || isDraft) && onStartAudit != null) ...[
               FilledButton.tonal(
                 onPressed: onStartAudit,
                 style: FilledButton.styleFrom(
@@ -632,7 +657,7 @@ class _AuditCard extends StatelessWidget {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  'Start',
+                  isDraft ? 'Resume' : 'Start',
                   style: AppFonts.displayStyle(
                     fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                     fontWeight: FontWeight.w600,

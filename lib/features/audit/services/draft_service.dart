@@ -10,7 +10,7 @@ import 'package:get_it/get_it.dart';
 /// Manages auto-save drafts for in-progress audits.
 ///
 /// Debounces saves by 3 seconds after each answer change.
-/// Drafts expire after 24 hours and are cleaned on startup.
+/// Drafts expire after 14 days (336 hours) and are cleaned on startup.
 class DraftService {
   final AppDatabase _db;
   Timer? _debounceTimer;
@@ -38,8 +38,8 @@ class DraftService {
 
     if (row == null) return null;
 
-    // Check 24h expiry
-    if (DateTime.now().difference(row.savedAt).inHours >= 24) {
+    // Check 14-day (336h) expiry — per ADR-001
+    if (DateTime.now().difference(row.savedAt).inHours >= 336) {
       await deleteDraft(draftKey);
       return null;
     }
@@ -68,9 +68,9 @@ class DraftService {
     )..where((t) => t.draftKey.equals(draftKey))).go();
   }
 
-  /// Deletes all drafts older than 24 hours.
+  /// Deletes all drafts older than 14 days (336 hours) — per ADR-001.
   Future<int> cleanExpired() async {
-    final cutoff = DateTime.now().subtract(const Duration(hours: 24));
+    final cutoff = DateTime.now().subtract(const Duration(hours: 336));
     return await (_db.delete(
       _db.draftAnswers,
     )..where((t) => t.savedAt.isSmallerThanValue(cutoff))).go();

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/services/gps_service.dart';
+import '../../../_shared/utils/date_format_utils.dart';
 import '../../stores/manager/store_manager.dart';
 import '../../templates/manager/template_manager.dart';
 import '../../templates/models/template_dto.dart';
@@ -55,14 +56,32 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
       // Show resume dialog if draft exists
       if (manager.hasDraft && mounted) {
+        final draftAge = manager.pendingDraft?.savedAt != null
+            ? timeAgo(manager.pendingDraft!.savedAt)
+            : 'recently';
         final resume = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
           builder: (_) => AlertDialog(
             title: const Text('Resume draft?'),
-            content: const Text(
-              'You have an unsaved draft for this audit. '
-              'Would you like to resume where you left off?',
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'You have an unsaved draft for this audit (saved $draftAge). '
+                  'Would you like to resume where you left off?',
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'This draft is saved only on this device. It will expire in 14 days.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ),
             actions: [
               TextButton(
