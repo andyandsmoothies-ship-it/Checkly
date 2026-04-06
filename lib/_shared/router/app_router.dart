@@ -114,6 +114,7 @@ final appRouter = GoRouter(
       builder: (context, state) => AuditFormPage(
         templateId: state.uri.queryParameters['templateId'] ?? '',
         storeId: state.uri.queryParameters['storeId'] ?? '',
+        autoResume: state.uri.queryParameters['autoResume'] == 'true',
       ),
     ),
     GoRoute(

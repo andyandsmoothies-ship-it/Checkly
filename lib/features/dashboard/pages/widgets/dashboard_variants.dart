@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/theme/app_colors.dart';
@@ -7,6 +8,8 @@ import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../../../../_shared/widgets/section_header.dart';
 import '../../../../_shared/database/app_database.dart';
+import '../../../audit/services/draft_service.dart';
+import '../../../auth/manager/auth_manager.dart';
 import '../../manager/dashboard_manager.dart';
 
 // ────────────────────────────────────────────────────────────────
@@ -633,16 +636,52 @@ class _SubmissionFeedSection extends StatelessWidget {
 }
 
 /// Single submission row in the feed.
-class _SubmissionRow extends StatelessWidget {
+class _SubmissionRow extends StatefulWidget {
   final CachedSubmission submission;
   final BuildContext context;
 
   const _SubmissionRow({required this.submission, required this.context});
 
   @override
+  State<_SubmissionRow> createState() => _SubmissionRowState();
+}
+
+class _SubmissionRowState extends State<_SubmissionRow> {
+  final _di = GetIt.instance;
+
+  Future<void> _discardDraft() async {
+    final sub = widget.submission;
+    final tId = sub.templateId;
+    final sId = sub.storeId;
+    if (tId == null || sId == null) return;
+
+    final userId = _di<AuthManager>().currentUser?.userId ?? 'anon';
+    final draftKey = '$tId:$sId:$userId';
+
+    await _di<DraftService>().deleteDraft(draftKey);
+    await _di<DashboardManager>().loadStats();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Draft discarded')),
+      );
+    }
+  }
+
+  void _resumeDraft() {
+    final sub = widget.submission;
+    final tId = sub.templateId;
+    final sId = sub.storeId;
+    if (tId == null || sId == null) return;
+    widget.context.push('/audit?templateId=$tId&storeId=$sId&autoResume=true');
+  }
+
+  @override
   Widget build(BuildContext ctx) {
     final theme = Theme.of(ctx);
-    final score = submission.totalScore;
+    final sub = widget.submission;
+    final score = sub.totalScore;
+    final isDraft = sub.status == 'draft';
     final scoreColor = score != null
         ? (score >= 80 ? AppTheme.success : AppColors.destructive)
         : theme.colorScheme.onSurfaceVariant;
@@ -651,7 +690,7 @@ class _SubmissionRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => context.go('/activity'),
+        onTap: isDraft ? _resumeDraft : () => widget.context.go('/activity'),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
@@ -661,7 +700,7 @@ class _SubmissionRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      submission.templateTitle ?? 'Audit',
+                      sub.templateTitle ?? 'Audit',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -670,7 +709,7 @@ class _SubmissionRow extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${submission.storeName ?? 'Unknown'} · ${timeAgo(submission.createdAt)}',
+                      '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.createdAt)}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -680,11 +719,46 @@ class _SubmissionRow extends StatelessWidget {
                   ],
                 ),
               ),
-              if (score != null)
+              // Right side: for drafts show actions menu; otherwise score badge
+              if (isDraft)
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    size: 20,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onSelected: (value) {
+                    if (value == 'resume') _resumeDraft();
+                    if (value == 'discard') _discardDraft();
+                  },
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(
+                      value: 'resume',
+                      child: Row(
+                        children: [
+                          Icon(Icons.play_circle_outline, size: 18),
+                          SizedBox(width: 8),
+                          Text('Resume Audit'),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'discard',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_outline, size: 18),
+                          SizedBox(width: 8),
+                          Text('Discard Draft'),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              else if (score != null)
                 Text(
                   '${score.toStringAsFixed(0)}%',
                   style: AppFonts.serifStyle(
-                    fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
+                    fontSize: Theme.of(widget.context).textTheme.headlineSmall?.fontSize ?? 24,
                     color: scoreColor,
                   ),
                 )
@@ -699,7 +773,7 @@ class _SubmissionRow extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    submission.status.toUpperCase(),
+                    sub.status.toUpperCase(),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.tertiary,
                       fontWeight: FontWeight.w600,

@@ -21,11 +21,15 @@ final _di = GetIt.instance;
 class AuditFormPage extends StatefulWidget {
   final String templateId;
   final String storeId;
+  /// When true, skips the "Resume draft?" dialog and restores immediately.
+  /// Set by the Dashboard "Resume" action to bypass the confirmation popup.
+  final bool autoResume;
 
   const AuditFormPage({
     super.key,
     required this.templateId,
     required this.storeId,
+    this.autoResume = false,
   });
 
   @override
@@ -54,8 +58,11 @@ class _AuditFormPageState extends State<AuditFormPage> {
       await manager.startAudit(tree, widget.storeId);
       manager.addListener(_onManagerChanged);
 
-      // Show resume dialog if draft exists
-      if (manager.hasDraft && mounted) {
+      // Auto-resume path: skip dialog, restore immediately (from Dashboard action)
+      if (widget.autoResume && manager.hasDraft && mounted) {
+        manager.restoreDraft();
+      } else if (manager.hasDraft && mounted) {
+        // Manual path: show confirmation dialog with draft age + device warning
         final draftAge = manager.pendingDraft?.savedAt != null
             ? timeAgo(manager.pendingDraft!.savedAt)
             : 'recently';
