@@ -329,8 +329,7 @@ void main() {
       final mockApi = MockSubmissionApiService();
       final mockConnectivity = MockConnectivityService();
 
-      when(() => mockOutbox.insertSubmission(any())).thenAnswer((_) async {});
-      when(() => mockOutbox.insertAnswers(any())).thenAnswer((_) async {});
+      when(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).thenAnswer((_) async {});
       when(() => mockConnectivity.isOnline).thenReturn(false);
 
       final m = _manager(
@@ -341,8 +340,7 @@ void main() {
       await m.startAudit(_template(), 'store-1');
       await m.submitAudit();
 
-      verify(() => mockOutbox.insertSubmission(any())).called(1);
-      verify(() => mockOutbox.insertAnswers(any())).called(1);
+      verify(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).called(1);
       verifyNever(() => mockApi.createSubmission(any()));
       expect(m.wasQueuedOffline, isTrue);
     });
@@ -354,8 +352,7 @@ void main() {
         final mockApi = MockSubmissionApiService();
         final mockConnectivity = MockConnectivityService();
 
-        when(() => mockOutbox.insertSubmission(any())).thenAnswer((_) async {});
-        when(() => mockOutbox.insertAnswers(any())).thenAnswer((_) async {});
+        when(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).thenAnswer((_) async {});
         when(() => mockOutbox.removeSubmission(any())).thenAnswer((_) async {});
         when(() => mockConnectivity.isOnline).thenReturn(true);
         when(
@@ -381,8 +378,7 @@ void main() {
       final mockApi = MockSubmissionApiService();
       final mockConnectivity = MockConnectivityService();
 
-      when(() => mockOutbox.insertSubmission(any())).thenAnswer((_) async {});
-      when(() => mockOutbox.insertAnswers(any())).thenAnswer((_) async {});
+      when(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).thenAnswer((_) async {});
       when(() => mockConnectivity.isOnline).thenReturn(true);
       when(
         () => mockApi.createSubmission(any()),
