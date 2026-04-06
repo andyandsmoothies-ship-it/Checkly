@@ -88,6 +88,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Red/Green Loop**| IF `Sentinel` gives RED test -> write PROD code to make GREEN -> Refactor. PROHIBITED: Modifying test files unless executing the strict legacy TDD clause above. |
 | **Refactor Safety**| IF (renaming/moving code) THEN `grep_search` is NOT an AST. MUST explicitly search 4 ways: 1) Direct calls, 2) Types, 3) String literals, 4) Test Mocks. |
 | **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
+| **State Invariants**| MANDATORY: You MUST explicitly write test assertions to verify the Entry Preconditions and Exit Postconditions of the slice. |
+| **Blast Radius** | IF modifying shared foundational code (e.g., `Common/`, `shared/`, `core/`) -> MANDATORY: Execute regression tests for ALL upstream callers. If tests do not exist, write them before modifying the code. |
 
 > **@@SCAN**: (1) Red/Green split respected? (2) Inline verify gate run?
 
@@ -100,6 +102,8 @@ Review from 5 angles & state findings:
    - ✅ Happy Path Test (e.g. 200/201)
    - ✅ Error State Test (e.g. 400/403)
    - ✅ Empty State Test (e.g. Nulls)
+   - ✅ State Invariant Test (Entry/Exit Conditions)
+   - ✅ Blast Radius Test (If modifying shared code)
    - *Exemption*: Purely cosmetic (`[SCAN Exemption: Cosmetic Only]`)
 5. **Quality Gate**: No hardcoded UI colors, no rogue padding, zero unused imports, zero dead code.
 

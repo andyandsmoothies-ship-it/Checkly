@@ -43,7 +43,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Vector | Execution Contract |
 |---|---|
-| **Radius Check** | Traverse `GEMINI.md` cascade for constraints. Verify upstream callers of modified functions. |
+| **Blast Radius** | MANDATORY: If altering shared foundational code (e.g., `Common/`, `shared/`, `core/`), use `grep_search` to find ALL upstream calling features. You MUST list them in the plan. |
 | **Boundary Check** | If touching an API, DTO, or DB Schema, MANDATORY `grep_search` across BOTH `lib/` (Flutter) AND `server/` (C#). Never treat the server as a black box. |
 | **Data Lineage Contract** | Never trust UI state alone. If your plan intercepts conditional data (e.g., `if status == 'x'`), you MUST `grep_search` its definitive Source of Truth (DB/API/Cache) to prove that boundary is capable of emitting that exact state. |
 | **State Matrix** | MANDATORY: Define the 4 System Extremes -> `Loading`, `Empty`, `Error`, `Success`. |
@@ -58,7 +58,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 ## Phase 4: Route Implementation (The ATDD Gate)
 
 > [!CAUTION]
-> **[SCOPE_ESCALATION_TRAP]**: IF (touches >5 files OR requires DB migration OR new architecture) THEN STOP -> Escalate to Track C -> Run `/analyze-epic`. DO NOT ROUTE HERE.
+> **[SCOPE_ESCALATION_TRAP]**: IF (requires DB migration OR alters core infrastructure like routing/auth OR introduces new architectural patterns OR spans >2 distinct feature domains) THEN STOP -> Escalate to Track C -> Run `/analyze-epic`. DO NOT ROUTE HERE.
 
 | Signal Check | Route: B1 (Direct Implement) | Route: B2 (QA ATDD Spec) |
 |---|---|---|
