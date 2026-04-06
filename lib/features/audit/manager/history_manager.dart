@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/dao/submission_dao.dart';
 import '../model/submission_dto.dart';
+import '../services/draft_service.dart';
 import '../services/submission_api_service.dart';
 
 final _di = GetIt.instance;
@@ -15,14 +16,19 @@ final _di = GetIt.instance;
 class HistoryManager extends ChangeNotifier {
   final SubmissionApiService _api;
   late final SubmissionDao _dao;
+  late final DraftService _draftService;
 
-  HistoryManager({SubmissionApiService? api, SubmissionDao? dao})
-    : _api = api ?? _di<SubmissionApiService>() {
+  HistoryManager({
+    SubmissionApiService? api,
+    SubmissionDao? dao,
+    DraftService? draftService,
+  }) : _api = api ?? _di<SubmissionApiService>() {
     if (dao != null) {
       _dao = dao;
     } else {
       _dao = SubmissionDao(_di<DatabaseService>().db);
     }
+    _draftService = draftService ?? DraftService();
   }
 
   // ---------- State ----------
@@ -49,7 +55,7 @@ class HistoryManager extends ChangeNotifier {
       // 1. Read from Drift cache first
       final cached = await _dao.getAllSubmissions();
       if (cached.isNotEmpty) {
-        submissions.value = cached;
+        submissions.value = await _applyLocalDraftOverrides(cached);
         isLoading.value = false;
         notifyListeners();
       }
@@ -57,11 +63,11 @@ class HistoryManager extends ChangeNotifier {
       // 2. Background API fetch (page 1)
       try {
         final fresh = await _api.getSubmissions(page: 1, pageSize: _pageSize);
-        submissions.value = fresh;
+        submissions.value = await _applyLocalDraftOverrides(fresh);
         hasMore = fresh.length >= _pageSize;
         lastRefreshed = DateTime.now();
 
-        // 3. Update Drift cache
+        // 3. Update Drift cache (store raw server data — overrides are in-memory only)
         await _dao.upsertSubmissions(fresh);
       } catch (_) {
         if (cached.isEmpty) {
@@ -86,7 +92,8 @@ class HistoryManager extends ChangeNotifier {
     try {
       _page++;
       final more = await _api.getSubmissions(page: _page, pageSize: _pageSize);
-      submissions.value = [...submissions.value, ...more];
+      final hydrated = await _applyLocalDraftOverrides(more);
+      submissions.value = [...submissions.value, ...hydrated];
       hasMore = more.length >= _pageSize;
     } catch (_) {
       _page--; // Revert on failure so retry works
@@ -141,5 +148,32 @@ class HistoryManager extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  // ---------- Local Draft Hydration ----------
+
+  /// Merges device-local SQLite draft state into a list of server DTOs.
+  ///
+  /// For each submission whose server status is still `'scheduled'`, checks
+  /// whether a local draft exists by prefix-matching the draft key:
+  ///   `"${s.templateId}:${s.storeId}:"`
+  /// If a match is found, overrides the status to `'draft'` in-memory.
+  /// The Drift cache is intentionally NOT updated — only the live in-memory
+  /// list is patched, ensuring the server remains the source of truth on disk.
+  Future<List<SubmissionDto>> _applyLocalDraftOverrides(
+    List<SubmissionDto> list,
+  ) async {
+    final draftKeys = await _draftService.getAllDraftKeys();
+    if (draftKeys.isEmpty) return list;
+
+    return list.map((s) {
+      if (s.status != 'scheduled') return s;
+      final tId = s.templateId;
+      final sId = s.storeId;
+      if (tId == null || sId == null) return s;
+      final prefix = '$tId:$sId:';
+      final hasLocalDraft = draftKeys.any((k) => k.startsWith(prefix));
+      return hasLocalDraft ? s.withStatus('draft') : s;
+    }).toList();
   }
 }

@@ -45,6 +45,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 |---|---|
 | **Radius Check** | Traverse `GEMINI.md` cascade for constraints. Verify upstream callers of modified functions. |
 | **Boundary Check** | If touching an API, DTO, or DB Schema, MANDATORY `grep_search` across BOTH `lib/` (Flutter) AND `server/` (C#). Never treat the server as a black box. |
+| **Data Lineage Contract** | Never trust UI state alone. If your plan intercepts conditional data (e.g., `if status == 'x'`), you MUST `grep_search` its definitive Source of Truth (DB/API/Cache) to prove that boundary is capable of emitting that exact state. |
 | **State Matrix** | MANDATORY: Define the 4 System Extremes -> `Loading`, `Empty`, `Error`, `Success`. |
 
 > **@@SCAN**: (1) Upstream callers checked? (2) Both C# and Dart API boundaries explicitly mapped via `grep_search`? (3) 4-State Matrix defined?

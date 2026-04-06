@@ -17,6 +17,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | **Side Effects** | MANDATORY: Assess code changes for framework state loss, missing locks, or illegal ghost imports based on `.agents/rules/`. |
 | **Verification**| MANDATORY: Semi-Formal Reasoning. Trace code path line-by-line. PROHIBITED: Assuming behavior based on function names. |
 | **Criteria Check**| `grep_search` upstream `implementation_plan.md` → verify every AC is realized in code. If AC involves API/DTO: verify realization exists in BOTH `server/` and `lib/`. Flag omissions. |
+| **Boundary Sync Check**| MANDATORY: Does this feature combine data across architectural boundaries (e.g., Remote API + Local Store)? If yes, explicitly verify and document the merging logic. Unverified trust across boundaries fails the pipeline. |
 | **EDD Proof** | MANDATORY: Demand **Executed Evidence** (logs, API responses). PROHIBITED: Accepting "Generative Evidence" (Builder claiming it works). |
 
 > **@@SCAN**: (1) Code path traced line-by-line? (2) All ACs verified against real code on both stacks?

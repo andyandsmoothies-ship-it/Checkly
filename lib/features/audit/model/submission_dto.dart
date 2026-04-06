@@ -169,7 +169,36 @@ class SubmissionDto {
         ? DateTime.parse(json['voidedAt'] as String)
         : null,
   );
+
+  /// Returns a copy of this DTO with [status] overridden.
+  /// Used by [HistoryManager] to hydrate local draft state into the remote list.
+  SubmissionDto withStatus(String newStatus) => SubmissionDto(
+    id: id,
+    templateId: templateId,
+    templateTitle: templateTitle,
+    displayNoun: displayNoun,
+    storeId: storeId,
+    storeName: storeName,
+    auditorId: auditorId,
+    auditorName: auditorName,
+    status: newStatus,
+    totalScore: totalScore,
+    sectionScores: sectionScores,
+    notes: notes,
+    reviewStatus: reviewStatus,
+    approvedBy: approvedBy,
+    approverName: approverName,
+    approvedAt: approvedAt,
+    createdAt: createdAt,
+    completedAt: completedAt,
+    scheduledAt: scheduledAt,
+    templateSnapshot: templateSnapshot,
+    templateVersion: templateVersion,
+    voidReason: voidReason,
+    voidedAt: voidedAt,
+  );
 }
+
 
 /// Detailed submission with answers — GET /submissions/{id}.
 class SubmissionDetailDto {

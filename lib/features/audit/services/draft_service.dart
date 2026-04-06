@@ -81,6 +81,16 @@ class DraftService {
     _debounceTimer?.cancel();
   }
 
+  /// Returns all raw draft keys currently stored in SQLite.
+  ///
+  /// Keys follow the format `"templateId:storeId:userId"`.
+  /// Used by [HistoryManager] to overlay local draft state onto
+  /// the remote API submission list without a full deserialization pass.
+  Future<Set<String>> getAllDraftKeys() async {
+    final rows = await _db.select(_db.draftAnswers).get();
+    return rows.map((r) => r.draftKey).toSet();
+  }
+
   // ── Private ──
 
   Future<void> _upsert(
