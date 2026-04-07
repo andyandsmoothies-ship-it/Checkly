@@ -40,7 +40,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 | Step | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `research_[topic].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal `cp` command. |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 > **Payload Schema:** Your generated `research_[topic].md` MUST INCLUDE: 

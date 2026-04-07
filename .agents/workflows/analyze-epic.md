@@ -56,7 +56,8 @@ Workflow: /analyze-epic | Track: C
 
 | Process | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `analysis_epic_[topic].md`. |
+| **Artifact Gen** | Create `analysis_epic_[topic].md` (IsArtifact: True). |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/analysis_epic_[topic].md` via terminal. |
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
 ## Phase 4: Slicing & Dispatch Loop
