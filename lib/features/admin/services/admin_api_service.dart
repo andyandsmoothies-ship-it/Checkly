@@ -36,12 +36,14 @@ class AdminApiService {
   /// PUT /admin/users/{id} — update user role, store, or area.
   Future<Map<String, dynamic>> updateUser(
     String id, {
+    String? fullName,
     String? role,
     String? storeId,
     String? areaId,
     bool forceReassign = false,
   }) async {
     final body = <String, dynamic>{};
+    if (fullName != null && fullName.isNotEmpty) body['fullName'] = fullName;
     if (role != null) body['role'] = role;
     if (storeId != null) body['storeId'] = storeId;
     if (areaId != null) body['areaId'] = areaId;

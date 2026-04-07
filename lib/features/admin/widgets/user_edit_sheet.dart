@@ -17,16 +17,19 @@ class UserEditSheet extends StatefulWidget {
   final Future<List<Map<String, dynamic>>> Function({
     String? assignableAs,
     String? exceptUser,
-  }) loadStores;
+  })
+  loadStores;
 
   /// Called when the user taps Save. Implementation lives in the Page so that
   /// the page keeps ownership of Navigator.pop() + _loadData() + 409 dialog.
   final Future<void> Function({
     required String userId,
+    String? fullName,
     String? role,
     String? storeId,
     String? areaId,
-  }) onSave;
+  })
+  onSave;
 
   /// Called when the user taps Reset Password. The Page shows its dialog.
   /// First arg is this sheet's BuildContext so the dialog can pop the sheet.
@@ -47,6 +50,7 @@ class UserEditSheet extends StatefulWidget {
 }
 
 class _UserEditSheetState extends State<UserEditSheet> {
+  late final TextEditingController _fullNameCtrl;
   late String? selectedRole;
   late String? selectedStoreId;
   late String? selectedAreaId;
@@ -56,6 +60,10 @@ class _UserEditSheetState extends State<UserEditSheet> {
   @override
   void initState() {
     super.initState();
+    _fullNameCtrl = TextEditingController(
+      text: widget.user['fullName'] as String?,
+    );
+    _fullNameCtrl.addListener(_markDirty);
     selectedRole = widget.user['role'] as String?;
     selectedStoreId = widget.user['storeId'] as String?;
     selectedAreaId = widget.user['areaId'] as String?;
@@ -64,6 +72,12 @@ class _UserEditSheetState extends State<UserEditSheet> {
     if (selectedRole == 'store_manager') {
       _loadStores();
     }
+  }
+
+  @override
+  void dispose() {
+    _fullNameCtrl.dispose();
+    super.dispose();
   }
 
   /// Loads assignable stores and shows a SnackBar on network failure.
@@ -110,17 +124,18 @@ class _UserEditSheetState extends State<UserEditSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.user['fullName'] ?? 'Unknown',
-                        style: Theme.of(context).textTheme.titleLarge
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                      TextFormField(
+                        controller: _fullNameCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Full Name',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         widget.user['email'] ?? '',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -180,9 +195,8 @@ class _UserEditSheetState extends State<UserEditSheet> {
             if (selectedRole == 'store_manager') ...[
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                initialValue: assignableStores.any(
-                  (s) => s['id'] == selectedStoreId,
-                )
+                initialValue:
+                    assignableStores.any((s) => s['id'] == selectedStoreId)
                     ? selectedStoreId
                     : null,
                 borderRadius: BorderRadius.circular(12),
@@ -243,6 +257,9 @@ class _UserEditSheetState extends State<UserEditSheet> {
               child: FilledButton.icon(
                 onPressed: () => widget.onSave(
                   userId: widget.user['id'] as String,
+                  fullName: _fullNameCtrl.text.trim().isEmpty
+                      ? null
+                      : _fullNameCtrl.text.trim(),
                   role: selectedRole,
                   storeId: selectedStoreId,
                   areaId: selectedAreaId,

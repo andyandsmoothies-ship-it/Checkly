@@ -133,7 +133,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error,
+              ),
               child: const Text('Deactivate'),
             ),
           ],
@@ -148,7 +150,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(ban ? 'User deactivated' : 'User reactivated'),
-            backgroundColor: ban ? Theme.of(context).colorScheme.error : AppTheme.success,
+            backgroundColor: ban
+                ? Theme.of(context).colorScheme.error
+                : AppTheme.success,
           ),
         );
         _loadData();
@@ -156,7 +160,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
     } on DioException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+            content: Text('Failed: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -171,8 +178,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
         user: user,
         areas: _areas,
         loadStores: _loadStores,
-        onSave: ({required userId, role, storeId, areaId}) =>
-            _saveUser(userId, role: role, storeId: storeId, areaId: areaId),
+        onSave: ({required userId, fullName, role, storeId, areaId}) =>
+            _saveUser(
+              userId,
+              fullName: fullName,
+              role: role,
+              storeId: storeId,
+              areaId: areaId,
+            ),
         onResetPassword: _showResetPasswordDialog,
       ),
     );
@@ -180,6 +193,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   Future<void> _saveUser(
     String id, {
+    String? fullName,
     String? role,
     String? storeId,
     String? areaId,
@@ -189,6 +203,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     try {
       await _di<AdminApiService>().updateUser(
         id,
+        fullName: fullName,
         role: role,
         storeId: storeId,
         areaId: areaId,
@@ -233,6 +248,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           try {
             await _di<AdminApiService>().updateUser(
               id,
+              fullName: fullName,
               role: role,
               storeId: storeId,
               areaId: areaId,
@@ -269,7 +285,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+            content: Text('Failed: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -371,15 +390,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
       builder: (_) => UserCreateSheet(
         areas: _areas,
         loadStores: _loadStores,
-        onCreate: ({
-          required email,
-          required password,
-          required fullName,
-          required role,
-          storeId,
-          areaId,
-        }) =>
-            _di<AdminApiService>().createUser(
+        onCreate:
+            ({
+              required email,
+              required password,
+              required fullName,
+              required role,
+              storeId,
+              areaId,
+            }) => _di<AdminApiService>().createUser(
               email: email,
               password: password,
               fullName: fullName,

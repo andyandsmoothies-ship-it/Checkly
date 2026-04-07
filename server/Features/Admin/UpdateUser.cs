@@ -12,7 +12,7 @@ namespace Checkly.Api.Features.Admin;
 /// </summary>
 public static class UpdateUser
 {
-    public record Request(string? Role, Guid? StoreId, Guid? AreaId, bool ForceReassign = false);
+    public record Request(string? FullName, string? Role, Guid? StoreId, Guid? AreaId, bool ForceReassign = false);
 
     private static readonly HashSet<string> ValidRoles = ["admin", "auditor", "store_manager", "area_manager"];
 
@@ -119,6 +119,9 @@ public static class UpdateUser
 
         if (request.AreaId.HasValue)
             profile.AreaId = request.AreaId;
+
+        if (!string.IsNullOrWhiteSpace(request.FullName))
+            profile.FullName = request.FullName.Trim();
 
         profile.UpdatedAt = DateTimeOffset.UtcNow;
 
