@@ -143,10 +143,20 @@ class SubmissionDto {
   bool get isVoided => status == 'voided';
 
   /// Whether this audit is overdue (scheduled but past its date).
-  bool get isOverdue =>
-      status == 'scheduled' &&
-      scheduledAt != null &&
-      scheduledAt!.isBefore(DateTime.now());
+  bool get isOverdue {
+    if (status != 'scheduled' || scheduledAt == null) return false;
+    final localScheduled = scheduledAt!.toLocal();
+    final scheduledDay = DateTime(
+      localScheduled.year,
+      localScheduled.month,
+      localScheduled.day,
+    );
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return scheduledDay.isBefore(today);
+  }
 
   factory SubmissionDto.fromJson(Map<String, dynamic> json) => SubmissionDto(
     id: json['id'] as String,
