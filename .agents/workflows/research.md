@@ -19,16 +19,17 @@ description: Architect's Strategic Research Workflow for System Architecture.
 |---|---|
 | **Task Tracking** | MANDATORY: Create `task.md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
+| **Status Quo Audit** | MANDATORY: Before proposing any new architecture, you MUST `grep_search` to find existing native implementations (e.g., existing auth guards, parsers). Your artifact MUST document the "Current Codebase Reality" to prevent generic textbook hallucinations. |
 | **Discovery** | IF (tech is very new/rare) THEN query Context7 MCP to save hallucination. ELSE rely on model baseline to save API credits. |
 | **E2E Map** | MANDATORY: Map Upstream Triggers + Downstream Effects. Identify Status Quo friction. Map exact system Context Handoff points. If touching API/DTO/DB, `grep_search` BOTH `lib/` and `server/` — never treat either side as a black box. |
 
-> **@@SCAN**: (1) Skills loaded/Patterns discovered? (2) Full E2E Scope mapped across BOTH lib/ and server/? (3) Friction points identified?
+> **@@SCAN**: (1) Skills loaded? (2) Status Quo explicitly audited? (3) Full E2E Scope mapped across lib/ and server/?
 
 ## Phase 2: Strategy Assessment
 
 | Vector | Execution Contract |
 |---|---|
-| **Comparables**| MANDATORY: Identify 2-3 top viable options. Evaluate against NFRs (Performance, Offline Limits, Tech Stack). |
+| **Impact Spectrum**| MANDATORY: Present 3 distinct options: (A) Strict native fit, (B) Pragmatic balance, (C) Enterprise textbook overhaul. |
 | **Blind Spots**| MANDATORY: Identify EXACTLY 3 blind spots regarding NFRs (payload size, memory). |
 | **Conflicts** | MANDATORY: Identify >= 1 Conflict with existing `.agents/rules/` or `GEMINI.md` gotchas. |
 
