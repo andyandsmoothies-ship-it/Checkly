@@ -2,6 +2,12 @@
 
 ## 1. Governance Rules
 
+### The "Read Before You Write" Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="ReadBeforeYouWrite">
+- **Rule**: Research the codebase before editing. Never change code you haven't read.
+- **Enforcement**: You must use `grep_search` and `view_file` to thoroughly understand the context, dependencies, and structure of the code before making any modifications. Blind code changes are prohibited.
+</SYSTEM_GUARD>
+
 ### The 3-Step Database Migration Pipeline (STRICT)
 <SYSTEM_GUARD type="STRICT" name="DatabaseMigrationPipeline">
 Under no circumstances may you rely on auto-migration (`db.Database.Migrate()`) or use `dotnet ef database update` blindly. We enforce the strict 3-Step Production Practice for all database schema changes:
