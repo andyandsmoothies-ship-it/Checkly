@@ -21,6 +21,7 @@ final _di = GetIt.instance;
 class AuditFormPage extends StatefulWidget {
   final String templateId;
   final String storeId;
+
   /// When true, skips the "Resume draft?" dialog and restores immediately.
   /// Set by the Dashboard "Resume" action to bypass the confirmation popup.
   final bool autoResume;
@@ -41,6 +42,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
   bool _scoreExpanded = true;
   int _currentSection = 0;
   bool _hasChanges = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -223,7 +225,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
                                   '${i + 1}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
-                                    fontSize: theme.textTheme.labelSmall?.fontSize,
+                                    fontSize:
+                                        theme.textTheme.labelSmall?.fontSize,
                                     color: isCurrent
                                         ? theme.colorScheme.primary
                                         : theme.colorScheme.onSurfaceVariant,
@@ -332,7 +335,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
     final answered = _totalAnswered(manager, template);
     final total = _totalCriteria(template);
 
-    // Gap 3: Confirm Required gate
+    // Gap 3: Confirm Required gate (unchanged)
     if (_isConfirmRequired(template) && answered < total) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -345,51 +348,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
       return;
     }
 
-    // Gap 5: GPS proximity warning (non-blocking)
-    try {
-      final gps = _di<GpsService>();
-      final pos = await gps.getCurrentPosition();
-      if (pos != null) {
-        manager.setGps(pos.latitude, pos.longitude);
-
-        // Check proximity to store
-        final storeManager = _di<StoreManager>();
-        final stores = storeManager.stores.value;
-        final store = stores.where((s) => s.id == manager.storeId).firstOrNull;
-        if (store != null && store.gpsLat != null && store.gpsLng != null) {
-          final result = gps.checkProximity(
-            userLat: pos.latitude,
-            userLng: pos.longitude,
-            storeLat: store.gpsLat!,
-            storeLng: store.gpsLng!,
-          );
-          if (!result.inRange && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Unverified location — ${result.distance}m from store '
-                  '(max ${GpsService.maxDistanceMeters}m)',
-                ),
-                backgroundColor: AppTheme.warning,
-                duration: const Duration(seconds: 4),
-              ),
-            );
-          }
-        }
-      }
-    } catch (_) {
-      // GPS failure is non-blocking — but user must know
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('📍 Location unavailable — submitting without GPS'),
-          ),
-        );
-      }
-    }
-
+    // ── STEP 1: Confirm dialog FIRST (instant, no GPS wait) ──────────────
     if (!mounted) return;
-
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -452,30 +412,80 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
     if (confirm != true) return;
 
-    await manager.submitAudit();
+    // ── STEP 2: Lock UI, run GPS, then submit ────────────────────────────
+    setState(() => _isSubmitting = true);
+    try {
+      // Gap 5: GPS proximity warning (non-blocking) — deferred post-confirm
+      try {
+        final gps = _di<GpsService>();
+        final pos = await gps.getCurrentPosition();
+        if (pos != null) {
+          manager.setGps(pos.latitude, pos.longitude);
 
-    if (mounted) {
-      if (manager.lastSubmission != null || manager.wasQueuedOffline) {
-        setState(() => _hasChanges = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              manager.wasQueuedOffline
-                  ? 'Audit queued — will sync when online'
-                  : 'Audit submitted successfully!',
+          final storeManager = _di<StoreManager>();
+          final stores = storeManager.stores.value;
+          final store = stores
+              .where((s) => s.id == manager.storeId)
+              .firstOrNull;
+          if (store != null && store.gpsLat != null && store.gpsLng != null) {
+            final result = gps.checkProximity(
+              userLat: pos.latitude,
+              userLng: pos.longitude,
+              storeLat: store.gpsLat!,
+              storeLng: store.gpsLng!,
+            );
+            // Show proximity warning BEFORE navigation to prevent SnackBar clipping
+            if (!result.inRange && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Unverified location — ${result.distance}m from store '
+                    '(max ${GpsService.maxDistanceMeters}m)',
+                  ),
+                  backgroundColor: AppTheme.warning,
+                  duration: const Duration(seconds: 4),
+                ),
+              );
+            }
+          }
+        }
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('📍 Location unavailable — submitting without GPS'),
             ),
-            backgroundColor: AppTheme.success,
-          ),
-        );
-        context.go('/home');
-      } else if (manager.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(manager.error!),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+          );
+        }
       }
+
+      await manager.submitAudit();
+
+      if (mounted) {
+        if (manager.lastSubmission != null || manager.wasQueuedOffline) {
+          setState(() => _hasChanges = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                manager.wasQueuedOffline
+                    ? 'Audit queued — will sync when online'
+                    : 'Audit submitted successfully!',
+              ),
+              backgroundColor: AppTheme.success,
+            ),
+          );
+          context.go('/home');
+        } else if (manager.error != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(manager.error!),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -556,7 +566,11 @@ class _AuditFormPageState extends State<AuditFormPage> {
                       ),
                       label: Text(
                         'Saved',
-                        style: TextStyle(fontSize: Theme.of(context).textTheme.labelSmall?.fontSize),
+                        style: TextStyle(
+                          fontSize: Theme.of(
+                            context,
+                          ).textTheme.labelSmall?.fontSize,
+                        ),
                       ),
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
@@ -566,58 +580,71 @@ class _AuditFormPageState extends State<AuditFormPage> {
                 const SizedBox(width: 8),
               ],
             ),
-            body: Column(
-              children: [
-                // Live score HUD
-                GestureDetector(
-                  onTap: () => setState(() => _scoreExpanded = !_scoreExpanded),
-                  child: AnimatedCrossFade(
-                    duration: const Duration(milliseconds: 200),
-                    crossFadeState: _scoreExpanded
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    firstChild: AuditScoreHud(
-                      score: manager.liveScore,
-                      sectionScores: manager.sectionScores,
-                    ),
-                    secondChild: AuditCollapsedScoreHud(
-                      score: manager.liveScore,
-                      sectionScores: manager.sectionScores,
-                    ),
-                  ),
-                ),
-
-                // Current section only (F7: swipe gesture navigation)
-                Expanded(
-                  child: GestureDetector(
-                    onHorizontalDragEnd: (details) {
-                      if (details.primaryVelocity == null) return;
-                      if (details.primaryVelocity! < -200 &&
-                          _currentSection < template.groups.length - 1) {
-                        setState(() => _currentSection++);
-                      } else if (details.primaryVelocity! > 200 &&
-                          _currentSection > 0) {
-                        setState(() => _currentSection--);
-                      }
-                    },
-                    child: ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      children: [
-                        if (template.groups.isNotEmpty &&
-                            _currentSection < template.groups.length)
-                          AuditSectionCard(
-                            group: template.groups[_currentSection],
-                            manager: manager,
-                            depth: 0,
-                            confirmRequired: confirmRequired,
-                            ccpEnabled: ccpEnabled,
-                            riskEnabled: riskEnabled,
+            body: AbsorbPointer(
+              absorbing: _isSubmitting,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      // Live score HUD
+                      GestureDetector(
+                        onTap: () =>
+                            setState(() => _scoreExpanded = !_scoreExpanded),
+                        child: AnimatedCrossFade(
+                          duration: const Duration(milliseconds: 200),
+                          crossFadeState: _scoreExpanded
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          firstChild: AuditScoreHud(
+                            score: manager.liveScore,
+                            sectionScores: manager.sectionScores,
                           ),
-                      ],
-                    ),
+                          secondChild: AuditCollapsedScoreHud(
+                            score: manager.liveScore,
+                            sectionScores: manager.sectionScores,
+                          ),
+                        ),
+                      ),
+
+                      // Current section only (F7: swipe gesture navigation)
+                      Expanded(
+                        child: GestureDetector(
+                          onHorizontalDragEnd: (details) {
+                            if (details.primaryVelocity == null) return;
+                            if (details.primaryVelocity! < -200 &&
+                                _currentSection < template.groups.length - 1) {
+                              setState(() => _currentSection++);
+                            } else if (details.primaryVelocity! > 200 &&
+                                _currentSection > 0) {
+                              setState(() => _currentSection--);
+                            }
+                          },
+                          child: ListView(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                            children: [
+                              if (template.groups.isNotEmpty &&
+                                  _currentSection < template.groups.length)
+                                AuditSectionCard(
+                                  group: template.groups[_currentSection],
+                                  manager: manager,
+                                  depth: 0,
+                                  confirmRequired: confirmRequired,
+                                  ccpEnabled: ccpEnabled,
+                                  riskEnabled: riskEnabled,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  if (_isSubmitting)
+                    const ColoredBox(
+                      color: Colors.black26,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                ],
+              ),
             ),
 
             // Quick Jump FAB (Slice 2)

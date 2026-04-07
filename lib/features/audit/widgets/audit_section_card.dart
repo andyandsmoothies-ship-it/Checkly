@@ -108,13 +108,14 @@ class AuditSectionCard extends StatelessWidget {
           ],
         ),
         children: [
-          ...group.criteria.map(
-            (c) => AuditCriterionRow(
-              criterion: c,
+          ...group.criteria.indexed.map(
+            ((int, CriterionDto) entry) => AuditCriterionRow(
+              criterion: entry.$2,
               manager: manager,
               confirmRequired: confirmRequired,
               ccpEnabled: ccpEnabled,
               riskEnabled: riskEnabled,
+              index: entry.$1 + 1, // 1-based section-local display number
             ),
           ),
           ...group.children.map(

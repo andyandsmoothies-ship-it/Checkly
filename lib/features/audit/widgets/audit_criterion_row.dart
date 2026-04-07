@@ -24,6 +24,7 @@ class AuditCriterionRow extends StatelessWidget {
   final bool confirmRequired;
   final bool ccpEnabled;
   final bool riskEnabled;
+  final int? index; // 1-based display number within its section
 
   const AuditCriterionRow({
     super.key,
@@ -32,6 +33,7 @@ class AuditCriterionRow extends StatelessWidget {
     this.confirmRequired = false,
     this.ccpEnabled = true,
     this.riskEnabled = true,
+    this.index,
   });
 
   @override
@@ -44,9 +46,6 @@ class AuditCriterionRow extends StatelessWidget {
     final isRisk = answer?.isRisk ?? false;
     final hasNote = answer?.note != null && answer!.note!.isNotEmpty;
     final hasPhoto = answer?.photoUrl != null;
-    final isConfirmed = answer?.value == 'conform';
-    final isNonConform = answer?.value == 'non_conform';
-
     // Determine overall status
     final bool isAnswered =
         answer?.value != null || (answer?.numericValue != null);
@@ -64,20 +63,8 @@ class AuditCriterionRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
-            // Leading status icon
-            Icon(
-              isConfirmed || (isAnswered && faults == 0 && !isNonConform)
-                  ? Icons.check_circle
-                  : faults > 0 || isNonConform
-                  ? Icons.error_outline
-                  : Icons.radio_button_unchecked,
-              size: 20,
-              color: isConfirmed || (isAnswered && faults == 0 && !isNonConform)
-                  ? AppTheme.success
-                  : faults > 0 || isNonConform
-                  ? theme.colorScheme.error
-                  : theme.colorScheme.outlineVariant,
-            ),
+            // Leading numbered badge
+            _CriterionNumberBadge(number: index, isAnswered: isAnswered),
             const SizedBox(width: 12),
 
             // Label
@@ -135,6 +122,47 @@ class AuditCriterionRow extends StatelessWidget {
               color: theme.colorScheme.outlineVariant,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Numbered circular badge replacing the status icon in the compact row.
+/// Green fill = answered, grey outline = unanswered.
+class _CriterionNumberBadge extends StatelessWidget {
+  final int? number;
+  final bool isAnswered;
+
+  const _CriterionNumberBadge({required this.number, required this.isAnswered});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final Color fillColor = isAnswered ? AppTheme.success : Colors.transparent;
+    final Color borderColor = isAnswered
+        ? AppTheme.success
+        : theme.colorScheme.outlineVariant;
+    final Color textColor = isAnswered
+        ? Colors.white
+        : theme.colorScheme.outlineVariant;
+
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: fillColor,
+        border: Border.all(color: borderColor, width: 1.5),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        number != null ? '$number' : '·',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          color: textColor,
+          height: 1,
         ),
       ),
     );
@@ -332,9 +360,7 @@ class AuditCcpRiskButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: active ? activeColor : Colors.transparent,
-        ),
+        side: BorderSide(color: active ? activeColor : Colors.transparent),
       ),
       onSelected: (_) => onTap(),
     );
