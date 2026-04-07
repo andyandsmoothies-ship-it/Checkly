@@ -11,7 +11,6 @@ import '../models/editable_group.dart';
 import '../models/validation_result.dart';
 import '../widgets/ghost_add_button.dart';
 import '../widgets/advanced_settings_card.dart';
-import '../widgets/blueprint_selection_modal.dart';
 import '../widgets/metadata_form_card.dart';
 import '../widgets/section_editor.dart';
 import '../widgets/template_footer.dart';
@@ -74,59 +73,10 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       });
     } else {
       _loading = false;
-      // Intent-driven wizard: show blueprint selection for new templates
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showBlueprintModal();
-      });
+      // Classic Builder: start with an empty canvas.
+      // The Blueprint modal is intentionally NOT shown here — the user
+      // already declared their intent by choosing "Classic Builder".
     }
-  }
-
-  /// Show the blueprint selection modal and auto-configure on selection.
-  Future<void> _showBlueprintModal() async {
-    final selected = await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const BlueprintSelectionModal(),
-    );
-    if (selected == null || !mounted) {
-      if (mounted) context.pop();
-      return;
-    }
-
-    setState(() {
-      _scoringMode = selected;
-      // Reset all feature flags to mode-appropriate defaults
-      _ccpOverride = selected == 'penalty';
-      _riskOverride = selected == 'penalty';
-      _progressiveRepeat = false;
-      _confirmCorrect = false;
-      _weightedDensity = false;
-
-      // Smart scaffolding: inject 1 section + 1 criterion
-      final defaultInputType = _recommendedInputType(selected);
-      final sectionTitle = switch (selected) {
-        'survey' => 'General Feedback',
-        'checklist' => 'Checklist Items',
-        'accumulation' => 'Assessment Criteria',
-        _ => 'Inspection Items',
-      };
-      _sections = [
-        EditableGroup(
-          title: sectionTitle,
-          criteria: [EditableCriterion(inputType: defaultInputType)],
-        ),
-      ];
-    });
-  }
-
-  /// Returns the recommended input type for a given blueprint mode.
-  static String _recommendedInputType(String mode) {
-    return switch (mode) {
-      'survey' => 'single_choice',
-      'checklist' => 'pass_fail',
-      'accumulation' => 'scale',
-      _ => 'numeric', // penalty default
-    };
   }
 
   void _markDirty() {
