@@ -59,16 +59,24 @@ class FakeConnectivityService implements ConnectivityService {
 class FakeSyncApi implements SyncApi {
   final List<String> pushLog = [];
   final List<String> pullLog = [];
-
-  /// If set, push for this submission ID will throw.
+  /// If set, push for this submission ID will throw a generic network error.
   String? failOnPushId;
+
+  /// If set, push for this submission ID will throw a 403 Forbidden error.
+  String? throw403OnId;
 
   /// Simulated last sync timestamp returned by delta endpoints.
   DateTime serverTimestamp = DateTime.utc(2026, 3, 11, 12, 0, 0);
 
+  int pushCallCount = 0;
+
   @override
   Future<void> pushSubmission(PendingSubmission submission) async {
     pushLog.add(submission.idempotencyKey);
+    pushCallCount++;
+    if (submission.idempotencyKey == throw403OnId) {
+      throw Exception('DioException 403 Forbidden: Permission denied for ${submission.idempotencyKey}');
+    }
     if (submission.idempotencyKey == failOnPushId) {
       throw Exception('Network error on ${submission.idempotencyKey}');
     }
@@ -330,5 +338,60 @@ void main() {
 
     // Engine should reflect offline state
     expect(engine.state, SyncState.offline);
+  });
+
+  // ================================================================
+  // Scenario 9: 403 Forbidden exhausts record immediately, no retry
+  // Source: PBAC Slice 5 -- Fatal 403 Resilience
+  // PM Safety Mandate: demoted users trigger battery drain loop without this guard.
+  // ================================================================
+  test('S9: 403 Forbidden immediately exhausts record without retrying', () async {
+    await seedData([_makePending('A', DateTime.utc(2026, 3, 11, 1))]);
+    api.throw403OnId = 'A';
+
+    await engine.requestSync();
+
+    // The record must be exhausted
+    final rows = await testDb.select(testDb.pendingSubmissions).get();
+    expect(rows.length, 1);
+    expect(rows.first.syncStatus, 'exhausted');
+    expect(rows.first.syncError, contains('FATAL 403'));
+
+    // retryCount must still be 0 -- no backoff was attempted before exhaustion
+    expect(rows.first.retryCount, 0);
+
+    // Push was called exactly ONCE (no retry)
+    expect(api.pushCallCount, 1);
+  });
+
+  // ================================================================
+  // Scenario 10: 403 on first record does NOT abort remaining batch
+  // Source: PBAC Slice 5 -- Fatal 403 Resilience
+  // Verifies `continue` (not `return`) is used in the catch block.
+  // ================================================================
+  test('S10: 403 on one record continues syncing remaining records', () async {
+    await seedData([
+      _makePending('A', DateTime.utc(2026, 3, 11, 1)), // will get 403
+      _makePending('B', DateTime.utc(2026, 3, 11, 2)), // should succeed
+    ]);
+    api.throw403OnId = 'A';
+
+    await engine.requestSync();
+
+    // A should be exhausted
+    final rowA = (await testDb.select(testDb.pendingSubmissions).get())
+        .where((r) => r.id == 'A')
+        .single;
+    expect(rowA.syncStatus, 'exhausted');
+    expect(rowA.syncError, contains('FATAL 403'));
+
+    // B should have been removed (synced successfully)
+    final rowB = (await testDb.select(testDb.pendingSubmissions).get())
+        .where((r) => r.id == 'B')
+        .toList();
+    expect(rowB, isEmpty, reason: 'B should be removed from outbox after success');
+
+    // Both push calls were made (A attempted once, B succeeded)
+    expect(api.pushLog, ['A', 'B']);
   });
 }

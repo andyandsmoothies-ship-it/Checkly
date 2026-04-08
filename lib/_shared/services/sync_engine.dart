@@ -158,6 +158,22 @@ class SyncEngine {
             continue;
           }
 
+          // Hard-exhaust on permission denied (403 Forbidden).
+          // A 403 means the user's role has been revoked — retrying will never
+          // succeed and causes the battery drain loop (PM Safety Mandate, Slice 5).
+          // Use `continue` (not `return`) to keep processing remaining outbox records.
+          final isForbidden = e.toString().contains('403') ||
+              e.toString().toLowerCase().contains('forbidden');
+
+          if (isForbidden) {
+            await _outboxDao.updateSyncStatus(
+              dbRow.id,
+              'exhausted',
+              error: 'FATAL 403: Permission denied. Role may have changed.',
+            );
+            continue;
+          }
+
           // Apply SQLite-backed exponential backoff (Pillar D).
           final currentRetries = dbRow.retryCount;
           if (currentRetries < _backoffDelays.length) {

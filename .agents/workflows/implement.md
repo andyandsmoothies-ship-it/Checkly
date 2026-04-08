@@ -72,7 +72,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 |---|---|
 | **Artifact Create**| Export `test_contracts_[topic].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
 | **Contract Format**| Strict Template: `ID`, `Exact Text/Key` (with line #), `State Matrix` (Happy/Error/Empty), `Private Method Access`, `Why RED now`. |
-| **Execution Lock** | PROHIBITED: Entering Phase 3 without explicit TDD execution. IF ATDD tests (e.g. `test_contracts_[topic].md` or `test_cases_[topic].md`) were provided in the prompt, DO NOT SKIP THIS PHASE. ATDD (Acceptance/Integration bounds) $\neq$ TDD (Internal Unit Tests). MANDATORY: Output message: *"Plan ready. Run /tdd with QA Agent (@Sentinel) for failing internal unit tests. When done, reply here: 'Here is the result of tdd, check and continue'."* -> YIELD. |
+| **Execution Lock** | PROHIBITED: Entering Phase 3 without explicit TDD execution. The *Marking Your Own Homework Paradox* applies universally. MANDATORY YIELD: You MUST yield to the QA persona (@Sentinel) to write tests, regardless of Track (A/B1/B2/C) or task size. Output message: *"Plan ready. Run /tdd with QA Agent (@Sentinel) for failing internal unit tests. When done, reply here: 'Here is the result of tdd, check and continue'."* -> YIELD. |
 
 ## Phase 3: Coding
 
