@@ -2,7 +2,9 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Checkly.Api.Common;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Features.Submissions;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Checkly.Api.Tests;
@@ -73,18 +75,20 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
     public async Task ListSubmissions_WithoutSubmissionsListCapability_Returns403()
     {
         // ARRANGE
-        var client = _factory.CreateClient();
-        
-        // Register an auditor. In Slice 2, this endpoint requires "submissions:list".
-        // Until that capability is seeded and the endpoint is protected, this returns 200.
-        // Once protected, and if the DB seed hasn't run or is missing for this role, it should return 403.
-        var (token, _) = await _factory.RegisterUserAsync(client, "noperms@test.test", "Pass123!@", "No Perms", "auditor");
-        var badClient = _factory.CreateAuthenticatedClient(token);
+        // Forge a JWT directly via TokenService with role "phantom" — a role that has
+        // NO entry in role_capabilities. This bypasses RegisterUserAsync which enforces
+        // the server-side role allowlist (admin/auditor/store_manager/area_manager).
+        // (Option A resolution: contract fix — all registered roles have submissions:list)
+        using var scope = _factory.Services.CreateScope();
+        var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
+        var phantomToken = tokenService.GenerateToken(Guid.NewGuid(), "phantom@test.test", "phantom");
+        var badClient = _factory.CreateAuthenticatedClient(phantomToken);
 
         // ACT
         var response = await badClient.GetAsync("/api/submissions");
 
         // ASSERT
+        // CapabilityAuthorizationHandler finds no entries for "phantom" in PbacDictionaryCache → 403
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 

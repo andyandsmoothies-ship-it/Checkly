@@ -151,6 +151,7 @@ try
     builder.Services.AddSingleton<ScoringVerifier>();
     builder.Services.AddSingleton<PbacDictionaryCache>();
     builder.Services.AddSingleton<IAuthorizationHandler, CapabilityAuthorizationHandler>();
+    builder.Services.AddHostedService<PbacCacheListenerService>();
     builder.Services.AddHostedService<ReminderService>();
 
     // --- SignalR ---
@@ -191,6 +192,20 @@ try
 
         // PBAC Cache warm-up — must run AFTER Migrate() so role_capabilities table exists.
         var pbacCache = app.Services.GetRequiredService<PbacDictionaryCache>();
+        await pbacCache.InitializeAsync(app.Services);
+
+        // Slice 2: Seed submissions:list capability for all roles (idempotent — ON CONFLICT DO NOTHING)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'admin',         'submissions:list', now()),
+                (gen_random_uuid(), 'auditor',       'submissions:list', now()),
+                (gen_random_uuid(), 'store_manager', 'submissions:list', now()),
+                (gen_random_uuid(), 'area_manager',  'submissions:list', now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so the new submissions:list rows are immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
     }
 

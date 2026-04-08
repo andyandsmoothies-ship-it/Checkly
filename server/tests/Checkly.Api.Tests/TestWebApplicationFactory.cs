@@ -38,6 +38,16 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             logging.AddConsole();
         });
 
+        // Ensure IConfiguration["ConnectionStrings:DefaultConnection"] matches the test DB
+        // so background listeners connect to the right database.
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = TestConnectionString
+            });
+        });
+
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(

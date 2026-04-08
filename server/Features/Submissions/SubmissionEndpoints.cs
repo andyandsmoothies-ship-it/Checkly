@@ -1,3 +1,5 @@
+using Checkly.Api.Common.Auth;
+
 namespace Checkly.Api.Features.Submissions;
 
 /// <summary>
@@ -15,7 +17,9 @@ public static class SubmissionEndpoints
             .WithName("CreateSubmission");
 
         group.MapGet("/", ListSubmissions.HandleAsync)
-            .WithName("ListSubmissions");
+            .WithName("ListSubmissions")
+            .RequireCapability("submissions:list");
+
 
         group.MapGet("/survey-results", GetSurveyResults.HandleAsync)
             .WithName("GetSurveyResults");

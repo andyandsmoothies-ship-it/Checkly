@@ -14,3 +14,14 @@
 > **WAF Parallel Initialization DB Race Condition**
 > **Problem:** xUnit parallel tests interleave `EnsureDeleted()` + `Migrate()`, yielding false `3D000` or `42P07` Postgres/EF errors.
 > **Fix:** These are infrastructure flakes. Test isolated fixes via `--filter`. Trust the combined sequential `dotnet test` result as the source of truth. Do NOT rewrite application logic to fix a 3D000 DB initialization error.
+
+> [!IMPORTANT]
+> **Register Endpoint Role Allowlist Blocks Test-Role Injection**
+> **Problem:** `POST /api/auth/register` validates `role` against a server-side allowlist (`admin, auditor, store_manager, area_manager`). Using `RegisterUserAsync("phantom")` to inject an unmapped role for capability boundary tests returns **400 Bad Request** before a JWT is issued.
+> **Fix:** Forge a JWT directly via `TokenService.GenerateToken(userId, email, "phantom")` resolved from `_factory.Services`. This bypasses registration entirely and still produces a valid signed token that the PBAC handler will evaluate against the capability cache.
+> ```csharp
+> using var scope = _factory.Services.CreateScope();
+> var ts = scope.ServiceProvider.GetRequiredService<TokenService>();
+> var token = ts.GenerateToken(Guid.NewGuid(), "fake@test.test", "phantom");
+> var client = _factory.CreateAuthenticatedClient(token);
+> ```

@@ -47,3 +47,8 @@
 > **Drift DAO Test Fakes Must Use `implements`, Not `extends`**
 > **Problem:** Subclassing via `extends` and passing `null` to `super()` crash-loops the test suite before body execution due to `AppDatabase` NPEs.
 > **Fix:** Always use `class FakeDao implements ActionPlanOutboxDao`.
+
+> [!WARNING]
+> **CS0420: `volatile` Keyword + `Volatile.Write(ref field, ...)` Are Mutually Exclusive**
+> **Problem:** `private volatile T _field; Volatile.Write(ref _field, value)` triggers CS0420. Passing `ref` to a `volatile` field inside a method strips the volatile semantics — the compiler warns you the call is semantically broken.
+> **Fix:** Remove the `volatile` keyword. Use `Volatile.Write(ref _field, value)` in writers and `Volatile.Read(ref _field)` in readers. Provides identical memory ordering guarantees with zero warnings. Applies to any lock-free single-writer/multi-reader singleton cache pattern.

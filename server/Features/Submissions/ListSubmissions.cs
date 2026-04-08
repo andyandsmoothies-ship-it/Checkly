@@ -1,13 +1,16 @@
 using System.Security.Claims;
 using Checkly.Api.Common;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
 
 /// <summary>
-/// GET /api/submissions — role-based filtered list.
-/// admin → all, auditor → own, store_manager → their store, area_manager → their area.
+/// GET /api/submissions — role-scoped paginated list.
+/// Ownership scoping (admin/auditor/store_manager/area_manager) is delegated to
+/// OwnershipScopeFilter.ApplyAsync — see Common/Auth/OwnershipScopeFilter.cs.
+/// Capability gate: submissions:list (enforced at route level via RequireCapability).
 /// </summary>
 public static class ListSubmissions
 {
@@ -17,56 +20,10 @@ public static class ListSubmissions
         HttpContext httpContext,
         CancellationToken ct)
     {
-        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
-
         var query = db.Submissions.AsNoTracking().AsQueryable();
 
-        switch (role)
-        {
-            case "admin":
-                // Admin sees everything
-                break;
-
-            case "auditor":
-                // Auditor sees only own submissions
-                query = query.Where(s => s.AuditorId == userId);
-                break;
-
-            case "store_manager":
-                // Store manager sees submissions for their store
-                var profile = await db.Profiles
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.Id == userId, ct);
-                if (profile?.StoreId != null)
-                    query = query.Where(s => s.StoreId == profile.StoreId);
-                else
-                    query = query.Where(s => false); // No store → no results
-                break;
-
-            case "area_manager":
-                // Area manager sees submissions for all stores in their area
-                var areaProfile = await db.Profiles
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.Id == userId, ct);
-                if (areaProfile?.AreaId != null)
-                {
-                    var storeIds = await db.Stores
-                        .Where(s => s.AreaId == areaProfile.AreaId)
-                        .Select(s => s.Id)
-                        .ToListAsync(ct);
-                    query = query.Where(s => storeIds.Contains(s.StoreId!.Value));
-                }
-                else
-                {
-                    query = query.Where(s => false);
-                }
-                break;
-
-            default:
-                query = query.Where(s => false);
-                break;
-        }
+        // Apply role-based ownership scope (admin → all, auditor → own, etc.)
+        query = await OwnershipScopeFilter.ApplyAsync(query, user, db, ct);
 
         // Optional status filter: ?status=draft|scheduled|in_progress|completed|finalized|void
         var statusFilter = httpContext.Request.Query["status"].ToString();
@@ -99,3 +56,4 @@ public static class ListSubmissions
         return TypedResults.Ok(new PagedResult<SubmissionDto>(submissions, total, page, pageSize));
     }
 }
+
