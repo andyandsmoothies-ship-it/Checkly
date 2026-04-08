@@ -14,6 +14,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 | Step | Execution Contract |
 |---|---|
 | **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
+| **Contract Ingestion** | MANDATORY: If this feature is part of an Epic, you MUST read the parent Epic's API Contracts and Dispatch Map. Your sole purpose is to translate ONE specific Epic Slice into an exact execution plan. You are required to generate the specific Database Schemas, File Paths, and exact Diffs required to fulfill the Epic Contract without changing the contract itself. |
 
 ```markdown
 # Task: [Feature / Bug / Topic Name]
