@@ -10,19 +10,19 @@
 
 ## Table Overview
 
-The Checkly database contains **24 tables** organized into 3 categories:
+The Checkly database contains **25 tables** organized into 3 categories:
 
 > **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| **Business Domain** | 16 tables | Core audit workflow data |
+| **Business Domain** | 17 tables | Core audit workflow data |
 | **ASP.NET Identity** | 7 tables | Authentication & identity infrastructure |
 | **EF Core Internal** | 1 table | Migration tracking |
 
 ---
 
-## Business Domain Tables (16)
+## Business Domain Tables (17)
 
 ### `profiles`
 **Rows**: 7 | **Soft Delete**: No (ban via `AspNetUsers.LockoutEnd`)
@@ -55,6 +55,20 @@ Maps each user to exactly one application role. Separate from Identity's built-i
 | `user_id` | UUID (FK → AspNetUsers) | The user |
 | `role` | text | One of: `admin`, `auditor`, `store_manager`, `area_manager` |
 | `created_at` | timestamptz | When role was assigned |
+
+---
+
+### `role_capabilities`
+**Rows**: 0 | **Populated dynamically**
+
+Maps roles to fine-grained capability strings as part of the PBAC (Permission-Based Access Control) system. Capability format is `{domain}:{action}` (e.g. `templates:create`). Changes here emit a `pg_notify` to invalidate backend cache.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique capability ID |
+| `role` | text | Which role this applies to (e.g., `admin`, `auditor`) |
+| `capability` | text | The capability mapping (e.g. `templates:create`) |
+| `created_at` | timestamptz | Record creation |
 
 ---
 

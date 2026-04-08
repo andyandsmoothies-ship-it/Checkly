@@ -7,7 +7,9 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 ---
 
 ## Module 1: Authentication & Role Authorization
-**Focus**: Login, JWT storage, and Role-Based Access Control (RBAC).
+**Focus**: Login, JWT storage, and Permission-Based Access Control (PBAC).
+
+> **PBAC Note**: As of Slice 6, UI checks and GoRouter redirects are driven by `PolicyManager.can(capability)` rather than hard-coded `role == 'admin'` checks. Ensure testing validates capability-driven behavior.
 
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
@@ -27,7 +29,7 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 2.1 | Bottom Nav Switching | Tap through Home, Audits, Action Plans, Profile | Instant switching. Active state highlighted. | [ ] |
 | 2.2 | Keyboard Padding | Focus a text input on a deeply scrolled page | UI scrolls up so input is not hidden by keyboard. | [ ] |
 | 2.3 | Global Scroll Restoration | Scroll down a list → Navigate away → Go back | List restores exact scroll position. | [ ] |
-| 2.4 | Admin Route Guard | Login as Auditor → Navigate to `/admin/dashboard` | Redirected to `/home`. Admin pages are not accessible. | [ ] |
+| 2.4 | Capability Route Guard | Login as Auditor → Navigate to `/admin/dashboard` | Redirected to `/home`. Admin pages are not accessible (missing `admin:access` capability). | [ ] |
 | 2.5 | Access Pending Redirect | Login as user with no role assigned | Redirected to Access Pending page, not Dashboard. | [ ] |
 | 2.6 | Admin Nav Items | Login as Admin → Open Admin Dashboard | All 5 menu items (Users, Stores, Approvals, Logs, Areas) navigate correctly. | [ ] |
 

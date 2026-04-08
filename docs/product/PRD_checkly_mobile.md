@@ -45,8 +45,8 @@
 | Requirement | Detail |
 |-------------|--------|
 | **Login** | Email + password → JWT token. Account locks after 5 failed attempts (15-min lockout) |
-| **Offline login** | Cached session allows offline access with last-known role |
-| **Role-based access** | 4 roles with hierarchical permissions (see §2) |
+| **Offline login** | Cached session allows offline access with last-known capabilities |
+| **Permission-based access** | Dynamic PBAC with capability syncing replacing hardcoded role strings |
 | **Data isolation** | Store managers see only their store's data; area managers see their region |
 | **Session refresh** | Automatic JWT refresh; graceful offline fallback |
 
@@ -242,7 +242,10 @@ flowchart TD
 
 ---
 
-## 6. Access Control Matrix
+## 6. Access Control Matrix (PBAC)
+
+> [!NOTE]
+> **Permission-Based Access Control (PBAC)**: The system dynamically evaluates access using `capabilities` (e.g., `templates:create`) via `PolicyManager.can()`, instead of hard-coded role strings. The matrix below shows the *default* semantic mappings for the 4 out-of-the-box roles, but all system gates evaluate underlying capabilities.
 
 | Action | Admin | Auditor | Store Manager | Area Manager |
 |--------|:-----:|:-------:|:-------------:|:------------:|
