@@ -136,6 +136,16 @@ class OutboxDao {
     return Rx.combineLatest2(subStream, photoStream, (int a, int b) => a + b);
   }
 
+  /// Permanently deletes exhausted submissions and photos (discard corrupted data).
+  Future<void> discardExhausted() async {
+    await (_db.delete(_db.pendingPhotos)
+          ..where((p) => p.syncStatus.equals('exhausted')))
+        .go();
+    await (_db.delete(_db.pendingSubmissions)
+          ..where((s) => s.syncStatus.equals('exhausted')))
+        .go();
+  }
+
   /// Reset all exhausted records in both tables back to `pending`.
   /// Clears `retryCount` and `nextRetryAt` — they become eligible immediately.
   Future<void> requeueExhausted() async {
@@ -223,10 +233,30 @@ class OutboxDao {
   // Counts
   // ============================================================
 
-  /// Count of pending submissions (for badge/indicator).
-  Future<int> pendingCount() async {
+  /// Count of submissions that are still recoverable (not yet uploaded).
+  /// Statuses covered: 'pending', 'submission_synced', 'photos_pending'.
+  /// Sign-out MUST be blocked while this count > 0.
+  Future<int> syncableCount() async {
+    const recoverableStatuses = ['pending', 'submission_synced', 'photos_pending'];
+    int total = 0;
+    for (final status in recoverableStatuses) {
+      final countExp = countAll();
+      final query = _db.selectOnly(_db.pendingSubmissions)
+        ..addColumns([countExp])
+        ..where(_db.pendingSubmissions.syncStatus.equals(status));
+      final n = await query.map((row) => row.read(countExp)).getSingle() ?? 0;
+      total += n;
+    }
+    return total;
+  }
+
+  /// Count of permanently-failed submissions ('exhausted').
+  /// These will never sync — user can be warned and allowed to sign out.
+  Future<int> exhaustedCount() async {
     final countExp = countAll();
-    final query = _db.selectOnly(_db.pendingSubmissions)..addColumns([countExp]);
+    final query = _db.selectOnly(_db.pendingSubmissions)
+      ..addColumns([countExp])
+      ..where(_db.pendingSubmissions.syncStatus.equals('exhausted'));
     return await query.map((row) => row.read(countExp)).getSingle() ?? 0;
   }
 }

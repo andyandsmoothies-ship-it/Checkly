@@ -282,6 +282,42 @@ class _MainShell extends StatelessWidget {
                             ),
                           ),
                         ),
+                        IconButton(
+                          onPressed: () async {
+                            // Show confirmation dialog before deleting permanently
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (dialogCtx) => AlertDialog(
+                                title: const Text('Discard Corrupted Audits?'),
+                                content: const Text(
+                                  'This will permanently delete the failed audits from this device. '
+                                  'They cannot be recovered.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(dialogCtx).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(dialogCtx).pop(true),
+                                    child: Text(
+                                      'Discard',
+                                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await _di<OutboxDao>().discardExhausted();
+                            }
+                          },
+                          icon: const Icon(Icons.delete_outline, color: Colors.white, size: 20),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          tooltip: 'Discard permanently',
+                        ),
+                        const SizedBox(width: 8),
                         TextButton(
                           onPressed: () {
                             // Tap to requeue: clears nextRetryAt and retryCount

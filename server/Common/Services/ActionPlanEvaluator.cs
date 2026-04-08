@@ -43,8 +43,26 @@ public static class ActionPlanEvaluator
         return triggered;
     }
 
+    private static bool IsFaulty(Answer answer)
+    {
+        if (string.Equals(answer.Value, "conform", System.StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(answer.Value, "na", System.StringComparison.OrdinalIgnoreCase))
+            return false;
+            
+        if (string.Equals(answer.Value, "non_conform", System.StringComparison.OrdinalIgnoreCase))
+            return true;
+            
+        return (answer.NumericValue ?? 0) > 0;
+    }
+
     private static bool ShouldTrigger(Answer answer, Criterion criterion)
     {
+        // 1. Criticality Override: Any CCP or RISK criterion that has faults MUST trigger an action plan.
+        if ((criterion.IsRisk || criterion.IsCcp) && IsFaulty(answer))
+        {
+            return true;
+        }
+
         var trigger = ParseTrigger(criterion.Metadata);
 
         // No trigger defined → use legacy behavior
@@ -52,7 +70,7 @@ public static class ActionPlanEvaluator
         {
             // Legacy: only pass_fail with "non_conform" triggers an AP
             return criterion.InputType == "pass_fail"
-                && answer.Value == "non_conform";
+                && string.Equals(answer.Value, "non_conform", System.StringComparison.OrdinalIgnoreCase);
         }
 
         return trigger.Condition switch

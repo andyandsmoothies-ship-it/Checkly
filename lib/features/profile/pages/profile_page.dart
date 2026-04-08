@@ -382,20 +382,27 @@ class _SignOutTileState extends State<_SignOutTile> {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
-    // AC-5: Block sign-out if outbox has pending submissions
     final outbox = OutboxDao(_di<DatabaseService>().db);
-    final pending = await outbox.pendingCount();
+
+    // Check both counts in parallel
+    final results = await Future.wait([
+      outbox.syncableCount(),
+      outbox.exhaustedCount(),
+    ]);
+    final syncable = results[0];
+    final exhausted = results[1];
 
     if (!context.mounted) return;
 
-    if (pending > 0) {
+    // Case 1: Recoverable submissions in-flight — hard block.
+    if (syncable > 0) {
       await showDialog<void>(
         context: context,
         builder: (dialogCtx) => AlertDialog(
-          title: const Text('Cannot Sign Out'),
+          title: const Text('Audits Uploading'),
           content: Text(
-            'You have $pending pending submission${pending == 1 ? '' : 's'} '
-            'waiting to sync. Please stay connected until they are uploaded.',
+            'You have $syncable audit${syncable == 1 ? '' : 's'} still uploading. '
+            'Please stay connected until they finish before signing out.',
           ),
           actions: [
             TextButton(
@@ -408,7 +415,42 @@ class _SignOutTileState extends State<_SignOutTile> {
       return;
     }
 
-    // AC-6: Outbox is empty — show normal confirm dialog
+    // Case 2: Only exhausted (permanently failed) rows remain — warn + allow escape.
+    if (exhausted > 0) {
+      final shouldForce = await showDialog<bool>(
+        context: context,
+        builder: (dialogCtx) => AlertDialog(
+          title: const Text('Unsynced Audits Will Be Lost'),
+          content: Text(
+            '$exhausted audit${exhausted == 1 ? '' : 's'} failed to upload and '
+            'cannot be recovered. Signing out will permanently delete '
+            '${exhausted == 1 ? 'it' : 'them'} from this device.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(true),
+              child: Text(
+                'Sign Out Anyway',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (shouldForce == true) {
+        _di<AuthManager>().logout();
+      }
+      return;
+    }
+
+    // Case 3: Outbox is clean — standard confirmation.
     await showDialog<void>(
       context: context,
       builder: (dialogCtx) => AlertDialog(

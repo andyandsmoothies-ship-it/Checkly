@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
@@ -28,6 +29,7 @@ const List<int> _backoffDelays = [2, 4, 8, 60];
 class SyncEngine {
   final ConnectivityService _connectivity;
   final SyncApi _api;
+  // ignore: unused_field — Outbox interface kept as constructor seam; _outboxDao used directly for removal (TODO: cleanup in follow-up PR).
   final Outbox _outbox;
   final AuthCheck _auth;
   final OutboxDao _outboxDao; // Direct DAO access for backoff writes
@@ -98,20 +100,12 @@ class SyncEngine {
       final pullResult = await _api.pullDeltas(lastSyncTimestamp);
       lastSyncTimestamp = pullResult.serverTimestamp;
 
-      // --- Push phase: use Outbox interface entries (carry payload) ---
-      // Filter to only eligible entries using the backoff-gated DAO query.
-      // The eligible set is keyed by idempotencyKey for O(1) cross-reference.
+      // --- Push phase: build payload from normalized DAO tables (FIFO) ---
+      // Fetch backoff-eligible entries directly from DAO — ordered by createdAt ASC.
+      // _outbox.pending is bypassed because it is synchronous and cannot
+      // load rows from SQLite — DAO query is the source of truth.
       final eligibleRows = await _outboxDao.getEligiblePending();
-      final eligibleKeys = {for (final r in eligibleRows) r.idempotencyKey: r};
-
-      final sortedPending = List<PendingSubmission>.from(_outbox.pending)
-        ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-
-      for (final entry in sortedPending) {
-        // Skip if not in the backoff-eligible set
-        final dbEntry = eligibleKeys[entry.idempotencyKey];
-        if (dbEntry == null) continue;
-
+      for (final dbRow in eligibleRows) {
         // Check connectivity before each push
         if (!_connectivity.isOnline) {
           _state = SyncState.offline;
@@ -119,28 +113,68 @@ class SyncEngine {
         }
 
         try {
+          // Fetch answers for this submission from the normalized table
+          final answers = await _outboxDao.getAnswersForSubmission(dbRow.id);
+
+          // Build the JSON payload the API expects
+          final payload = jsonEncode({
+            'templateId': dbRow.templateId,
+            'storeId': dbRow.storeId,
+            'clientScore': dbRow.clientScore,
+            'sectionScores': dbRow.sectionScores,
+            'notes': dbRow.notes,
+            'gpsLat': dbRow.gpsLat,
+            'gpsLng': dbRow.gpsLng,
+            'status': 'completed',
+            'idempotencyKey': dbRow.idempotencyKey,
+            'answers': answers.map((a) => {
+              'criteriaId': a.criteriaId,
+              'value': a.value,
+              'numericValue': a.numericValue,
+              'note': a.note,
+              'photoUrl': a.photoUrl,
+              'isRepeatedError': a.isRepeatedError,
+            }).toList(),
+          });
+
+          final entry = PendingSubmission(
+            idempotencyKey: dbRow.idempotencyKey,
+            createdAt: dbRow.createdAt,
+            payload: payload,
+          );
+
           await _api.pushSubmission(entry);
-          await _outbox.remove(entry.idempotencyKey);
+          await _outboxDao.removeSubmission(dbRow.id);
         } catch (e) {
+          // Hard-exhaust on malformed payload (e.g. 400 Bad Request)
+          final isBadRequest = e.toString().contains('400') || e.toString().contains('ClientFormatError');
+          
+          if (isBadRequest) {
+            await _outboxDao.updateSyncStatus(
+              dbRow.id,
+              'exhausted',
+              error: 'FATAL 400: ${e.toString()}',
+            );
+            continue;
+          }
+
           // Apply SQLite-backed exponential backoff (Pillar D).
-          // No Timer spawned — backoff is evaluated at query-time via nextRetryAt.
-          final currentRetries = dbEntry.retryCount;
+          final currentRetries = dbRow.retryCount;
           if (currentRetries < _backoffDelays.length) {
             final delaySecs = _backoffDelays[currentRetries];
             final nextRetry = DateTime.now().toUtc().add(
               Duration(seconds: delaySecs),
             );
             await _outboxDao.updateSyncStatus(
-              dbEntry.id,
+              dbRow.id,
               'pending',
               retryCount: currentRetries + 1,
               nextRetryAt: nextRetry,
               error: e.toString(),
             );
           } else {
-            // Exhausted — UX Red Badge will appear via watchExhaustedCount()
             await _outboxDao.updateSyncStatus(
-              dbEntry.id,
+              dbRow.id,
               'exhausted',
               error: 'Max retries exceeded',
             );

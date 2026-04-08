@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
@@ -11,6 +12,7 @@ import '../../../_shared/database/dao/outbox_dao.dart'; // Kept as it's used
 import '../../../_shared/services/connectivity_service.dart'; // Kept as it's used
 import '../../../_shared/services/scoring_engine.dart'; // Kept as it's used
 import '../../../_shared/services/scoring_models.dart';
+import '../../../_shared/services/sync_engine.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../templates/models/template_dto.dart';
 import '../model/submission_dto.dart';
@@ -88,6 +90,7 @@ class AuditAnswer {
 /// 2. Save to Drift outbox (pending_submissions + pending_answers)
 /// 3. If online: trigger sync. If offline: queued for later.
 class AuditManager extends ChangeNotifier {
+  // ignore: unused_field — kept as injectable test seam; SpySubmissionApiService verifies HTTP path is never reached.
   final SubmissionApiService _api;
   late final OutboxDao _outbox;
   late final ConnectivityService? _connectivity;
@@ -392,6 +395,10 @@ class AuditManager extends ChangeNotifier {
       final now = DateTime.now();
       final submissionId = _uuid.v4();
 
+      if (_answers.isEmpty) {
+        throw Exception('Cannot submit an audit with zero answers. Please complete the audit first.');
+      }
+
       // 1. Build answer companions
       final answerCompanions = _answers.values.map((a) {
         return PendingAnswersCompanion.insert(
@@ -431,32 +438,15 @@ class AuditManager extends ChangeNotifier {
         _draftSavedAt = null;
       }
 
-      // 3. If online, attempt immediate API submission
+      // 3. Notify SyncEngine — it drains the outbox in the background (non-blocking).
+      //    Connectivity state is used only to set the correct UX flag.
       final isOnline = _connectivity?.isOnline ?? true;
-      if (isOnline) {
-        try {
-          final request = CreateSubmissionRequest(
-            templateId: _template!.id,
-            storeId: _storeId!,
-            clientScore: _liveScore,
-            sectionScores: _buildSectionScoresJson(),
-            notes: _notes,
-            gpsLat: _gpsLat,
-            gpsLng: _gpsLng,
-            answers: _answers.values.map((a) => a.toInput()).toList(),
-            idempotencyKey: idempotencyKey,
-          );
-
-          _lastSubmission = await _api.createSubmission(request);
-
-          // Success — remove from outbox
-          await _outbox.removeSubmission(submissionId);
-        } catch (_) {
-          // API failed — submission stays in outbox for sync
-          _wasQueuedOffline = true;
-        }
-      } else {
-        _wasQueuedOffline = true;
+      _wasQueuedOffline = !isOnline;
+      // Guard: SyncEngine may not be registered in test environments.
+      try {
+        unawaited(_di<SyncEngine>().requestSync());
+      } catch (_) {
+        // SyncEngine not registered (test/isolated environment) — outbox will drain on next connectivity event.
       }
     } catch (e) {
       _error = 'Submission failed. Please try again.';
@@ -466,8 +456,8 @@ class AuditManager extends ChangeNotifier {
     }
   }
 
-  // ---------- Pending count ----------
-  Future<int> get pendingCount => _outbox.pendingCount();
+  // ---------- Pending count (syncable-only — excludes exhausted) ----------
+  Future<int> get pendingCount => _outbox.syncableCount();
 
   // ---------- Reset ----------
   void reset() {
