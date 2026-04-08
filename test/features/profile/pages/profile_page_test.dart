@@ -35,6 +35,9 @@ import 'package:checkly/features/auth/model/user_session.dart';
 import 'package:checkly/features/profile/pages/profile_page.dart';
 import 'package:checkly/_shared/theme/theme_manager.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
+import 'package:checkly/_shared/database/database_service.dart';
+import 'package:checkly/_shared/database/app_database.dart';
+import 'package:drift/native.dart';
 
 
 // ── Mock Declarations ─────────────────────────────────────────────────────────
@@ -42,6 +45,7 @@ import 'package:checkly/_shared/theme/app_theme.dart';
 
 class _MockAuthManager extends Mock implements AuthManager {}
 class _MockThemeManager extends Mock implements ThemeManager {}
+class _MockDatabaseService extends Mock implements DatabaseService {}
 
 // ── Test Fixtures ─────────────────────────────────────────────────────────────
 
@@ -80,6 +84,11 @@ _MockAuthManager _registerDi({UserSession? user}) {
   final di = GetIt.instance;
   di.registerSingleton<AuthManager>(mockAuth);
   di.registerSingleton<ThemeManager>(mockTheme);
+
+  final mockDbService = _MockDatabaseService();
+  final testDb = AppDatabase.forTesting(NativeDatabase.memory());
+  when(() => mockDbService.db).thenReturn(testDb);
+  di.registerSingleton<DatabaseService>(mockDbService);
 
   return mockAuth;
 }

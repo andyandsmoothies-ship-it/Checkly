@@ -43,7 +43,9 @@ class FakeSubmissionApiService extends SubmissionApiService {
   FakeSubmissionApiService() : super(Dio());
 
   @override
-  Future<SubmissionDto> createSubmission(CreateSubmissionRequest request) async {
+  Future<SubmissionDto> createSubmission(
+    CreateSubmissionRequest request,
+  ) async {
     throw StateError('Should not be called on offline path');
   }
 }
@@ -98,7 +100,7 @@ void main() {
 
   tearDown(() async => testDb.close());
 
-  AuditManager _makeManager({OutboxDao? overrideOutbox}) {
+  AuditManager makeManager({OutboxDao? overrideOutbox}) {
     return AuditManager(
       api: FakeSubmissionApiService(),
       outbox: overrideOutbox ?? outboxDao,
@@ -115,7 +117,7 @@ void main() {
     'AuditManager_Submit_WritesSubmissionAndAnswersToOutboxAtomically',
     () async {
       // Arrange
-      final manager = _makeManager();
+      final manager = makeManager();
       final template = _makeTemplate(criteriaCount: 3);
       await manager.startAudit(template, 'store-001');
 
@@ -124,14 +126,21 @@ void main() {
 
       // Assert
       final pendingRows = await outboxDao.getAllPending();
-      expect(pendingRows.length, equals(1),
-          reason: 'Exactly 1 outbox row expected');
+      expect(
+        pendingRows.length,
+        equals(1),
+        reason: 'Exactly 1 outbox row expected',
+      );
       expect(pendingRows.first.syncStatus, equals('pending'));
 
-      final answers =
-          await outboxDao.getAnswersForSubmission(pendingRows.first.id);
-      expect(answers.length, equals(3),
-          reason: 'All 3 criteria answers must be persisted to outbox');
+      final answers = await outboxDao.getAnswersForSubmission(
+        pendingRows.first.id,
+      );
+      expect(
+        answers.length,
+        equals(3),
+        reason: 'All 3 criteria answers must be persisted to outbox',
+      );
     },
   );
 
@@ -141,22 +150,22 @@ void main() {
   //
   // Full spy verification deferred: requires SyncEngine injection to AuditManager.
   // ----------------------------------------------------------------
-  test(
-    'AuditManager_Submit_TriggersSyncEngineAfterOutboxWrite',
-    () async {
-      // Arrange
-      final manager = _makeManager();
-      await manager.startAudit(_makeTemplate(), 'store-002');
+  test('AuditManager_Submit_TriggersSyncEngineAfterOutboxWrite', () async {
+    // Arrange
+    final manager = makeManager();
+    await manager.startAudit(_makeTemplate(), 'store-002');
 
-      // Act
-      await manager.submitAudit();
+    // Act
+    await manager.submitAudit();
 
-      // Assert precondition: committed row exists (engine must fire AFTER this)
-      final pending = await outboxDao.getAllPending();
-      expect(pending, isNotEmpty,
-          reason: 'Outbox must be committed before SyncEngine fires');
-    },
-  );
+    // Assert precondition: committed row exists (engine must fire AFTER this)
+    final pending = await outboxDao.getAllPending();
+    expect(
+      pending,
+      isNotEmpty,
+      reason: 'Outbox must be committed before SyncEngine fires',
+    );
+  });
 
   // ----------------------------------------------------------------
   // AC-3: isSubmitting transitions correctly
@@ -166,7 +175,7 @@ void main() {
     'AuditManager_Submit_IsSubmittingIsTrueWhileInFlightThenReset',
     () async {
       // Arrange
-      final manager = _makeManager();
+      final manager = makeManager();
       await manager.startAudit(_makeTemplate(), 'store-003');
 
       final observed = <bool>[];
@@ -176,10 +185,16 @@ void main() {
       await manager.submitAudit();
 
       // Assert
-      expect(observed, contains(true),
-          reason: 'isSubmitting must flip true during submit');
-      expect(manager.isSubmitting, isFalse,
-          reason: 'isSubmitting must reset after submit completes');
+      expect(
+        observed,
+        contains(true),
+        reason: 'isSubmitting must flip true during submit',
+      );
+      expect(
+        manager.isSubmitting,
+        isFalse,
+        reason: 'isSubmitting must reset after submit completes',
+      );
     },
   );
 
@@ -193,19 +208,19 @@ void main() {
     'AuditManager_Submit_ConcurrentDoubleTap_InsertsOnlyOneOutboxRow',
     () async {
       // Arrange
-      final manager = _makeManager();
+      final manager = makeManager();
       await manager.startAudit(_makeTemplate(criteriaCount: 2), 'store-004');
 
       // Act — fire two concurrent submits
-      await Future.wait([
-        manager.submitAudit(),
-        manager.submitAudit(),
-      ]);
+      await Future.wait([manager.submitAudit(), manager.submitAudit()]);
 
       // Assert
       final pending = await outboxDao.getAllPending();
-      expect(pending.length, equals(1),
-          reason: 'Mutex must prevent duplicate outbox rows from double-tap');
+      expect(
+        pending.length,
+        equals(1),
+        reason: 'Mutex must prevent duplicate outbox rows from double-tap',
+      );
     },
   );
 
@@ -218,17 +233,23 @@ void main() {
     () async {
       // Arrange
       final throwingOutbox = _ThrowingOutboxDao(testDb);
-      final manager = _makeManager(overrideOutbox: throwingOutbox);
+      final manager = makeManager(overrideOutbox: throwingOutbox);
       await manager.startAudit(_makeTemplate(), 'store-007');
 
       // Act
       await manager.submitAudit();
 
       // Assert
-      expect(manager.isSubmitting, isFalse,
-          reason: 'isSubmitting must always reset in finally block');
-      expect(manager.error, isNotNull,
-          reason: 'error must be non-null when SQLite write fails');
+      expect(
+        manager.isSubmitting,
+        isFalse,
+        reason: 'isSubmitting must always reset in finally block',
+      );
+      expect(
+        manager.error,
+        isNotNull,
+        reason: 'error must be non-null when SQLite write fails',
+      );
     },
   );
 
@@ -239,25 +260,28 @@ void main() {
   // Verified indirectly: if insertSubmissionWithAnswers throws, deleteDraft
   // line is never reached. Observable via: error set + outbox still empty.
   // ----------------------------------------------------------------
-  test(
-    'AuditManager_Submit_SQLiteWriteFailure_DoesNotDeleteDraft',
-    () async {
-      // Arrange
-      final throwingOutbox = _ThrowingOutboxDao(testDb);
-      final manager = _makeManager(overrideOutbox: throwingOutbox);
-      await manager.startAudit(_makeTemplate(), 'store-008');
+  test('AuditManager_Submit_SQLiteWriteFailure_DoesNotDeleteDraft', () async {
+    // Arrange
+    final throwingOutbox = _ThrowingOutboxDao(testDb);
+    final manager = makeManager(overrideOutbox: throwingOutbox);
+    await manager.startAudit(_makeTemplate(), 'store-008');
 
-      // Act
-      await manager.submitAudit();
+    // Act
+    await manager.submitAudit();
 
-      // Assert — outbox empty proves we took the failure path
-      expect(manager.error, isNotNull,
-          reason: 'Failure path must have been taken');
-      final rows = await outboxDao.getAllPending();
-      expect(rows, isEmpty,
-          reason: 'No rows in outbox means deleteDraft path was never reached');
-    },
-  );
+    // Assert — outbox empty proves we took the failure path
+    expect(
+      manager.error,
+      isNotNull,
+      reason: 'Failure path must have been taken',
+    );
+    final rows = await outboxDao.getAllPending();
+    expect(
+      rows,
+      isEmpty,
+      reason: 'No rows in outbox means deleteDraft path was never reached',
+    );
+  });
 }
 
 // ============================================================
