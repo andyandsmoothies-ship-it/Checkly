@@ -145,6 +145,17 @@ class CachedNotifications extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Local capability cache — populated after active login from GET /api/system/capabilities.
+/// Cleared on logout. Read on tryAutoLogin() to restore offline capability state.
+/// Single-column PK on capability string: bounded by definition (one row per capability).
+class CachedPolicies extends Table {
+  /// The capability string, e.g. "templates:create", "submissions:list".
+  TextColumn get capability => text()();
+
+  @override
+  Set<Column> get primaryKey => {capability};
+}
+
 // ============================================================
 // Outbox Tables (local-first writes pending sync)
 // ============================================================

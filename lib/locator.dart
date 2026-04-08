@@ -13,7 +13,9 @@ import '_shared/services/service_adapters.dart';
 import '_shared/theme/theme_manager.dart';
 import 'features/auth/services/auth_api_service.dart';
 import 'features/auth/services/secure_storage_service.dart';
+import 'features/auth/services/policy_api_service.dart';
 import 'features/auth/manager/auth_manager.dart';
+import '_shared/database/dao/policy_dao.dart';
 import 'features/templates/services/template_api_service.dart';
 import 'features/templates/manager/template_manager.dart';
 import 'features/stores/services/store_api_service.dart';
@@ -46,9 +48,11 @@ void configureDependencies() {
   );
   di.registerLazySingleton<GpsService>(() => GpsService());
 
-  // ---------- Auth (Slice 2) ----------
+  // ---------- Auth (Slice 2 + PBAC Slice 4) ----------
   di.registerLazySingleton<SecureStorageService>(() => SecureStorageService());
   di.registerLazySingleton<AuthApiService>(() => AuthApiService(di<Dio>()));
+  di.registerLazySingleton<PolicyApiService>(() => PolicyApiService(di<Dio>()));
+  di.registerLazySingleton<PolicyDao>(() => PolicyDao(di<DatabaseService>().db));
   di.registerLazySingleton<AuthManager>(() => AuthManager());
 
   // ---------- Templates (Slice 3) ----------

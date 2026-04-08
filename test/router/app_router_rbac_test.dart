@@ -23,6 +23,9 @@ class _StubAuthManager extends ChangeNotifier implements AuthManager {
     ? UserSession(userId: '1', fullName: 'Test', email: 'test@x.com', role: role!, token: 'tok')
     : null;
 
+  @override
+  ValueListenable<Set<String>> get capabilities => ValueNotifier({});
+
   @override Future<void> login(String e, String p) async {}
   @override Future<void> logout() async {}
   @override Future<void> tryAutoLogin() async {}

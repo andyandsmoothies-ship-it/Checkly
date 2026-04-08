@@ -23,6 +23,7 @@ part 'app_database.g.dart';
     CachedSubmissions,
     CachedActionPlans,
     CachedNotifications,
+    CachedPolicies,
     // Outbox tables
     PendingSubmissions,
     PendingAnswers,
@@ -41,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -92,6 +93,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 10) {
         // P1 UX: Store Manager offline evidence queue.
         await m.createTable(pendingActionPlanUpdates);
+      }
+      if (from < 11) {
+        // PBAC Slice 4: local capability cache — persists across app restarts.
+        await m.createTable(cachedPolicies);
       }
     },
     beforeOpen: (details) async {

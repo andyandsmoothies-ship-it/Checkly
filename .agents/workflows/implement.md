@@ -50,6 +50,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 |---|---|
 | **Artifact Check**| IF `implementation_plan.md` OR `specs.md` exists -> Execute Quality Checklist. ELSE -> load `technical-specification` + generate lightweight plan -> Yield Approval. |
 | **JIT Harness** | MANDATORY: Declare `[ACTIVE_SKILLS]` at the top of the plan. Drop all other RAG context. The AI is legally bound to this isolation cage for the session. |
+| **ATDD Ingestion**| IF ATDD artifacts were provided in the prompt -> MANDATORY: Use `view_file` to read the `.md` test contracts AND the physical test files created by QA. Real-world engineering requires understanding the Outer Loop (ATDD) before defining the Inner Loop (TDD). |
 | **Verification** | Spot-check 1 plan claim against source via `grep_search`. IF plan references an API/DTO: verify claim holds in BOTH `server/` AND `lib/`. IF False → STOP. |
 | **YAGNI Gate** | IF feature adds complexity without business value -> Create Before/After tradeoff table. |
 
@@ -71,7 +72,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 |---|---|
 | **Artifact Create**| Export `test_contracts_[topic].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
 | **Contract Format**| Strict Template: `ID`, `Exact Text/Key` (with line #), `State Matrix` (Happy/Error/Empty), `Private Method Access`, `Why RED now`. |
-| **Execution Lock** | PROHIBITED: Entering Phase 3. MANDATORY: Output message: *"Plan ready. Run /tdd with QA Agent (@Sentinel) for failing tests. When done, reply here: 'Here is the result of tdd, check and continue'."* -> YIELD. |
+| **Execution Lock** | PROHIBITED: Entering Phase 3 without explicit TDD execution. IF ATDD tests (e.g. `test_contracts_[topic].md` or `test_cases_[topic].md`) were provided in the prompt, DO NOT SKIP THIS PHASE. ATDD (Acceptance/Integration bounds) $\neq$ TDD (Internal Unit Tests). MANDATORY: Output message: *"Plan ready. Run /tdd with QA Agent (@Sentinel) for failing internal unit tests. When done, reply here: 'Here is the result of tdd, check and continue'."* -> YIELD. |
 
 ## Phase 3: Coding
 
@@ -82,7 +83,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 | Step | Execution Contract |
 |---|---|
-| **Test Ingestion** | IF returning from Phase 2.5 -> MANDATORY: Use `view_file` or `grep_search` to read `executed_tests_[topic].md` AND the physical test files created by QA. Understand exact assertions before coding. |
+| **Test Ingestion** | IF returning from Phase 2.5 -> MANDATORY: Use `view_file` or `grep_search` to read the internal unit test files (TDD) created by QA during Phase 2.5. Understand exact internal assertions before coding. |
 | **Cheap Verify** | Run structural validation (e.g. `flutter analyze`, `dotnet build --no-restore`). Fix before declaring complete. File writes alone != Success. |
 | **Strict TDD (Legacy)**| IF altering legacy boundaries -> MANDATORY: Update legacy test FIRST (turn RED) -> THEN write PROD code (turn GREEN). |
 | **Red/Green Loop**| IF `Sentinel` gives RED test -> write PROD code to make GREEN -> Refactor. PROHIBITED: Modifying test files unless executing the strict legacy TDD clause above. |

@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/services/api_client.dart';
+import '../../../_shared/database/dao/policy_dao.dart';
 import '../model/auth_state.dart';
 import '../model/user_session.dart';
 import '../services/auth_api_service.dart';
+import '../services/policy_api_service.dart';
 import '../services/secure_storage_service.dart';
 
 final _di = GetIt.instance;
@@ -13,22 +15,38 @@ final _di = GetIt.instance;
 ///
 /// Manages login, logout, auto-login, and session state.
 /// UI watches [authState] and [currentUser] via WatchingWidget.
+///
+/// PBAC Slice 4: exposes [capabilities] as a [ValueListenable<Set<String>>].
+/// Capabilities are fetched from the backend on active login and persisted to
+/// the local [PolicyDao] table for offline access on app restart.
 class AuthManager extends ChangeNotifier {
   final AuthApiService _authApi;
   final SecureStorageService _storage;
   final ApiClient _apiClient;
+  final PolicyApiService _policyApi;
+  final PolicyDao _policyDao;
 
   AuthManager({
     AuthApiService? authApi,
     SecureStorageService? storage,
     ApiClient? apiClient,
-  }) : _authApi = authApi ?? _di<AuthApiService>(),
-       _storage = storage ?? _di<SecureStorageService>(),
-       _apiClient = apiClient ?? _di<ApiClient>();
+    PolicyApiService? policyApi,
+    PolicyDao? policyDao,
+  })  : _authApi = authApi ?? _di<AuthApiService>(),
+        _storage = storage ?? _di<SecureStorageService>(),
+        _apiClient = apiClient ?? _di<ApiClient>(),
+        _policyApi = policyApi ?? _di<PolicyApiService>(),
+        _policyDao = policyDao ?? _di<PolicyDao>();
 
   // ---------- State ----------
   final _authState = ValueNotifier<AuthState>(AuthState.loading);
   ValueListenable<AuthState> get authState => _authState;
+
+  /// The current user's PBAC capability set.
+  /// Populated on login, restored from Drift on tryAutoLogin, cleared on logout.
+  /// Consumers (Slice 6) use this to gate feature access.
+  final _capabilities = ValueNotifier<Set<String>>({});
+  ValueListenable<Set<String>> get capabilities => _capabilities;
 
   UserSession? _currentUser;
   UserSession? get currentUser => _currentUser;
@@ -41,15 +59,29 @@ class AuthManager extends ChangeNotifier {
     try {
       final session = await _authApi.login(email, password);
 
-      // Persist
+      // Persist session to secure storage
       await _storage.saveToken(session.token);
       await _storage.saveSession(session);
 
-      // Set API auth header
+      // Set API auth header so subsequent calls include the JWT
       _apiClient.setAuthToken(session.token);
 
-      // Update state
+      // Update in-memory session
       _currentUser = session;
+
+      // [PBAC Slice 4] Fetch and persist capabilities — fail-open.
+      // If the capability endpoint is down or returns an error, login still
+      // succeeds. The capabilities default to an empty set; Slice 6 gates will
+      // deny access to gated features until the next successful login.
+      try {
+        final caps = await _policyApi.fetchCapabilities();
+        await _policyDao.upsertCapabilities(caps);
+        _capabilities.value = caps.toSet();
+      } catch (e) {
+        debugPrint('[PBAC] Capability sync failed (non-fatal): $e');
+        // capabilities remain as previous value (empty on first login)
+      }
+
       _authState.value = AuthState.authenticated;
       notifyListeners();
     } catch (e) {
@@ -71,6 +103,12 @@ class AuthManager extends ChangeNotifier {
       if (session != null && token != null) {
         _apiClient.setAuthToken(token);
         _currentUser = session;
+
+        // [PBAC Slice 4] Restore capabilities from local Drift cache — no network call.
+        // Guarantees offline resilience: app restarts without internet still get the
+        // capability set that was valid at the time of the last active login.
+        _capabilities.value = await _policyDao.getCapabilities();
+
         _authState.value = AuthState.authenticated;
       } else {
         _authState.value = AuthState.unauthenticated;
@@ -85,8 +123,10 @@ class AuthManager extends ChangeNotifier {
   // ---------- Logout ----------
   Future<void> logout() async {
     await _storage.clearAll();
+    await _policyDao.clearCapabilities(); // [PBAC Slice 4] clear Drift cache
     _apiClient.clearAuthToken();
     _currentUser = null;
+    _capabilities.value = {};            // [PBAC Slice 4] clear memory cache
     _authState.value = AuthState.unauthenticated;
     notifyListeners();
   }

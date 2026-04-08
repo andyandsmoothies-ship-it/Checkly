@@ -5439,6 +5439,178 @@ class CachedNotificationsCompanion extends UpdateCompanion<CachedNotification> {
   }
 }
 
+class $CachedPoliciesTable extends CachedPolicies
+    with TableInfo<$CachedPoliciesTable, CachedPolicy> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedPoliciesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _capabilityMeta = const VerificationMeta(
+    'capability',
+  );
+  @override
+  late final GeneratedColumn<String> capability = GeneratedColumn<String>(
+    'capability',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [capability];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_policies';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CachedPolicy> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('capability')) {
+      context.handle(
+        _capabilityMeta,
+        capability.isAcceptableOrUnknown(data['capability']!, _capabilityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_capabilityMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {capability};
+  @override
+  CachedPolicy map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedPolicy(
+      capability: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}capability'],
+      )!,
+    );
+  }
+
+  @override
+  $CachedPoliciesTable createAlias(String alias) {
+    return $CachedPoliciesTable(attachedDatabase, alias);
+  }
+}
+
+class CachedPolicy extends DataClass implements Insertable<CachedPolicy> {
+  /// The capability string, e.g. "templates:create", "submissions:list".
+  final String capability;
+  const CachedPolicy({required this.capability});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['capability'] = Variable<String>(capability);
+    return map;
+  }
+
+  CachedPoliciesCompanion toCompanion(bool nullToAbsent) {
+    return CachedPoliciesCompanion(capability: Value(capability));
+  }
+
+  factory CachedPolicy.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedPolicy(
+      capability: serializer.fromJson<String>(json['capability']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'capability': serializer.toJson<String>(capability),
+    };
+  }
+
+  CachedPolicy copyWith({String? capability}) =>
+      CachedPolicy(capability: capability ?? this.capability);
+  CachedPolicy copyWithCompanion(CachedPoliciesCompanion data) {
+    return CachedPolicy(
+      capability: data.capability.present
+          ? data.capability.value
+          : this.capability,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedPolicy(')
+          ..write('capability: $capability')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => capability.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedPolicy && other.capability == this.capability);
+}
+
+class CachedPoliciesCompanion extends UpdateCompanion<CachedPolicy> {
+  final Value<String> capability;
+  final Value<int> rowid;
+  const CachedPoliciesCompanion({
+    this.capability = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedPoliciesCompanion.insert({
+    required String capability,
+    this.rowid = const Value.absent(),
+  }) : capability = Value(capability);
+  static Insertable<CachedPolicy> custom({
+    Expression<String>? capability,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (capability != null) 'capability': capability,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedPoliciesCompanion copyWith({
+    Value<String>? capability,
+    Value<int>? rowid,
+  }) {
+    return CachedPoliciesCompanion(
+      capability: capability ?? this.capability,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (capability.present) {
+      map['capability'] = Variable<String>(capability.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedPoliciesCompanion(')
+          ..write('capability: $capability, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PendingSubmissionsTable extends PendingSubmissions
     with TableInfo<$PendingSubmissionsTable, PendingSubmission> {
   @override
@@ -8434,6 +8606,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $CachedActionPlansTable(this);
   late final $CachedNotificationsTable cachedNotifications =
       $CachedNotificationsTable(this);
+  late final $CachedPoliciesTable cachedPolicies = $CachedPoliciesTable(this);
   late final $PendingSubmissionsTable pendingSubmissions =
       $PendingSubmissionsTable(this);
   late final $PendingAnswersTable pendingAnswers = $PendingAnswersTable(this);
@@ -8454,6 +8627,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cachedSubmissions,
     cachedActionPlans,
     cachedNotifications,
+    cachedPolicies,
     pendingSubmissions,
     pendingAnswers,
     pendingPhotos,
@@ -11484,6 +11658,132 @@ typedef $$CachedNotificationsTableProcessedTableManager =
       CachedNotification,
       PrefetchHooks Function()
     >;
+typedef $$CachedPoliciesTableCreateCompanionBuilder =
+    CachedPoliciesCompanion Function({
+      required String capability,
+      Value<int> rowid,
+    });
+typedef $$CachedPoliciesTableUpdateCompanionBuilder =
+    CachedPoliciesCompanion Function({
+      Value<String> capability,
+      Value<int> rowid,
+    });
+
+class $$CachedPoliciesTableFilterComposer
+    extends Composer<_$AppDatabase, $CachedPoliciesTable> {
+  $$CachedPoliciesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get capability => $composableBuilder(
+    column: $table.capability,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CachedPoliciesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CachedPoliciesTable> {
+  $$CachedPoliciesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get capability => $composableBuilder(
+    column: $table.capability,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CachedPoliciesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CachedPoliciesTable> {
+  $$CachedPoliciesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get capability => $composableBuilder(
+    column: $table.capability,
+    builder: (column) => column,
+  );
+}
+
+class $$CachedPoliciesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CachedPoliciesTable,
+          CachedPolicy,
+          $$CachedPoliciesTableFilterComposer,
+          $$CachedPoliciesTableOrderingComposer,
+          $$CachedPoliciesTableAnnotationComposer,
+          $$CachedPoliciesTableCreateCompanionBuilder,
+          $$CachedPoliciesTableUpdateCompanionBuilder,
+          (
+            CachedPolicy,
+            BaseReferences<_$AppDatabase, $CachedPoliciesTable, CachedPolicy>,
+          ),
+          CachedPolicy,
+          PrefetchHooks Function()
+        > {
+  $$CachedPoliciesTableTableManager(
+    _$AppDatabase db,
+    $CachedPoliciesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CachedPoliciesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CachedPoliciesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CachedPoliciesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> capability = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) =>
+                  CachedPoliciesCompanion(capability: capability, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String capability,
+                Value<int> rowid = const Value.absent(),
+              }) => CachedPoliciesCompanion.insert(
+                capability: capability,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CachedPoliciesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CachedPoliciesTable,
+      CachedPolicy,
+      $$CachedPoliciesTableFilterComposer,
+      $$CachedPoliciesTableOrderingComposer,
+      $$CachedPoliciesTableAnnotationComposer,
+      $$CachedPoliciesTableCreateCompanionBuilder,
+      $$CachedPoliciesTableUpdateCompanionBuilder,
+      (
+        CachedPolicy,
+        BaseReferences<_$AppDatabase, $CachedPoliciesTable, CachedPolicy>,
+      ),
+      CachedPolicy,
+      PrefetchHooks Function()
+    >;
 typedef $$PendingSubmissionsTableCreateCompanionBuilder =
     PendingSubmissionsCompanion Function({
       required String id,
@@ -13505,6 +13805,8 @@ class $AppDatabaseManager {
       $$CachedActionPlansTableTableManager(_db, _db.cachedActionPlans);
   $$CachedNotificationsTableTableManager get cachedNotifications =>
       $$CachedNotificationsTableTableManager(_db, _db.cachedNotifications);
+  $$CachedPoliciesTableTableManager get cachedPolicies =>
+      $$CachedPoliciesTableTableManager(_db, _db.cachedPolicies);
   $$PendingSubmissionsTableTableManager get pendingSubmissions =>
       $$PendingSubmissionsTableTableManager(_db, _db.pendingSubmissions);
   $$PendingAnswersTableTableManager get pendingAnswers =>

@@ -13,10 +13,11 @@ namespace Checkly.Api.Tests.Features.Auth;
 [Collection("ApiCollection")]
 public class PbacListenerTests(TestWebApplicationFactory fixture) : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
-    private readonly IServiceProvider _sp = fixture.Services;
+    private IServiceProvider _sp = null!;
     
     public async Task InitializeAsync() 
     {
+        _sp = fixture.Services;
         fixture.EnsureDatabaseCreated();
 
         // Ensure DB is ready and seeded
