@@ -345,55 +345,22 @@ void main() {
       expect(m.wasQueuedOffline, isTrue);
     });
 
-    test(
-      'calls API and removes from outbox when online and API succeeds',
-      () async {
-        final mockOutbox = MockOutboxDao();
-        final mockApi = MockSubmissionApiService();
-        final mockConnectivity = MockConnectivityService();
-
-        when(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).thenAnswer((_) async {});
-        when(() => mockOutbox.removeSubmission(any())).thenAnswer((_) async {});
-        when(() => mockConnectivity.isOnline).thenReturn(true);
-        when(
-          () => mockApi.createSubmission(any()),
-        ).thenAnswer((_) async => _fakeSubmission());
-
-        final m = _manager(
-          outbox: mockOutbox,
-          api: mockApi,
-          connectivity: mockConnectivity,
-        );
-        await m.startAudit(_template(), 'store-1');
-        await m.submitAudit();
-
-        verify(() => mockApi.createSubmission(any())).called(1);
-        verify(() => mockOutbox.removeSubmission(any())).called(1);
-        expect(m.wasQueuedOffline, isFalse);
-      },
-    );
-
-    test('stays queued when online but API throws an exception', () async {
+    test('inserts to outbox and marks wasQueuedOffline=false when online', () async {
       final mockOutbox = MockOutboxDao();
-      final mockApi = MockSubmissionApiService();
       final mockConnectivity = MockConnectivityService();
 
       when(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).thenAnswer((_) async {});
       when(() => mockConnectivity.isOnline).thenReturn(true);
-      when(
-        () => mockApi.createSubmission(any()),
-      ).thenThrow(Exception('Server error 500'));
 
       final m = _manager(
         outbox: mockOutbox,
-        api: mockApi,
         connectivity: mockConnectivity,
       );
       await m.startAudit(_template(), 'store-1');
       await m.submitAudit();
 
-      expect(m.wasQueuedOffline, isTrue);
-      verifyNever(() => mockOutbox.removeSubmission(any()));
+      verify(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).called(1);
+      expect(m.wasQueuedOffline, isFalse);
     });
   });
 }

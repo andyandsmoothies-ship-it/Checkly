@@ -31,6 +31,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<TemplateAssignment> TemplateAssignments => Set<TemplateAssignment>();
     public DbSet<SubmissionSectionScore> SubmissionSectionScores => Set<SubmissionSectionScore>();
     public DbSet<StoreAnalyticsSnapshot> StoreAnalyticsSnapshots => Set<StoreAnalyticsSnapshot>();
+    public DbSet<RoleCapability> RoleCapabilities => Set<RoleCapability>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,6 +55,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureTemplateAssignment(modelBuilder);
         ConfigureSubmissionSectionScore(modelBuilder);
         ConfigureStoreAnalyticsSnapshot(modelBuilder);
+        ConfigureRoleCapability(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -581,6 +583,28 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithOne()
                 .HasForeignKey<StoreAnalyticsSnapshot>(x => x.StoreId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureRoleCapability(ModelBuilder mb)
+    {
+        mb.Entity<RoleCapability>(e =>
+        {
+            e.ToTable("role_capabilities");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.Role).HasColumnName("role").IsRequired().HasMaxLength(50);
+            e.Property(x => x.Capability).HasColumnName("capability").IsRequired().HasMaxLength(100);
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            // Composite unique constraint: one capability string per role
+            e.HasIndex(x => new { x.Role, x.Capability })
+                .IsUnique()
+                .HasDatabaseName("UX_role_capabilities_role_capability");
+
+            // Performance index: cache warm-up queries by role
+            e.HasIndex(x => x.Role)
+                .HasDatabaseName("IX_role_capabilities_role");
         });
     }
 }

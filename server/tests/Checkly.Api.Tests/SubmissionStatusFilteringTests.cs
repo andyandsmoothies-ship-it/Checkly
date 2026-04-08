@@ -32,10 +32,15 @@ public class SubmissionStatusFilteringTests : IClassFixture<TestWebApplicationFa
         var storeId = storeJson.GetProperty("id").GetGuid();
 
         // 2. Create a Template
-        var templateResponse = await adminClient.PostAsJsonAsync("/api/templates", new { Title = "Test Template" });
-        templateResponse.EnsureSuccessStatusCode();
+        Guid templateId;
+        var templateResponse = await adminClient.PostAsJsonAsync("/api/templates", new { Title = "Test Template", Type = "audit" });
+        if (!templateResponse.IsSuccessStatusCode)
+        {
+            var problemDetails = await templateResponse.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to create template. Server returned: {problemDetails}");
+        }
         var templateJson = await templateResponse.Content.ReadFromJsonAsync<JsonElement>();
-        var templateId = templateJson.GetProperty("id").GetGuid();
+        templateId = templateJson.GetProperty("id").GetGuid();
 
         // 3. Create an auditor
         var (auditorToken, auditorId) = await _factory.RegisterUserAsync(

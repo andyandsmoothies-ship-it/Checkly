@@ -1,3 +1,5 @@
+using Checkly.Api.Common.Auth;
+
 namespace Checkly.Api.Features.Templates;
 
 /// <summary>
@@ -19,7 +21,8 @@ public static class TemplateEndpoints
 
         group.MapPost("/", CreateTemplate.HandleAsync)
             .WithName("CreateTemplate")
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability("templates:create");
+
 
         group.MapPut("/{id}/tree", SaveTemplateTree.HandleAsync)
             .WithName("SaveTemplateTree")

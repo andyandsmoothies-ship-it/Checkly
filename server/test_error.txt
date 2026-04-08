@@ -1,0 +1,21 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:04.39]     Checkly.Api.Tests.SubmissionStatusFilteringTests.ListSubmissions_WhenFilteredByStatus_ReturnsOnlyMatchingSubmissions [FAIL]
+  Failed Checkly.Api.Tests.SubmissionStatusFilteringTests.ListSubmissions_WhenFilteredByStatus_ReturnsOnlyMatchingSubmissions [4 s]
+  Error Message:
+   System.Exception : POST template failed. Inner exception info should be printed.
+---- System.Exception : {"type":"https://tools.ietf.org/html/rfc9110#section-15.6.1","title":"An unexpected error occurred","status":500,"detail":"An error occurred while saving the entity changes. See the inner exception for details.","correlationId":"974f6196c408"}
+  Stack Trace:
+     at Checkly.Api.Tests.SubmissionStatusFilteringTests.ListSubmissions_WhenFilteredByStatus_ReturnsOnlyMatchingSubmissions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionStatusFilteringTests.cs:line 45
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+   at Checkly.Api.Tests.SubmissionStatusFilteringTests.ListSubmissions_WhenFilteredByStatus_ReturnsOnlyMatchingSubmissions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionStatusFilteringTests.cs:line 39
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)

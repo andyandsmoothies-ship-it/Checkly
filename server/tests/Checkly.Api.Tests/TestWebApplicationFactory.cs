@@ -34,7 +34,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         // routes all test logging to /dev/null.
         builder.ConfigureLogging(logging =>
         {
-            logging.ClearProviders();
+            // logging.ClearProviders(); // We need to see the DbUpdateException
             logging.AddConsole();
         });
 

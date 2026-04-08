@@ -68,6 +68,11 @@ public static class ListSubmissions
                 break;
         }
 
+        // Optional status filter: ?status=draft|scheduled|in_progress|completed|finalized|void
+        var statusFilter = httpContext.Request.Query["status"].ToString();
+        if (!string.IsNullOrEmpty(statusFilter))
+            query = query.Where(s => s.Status == statusFilter);
+
         // Pagination (defaults: page 1, 50 items, max 100)
         var page = int.TryParse(httpContext.Request.Query["page"], out var p) ? Math.Max(1, p) : 1;
         var pageSize = int.TryParse(httpContext.Request.Query["pageSize"], out var ps) ? Math.Clamp(ps, 1, 100) : 50;

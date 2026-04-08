@@ -16,11 +16,13 @@ using Checkly.Api.Features.Templates;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
 using Checkly.Api.Common.Exceptions;
+using Checkly.Api.Features.SystemInfo;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -147,6 +149,8 @@ try
     builder.Services.AddScoped<Register.Handler>();
     builder.Services.AddScoped<Login.Handler>();
     builder.Services.AddSingleton<ScoringVerifier>();
+    builder.Services.AddSingleton<PbacDictionaryCache>();
+    builder.Services.AddSingleton<IAuthorizationHandler, CapabilityAuthorizationHandler>();
     builder.Services.AddHostedService<ReminderService>();
 
     // --- SignalR ---
@@ -184,6 +188,10 @@ try
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.Migrate();
+
+        // PBAC Cache warm-up — must run AFTER Migrate() so role_capabilities table exists.
+        var pbacCache = app.Services.GetRequiredService<PbacDictionaryCache>();
+        await pbacCache.InitializeAsync(app.Services);
     }
 
     // Diagnostic endpoint — only available in Development/Test environments,
@@ -231,6 +239,7 @@ try
     app.MapAnalyticsEndpoints();
     app.MapAreaEndpoints();
     app.MapUserGroupEndpoints();
+    app.MapSystemEndpoints();
 
     app.Run();
 }

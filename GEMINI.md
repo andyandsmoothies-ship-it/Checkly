@@ -5,7 +5,7 @@
 ### The "Read Before You Write" Mandate (STRICT)
 <SYSTEM_GUARD type="STRICT" name="ReadBeforeYouWrite">
 - **Rule**: Research the codebase before editing. Never change code you haven't read.
-- **Enforcement**: You must use `grep_search` and `view_file` to thoroughly understand the context, dependencies, and structure of the code before making any modifications. Blind code changes are prohibited.
+- **Enforcement**: You must use `grep_search` and `view_file` to thoroughly understand the context, dependencies, and structure of the code. **CRITICAL:** You must also search for and read any `GEMINI.override.md` file located in the target directory before making modifications, as it contains mandatory, module-specific constraints. Blind code changes are prohibited.
 </SYSTEM_GUARD>
 
 ### The 3-Step Database Migration Pipeline (STRICT)

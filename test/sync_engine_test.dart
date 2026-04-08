@@ -244,7 +244,8 @@ void main() {
     // Must push in chronological order A → B → C
     expect(api.pushLog, ['A', 'B', 'C']);
     // Outbox should be empty after successful sync
-    expect(outbox.pending, isEmpty);
+    final remainingRows = await outboxDao.getEligiblePending();
+    expect(remainingRows, isEmpty);
   });
 
   // ================================================================
@@ -263,7 +264,8 @@ void main() {
 
     // A should have been pushed and removed
     expect(api.pushLog, ['A', 'B']); // B was attempted
-    expect(outbox.pending.map((e) => e.idempotencyKey).toList(), ['B', 'C']);
+    final allPending = await testDb.select(testDb.pendingSubmissions).get();
+    expect(allPending.map((e) => e.idempotencyKey).toList(), ['B', 'C']);
     expect(engine.state, SyncState.error);
   });
 

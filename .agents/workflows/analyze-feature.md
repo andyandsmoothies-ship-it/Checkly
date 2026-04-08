@@ -35,10 +35,11 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 |---|---|
 | **Skill Load** | Extract Persona -> Load 1-2 matching skills from `.agents/skills/`. |
 | **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). |
+| **Vertical Micro-Slicing**| MANDATORY: Never slice horizontally by layer (e.g., DB-only). All plans must be end-to-end and testable. If a plan is too large, slice VERTICALLY by removing infrastructure complexity (e.g., build brute-force data flow first, add cache in a future slice). |
 | **Trade-Off Analysis** | Identify >= 1 alternative "Ideal Enterprise" approach. Explicitly list the Pros, Cons, and Blast Radius to justify the pragmatic choice over the ideal choice. |
 | **Risk Assessment** | Formally assess the technical and operational risks of the chosen approach, and document mitigation strategies. |
 
-> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Pros/Cons of Ideal vs Pragmatic approaches explicitly mapped? (4) Risk Assessment included?
+> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Did you restrict the generated plan to a single Micro-Slice if layers > 2? (4) Pros/Cons of Ideal vs Pragmatic mapped? (5) Risk Assessment included?
 
 ## Phase 2: Resilience & Blast Radius
 

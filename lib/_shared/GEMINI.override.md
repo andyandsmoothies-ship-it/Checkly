@@ -1,17 +1,23 @@
 # Shared Flutter Rules & Gotchas
 
-- **Gotcha 14: Drift OOM — Every DAO Query Must Be Bounded**
-  - **Problem:** Unbounded `.select().get()` loads an entire table into memory.
-  - **Fix:** Every DAO query MUST use (1) `selectOnly + count()/avg()`, (2) `..limit(n)`, or (3) a comment justifying the bounded result. Use `customSelect` raw SQL for `GROUP BY ... HAVING AVG()`.
+# Shared Flutter Rules & Gotchas
 
-- **Gotcha 1: Nested Scaffold FAB Renders Behind Bottom Nav Bar**
-  - **Problem:** `_MainShell` uses `extendBody: true` with a 96px nav bar — an inner Scaffold FAB renders behind it invisibly.
-  - **Fix:** Wrap the FAB with `Padding(padding: EdgeInsets.only(bottom: 80))`.
+> [!IMPORTANT]
+> **Drift OOM — Every DAO Query Must Be Bounded**
+> **Problem:** Unbounded `.select().get()` loads entire tables, causing Out-Of-Memory.
+> **Fix:** DAO queries MUST use `selectOnly + count()/avg()`, `..limit(n)`, or `customSelect` raw SQL.
 
-- **Gotcha 2: FAB Inside PopupMenuButton Absorbs Tap Events**
-  - **Problem:** `FloatingActionButton` inside `PopupMenuButton.child` — the FAB's InkResponse absorbs all taps, the menu never opens.
-  - **Fix:** Call `showMenu()` programmatically from the FAB's `onPressed` instead.
+> [!WARNING]
+> **Nested Scaffold FAB Renders Behind Bottom Nav**
+> **Problem:** `extendBody: true` in `_MainShell` causes inner Scaffold FABs to hide behind the 96px nav bar.
+> **Fix:** Wrap the inner FAB with `Padding(padding: EdgeInsets.only(bottom: 80))`.
 
-- **Gotcha 10: Bottom Nav Label Must Be Template-Agnostic**
-  - **Problem:** Context-sensitive bottom nav labels are wrong because the user has no template context outside a specific audit.
-  - **Fix:** Use a generic label (e.g., `'ACTIVITY'`). Never use `'AUDIT'` or `'SURVEY'`.
+> [!WARNING]
+> **FAB Inside PopupMenuButton Absorbs Taps**
+> **Problem:** An `InkResponse` in a FAB inside a `PopupMenuButton` absorbs the tap, breaking the menu toggle.
+> **Fix:** Call `showMenu()` programmatically from `FAB.onPressed`.
+
+> [!WARNING]
+> **Bottom Nav Label Context Scope**
+> **Problem:** Context-sensitive labels like "AUDIT" are wrong when outside that specific loop.
+> **Fix:** Use generic template-agnostic labels like `'ACTIVITY'`.

@@ -1,10 +1,16 @@
-# Checkly Server Tests & Workflow Gotchas
+# Server Tests Gotchas
 
-## 1. Test Project File Locks (AI Standard Operating Procedure)
-- **Problem:** Executing `dotnet test` will block and crash with `MSB3026` if an AI or human currently has `dotnet run` actively occupying a terminal for `Checkly.Api`.
-- **Fix (AI Directive):** Before running `dotnet test` or any build command, AI agents MUST actively kill the `Checkly.Api.exe` process without asking for human permission. 
-  - Execute: `cmd /c taskkill /F /IM Checkly.Api.exe` silently using the `run_command` tool *before* invoking the test suite. Do not wait for a file lock error to occur.
+> [!IMPORTANT]
+> **MSB3026 File Lock (AI Auto-Kill)**
+> **Problem:** `dotnet test` blocks with MSB3026 if `dotnet run` is active.
+> **Fix:** Run `cmd /c taskkill /F /IM Checkly.Api.exe` *before* `dotnet test`. Do not ask for human permission.
 
-## 2. Test Factory Initialization (EF Core)
-- **Problem:** Integration tests leveraging raw SQL constraints (like `CHECK` logic in PostgreSQL) will result in false-positive "passes" if `EnsureCreated()` is used, as it completely skips all physical migration scripts.
-- **Fix:** `TestWebApplicationFactory` must utilize `db.Database.Migrate()` instead of `EnsureCreated()` during container startup. Do not revert to `EnsureCreated()`.
+> [!WARNING]
+> **EF Core `EnsureCreated()` Banned in Tests**
+> **Problem:** `EnsureCreated()` skips raw SQL `CHECK` constraints, causing false positives.
+> **Fix:** `TestWebApplicationFactory` MUST use `db.Database.Migrate()`. Never use `EnsureCreated()`.
+
+> [!WARNING]
+> **WAF Parallel Initialization DB Race Condition**
+> **Problem:** xUnit parallel tests interleave `EnsureDeleted()` + `Migrate()`, yielding false `3D000` or `42P07` Postgres/EF errors.
+> **Fix:** These are infrastructure flakes. Test isolated fixes via `--filter`. Trust the combined sequential `dotnet test` result as the source of truth. Do NOT rewrite application logic to fix a 3D000 DB initialization error.
