@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/database_service.dart';
@@ -17,6 +18,10 @@ class DraftService {
   Timer? _debounceTimer;
 
   DraftService() : _db = GetIt.instance<DatabaseService>().db;
+
+  /// Test-only constructor. Bypasses GetIt to allow injection of an in-memory DB.
+  @visibleForTesting
+  DraftService.forTesting(AppDatabase db) : _db = db;
 
   /// Schedules a debounced save (3s delay).
   /// Cancels any pending save before scheduling a new one.

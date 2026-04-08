@@ -98,8 +98,7 @@ class AuditManager extends ChangeNotifier {
     ConnectivityService? connectivity,
     DraftService? draftService,
   }) : _api = api ?? _di<SubmissionApiService>() {
-    final db = _di<DatabaseService>().db;
-    _outbox = outbox ?? OutboxDao(db);
+    _outbox = outbox ?? OutboxDao(_di<DatabaseService>().db);
     _draftService = draftService ?? DraftService();
     try {
       _connectivity = connectivity ?? _di<ConnectivityService>();
@@ -375,6 +374,9 @@ class AuditManager extends ChangeNotifier {
   // ---------- Submit (offline-first) ----------
   Future<void> submitAudit() async {
     if (_template == null || _storeId == null) return;
+
+    // Mutex guard — drop second concurrent call silently (AC-4)
+    if (_isSubmitting) return;
 
     _isSubmitting = true;
     _error = null;

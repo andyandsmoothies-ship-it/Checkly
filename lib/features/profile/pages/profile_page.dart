@@ -4,6 +4,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../auth/manager/auth_manager.dart';
+import '../../../_shared/database/dao/outbox_dao.dart';
+import '../../../_shared/database/database_service.dart';
 import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/theme/theme_manager.dart';
 import '../../../_shared/theme/app_fonts.dart';
@@ -380,6 +382,33 @@ class _SignOutTileState extends State<_SignOutTile> {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
+    // AC-5: Block sign-out if outbox has pending submissions
+    final outbox = OutboxDao(_di<DatabaseService>().db);
+    final pending = await outbox.pendingCount();
+
+    if (!context.mounted) return;
+
+    if (pending > 0) {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogCtx) => AlertDialog(
+          title: const Text('Cannot Sign Out'),
+          content: Text(
+            'You have $pending pending submission${pending == 1 ? '' : 's'} '
+            'waiting to sync. Please stay connected until they are uploaded.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // AC-6: Outbox is empty — show normal confirm dialog
     await showDialog<void>(
       context: context,
       builder: (dialogCtx) => AlertDialog(

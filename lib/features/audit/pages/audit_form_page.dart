@@ -462,7 +462,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
       await manager.submitAudit();
 
       if (mounted) {
-        if (manager.lastSubmission != null || manager.wasQueuedOffline) {
+        if (manager.error == null) {
           setState(() => _hasChanges = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -475,7 +475,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
             ),
           );
           context.go('/home');
-        } else if (manager.error != null) {
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(manager.error!),
