@@ -12,20 +12,15 @@ import 'package:checkly/_shared/services/policy_manager.dart';
 
 class _StubAuthManager extends ChangeNotifier implements AuthManager {
   final Set<String> _caps;
-  final bool isAuthenticated;
   
-  _StubAuthManager({required Set<String> capabilities, this.isAuthenticated = true}) 
+  _StubAuthManager({required Set<String> capabilities}) 
       : _caps = capabilities;
 
   @override
-  ValueListenable<AuthState> get authState => ValueNotifier(
-    isAuthenticated ? AuthState.authenticated : AuthState.unauthenticated
-  );
+  ValueListenable<AuthState> get authState => ValueNotifier(AuthState.authenticated);
 
   @override
-  UserSession? get currentUser => isAuthenticated
-    ? const UserSession(userId: '1', fullName: 'Test', email: 'test@x.com', role: 'any', token: 'tok')
-    : null;
+  UserSession? get currentUser => const UserSession(userId: '1', fullName: 'Test', email: 'test@x.com', role: 'any', token: 'tok');
 
   @override
   ValueListenable<Set<String>> get capabilities => ValueNotifier(_caps);

@@ -88,8 +88,6 @@ TemplateTreeDto _template({List<GroupDto>? groups}) => TemplateTreeDto(
       ],
 );
 
-SubmissionDto _fakeSubmission() =>
-    SubmissionDto(id: 'sub-1', status: 'completed', createdAt: DateTime.now());
 
 /// Creates an [AuditManager] with all dependencies injected.
 /// DraftService stubs are applied by default.

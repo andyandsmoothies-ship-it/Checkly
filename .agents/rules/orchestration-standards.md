@@ -34,3 +34,8 @@ Before ANY workflow response involving analysis, design, or implementation:
 - **Problem**: Giant script loops are "black boxes" that strip the user of granular control.
 - **Action**: When generating scripts for bulk actions (moving files, renaming, deleting), you MUST write out actions explicitly, 1-by-1, on individual lines (e.g. 50 distinct `Move-Item` statements).
 - **Why**: This guarantees transparency. The user can see exactly what is being modified line-by-line and safely comment out (`#`) any specific exceptions before running the script.
+
+## SDLC Artifact Storage
+- **Generate Default**: Always create ALL artifacts in the `brain/` folder first.
+- **Copy High-Value**: Explicitly copy ADRs, Test Contracts, and Audits to `docs/` after creation.
+- **Discard Transients**: Leave Implementation Plans and tasks in `brain/`. DO NOT copy them to `docs/`.
