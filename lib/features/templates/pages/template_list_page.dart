@@ -7,6 +7,7 @@ import '../../../_shared/utils/date_format_utils.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
+import '../../auth/manager/auth_manager.dart';
 import '../manager/template_manager.dart';
 import '../models/template_dto.dart';
 
@@ -162,25 +163,27 @@ class _TemplateListPageState extends State<TemplateListPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final manager = _di<TemplateManager>();
-
+    final isAdmin = _di<AuthManager>().currentUser?.role == 'admin';
     return Scaffold(
       appBar: AppBar(title: const Text('Templates')),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: Builder(
-          builder: (context) {
-            final theme = Theme.of(context);
-            return FloatingActionButton(
-              onPressed: () => _showCreateMenu(context),
-              shape: const CircleBorder(),
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: theme.colorScheme.onPrimary,
-              elevation: 4,
-              child: const Icon(Icons.add),
-            );
-          },
-        ),
-      ),
+      floatingActionButton: !isAdmin
+          ? null
+          : Padding(
+              padding: const EdgeInsets.only(bottom: 80),
+              child: Builder(
+                builder: (context) {
+                  final theme = Theme.of(context);
+                  return FloatingActionButton(
+                    onPressed: () => _showCreateMenu(context),
+                    shape: const CircleBorder(),
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    elevation: 4,
+                    child: const Icon(Icons.add),
+                  );
+                },
+              ),
+            ),
       body: ListenableBuilder(
         listenable: manager,
         builder: (context, _) {
@@ -272,7 +275,7 @@ class _TemplateListPageState extends State<TemplateListPage> {
                         count: templates.length,
                         initiallyExpanded: false,
                         children: templates
-                            .map((t) => _TemplateCard(template: t))
+                            .map((t) => _TemplateCard(template: t, isAdmin: isAdmin))
                             .toList(),
                       );
                     }).toList(),
@@ -351,8 +354,10 @@ class _TypeSection extends StatelessWidget {
 /// Card for a single template in the list.
 class _TemplateCard extends StatelessWidget {
   final TemplateDto template;
+  /// Whether the current user has admin role. Controls mutation actions.
+  final bool isAdmin;
 
-  const _TemplateCard({required this.template});
+  const _TemplateCard({required this.template, required this.isAdmin});
 
   @override
   Widget build(BuildContext context) {
@@ -449,55 +454,59 @@ class _TemplateCard extends StatelessWidget {
                     case 'start':
                       context.push('/stores/select?templateId=${template.id}');
                     case 'edit':
-                      context.push('/templates/edit/${template.id}');
+                      if (isAdmin) context.push('/templates/edit/${template.id}');
                     case 'duplicate':
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Duplicate — coming soon'),
-                        ),
-                      );
-                    case 'delete':
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text('Delete Template'),
-                          content: Text(
-                            'Delete "${template.title}"? This cannot be undone.',
+                      if (isAdmin) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Duplicate — coming soon'),
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: const Text('Cancel'),
+                        );
+                      }
+                    case 'delete':
+                      if (isAdmin) {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Delete Template'),
+                            content: Text(
+                              'Delete "${template.title}"? This cannot be undone.',
                             ),
-                            FilledButton(
-                              onPressed: () async {
-                                Navigator.pop(ctx);
-                                try {
-                                  await _di<TemplateManager>().deleteTemplate(
-                                    template.id,
-                                  );
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Template deleted'),
-                                      ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: const Text('Cancel'),
+                              ),
+                              FilledButton(
+                                onPressed: () async {
+                                  Navigator.pop(ctx);
+                                  try {
+                                    await _di<TemplateManager>().deleteTemplate(
+                                      template.id,
                                     );
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Template deleted'),
+                                        ),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Failed to delete: $e'),
+                                        ),
+                                      );
+                                    }
                                   }
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Failed to delete: $e'),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                              child: const Text('Delete'),
-                            ),
-                          ],
-                        ),
-                      );
+                                },
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                   }
                 },
                 itemBuilder: (context) => [
@@ -509,38 +518,40 @@ class _TemplateCard extends StatelessWidget {
                       dense: true,
                     ),
                   ),
-                  const PopupMenuItem(
-                    value: 'edit',
-                    child: ListTile(
-                      leading: Icon(Icons.edit),
-                      title: Text('Edit'),
-                      dense: true,
+                  if (isAdmin) ...[  
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text('Edit'),
+                        dense: true,
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'duplicate',
-                    child: ListTile(
-                      leading: Icon(Icons.copy),
-                      title: Text('Duplicate'),
-                      dense: true,
+                    const PopupMenuItem(
+                      value: 'duplicate',
+                      child: ListTile(
+                        leading: Icon(Icons.copy),
+                        title: Text('Duplicate'),
+                        dense: true,
+                      ),
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Builder(
-                      builder: (ctx) {
-                        final errorColor = Theme.of(ctx).colorScheme.error;
-                        return ListTile(
-                          leading: Icon(Icons.delete_outline, color: errorColor),
-                          title: Text(
-                            'Delete',
-                            style: TextStyle(color: errorColor),
-                          ),
-                          dense: true,
-                        );
-                      },
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Builder(
+                        builder: (ctx) {
+                          final errorColor = Theme.of(ctx).colorScheme.error;
+                          return ListTile(
+                            leading: Icon(Icons.delete_outline, color: errorColor),
+                            title: Text(
+                              'Delete',
+                              style: TextStyle(color: errorColor),
+                            ),
+                            dense: true,
+                          );
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ],

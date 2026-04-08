@@ -17,6 +17,7 @@ import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 // ============================================================
 
 class FakeConnectivity implements ConnectivityService {
+  @override
   bool isOnline;
   FakeConnectivity({this.isOnline = false});
   @override

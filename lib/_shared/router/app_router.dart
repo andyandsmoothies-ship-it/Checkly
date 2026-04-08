@@ -38,7 +38,7 @@ final _di = GetIt.instance;
 final appRouter = GoRouter(
   initialLocation: '/login',
   refreshListenable: _di<AuthManager>(),
-  redirect: _authRedirect,
+  redirect: authRedirect,
   routes: [
     // ---------- Auth ----------
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
@@ -188,7 +188,10 @@ final appRouter = GoRouter(
 /// Auth redirect guard.
 /// Redirects unauthenticated users to /login.
 /// Redirects non-admin users away from /admin/* routes to /home.
-String? _authRedirect(BuildContext context, GoRouterState state) {
+/// Redirects non-admin users away from /templates/* mutation routes to /home.
+/// Read-only /templates/:id detail pages are whitelisted for all authenticated roles.
+@visibleForTesting
+String? authRedirect(BuildContext context, GoRouterState state) {
   final auth = _di<AuthManager>();
   final isAuthenticated = auth.authState.value == AuthState.authenticated;
   final isOnLogin = state.matchedLocation == '/login';
@@ -212,6 +215,19 @@ String? _authRedirect(BuildContext context, GoRouterState state) {
     if (role != 'admin') return '/home';
   }
 
+  // Template mutation role guard: non-admin users cannot access mutation routes.
+  // Default Deny: ALL /templates/* paths are treated as mutations EXCEPT the
+  // exact read-only detail path /templates/:id (exactly 3 path segments).
+  if (isAuthenticated && state.matchedLocation.startsWith('/templates/')) {
+    final role = auth.currentUser?.role;
+    final parts = state.matchedLocation.split('/');
+    // Whitelist: ['', 'templates', '<id>'] — must be exactly 3 segments
+    // and the id segment cannot be a known mutation keyword.
+    final isReadOnlyDetail =
+        parts.length == 3 && parts[2] != 'new' && parts[2] != 'wizard';
+    if (!isReadOnlyDetail && role != 'admin') return '/home';
+  }
+
   // No-role guard on all app routes (except /access-pending and /login)
   if (isAuthenticated &&
       state.matchedLocation != '/access-pending' &&
@@ -222,6 +238,7 @@ String? _authRedirect(BuildContext context, GoRouterState state) {
 
   return null;
 }
+
 
 @visibleForTesting
 int shellIndexFromLocation(String location) {

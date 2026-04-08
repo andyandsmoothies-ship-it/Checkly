@@ -18,6 +18,7 @@ import 'package:checkly/features/templates/models/template_dto.dart';
 // ============================================================
 
 class FakeConnectivity implements ConnectivityService {
+  @override
   bool isOnline;
   FakeConnectivity({this.isOnline = false});
   @override
@@ -100,7 +101,7 @@ void main() {
     // Assert
     expect(spy.createSubmissionCalled, isFalse,
         reason: 'Online path must NOT call HTTP API directly. Outbox-first only.');
-    expect(await outboxDao.pendingCount(), equals(1),
+    expect((await outboxDao.getAllPending()).length, equals(1),
         reason: '1 outbox row must exist — SyncEngine drains it asynchronously.');
     expect(manager.error, isNull,
         reason: 'No error must be set after successful outbox write.');
