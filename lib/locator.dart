@@ -16,6 +16,7 @@ import 'features/auth/services/secure_storage_service.dart';
 import 'features/auth/services/policy_api_service.dart';
 import 'features/auth/manager/auth_manager.dart';
 import '_shared/database/dao/policy_dao.dart';
+import '_shared/services/policy_manager.dart';
 import 'features/templates/services/template_api_service.dart';
 import 'features/templates/manager/template_manager.dart';
 import 'features/stores/services/store_api_service.dart';
@@ -54,6 +55,7 @@ void configureDependencies() {
   di.registerLazySingleton<PolicyApiService>(() => PolicyApiService(di<Dio>()));
   di.registerLazySingleton<PolicyDao>(() => PolicyDao(di<DatabaseService>().db));
   di.registerLazySingleton<AuthManager>(() => AuthManager());
+  di.registerLazySingleton<PolicyManager>(() => PolicyManager(auth: di<AuthManager>()));
 
   // ---------- Templates (Slice 3) ----------
   di.registerLazySingleton<TemplateApiService>(

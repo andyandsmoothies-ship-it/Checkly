@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/manager/auth_manager.dart';
 import '../../features/auth/model/auth_state.dart';
+import '../services/policy_manager.dart';
 import '../theme/app_theme.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/auth/pages/access_pending_page.dart';
@@ -209,23 +210,24 @@ String? authRedirect(BuildContext context, GoRouterState state) {
     return '/home';
   }
 
-  // Admin role guard: non-admin users cannot access /admin/* routes
+  // Admin capability guard: requires 'admin:access' capability.
+  // Fail-safe deny: empty capabilities → redirect to /home.
   if (isAuthenticated && state.matchedLocation.startsWith('/admin')) {
-    final role = auth.currentUser?.role;
-    if (role != 'admin') return '/home';
+    if (!_di<PolicyManager>().can('admin:access')) return '/home';
   }
 
-  // Template mutation role guard: non-admin users cannot access mutation routes.
-  // Default Deny: ALL /templates/* paths are treated as mutations EXCEPT the
-  // exact read-only detail path /templates/:id (exactly 3 path segments).
+  // Template mutation capability guard: requires 'templates:create' capability.
+  // Default Deny: ALL /templates/* paths are mutations EXCEPT the exact read-only
+  // detail path /templates/:id (exactly 3 path segments, not 'new' or 'wizard').
   if (isAuthenticated && state.matchedLocation.startsWith('/templates/')) {
-    final role = auth.currentUser?.role;
     final parts = state.matchedLocation.split('/');
     // Whitelist: ['', 'templates', '<id>'] — must be exactly 3 segments
     // and the id segment cannot be a known mutation keyword.
     final isReadOnlyDetail =
         parts.length == 3 && parts[2] != 'new' && parts[2] != 'wizard';
-    if (!isReadOnlyDetail && role != 'admin') return '/home';
+    if (!isReadOnlyDetail && !_di<PolicyManager>().can('templates:create')) {
+      return '/home';
+    }
   }
 
   // No-role guard on all app routes (except /access-pending and /login)

@@ -10,10 +10,13 @@ import 'package:checkly/features/auth/model/user_session.dart';
 import 'package:checkly/features/templates/manager/template_manager.dart';
 import 'package:checkly/features/templates/pages/template_list_page.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
+import 'package:checkly/_shared/services/policy_manager.dart';
 
 class _StubAuthManager extends ChangeNotifier implements AuthManager {
   final String? role;
-  _StubAuthManager({this.role});
+  final Set<String> _caps;
+  _StubAuthManager({this.role, Set<String>? capabilities})
+      : _caps = capabilities ?? {};
 
   @override
   ValueListenable<AuthState> get authState => ValueNotifier(
@@ -26,7 +29,7 @@ class _StubAuthManager extends ChangeNotifier implements AuthManager {
     : null;
 
   @override
-  ValueListenable<Set<String>> get capabilities => ValueNotifier({});
+  ValueListenable<Set<String>> get capabilities => ValueNotifier(_caps);
 
   @override Future<void> login(String e, String p) async {}
   @override Future<void> logout() async {}
@@ -71,7 +74,12 @@ void main() {
   });
 
   void arrangeAuthRole(String role) {
-    GetIt.I.registerSingleton<AuthManager>(_StubAuthManager(role: role));
+    // Admin gets templates:create capability so PermissionGuard shows FAB.
+    // All other roles get empty capabilities (fail-safe deny).
+    final caps = role == 'admin' ? {'templates:create', 'admin:access'} : <String>{};
+    final auth = _StubAuthManager(role: role, capabilities: caps);
+    GetIt.I.registerSingleton<AuthManager>(auth);
+    GetIt.I.registerSingleton<PolicyManager>(PolicyManager(auth: auth));
   }
 
   Widget createSubject() {

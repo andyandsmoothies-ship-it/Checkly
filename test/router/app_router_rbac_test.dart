@@ -8,23 +8,27 @@ import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/auth/model/auth_state.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
 import 'package:checkly/_shared/router/app_router.dart';
+import 'package:checkly/_shared/services/policy_manager.dart';
 
 class _StubAuthManager extends ChangeNotifier implements AuthManager {
-  final String? role;
-  _StubAuthManager({this.role});
+  final Set<String> _caps;
+  final bool isAuthenticated;
+  
+  _StubAuthManager({required Set<String> capabilities, this.isAuthenticated = true}) 
+      : _caps = capabilities;
 
   @override
   ValueListenable<AuthState> get authState => ValueNotifier(
-    role != null ? AuthState.authenticated : AuthState.unauthenticated
+    isAuthenticated ? AuthState.authenticated : AuthState.unauthenticated
   );
 
   @override
-  UserSession? get currentUser => role != null
-    ? UserSession(userId: '1', fullName: 'Test', email: 'test@x.com', role: role!, token: 'tok')
+  UserSession? get currentUser => isAuthenticated
+    ? const UserSession(userId: '1', fullName: 'Test', email: 'test@x.com', role: 'any', token: 'tok')
     : null;
 
   @override
-  ValueListenable<Set<String>> get capabilities => ValueNotifier({});
+  ValueListenable<Set<String>> get capabilities => ValueNotifier(_caps);
 
   @override Future<void> login(String e, String p) async {}
   @override Future<void> logout() async {}
@@ -50,53 +54,48 @@ void main() {
     GetIt.I.reset();
   });
 
-  void arrangeAuthRole(String role) {
-    GetIt.I.registerSingleton<AuthManager>(_StubAuthManager(role: role));
+  void arrangeCapabilities(Set<String> caps) {
+    final auth = _StubAuthManager(capabilities: caps);
+    GetIt.I.registerSingleton<AuthManager>(auth);
+    GetIt.I.registerSingleton<PolicyManager>(PolicyManager(auth: auth));
   }
 
   String? runRedirect(String location) {
     return authRedirect(MockBuildContext(), MockGoRouterState(location));
   }
 
-  group('GoRouter Mutation Guard', () {
-    test('TC-01: Block /templates/new for unauthorized roles', () {
-      arrangeAuthRole('auditor');
-      expect(runRedirect('/templates/new'), '/home');
-      
-      arrangeAuthRole('area_manager');
-      expect(runRedirect('/templates/new'), '/home');
-      
-      arrangeAuthRole('admin');
-      expect(runRedirect('/templates/new'), isNull); // allowed
+  group('GoRouter PBAC Capability Guard', () {
+    test('AR-01: Blocks /admin/dashboard when admin:access capability is missing', () {
+      arrangeCapabilities({'templates:create'}); // Has other capability, but not admin
+      expect(runRedirect('/admin/dashboard'), '/home');
     });
 
-    test('TC-02: Block /templates/wizard for area_manager', () {
-      arrangeAuthRole('area_manager');
-      expect(runRedirect('/templates/wizard'), '/home');
+    test('AR-02: Allows /admin/dashboard when admin:access capability exists', () {
+      arrangeCapabilities({'admin:access'});
+      expect(runRedirect('/admin/dashboard'), isNull);
+    });
+
+    test('AR-03: Blocks /templates/new when templates:create capability is missing', () {
+      arrangeCapabilities({'admin:access'});
+      expect(runRedirect('/templates/new'), '/home');
+    });
+
+    test('AR-04: Allows /templates/new when templates:create capability exists', () {
+      arrangeCapabilities({'templates:create'});
+      expect(runRedirect('/templates/new'), isNull);
       
-      arrangeAuthRole('admin');
       expect(runRedirect('/templates/wizard'), isNull);
     });
 
-    test('TC-03: Block /templates/edit/:id for auditor', () {
-      arrangeAuthRole('auditor');
-      expect(runRedirect('/templates/edit/abc-123'), '/home');
-      
-      arrangeAuthRole('admin');
-      expect(runRedirect('/templates/edit/abc-123'), isNull);
-    });
-
-    test('TC-04: Block /templates/:id/builder for auditor', () {
-      arrangeAuthRole('auditor');
-      expect(runRedirect('/templates/abc-123/builder'), '/home');
-      
-      arrangeAuthRole('admin');
-      expect(runRedirect('/templates/abc-123/builder'), isNull);
-    });
-
-    test('TC-05: Allow /templates/:id read-only for auditor', () {
-      arrangeAuthRole('auditor');
+    test('AR-05: Allows /templates/:id read-only for users without templates:create capability', () {
+      arrangeCapabilities({}); // Empty capabilities
       expect(runRedirect('/templates/abc-def-123'), isNull); // explicitly allowed read-only
+    });
+
+    test('AR-06: (Gap AC) Blocks deeply nested mutation route (/templates/123/edit) when capability missing', () {
+      arrangeCapabilities({}); 
+      // Length of split('/') is 4 for '/templates/123/edit'. Must fail length==3 check.
+      expect(runRedirect('/templates/abc-123/edit'), '/home');
     });
   });
 }

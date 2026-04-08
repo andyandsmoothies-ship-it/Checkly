@@ -15,3 +15,12 @@
 - **Gotcha 24: `AuthManager` Interface Changes Break All `implements AuthManager` Test Stubs**
   - **Problem:** Adding a new getter/method causes compile errors in EVERY test file with `class _StubX extends ChangeNotifier implements AuthManager`.
   - **Fix:** After ANY `AuthManager` modification, run `grep_search` for `implements AuthManager` in the `test/` tree and add the missing no-op implementations. Return `ValueNotifier({})` for new `ValueListenable` getters.
+
+- **Gotcha 25: Test `arrange*` Helpers Must Register `PolicyManager` Alongside `AuthManager`**
+  - **Problem:** Any widget test that renders a component using `PermissionGuard` or `authRedirect` will throw `StateError: PolicyManager not found in GetIt` if `PolicyManager` is not registered — even if the test's `_StubAuthManager` correctly implements `capabilities`.
+  - **Fix:** In every `arrange*` helper that registers `AuthManager`, also register `PolicyManager(auth: stubAuth)`:
+    ```dart
+    final auth = _StubAuthManager(role: role, capabilities: caps);
+    GetIt.I.registerSingleton<AuthManager>(auth);
+    GetIt.I.registerSingleton<PolicyManager>(PolicyManager(auth: auth));
+    ```

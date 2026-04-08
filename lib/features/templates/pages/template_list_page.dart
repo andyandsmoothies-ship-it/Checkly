@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/widgets/permission_guard.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -166,9 +167,9 @@ class _TemplateListPageState extends State<TemplateListPage> {
     final isAdmin = _di<AuthManager>().currentUser?.role == 'admin';
     return Scaffold(
       appBar: AppBar(title: const Text('Templates')),
-      floatingActionButton: !isAdmin
-          ? null
-          : Padding(
+      floatingActionButton: PermissionGuard(
+          capability: 'templates:create',
+          child: Padding(
               padding: const EdgeInsets.only(bottom: 80),
               child: Builder(
                 builder: (context) {
@@ -184,6 +185,7 @@ class _TemplateListPageState extends State<TemplateListPage> {
                 },
               ),
             ),
+          ),
       body: ListenableBuilder(
         listenable: manager,
         builder: (context, _) {
