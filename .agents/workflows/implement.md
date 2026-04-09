@@ -115,7 +115,7 @@ Review from 5 angles & state findings:
    - ✅ State Invariant Test (Entry/Exit Conditions)
    - ✅ Blast Radius Test (If modifying shared code)
    - *Exemption*: Purely cosmetic (`[SCAN Exemption: Cosmetic Only]`)
-5. **Quality Gate**: No hardcoded UI colors, no rogue padding, zero unused imports, zero dead code.
+5. **Quality Gate (Zero-Warning Mandate)**: You MUST run structural validation (e.g., `flutter analyze` or `dotnet build`). If the compiler/linter emits ANY warnings (e.g., unused imports, dead code, logic smells), you are strictly PROHIBITED from handing the task back to the user. You must fix the warnings first. No exceptions.
 
 | Step | Execution Contract |
 |---|---|
