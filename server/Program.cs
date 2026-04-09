@@ -31,14 +31,17 @@ using Serilog;
 // Stage 1: Bootstrap logger — captures startup errors before DI.
 // Guard: CreateBootstrapLogger() freezes Log.Logger. Integration tests spin up multiple
 // WebApplicationFactory instances which each re-execute these top-level statements.
-// The static flag prevents crashing with "logger already frozen" on repeated entry.
-if (Log.Logger.GetType().Name == "SilentLogger")
+// The lock and static flag prevents crashing with "logger already frozen" on parallel entry.
+lock (Program.LoggerLock)
 {
-    Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-        .Enrich.FromLogContext()
-        .WriteTo.Console()
-        .CreateBootstrapLogger();
+    if (Log.Logger.GetType().Name == "SilentLogger")
+    {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
+    }
 }
 
 try
@@ -54,7 +57,9 @@ try
         .Enrich.FromLogContext()
         .Enrich.WithMachineName()
         .Enrich.WithEnvironmentName()
-        .Enrich.WithProperty("Application", "Checkly.Api"));
+        .Enrich.WithProperty("Application", "Checkly.Api"),
+        preserveStaticLogger: true,
+        writeToProviders: false);
 
     // --- Database ---
     builder.Services.AddDbContext<AppDbContext>(options =>
@@ -269,4 +274,7 @@ finally
 }
 
 // Marker class for WebApplicationFactory<Program> in integration tests
-public partial class Program { }
+public partial class Program 
+{ 
+    public static readonly object LoggerLock = new();
+}

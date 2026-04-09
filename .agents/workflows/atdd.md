@@ -35,7 +35,7 @@ Workflow: /atdd | Track: [B2 / C]
 |---|---|
 | **Skill Load** | MANDATORY: Load `atdd-quality-gates` skill. |
 | **Dynamic Skills**| Derive 2-3 keywords -> search `.agents/skills/` -> Load Top 2. |
-| **Verification** | MANDATORY: Read upstream `analysis_[topic].md`. Execute `grep_search` / `view_file` to confirm entities/endpoints mentioned actually exist. **If spec mentions an API contract: verify the route exists in `server/` AND a corresponding Dart client call exists in `lib/`.** IF Discrepancy THEN Flag to user → STOP. |
+| **Verification** | MANDATORY: Read upstream `implementation_plan_[topic].md`. Execute `grep_search` / `view_file` to confirm existing entities. **Exception:** If the plan explicitly defines a NET-NEW API route/feature to be built, do NOT flag its absence as an error. Your job is to write the failing test for it (Red Phase). For existing dependencies that are missing, IF discrepancy THEN Flag to user → STOP. |
 | **Gap Analysis** | MANDATORY: Play the Adversary. Independent of the upstream spec, ask: "What edge cases, state leaks, migrations, or boundary errors did the Architect forget?" Define minimally 2 ACs that are NOT explicitly requested by the spec to act as a safety net. |
 
 > **@@SCAN**: (1) `atdd-quality-gates` loaded? (2) API routes confirmed in BOTH server/ and lib/? (3) Discrepancies found? (4) Gap Analysis ACs defined?
@@ -83,7 +83,15 @@ Workflow: /atdd | Track: [B2 / C]
 | **Artifact Form** | Create `specs_[feature].md` & `test_cases_[feature].md` (Markdown table of approved ACs only). |
 | **Metadata** | Append `Test Infrastructure Map` to Specs. |
 | **Workflow Merge**| Update `implementation_plan_[topic].md` with test names. |
-| **Clean Handoff** | Pass `test_cases_[topic].md` to User -> YIELD. |
+| **Clean Handoff** | Complete block below -> YIELD. |
+
+## 🚦 User Handoff & Next Steps
+
+> [!IMPORTANT]
+> **Outputs Created:** Physical test files (RED) + `test_contracts_[topic].md`.
+>
+> **YOUR NEXT COMMAND:** (Do not send test logs to Builder)
+> - Switch to Forge Builder and type: `@[/implement] this implementation_plan_[topic].md`
 
 > [!IMPORTANT]
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.

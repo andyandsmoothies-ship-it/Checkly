@@ -70,8 +70,14 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **State** | Simple flag | Complex state machine |
 | **Testing** | Low risk (UI/Cosmetic) | High risk (Silent corruption) |
 
-- **B1 Handoff**: Yield `implementation_plan.md` -> Tag `@Forge` `/implement`.
-- **B2 Handoff**: Yield `implementation_plan.md` -> Tag `@Sentinel` `/atdd`.
+## 🚦 User Handoff & Next Steps
+
+> [!IMPORTANT]
+> **Output Created:** `implementation_plan_[topic].md`
+> 
+> **YOUR NEXT COMMAND:** (Do not run in parallel)
+> - **If Track B2 (High Risk):** Switch to Sentinel QA and type: `@[/atdd] this implementation_plan_[topic].md`
+> - **If Track B1 (Low Risk):** Switch to Forge Builder and type: `@[/implement] this implementation_plan_[topic].md`
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]

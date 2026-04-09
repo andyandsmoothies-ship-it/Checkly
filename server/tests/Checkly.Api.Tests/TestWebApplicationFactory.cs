@@ -97,6 +97,13 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             });
             db.SaveChanges();
 
+            // CRITICAL: Reload PBAC cache after EnsureDeleted + Migrate wipes the test DB.
+            // The app's PbacDictionaryCache was populated at startup from the old DB state.
+            // After Migrate() re-seeds role_capabilities (including admin:manage_roles),
+            // the cache must be refreshed or all PBAC-gated endpoints will 403.
+            var pbacCache = scope.ServiceProvider.GetRequiredService<PbacDictionaryCache>();
+            pbacCache.InitializeAsync(scope.ServiceProvider).GetAwaiter().GetResult();
+
             _dbInitialized = true;
         }
     }

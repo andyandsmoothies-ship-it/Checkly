@@ -1,3 +1,5 @@
+using Checkly.Api.Common.Auth;
+
 namespace Checkly.Api.Features.Admin;
 
 /// <summary>
@@ -34,5 +36,22 @@ public static class AdminEndpoints
         // S12: System Logs
         group.MapGet("/logs", ListSystemLogs.HandleAsync)
             .WithName("ListSystemLogs");
+
+        // PBAC Slice Admin-1: Roles & Capability Management
+        group.MapGet("/roles", Roles.GetRoles.HandleAsync)
+            .WithName("GetRoles")
+            .RequireCapability("admin:manage_roles");
+
+        group.MapGet("/capabilities/catalog", Roles.GetCapabilityCatalog.HandleAsync)
+            .WithName("GetCapabilityCatalog");
+        // No extra capability gate — any authenticated admin may read the catalog.
+
+        group.MapPost("/roles/{role}/capabilities/{capability}", Roles.GrantCapability.HandleAsync)
+            .WithName("GrantCapability")
+            .RequireCapability("admin:manage_roles");
+
+        group.MapDelete("/roles/{role}/capabilities/{capability}", Roles.RevokeCapability.HandleAsync)
+            .WithName("RevokeCapability")
+            .RequireCapability("admin:manage_roles");
     }
 }

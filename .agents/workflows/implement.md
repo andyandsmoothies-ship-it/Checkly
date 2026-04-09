@@ -72,7 +72,16 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 |---|---|
 | **Artifact Create**| Export `test_contracts_[topic].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
 | **Contract Format**| Strict Template: `ID`, `Exact Text/Key` (with line #), `State Matrix` (Happy/Error/Empty), `Private Method Access`, `Why RED now`. |
-| **Execution Lock** | PROHIBITED: Entering Phase 3 without explicit TDD execution. The *Marking Your Own Homework Paradox* applies universally. MANDATORY YIELD: You MUST yield to the QA persona (@Sentinel) to write tests, regardless of Track (A/B1/B2/C) or task size. Output message: *"Plan ready. Run /tdd with QA Agent (@Sentinel) for failing internal unit tests. When done, reply here: 'Here is the result of tdd, check and continue'."* -> YIELD. |
+| **Execution Lock** | PROHIBITED: Entering Phase 3 without explicit TDD execution. The *Marking Your Own Homework Paradox* applies universally. MANDATORY YIELD: You MUST yield to the QA persona (@Sentinel) to write tests. Output the exact block below -> YIELD. |
+
+## 🚦 Phase 2.5 Handoff (Yield)
+
+> [!IMPORTANT]
+> **Outputs Created:** Internal component plan.
+>
+> **YOUR NEXT COMMAND:** 
+> - Switch to Sentinel QA and type: `@[/tdd] The Builder proposes these classes... (describe or paste plan)`
+> - Once `/tdd` is complete, return here and type: `Here is the result of tdd. Go.`
 
 ## Phase 3: Coding
 
@@ -137,5 +146,13 @@ Review from 5 angles & state findings:
 > 
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-> - `Code 0`: *"Implementation complete. Run git commit when ready."*
+> - `Code 0`: *"Implementation complete. Output User Handoff."*
 > - `Code 1`: Fix block -> retry. (Fail twice = Write Handoff).
+
+## 🚦 User Handoff & Next Steps
+
+> [!IMPORTANT]
+> **Outputs Created:** Implemented code (GREEN) + `walkthrough_[topic].md`.
+>
+> **YOUR NEXT COMMAND:** (Do not merge code yet)
+> - Switch to Sentinel QA and type: `@[/verify] this walkthrough_[topic].md`

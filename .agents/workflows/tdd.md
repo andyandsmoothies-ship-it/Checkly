@@ -81,12 +81,15 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 - **Requirement**: Output the failed test execution log securely.
 - **Action**: Create an `executed_tests_[topic].md` artifact containing the raw terminal output proving the Valid Red test failures.
 - **Action**: Create a `walkthrough_[topic].md` declaring the scope of the tests written along with the exact commands the Builder should use to run them.
-- **Final Message**: You MUST output the exact following block to the user so they can pivot back to the Builder Agent:
+- **Final Message**: You MUST output the exact block below to the user so they can pivot back to the Builder Agent:
 
-> **Tests are written and Red.**
-> 
-> *To the Product Owner: Please swap back to your chat with Forge (the Builder Agent) and send this exact message:*
-> "Here is the result of tdd, check and continue"
+## 🚦 User Handoff & Next Steps
+
+> [!IMPORTANT]
+> **Outputs Created:** Internal Unit Tests (RED) + `executed_tests_[topic].md`.
+>
+> **YOUR NEXT COMMAND:** 
+> - Return to your suspended chat with Forge Builder and type: `Here is the result of tdd, check and continue.`
 
 ---
 
