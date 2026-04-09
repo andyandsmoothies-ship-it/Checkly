@@ -50,6 +50,15 @@ description: Infrastructure & architecture audit — database health, security p
 
 > **@@SCAN**: (1) Missing DB operations? (2) Missing Flutter API methods? (3) Features lacking endpoints?
 
+## Phase 4.5: Telemetry & NFR Check
+
+| Audit Vector | Execution Contract |
+|---|---|
+| **Logging (`🔴`)** | Scan mutation endpoints (`POST/PUT/DELETE`). IF endpoint modifies data blindly WITHOUT `_logger.LogInformation` or `AuditLogger` THEN Flag. |
+| **Circuit Breakers (`🟡`)** | Verify external API calls use resilience handlers. |
+
+> **@@SCAN**: (1) Missing logs on mutations? (2) Missing resilience handlers?
+
 ## Phase 5: Assessment Payload
 
 | Step | Execution Contract |

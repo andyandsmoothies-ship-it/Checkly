@@ -38,8 +38,9 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **Vertical Micro-Slicing**| MANDATORY: Never slice horizontally by layer (e.g., DB-only). All plans must be end-to-end and testable. If a plan is too large, slice VERTICALLY by removing infrastructure complexity (e.g., build brute-force data flow first, add cache in a future slice). |
 | **Trade-Off Analysis** | Identify >= 1 alternative "Ideal Enterprise" approach. Explicitly list the Pros, Cons, and Blast Radius to justify the pragmatic choice over the ideal choice. |
 | **Risk Assessment** | Formally assess the technical and operational risks of the chosen approach, and document mitigation strategies. |
+| **NFR Constraints** | MANDATORY: Explicitly define 3 Non-Functional Requirements for this feature: Performance (latency/load limits), Security (Auth rules/data isolation), and Observability (required telemetry/logs). |
 
-> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Did you restrict the generated plan to a single Micro-Slice if layers > 2? (4) Pros/Cons of Ideal vs Pragmatic mapped? (5) Risk Assessment included?
+> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Did you restrict the generated plan to a single Micro-Slice if layers > 2? (4) NFR Constraints defined? (5) Risk Assessment included?
 
 ## Phase 2: Resilience & Blast Radius
 

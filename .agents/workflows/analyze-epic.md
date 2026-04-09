@@ -42,8 +42,9 @@ Workflow: /analyze-epic | Track: C
 | **System Impact**| `grep_search` all core tables/services affected. Define ALLOWLIST vs BLOCKLIST conditional logic. |
 | **Trade-Off Matrix**| MANDATORY: For each alternative, explicitly document Pros, Cons, and Blast Radius. Justify the chosen option over the ideal enterprise option. |
 | **Risk Assessment** | Formally assess the technical and operational risks of each decision/alternative, and document mitigation strategies. |
+| **NFR Constraints** | MANDATORY: Explicitly define System-wide limits for Performance, Security, and Observability before proceeding. |
 
-> **@@SCAN**: (1) Component reuse verified? (2) >=2 Alternatives with Pros/Cons mapped? (3) Core tables explicitly grepped across BOTH lib/ and server/?
+> **@@SCAN**: (1) Component reuse verified? (2) >=2 Alternatives with Pros/Cons mapped? (3) NFR Constraints defined? (4) Core tables explicitly grepped across BOTH lib/ and server/?
 
 ## Phase 2: Red Team Adversarial Review
 
