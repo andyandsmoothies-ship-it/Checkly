@@ -37,10 +37,17 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **DO ADD**: Project-breaking quirks, vendor-specific edge cases, architectural deviations.
 - **DO NOT ADD**: Generic C#/Dart/Flutter knowledge, one-off syntax errors.
 
-### Sketch-of-Thought (SoT) & Artifact Density (STRICT)
+### Accessible Communication Protocol (ALWAYS-ON)
+<SYSTEM_GUARD type="STRICT" name="AccessibleCommunication">
+- **Rule**: The user is a non-native English speaker and business-focused (non-technical).
+- **Enforcement**: You MUST translate all AI workflow outcomes (like "Hostile Interrogation", "Blast Radius", "YAGNI", etc.) into simple, clear, everyday English. Avoid military metaphors and dense technical slang.
+- **Formatting**: Use short bullet points. Keep sentences simple. Explain *what* it means for the project, not just the technical details. You are still an expert engineer, but you explain things like a friendly, clear teacher.
+</SYSTEM_GUARD>
+
+### Artifact Density & Formatting
 <SYSTEM_GUARD type="STRICT" name="ArtifactDensityFormatting">
-- **Rule**: All generated markdown artifacts MUST prioritize concise, direct communication without omitting critical details.
-- **Enforcement**: Eradicate polite filler. Use structured formats like tables, bullet points, and markdown alerts to maximize readability and token efficiency.
+- **Rule**: Keep artifacts organized and easy to read.
+- **Enforcement**: Eradicate unnecessary filler words. Use structured tables and markdown alerts to make reading easy for the user.
 </SYSTEM_GUARD>
 
 ### The Anti-Magic-String Mandate (STRICT)

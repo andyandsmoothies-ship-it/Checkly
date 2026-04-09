@@ -221,10 +221,14 @@ String? authRedirect(BuildContext context, GoRouterState state) {
     return '/home';
   }
 
-  // Admin capability guard: requires 'admin:manage_roles' capability.
+  // Admin capability guard: requires 'admin:access' UI-Signal capability.
+  // This is the ONLY capability checked at the router prefix level.
+  // Granular capability checks (e.g. admin:manage_roles) belong inside individual
+  // admin pages/widgets — NOT here. Checking granulars here causes the
+  // Group Policy Trap: a user with stores:write but not manage_roles gets locked out.
   // Fail-safe deny: empty capabilities → redirect to /home.
   if (isAuthenticated && state.matchedLocation.startsWith('/admin')) {
-    if (!_di<PolicyManager>().can('admin:manage_roles')) return '/home';
+    if (!_di<PolicyManager>().can('admin:access')) return '/home';
   }
 
   // Template mutation capability guard: requires 'templates:create' capability.
