@@ -91,7 +91,7 @@ Workflow: /atdd | Track: [B2 / C]
 > **Outputs Created:** Physical test files (RED) + `test_contracts_[topic].md`.
 >
 > **YOUR NEXT COMMAND:** (Do not send test logs to Builder)
-> - Switch to Forge Builder and type: `@[/implement] this implementation_plan_[topic].md`
+> - Switch to Forge Builder and type: `@[/implement] this [INSERT THE EXACT RELATIVE PATH OF THE ORIGINAL implementation_plan YOU WERE GIVEN]`
 
 > [!IMPORTANT]
 > **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.

@@ -29,6 +29,7 @@ import 'features/notifications/manager/notification_manager.dart';
 import 'features/action_plans/manager/action_plan_manager.dart';
 import 'features/dashboard/manager/dashboard_manager.dart';
 import 'features/admin/services/admin_api_service.dart';
+import 'features/admin/manager/role_manager.dart';
 import 'features/analytics/services/analytics_api_service.dart';
 
 final di = GetIt.instance;
@@ -111,6 +112,12 @@ void configureDependencies() {
 
   // ---------- Admin (CRUD Gaps — MS5) ----------
   di.registerLazySingleton<AdminApiService>(() => AdminApiService(di<Dio>()));
+
+  // ---------- Admin PBAC Slice 2 — Role Management ----------
+  di.registerLazySingleton<RoleManager>(
+    () => RoleManager(adminApiService: di<AdminApiService>()),
+    dispose: (m) => m.dispose(),
+  );
 
   // ---------- Analytics (CRUD Gaps — MS5) ----------
   di.registerLazySingleton<AnalyticsApiService>(

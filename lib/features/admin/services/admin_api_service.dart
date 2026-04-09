@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+import '../model/role_dto.dart';
+
 /// API service for admin endpoints (/api/admin/*).
 class AdminApiService {
   final Dio _dio;
@@ -161,5 +163,39 @@ class AdminApiService {
     if (description != null) body['description'] = description;
     final response = await _dio.put('/areas/$id', data: body);
     return response.data as Map<String, dynamic>;
+  }
+
+  // ── Role Capabilities API (PBAC Admin Slice 2) ──
+
+  /// GET /admin/roles — list all roles with their assigned capabilities.
+  Future<List<RoleDto>> getRoles() async {
+    final response = await _dio.get('/admin/roles');
+    final list = response.data as List<dynamic>;
+    return list
+        .map((e) => RoleDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// GET /admin/capabilities/catalog — returns the static capability catalog.
+  Future<List<String>> getCapabilityCatalog() async {
+    final response = await _dio.get('/admin/capabilities/catalog');
+    final list = response.data as List<dynamic>;
+    return list.map((e) => e as String).toList();
+  }
+
+  /// POST /admin/roles/{role}/capabilities/{capability} — idempotent grant.
+  Future<void> grantCapability({
+    required String role,
+    required String capability,
+  }) async {
+    await _dio.post('/admin/roles/$role/capabilities/$capability');
+  }
+
+  /// DELETE /admin/roles/{role}/capabilities/{capability} — idempotent revoke.
+  Future<void> revokeCapability({
+    required String role,
+    required String capability,
+  }) async {
+    await _dio.delete('/admin/roles/$role/capabilities/$capability');
   }
 }

@@ -179,6 +179,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 subtitle: 'Delegate audits to auditors',
                 onTap: () => context.push('/admin/schedule'),
               ),
+              _MenuItem(
+                icon: Icons.manage_accounts,
+                title: 'Role Management',
+                subtitle: 'Manage role capabilities',
+                onTap: () => context.push('/admin/roles'),
+              ),
             ],
           ),
             ),
