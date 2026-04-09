@@ -177,9 +177,12 @@ class AdminApiService {
   }
 
   /// GET /admin/capabilities/catalog — returns the static capability catalog.
+  /// NOTE: Server wraps response in CatalogResponse DTO: { "capabilities": [...] }.
+  /// Do NOT cast response.data directly to List — it is a Map envelope.
   Future<List<String>> getCapabilityCatalog() async {
     final response = await _dio.get('/admin/capabilities/catalog');
-    final list = response.data as List<dynamic>;
+    final data = response.data as Map<String, dynamic>;
+    final list = data['capabilities'] as List<dynamic>;
     return list.map((e) => e as String).toList();
   }
 

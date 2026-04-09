@@ -41,3 +41,12 @@ test/features/admin/
   pages/
     role_management_atdd_test.dart — AT-01..05 (ATDD widget tests, GetIt scope isolation)
 ```
+
+---
+
+## Gotcha D: C# Record DTO Wraps Arrays — Never Cast response.data Directly to List
+**Context:** `admin_api_service.dart` — `getCapabilityCatalog()`.
+**Problem:** `GetCapabilityCatalog.cs` returns `TypedResults.Ok(new CatalogResponse(Catalog))` where `CatalogResponse` is a C# record. Dart receives `{"capabilities": [...]}` as a `Map<String, dynamic>`. Naively casting `response.data as List<dynamic>` throws a `TypeError` that the manager's catch block silently suppresses, leaving `catalog.value == null`. The fallback `catalog ?? assigned` then renders only the already-assigned capabilities — making the bug invisible for the `admin` role (which has all caps) but catastrophic for `auditor`/`store_manager`.
+**Fix:** Always extract the named key: `final data = response.data as Map<String, dynamic>; final list = data['capabilities'] as List<dynamic>;`
+**Rule:** When a C# endpoint returns a `record` or `class` wrapper DTO, the Dart client MUST cast to `Map<String, dynamic>` first, then extract the payload field. Never assume a C# endpoint returns a bare array.
+**Verified:** Fix confirmed via `flutter analyze` — 0 issues. Status: CONFIRMED.
