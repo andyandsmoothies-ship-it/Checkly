@@ -1,5 +1,10 @@
 # Checkly
 
+![Flutter](https://img.shields.io/badge/Flutter-3.11+-02569B?logo=flutter)
+![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Self_Hosted-336791?logo=postgresql)
+![AI Governed](https://img.shields.io/badge/AI_Governed-Strict_SDLC-8A2BE2)
+
 **Mobile-first audit & inspection platform** — build dynamic templates, run audits offline, score automatically, and track corrective actions. Built with Flutter and a self-hosted ASP.NET Core API backed by PostgreSQL.
 
 ---
@@ -12,6 +17,9 @@
 - **Role-Based Analytics** — Dedicated dashboards for Admins (global KPIs), Area Managers (store leaderboard), Store Managers (store snapshot), and Auditors (personal calibration stats).
 - **Action Plan Workflow** — Create corrective actions from failed criteria with deadlines, reminders, and status tracking.
 - **Server-Side Score Verification** — The backend independently recalculates scores and rejects submissions with suspicious deltas (>5%).
+- **Notification Engine** — Real-time SignalR notifications and in-app inbox for audit submissions and action plan deadlines.
+- **Internal Distribution** — Deployed natively via internal APK sideloading and iOS TestFlight (zero app store dependency).
+- **AI-Agent Governed** — Codebase uses double-loop ATDD workflows with deterministic Python script gates to guarantee architecture rules before merging.
 
 ---
 
@@ -25,7 +33,7 @@
 | **Backend API** | ASP.NET Core (.NET 10) | Vertical Slice Minimal API |
 | **Database** | PostgreSQL (Self-Hosted) | Primary data store |
 | **ORM** | Entity Framework Core | Server-side data access |
-| **Auth** | ASP.NET Core Identity (JWT) | Authentication + RBAC |
+| **Auth** | ASP.NET Core Identity (JWT) | Authentication + PBAC |
 | **Local DB** | Drift (SQLite) | Offline cache & sync |
 | **DI** | get_it / watch_it | Flutter service locator |
 
@@ -38,6 +46,8 @@
 | **Store Manager** | Single store | View store dashboard, manage action plans |
 | **Auditor** | Self | Conduct audits, view personal stats |
 
+> **Security Note (PBAC)**: The above roles serve as semantic defaults. Under the hood, Checkly relies entirely on **Permission-Based Access Control (PBAC)**. Roles are mapped to capabilities (e.g., `templates:create`) via a `role_capabilities` cache powered by PostgreSQL `LISTEN/NOTIFY`. The Flutter and ASP.NET Core clients evaluate these granular capabilities rather than hardcoded role strings.
+
 ---
 
 ## Project Structure
@@ -46,19 +56,26 @@
 Checkly/
 ├── lib/                          ← Flutter app (Feature-Sliced Design)
 │   ├── features/
-│   │   ├── audit/                ← Audit form, scoring engine, manager
-│   │   ├── templates/            ← Template builder, detail, list
-│   │   ├── analytics/            ← Analytics dashboards
-│   │   ├── admin/                ← Admin panel
-│   │   └── profile/              ← User profile & settings
-│   └── _shared/                  ← Router, widgets, services, database
+│   │   ├── admin/                ← Users, Stores, Areas, System Logs
+│   │   ├── action_plans/         ← Corrective workflow, status boards
+│   │   ├── analytics/            ← Analytics dashboards & charts
+│   │   ├── audit/                ← Audit form, scoring engine, offline manager
+│   │   ├── auth/                 ← Login, cached offline sessions
+│   │   ├── dashboard/            ← Role-aware landing views
+│   │   ├── notifications/        ← SignalR inbox
+│   │   ├── profile/              ← User profile & settings
+│   │   └── templates/            ← Template builder, detail, list
+│   └── _shared/                  ← Router, widgets, services, Drift DB
 ├── server/                       ← ASP.NET Core Web API
 │   ├── Features/                 ← Vertical Slice handlers
-│   │   ├── Templates/            ← Template CRUD
-│   │   ├── Submissions/          ← Audit submissions
+│   │   ├── ActionPlans/          ← Corrective plan CRUD
+│   │   ├── Admin/                ← User & role management
 │   │   ├── Analytics/            ← KPI & reporting endpoints
+│   │   ├── Auth/                 ← JWT issuance
+│   │   ├── Notifications/        ← SignalR hub & alerts
 │   │   ├── Stores/               ← Store management
-│   │   └── Admin/                ← User & role management
+│   │   ├── Submissions/          ← Audit submissions & score verification
+│   │   └── Templates/            ← Template CRUD
 │   └── Common/
 │       └── Persistence/          ← EF Core DbContext, Entities, Migrations
 ├── test/                         ← Flutter unit & integration tests
@@ -118,20 +135,23 @@ dotnet ef database update
 # Terminal 1 — API server
 dotnet run --project server/Checkly.Api.csproj
 
-# Terminal 2 — Flutter app
-flutter run
+dotnet run --urls "http://0.0.0.0:5288"
 ```
+*(Leave this terminal open to keep the backend ALIVE).*
+
+**2. Build & Deploy the Flutter App**
+Find your PC's LAN IP (`ipconfig`) and your connected Android Device ID (`adb devices`).
+```powershell
+flutter run -d <DEVICE_ID> --dart-define=API_BASE_URL=http://<YOUR_LAN_IP>:5288/api
+```
+*(For Windows Desktop fallback without a phone: `flutter run -d windows --dart-define=API_BASE_URL=http://localhost:5288/api`)*
 
 ---
 
-## Documentation
-
-| Document | Description |
-|----------|------------|
-| [Database Schema](docs/DATABASE_SCHEMA.md) | Full table definitions and relationships |
-| [Scoring Logic](docs/reference/SCORING_LOGIC.md) | Scoring modes, formulas, CCP/RISK rules |
-| [Supported Use Cases](docs/reference/SUPPORTED_USE_CASES.md) | 15 real-world template configurations |
-| [Mobile Dev Setup](docs/MOBILE_DEV_SETUP.md) | Device setup and debugging guide |
+## 📚 Documentation
+- [Product Requirements (PRD)](docs/product/PRD_checkly_mobile.md)
+- [Database Schema (PBAC)](docs/architecture/DATABASE_SCHEMA.md)
+- [Core Workflows & State Machines](docs/reference/CORE_WORKFLOWS.md)
 
 ---
 
