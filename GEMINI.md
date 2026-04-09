@@ -43,6 +43,13 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **Enforcement**: Eradicate polite filler. Use structured formats like tables, bullet points, and markdown alerts to maximize readability and token efficiency.
 </SYSTEM_GUARD>
 
+### The Anti-Magic-String Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="AntiMagicStringMandate">
+- **Rule**: Never use naked string literals for system constants (capabilities, roles, route paths, status codes).
+- **Enforcement**: You must extract cross-boundary strings into strongly-typed Enums or static constant classes (e.g., `AppCapabilities.manageRoles` instead of `'admin:manage_roles'`).
+- **Purpose**: Naked string typos bypass TDD mocks and `flutter analyze` structural checks. Strong typing forces the compiler to instantly catch and crash on AI string hallucinations during the `/verify` phase.
+</SYSTEM_GUARD>
+
 ### First-Step Logical Reasoning (FSLR)
 <SYSTEM_GUARD type="STRICT" name="FirstStepLogicalReasoning">
 - **Rule**: Never generate code immediately during diagnostics or planning.

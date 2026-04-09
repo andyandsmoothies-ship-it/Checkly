@@ -221,10 +221,10 @@ String? authRedirect(BuildContext context, GoRouterState state) {
     return '/home';
   }
 
-  // Admin capability guard: requires 'admin:access' capability.
+  // Admin capability guard: requires 'admin:manage_roles' capability.
   // Fail-safe deny: empty capabilities → redirect to /home.
   if (isAuthenticated && state.matchedLocation.startsWith('/admin')) {
-    if (!_di<PolicyManager>().can('admin:access')) return '/home';
+    if (!_di<PolicyManager>().can('admin:manage_roles')) return '/home';
   }
 
   // Template mutation capability guard: requires 'templates:create' capability.
