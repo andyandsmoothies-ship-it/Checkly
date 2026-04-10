@@ -107,7 +107,7 @@ src/entities/[entity]/
 - **Error Handling**: Never leak server-side stack traces or internal schema details.
 
 ### OWASP Top 10 Adherence
-- **A01: Broken Access Control**: Admin endpoints use `RequireAuthorization("AdminOnly")` at the route group level. Area management (POST/PUT) requires `AdminOnly`. IDOR checks in every handler via `SubmissionAccessGuard.CanAccessAsync()` for submission-scoped resources (submissions, photos).
+- **A01: Broken Access Control**: Route endpoints are protected via strict, granular Permission-Based Access Control (PBAC). Endpoints must use `.RequireCapability("action:scope")` (e.g., `stores:write`). Group-level Role policies are forbidden to prevent AND-gate traps. IDOR checks in every handler via `SubmissionAccessGuard.CanAccessAsync()` for submission-scoped resources (submissions, photos).
 - **A03: Injection**: Use EF Core LINQ or parameterized queries. Raw SQL with user input is forbidden.
 - **A05: Security Misconfiguration**: CORS policy is config-driven via `Cors:AllowedOrigins` in appsettings. Never use `AllowAnyOrigin()` with `AllowCredentials()`.
 - **A07: Auth Failures**: Login endpoint uses `SignInManager.CheckPasswordSignInAsync` with `lockoutOnFailure: true`. Account locks after 5 failed attempts for 15 minutes.
@@ -116,7 +116,7 @@ src/entities/[entity]/
 - **JWT**: ValidateIssuer, ValidateAudience, ValidateLifetime, ValidateIssuerSigningKey = `true`. ClockSkew = `Zero`.
 - **Lockout**: 5 attempts max, 15-min lockout, enabled for new users.
 - **CORS**: Middleware ordering: `UseCors()` → `UseAuthentication()` → `UseAuthorization()`.
-- **Policies**: `AdminOnly`, `AuditorAccess`, `StoreManagerAccess`, `AreaManagerAccess`.
+- **PBAC Capabilities**: Extracted to strongly typed constants in `AppCapabilities.cs` (e.g., `stores:write`, `analytics:area`, `users:manage`). Endpoints must gate using `RequireCapability()`. UX-only signals like `admin:access` must not be used on C# routes.
 - **IDOR Guard**: `SubmissionAccessGuard` (`Common/SubmissionAccessGuard.cs`) — reusable guard for all submission-scoped resources. Uses `Guid.TryParse` for defense-in-depth. Role-based access: admin→all, auditor→owns, store_manager→their store, area_manager→their area.
 
 ### Media & Storage Security
