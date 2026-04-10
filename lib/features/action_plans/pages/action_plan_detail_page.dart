@@ -334,7 +334,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
         );
 
         return Scaffold(
-          appBar: AppBar(title: Text(plan.criteriaLabel)),
+          appBar: AppBar(title: const Text('Action Plan')),
           bottomNavigationBar: _buildActionBar(plan),
           body: ListView(
             padding: const EdgeInsets.all(16),
@@ -423,7 +423,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                 _SectionHeader(title: 'Root Cause'),
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Text(
                       plan.rootCause!,
                       style: theme.textTheme.bodyMedium,
@@ -439,7 +439,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                 _SectionHeader(title: 'Correction Plan'),
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Text(
                       plan.correctionPlan!,
                       style: theme.textTheme.bodyMedium,
@@ -455,7 +455,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                 _SectionHeader(title: 'Evidence'),
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -496,7 +496,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                 _SectionHeader(title: 'Verified By'),
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Row(
                       children: [
                         Icon(Icons.verified, color: AppTheme.success),
@@ -530,7 +530,7 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(children: children),
       ),
     );
@@ -557,15 +557,22 @@ class _InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,  // Fix: was center, causing icon to float mid-block on multi-line values
         children: [
-          Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),  // Align icon cap-height with first text baseline
+            child: Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
+          ),
           const SizedBox(width: 12),
           SizedBox(
             width: 70,
-            child: Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ),

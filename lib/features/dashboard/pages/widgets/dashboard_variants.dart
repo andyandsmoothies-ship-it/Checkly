@@ -268,7 +268,8 @@ class AdminDashboardVariant extends StatelessWidget {
                 style: AppFonts.displayStyle(
                   fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
                   fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  // WCAG fix: raised from 0.5 → 0.65
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                   letterSpacing: 1.5,
                 ),
               ),
@@ -526,7 +527,8 @@ class _DashboardStatCard extends StatelessWidget {
                 style: AppFonts.displayStyle(
                   fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  // WCAG fix: raised from 0.5 → 0.65
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                   letterSpacing: 1,
                 ),
               ),
@@ -537,7 +539,8 @@ class _DashboardStatCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
                     fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35),
+                    // WCAG fix: raised from 0.35 → 0.65
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -587,9 +590,10 @@ class _SubmissionFeedSection extends StatelessWidget {
             const Expanded(child: SectionHeader('LATEST SUBMISSIONS')),
             InkWell(
               onTap: () => context.go('/activity'),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                // WCAG tap target fix: raised from h:4,v:2 → h:12,v:12 (44px minimum)
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

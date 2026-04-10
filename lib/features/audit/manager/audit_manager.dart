@@ -443,6 +443,7 @@ class AuditManager extends ChangeNotifier {
 
       if (_draftKey != null) {
         await _draftService.deleteDraft(_draftKey!);
+        _draftKey = null;      // Prevent PopScope from resurrecting the draft on navigation teardown
         _draftSavedAt = null;
       }
 

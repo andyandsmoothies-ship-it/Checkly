@@ -67,7 +67,10 @@ public sealed class ScoringVerifier
 
         if (isWeighted)
         {
-            var finalScore = 0m;
+            // Collect only non-CCP sections (mirrors Flutter ScoringEngine._calculatePenalty).
+            // CCP-triggered sections are excluded from BOTH score contribution AND the weight
+            // denominator. This means the audit is scored "out of remaining sections".
+            var participating = new List<(decimal ratio, decimal weight)>();
             foreach (var section in rootGroups)
             {
                 var sectionCriteria = GetCriteriaForGroup(section.Id, groups, criteria);
@@ -83,8 +86,16 @@ public sealed class ScoringVerifier
 
                 var sectionAfter = Math.Max(0, sectionBefore - sectionDeductions);
                 var sectionRatio = sectionAfter / sectionBefore;
-                var sectionWeight = (section.Weight ?? 0) / totalWeight;
-                finalScore += sectionRatio * sectionWeight;
+                participating.Add((sectionRatio, section.Weight ?? 0));
+            }
+
+            // Normalize to participatingWeight — matches Flutter's ScoringEngine
+            var participatingWeight = participating.Sum(p => p.weight);
+            var finalScore = 0m;
+            if (participatingWeight > 0)
+            {
+                foreach (var (ratio, weight) in participating)
+                    finalScore += ratio * (weight / participatingWeight);
             }
 
             var serverScore = finalScore * 100;

@@ -30,3 +30,10 @@
 > **PBAC LISTEN/NOTIFY Cross-Test Contamination**
 > **Problem:** xUnit parallel execution causes test classes to run simultaneously against the shared `checkly_test` database. If Test A mutates `role_capabilities` (e.g. testing `GrantCapability`), Postgres fires `NOTIFY`. Test B's `PbacCacheListenerService` instantly catches this signal, dynamically reloading its PBAC cache with the dirty state mid-test, leading to impossible "403 Expected but got 201" failures.
 > **Fix:** Checkly integration tests must be strictly sequential. Use `[assembly: CollectionBehavior(DisableTestParallelization = true)]` in `GlobalUsings.cs` to prevent cross-contamination.
+
+> [!CAUTION]
+> **Gotcha 18: CCP Weight Normalization — C# vs Flutter Divergence**
+> **Problem:** When a CCP section is triggered in penalty mode, Flutter's `ScoringEngine._calculatePenalty()` excludes the CCP section from `participatingWeight`. The ORIGINAL C# `ScoringVerifier.VerifyPenalty()` divided by `totalWeight` (all sections), producing systematically lower scores. Concrete example: 2 sections [60, 40], CCP on section-1 triggered. Flutter gives 100% (section-2 all-pass, normalized to 40). Old C# gave 40% (divided by 100). This caused **400 Bad Request** on every `PUT /submissions/{id}/finalize` that involved a triggered CCP.
+> **Fix:** `VerifyPenalty()` now collects only participating (non-CCP) sections into a list, then sums `participatingWeight` as the denominator. Regression test: `Ccp_TriggeredSection_ExcludedFromWeightDenominator_MatchesFlutter` in `ScoringVerifierTests.cs`.
+> **Rule:** Never port scoring logic between Dart and C# without a cross-engine parity test covering at least: no-CCP, CCP-triggered-with-one-section, CCP-triggered-with-multiple-sections.
+

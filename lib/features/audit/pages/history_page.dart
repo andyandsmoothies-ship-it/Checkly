@@ -369,7 +369,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         onRefresh: () => manager.loadHistory(),
                         child: ListView(
                           controller: _scrollController,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
                           children: [
                             ..._grouped.entries.map(
                               (entry) => _StoreGroup(
@@ -393,28 +393,32 @@ class _HistoryPageState extends State<HistoryPage> {
                                       return;
                                     }
                                     if (context.mounted) {
+                                      // Guard against sending fake SQLite-only IDs.
+                                      final isLocalOnly = submission.id
+                                          .startsWith('local_draft_');
+                                      final subParam = isLocalOnly
+                                          ? ''
+                                          : '&submissionId=${submission.id}';
                                       context.push(
-                                        '/audit?templateId=$tId&storeId=$sId',
+                                        '/audit?templateId=$tId&storeId=$sId&autoResume=true$subParam',
                                       );
                                     }
                                     return;
                                   }
                                   // Scheduled → standard server-transition flow
                                   try {
-                                    await manager.startScheduledAudit(
+                                    final updated =
+                                        await manager.startScheduledAudit(
                                       submission.id,
                                     );
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Audit started — draft created',
-                                          ),
-                                        ),
-                                      );
-                                      setState(() {});
+                                      final tId = updated.templateId;
+                                      final sId = updated.storeId;
+                                      if (tId != null && sId != null) {
+                                        context.push(
+                                          '/audit?templateId=$tId&storeId=$sId&autoResume=true&submissionId=${updated.id}',
+                                        );
+                                      }
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
@@ -501,7 +505,7 @@ class _StoreGroup extends StatelessWidget {
               style: AppFonts.displayStyle(
                 fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                 letterSpacing: 3,
               ),
             ),
@@ -578,7 +582,7 @@ class _AuditCard extends StatelessWidget {
                     ? theme.colorScheme.primary.withValues(alpha: 0.08)
                     : isDraft
                     ? AppTheme.warning.withValues(alpha: 0.1)
-                    : theme.colorScheme.primary.withValues(alpha: 0.1),
+                    : color.withValues(alpha: 0.1),   // Synchronized: bg tint tracks score-semantic color
               ),
               child: Center(
                 child: isVoided
@@ -646,7 +650,7 @@ class _AuditCard extends StatelessWidget {
 
             // Action: Start / Resume button OR status badge
             if ((isScheduled || isDraft) && onStartAudit != null) ...[
-              FilledButton.tonal(
+               FilledButton(
                 onPressed: onStartAudit,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(

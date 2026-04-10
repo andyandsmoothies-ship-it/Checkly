@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
@@ -186,13 +187,20 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
               ),
               const SizedBox(height: 8),
 
-              // Sort selector — hidden when no data exists
+              // Sort selector — unified control row, hidden when no data exists
               if (_countByStatus('all') > 0)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   child: Row(
                     children: [
-                      const Spacer(),
+                      Text(
+                        'Sort:',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       WarmChip(
                         label: 'Newest',
                         selected: _sort == 'newest',
@@ -284,7 +292,8 @@ class _StoreGroup extends StatelessWidget {
               style: AppFonts.displayStyle(
                 fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                // WCAG: raised from 0.4 → 0.62 for readable low-opacity tracking text
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.62),
                 letterSpacing: 3,
               ),
             ),
@@ -335,16 +344,16 @@ class _ActionPlanCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               // Status indicator
               Container(
-                width: 4,
-                height: 44,
+                width: 5,
+                height: 48,
                 decoration: BoxDecoration(
                   color: isOverdue ? theme.colorScheme.error : statusColor,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(width: 12),
@@ -381,18 +390,20 @@ class _ActionPlanCard extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
+                      horizontal: 10,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
+                      color: statusColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       _statusLabel(plan.status),
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
+                        // WCAG fix: use dark charcoal for text instead of statusColor.
+                        // statusColor over 0.1-alpha tint fails WCAG AA 4.5:1 contrast.
+                        color: AppColors.charcoal,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),

@@ -121,6 +121,51 @@ public class ScoringVerifierTests
         Assert.Equal(0m, result.ServerScore);
     }
 
+    /// <summary>
+    /// Gotcha 18 regression — CCP weight normalization parity between C# and Flutter.
+    /// Template: 2 sections, weights [60, 40]. CCP on section-1 triggered.
+    /// Flutter: participatingWeight=40 → score=(ratio2 × 40/40)×100 = sectionRatio2 × 100
+    /// Old C#:  totalWeight=100 → score=(ratio2 × 40/100)×100 = sectionRatio2 × 40  ← WRONG
+    /// New C#:  participatingWeight=40 → score=(ratio2 × 40/40)×100 = sectionRatio2 × 100 ✅
+    ///
+    /// With section-2 all-pass: ratio2=1.0 → expected score = 100.
+    /// This test would have FAILED against the old C# engine (returned 40).
+    /// </summary>
+    [Fact]
+    public void Ccp_TriggeredSection_ExcludedFromWeightDenominator_MatchesFlutter()
+    {
+        var section1Id = Guid.NewGuid();
+        var section2Id = Guid.NewGuid();
+        var ccpId     = Guid.NewGuid();
+        var normalId  = Guid.NewGuid();
+
+        // Two root sections: weights 60 and 40
+        var groups = new[]
+        {
+            MakeSection(section1Id, weight: 60),
+            MakeSection(section2Id, weight: 40),
+        };
+
+        var criteria = new[]
+        {
+            MakeCriterion(ccpId,    section1Id, points: 5m, isCcp: true),
+            MakeCriterion(normalId, section2Id, points: 10m),
+        };
+
+        // Section-1 CCP triggered → excluded. Section-2 all-pass.
+        // participatingWeight = 40 → score = (10/10) × (40/40) × 100 = 100
+        var answers = new[]
+        {
+            MakeAnswer(ccpId,    numericValue: null, value: "non_conform"),
+            MakeAnswer(normalId, numericValue: 0),
+        };
+
+        var result = _sut.Verify(100m, answers, groups, criteria);
+        Assert.True(result.IsValid,
+            $"Gotcha 18 CCP normalization: expected 100 (Flutter parity) but server gave {result.ServerScore}");
+        Assert.Equal(100m, result.ServerScore);
+    }
+
     [Fact]
     public void Conform_Value_Does_Not_Trigger_Faults()
     {
