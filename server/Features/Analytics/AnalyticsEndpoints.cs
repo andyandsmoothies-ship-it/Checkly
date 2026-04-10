@@ -1,3 +1,5 @@
+using Checkly.Api.Common.Auth;
+
 namespace Checkly.Api.Features.Analytics;
 
 public static class AnalyticsEndpoints
@@ -11,14 +13,14 @@ public static class AnalyticsEndpoints
         // Specific routes BEFORE catch-all (Gotcha #3)
         group.MapGet("/area-leaderboard", GetAreaLeaderboard.HandleAsync)
             .WithName("GetAreaLeaderboard")
-            .RequireAuthorization("AreaManagerAccess");
+            .RequireCapability(AppCapabilities.AnalyticsArea);
 
         group.MapGet("/my-stats", GetMyStats.HandleAsync)
             .WithName("GetMyStats");
 
         group.MapGet("/top-failures", GetTopFailures.HandleAsync)
             .WithName("GetTopFailures")
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability(AppCapabilities.AnalyticsAdmin);
 
         group.MapGet("/", GetAnalytics.HandleAsync)
             .WithName("GetAnalytics");

@@ -1,3 +1,5 @@
+using Checkly.Api.Common.Auth;
+
 namespace Checkly.Api.Features.Stores;
 
 /// <summary>
@@ -23,14 +25,14 @@ public static class StoreEndpoints
 
         group.MapPost("/", CreateStore.HandleAsync)
             .WithName("CreateStore")
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability(AppCapabilities.StoresWrite);
 
         group.MapPut("/{id:guid}", UpdateStore.HandleAsync)
             .WithName("UpdateStore")
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability(AppCapabilities.StoresWrite);
 
         group.MapDelete("/{id:guid}", DeleteStore.HandleAsync)
             .WithName("DeleteStore")
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability(AppCapabilities.StoresWrite);
     }
 }

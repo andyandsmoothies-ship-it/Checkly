@@ -1,3 +1,5 @@
+using Checkly.Api.Common.Auth;
+
 namespace Checkly.Api.Features.Areas;
 
 /// <summary>
@@ -13,10 +15,10 @@ public static class AreasEndpoints
         group.MapGet("/", ListAreas.HandleAsync);
         group.MapGet("/{id:guid}", GetArea.HandleAsync);
         group.MapPost("/", CreateArea.HandleAsync)
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability(AppCapabilities.AreasWrite);
         group.MapPut("/{id:guid}", UpdateArea.HandleAsync)
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability(AppCapabilities.AreasWrite);
         group.MapDelete("/{id:guid}", DeleteArea.HandleAsync)
-            .RequireAuthorization("AdminOnly");
+            .RequireCapability(AppCapabilities.AreasWrite);
     }
 }

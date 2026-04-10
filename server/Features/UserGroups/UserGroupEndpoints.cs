@@ -1,8 +1,10 @@
+using Checkly.Api.Common.Auth;
+
 namespace Checkly.Api.Features.UserGroups;
 
 /// <summary>
 /// Maps the /api/user-groups route group.
-/// All endpoints require admin authorization.
+/// All endpoints require the users:manage capability.
 /// </summary>
 public static class UserGroupEndpoints
 {
@@ -10,15 +12,18 @@ public static class UserGroupEndpoints
     {
         var group = app.MapGroup("/api/user-groups")
             .WithTags("UserGroups")
-            .RequireAuthorization("AdminOnly");
+            .RequireAuthorization();
 
         group.MapPost("/", CreateUserGroup.HandleAsync)
-            .WithName("CreateUserGroup");
+            .WithName("CreateUserGroup")
+            .RequireCapability(AppCapabilities.UsersManage);
 
         group.MapGet("/", ListUserGroups.HandleAsync)
-            .WithName("ListUserGroups");
+            .WithName("ListUserGroups")
+            .RequireCapability(AppCapabilities.UsersManage);
 
         group.MapPut("/{id}/members", UpdateMembers.HandleAsync)
-            .WithName("UpdateGroupMembers");
+            .WithName("UpdateGroupMembers")
+            .RequireCapability(AppCapabilities.UsersManage);
     }
 }
