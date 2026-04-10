@@ -1412,19 +1412,19 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260408112945_AddRoleCapabilities') THEN
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('72269461-5cd2-4b74-89df-83aea2cfd0b1', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-09T08:49:05.111077+00:00');
+    VALUES ('8bfae2fb-b18b-4121-b7d0-9ed57ea04a0a', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-10T08:46:26.530889+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('ecad4112-c400-4926-b0e4-ebea50585abf', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-09T08:49:05.111079+00:00');
+    VALUES ('ac995fb4-a97e-4ce0-a61c-0d0225f4d3a9', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-10T08:46:26.53089+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('716c13c7-9958-4e30-a889-d3834d8e1e1e', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-09T08:49:05.111079+00:00');
+    VALUES ('17b63eb6-c89e-4423-8167-ef0a369e9684', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-10T08:46:26.530891+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('33439922-0b88-46bd-8dcd-22c1f213236f', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-09T08:49:05.11108+00:00');
+    VALUES ('67dd4921-5713-4a8c-b2f1-7e43a68a4405', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('e82692f8-8794-4bcc-a134-0ab05cd61bea', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-09T08:49:05.11108+00:00');
+    VALUES ('b02e6832-0f57-4c28-bbc6-d6aa8b7ef1ac', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('d3907380-240f-4f9e-95f1-544d03787bdb', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-09T08:49:05.111081+00:00');
+    VALUES ('464fca1e-d150-414a-871b-f4a1601d78a8', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('431d3fab-3408-4755-b2b9-e7eebb5e9ee2', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-09T08:49:05.111081+00:00');
+    VALUES ('6b264137-8a09-4834-8ae1-5df2945232ee', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
     END IF;
 END $EF$;
 
@@ -1508,6 +1508,66 @@ BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260409084817_SeedSubmissionsListCapability') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
     VALUES ('20260409084817_SeedSubmissionsListCapability', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260410000250_SeedAnalyticsAreaCapability') THEN
+    INSERT INTO role_capabilities (id, role, capability, created_at)
+    VALUES
+        (gen_random_uuid(), 'area_manager', 'analytics:area', now())
+    ON CONFLICT (role, capability) DO NOTHING;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260410000250_SeedAnalyticsAreaCapability') THEN
+    INSERT INTO role_capabilities (id, role, capability, created_at)
+    VALUES
+        (gen_random_uuid(), 'admin', 'templates:create',  now()),
+        (gen_random_uuid(), 'admin', 'templates:update',  now()),
+        (gen_random_uuid(), 'admin', 'templates:delete',  now()),
+        (gen_random_uuid(), 'admin', 'stores:write',      now()),
+        (gen_random_uuid(), 'admin', 'areas:write',       now()),
+        (gen_random_uuid(), 'admin', 'users:manage',      now()),
+        (gen_random_uuid(), 'admin', 'analytics:admin',   now()),
+        (gen_random_uuid(), 'admin', 'analytics:area',    now()),
+        (gen_random_uuid(), 'admin', 'submissions:list',  now()),
+        (gen_random_uuid(), 'admin', 'admin:manage_roles',now())
+    ON CONFLICT (role, capability) DO NOTHING;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260410000250_SeedAnalyticsAreaCapability') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260410000250_SeedAnalyticsAreaCapability', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260410021648_SeedAdminAccessCapability') THEN
+    INSERT INTO role_capabilities (id, role, capability, created_at)
+    VALUES (gen_random_uuid(), 'admin', 'admin:access', now())
+    ON CONFLICT (role, capability) DO NOTHING;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260410021648_SeedAdminAccessCapability') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260410021648_SeedAdminAccessCapability', '10.0.4');
     END IF;
 END $EF$;
 COMMIT;
