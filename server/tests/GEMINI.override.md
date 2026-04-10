@@ -25,3 +25,8 @@
 > var token = ts.GenerateToken(Guid.NewGuid(), "fake@test.test", "phantom");
 > var client = _factory.CreateAuthenticatedClient(token);
 > ```
+
+> [!WARNING]
+> **PBAC LISTEN/NOTIFY Cross-Test Contamination**
+> **Problem:** xUnit parallel execution causes test classes to run simultaneously against the shared `checkly_test` database. If Test A mutates `role_capabilities` (e.g. testing `GrantCapability`), Postgres fires `NOTIFY`. Test B's `PbacCacheListenerService` instantly catches this signal, dynamically reloading its PBAC cache with the dirty state mid-test, leading to impossible "403 Expected but got 201" failures.
+> **Fix:** Checkly integration tests must be strictly sequential. Use `[assembly: CollectionBehavior(DisableTestParallelization = true)]` in `GlobalUsings.cs` to prevent cross-contamination.
