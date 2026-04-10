@@ -1,10 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../_shared/database/app_database.dart';
-import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/dao/action_plan_outbox_dao.dart';
 import '../../../_shared/services/connectivity_service.dart';
 import '../model/action_plan_dto.dart';
@@ -20,6 +18,11 @@ abstract class ActionPlanApi {
     String id,
     Map<String, dynamic> fields,
   );
+
+  /// Fetch all action plans from the server for the authenticated user.
+  /// Concrete adapters override this. Default throws to prevent silent misuse.
+  Future<List<ActionPlanDto>> fetchActionPlans() =>
+      throw UnimplementedError('fetchActionPlans() not implemented');
 }
 
 /// Provides the current user's role for client-side role guards.
@@ -53,7 +56,6 @@ class InvalidTransitionException implements Exception {
 // ActionPlanManager — role-guarded state machine + list loading
 // ============================================================
 
-final _di = GetIt.instance;
 
 /// Manages action plan lifecycle with client-side role guards.
 ///
@@ -70,16 +72,21 @@ class ActionPlanManager extends ChangeNotifier {
   final UserRoleProvider _userRole;
   final ConnectivityService _connectivity;
   final ActionPlanOutboxDao _outboxDao;
+  /// Injected database — required for [loadActionPlans]. Optional to allow
+  /// state-machine-only test construction (S1–S8 never call loadActionPlans).
+  final AppDatabase? _db;
 
   ActionPlanManager({
     required ActionPlanApi api,
     required UserRoleProvider userRole,
     required ConnectivityService connectivity,
     required ActionPlanOutboxDao outboxDao,
+    AppDatabase? db,
   }) : _api = api,
        _userRole = userRole,
        _connectivity = connectivity,
-       _outboxDao = outboxDao;
+       _outboxDao = outboxDao,
+       _db = db;
 
   // ---------- List state ----------
   final actionPlans = ValueNotifier<List<ActionPlanDto>>([]);
@@ -87,19 +94,68 @@ class ActionPlanManager extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? error;
 
-  /// Load action plans from local Drift cache.
+  /// Load action plans — network-first with local cache fallback.
+  ///
+  /// **Online path:** Calls `fetchActionPlans()`, upserts all results into
+  /// `cachedActionPlans` (replace-on-conflict), then populates `actionPlans.value`
+  /// from the returned list directly (no extra DB round-trip needed).
+  ///
+  /// **Offline / error path:** Reads from the local `cachedActionPlans` table,
+  /// bounded to 500 rows for mobile performance (Gotcha #14).
   Future<void> loadActionPlans() async {
     _isLoading = true;
     error = null;
     notifyListeners();
 
     try {
-      final db = _di<DatabaseService>().db;
-      final rows =
-          await (db.select(db.cachedActionPlans)..limit(
-                500,
-              )) // Bounded to 500 for mobile performance safety (Gotcha #14)
-              .get();
+      // Promote nullable _db to non-null once (S1-S8 tests never call this method).
+      final db = _db!;
+
+      if (_connectivity.isOnline) {
+        try {
+          // --- Online path: fetch → upsert → expose ---
+          final remote = await _api.fetchActionPlans();
+
+          // Upsert: insert-or-replace all remote plans into local cache.
+          await db.batch((batch) {
+            batch.insertAll(
+              db.cachedActionPlans,
+              remote.map(
+                (plan) => CachedActionPlansCompanion.insert(
+                  id: plan.id,
+                  criteriaLabel: plan.criteriaLabel,
+                  groupTitle: plan.groupTitle,
+                  status: Value(plan.status),
+                  storeName: Value(plan.storeName),
+                  storeId: Value(plan.storeId),
+                  storeManagerName: Value(plan.storeManagerName),
+                  rootCause: Value(plan.rootCause),
+                  correctionPlan: Value(plan.correctionPlan),
+                  evidencePhotoUrl: Value(plan.evidencePhotoUrl),
+                  evidenceNote: Value(plan.evidenceNote),
+                  closedAt: Value(plan.closedAt),
+                  verifierName: Value(plan.verifierName),
+                  deadline: Value(plan.deadline),
+                  createdAt: plan.createdAt,
+                  updatedAt: plan.updatedAt,
+                ),
+              ),
+              mode: InsertMode.insertOrReplace,
+            );
+          });
+
+          actionPlans.value = remote;
+          return; // Skip the offline cache-read path
+        } catch (_) {
+          // Network or parse failure — fall through to cache fallback below.
+          // Errors are swallowed to ensure graceful degradation (AP_PULL_03).
+        }
+      }
+
+      // --- Offline / error fallback: read local cache ---
+      final rows = await (db.select(db.cachedActionPlans)
+            ..limit(500)) // Bounded to 500 for mobile performance safety (Gotcha #14)
+          .get();
 
       actionPlans.value = rows
           .map(
@@ -109,6 +165,7 @@ class ActionPlanManager extends ChangeNotifier {
               criteriaLabel: row.criteriaLabel,
               groupTitle: row.groupTitle,
               storeName: row.storeName,
+              storeId: row.storeId,
               storeManagerName: row.storeManagerName,
               rootCause: row.rootCause,
               correctionPlan: row.correctionPlan,

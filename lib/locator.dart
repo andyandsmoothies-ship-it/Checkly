@@ -98,6 +98,7 @@ void configureDependencies() {
       userRole: UserRoleAdapter(di<AuthManager>()),
       connectivity: di<ConnectivityService>(),
       outboxDao: di<ActionPlanOutboxDao>(),
+      db: di<DatabaseService>().db,
     ),
   );
 

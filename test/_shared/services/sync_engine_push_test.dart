@@ -53,6 +53,10 @@ class FakeActionPlanApi implements ActionPlanApi {
   @override
   Future<ActionPlanDto> updateActionPlan(String id, Map<String, dynamic> f) =>
       Future.error('not used');
+
+  /// Not used by sync engine push tests. Satisfies the ActionPlanApi interface.
+  @override
+  Future<List<ActionPlanDto>> fetchActionPlans() async => [];
 }
 
 void main() {

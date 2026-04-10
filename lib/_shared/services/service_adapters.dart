@@ -116,6 +116,34 @@ class ActionPlanApiAdapter implements ActionPlanApi {
     final response = await _dio.put('/action-plans/$id', data: fields);
     return ActionPlanDto.fromJson(response.data as Map<String, dynamic>);
   }
+
+  @override
+  Future<List<ActionPlanDto>> fetchActionPlans() async {
+    // Auto-paginate — page size 100, max 5 pages = 500 items (matches local cache limit).
+    // Backend returns PagedResult<ActionPlanDto>: { items: [...], total, page, pageSize }.
+    final allPlans = <ActionPlanDto>[];
+    int page = 1;
+    const pageSize = 100;
+
+    while (true) {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/action-plans',
+        queryParameters: {'page': page, 'pageSize': pageSize},
+      );
+      final body = response.data!;
+      final items = (body['items'] as List)
+          .map((e) => ActionPlanDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      allPlans.addAll(items);
+
+      final total = (body['total'] as num).toInt();
+      if (allPlans.length >= total || items.isEmpty || page >= 5) break;
+      page++;
+    }
+
+    return allPlans;
+  }
 }
 
 // ============================================================

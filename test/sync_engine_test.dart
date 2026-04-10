@@ -132,6 +132,10 @@ class _FakeActionPlanApi implements ActionPlanApi {
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
   );
+
+  /// Not used by sync engine tests. Satisfies the ActionPlanApi interface.
+  @override
+  Future<List<ActionPlanDto>> fetchActionPlans() async => [];
 }
 
 class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
