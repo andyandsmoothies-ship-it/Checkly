@@ -42,14 +42,28 @@ class SyncApiAdapter implements SyncApi {
       }
     }
 
-    await _dio.post(
-      '/submissions',
-      data: payload,
-      options: Options(
-        headers: {'X-Idempotency-Key': submission.idempotencyKey},
-        contentType: Headers.jsonContentType,
-      ),
-    );
+    // Extract routing metadata — never send this field to the backend.
+    final targetId = payload.remove('targetSubmissionId') as String?;
+
+    if (targetId != null && targetId.isNotEmpty) {
+      // Finalize an existing server-side DRAFT submission.
+      // Backend: PUT /api/submissions/{id}/finalize (FinalizeSubmission.cs)
+      await _dio.put(
+        '/submissions/$targetId/finalize',
+        data: payload,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+    } else {
+      // Fresh new audit — use idempotent POST.
+      await _dio.post(
+        '/submissions',
+        data: payload,
+        options: Options(
+          headers: {'X-Idempotency-Key': submission.idempotencyKey},
+          contentType: Headers.jsonContentType,
+        ),
+      );
+    }
   }
 
   @override

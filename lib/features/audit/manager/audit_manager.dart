@@ -160,8 +160,14 @@ class AuditManager extends ChangeNotifier {
   /// Last draft save timestamp (for UI indicator).
   DateTime? get draftSavedAt => _draftSavedAt;
 
+  // ---------- Resume Resume State ----------
+  /// When non-null, this audit is finalizing an EXISTING server-side draft.
+  /// SyncEngine reads this from the outbox row to route PUT instead of POST.
+  String? _targetSubmissionId;
+
   // ---------- Init ----------
-  Future<void> startAudit(TemplateTreeDto template, String storeId) async {
+  Future<void> startAudit(TemplateTreeDto template, String storeId,
+      {String? targetSubmissionId}) async {
     _template = template;
     _storeId = storeId;
     _answers.clear();
@@ -173,6 +179,7 @@ class AuditManager extends ChangeNotifier {
     _gpsLng = null;
     _wasQueuedOffline = false;
     _draftSavedAt = null;
+    _targetSubmissionId = targetSubmissionId;
 
     // Pre-populate answers for all criteria
     for (final group in template.groups) {
@@ -427,6 +434,7 @@ class AuditManager extends ChangeNotifier {
           gpsLng: Value(_gpsLng),
           createdAt: now,
           syncStatus: Value('pending'),
+          targetSubmissionId: Value(_targetSubmissionId),
         ),
         answerCompanions,
       );
@@ -475,6 +483,7 @@ class AuditManager extends ChangeNotifier {
     _draftKey = null;
     _pendingDraft = null;
     _draftSavedAt = null;
+    _targetSubmissionId = null;
     notifyListeners();
   }
 }

@@ -118,6 +118,7 @@ final appRouter = GoRouter(
         templateId: state.uri.queryParameters['templateId'] ?? '',
         storeId: state.uri.queryParameters['storeId'] ?? '',
         autoResume: state.uri.queryParameters['autoResume'] == 'true',
+        targetSubmissionId: state.uri.queryParameters['submissionId'],
       ),
     ),
     GoRoute(

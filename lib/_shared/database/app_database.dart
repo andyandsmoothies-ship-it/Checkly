@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -97,6 +97,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 11) {
         // PBAC Slice 4: local capability cache — persists across app restarts.
         await m.createTable(cachedPolicies);
+      }
+      if (from < 12) {
+        // Orphaned Resume fix: track the server's submission ID for finalize routing.
+        await m.addColumn(pendingSubmissions, pendingSubmissions.targetSubmissionId);
       }
     },
     beforeOpen: (details) async {

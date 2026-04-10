@@ -127,6 +127,9 @@ class SyncEngine {
             'gpsLng': dbRow.gpsLng,
             'status': 'completed',
             'idempotencyKey': dbRow.idempotencyKey,
+            // Non-null → SyncApiAdapter routes to PUT /submissions/{id}/finalize.
+            // Null    → SyncApiAdapter uses POST /submissions (fresh audit path).
+            'targetSubmissionId': dbRow.targetSubmissionId,
             'answers': answers.map((a) => {
               'criteriaId': a.criteriaId,
               'value': a.value,

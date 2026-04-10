@@ -105,4 +105,63 @@ void main() {
     final answers = capturedData['answers'] as List;
     expect(answers[0]['photoUrl'], isNull);
   });
+
+  test('AC11: SyncAdapter_PushSubmission_WithTargetId_CallsPutFinalize', () async {
+    when(() => mockDio.put(any(), data: any(named: 'data'), options: any(named: 'options')))
+        .thenAnswer((_) async => Response(
+              requestOptions: RequestOptions(path: ''),
+              data: {'success': true},
+            ));
+    when(() => mockDio.post(any(), data: any(named: 'data'), options: any(named: 'options')))
+        .thenAnswer((_) async => Response(
+              requestOptions: RequestOptions(path: ''),
+              data: {'success': true},
+            ));
+
+    final payload = {
+      'targetSubmissionId': 'sub-123',
+      'answers': [],
+    };
+
+    final submission = PendingSubmission(
+      idempotencyKey: 'key',
+      createdAt: DateTime.now(),
+      payload: jsonEncode(payload),
+    );
+
+    // Act
+    await adapter.pushSubmission(submission);
+
+    // Assert: PUT was called on /submissions/sub-123/finalize
+    final captured = verify(() => mockDio.put('/submissions/sub-123/finalize', data: captureAny(named: 'data'), options: any(named: 'options'))).captured;
+    final capturedData = captured.first as Map<String, dynamic>;
+    
+    // The targetSubmissionId should be stripped before sending the payload
+    expect(capturedData.containsKey('targetSubmissionId'), isFalse);
+  });
+
+  test('AC12: SyncAdapter_PushSubmission_WithNullTargetId_CallsPostSubmissions', () async {
+    when(() => mockDio.post(any(), data: any(named: 'data'), options: any(named: 'options')))
+        .thenAnswer((_) async => Response(
+              requestOptions: RequestOptions(path: ''),
+              data: {'success': true},
+            ));
+
+    final payload = {
+      'targetSubmissionId': null, // or omitted
+      'answers': [],
+    };
+
+    final submission = PendingSubmission(
+      idempotencyKey: 'key',
+      createdAt: DateTime.now(),
+      payload: jsonEncode(payload),
+    );
+
+    // Act
+    await adapter.pushSubmission(submission);
+
+    // Assert: POST was called on /submissions
+    verify(() => mockDio.post('/submissions', data: any(named: 'data'), options: any(named: 'options'))).called(1);
+  });
 }

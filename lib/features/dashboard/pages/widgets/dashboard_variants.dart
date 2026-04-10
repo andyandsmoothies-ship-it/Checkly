@@ -673,7 +673,10 @@ class _SubmissionRowState extends State<_SubmissionRow> {
     final tId = sub.templateId;
     final sId = sub.storeId;
     if (tId == null || sId == null) return;
-    widget.context.push('/audit?templateId=$tId&storeId=$sId&autoResume=true');
+    // Pass the server's submission ID so the finalize path can be used.
+    widget.context.push(
+      '/audit?templateId=$tId&storeId=$sId&autoResume=true&submissionId=${sub.id}',
+    );
   }
 
   @override

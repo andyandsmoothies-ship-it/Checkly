@@ -5765,6 +5765,17 @@ class $PendingSubmissionsTable extends PendingSubmissions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _targetSubmissionIdMeta =
+      const VerificationMeta('targetSubmissionId');
+  @override
+  late final GeneratedColumn<String> targetSubmissionId =
+      GeneratedColumn<String>(
+        'target_submission_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5781,6 +5792,7 @@ class $PendingSubmissionsTable extends PendingSubmissions
     retryCount,
     nextRetryAt,
     createdAt,
+    targetSubmissionId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5899,6 +5911,15 @@ class $PendingSubmissionsTable extends PendingSubmissions
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('target_submission_id')) {
+      context.handle(
+        _targetSubmissionIdMeta,
+        targetSubmissionId.isAcceptableOrUnknown(
+          data['target_submission_id']!,
+          _targetSubmissionIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -5964,6 +5985,10 @@ class $PendingSubmissionsTable extends PendingSubmissions
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      targetSubmissionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_submission_id'],
+      ),
     );
   }
 
@@ -5989,6 +6014,11 @@ class PendingSubmission extends DataClass
   final int retryCount;
   final DateTime? nextRetryAt;
   final DateTime createdAt;
+
+  /// When non-null, this outbox row is finalizing an EXISTING server-side draft.
+  /// SyncEngine routes to PUT /submissions/{id}/finalize instead of POST /submissions.
+  /// Null = fresh new audit (default POST path).
+  final String? targetSubmissionId;
   const PendingSubmission({
     required this.id,
     required this.templateId,
@@ -6004,6 +6034,7 @@ class PendingSubmission extends DataClass
     required this.retryCount,
     this.nextRetryAt,
     required this.createdAt,
+    this.targetSubmissionId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6034,6 +6065,9 @@ class PendingSubmission extends DataClass
       map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || targetSubmissionId != null) {
+      map['target_submission_id'] = Variable<String>(targetSubmissionId);
+    }
     return map;
   }
 
@@ -6065,6 +6099,9 @@ class PendingSubmission extends DataClass
           ? const Value.absent()
           : Value(nextRetryAt),
       createdAt: Value(createdAt),
+      targetSubmissionId: targetSubmissionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetSubmissionId),
     );
   }
 
@@ -6088,6 +6125,9 @@ class PendingSubmission extends DataClass
       retryCount: serializer.fromJson<int>(json['retryCount']),
       nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      targetSubmissionId: serializer.fromJson<String?>(
+        json['targetSubmissionId'],
+      ),
     );
   }
   @override
@@ -6108,6 +6148,7 @@ class PendingSubmission extends DataClass
       'retryCount': serializer.toJson<int>(retryCount),
       'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'targetSubmissionId': serializer.toJson<String?>(targetSubmissionId),
     };
   }
 
@@ -6126,6 +6167,7 @@ class PendingSubmission extends DataClass
     int? retryCount,
     Value<DateTime?> nextRetryAt = const Value.absent(),
     DateTime? createdAt,
+    Value<String?> targetSubmissionId = const Value.absent(),
   }) => PendingSubmission(
     id: id ?? this.id,
     templateId: templateId ?? this.templateId,
@@ -6143,6 +6185,9 @@ class PendingSubmission extends DataClass
     retryCount: retryCount ?? this.retryCount,
     nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
     createdAt: createdAt ?? this.createdAt,
+    targetSubmissionId: targetSubmissionId.present
+        ? targetSubmissionId.value
+        : this.targetSubmissionId,
   );
   PendingSubmission copyWithCompanion(PendingSubmissionsCompanion data) {
     return PendingSubmission(
@@ -6174,6 +6219,9 @@ class PendingSubmission extends DataClass
           ? data.nextRetryAt.value
           : this.nextRetryAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      targetSubmissionId: data.targetSubmissionId.present
+          ? data.targetSubmissionId.value
+          : this.targetSubmissionId,
     );
   }
 
@@ -6193,7 +6241,8 @@ class PendingSubmission extends DataClass
           ..write('syncError: $syncError, ')
           ..write('retryCount: $retryCount, ')
           ..write('nextRetryAt: $nextRetryAt, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('targetSubmissionId: $targetSubmissionId')
           ..write(')'))
         .toString();
   }
@@ -6214,6 +6263,7 @@ class PendingSubmission extends DataClass
     retryCount,
     nextRetryAt,
     createdAt,
+    targetSubmissionId,
   );
   @override
   bool operator ==(Object other) =>
@@ -6232,7 +6282,8 @@ class PendingSubmission extends DataClass
           other.syncError == this.syncError &&
           other.retryCount == this.retryCount &&
           other.nextRetryAt == this.nextRetryAt &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.targetSubmissionId == this.targetSubmissionId);
 }
 
 class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
@@ -6250,6 +6301,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
   final Value<int> retryCount;
   final Value<DateTime?> nextRetryAt;
   final Value<DateTime> createdAt;
+  final Value<String?> targetSubmissionId;
   final Value<int> rowid;
   const PendingSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -6266,6 +6318,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     this.retryCount = const Value.absent(),
     this.nextRetryAt = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.targetSubmissionId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingSubmissionsCompanion.insert({
@@ -6283,6 +6336,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     this.retryCount = const Value.absent(),
     this.nextRetryAt = const Value.absent(),
     required DateTime createdAt,
+    this.targetSubmissionId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        templateId = Value(templateId),
@@ -6305,6 +6359,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Expression<int>? retryCount,
     Expression<DateTime>? nextRetryAt,
     Expression<DateTime>? createdAt,
+    Expression<String>? targetSubmissionId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6322,6 +6377,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
       if (retryCount != null) 'retry_count': retryCount,
       if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
       if (createdAt != null) 'created_at': createdAt,
+      if (targetSubmissionId != null)
+        'target_submission_id': targetSubmissionId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6341,6 +6398,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Value<int>? retryCount,
     Value<DateTime?>? nextRetryAt,
     Value<DateTime>? createdAt,
+    Value<String?>? targetSubmissionId,
     Value<int>? rowid,
   }) {
     return PendingSubmissionsCompanion(
@@ -6358,6 +6416,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
       retryCount: retryCount ?? this.retryCount,
       nextRetryAt: nextRetryAt ?? this.nextRetryAt,
       createdAt: createdAt ?? this.createdAt,
+      targetSubmissionId: targetSubmissionId ?? this.targetSubmissionId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6407,6 +6466,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (targetSubmissionId.present) {
+      map['target_submission_id'] = Variable<String>(targetSubmissionId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6430,6 +6492,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
           ..write('retryCount: $retryCount, ')
           ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt, ')
+          ..write('targetSubmissionId: $targetSubmissionId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -11800,6 +11863,7 @@ typedef $$PendingSubmissionsTableCreateCompanionBuilder =
       Value<int> retryCount,
       Value<DateTime?> nextRetryAt,
       required DateTime createdAt,
+      Value<String?> targetSubmissionId,
       Value<int> rowid,
     });
 typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
@@ -11818,6 +11882,7 @@ typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
       Value<int> retryCount,
       Value<DateTime?> nextRetryAt,
       Value<DateTime> createdAt,
+      Value<String?> targetSubmissionId,
       Value<int> rowid,
     });
 
@@ -11958,6 +12023,11 @@ class $$PendingSubmissionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get targetSubmissionId => $composableBuilder(
+    column: $table.targetSubmissionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> pendingAnswersRefs(
     Expression<bool> Function($$PendingAnswersTableFilterComposer f) f,
   ) {
@@ -12087,6 +12157,11 @@ class $$PendingSubmissionsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get targetSubmissionId => $composableBuilder(
+    column: $table.targetSubmissionId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PendingSubmissionsTableAnnotationComposer
@@ -12153,6 +12228,11 @@ class $$PendingSubmissionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get targetSubmissionId => $composableBuilder(
+    column: $table.targetSubmissionId,
+    builder: (column) => column,
+  );
 
   Expression<T> pendingAnswersRefs<T extends Object>(
     Expression<T> Function($$PendingAnswersTableAnnotationComposer a) f,
@@ -12255,6 +12335,7 @@ class $$PendingSubmissionsTableTableManager
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> nextRetryAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> targetSubmissionId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion(
                 id: id,
@@ -12271,6 +12352,7 @@ class $$PendingSubmissionsTableTableManager
                 retryCount: retryCount,
                 nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
+                targetSubmissionId: targetSubmissionId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12289,6 +12371,7 @@ class $$PendingSubmissionsTableTableManager
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> nextRetryAt = const Value.absent(),
                 required DateTime createdAt,
+                Value<String?> targetSubmissionId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion.insert(
                 id: id,
@@ -12305,6 +12388,7 @@ class $$PendingSubmissionsTableTableManager
                 retryCount: retryCount,
                 nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
+                targetSubmissionId: targetSubmissionId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

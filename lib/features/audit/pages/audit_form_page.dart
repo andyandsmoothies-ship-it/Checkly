@@ -26,11 +26,16 @@ class AuditFormPage extends StatefulWidget {
   /// Set by the Dashboard "Resume" action to bypass the confirmation popup.
   final bool autoResume;
 
+  /// When non-null, identifies the server-side submission ID to finalize.
+  /// Passed by the Activity screen when resuming a scheduled/server-draft audit.
+  final String? targetSubmissionId;
+
   const AuditFormPage({
     super.key,
     required this.templateId,
     required this.storeId,
     this.autoResume = false,
+    this.targetSubmissionId,
   });
 
   @override
@@ -57,7 +62,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
     if (tree != null) {
       final manager = _di<AuditManager>();
-      await manager.startAudit(tree, widget.storeId);
+      await manager.startAudit(tree, widget.storeId,
+          targetSubmissionId: widget.targetSubmissionId);
       manager.addListener(_onManagerChanged);
 
       // Auto-resume path: skip dialog, restore immediately (from Dashboard action)

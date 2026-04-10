@@ -178,6 +178,11 @@ class PendingSubmissions extends Table {
   DateTimeColumn get nextRetryAt => dateTime().nullable()(); // UTC — evaluated by SyncEngine
   DateTimeColumn get createdAt => dateTime()();
 
+  /// When non-null, this outbox row is finalizing an EXISTING server-side draft.
+  /// SyncEngine routes to PUT /submissions/{id}/finalize instead of POST /submissions.
+  /// Null = fresh new audit (default POST path).
+  TextColumn get targetSubmissionId => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

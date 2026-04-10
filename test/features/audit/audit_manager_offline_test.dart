@@ -282,6 +282,41 @@ void main() {
       reason: 'No rows in outbox means deleteDraft path was never reached',
     );
   });
+
+  // ----------------------------------------------------------------
+  // AC-9: targetSubmissionId threads into Outbox
+  // Source: Orphaned Resume Audits bugfix
+  // ----------------------------------------------------------------
+  test('AuditManager_Submit_WithTargetId_StoresItInOutboxRow', () async {
+    // Arrange
+    final manager = makeManager();
+    // targetSubmissionId does not exist yet; compiler will throw Valid Red.
+    await manager.startAudit(_makeTemplate(criteriaCount: 1), 'store-sync-1', targetSubmissionId: 'sub-123');
+
+    // Act
+    await manager.submitAudit();
+
+    // Assert
+    final pendingRows = await outboxDao.getAllPending();
+    expect(pendingRows.length, equals(1));
+    // targetSubmissionId getter does not exist yet; compiler will throw Valid Red.
+    expect(pendingRows.first.targetSubmissionId, equals('sub-123'));
+  });
+
+  test('AuditManager_Submit_WithoutTargetId_StoresNullInOutboxRow', () async {
+    // Arrange
+    final manager = makeManager();
+    await manager.startAudit(_makeTemplate(criteriaCount: 1), 'store-sync-2'); // No target submission id
+
+    // Act
+    await manager.submitAudit();
+
+    // Assert
+    final pendingRows = await outboxDao.getAllPending();
+    expect(pendingRows.length, equals(1));
+    // targetSubmissionId getter does not exist yet; compiler will throw Valid Red.
+    expect(pendingRows.first.targetSubmissionId, isNull);
+  });
 }
 
 // ============================================================
