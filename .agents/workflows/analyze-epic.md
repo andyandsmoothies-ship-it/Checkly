@@ -77,7 +77,10 @@ Workflow: /analyze-epic | Track: C
 ### Dispatch Map Schema
 - **Track A (Cosmetic/Static):** `/analyze-feature` -> `/implement`
 - **Track B (Logic/State/Mutation):** `/analyze-feature` -> `/atdd` -> `/implement`
-- **Mandate:** *"DO NOT dispatch Slice N+1 until Slice N is verified GREEN."*
+- **Concurrency & Gating Strategy**: For every slice, explicitly declare its execution dependency:
+    - `[BLOCKING]`: Must be analyzed/implemented FIRST and ALONE (subsequent slices depend on it).
+    - `[PARALLEL]`: Independent slice. Explicitly state which other slices it can be executed concurrently with (to save waiting time via multiple AI sessions).
+    - `[SEQUENTIAL]`: Must be executed in strict order after a specific Slice N.
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]

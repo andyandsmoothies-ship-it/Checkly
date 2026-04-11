@@ -76,7 +76,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > [!IMPORTANT]
 > **Output Created:** `implementation_plan_[topic].md`
 > 
-> **YOUR NEXT COMMAND:** (Do not run in parallel)
+> **YOUR NEXT COMMAND & CONCURRENCY:**
+> - **Concurrency Strategy**: If you generated multiple Micro-Slices, explicitly declare which slices are `[BLOCKING]` (must run alone/first) and which are `[PARALLEL]` (can be dispatched concurrently in separate AI windows to save user waiting time).
 > - **If Track B2 (High Risk):** Switch to Sentinel QA and type: `@[/atdd] this implementation_plan_[topic].md`
 > - **If Track B1 (Low Risk):** Switch to Forge Builder and type: `@[/implement] this implementation_plan_[topic].md`
 

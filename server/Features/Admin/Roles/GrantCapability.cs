@@ -1,4 +1,3 @@
-using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +9,8 @@ namespace Checkly.Api.Features.Admin.Roles;
 /// Idempotent atomic grant: adds a single capability to a role.
 /// Uses INSERT ON CONFLICT DO NOTHING — safe to call twice (returns 204 both times).
 /// Auth: RequireCapability("admin:manage_roles").
+/// Consistency: Eventual — after 204, the in-memory PBAC cache is refreshed asynchronously
+/// by <see cref="PbacCacheListenerService"/> via Postgres LISTEN/NOTIFY (~50ms propagation).
 /// </summary>
 public static class GrantCapability
 {
@@ -20,8 +21,6 @@ public static class GrantCapability
         string role,
         string capability,
         AppDbContext db,
-        PbacDictionaryCache pbacCache,
-        IServiceProvider sp,
         CancellationToken ct)
     {
         // AC-11: Role must be exact lowercase match — reject "ADMIN", "Admin", etc.
@@ -48,9 +47,6 @@ public static class GrantCapability
             });
             await db.SaveChangesAsync(ct);
         }
-
-        // Belt-and-suspenders: immediately reload cache (LISTEN/NOTIFY may lag in tests).
-        await pbacCache.InitializeAsync(sp);
 
         return TypedResults.NoContent();
     }

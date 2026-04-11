@@ -57,6 +57,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > - **PoC Scope**: [Define PoC boundary if highly risky]
 > - **Downsides & Risks**: [Explicitly list UX degradation, maintenance burden]
 > - **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
+> - **Concurrency Strategy**: Specify if this research dictates `[BLOCKING]` sequential work, or `[PARALLEL]` independent tracks to save waiting time.
 > - **Recommended Next**: `shaping` | `/analyze-epic` | `/analyze-feature`
 > - **Persistent Path**: `.agents/tmp/research/research_[topic]_[ConversationID].md`
 > - **Blind Spots**: [3 explicit flaws]

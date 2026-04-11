@@ -32,6 +32,15 @@ public sealed class PbacDictionaryCache
     public bool IsReady { get; private set; }
 
     /// <summary>
+    /// True when the listener has received a NOTIFY and is deliberately delaying
+    /// the cache rebuild (Debounce Window), or is actively executing the DB fetch.
+    /// Reset to false (via finally block) once InitializeAsync completes or fails.
+    /// Used by health checks and dashboards to distinguish "stale but intentional"
+    /// from "broken/stuck".
+    /// </summary>
+    public bool IsRebuilding { get; set; }
+
+    /// <summary>
     /// Loads capabilities from the role_capabilities table into memory.
     /// Safe to call multiple times (idempotent). Each call builds a fresh dictionary
     /// and atomically swaps it in via Volatile.Write.

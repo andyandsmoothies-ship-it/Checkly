@@ -156,6 +156,8 @@ try
     builder.Services.AddScoped<Register.Handler>();
     builder.Services.AddScoped<Login.Handler>();
     builder.Services.AddSingleton<ScoringVerifier>();
+    builder.Services.Configure<PbacListenerOptions>(
+        builder.Configuration.GetSection("Pbac"));
     builder.Services.AddSingleton<PbacDictionaryCache>();
     builder.Services.AddSingleton<IAuthorizationHandler, CapabilityAuthorizationHandler>();
     builder.Services.AddHostedService<PbacCacheListenerService>();

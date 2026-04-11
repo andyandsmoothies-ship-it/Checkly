@@ -1,4 +1,3 @@
-using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +9,8 @@ namespace Checkly.Api.Features.Admin.Roles;
 /// Returns 204 even if the row does not exist (delete 0 rows = success).
 /// AC-10: Revoke of admin:manage_roles from admin role is blocked (self-lockout guard).
 /// Auth: RequireCapability("admin:manage_roles").
+/// Consistency: Eventual — after 204, the in-memory PBAC cache is refreshed asynchronously
+/// by <see cref="PbacCacheListenerService"/> via Postgres LISTEN/NOTIFY (~50ms propagation).
 /// </summary>
 public static class RevokeCapability
 {
@@ -20,8 +21,6 @@ public static class RevokeCapability
         string role,
         string capability,
         AppDbContext db,
-        PbacDictionaryCache pbacCache,
-        IServiceProvider sp,
         CancellationToken ct)
     {
         // AC-11: Role must be exact lowercase match.
@@ -42,9 +41,6 @@ public static class RevokeCapability
         await db.RoleCapabilities
             .Where(rc => rc.Role == role && rc.Capability == capability)
             .ExecuteDeleteAsync(ct);
-
-        // Belt-and-suspenders: immediately reload cache.
-        await pbacCache.InitializeAsync(sp);
 
         return TypedResults.NoContent();
     }
