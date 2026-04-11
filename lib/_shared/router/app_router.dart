@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/manager/auth_manager.dart';
 import '../../features/auth/model/auth_state.dart';
 import '../services/policy_manager.dart';
+import '../services/sync_engine.dart';
 import '../theme/app_theme.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/auth/pages/access_pending_page.dart';
@@ -354,9 +355,11 @@ class _MainShell extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             // Tap to requeue: clears nextRetryAt and retryCount
-                            _di<OutboxDao>().requeueExhausted();
+                            await _di<OutboxDao>().requeueExhausted();
+                            // Trigger sync cycle explicitly so records don't just sit there
+                            _di<SyncEngine>().requestSync();
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.white,

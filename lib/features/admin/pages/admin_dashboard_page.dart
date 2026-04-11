@@ -3,12 +3,12 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../templates/services/template_api_service.dart';
 import '../services/admin_api_service.dart';
+import '../../../_shared/widgets/compact_status_panel.dart';
 
 final _di = GetIt.instance;
 
@@ -83,107 +83,104 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               // Subtitle
               const SectionHeader('SYSTEM MANAGEMENT'),
 
-              // Stats grid (2×2) — shows shimmer values while loading
-              Row(
-                children: [
-                  Expanded(
-                    child: _AdminStat(
-                      icon: Icons.people,
-                      label: 'USERS',
-                      value: isLoading ? '—' : '$_userCount',
-                      color: theme.colorScheme.primary,
-                      filled: true,
-                      dimmed: isLoading,
-                    ),
+              // Dense stats panel
+              CompactStatusPanel(
+                metrics: [
+                  StatRowData(
+                    icon: Icons.people,
+                    label: 'USERS',
+                    value: isLoading ? '—' : '$_userCount',
+                    iconColor: theme.colorScheme.primary,
+                    onTap: () => context.push('/admin/users'),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _AdminStat(
-                      icon: Icons.store,
-                      label: 'STORES',
-                      value: isLoading ? '—' : '$_storeCount',
-                      color: AppTheme.success,
-                      dimmed: isLoading,
-                    ),
+                  StatRowData(
+                    icon: Icons.store,
+                    label: 'STORES',
+                    value: isLoading ? '—' : '$_storeCount',
+                    iconColor: AppTheme.success,
+                    onTap: () => context.push('/admin/stores'),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _AdminStat(
-                      icon: Icons.description,
-                      label: 'TEMPLATES',
-                      value: isLoading ? '—' : '$_templateCount',
-                      color: AppTheme.info,
-                      dimmed: isLoading,
-                    ),
+                  StatRowData(
+                    icon: Icons.description,
+                    label: 'TEMPLATES',
+                    value: isLoading ? '—' : '$_templateCount',
+                    iconColor: AppTheme.info,
+                    onTap: () {},
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _AdminStat(
-                      icon: Icons.hourglass_empty,
-                      label: 'OPEN PLANS',
-                      value: isLoading
-                          ? '—'
-                          : '${adminState?.openActionPlans ?? 0}',
-                      color: AppTheme.warning,
-                      dimmed: isLoading,
-                    ),
+                  StatRowData(
+                    icon: Icons.hourglass_empty,
+                    label: 'OPEN PLANS',
+                    value: isLoading
+                        ? '—'
+                        : '${adminState?.openActionPlans ?? 0}',
+                    iconColor: AppTheme.warning,
+                    onTap: () {},
                   ),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Menu items — always visible, no waiting
-              _MenuItem(
-                icon: Icons.people,
-                title: 'User Management',
-                subtitle: 'Manage auditors & managers',
-                onTap: () => context.push('/admin/users'),
-              ),
-              _MenuItem(
-                icon: Icons.store,
-                title: 'Store Management',
-                subtitle: 'Manage store locations',
-                onTap: () => context.push('/admin/stores'),
-              ),
-              _MenuItem(
-                icon: Icons.map_outlined,
-                title: 'Area Management',
-                subtitle: 'Manage geographic areas',
-                onTap: () => context.push('/admin/areas'),
-              ),
-              _MenuItem(
-                icon: Icons.assignment,
-                title: 'Audit Approvals',
-                subtitle: 'Review submitted audits',
-                onTap: () => context.push('/admin/approvals'),
-              ),
-              _MenuItem(
-                icon: Icons.warning_amber,
-                title: 'System Logs',
-                subtitle: 'Monitor application events',
-                onTap: () => context.push('/admin/logs'),
-              ),
-              _MenuItem(
-                icon: Icons.bar_chart,
-                title: 'Analytics',
-                subtitle: 'View performance data',
-                onTap: () => context.push('/analytics'),
-              ),
-              _MenuItem(
-                icon: Icons.event_note,
-                title: 'Schedule Audit',
-                subtitle: 'Delegate audits to auditors',
-                onTap: () => context.push('/admin/schedule'),
-              ),
-              _MenuItem(
-                icon: Icons.manage_accounts,
-                title: 'Role Management',
-                subtitle: 'Manage role capabilities',
-                onTap: () => context.push('/admin/roles'),
+              // Menu items — grouped elegantly in a single card
+              Card(
+                child: Column(
+                  children: [
+                    _MenuItem(
+                      icon: Icons.people,
+                      title: 'User Management',
+                      subtitle: 'Manage auditors & managers',
+                      onTap: () => context.push('/admin/users'),
+                    ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.store,
+                      title: 'Store Management',
+                      subtitle: 'Manage store locations',
+                      onTap: () => context.push('/admin/stores'),
+                    ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.map_outlined,
+                      title: 'Area Management',
+                      subtitle: 'Manage geographic areas',
+                      onTap: () => context.push('/admin/areas'),
+                    ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.assignment,
+                      title: 'Audit Approvals',
+                      subtitle: 'Review submitted audits',
+                      onTap: () => context.push('/admin/approvals'),
+                    ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.warning_amber,
+                      title: 'System Logs',
+                      subtitle: 'Monitor application events',
+                      onTap: () => context.push('/admin/logs'),
+                    ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.bar_chart,
+                      title: 'Analytics',
+                      subtitle: 'View performance data',
+                      onTap: () => context.push('/analytics'),
+                    ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.event_note,
+                      title: 'Schedule Audit',
+                      subtitle: 'Delegate audits to auditors',
+                      onTap: () => context.push('/admin/schedule'),
+                    ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.manage_accounts,
+                      title: 'Role Management',
+                      subtitle: 'Manage role capabilities',
+                      onTap: () => context.push('/admin/roles'),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -195,66 +192,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 }
 
-class _AdminStat extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-  final bool filled;
-  final bool dimmed;
-
-  const _AdminStat({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-    this.filled = false,
-    this.dimmed = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return AnimatedOpacity(
-      opacity: dimmed ? 0.4 : 1.0,
-      duration: const Duration(milliseconds: 300),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: filled ? theme.colorScheme.primaryContainer : theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: filled
-              ? null
-              : Border.all(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: AppFonts.serifStyle(
-                fontSize: theme.textTheme.headlineMedium?.fontSize,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppFonts.displayStyle(
-                fontSize: theme.textTheme.labelSmall?.fontSize,
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _MenuItem extends StatelessWidget {
   final IconData icon;
@@ -273,25 +210,22 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: theme.colorScheme.primary, size: 22),
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(8),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-        onTap: onTap,
+        child: Icon(icon, color: theme.colorScheme.primary, size: 22),
       ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+      subtitle: Text(subtitle),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+      onTap: onTap,
     );
   }
 }

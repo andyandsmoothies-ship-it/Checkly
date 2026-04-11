@@ -34,6 +34,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
     3. The Red Team attack vectors.
     4. The Pugh Decision Matrix.
     5. The Final Verdict (The mathematical winner).
+    6. **Handoff Block**: Standardized `## Handoff Block` appended at the EOF (Verdict, Sizing, Recommended Next `/analyze-*`, Persistent Path).
 - [ ] **Persist Copy**: Copy the deliverable to `.agents/tmp/research/decision_record_[topic].md` using the terminal.
 - [ ] **Verification**: Run `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"` to validate the output format.
 > **@@SCAN**: (1) ADR Schema respected (Latent Debate, Pugh Matrix)? (2) python verifier script executed and passed?

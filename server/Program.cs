@@ -46,6 +46,8 @@ lock (Program.LoggerLock)
 
 try
 {
+
+
     Log.Information("Starting Checkly API");
 
     var builder = WebApplication.CreateBuilder(args);

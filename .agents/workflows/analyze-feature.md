@@ -46,12 +46,12 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Vector | Execution Contract |
 |---|---|
-| **Blast Radius** | MANDATORY: If altering shared foundational code (e.g., `Common/`, `shared/`, `core/`), use `grep_search` to find ALL upstream calling features. You MUST list them in the plan. |
-| **Boundary Check** | If touching an API, DTO, or DB Schema, MANDATORY `grep_search` across BOTH `lib/` (Flutter) AND `server/` (C#). Never treat the server as a black box. |
+| **Dependency Root Tracing** | MANDATORY: Before modifying ANY Class, Method, or API, you MUST execute `grep_search` using the exact entity name across the entire project root (`/server`, `/lib`, `/src`, etc.). Track all 6 boundary axes: 1) UI, 2) Routing, 3) DB schemas, 4) Mocks, 5) Events/PubSub listeners, 6) DI/IoC registrations. |
+| **Blast Radius Check** | You are strictly prohibited from changing tests or mocks to make broken upstream code pass. Adapt your logic to the proven X-Ray boundary. If touching an API or DB, map both Backend and Frontend files. |
 | **Data Lineage Contract** | Never trust UI state alone. If your plan intercepts conditional data (e.g., `if status == 'x'`), you MUST `grep_search` its definitive Source of Truth (DB/API/Cache) to prove that boundary is capable of emitting that exact state. |
 | **State Matrix** | MANDATORY: Define the 4 System Extremes -> `Loading`, `Empty`, `Error`, `Success`. |
 
-> **@@SCAN**: (1) Upstream callers checked? (2) Both C# and Dart API boundaries explicitly mapped via `grep_search`? (3) 4-State Matrix defined?
+> **@@SCAN**: (1) Dependency Roots mathematically traced via grep_search? (2) Backend and Frontend mapped? (3) 4-State Matrix defined?
 
 ## Phase 3: Tactical Plan Deliverable
 

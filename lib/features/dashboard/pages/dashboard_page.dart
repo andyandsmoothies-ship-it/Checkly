@@ -91,7 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
               child: Row(
                 children: [
-                  Expanded(child: _Greeting(role: role)),
+                  Expanded(child: Greeting(role: role)),
                   const NotificationBell(),
                 ],
               ),
@@ -125,9 +125,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
 // ── Greeting widget ──
 
-class _Greeting extends StatelessWidget {
+@visibleForTesting
+class Greeting extends StatelessWidget {
   final String role;
-  const _Greeting({required this.role});
+  const Greeting({required this.role, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -139,17 +140,27 @@ class _Greeting extends StatelessWidget {
         : hour < 18
         ? 'Good Afternoon'
         : 'Good Evening';
-    final greeting = name.isNotEmpty ? '$timeGreeting, $name' : timeGreeting;
+    final personalizedGreeting =
+        name.isNotEmpty ? '$timeGreeting, $name' : timeGreeting;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          greeting,
+          personalizedGreeting.toUpperCase(),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          'Store Overview',
           style: AppFonts.serifStyle(
-              fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontSize: 22,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
       ],
     );

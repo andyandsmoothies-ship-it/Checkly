@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../_shared/utils/date_format_utils.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/utils/score_utils.dart';
@@ -369,7 +369,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         onRefresh: () => manager.loadHistory(),
                         child: ListView(
                           controller: _scrollController,
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 140),
                           children: [
                             ..._grouped.entries.map(
                               (entry) => _StoreGroup(
@@ -563,9 +563,9 @@ class _AuditCard extends StatelessWidget {
         : _scoreColor(submission.totalScore, theme);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(20),
         child: Row(
           children: [
             // Score circle or status icon
@@ -634,10 +634,10 @@ class _AuditCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     isScheduled || isOverdue
-                        ? 'Scheduled: ${_formatDate(submission.scheduledAt ?? submission.createdAt)}'
-                        : _formatDate(
-                            submission.completedAt ?? submission.createdAt,
-                          ),
+                        ? 'Scheduled at ${_formatDateTime(submission.scheduledAt ?? submission.createdAt)}'
+                        : isDraft
+                            ? 'Started at ${_formatDateTime(submission.createdAt)}'
+                            : 'Completed at ${_formatDateTime(submission.completedAt ?? submission.createdAt)}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isOverdue
                           ? theme.colorScheme.error
@@ -654,10 +654,10 @@ class _AuditCard extends StatelessWidget {
                 onPressed: onStartAudit,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                  minimumSize: Size.zero,
+                  minimumSize: const Size(64, 44),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
@@ -755,5 +755,5 @@ class _AuditCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) => formatDate(date);
+  String _formatDateTime(DateTime date) => DateFormat('dd MMM yyyy HH:mm:ss').format(date.toLocal());
 }

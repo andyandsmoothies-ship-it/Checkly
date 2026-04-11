@@ -67,40 +67,81 @@ public sealed class ScoringVerifier
 
         if (isWeighted)
         {
-            // Collect only non-CCP sections (mirrors Flutter ScoringEngine._calculatePenalty).
-            // CCP-triggered sections are excluded from BOTH score contribution AND the weight
-            // denominator. This means the audit is scored "out of remaining sections".
-            var participating = new List<(decimal ratio, decimal weight)>();
+            var sectionResults = new List<(decimal ratio, decimal weight)>();
+            
             foreach (var section in rootGroups)
             {
-                var sectionCriteria = GetCriteriaForGroup(section.Id, groups, criteria);
-                var ccpTriggered = sectionCriteria.Any(c => c.IsCcp && HasFaults(c, answers));
-                if (ccpTriggered) continue;
+                var flatCriteria = criteria.Where(c => c.GroupId == section.Id).ToList();
+                var subsections = groups.Where(g => g.ParentId == section.Id).ToList();
+                
+                var allCriteria = new List<Criterion>(flatCriteria);
+                foreach (var sub in subsections)
+                {
+                    allCriteria.AddRange(criteria.Where(c => c.GroupId == sub.Id));
+                }
 
-                var sectionBefore = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
+                bool ccpTriggered = allCriteria.Any(c => c.IsCcp && HasFaults(c, answers));
+                
+                decimal sectionBefore = 0m;
+                decimal sectionDeductions = 0m;
+
+                foreach (var sub in subsections)
+                {
+                    var subCriteria = criteria.Where(c => c.GroupId == sub.Id).ToList();
+                    var subBefore = subCriteria.Sum(c => c.PointsWeight ?? 0);
+                    sectionBefore += subBefore;
+                    
+                    if (subBefore == 0) continue;
+
+                    var subDeductions = subCriteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
+                    
+                    // Cap at MaxDeductionPoints OR subBefore
+                    var cap = sub.MaxDeductionPoints ?? subBefore;
+                    subDeductions = Math.Min(subDeductions, cap);
+                    
+                    sectionDeductions += subDeductions;
+                }
+
+                if (flatCriteria.Any())
+                {
+                    var rootFlatBefore = flatCriteria.Sum(c => c.PointsWeight ?? 0);
+                    sectionBefore += rootFlatBefore;
+
+                    var rootFlatDeductions = flatCriteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
+                    if (section.MaxDeductionPoints.HasValue)
+                    {
+                        rootFlatDeductions = Math.Min(rootFlatDeductions, section.MaxDeductionPoints.Value);
+                    }
+                    sectionDeductions += rootFlatDeductions;
+                }
+
                 if (sectionBefore == 0) continue;
 
-                var sectionDeductions = sectionCriteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
-                if (section.MaxDeductionPoints.HasValue)
-                    sectionDeductions = Math.Min(sectionDeductions, section.MaxDeductionPoints.Value);
+                // CCP triggered → exclude this section from BOTH numerator and denominator.
+                // Mirrors Flutter ScoringEngine._calculatePenalty which uses `continue` to skip the section.
+                // Setting ratio=0 while keeping the weight in participatingWeight produces a different
+                // weighted average than Flutter → score mismatch → 400. (See GEMINI.override.md)
+                if (ccpTriggered) continue;
 
-                var sectionAfter = Math.Max(0, sectionBefore - sectionDeductions);
+                var sectionAfter = Math.Max(0m, sectionBefore - sectionDeductions);
                 var sectionRatio = sectionAfter / sectionBefore;
-                participating.Add((sectionRatio, section.Weight ?? 0));
+                sectionResults.Add((sectionRatio, section.Weight ?? 0));
             }
 
-            // Normalize to participatingWeight — matches Flutter's ScoringEngine
-            var participatingWeight = participating.Sum(p => p.weight);
+            var participatingWeight = sectionResults.Sum(p => p.weight);
             var finalScore = 0m;
+            
             if (participatingWeight > 0)
             {
-                foreach (var (ratio, weight) in participating)
+                foreach (var (ratio, weight) in sectionResults)
+                {
                     finalScore += ratio * (weight / participatingWeight);
+                }
             }
 
-            var serverScore = finalScore * 100;
+            var serverScore = finalScore * 100m;
             return new VerificationResult(
-                Math.Abs(clientScore - serverScore) <= Tolerance,
+                Math.Abs(clientScore - Math.Round(serverScore, 2)) <= Tolerance,
                 Math.Round(serverScore, 2),
                 null,
                 BuildFailedSet(criteria, answers));

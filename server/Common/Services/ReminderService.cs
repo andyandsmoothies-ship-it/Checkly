@@ -38,12 +38,24 @@ public sealed class ReminderService : BackgroundService
                 await SendScheduleReminders(db, stoppingToken);
                 await RunRetentionCleanup(db, stoppingToken);
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (OperationCanceledException)
+            {
+                // Expected on shutdown
+                break;
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "ReminderService tick failed");
             }
 
-            await Task.Delay(Interval, stoppingToken);
+            try 
+            {
+                await Task.Delay(Interval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
     }
 

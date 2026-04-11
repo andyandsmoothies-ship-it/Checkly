@@ -39,12 +39,12 @@ Workflow: /analyze-epic | Track: C
 | **Skill Load** | Load abstract architectural skills (e.g., `clean-architecture`). |
 | **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
 | **Options** | Explicitly define >= 2 architectural alternatives. |
-| **System Impact**| `grep_search` all core tables/services affected. Define ALLOWLIST vs BLOCKLIST conditional logic. |
+| **Dependency Root Tracing**| MANDATORY: Before proposing an architecture, you MUST execute `grep_search` using exact entity names across the entire project. You must mathematically prove the 3-Tier Boundary: Database roots, DI Container registrations, and Cross-Platform API contracts. |
 | **Trade-Off Matrix**| MANDATORY: For each alternative, explicitly document Pros, Cons, and Blast Radius. Justify the chosen option over the ideal enterprise option. |
 | **Risk Assessment** | Formally assess the technical and operational risks of each decision/alternative, and document mitigation strategies. |
 | **NFR Constraints** | MANDATORY: Explicitly define System-wide limits for Performance, Security, and Observability before proceeding. |
 
-> **@@SCAN**: (1) Component reuse verified? (2) >=2 Alternatives with Pros/Cons mapped? (3) NFR Constraints defined? (4) Core tables explicitly grepped across BOTH lib/ and server/?
+> **@@SCAN**: (1) Dependency Roots mathematically traced via grep_search? (2) >=2 Alternatives mapped? (3) NFR Constraints defined? (4) 3-Tier Boundary proven?
 
 ## Phase 2: Red Team Adversarial Review
 
@@ -61,7 +61,7 @@ Workflow: /analyze-epic | Track: C
 | Process | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `analysis_epic_[topic].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/analysis_epic_[topic].md` via terminal. |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/analysis_epic_[topic]_[ConversationID].md` via terminal. |
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
 ## Phase 4: Slicing & Dispatch Loop

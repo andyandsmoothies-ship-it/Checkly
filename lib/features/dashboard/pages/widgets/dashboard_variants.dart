@@ -7,6 +7,7 @@ import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../../../../_shared/widgets/section_header.dart';
+import '../../../../_shared/widgets/compact_status_panel.dart';
 import '../../../../_shared/database/app_database.dart';
 import '../../../audit/services/draft_service.dart';
 import '../../../auth/manager/auth_manager.dart';
@@ -82,38 +83,29 @@ class AuditorDashboardVariant extends StatelessWidget {
 
           if (state.draftCount > 0) const SizedBox(height: 16),
 
-          // ── Bento Box: Vitals ──
-          Row(
-            children: [
-              Expanded(
-                child: _DashboardStatCard(
-                  icon: Icons.pending_actions,
-                  label: 'Action Plans',
-                  subtitle: 'ASSIGNED TO YOU',
-                  value: '${state.openActionPlans}',
-                  color: AppTheme.warningContainer,
-                  iconColor: AppTheme.warning,
-                  onTap: () => context.go('/plans?filter=open'),
-                ),
+          // ── Compact Status Panel: Vitals ──
+          CompactStatusPanel(
+            metrics: [
+              StatRowData(
+                icon: Icons.pending_actions,
+                label: 'Assigned Action Plans',
+                value: '${state.openActionPlans}',
+                iconColor: AppTheme.warning,
+                onTap: () => context.go('/plans?filter=open'),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _DashboardStatCard(
-                  icon: Icons.speed,
-                  label: 'My Avg Audit Score',
-                  subtitle: 'AUDITS I PERFORMED',
-                  value: '$avgFormatted%',
-                  color: AppTheme.success.withValues(alpha: 0.08),
-                  iconColor: AppTheme.success,
-                  onTap: () => context.push('/analytics'),
-                ),
+              StatRowData(
+                icon: Icons.speed,
+                label: 'My Avg Audit Score',
+                value: '$avgFormatted%',
+                iconColor: AppTheme.success,
+                onTap: () => context.push('/analytics'),
               ),
             ],
           ),
 
           if (state.nearestDeadline != null) ...[
             const SizedBox(height: 12),
-            _DeadlineBanner(deadline: state.nearestDeadline!),
+            DeadlineBanner(deadline: state.nearestDeadline!),
           ],
 
           const SizedBox(height: 32),
@@ -180,40 +172,29 @@ class ManagerDashboardVariant extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // ── Bento Box ──
-        Row(
-          children: [
-            Expanded(
-              child: _DashboardStatCard(
-                icon: Icons.pending_actions,
-                label: 'Action Plans',
-                subtitle: isArea ? 'IN YOUR AREA' : 'AT THIS STORE',
-                value: '${state.openActionPlans}',
-                color: AppTheme.warningContainer,
-                iconColor: AppTheme.warning,
-                onTap: () => context.go('/plans?filter=open'),
-              ),
+        // ── Compact Status Panel ──
+        CompactStatusPanel(
+          metrics: [
+            StatRowData(
+              icon: Icons.pending_actions,
+              label: isArea ? 'Area Action Plans' : 'Store Action Plans',
+              value: '${state.openActionPlans}',
+              iconColor: AppTheme.warning,
+              onTap: () => context.go('/plans?filter=open'),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _DashboardStatCard(
-                icon: Icons.speed,
-                label: isArea
-                    ? 'Area Avg Audit Score'
-                    : 'Store Avg Audit Score',
-                subtitle: isArea ? 'STORES IN REGION' : 'THIS LOCATION ONLY',
-                value: '$avgFormatted%',
-                color: AppTheme.success.withValues(alpha: 0.08),
-                iconColor: AppTheme.success,
-                onTap: () => context.push('/analytics'),
-              ),
+            StatRowData(
+              icon: Icons.speed,
+              label: isArea ? 'Area Avg Score' : 'Store Avg Score',
+              value: '$avgFormatted%',
+              iconColor: AppTheme.success,
+              onTap: () => context.push('/analytics'),
             ),
           ],
         ),
 
         if (state.nearestDeadline != null) ...[
           const SizedBox(height: 12),
-          _DeadlineBanner(deadline: state.nearestDeadline!),
+          DeadlineBanner(deadline: state.nearestDeadline!),
         ],
 
         const SizedBox(height: 32),
@@ -278,59 +259,36 @@ class AdminDashboardVariant extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // ── Bento Box: 4-cell grid ──
-          Row(
-            children: [
-              Expanded(
-                child: _DashboardStatCard(
-                  icon: Icons.pending_actions,
-                  label: 'Action Plans',
-                  subtitle: 'ACROSS PLATFORM',
-                  value: '${state.openActionPlans}',
-                  color: AppTheme.warningContainer,
-                  iconColor: AppTheme.warning,
-                  onTap: () => context.go('/plans?filter=open'),
-                ),
+          // ── Compact Status Panel: 4 KPIs ──
+          CompactStatusPanel(
+            metrics: [
+              StatRowData(
+                icon: Icons.pending_actions,
+                label: 'Action Plans',
+                value: '${state.openActionPlans}',
+                iconColor: AppTheme.warning,
+                onTap: () => context.go('/plans?filter=open'),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _DashboardStatCard(
-                  icon: Icons.assignment,
-                  label: 'Total Audits',
-                  subtitle: 'ALL-TIME COMPLETIONS',
-                  value: '${state.totalAudits}',
-                  color: theme.colorScheme.surface,
-                  iconColor: theme.colorScheme.primary,
-                  onTap: () => context.go('/activity'),
-                ),
+              StatRowData(
+                icon: Icons.assignment,
+                label: 'Total Audits',
+                value: '${state.totalAudits}',
+                iconColor: theme.colorScheme.primary,
+                onTap: () => context.go('/activity'),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _DashboardStatCard(
-                  icon: Icons.warning_amber,
-                  label: 'Overdue',
-                  subtitle: 'ACROSS PLATFORM',
-                  value: '${state.overdueActionPlans}',
-                  color: AppColors.destructive.withValues(alpha: 0.08),
-                  iconColor: AppColors.destructive,
-                  onTap: () => context.go('/plans?sort=urgent'),
-                ),
+              StatRowData(
+                icon: Icons.warning_amber,
+                label: 'Overdue',
+                value: '${state.overdueActionPlans}',
+                iconColor: AppColors.destructive,
+                onTap: () => context.go('/plans?sort=urgent'),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _DashboardStatCard(
-                  icon: Icons.speed,
-                  label: 'Global Avg Audit Score',
-                  subtitle: 'ALL STORES GLOBALLY',
-                  value: '$avgFormatted%',
-                  color: AppTheme.success.withValues(alpha: 0.08),
-                  iconColor: AppTheme.success,
-                  onTap: () => context.push('/analytics'),
-                ),
+              StatRowData(
+                icon: Icons.speed,
+                label: 'Global Avg Audit Score',
+                value: '$avgFormatted%',
+                iconColor: AppTheme.success,
+                onTap: () => context.push('/analytics'),
               ),
             ],
           ),
@@ -384,7 +342,7 @@ class _HeroCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.2)),
+            border: Border.all(color: ic.withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
@@ -431,9 +389,10 @@ class _HeroCard extends StatelessWidget {
 }
 
 /// Compact deadline warning banner.
-class _DeadlineBanner extends StatelessWidget {
+@visibleForTesting
+class DeadlineBanner extends StatelessWidget {
   final DateTime deadline;
-  const _DeadlineBanner({required this.deadline});
+  const DeadlineBanner({required this.deadline, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -443,14 +402,13 @@ class _DeadlineBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.warning.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.warning.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Icon(Icons.schedule, size: 16, color: AppTheme.warning),
           const SizedBox(width: 8),
           Text(
-            'Nearest deadline: ${timeAgo(deadline)}',
+            'Next Action Plan Deadline: ${timeAgo(deadline)}',
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppTheme.warning,
               fontWeight: FontWeight.w600,
@@ -462,96 +420,6 @@ class _DeadlineBanner extends StatelessWidget {
   }
 }
 
-/// Stat card — the Bento Box cell.
-class _DashboardStatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String? subtitle;
-  final String value;
-  final Color color;
-  final Color iconColor;
-  final VoidCallback onTap;
-
-  const _DashboardStatCard({
-    required this.icon,
-    required this.label,
-    this.subtitle,
-    required this.value,
-    required this.color,
-    required this.iconColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.2)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(icon, color: iconColor, size: 20),
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2, right: 2),
-                    child: Icon(
-                      Icons.chevron_right,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                value,
-                style: AppFonts.serifStyle(
-                  fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize ?? 28,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                label.toUpperCase(),
-                style: AppFonts.displayStyle(
-                  fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
-                  fontWeight: FontWeight.w600,
-                  // WCAG fix: raised from 0.5 → 0.65
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                  letterSpacing: 1,
-                ),
-              ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle!,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
-                    fontWeight: FontWeight.w500,
-                    // WCAG fix: raised from 0.35 → 0.65
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 /// Recent submissions feed section — shared across all variants.
 class _SubmissionFeedSection extends StatelessWidget {
@@ -632,7 +500,7 @@ class _SubmissionFeedSection extends StatelessWidget {
           )
         else
           ...submissions.map(
-            (sub) => _SubmissionRow(submission: sub, context: context),
+            (sub) => SubmissionRow(submission: sub, context: context),
           ),
       ],
     );
@@ -640,17 +508,18 @@ class _SubmissionFeedSection extends StatelessWidget {
 }
 
 /// Single submission row in the feed.
-class _SubmissionRow extends StatefulWidget {
+@visibleForTesting
+class SubmissionRow extends StatefulWidget {
   final CachedSubmission submission;
   final BuildContext context;
 
-  const _SubmissionRow({required this.submission, required this.context});
+  const SubmissionRow({required this.submission, required this.context, super.key});
 
   @override
-  State<_SubmissionRow> createState() => _SubmissionRowState();
+  State<SubmissionRow> createState() => _SubmissionRowState();
 }
 
-class _SubmissionRowState extends State<_SubmissionRow> {
+class _SubmissionRowState extends State<SubmissionRow> {
   final _di = GetIt.instance;
 
   Future<void> _discardDraft() async {
@@ -689,8 +558,13 @@ class _SubmissionRowState extends State<_SubmissionRow> {
     final sub = widget.submission;
     final score = sub.totalScore;
     final isDraft = sub.status == 'draft';
-    final scoreColor = score != null
-        ? (score >= 80 ? AppTheme.success : AppColors.destructive)
+    final scoreColor = theme.colorScheme.onSurface;
+    final semanticColor = score != null
+        ? (score >= 80
+            ? AppTheme.success
+            : score >= 60
+                ? AppTheme.warning
+                : AppColors.destructive)
         : theme.colorScheme.onSurfaceVariant;
 
     return Card(
@@ -762,12 +636,26 @@ class _SubmissionRowState extends State<_SubmissionRow> {
                   ],
                 )
               else if (score != null)
-                Text(
-                  '${score.toStringAsFixed(0)}%',
-                  style: AppFonts.serifStyle(
-                    fontSize: Theme.of(widget.context).textTheme.headlineSmall?.fontSize ?? 24,
-                    color: scoreColor,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: semanticColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${score.toStringAsFixed(0)}%',
+                      style: AppFonts.serifStyle(
+                        fontSize: 18,
+                        color: scoreColor,
+                      ),
+                    ),
+                  ],
                 )
               else
                 Container(

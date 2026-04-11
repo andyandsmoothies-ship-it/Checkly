@@ -172,6 +172,16 @@ class AppDatabase extends _$AppDatabase {
   /// Prevents Mirror Function Trap — tests call this rather than duplicating SQL.
   @visibleForTesting
   Future<void> pruneStaleAuditsForTesting() => _pruneStaleAudits();
+
+  /// WIPE: Thoroughly cleans the entire Drift offline cache.
+  /// Used by AuthManager during logout to prevent cross-session data bleeding.
+  Future<void> clearAllData() async {
+    await transaction(() async {
+      for (final table in allTables) {
+        await delete(table).go();
+      }
+    });
+  }
 }
 
 LazyDatabase _openConnection() {

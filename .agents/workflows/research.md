@@ -40,7 +40,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 | Step | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `research_[topic].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic].md` via terminal. |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic]_[ConversationID].md` via terminal. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 > **Payload Schema:** Your generated `research_[topic].md` MUST INCLUDE: 
@@ -58,7 +58,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > - **Downsides & Risks**: [Explicitly list UX degradation, maintenance burden]
 > - **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
 > - **Recommended Next**: `shaping` | `/analyze-epic` | `/analyze-feature`
-> - **Persistent Path**: `.agents/tmp/research/research_[topic].md`
+> - **Persistent Path**: `.agents/tmp/research/research_[topic]_[ConversationID].md`
 > - **Blind Spots**: [3 explicit flaws]
 > - **Conflicts**: [Explicit constraints broken]
 > ```

@@ -8,6 +8,7 @@ import '../model/user_session.dart';
 import '../services/auth_api_service.dart';
 import '../services/policy_api_service.dart';
 import '../services/secure_storage_service.dart';
+import '../../../_shared/database/database_service.dart';
 
 final _di = GetIt.instance;
 
@@ -25,6 +26,7 @@ class AuthManager extends ChangeNotifier {
   final ApiClient _apiClient;
   final PolicyApiService _policyApi;
   final PolicyDao _policyDao;
+  final DatabaseService _dbService;
 
   AuthManager({
     AuthApiService? authApi,
@@ -32,11 +34,13 @@ class AuthManager extends ChangeNotifier {
     ApiClient? apiClient,
     PolicyApiService? policyApi,
     PolicyDao? policyDao,
+    DatabaseService? dbService,
   })  : _authApi = authApi ?? _di<AuthApiService>(),
         _storage = storage ?? _di<SecureStorageService>(),
         _apiClient = apiClient ?? _di<ApiClient>(),
         _policyApi = policyApi ?? _di<PolicyApiService>(),
-        _policyDao = policyDao ?? _di<PolicyDao>();
+        _policyDao = policyDao ?? _di<PolicyDao>(),
+        _dbService = dbService ?? _di<DatabaseService>();
 
   // ---------- State ----------
   final _authState = ValueNotifier<AuthState>(AuthState.loading);
@@ -123,6 +127,7 @@ class AuthManager extends ChangeNotifier {
   // ---------- Logout ----------
   Future<void> logout() async {
     await _storage.clearAll();
+    await _dbService.db.clearAllData();  // Full SQLite wipe to prevent data bleed
     await _policyDao.clearCapabilities(); // [PBAC Slice 4] clear Drift cache
     _apiClient.clearAuthToken();
     _currentUser = null;

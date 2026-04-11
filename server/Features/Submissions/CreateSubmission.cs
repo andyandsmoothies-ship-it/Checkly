@@ -6,6 +6,7 @@ using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Checkly.Api.Features.Submissions;
 
@@ -43,12 +44,15 @@ public static class CreateSubmission
         // Determine mode
         var requestedStatus = request.Status?.ToLowerInvariant() ?? "completed";
         if (!ValidStatuses.Contains(requestedStatus))
+        {
+            Log.Warning("CreateSubmission 400: Invalid status {Status}", request.Status);
             return TypedResults.BadRequest(new { error = $"Invalid status: '{request.Status}'. Must be draft, scheduled, or completed." });
+        }
 
         var isDraft = requestedStatus == "draft";
         var isScheduled = requestedStatus == "scheduled";
 
-        // Idempotency check — if key already used, return existing submission
+        // Idempotency check
         if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
         {
             var existing = await db.Submissions
@@ -71,33 +75,49 @@ public static class CreateSubmission
         if (!isDraft && !isScheduled)
         {
             if (request.ClientScore is null)
+            {
+                Log.Warning("CreateSubmission 400: ClientScore is missing");
                 return TypedResults.BadRequest(new { error = "ClientScore is required for completed submissions" });
+            }
             if (request.Answers is null || request.Answers.Count == 0)
+            {
+                Log.Warning("CreateSubmission 400: Answers are empty");
                 return TypedResults.BadRequest(new { error = "Answers are required for completed submissions" });
+            }
         }
 
-        // Load template (always needed for snapshot)
         var template = await db.Templates
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == request.TemplateId, ct);
 
         if (template is null)
+        {
+            Log.Warning("CreateSubmission 400: Template not found {Id}", request.TemplateId);
             return TypedResults.BadRequest(new { error = "Template not found" });
+        }
 
         if (!template.IsActive)
+        {
+            Log.Warning("CreateSubmission 400: Template archived");
             return TypedResults.BadRequest(new { error = "Template is archived" });
+        }
 
         var store = await db.Stores
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.StoreId, ct);
 
         if (store is null)
+        {
+            Log.Warning("CreateSubmission 400: Store not found {Id}", request.StoreId);
             return TypedResults.BadRequest(new { error = "Store not found" });
+        }
 
         if (store.IsActive == false)
+        {
+            Log.Warning("CreateSubmission 400: Store deactivated");
             return TypedResults.BadRequest(new { error = "Store is deactivated" });
+        }
 
-        // Load groups + criteria for ALL statuses (needed for snapshot)
         var groups = await db.Groups
             .AsNoTracking()
             .Where(g => g.TemplateId == request.TemplateId && g.IsActive)
@@ -111,12 +131,10 @@ public static class CreateSubmission
 
         var templateSnapshotJson = TemplateSnapshotBuilder.BuildSnapshot(template, groups, criteria);
 
-        // Scoring verification — only for completed submissions
         decimal? serverScore = null;
 
         if (!isDraft && !isScheduled)
         {
-            // Parse scoring mode from template config
             var scoringMode = "penalty";
             if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
             {
@@ -144,6 +162,8 @@ public static class CreateSubmission
             {
                 if (scoreMode == "enforce")
                 {
+                    Log.Warning("CreateSubmission 400: Score mismatch. Client: {Client}, Server: {Server}. Reason: {Reason}", 
+                        request.ClientScore, verification.ServerScore, verification.Reason);
                     return TypedResults.BadRequest(new
                     {
                         error = "Score verification failed",
@@ -157,12 +177,10 @@ public static class CreateSubmission
             serverScore = scoringMode == "survey" ? null : verification.ServerScore;
         }
 
-        // Snapshot auditor info
         var profile = await db.Profiles
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == auditorId, ct);
 
-        // Parse scoring mode from template config (for all statuses — denormalized for analytics)
         var submissionScoringMode = "penalty";
         if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
         {
@@ -175,7 +193,6 @@ public static class CreateSubmission
             catch { /* malformed config → default to penalty */ }
         }
 
-        // Create submission
         var now = DateTimeOffset.UtcNow;
         var submission = new Submission
         {
@@ -196,7 +213,6 @@ public static class CreateSubmission
             ScheduledAt = request.ScheduledAt?.ToUniversalTime(),
             CreatedAt = now,
             UpdatedAt = now,
-            // Snapshot fields
             AuditorName = profile?.FullName,
             AuditorEmail = profile?.Email,
             StoreName = store.Name,

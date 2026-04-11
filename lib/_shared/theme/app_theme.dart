@@ -72,15 +72,17 @@ class AppTheme {
         ),
       ),
 
-      // Cards — sage gray border at 50% opacity
+      // Cards — Premium soft analytical styling
       cardTheme: CardThemeData(
-        elevation: 0,
+        elevation: 1,
+        shadowColor: colorScheme.shadow.withValues(alpha: 0.2),
+        margin: EdgeInsets.zero,
         color: colorScheme.brightness == Brightness.light
             ? Colors.white
             : colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColors.sageGray.withValues(alpha: 0.5)),
+          side: BorderSide.none,
         ),
       ),
 

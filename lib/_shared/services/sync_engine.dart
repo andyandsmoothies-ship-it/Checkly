@@ -74,6 +74,11 @@ class SyncEngine {
         _state = SyncState.offline;
       }
     });
+
+    // Run initial sync on boot if we start online!
+    if (_connectivity.isOnline) {
+      requestSync();
+    }
   }
 
   /// Request a sync cycle. If already syncing, the request is ignored.
@@ -81,11 +86,11 @@ class SyncEngine {
     // Guard: no concurrent sync
     if (_state == SyncState.syncing) return;
 
-    // Guard: skip if offline
-    if (!_connectivity.isOnline) {
-      _state = SyncState.offline;
-      return;
-    }
+    // Guard: skip if offline (Bypassed temporarily for Windows diagnostics)
+    // if (!_connectivity.isOnline) {
+    //   _state = SyncState.offline;
+    //   return;
+    // }
 
     // Guard: skip if not authenticated
     if (!_auth.isLoggedIn) {
@@ -107,10 +112,10 @@ class SyncEngine {
       final eligibleRows = await _outboxDao.getEligiblePending();
       for (final dbRow in eligibleRows) {
         // Check connectivity before each push
-        if (!_connectivity.isOnline) {
-          _state = SyncState.offline;
-          return;
-        }
+        // if (!_connectivity.isOnline) {
+        //   _state = SyncState.offline;
+        //   return;
+        // }
 
         try {
           // Fetch answers for this submission from the normalized table
@@ -199,24 +204,24 @@ class SyncEngine {
             );
           }
           _state = SyncState.error;
-          return;
+          continue; // Move to the next queued record instead of aborting the batch
         }
       }
 
       // All done — check connectivity one last time
-      if (!_connectivity.isOnline) {
-        _state = SyncState.offline;
-        return;
-      }
+      // if (!_connectivity.isOnline) {
+      //   _state = SyncState.offline;
+      //   return;
+      // }
 
       // --- Action Plan Evidence Drain phase ---
       // Drain any queued offline evidence submissions (P1 UX Fix).
       final pendingEvidence = await _actionPlanOutboxDao.getEligiblePending();
       for (final entry in pendingEvidence) {
-        if (!_connectivity.isOnline) {
-          _state = SyncState.offline;
-          return;
-        }
+        // if (!_connectivity.isOnline) {
+        //   _state = SyncState.offline;
+        //   return;
+        // }
         try {
           await _actionPlanApi.updateActionPlan(entry.actionPlanId, {
             'status': 'pending_verify',

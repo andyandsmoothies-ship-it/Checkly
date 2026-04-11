@@ -270,11 +270,6 @@ class _SettingsSectionGroup extends StatelessWidget {
     if (!hasContent) return const SizedBox.shrink();
 
     return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
-      ),
       child: Column(
         children: [
           for (int i = 0; i < items.length; i++) ...[
@@ -394,24 +389,37 @@ class _SignOutTileState extends State<_SignOutTile> {
 
     if (!context.mounted) return;
 
-    // Case 1: Recoverable submissions in-flight — hard block.
+    // Case 1: Recoverable submissions in-flight — warn but allow escape.
     if (syncable > 0) {
-      await showDialog<void>(
+      final shouldForce = await showDialog<bool>(
         context: context,
         builder: (dialogCtx) => AlertDialog(
-          title: const Text('Audits Uploading'),
+          title: const Text('Audits Still Uploading'),
           content: Text(
             'You have $syncable audit${syncable == 1 ? '' : 's'} still uploading. '
-            'Please stay connected until they finish before signing out.',
+            'Signing out now will permanently delete ${syncable == 1 ? 'it' : 'them'} from this device.',
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(),
-              child: const Text('OK'),
+              onPressed: () => Navigator.of(dialogCtx).pop(false),
+              child: const Text('Wait'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(true),
+              child: Text(
+                'Sign Out Anyway',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
       );
+      if (shouldForce == true) {
+        _di<AuthManager>().logout();
+      }
       return;
     }
 

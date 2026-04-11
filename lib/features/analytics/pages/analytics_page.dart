@@ -780,11 +780,8 @@ class _KpiCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.08),
+              color: Theme.of(context).colorScheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppTheme.sageGray.withValues(alpha: 0.3),
-              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -815,12 +812,9 @@ class _KpiCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  label.toUpperCase(),
-                  style: AppFonts.displayStyle(
-                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                    letterSpacing: 1,
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

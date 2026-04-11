@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../auth/manager/auth_manager.dart';
@@ -50,6 +51,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
       ),
       builder: (ctx) {
         var isDirty = false;
+        var isSubmitting = false;
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
             // Attach listeners once on first build
@@ -90,14 +92,15 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.close),
-                            onPressed: () {
-                              if (isDirty || computedDirty) {
-                                // Let PopScope handle via back-navigation
-                                Navigator.maybePop(ctx);
-                              } else {
-                                Navigator.pop(ctx);
-                              }
-                            },
+                            onPressed: isSubmitting
+                                ? null // disable close while submitting
+                                : () {
+                                    if (isDirty || computedDirty) {
+                                      Navigator.maybePop(ctx);
+                                    } else {
+                                      Navigator.pop(ctx);
+                                    }
+                                  },
                           ),
                         ],
                       ),
@@ -126,21 +129,41 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                             v == null || v.trim().isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: 16),
+                      // H1 Fix: spinner lives inside the button; modal stays open during the call
                       FilledButton(
-                        onPressed: () async {
-                          if (!formKey.currentState!.validate()) return;
-                          Navigator.pop(ctx);
-                          await _callManager(
-                            () => _manager.submitEvidence(
-                              plan,
-                              correctionPlan: correctionCtrl.text.trim(),
-                              evidenceNote: evidenceCtrl.text.trim(),
-                            ),
-                            successMsg:
-                                'Evidence submitted — awaiting verification',
-                          );
-                        },
-                        child: const Text('Submit'),
+                        onPressed: isSubmitting
+                            ? null
+                            : () async {
+                                if (!formKey.currentState!.validate()) return;
+                                setSheetState(() => isSubmitting = true);
+                                try {
+                                  await _callManager(
+                                    () => _manager.submitEvidence(
+                                      plan,
+                                      correctionPlan:
+                                          correctionCtrl.text.trim(),
+                                      evidenceNote: evidenceCtrl.text.trim(),
+                                    ),
+                                    successMsg:
+                                        'Evidence submitted — awaiting verification',
+                                  );
+                                  if (ctx.mounted) Navigator.pop(ctx);
+                                } finally {
+                                  if (ctx.mounted) {
+                                    setSheetState(() => isSubmitting = false);
+                                  }
+                                }
+                              },
+                        child: isSubmitting
+                            ? const SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text('Submit'),
                       ),
                     ],
                   ),
@@ -234,10 +257,14 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
         ).showSnackBar(SnackBar(content: Text('Permission denied: $e')));
       }
     } catch (e) {
+      // H2 Fix: Sanitise generic errors — never expose raw Dart exception strings
+      // to users. Domain-specific RoleGuardException is handled above.
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Something went wrong. Please try again.'),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -421,12 +448,11 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                   plan.rootCause!.isNotEmpty &&
                   plan.rootCause != 'SYSTEM_VOID') ...[
                 _SectionHeader(title: 'Root Cause'),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text(
-                      plan.rootCause!,
-                      style: theme.textTheme.bodyMedium,
+                _FlatBlock(
+                  child: Text(
+                    plan.rootCause!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
@@ -437,12 +463,11 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               if (plan.correctionPlan != null &&
                   plan.correctionPlan!.isNotEmpty) ...[
                 _SectionHeader(title: 'Correction Plan'),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text(
-                      plan.correctionPlan!,
-                      style: theme.textTheme.bodyMedium,
+                _FlatBlock(
+                  child: Text(
+                    plan.correctionPlan!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
@@ -453,39 +478,37 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               if (plan.evidenceNote != null ||
                   plan.evidencePhotoUrl != null) ...[
                 _SectionHeader(title: 'Evidence'),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (plan.evidenceNote != null)
-                          Text(
-                            plan.evidenceNote!,
-                            style: theme.textTheme.bodyMedium,
+                _FlatBlock(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (plan.evidenceNote != null)
+                        Text(
+                          plan.evidenceNote!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
-                        if (plan.evidencePhotoUrl != null) ...[
-                          const SizedBox(height: 12),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              plan.evidencePhotoUrl!,
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => Container(
-                                height: 100,
-                                color:
-                                    theme.colorScheme.surfaceContainerHighest,
-                                child: const Center(
-                                  child: Icon(Icons.broken_image),
-                                ),
+                        ),
+                      if (plan.evidencePhotoUrl != null) ...[
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            plan.evidencePhotoUrl!,
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, e, s) => Container(
+                              height: 100,
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: const Center(
+                                child: Icon(Icons.broken_image),
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ],
-                    ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -494,19 +517,16 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               // ── Verifier ──
               if (plan.verifierName != null) ...[
                 _SectionHeader(title: 'Verified By'),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        Icon(Icons.verified, color: AppTheme.success),
-                        const SizedBox(width: 8),
-                        Text(
-                          plan.verifierName!,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
+                _FlatBlock(
+                  child: Row(
+                    children: [
+                      Icon(Icons.verified, color: AppTheme.success, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        plan.verifierName!,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -533,6 +553,30 @@ class _InfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(children: children),
       ),
+    );
+  }
+}
+
+// ── Flat Block (replaces Card for read-only data sections) ──
+// Renders content flush on the page surface with a subtle left accent border.
+class _FlatBlock extends StatelessWidget {
+  final Widget child;
+  const _FlatBlock({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+            color: theme.colorScheme.outlineVariant,
+            width: 3,
+          ),
+        ),
+      ),
+      child: child,
     );
   }
 }
@@ -601,9 +645,10 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+        style: AppFonts.serifStyle(
+          fontSize: 18,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/database_service.dart';
 import '../../auth/manager/auth_manager.dart';
+import '../../stores/manager/store_manager.dart';
 import 'dashboard_queries.dart';
 
 final _di = GetIt.instance;
@@ -37,7 +38,7 @@ class AuditorDashboardState extends DashboardState {
 
 /// State for Store Manager and Area Manager roles.
 class ManagerDashboardState extends DashboardState {
-  final String storeId;
+  final String? storeId;
   final String? storeName;
   final int openActionPlans;
   final int overdueActionPlans;
@@ -100,6 +101,7 @@ class DashboardManager extends ChangeNotifier {
   DashboardState get dashboardState => _state;
 
   bool get isLoading => _state is DashboardLoading;
+  bool _isSyncingStores = false;
 
   /// Load dashboard stats from local Drift cache, branching on role.
   Future<void> loadStats() async {
@@ -159,9 +161,40 @@ class DashboardManager extends ChangeNotifier {
     // Get storeId from the cached store profile.
     // Store managers have exactly one store in the local cache.
     final stores = await (_db.select(_db.cachedStores)..limit(1)).get();
+
     if (stores.isEmpty) {
-      // No store synced yet — fallback to auditor-style view
-      return _loadAuditorState(queries);
+      // IA Overhaul: Resilient Manager View
+      // If store sync is pending, pull personal (Auditor-like) data but wrap in Manager UI.
+      // Kickstart store sync so it doesn't get stuck in "Syncing..." forever.
+      if (!_isSyncingStores && _di.isRegistered<StoreManager>()) {
+        _isSyncingStores = true;
+        _di<StoreManager>().loadStores().whenComplete(() {
+          _isSyncingStores = false;
+          // Refresh dashboard if store was successfully fetched
+          if (_di<StoreManager>().stores.value.isNotEmpty) {
+            loadStats();
+          }
+        }).ignore();
+      }
+
+      final results = await Future.wait([
+        queries.getMyOpenApCount(), // Personal open APs
+        Future.value(0),            // No "store" overdue yet
+        queries.getMyAvgScore(),    // Personal avg score
+      ]);
+
+      final deadline = await queries.getNearestDeadline();
+      final recent = await queries.getRecentSubmissions(limit: 10);
+
+      return ManagerDashboardState(
+        storeId: null,
+        storeName: 'Syncing...',
+        openActionPlans: results[0] as int,
+        overdueActionPlans: results[1] as int,
+        storeAvgScore: results[2] as double,
+        nearestDeadline: deadline,
+        recentSubmissions: recent,
+      );
     }
 
     final store = stores.first;
