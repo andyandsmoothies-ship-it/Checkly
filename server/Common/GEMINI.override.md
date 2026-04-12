@@ -52,3 +52,8 @@
 > **CS0420: `volatile` Keyword + `Volatile.Write(ref field, ...)` Are Mutually Exclusive**
 > **Problem:** `private volatile T _field; Volatile.Write(ref _field, value)` triggers CS0420. Passing `ref` to a `volatile` field inside a method strips the volatile semantics — the compiler warns you the call is semantically broken.
 > **Fix:** Remove the `volatile` keyword. Use `Volatile.Write(ref _field, value)` in writers and `Volatile.Read(ref _field)` in readers. Provides identical memory ordering guarantees with zero warnings. Applies to any lock-free single-writer/multi-reader singleton cache pattern.
+
+> [!WARNING]
+> **Serilog + MEL `ILogger` Ambiguity (CS0104)**
+> **Problem:** Using `using Serilog;` in a class that lives in the same project as `Microsoft.Extensions.Logging` creates an ambiguous `ILogger` reference, causing CS0104 build failure.
+> **Fix:** Do NOT add `using Serilog;`. Instead, fully qualify inline: `private static readonly Serilog.ILogger Logger = Serilog.Log.ForContext<MyClass>();`. Applies to every new class in `Common/` that needs structured logging.

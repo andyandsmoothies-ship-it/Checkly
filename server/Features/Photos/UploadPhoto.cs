@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Storage;
 
 namespace Checkly.Api.Features.Photos;
 
@@ -19,7 +20,7 @@ public static class UploadPhoto
         IFormFile file,
         ClaimsPrincipal user,
         AppDbContext db,
-        IWebHostEnvironment env,
+        IFileStorage storage,
         CancellationToken ct)
     {
         if (file.Length == 0)
@@ -63,15 +64,12 @@ public static class UploadPhoto
         if (!hasAccess)
             return TypedResults.Forbid();
 
-        // Save to filesystem using a fresh stream open (IFormFile supports multiple opens)
-        var photoDir = Path.Combine(env.ContentRootPath, "data", "photos", submissionId.ToString());
-        Directory.CreateDirectory(photoDir);
-
+        // Save via storage abstraction (decoupled from raw filesystem).
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var filePath = Path.Combine(photoDir, fileName);
+        var key = $"{submissionId}/{fileName}";
 
-        await using var saveStream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(saveStream, ct);
+        await using var saveStream = file.OpenReadStream();
+        await storage.SaveAsync("photos", key, saveStream, ct);
 
         var photoUrl = $"/api/photos/{submissionId}/{fileName}";
 

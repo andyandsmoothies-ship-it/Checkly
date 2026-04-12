@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Storage;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Photos;
@@ -16,7 +17,7 @@ public static class GetPhoto
         string fileName,
         ClaimsPrincipal user,
         AppDbContext db,
-        IWebHostEnvironment env,
+        IFileStorage storage,
         CancellationToken ct)
     {
         if (!Guid.TryParse(submissionId, out var parsedSubmissionId))
@@ -25,11 +26,6 @@ public static class GetPhoto
         // Prevent Path Traversal (e.g. ../../appsettings)
         if (fileName.Contains("..") || fileName.Contains('/') || fileName.Contains('\\'))
             return TypedResults.BadRequest();
-
-        var filePath = Path.Combine(env.ContentRootPath, "data", "photos", parsedSubmissionId.ToString(), fileName);
-
-        if (!File.Exists(filePath))
-            return TypedResults.NotFound();
 
         // IDOR: Look up submission to verify ownership.
         // V4 Ghost File Bypass fix: if submission is null (deleted), deny immediately.
@@ -55,6 +51,10 @@ public static class GetPhoto
             _ => "application/octet-stream"
         };
 
-        return Results.File(filePath, contentType);
+        var stream = await storage.ReadAsync("photos", $"{parsedSubmissionId}/{fileName}", ct);
+        if (stream is null)
+            return TypedResults.NotFound();
+
+        return Results.Stream(stream, contentType);
     }
 }

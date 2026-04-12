@@ -4,6 +4,9 @@ using System.Text.Json;
 using Checkly.Api.Common;
 using Checkly.Api.Common.Auth;
 using Checkly.Api.Features.Submissions;
+using Checkly.Api.Common.Persistence;
+using Checkly.Api.Common.Persistence.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -75,20 +78,35 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
     public async Task ListSubmissions_WithoutSubmissionsListCapability_Returns403()
     {
         // ARRANGE
-        // Forge a JWT directly via TokenService with role "phantom" — a role that has
-        // NO entry in role_capabilities. This bypasses RegisterUserAsync which enforces
-        // the server-side role allowlist (admin/auditor/store_manager/area_manager).
-        // (Option A resolution: contract fix — all registered roles have submissions:list)
-        using var scope = _factory.Services.CreateScope();
-        var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
-        var phantomToken = tokenService.GenerateToken(Guid.NewGuid(), "phantom@test.test", "phantom");
+        // Phase F2 Hardening Check: Authentication now verifies the user exists.
+        // We must manually insert a user with a 'phantom' role into the DB 
+        // to bypass the 401 Unauthorized check and reach the 403 Forbidden check.
+        var phantomUserId = Guid.NewGuid();
+        var phantomEmail = "phantom@test.test";
+        var phantomRole = "phantom";
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+            
+            var user = new AppUser { Id = phantomUserId, UserName = phantomEmail, Email = phantomEmail };
+            await userManager.CreateAsync(user, "Pass123!@");
+            
+            db.AppUserRoles.Add(new UserRole { Id = Guid.NewGuid(), UserId = phantomUserId, Role = phantomRole });
+            await db.SaveChangesAsync();
+        }
+
+        using var tokenScope = _factory.Services.CreateScope();
+        var tokenService = tokenScope.ServiceProvider.GetRequiredService<TokenService>();
+        var phantomToken = tokenService.GenerateToken(phantomUserId, phantomEmail, phantomRole);
         var badClient = _factory.CreateAuthenticatedClient(phantomToken);
 
         // ACT
         var response = await badClient.GetAsync("/api/submissions");
 
         // ASSERT
-        // CapabilityAuthorizationHandler finds no entries for "phantom" in PbacDictionaryCache → 403
+        // User exists (Auth passes), but role 'phantom' has no capabilities (Authz fails) → 403
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 

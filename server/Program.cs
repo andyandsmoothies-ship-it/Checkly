@@ -18,6 +18,7 @@ using Checkly.Api.Features.Templates;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
 using Checkly.Api.Common.Exceptions;
+using Checkly.Api.Common.Storage;
 using Checkly.Api.Features.SystemInfo;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
@@ -218,6 +219,7 @@ try
     builder.Services.AddSingleton<IAuthorizationHandler, CapabilityAuthorizationHandler>();
     builder.Services.AddHostedService<PbacCacheListenerService>();
     builder.Services.AddSingleton<DistributedLockManager>();
+    builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
     builder.Services.AddHostedService<ReminderService>();
 
     // --- SignalR ---
