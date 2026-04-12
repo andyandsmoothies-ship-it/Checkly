@@ -13,8 +13,8 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 
 | Step | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
-| **Reasoning Phases**| Structure internal thoughts via exactly 4 phases: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `task.md`. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
+| **Reasoning Phases**| Structure internal thoughts via exactly 4 phases: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `task_[ConversationID].md`. |
 
 ```markdown
 # Task: [Bug / Error Topic Name]
@@ -26,7 +26,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 - [ ] Phase 4: Deliverable Handoff
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../failure_report_[topic].md | Report |
+| [NEW]  | brain/.../failure_report_[topic]_[ConversationID].md | Report |
 ```
 
 ## Phase 1: Symptom Isolation
@@ -53,7 +53,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Skill Refresh** | IF (Root cause domain != Symptom domain) THEN Re-scan and load new Domain `SKILL.md`. |
-| **Artifact Gen** | Export `failure_report_[topic].md`. |
+| **Artifact Gen** | Export `failure_report_[topic]_[ConversationID].md`. |
 | **Constraint** | PROHIBITED: Making code changes directly in this workflow. |
 
 > **@@SCAN**: (1) File contains explicit execution trace? (2) Proposed fix strictly scoped to root cause?
@@ -63,13 +63,13 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Gotcha Protocol**| MANDATORY: Append `### Gotcha Addition Proposal` to report. IF (project-specific logic) THEN Propose bullet point for `GEMINI.override.md`. ELSE -> State "No new gotcha detected". |
-| **Routing** | Output message: *"Pass failure_report_[topic].md to Builder agent (@Forge) for /implement."* -> YIELD. |
+| **Routing** | Output message: *"Pass failure_report_[topic]_[ConversationID].md to Builder agent (@Forge) for /implement."* -> YIELD. |
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your `failure_report_[topic].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.
+> **Payload Schema:** Your `failure_report_[topic]_[ConversationID].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.
 >
-> **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`

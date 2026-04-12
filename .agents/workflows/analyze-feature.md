@@ -13,7 +13,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 | Step | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
 | **Contract Ingestion** | MANDATORY: If this feature is part of an Epic, you MUST read the parent Epic's API Contracts and Dispatch Map. Your sole purpose is to translate ONE specific Epic Slice into an exact execution plan. You are required to generate the specific Database Schemas, File Paths, and exact Diffs required to fulfill the Epic Contract without changing the contract itself. |
 
 ```markdown
@@ -26,7 +26,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 - [ ] Phase 4: Route Implementation
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../implementation_plan_[topic].md | Plan |
+| [NEW]  | brain/.../implementation_plan_[topic]_[ConversationID].md | Plan |
 ```
 
 ## Phase 1: Discovery & Deconstruction
@@ -57,8 +57,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Process | Execution Contract |
 |---|---|
-| **Artifact Generation** | Create `implementation_plan_[topic].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/implementation_plan_[topic].md` via terminal. |
+| **Artifact Generation** | Create `implementation_plan_[topic]_[ConversationID].md` (IsArtifact: True). |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/implementation_plan_[topic]_[ConversationID].md` via terminal. |
 ## Phase 4: Route Implementation (The ATDD Gate)
 
 > [!CAUTION]
@@ -74,18 +74,18 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 ## 🚦 User Handoff & Next Steps
 
 > [!IMPORTANT]
-> **Output Created:** `implementation_plan_[topic].md`
+> **Output Created:** `implementation_plan_[topic]_[ConversationID].md`
 > 
 > **YOUR NEXT COMMAND & CONCURRENCY:**
 > - **Concurrency Strategy**: If you generated multiple Micro-Slices, explicitly declare which slices are `[BLOCKING]` (must run alone/first) and which are `[PARALLEL]` (can be dispatched concurrently in separate AI windows to save user waiting time).
-> - **If Track B2 (High Risk):** Switch to Sentinel QA and type: `@[/atdd] this implementation_plan_[topic].md`
-> - **If Track B1 (Low Risk):** Switch to Forge Builder and type: `@[/implement] this implementation_plan_[topic].md`
+> - **If Track B2 (High Risk):** Switch to Sentinel QA and type: `@[/atdd] this implementation_plan_[topic]_[ConversationID].md`
+> - **If Track B1 (Low Risk):** Switch to Forge Builder and type: `@[/implement] this implementation_plan_[topic]_[ConversationID].md`
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `implementation_plan_[topic].md` MUST INCLUDE: `<latent_space_scratchpad>` (to artificially expand your computational thinking on edge cases prior to outputting the plan), `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Risk Assessment`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Verification Plan`, and `<forensic_evidence>` tags (list of terminal commands run).
+> **Payload Schema:** Your generated `implementation_plan_[topic]_[ConversationID].md` MUST INCLUDE: `<latent_space_scratchpad>` (to artificially expand your computational thinking on edge cases prior to outputting the plan), `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Risk Assessment`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `Tactical Rollback Plan`, `Verification Plan`, and `<forensic_evidence>` tags (list of terminal commands run).
 >
-> **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`

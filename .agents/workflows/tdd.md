@@ -11,7 +11,7 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 > The Builder Agent (@Forge) is strictly forbidden from running this workflow.
 
 ## Pre-Flight Setup
-- **MANDATORY ARTIFACT**: You MUST create a `task.md` document right now using this exact schema. Update progress continuously.
+- **MANDATORY ARTIFACT**: You MUST create a `task_[ConversationID].md` document right now using this exact schema. Update progress continuously.
   ```markdown
   # Task: [Test Generation Topic]
   Workflow: /tdd | Track: [A / B1 / B2 / C]
@@ -22,13 +22,13 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
   - [ ] Phase 4: Handoff
   ## Artifact Inventory
   | Status | File Path | Type |
-  | [NEW]  | brain/.../executed_tests_[topic].md | Red Tests |
-  | [NEW]  | brain/.../walkthrough_[topic].md | Summary |
+  | [NEW]  | brain/.../executed_tests_[topic]_[ConversationID].md | Red Tests |
+  | [NEW]  | brain/.../walkthrough_[topic]_[ConversationID].md | Summary |
   ```
 
 ## Phase 1: Blueprint Ingestion
 - **Instruction**: Assume the role of **Sentinel** (Senior QA/SDET Engineer).
-- **Action**: Read the `implementation_plan_[topic].md` (or the plan provided by the user). You must fully understand the proposed API contracts, class names, or widget signatures proposed by the Builder.
+- **Action**: Read the `implementation_plan_[topic]_[ConversationID].md` (or the plan provided by the user). You must fully understand the proposed API contracts, class names, or widget signatures proposed by the Builder.
 - **Dynamic Skill Loading (MANDATORY)**: You must load testing skills relevant to the current technology stack. Scan `.agents/skills/` and load the most specific skills. Do NOT run this workflow without loading the correct skill suite:
   - **.NET / C# Backend**: Load `testing-strategy` (for xUnit v3, WebApplicationFactory, Verify).
   - **React / Frontend**: Load `frontend-testing` (for Jest, React Testing Library, Cypress).
@@ -80,14 +80,14 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 
 ## Phase 4: Handoff
 - **Requirement**: Output the failed test execution log securely.
-- **Action**: Create an `executed_tests_[topic].md` artifact containing the raw terminal output proving the Valid Red test failures.
-- **Action**: Create a `walkthrough_[topic].md` declaring the scope of the tests written along with the exact commands the Builder should use to run them.
+- **Action**: Create an `executed_tests_[topic]_[ConversationID].md` artifact containing the raw terminal output proving the Valid Red test failures.
+- **Action**: Create a `walkthrough_[topic]_[ConversationID].md` declaring the scope of the tests written along with the exact commands the Builder should use to run them.
 - **Final Message**: You MUST output the exact block below to the user so they can pivot back to the Builder Agent:
 
 ## 🚦 User Handoff & Next Steps
 
 > [!IMPORTANT]
-> **Outputs Created:** Internal Unit Tests (RED) + `executed_tests_[topic].md`.
+> **Outputs Created:** Internal Unit Tests (RED) + `executed_tests_[topic]_[ConversationID].md`.
 >
 > **YOUR NEXT COMMAND:** 
 > - Return to your suspended chat with Forge Builder and type: `Here is the result of tdd, check and continue.`
@@ -97,11 +97,11 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 ## Final Phase: Script Verification Gate
 
 > [!IMPORTANT]
-> **Update `task.md`**: Before running the script below, you MUST update your `task.md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
+> **Update `task_[ConversationID].md`**: Before running the script below, you MUST update your `task_[ConversationID].md` to change all lines to `[x]` and update the `Artifact Inventory` with the absolute paths of the files you just wrote.
 
 Run EXACTLY:
 `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 
 - Code 0 (PASS): Workflow complete. Share summary and stop.
 - Code 1 (FAIL): Fix reported errors and retry.
-- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic].md` with error. Tell user: "Hard gate blocked on: [error]".
+- 2-Strike Rule: Same error fails twice → STOP. Write `handoff_[topic]_[ConversationID].md` with error. Tell user: "Hard gate blocked on: [error]".

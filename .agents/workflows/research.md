@@ -17,7 +17,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Vector | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
 | **Status Quo Audit** | MANDATORY: Before proposing any new architecture, you MUST `grep_search` to find existing native implementations (e.g., existing auth guards, parsers). Your artifact MUST document the "Current Codebase Reality" to prevent generic textbook hallucinations. |
 | **Discovery** | IF (tech is very new/rare) THEN query Context7 MCP to save hallucination. ELSE rely on model baseline to save API credits. |
@@ -39,11 +39,11 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `research_[topic].md` (IsArtifact: True). |
+| **Artifact Gen** | Create `research_[topic]_[ConversationID].md` (IsArtifact: True). |
 | **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic]_[ConversationID].md` via terminal. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `research_[topic].md` MUST INCLUDE: 
+> **Payload Schema:** Your generated `research_[topic]_[ConversationID].md` MUST INCLUDE: 
 > 1. `<latent_space_scratchpad>`: Before writing your final plan, use this block to explicitly state your internal reasoning, debate architectural tradeoffs, and explore edge cases to artificially expand your test-time compute.
 > 2. `E2E Workflow Map`
 > 3. `Comparative Decision Matrix`

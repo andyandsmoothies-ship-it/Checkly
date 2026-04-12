@@ -12,7 +12,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 | Audit Vector | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills. |
 | **Side Effects** | MANDATORY: Assess code changes for framework state loss, missing locks, or illegal ghost imports based on `.agents/rules/`. |
 | **Verification**| MANDATORY: Semi-Formal Reasoning. Trace code path line-by-line. PROHIBITED: Assuming behavior based on function names. |
@@ -48,8 +48,8 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | Step | Execution Contract |
 |---|---|
 | **Skill Refresh** | Re-scan `.agents/skills/` for code-review/security skills to detect slow-burn tech debt. |
-| **Artifact Form** | Create `walkthrough_[topic]_[time].md`. Include EDD Executed Evidence (terminal logs/test outputs). |
-| **Handoff Lock** | Write `handoff_[topic].md` (Phases + Gate State) before context dilution. |
+| **Artifact Form** | Create `walkthrough_[topic]_[time]_[ConversationID].md`. Include EDD Executed Evidence (terminal logs/test outputs). |
+| **Handoff Lock** | Write `handoff_[topic]_[ConversationID].md` (Phases + Gate State) before context dilution. |
 
 > [!IMPORTANT]
 > **Script Verification Gate**:

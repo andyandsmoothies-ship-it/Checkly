@@ -78,7 +78,7 @@ def find_files_by_prefix(directory: str, prefix: str) -> list[str]:
 
 def get_active_artifacts(session_dir: str) -> list[str]:
     """Extracts explicit, scoped artifact paths from the active task.md Inventory."""
-    task_path = find_file(session_dir, "task.md")
+    task_path = next((f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()), None)
     if not task_path:
         return []
     
@@ -134,7 +134,7 @@ def warn(msg: str) -> None:
 
 def check_task_md(session_dir: str) -> None:
     print("\n[CHECK 1] Scanning task.md for incomplete phases...")
-    task_path = find_file(session_dir, "task.md")
+    task_path = next((f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()), None)
 
     if task_path is None:
         fail(
@@ -168,7 +168,7 @@ def check_task_md(session_dir: str) -> None:
 
 def check_artifact_inventory(session_dir: str) -> None:
     print("\n[CHECK 2] Scanning Artifact Inventory for missing files on disk...")
-    task_path = find_file(session_dir, "task.md")
+    task_path = next((f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()), None)
     if task_path is None:
         warn("Cannot run artifact physicality check — task.md not found.")
         return

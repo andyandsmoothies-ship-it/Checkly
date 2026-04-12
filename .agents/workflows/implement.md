@@ -14,7 +14,7 @@ description: The Core Builder Implementation Workflow
 |---|---|
 | **Context Load** | `view_file(implement.md)` -> load `@@SCAN` checkpoints into active context. |
 | **Governance** | Run Pre-Flight check (`governance-rules.md`). Process `@@SCAN` internally. |
-| **Task Tracking**| MANDATORY: Create `task.md` using strict template BEFORE coding. |
+| **Task Tracking**| MANDATORY: Create `task_[ConversationID].md` using strict template BEFORE coding. |
 
 ```markdown
 # Task: [Name]
@@ -31,8 +31,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 ## Artifact Inventory
 | Status | File Path | Type |
 |--------|-----------|------|
-| [NEW]  | brain/.../walkthrough_[topic].md | Result |
-| [NEW]  | brain/.../executed_tests_[topic].md | Test Log |
+| [NEW]  | brain/.../walkthrough_[topic]_[ConversationID].md | Result |
+| [NEW]  | brain/.../executed_tests_[topic]_[ConversationID].md | Test Log |
 ```
 
 ## Phase 1: Deep Discovery
@@ -70,7 +70,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 > **Anti-Bias Protocol:** Builder CANNOT write own tests.
 | Step | Execution Contract |
 |---|---|
-| **Artifact Create**| Export `test_contracts_[topic].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
+| **Artifact Create**| Export `test_contracts_[topic]_[ConversationID].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
 | **Contract Format**| Strict Template: `ID`, `Exact Text/Key` (with line #), `State Matrix` (Happy/Error/Empty), `Private Method Access`, `Why RED now`. |
 | **Execution Lock** | PROHIBITED: Entering Phase 3 without explicit TDD execution. The *Marking Your Own Homework Paradox* applies universally. MANDATORY YIELD: You MUST yield to the QA persona (@Sentinel) to write tests. Output the exact block below -> YIELD. |
 
@@ -122,7 +122,7 @@ Review from 5 angles & state findings:
 |---|---|
 | **Test Analytics**| Output tests to files to bypass terminal limits. `.NET`: `powershell -File scripts\CollectTestResults.ps1` \| `Flutter`: `flutter test --machine > results.json` \| `Node`: `npm test -- --json > results.json`. `view_file` the result. |
 | **Diff Check** | `git diff --name-only`. Revert unplanned. |
-| **Handoff Trap** | IF Context Limit Approaching: Create `handoff_[topic].md` (Completed, Remaining, Modded files) -> Notify User -> YIELD. |
+| **Handoff Trap** | IF Context Limit Approaching: Create `handoff_[topic]_[ConversationID].md` (Completed, Remaining, Modded files) -> Notify User -> YIELD. |
 
 > **@@SCAN**: (1) All 4 angles reviewed? (2) State tests exist? (3) `git diff` clean? (4) Verdict (Ship/Show/Ask)?
 
@@ -136,14 +136,14 @@ Review from 5 angles & state findings:
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Walkthrough Schema:** Your `walkthrough_[topic].md` MUST INCLUDE: 
+> **Walkthrough Schema:** Your `walkthrough_[topic]_[ConversationID].md` MUST INCLUDE: 
 > 1. `## Decision Log`: Table showing proposed vs implemented/rejected.
 > 2. `## Verification Handoff`: Steps/Expected/Radius for QA Agent. (MANDATORY: Recommend running `@red_team_playbook.md` if feature is Track C, or backend Track B).
 > 3. `<test_trace>`: MANDATORY for external feedback. You MUST provide the raw terminal execution output of your tests (e.g., `dotnet test` or `flutter analyze`) inside these XML tags. Self-certification of code fixes without terminal proof is prohibited.
 > 4. `<forensic_evidence>`: Proof of general validation/exploration commands run.
 > 4. `## Gotcha Protocol`: Propose `GEMINI.override.md` edit if obsolete rules exist.
 >
-> **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
@@ -153,7 +153,7 @@ Review from 5 angles & state findings:
 ## 🚦 User Handoff & Next Steps
 
 > [!IMPORTANT]
-> **Outputs Created:** Implemented code (GREEN) + `walkthrough_[topic].md`.
+> **Outputs Created:** Implemented code (GREEN) + `walkthrough_[topic]_[ConversationID].md`.
 >
 > **YOUR NEXT COMMAND:** (Do not merge code yet)
-> - Switch to Sentinel QA and type: `@[/verify] this walkthrough_[topic].md`
+> - Switch to Sentinel QA and type: `@[/verify] this walkthrough_[topic]_[ConversationID].md`

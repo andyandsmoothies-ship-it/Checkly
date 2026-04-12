@@ -14,7 +14,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute weekly or on-demand. (Use `/audit-infra` for DB/architecture health). |
-| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 keywords (e.g., "health", "refactoring") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
 ## Phase 2: Code Quality Scan
@@ -53,7 +53,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_code_report_[date-time].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[date].md`. |
+| **Artifact Gen** | Create `audit_code_report_[date-time]_[ConversationID].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[date]_[ConversationID].md`. |
 | **Severity Matrix**| `🔴 Critical` (Breaks build/Untestable) | `🟡 Warning` (Convention fail/Stale TODO) | `🟢 Optimization` (Dead code/Redundant). |
 | **Actionable Fix** | MANDATORY: Provide exact fix command or refactor snippet for EVERY finding. |
 

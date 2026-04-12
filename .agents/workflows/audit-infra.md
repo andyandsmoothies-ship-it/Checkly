@@ -14,7 +14,7 @@ description: Infrastructure & architecture audit — database health, security p
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute post-major feature release or pre-scaling. |
-| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 keywords (e.g., "database", "security", "api-design") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
 ## Phase 2: Database & Query Audit
@@ -63,7 +63,7 @@ description: Infrastructure & architecture audit — database health, security p
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_infra_report_[date-time].md` in `brain/` folder. IF zero issues -> create `audit_infra_pass_[date].md`. |
+| **Artifact Gen** | Create `audit_infra_report_[date-time]_[ConversationID].md` in `brain/` folder. IF zero issues -> create `audit_infra_pass_[date]_[ConversationID].md`. |
 | **Severity Matrix**| `🔴 Critical` (Data loss/Security breach/Unbounded rows) | `🟡 Warning` (Performance drag/Leakage) | `🟢 Optimization` (Cleanups). |
 | **Actionable Fix** | MANDATORY: Provide exact fix snippet or EF migration plan for EVERY finding. |
 

@@ -17,7 +17,7 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 | Step | Execution Contract |
 |---|---|
 | **Governance** | IF `.agents/rules/governance-rules.md` NOT in memory THEN `view_file` it immediately. |
-| **Task Tracking** | MANDATORY: Create `task.md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
 
 ```markdown
 # Task: [Epic Name]
@@ -29,7 +29,7 @@ Workflow: /analyze-epic | Track: C
 - [ ] Phase 4: Slicing Dispatch
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../analysis_epic_[topic].md | Epic Plan |
+| [NEW]  | brain/.../analysis_epic_[topic]_[ConversationID].md | Epic Plan |
 ```
 
 ## Phase 1: Technical Discovery & Feasibility
@@ -60,7 +60,7 @@ Workflow: /analyze-epic | Track: C
 
 | Process | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `analysis_epic_[topic].md` (IsArtifact: True). |
+| **Artifact Gen** | Create `analysis_epic_[topic]_[ConversationID].md` (IsArtifact: True). |
 | **Persist Copy** | Copy deliverable to `.agents/tmp/research/analysis_epic_[topic]_[ConversationID].md` via terminal. |
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
@@ -71,7 +71,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Execution Contract |
 |---|---|
-| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices. Append slices to `analysis_epic_[topic].md`. |
+| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices. Append slices to `analysis_epic_[topic]_[ConversationID].md`. |
 | **Dispatch Map** | Generate Routing Table. `Slice N | Track A/B | Route Path`. |
 
 ### Dispatch Map Schema
@@ -84,9 +84,9 @@ Workflow: /analyze-epic | Track: C
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `analysis_epic_[topic].md` MUST INCLUDE: `1. <latent_space_scratchpad>` (to artificially expand test-time compute by thinking through tradeoffs and edge cases *before* concluding), `2. Exec Summary`, `3. Decision Matrix`, `4. Risk Assessment`, `5. Sys Arch Flow (Mermaid)`, `6. DB Migrations`, `7. API Contracts`, `8. Blast Radius/Rollback Plan`, `9. Red Team Adversarial Log`, `10. Security/RLS`, `11. Observability Hooks`, `12. EDD Expectations`, and `13. <forensic_evidence>` tags (terminal log proof).
+> **Payload Schema:** Your generated `analysis_epic_[topic]_[ConversationID].md` MUST INCLUDE: `1. <latent_space_scratchpad>` (to artificially expand test-time compute by thinking through tradeoffs and edge cases *before* concluding), `2. Exec Summary`, `3. Decision Matrix`, `4. Risk Assessment`, `5. Sys Arch Flow (Mermaid)`, `6. DB Migrations`, `7. API Contracts`, `8. Blast Radius/Rollback Plan`, `9. Red Team Adversarial Log`, `10. Security/RLS`, `11. Observability Hooks`, `12. EDD Expectations`, and `13. <forensic_evidence>` tags (terminal log proof).
 >
-> **Update task.md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
