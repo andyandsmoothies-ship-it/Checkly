@@ -55,6 +55,13 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 | **Verification** | Execute `list_dir` on brain directory -> Confirm report written securely. |
 | **Routing Map** | All findings mandate a shift to the `/research` or `/analyze-epic` workflow to formally redesign the component before any code is written. |
 
+### Final Generation Mandate (Suffix)
+> [!IMPORTANT]
+> **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
+> 1. Final SRE Verdict (Fatal/Brittle/Resilient) & Persistent path.
+> 2. Summary of 2AM Landmines found.
+> 3. The exact next workflow command the user should run (e.g. `/analyze-epic`).
+>
 > [!IMPORTANT]
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`

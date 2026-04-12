@@ -86,6 +86,11 @@ Workflow: /analyze-epic | Track: C
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 > **Payload Schema:** Your generated `analysis_epic_[topic]_[ConversationID].md` MUST INCLUDE: `1. <latent_space_scratchpad>` (to artificially expand test-time compute by thinking through tradeoffs and edge cases *before* concluding), `2. Exec Summary`, `3. Decision Matrix`, `4. Risk Assessment`, `5. Sys Arch Flow (Mermaid)`, `6. DB Migrations`, `7. API Contracts`, `8. Blast Radius/Rollback Plan`, `9. Red Team Adversarial Log`, `10. Security/RLS`, `11. Observability Hooks`, `12. EDD Expectations`, and `13. <forensic_evidence>` tags (terminal log proof).
+> 
+> **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
+> 1. Final Epic Verdict & Persistent path.
+> 2. The routing table of Slices (Track A/B) and their dependencies.
+> 3. The exact next workflow command the user should run.
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

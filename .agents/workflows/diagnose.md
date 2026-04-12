@@ -68,6 +68,11 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 > **Payload Schema:** Your `failure_report_[topic]_[ConversationID].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.
+> 
+> **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
+> 1. Final Diagnostic Verdict & Persistent path.
+> 2. The required fix and its blast radius.
+> 3. The exact next workflow command the user should run (e.g. `/implement`).
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

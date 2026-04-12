@@ -49,20 +49,10 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > 3. `Comparative Decision Matrix`
 > 4. Strict `<forensic_evidence>` tags (proof of executed commands).
 > 
-> **Handoff Block Template** (Must be appended at the absolute EOF):
-> ```markdown
-> ---
-> ## Handoff Block
-> - **Verdict**: Viable / Needs Redesign / Reject
-> - **PoC Scope**: [Define PoC boundary if highly risky]
-> - **Downsides & Risks**: [Explicitly list UX degradation, maintenance burden]
-> - **Effort Sizing**: Sprint/Theme | Epic (Track C) | Feature (Track A/B)
-> - **Concurrency Strategy**: Specify if this research dictates `[BLOCKING]` sequential work, or `[PARALLEL]` independent tracks to save waiting time.
-> - **Recommended Next**: `shaping` | `/analyze-epic` | `/analyze-feature`
-> - **Persistent Path**: `.agents/tmp/research/research_[topic]_[ConversationID].md`
-> - **Blind Spots**: [3 explicit flaws]
-> - **Conflicts**: [Explicit constraints broken]
-> ```
+> **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
+> 1. Final Verdict (Viable/Reject) & Persistent path.
+> 2. Effort Sizing (Track C / Track A/B) and Concurrency Strategy.
+> 3. The exact next workflow command the user should run (e.g. `/analyze-epic`).
 > [!IMPORTANT]
 > **Script Verification Gate**:
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
