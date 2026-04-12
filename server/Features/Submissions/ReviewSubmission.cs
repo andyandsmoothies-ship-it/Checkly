@@ -23,13 +23,6 @@ public static class ReviewSubmission
         AppDbContext db,
         CancellationToken ct)
     {
-        // Admin-only guard
-        var callerRole = user.FindFirstValue(ClaimTypes.Role) ?? "";
-        if (callerRole != "admin")
-        {
-            return TypedResults.Forbid();
-        }
-
         // Validate status
         if (!ValidStatuses.Contains(request.Status))
         {

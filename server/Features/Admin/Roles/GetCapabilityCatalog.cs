@@ -10,7 +10,7 @@ namespace Checkly.Api.Features.Admin.Roles;
 public static class GetCapabilityCatalog
 {
     /// <summary>
-    /// All 9 valid capability strings. Hardcoded (YAGNI — stable V1 set).
+    /// All 13 valid capability strings. Hardcoded (YAGNI — stable V2 set).
     /// Adding a new capability here requires a coordinated deploy.
     /// </summary>
     public static readonly string[] Catalog =
@@ -23,6 +23,10 @@ public static class GetCapabilityCatalog
         "users:manage",
         "analytics:admin",
         "submissions:list",
+        "submissions:create",
+        "submissions:review",
+        "action_plans:write",
+        "action_plans:verify",
         "admin:manage_roles",
     ];
 

@@ -50,6 +50,7 @@ When writing or moving files via terminal commands (e.g., `copy`, `move`):
 If an AI agent skips or merges a workflow phase (e.g. bypassing `[/tdd]` because `[/atdd]` provided enough coverage):
 - **Rule**: No silent skips.
 - **Action**: Add an explicit `> [!NOTE]` alert in `task.md` or `implementation_plan.md`.
+- **The "Heavy Math" Exception**: You MUST NOT bypass TDD for pure domain logic. If the feature contains complex mathematical, algorithmic, or heavy permutational logic (e.g. scoring calculators, parsing engines, tax logic), you must STOP at Phase 2.5 and run `[/tdd]` to generate isolated, lightning-fast Unit Tests for that specific logic. ATDD integration tests alone are legally insufficient for heavy data permutations.
 - **Format**:
   > [!NOTE]
   > **AI Decision:** Skipped Phase X

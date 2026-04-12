@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +6,7 @@ namespace Checkly.Api.Features.Submissions;
 /// <summary>
 /// GET /api/submissions/survey-results?templateId={id}[&amp;inputTypes=single_choice,multi_choice]
 /// Returns aggregated answer distributions per criterion for ANY template type.
-/// Admin-only endpoint. Uses SQL GROUP BY for efficiency.
+/// Auth: RequireCapability(analytics:admin) enforced at route level.
 ///
 /// Phase B (Analytics V2): Removed ScoringMode == "survey" gate.
 /// Now works for all scoring modes, enabling distribution analytics for
@@ -16,15 +15,10 @@ namespace Checkly.Api.Features.Submissions;
 public static class GetSurveyResults
 {
     public static async Task<IResult> HandleAsync(
-        ClaimsPrincipal user,
         AppDbContext db,
         HttpContext httpContext,
         CancellationToken ct)
     {
-        var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
-        if (role != "admin")
-            return TypedResults.Forbid();
-
         var templateIdStr = httpContext.Request.Query["templateId"].FirstOrDefault();
         if (string.IsNullOrEmpty(templateIdStr) || !Guid.TryParse(templateIdStr, out var templateId))
             return TypedResults.BadRequest(new { error = "templateId query parameter is required" });

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +17,32 @@ public static class UpdateActionPlan
         UpdateActionPlanRequest request,
         ClaimsPrincipal user,
         AppDbContext db,
+        [Microsoft.AspNetCore.Mvc.FromServices] PbacDictionaryCache cache,
         CancellationToken ct)
     {
         var plan = await db.ActionPlans.FindAsync(id);
         if (plan is null)
             return TypedResults.NotFound();
 
-        // Capture old status BEFORE applying updates (for S2 notification logic)
+        // Capture old status BEFORE applying updates (for PBAC gate + S2 notification logic)
         var oldStatus = plan.Status;
+
+        // PBAC: Gate status transitions imperatively (one endpoint, two distinct capability gates).
+        // Field-only updates (description, evidence URL, etc.) bypass this check by design.
+        if (request.Status is not null)
+        {
+            var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
+
+            bool isWriteTransition  = request.Status == "pending_verify";
+            bool isVerifyTransition =
+                (request.Status == "closed" && oldStatus == "pending_verify") ||
+                (request.Status == "open"   && oldStatus == "pending_verify");
+
+            if (isWriteTransition  && !cache.GetCapabilities(role).Contains(AppCapabilities.ActionPlansWrite))
+                return TypedResults.Forbid();
+            if (isVerifyTransition && !cache.GetCapabilities(role).Contains(AppCapabilities.ActionPlansVerify))
+                return TypedResults.Forbid();
+        }
 
         if (request.PlanDescription is not null) plan.PlanDescription = request.PlanDescription;
         if (request.RootCause is not null) plan.RootCause = request.RootCause;

@@ -32,5 +32,12 @@ public static class AppCapabilities
     public const string AnalyticsAdmin = "analytics:admin";
     public const string AnalyticsArea = "analytics:area";  // Seeded in Slice 2 migration
     public const string SubmissionsList = "submissions:list";
+    public const string SubmissionsCreate = "submissions:create";
+    public const string SubmissionsReview = "submissions:review";
     public const string AdminManageRoles = "admin:manage_roles";
+
+    // ── Action Plan Transitions ───────────────────────────────────────────────
+    // Imperative checks inside UpdateActionPlan.HandleAsync — not route-level guards.
+    public const string ActionPlansWrite  = "action_plans:write";   // store_manager: submit evidence
+    public const string ActionPlansVerify = "action_plans:verify";  // auditor/area_manager: close or reject
 }

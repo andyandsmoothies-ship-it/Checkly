@@ -14,7 +14,8 @@ public static class SubmissionEndpoints
             .RequireAuthorization();
 
         group.MapPost("/", CreateSubmission.HandleAsync)
-            .WithName("CreateSubmission");
+            .WithName("CreateSubmission")
+            .RequireCapability(AppCapabilities.SubmissionsCreate);
 
         group.MapGet("/", ListSubmissions.HandleAsync)
             .WithName("ListSubmissions")
@@ -22,7 +23,8 @@ public static class SubmissionEndpoints
 
 
         group.MapGet("/survey-results", GetSurveyResults.HandleAsync)
-            .WithName("GetSurveyResults");
+            .WithName("GetSurveyResults")
+            .RequireCapability(AppCapabilities.AnalyticsAdmin);
 
         group.MapGet("/{id}", GetSubmission.HandleAsync)
             .WithName("GetSubmission");
@@ -31,7 +33,8 @@ public static class SubmissionEndpoints
             .WithName("UpdateSubmission");
 
         group.MapPut("/{id}/review", ReviewSubmission.HandleAsync)
-            .WithName("ReviewSubmission");
+            .WithName("ReviewSubmission")
+            .RequireCapability(AppCapabilities.SubmissionsReview);
 
         group.MapPut("/{id}/finalize", FinalizeSubmission.HandleAsync)
             .WithName("FinalizeSubmission");
