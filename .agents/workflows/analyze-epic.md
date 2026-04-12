@@ -39,6 +39,7 @@ Workflow: /analyze-epic | Track: C
 | **Skill Load** | Load abstract architectural skills (e.g., `clean-architecture`). |
 | **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
 | **Options** | Explicitly define >= 2 architectural alternatives. |
+| **Infrastructure Check**| MANDATORY: Identify if the Epic is "Backend-Only Infrastructure" (e.g., cron jobs, DB locks). If true, exempt the Epic from UI and Cross-Platform API generation. |
 | **Dependency Root Tracing**| MANDATORY: Before proposing an architecture, you MUST execute `grep_search` using exact entity names across the entire project. You must mathematically prove the 3-Tier Boundary: Database roots, DI Container registrations, and Cross-Platform API contracts. |
 | **Trade-Off Matrix**| MANDATORY: For each alternative, explicitly document Pros, Cons, and Blast Radius. Justify the chosen option over the ideal enterprise option. |
 | **Risk Assessment** | Formally assess the technical and operational risks of each decision/alternative, and document mitigation strategies. |
@@ -61,7 +62,7 @@ Workflow: /analyze-epic | Track: C
 | Process | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `analysis_epic_[topic]_[ConversationID].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/analysis_epic_[topic]_[ConversationID].md` via terminal. |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/analysis_epic_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
 ## Phase 4: Slicing & Dispatch Loop
@@ -71,7 +72,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Execution Contract |
 |---|---|
-| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices. Append slices to `analysis_epic_[topic]_[ConversationID].md`. |
+| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices (Unless Backend-Only Infrastructure, then slice by technical milestones). Append slices to `analysis_epic_[topic]_[ConversationID].md`. |
 | **Dispatch Map** | Generate Routing Table. `Slice N | Track A/B | Route Path`. |
 
 ### Dispatch Map Schema

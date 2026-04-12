@@ -58,7 +58,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | Process | Execution Contract |
 |---|---|
 | **Artifact Generation** | Create `implementation_plan_[topic]_[ConversationID].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/implementation_plan_[topic]_[ConversationID].md` via terminal. |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/implementation_plan_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
 ## Phase 4: Route Implementation (The ATDD Gate)
 
 > [!CAUTION]

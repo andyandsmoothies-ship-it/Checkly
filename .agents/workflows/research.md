@@ -40,7 +40,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 | Step | Execution Contract |
 |---|---|
 | **Artifact Gen** | Create `research_[topic]_[ConversationID].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic]_[ConversationID].md` via terminal. |
+| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 > **Payload Schema:** Your generated `research_[topic]_[ConversationID].md` MUST INCLUDE: 

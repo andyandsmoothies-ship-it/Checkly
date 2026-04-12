@@ -39,3 +39,9 @@ Before ANY workflow response involving analysis, design, or implementation:
 - **Generate Default**: Always create ALL artifacts in the `brain/` folder first.
 - **Copy High-Value**: Explicitly copy ADRs, Test Contracts, and Audits to `docs/` after creation.
 - **Discard Transients**: Leave Implementation Plans and tasks in `brain/`. DO NOT copy them to `docs/`.
+
+## Terminal File System Protocol (STRICT)
+When writing or moving files via terminal commands (e.g., `copy`, `move`):
+1. **Idempotent Directories**: Pre-create target directories to prevent silent failures (e.g., `if not exist [dir] mkdir [dir]`).
+2. **Quote Paths**: Always wrap full source and destination paths in `""`.
+3. **Mandatory Verification**: Never trust command exit codes. You MUST execute `dir` or `list_dir` on the destination to mathematically prove the file exists before yielding.

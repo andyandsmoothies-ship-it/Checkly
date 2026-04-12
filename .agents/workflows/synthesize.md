@@ -35,6 +35,6 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
     4. The Pugh Decision Matrix.
     5. The Final Verdict (The mathematical winner).
     6. **Handoff Block**: Standardized `## Handoff Block` appended at the EOF (Verdict, Sizing, Recommended Next `/analyze-*`, Persistent Path). MUST strictly obey the Anti-Acronym Rule (No P0/F1, use plain English).
-- [ ] **Persist Copy**: Copy the deliverable to `.agents/tmp/research/decision_record_[topic]_[ConversationID].md` using the terminal.
+- [ ] **Persist Copy**: Copy the deliverable to `.agents/tmp/research/decision_record_[topic]_[ConversationID].md` using the terminal. **MANDATORY: You must explicitly verify the file exists at the destination path (e.g. via `dir` or `list_dir`) before yielding control.**
 - [ ] **Verification**: Run `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"` to validate the output format.
 > **@@SCAN**: (1) ADR Schema respected (Latent Debate, Pugh Matrix)? (2) python verifier script executed and passed?
