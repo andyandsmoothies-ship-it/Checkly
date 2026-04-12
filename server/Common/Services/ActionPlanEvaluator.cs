@@ -48,10 +48,10 @@ public static class ActionPlanEvaluator
         if (string.Equals(answer.Value, "conform", System.StringComparison.OrdinalIgnoreCase) ||
             string.Equals(answer.Value, "na", System.StringComparison.OrdinalIgnoreCase))
             return false;
-            
+
         if (string.Equals(answer.Value, "non_conform", System.StringComparison.OrdinalIgnoreCase))
             return true;
-            
+
         return (answer.NumericValue ?? 0) > 0;
     }
 

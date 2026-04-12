@@ -149,4 +149,43 @@ public class PbacCacheListenerServiceTests(TestWebApplicationFactory fixture) : 
         // Expect exactly ONE invocation of InitializeAsync after 50 NOTIFYs
         Assert.Equal(1, tracker.DbContextResolutions);
     }
+
+    [Fact]
+    [Trait("Category", "Pbac")]
+    public async Task Consumer_RemainsAlive_AfterProcessingNotify_CanProcessSubsequentSignal()
+    {
+        // Arrange
+        var tracker = new TrackingServiceProvider(_sp);
+        var cache = new PbacDictionaryCache();
+        var config = _sp.GetRequiredService<IConfiguration>();
+        var listener = new PbacCacheListenerService(cache, config, new NullLogger<PbacCacheListenerService>(), tracker);
+        var cts = new CancellationTokenSource();
+        
+        var listenerTask = listener.StartAsync(cts.Token);
+        
+        // Act
+        // Phase 1 (Resync-on-Connect):
+        await Task.Delay(1500); 
+        Assert.True(cache.IsReady, "Resync-on-Connect should initialize cache.");
+        Assert.True(tracker.DbContextResolutions >= 1);
+
+        // Phase 2 (NOTIFY cycle):
+        tracker.DbContextResolutions = 0;
+        using (var scope = _sp.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await db.Database.ExecuteSqlRawAsync("NOTIFY pbac_invalidate;");
+        }
+        
+        await Task.Delay(2000); 
+
+        // Phase 3 (Teardown):
+        await cts.CancelAsync();
+        await listener.StopAsync(CancellationToken.None);
+
+        // Assert
+        Assert.Equal(1, tracker.DbContextResolutions);
+        Assert.True(cache.IsReady);
+        Assert.False(cache.IsRebuilding);
+    }
 }

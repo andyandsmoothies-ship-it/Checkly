@@ -411,6 +411,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
             // Performance indexes
             e.HasIndex(x => new { x.UserId, x.CreatedAt });
+            e.HasIndex(x => new { x.UserId, x.Type });
         });
     }
 

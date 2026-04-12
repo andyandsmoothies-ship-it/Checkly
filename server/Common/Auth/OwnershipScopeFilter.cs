@@ -28,7 +28,7 @@ public static class OwnershipScopeFilter
         CancellationToken ct)
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var role   = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
+        var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
 
         switch (role)
         {

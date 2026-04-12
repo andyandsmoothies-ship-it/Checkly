@@ -11,7 +11,7 @@ public static class SectionScoreExploder
 {
     public static Task ExplodeAsync(Guid submissionId, Guid? storeId, Guid? templateId, string? sectionScoresJson, AppDbContext db, DateTimeOffset now, CancellationToken ct = default)
     {
-        if (string.IsNullOrEmpty(sectionScoresJson)) 
+        if (string.IsNullOrEmpty(sectionScoresJson))
             return Task.CompletedTask;
 
         try

@@ -162,7 +162,7 @@ public static class CreateSubmission
             {
                 if (scoreMode == "enforce")
                 {
-                    Log.Warning("CreateSubmission 400: Score mismatch. Client: {Client}, Server: {Server}. Reason: {Reason}", 
+                    Log.Warning("CreateSubmission 400: Score mismatch. Client: {Client}, Server: {Server}. Reason: {Reason}",
                         request.ClientScore, verification.ServerScore, verification.Reason);
                     return TypedResults.BadRequest(new
                     {

@@ -59,11 +59,11 @@ public class GlobalExceptionHandler(IWebHostEnvironment env) : IExceptionHandler
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
         await httpContext.Response.WriteAsJsonAsync(
-            problemDetails, 
-            options: null, 
-            contentType: "application/problem+json", 
+            problemDetails,
+            options: null,
+            contentType: "application/problem+json",
             cancellationToken: cancellationToken);
-        
+
         return true;
     }
 }

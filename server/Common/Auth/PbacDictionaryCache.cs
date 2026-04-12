@@ -29,7 +29,22 @@ public sealed class PbacDictionaryCache
     /// IsReady is NOT reset to false during cache refresh — the listener keeps the old
     /// snapshot live until the new one is fully built and swapped in.
     /// </summary>
-    public bool IsReady { get; private set; }
+    // Non-volatile fields for IsReady and IsRebuilding — thread visibility managed via
+    // Volatile.Read (readers) and Volatile.Write (writers), matching the pattern used
+    // for _cache above. The volatile keyword is intentionally avoided: combining it with
+    // Volatile.Write triggers CS0420 (passing ref to a volatile field strips the semantics).
+    private bool _isReady;
+    private bool _isRebuilding;
+
+    /// <summary>
+    /// True once InitializeAsync has completed successfully.
+    /// The CapabilityAuthorizationHandler denies all requests if this is false (fail-safe).
+    /// IsReady is NOT reset to false during cache refresh — the listener keeps the old
+    /// snapshot live until the new one is fully built and swapped in.
+    /// Thread-safe: Volatile.Read ensures the written value is observable across all
+    /// CPU architectures including ARM64.
+    /// </summary>
+    public bool IsReady => Volatile.Read(ref _isReady);
 
     /// <summary>
     /// True when the listener has received a NOTIFY and is deliberately delaying
@@ -37,8 +52,13 @@ public sealed class PbacDictionaryCache
     /// Reset to false (via finally block) once InitializeAsync completes or fails.
     /// Used by health checks and dashboards to distinguish "stale but intentional"
     /// from "broken/stuck".
+    /// Thread-safe: getter uses Volatile.Read; setter uses Volatile.Write.
     /// </summary>
-    public bool IsRebuilding { get; set; }
+    public bool IsRebuilding
+    {
+        get => Volatile.Read(ref _isRebuilding);
+        set => Volatile.Write(ref _isRebuilding, value);
+    }
 
     /// <summary>
     /// Loads capabilities from the role_capabilities table into memory.
@@ -65,7 +85,10 @@ public sealed class PbacDictionaryCache
         // The old dictionary is safely GC'd once all readers holding a local snapshot release it.
         Volatile.Write(ref _cache, newCache);
 
-        IsReady = true;
+        // Volatile.Write guarantees _isReady = true is visible to ALL reader threads
+        // (including CapabilityAuthorizationHandler) AFTER this line executes,
+        // even on ARM64 where plain stores may not be immediately visible.
+        Volatile.Write(ref _isReady, true);
     }
 
     /// <summary>

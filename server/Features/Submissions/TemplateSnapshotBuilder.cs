@@ -41,7 +41,7 @@ public static class TemplateSnapshotBuilder
                 }).ToList()
             }).ToList()
         };
-        
+
         return JsonSerializer.Serialize(snapshotModel);
     }
 }

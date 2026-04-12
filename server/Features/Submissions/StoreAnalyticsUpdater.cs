@@ -12,7 +12,7 @@ public static class StoreAnalyticsUpdater
 {
     public static async Task UpdateMetricsAsync(Guid? storeId, Submission submission, AppDbContext db, DateTimeOffset now, CancellationToken ct)
     {
-        if (!storeId.HasValue) 
+        if (!storeId.HasValue)
             return;
 
         var thirtyDaysAgo = now.AddDays(-30);

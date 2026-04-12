@@ -68,12 +68,12 @@ public sealed class ScoringVerifier
         if (isWeighted)
         {
             var sectionResults = new List<(decimal ratio, decimal weight)>();
-            
+
             foreach (var section in rootGroups)
             {
                 var flatCriteria = criteria.Where(c => c.GroupId == section.Id).ToList();
                 var subsections = groups.Where(g => g.ParentId == section.Id).ToList();
-                
+
                 var allCriteria = new List<Criterion>(flatCriteria);
                 foreach (var sub in subsections)
                 {
@@ -81,7 +81,7 @@ public sealed class ScoringVerifier
                 }
 
                 bool ccpTriggered = allCriteria.Any(c => c.IsCcp && HasFaults(c, answers));
-                
+
                 decimal sectionBefore = 0m;
                 decimal sectionDeductions = 0m;
 
@@ -90,15 +90,15 @@ public sealed class ScoringVerifier
                     var subCriteria = criteria.Where(c => c.GroupId == sub.Id).ToList();
                     var subBefore = subCriteria.Sum(c => c.PointsWeight ?? 0);
                     sectionBefore += subBefore;
-                    
+
                     if (subBefore == 0) continue;
 
                     var subDeductions = subCriteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
-                    
+
                     // Cap at MaxDeductionPoints OR subBefore
                     var cap = sub.MaxDeductionPoints ?? subBefore;
                     subDeductions = Math.Min(subDeductions, cap);
-                    
+
                     sectionDeductions += subDeductions;
                 }
 
@@ -130,7 +130,7 @@ public sealed class ScoringVerifier
 
             var participatingWeight = sectionResults.Sum(p => p.weight);
             var finalScore = 0m;
-            
+
             if (participatingWeight > 0)
             {
                 foreach (var (ratio, weight) in sectionResults)

@@ -37,14 +37,14 @@ public static class ListSystemLogs
             return TypedResults.Forbid();
 
         var q = httpContext.Request.Query;
-        var levelFilter    = q["level"].FirstOrDefault();
+        var levelFilter = q["level"].FirstOrDefault();
         var categoryFilter = q["category"].FirstOrDefault();
-        var search         = q["search"].FirstOrDefault();
-        var startDateStr   = q["startDate"].FirstOrDefault();
-        var endDateStr     = q["endDate"].FirstOrDefault();
-        var traceIdFilter  = q["traceId"].FirstOrDefault();
-        var pageStr        = q["page"].FirstOrDefault();
-        var page           = int.TryParse(pageStr, out var p) ? Math.Max(1, p) : 1;
+        var search = q["search"].FirstOrDefault();
+        var startDateStr = q["startDate"].FirstOrDefault();
+        var endDateStr = q["endDate"].FirstOrDefault();
+        var traceIdFilter = q["traceId"].FirstOrDefault();
+        var pageStr = q["page"].FirstOrDefault();
+        var page = int.TryParse(pageStr, out var p) ? Math.Max(1, p) : 1;
         const int pageSize = 50;
 
         var query = db.SystemLogs.AsNoTracking().AsQueryable();
@@ -61,7 +61,7 @@ public static class ListSystemLogs
         if (!string.IsNullOrEmpty(search))
             query = query.Where(l =>
                 EF.Functions.ILike(l.Message ?? "", $"%{search}%") ||
-                EF.Functions.ILike(l.Action,         $"%{search}%") ||
+                EF.Functions.ILike(l.Action, $"%{search}%") ||
                 EF.Functions.ILike(l.UserEmail ?? "", $"%{search}%") ||
                 l.EntityId.ToString() == search);
 

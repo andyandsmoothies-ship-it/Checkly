@@ -542,6 +542,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("UserId", "CreatedAt");
 
+                    b.HasIndex("UserId", "Type");
+
                     b.ToTable("notifications", (string)null);
                 });
 

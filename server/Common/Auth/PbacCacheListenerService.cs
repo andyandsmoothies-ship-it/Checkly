@@ -177,6 +177,26 @@ public sealed class PbacCacheListenerService : BackgroundService
                     _logger.LogInformation("PBAC debounce window elapsed. Reloading capability cache.");
                     await _cache.InitializeAsync(_sp);
                 }
+                catch (OperationCanceledException)
+                {
+                    // Graceful shutdown — CancellationToken fired during delay or InitializeAsync.
+                    // Exit the consumer cleanly without logging; the outer catch handles the rest.
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    // [AUDIT: P0-B] Consumer Poison Pill guard.
+                    // Without this catch, any exception from InitializeAsync (e.g. NpgsqlException
+                    // on a transient DB outage) would escape this try/finally, propagate through
+                    // ReadAllAsync's MoveNextAsync, and permanently kill this consumer task.
+                    // The producer loop (ListenToDatabaseAsync) would continue running and writing
+                    // signals to the channel, but they would never be drained — a silent data loss.
+                    // This catch logs the error and lets the foreach advance to the next iteration.
+                    // The existing Resync-on-Connect mechanism ensures the cache is refreshed when
+                    // the producer reconnects after an outage.
+                    _logger.LogError(ex,
+                        "PBAC debounce consumer: cache reload failed. Consumer remains alive; retry on next NOTIFY signal.");
+                }
                 finally
                 {
                     // Always reset — even if InitializeAsync throws or CancellationToken fires.

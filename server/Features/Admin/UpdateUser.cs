@@ -41,6 +41,12 @@ public static class UpdateUser
             return TypedResults.NotFound(new { error = "User role not found" });
 
         var effectiveRole = request.Role ?? userRole.Role;
+
+        // Prevent self-demotion
+        var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        if (id == callerId && effectiveRole != "admin")
+            return TypedResults.BadRequest(new { error = "Cannot demote your own admin account. Have another admin perform this action." });
+
         string? previousManagerName = null;
 
         // S9: 1 SM per store
@@ -126,7 +132,6 @@ public static class UpdateUser
         profile.UpdatedAt = DateTimeOffset.UtcNow;
 
         // Log the admin action
-        var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var logMessage = request.ForceReassign && previousManagerName != null
             ? $"Updated user {profile.FullName} ({profile.Email}): role={effectiveRole}, transferred from {previousManagerName}"
             : $"Updated user {profile.FullName} ({profile.Email}): role={effectiveRole}";

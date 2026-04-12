@@ -21,5 +21,8 @@
     <PackageReference Include="Serilog.Expressions" Version="5.*" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.*" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Checkly.Api.Tests" />
+  </ItemGroup>
 
 </Project>

@@ -64,47 +64,47 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
     {
         lock (_lock)
         {
-            if (_dbInitialized) return;
-
-            using var scope = Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            db.Database.EnsureDeleted();
-            db.Database.Migrate();
-
-            // Seed a bootstrap admin so tests can create admin users via the API
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-            var adminUser = new AppUser
+            if (!_dbInitialized)
             {
-                Id = Guid.NewGuid(),
-                UserName = "bootstrap@admin.test",
-                Email = "bootstrap@admin.test"
-            };
-            userManager.CreateAsync(adminUser, "Bootstrap123!@").GetAwaiter().GetResult();
-            db.Profiles.Add(new Profile
-            {
-                Id = adminUser.Id,
-                FullName = "Bootstrap Admin",
-                Email = "bootstrap@admin.test",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow
-            });
-            db.AppUserRoles.Add(new UserRole
-            {
-                Id = Guid.NewGuid(),
-                UserId = adminUser.Id,
-                Role = "admin",
-                CreatedAt = DateTimeOffset.UtcNow
-            });
-            db.SaveChanges();
+                using var scopeInit = Services.CreateScope();
+                var dbInit = scopeInit.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbInit.Database.EnsureDeleted();
+                dbInit.Database.Migrate();
 
-            // CRITICAL: Reload PBAC cache after EnsureDeleted + Migrate wipes the test DB.
-            // The app's PbacDictionaryCache was populated at startup from the old DB state.
-            // After Migrate() re-seeds role_capabilities (including admin:manage_roles),
-            // the cache must be refreshed or all PBAC-gated endpoints will 403.
-            var pbacCache = scope.ServiceProvider.GetRequiredService<PbacDictionaryCache>();
-            pbacCache.InitializeAsync(scope.ServiceProvider).GetAwaiter().GetResult();
+                // Seed a bootstrap admin so tests can create admin users via the API
+                var userManagerInit = scopeInit.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+                var adminUserInit = new AppUser
+                {
+                    Id = Guid.NewGuid(),
+                    UserName = "bootstrap@admin.test",
+                    Email = "bootstrap@admin.test"
+                };
+                userManagerInit.CreateAsync(adminUserInit, "Bootstrap123!@").GetAwaiter().GetResult();
+                dbInit.Profiles.Add(new Profile
+                {
+                    Id = adminUserInit.Id,
+                    FullName = "Bootstrap Admin",
+                    Email = "bootstrap@admin.test",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                });
+                dbInit.AppUserRoles.Add(new UserRole
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = adminUserInit.Id,
+                    Role = "admin",
+                    CreatedAt = DateTimeOffset.UtcNow
+                });
+                dbInit.SaveChanges();
+                _dbInitialized = true;
+            }
 
-            _dbInitialized = true;
+            // CRITICAL: Reload PBAC cache for THIS factory instance.
+            // Even if the DB was initialized by another factory, this factory's Singleton cache
+            // must be hydrated from the DB, otherwise the Fail-Closed security gate blocks all requests.
+            using var scopeCache = Services.CreateScope();
+            var pbacCache = scopeCache.ServiceProvider.GetRequiredService<PbacDictionaryCache>();
+            pbacCache.InitializeAsync(scopeCache.ServiceProvider).GetAwaiter().GetResult();
         }
     }
 

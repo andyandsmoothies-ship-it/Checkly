@@ -117,7 +117,8 @@ try
         .AddPolicy("AreaManagerAccess", policy => policy.RequireRole("admin", "area_manager"));
 
     // --- Application Services ---
-    builder.Services.AddRequestTimeouts(options => {
+    builder.Services.AddRequestTimeouts(options =>
+    {
         options.DefaultPolicy = new Microsoft.AspNetCore.Http.Timeouts.RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(30) };
         options.AddPolicy("LongRunning", new Microsoft.AspNetCore.Http.Timeouts.RequestTimeoutPolicy { Timeout = TimeSpan.FromMinutes(2) });
     });
@@ -278,7 +279,7 @@ finally
 }
 
 // Marker class for WebApplicationFactory<Program> in integration tests
-public partial class Program 
-{ 
+public partial class Program
+{
     public static readonly object LoggerLock = new();
 }

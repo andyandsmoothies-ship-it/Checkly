@@ -36,7 +36,13 @@ public sealed class ReminderService : BackgroundService
 
                 await SendDeadlineReminders(db, stoppingToken);
                 await SendScheduleReminders(db, stoppingToken);
-                await RunRetentionCleanup(db, stoppingToken);
+
+                // Only run retention cleanup once per 24 hours
+                if (DateTimeOffset.UtcNow - _lastCleanupAt >= TimeSpan.FromHours(24))
+                {
+                    await RunRetentionCleanup(db, stoppingToken);
+                    _lastCleanupAt = DateTimeOffset.UtcNow;
+                }
             }
             catch (OperationCanceledException)
             {
@@ -48,7 +54,7 @@ public sealed class ReminderService : BackgroundService
                 _logger.LogError(ex, "ReminderService tick failed");
             }
 
-            try 
+            try
             {
                 await Task.Delay(Interval, stoppingToken);
             }
@@ -63,7 +69,7 @@ public sealed class ReminderService : BackgroundService
     /// S6: Send notifications for open APs with deadline approaching.
     /// Reads action_plan_reminder_days from template config (default: 2 days / 48h).
     /// </summary>
-    private async Task SendDeadlineReminders(AppDbContext db, CancellationToken ct)
+    internal async Task SendDeadlineReminders(AppDbContext db, CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
 
@@ -81,6 +87,17 @@ public sealed class ReminderService : BackgroundService
                 x => x.TemplateId,
                 t => t.Id,
                 (x, t) => new { x.AP, t.ScoringLogicConfig })
+            .GroupJoin(
+                db.Notifications.AsNoTracking().Where(n => n.Type == "ap_deadline_reminder"),
+                // The ActionUrl in notifications is formatted as "/action-plans/{id}".
+                // EF Core 8+ translates this string concatenation correctly in the LEFT JOIN.
+                x => "/action-plans/" + x.AP.Id.ToString(),
+                n => n.ActionUrl,
+                (x, notifs) => new { x.AP, x.ScoringLogicConfig, Notifs = notifs })
+            .SelectMany(
+                x => x.Notifs.DefaultIfEmpty(),
+                (x, n) => new { x.AP, x.ScoringLogicConfig, Notification = n })
+            .Where(x => x.Notification == null)
             .ToListAsync(ct);
 
         var count = 0;
@@ -109,12 +126,8 @@ public sealed class ReminderService : BackgroundService
             var cutoff = now.AddDays(reminderDays);
             if (ap.Deadline!.Value > cutoff) continue;
 
-            // Idempotency: skip if notification already sent for this AP deadline
-            var alreadySent = await db.Notifications
-                .AnyAsync(n => n.UserId == ap.StoreManagerId
-                    && n.ActionUrl != null && n.ActionUrl.Contains(ap.Id.ToString())
-                    && n.Type == "ap_deadline_reminder", ct);
-            if (alreadySent) continue;
+            // Idempotency: the db-side LEFT JOIN has already filtered out APs that have a notification.
+            var apUrl = $"/action-plans/{ap.Id}";
 
             db.Notifications.Add(new Notification
             {
@@ -123,7 +136,7 @@ public sealed class ReminderService : BackgroundService
                 Type = "ap_deadline_reminder",
                 Title = "Action Plan Deadline Approaching",
                 Message = $"AP for \"{ap.CriteriaLabel}\" at {ap.StoreName} is due within {reminderDays} day(s).",
-                ActionUrl = $"/action-plans/{ap.Id}",
+                ActionUrl = apUrl,
                 ReadAt = null,
                 CreatedAt = now,
             });
@@ -148,41 +161,29 @@ public sealed class ReminderService : BackgroundService
     }
 
     /// <summary>
-    /// Retention cleanup: hard-deletes notifications and system logs older than 90 days.
-    /// Runs once per day (tracked by _lastCleanupAt).
+    /// Hard-deletes notifications and system logs older than 90 days.
+    /// Uses ExecuteDeleteAsync for a single SQL DELETE with zero object allocation.
+    /// The 24h throttle guard lives in ExecuteAsync — this method always performs
+    /// cleanup when called directly (e.g. in tests).
     /// </summary>
-    private async Task RunRetentionCleanup(AppDbContext db, CancellationToken ct)
+    /// <remarks>internal for testability — do not call directly from outside ReminderService.</remarks>
+    internal async Task RunRetentionCleanup(AppDbContext db, CancellationToken ct)
     {
-        // Only run once per day
-        if (DateTimeOffset.UtcNow - _lastCleanupAt < TimeSpan.FromHours(24))
-            return;
-
         var cutoff = DateTimeOffset.UtcNow - RetentionPeriod;
 
-        // Hard-delete old notifications
-        var oldNotifications = await db.Notifications
+        // Single SQL: DELETE FROM notifications WHERE created_at < @cutoff
+        var deletedNotifications = await db.Notifications
             .Where(n => n.CreatedAt < cutoff)
-            .ToListAsync(ct);
-        if (oldNotifications.Count > 0)
-        {
-            db.Notifications.RemoveRange(oldNotifications);
-            _logger.LogInformation("Retention: purged {Count} notifications older than 90 days", oldNotifications.Count);
-        }
+            .ExecuteDeleteAsync(ct);
+        if (deletedNotifications > 0)
+            _logger.LogInformation("Retention: purged {Count} notifications older than 90 days", deletedNotifications);
 
-        // Hard-delete old system logs
-        var oldLogs = await db.SystemLogs
+        // Single SQL: DELETE FROM system_logs WHERE created_at < @cutoff
+        var deletedLogs = await db.SystemLogs
             .Where(l => l.CreatedAt < cutoff)
-            .ToListAsync(ct);
-        if (oldLogs.Count > 0)
-        {
-            db.SystemLogs.RemoveRange(oldLogs);
-            _logger.LogInformation("Retention: purged {Count} system logs older than 90 days", oldLogs.Count);
-        }
-
-        if (oldNotifications.Count > 0 || oldLogs.Count > 0)
-            await db.SaveChangesAsync(ct);
-
-        _lastCleanupAt = DateTimeOffset.UtcNow;
+            .ExecuteDeleteAsync(ct);
+        if (deletedLogs > 0)
+            _logger.LogInformation("Retention: purged {Count} system logs older than 90 days", deletedLogs);
     }
 }
 
