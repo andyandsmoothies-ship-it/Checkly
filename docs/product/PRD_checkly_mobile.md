@@ -247,18 +247,19 @@ flowchart TD
 > [!NOTE]
 > **Permission-Based Access Control (PBAC)**: The system dynamically evaluates access using `capabilities` (e.g., `templates:create`) via `PolicyManager.can()`, instead of hard-coded role strings. The matrix below shows the *default* semantic mappings for the 4 out-of-the-box roles, but all system gates evaluate underlying capabilities.
 
-| Action | Admin | Auditor | Store Manager | Area Manager |
-|--------|:-----:|:-------:|:-------------:|:------------:|
-| Create/edit templates | ✅ | ❌ | ❌ | ❌ |
-| Create/edit stores | ✅ | ❌ | ❌ | ❌ |
-| Manage users | ✅ | ❌ | ❌ | ❌ |
-| Execute audits | ✅ | ✅ | ❌ | ❌ |
-| View own submissions | ✅ | ✅ | ❌ | ❌ |
-| View store's submissions | ✅ | ❌ | ✅ (own store) | ✅ (own area) |
-| View all submissions | ✅ | ❌ | ❌ | ❌ |
-| Approve/reject audits | ✅ | ❌ | ❌ | ✅ |
-| Submit action plan evidence | ❌ | ❌ | ✅ | ❌ |
-| Verify action plan completion | ✅ | ❌ | ❌ | ✅ |
+| Action | PBAC Capability | Admin | Auditor | Store Manager | Area Manager |
+|--------|-----------------|:-----:|:-------:|:-------------:|:------------:|
+| Create/edit templates | `templates:create/update` | ✅ | ❌ | ❌ | ❌ |
+| Create/edit stores | `stores:write` | ✅ | ❌ | ❌ | ❌ |
+| Manage users | `users:manage` | ✅ | ❌ | ❌ | ❌ |
+| Execute audits (Start New) | `submissions:create` | ✅ | ✅ | ❌ | ❌ |
+| View own submissions | `submissions:list` | ✅ | ✅ | ❌ | ❌ |
+| View store's submissions | `submissions:list` | ✅ | ❌ | ✅ (own store) | ✅ (own area) |
+| View all submissions | `submissions:list` | ✅ | ❌ | ❌ | ❌ |
+| Approve/reject audits | `submissions:review` | ✅ | ❌ | ❌ | ✅ |
+| Void/Cancel audits | *(Hardcoded Admin)*| ✅ | ❌ | ❌ | ❌ |
+| Submit action plan evidence| `action_plans:write` | ❌ | ❌ | ✅ | ❌ |
+| Verify action plan completion| `action_plans:verify`| ✅ | ✅ | ❌ | ✅ |
 
 ---
 
