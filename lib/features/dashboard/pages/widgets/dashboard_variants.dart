@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/services/policy_manager.dart';
 import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/theme/app_fonts.dart';
@@ -189,6 +191,17 @@ class ManagerDashboardVariant extends StatelessWidget {
               iconColor: AppTheme.success,
               onTap: () => context.push('/analytics'),
             ),
+            // Approvals quick-link: visible only if user holds submissions:review.
+            // Area Managers with this capability can reach /admin/approvals
+            // (router whitelist applied in app_router.dart).
+            if (GetIt.instance<PolicyManager>().can(AppCapabilities.submissionsReview))
+              StatRowData(
+                icon: Icons.fact_check_outlined,
+                label: 'Pending Approvals',
+                value: 'View →',
+                iconColor: theme.colorScheme.primary,
+                onTap: () => context.push('/admin/approvals'),
+              ),
           ],
         ),
 

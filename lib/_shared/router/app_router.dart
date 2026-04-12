@@ -230,8 +230,22 @@ String? authRedirect(BuildContext context, GoRouterState state) {
   // admin pages/widgets — NOT here. Checking granulars here causes the
   // Group Policy Trap: a user with stores:write but not manage_roles gets locked out.
   // Fail-safe deny: empty capabilities → redirect to /home.
+  //
+  // Whitelist: /admin/approvals is also accessible to users with submissions:review
+  // (Area Managers) without granting full admin:access to the entire /admin/* prefix.
   if (isAuthenticated && state.matchedLocation.startsWith('/admin')) {
-    if (!_di<PolicyManager>().can(AppCapabilities.adminAccess)) return '/home';
+    final pm = _di<PolicyManager>();
+    final isApprovalRoute = state.matchedLocation == '/admin/approvals';
+    final canReview = pm.can(AppCapabilities.submissionsReview);
+    final hasAdminAccess = pm.can(AppCapabilities.adminAccess);
+
+    if (isApprovalRoute && (hasAdminAccess || canReview)) {
+      // Allow: user has either full admin or the specific review capability
+    } else if (!isApprovalRoute && !hasAdminAccess) {
+      return '/home';
+    } else if (isApprovalRoute && !hasAdminAccess && !canReview) {
+      return '/home';
+    }
   }
 
   // Template mutation capability guard: requires 'templates:create' capability.
