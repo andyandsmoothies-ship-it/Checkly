@@ -5,21 +5,20 @@ using Xunit;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
-using Npgsql;
 
 namespace Checkly.Api.Tests.Features.Notifications;
 
 /// <summary>
 /// ATDD acceptance suite for DistributedLockManager — Slice 1 (Thundering Herd Fix).
 ///
-/// L1: First caller acquires lock → returns non-null IDistributedLock
-/// L2: Second caller (same scope, same transaction open) → returns null
+/// L1: First caller acquires lock → criticalSection executes → returns true
+/// L2: Second caller (same scope string, first lock active) → returns false
 /// L3: Different scope strings → both callers can acquire simultaneously
 /// L4: FNV-1a hash is stable (same input → same output across calls)
 /// L5: FNV-1a hash differentiates common namespaces (no obvious collision)
-/// L6: After dispose (commit), the lock is released — a new caller can acquire it
-/// Gap1: TryAcquire_WithNullOrEmptyScope_ThrowsArgumentException
-/// Gap2: TryAcquire_CancellationRequested_ThrowsOperationCanceledException
+/// L6: After first call completes (transaction committed, lock released), a new caller can acquire it
+/// Gap1: TryExecuteInLockAsync_WithNullOrEmptyScope_ThrowsArgumentException
+/// Gap2: TryExecuteInLockAsync_CancellationRequested_ThrowsOperationCanceledException
 /// </summary>
 [Trait("Category", "DistributedLock")]
 [Collection("ApiCollection")]
@@ -27,20 +26,6 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
 {
     private readonly TestWebApplicationFactory _fixture;
     private IServiceProvider _sp = null!;
-    // Using reflection since the type might not exist yet during ATDD red phase.
-    // Wait, since I'm writing the ATDD tests, the type DOES NOT exist. 
-    // It is up to the Builder to create DistributedLockManager.
-    // However, I need to write the tests AS IF it exists, so it will fail to compile.
-    // A compilation error is an "Infra" error according to ATDD gates, but wait!
-    // If it doesn't compile, it's an infrastructure failure. 
-    // Actually, "Business" failure in ATDD for missing classes is a compilation failure if I just write it.
-    // If I can't even compile the test project, `dotnet test` fails with a build error, which is considered an Infra failure?
-    // Wait, the ATDD quality gate says:
-    // "✅ Business: The test fails at a domain assertion because the feature doesn't exist yet... "
-    // "❌ Infra: The test fails at setup, auth, routing, serialization, or DB schema... build failure before tests even run."
-    // Gate 1: "Are all NuGet/npm packages referenced in the test project's .csproj... Build failure before tests even run."
-    // Ah. So if there's a build failure because the class is missing... wait, the ATDD workflow says: 
-    // "For existing dependencies that are missing, IF discrepancy THEN Flag to user → STOP. Exception: If the plan explicitly defines a NET-NEW API route/feature to be built, do NOT flag its absence as an error. Your job is to write the failing test for it (Red Phase)."
 
     public DistributedLockManagerTests(TestWebApplicationFactory fixture)
     {
@@ -56,53 +41,86 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    // ── L1: Happy path — first caller acquires ───────────────────────────────
+    // ── L1: Happy path — first caller acquires and executes ─────────────────
 
     [Fact]
-    public async Task TryAcquire_FirstCaller_ReturnsNonNull()
+    public async Task TryExecuteInLock_FirstCaller_ReturnsTrueAndExecutes()
     {
         // Arrange
         using var scope = _sp.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var lockManager = new DistributedLockManager();
+        var executed = false;
 
         // Act
-        await using var lockHandle = await lockManager.TryAcquireAsync(db, "Checkly.Test.L1", CancellationToken.None);
+        var result = await lockManager.TryExecuteInLockAsync(
+            db,
+            "Checkly.Test.L1",
+            _ => { executed = true; return Task.CompletedTask; },
+            CancellationToken.None);
 
-        // Assert
-        Assert.NotNull(lockHandle);
+        // Assert: lock acquired, delegate ran
+        Assert.True(result);
+        Assert.True(executed);
     }
 
-    // ── L2: Second caller (same scope, lock still open) → null ───────────────
+    // ── L2: Second caller (same scope, first lock still held) → false ────────
+    //
+    // Pattern: Pod A holds the lock via a delegate that waits on a semaphore.
+    // Pod B tries to acquire the same scope from a different DB scope.
+    // Pod B must receive false while Pod A still holds the lock.
+    // Then Pod A's delegate completes, releasing the lock normally.
 
     [Fact]
-    public async Task TryAcquire_SameScopeSecondCaller_ReturnsNull()
+    public async Task TryExecuteInLock_SameScopeSecondCaller_ReturnsFalse()
     {
-        // Arrange: Pod A holds the lock via scope1
-        using var scope1 = _sp.CreateScope();
-        var db1 = scope1.ServiceProvider.GetRequiredService<AppDbContext>();
+        // Arrange
+        using var scopeA = _sp.CreateScope();
+        var dbA = scopeA.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        using var scopeB = _sp.CreateScope();
+        var dbB = scopeB.ServiceProvider.GetRequiredService<AppDbContext>();
+
         var lockManager = new DistributedLockManager();
-        await using var lockHandle = await lockManager.TryAcquireAsync(db1, "Checkly.Test.L2", CancellationToken.None);
-        Assert.NotNull(lockHandle); // Pod A acquired
 
-        // Pod B uses a separate scope/connection — must be denied
-        using var scope2 = _sp.CreateScope();
-        var db2 = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
+        // A gate that keeps Pod A's delegate alive while Pod B attempts
+        using var podAIsReady = new SemaphoreSlim(0, 1);
+        using var podACanFinish = new SemaphoreSlim(0, 1);
 
-        // Act
-        var lockHandlePodB = await lockManager.TryAcquireAsync(db2, "Checkly.Test.L2", CancellationToken.None);
+        // Pod A: hold the lock, signal readiness, then wait for permission to release
+        var podATask = lockManager.TryExecuteInLockAsync(
+            dbA,
+            "Checkly.Test.L2",
+            async _ =>
+            {
+                podAIsReady.Release();          // Signal: lock is now held
+                await podACanFinish.WaitAsync(); // Hold until Pod B has tried
+            },
+            CancellationToken.None);
 
-        // Assert
-        Assert.Null(lockHandlePodB);
-        // Cleanup: db2 has an open transaction from the failed attempt → rollback
-        if (db2.Database.CurrentTransaction is not null)
-            await db2.Database.CurrentTransaction.RollbackAsync();
+        // Wait until Pod A has actually acquired the lock
+        await podAIsReady.WaitAsync();
+
+        // Act: Pod B tries to acquire the same lock scope — must be denied
+        var podBResult = await lockManager.TryExecuteInLockAsync(
+            dbB,
+            "Checkly.Test.L2",
+            _ => Task.CompletedTask,
+            CancellationToken.None);
+
+        // Release Pod A
+        podACanFinish.Release();
+        var podAResult = await podATask;
+
+        // Assert: Pod A got it, Pod B was denied
+        Assert.True(podAResult);
+        Assert.False(podBResult);
     }
 
     // ── L3: Different scopes don't conflict ──────────────────────────────────
 
     [Fact]
-    public async Task TryAcquire_DifferentScopes_BothAcquire()
+    public async Task TryExecuteInLock_DifferentScopes_BothSucceed()
     {
         // Arrange
         using var scope1 = _sp.CreateScope();
@@ -112,13 +130,15 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
         var db2 = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
         var lockManager = new DistributedLockManager();
 
-        // Act
-        await using var lock1 = await lockManager.TryAcquireAsync(db1, "Checkly.Test.L3.ServiceA", CancellationToken.None);
-        await using var lock2 = await lockManager.TryAcquireAsync(db2, "Checkly.Test.L3.ServiceB", CancellationToken.None);
+        // Act: run concurrently on different scope strings
+        var task1 = lockManager.TryExecuteInLockAsync(db1, "Checkly.Test.L3.ServiceA", _ => Task.CompletedTask, CancellationToken.None);
+        var task2 = lockManager.TryExecuteInLockAsync(db2, "Checkly.Test.L3.ServiceB", _ => Task.CompletedTask, CancellationToken.None);
 
-        // Assert: both acquired (different keys)
-        Assert.NotNull(lock1);
-        Assert.NotNull(lock2);
+        var results = await Task.WhenAll(task1, task2);
+
+        // Assert: both acquired (different keys — no conflict)
+        Assert.True(results[0]);
+        Assert.True(results[1]);
     }
 
     // ── L4: Hash stability ───────────────────────────────────────────────────
@@ -127,7 +147,7 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
     public void ComputeFnv1a64_SameInput_ProducesSameHash()
     {
         const string scope = "Checkly.ReminderService";
-        
+
         // Arrange - Act
         var hash1 = DistributedLockManager.ComputeFnv1a64(scope);
         var hash2 = DistributedLockManager.ComputeFnv1a64(scope);
@@ -154,27 +174,36 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
         Assert.NotEqual(hash2, hash3);
     }
 
-    // ── L6: Commit-on-dispose releases the lock ──────────────────────────────
+    // ── L6: After completion, lock is released — new caller acquires ─────────
 
     [Fact]
-    public async Task TryAcquire_AfterDispose_LockReleased_NewCallerSucceeds()
+    public async Task TryExecuteInLock_AfterFirstCompletes_NewCallerSucceeds()
     {
-        // Arrange: Pod A acquires and immediately releases
+        // Arrange: Pod A acquires, runs delegate, transaction commits (lock auto-released)
         using var scope1 = _sp.CreateScope();
         var db1 = scope1.ServiceProvider.GetRequiredService<AppDbContext>();
         var lockManager = new DistributedLockManager();
 
-        var lockHandle = await lockManager.TryAcquireAsync(db1, "Checkly.Test.L6", CancellationToken.None);
-        Assert.NotNull(lockHandle);
-        await lockHandle.DisposeAsync(); // Commits transaction → lock released
+        var firstResult = await lockManager.TryExecuteInLockAsync(
+            db1,
+            "Checkly.Test.L6",
+            _ => Task.CompletedTask, // delegate completes → transaction commits → lock released
+            CancellationToken.None);
 
-        // Act: new caller on a new scope should now be able to acquire
+        Assert.True(firstResult); // Pod A acquired
+
+        // Act: new caller on a new scope should now acquire successfully
         using var scope2 = _sp.CreateScope();
         var db2 = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
-        await using var lockHandle2 = await lockManager.TryAcquireAsync(db2, "Checkly.Test.L6", CancellationToken.None);
 
-        // Assert
-        Assert.NotNull(lockHandle2);
+        var secondResult = await lockManager.TryExecuteInLockAsync(
+            db2,
+            "Checkly.Test.L6",
+            _ => Task.CompletedTask,
+            CancellationToken.None);
+
+        // Assert: Pod B also acquired (lock was released by Pod A's transaction commit)
+        Assert.True(secondResult);
     }
 
     // ── Gap1: Null/Empty Scope Argument Validation ───────────────────────────
@@ -183,7 +212,7 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(null)]
-    public async Task TryAcquire_WithNullOrEmptyScope_ThrowsArgumentException(string invalidScope)
+    public async Task TryExecuteInLock_WithNullOrEmptyScope_ThrowsArgumentException(string invalidScope)
     {
         // Arrange
         using var scope = _sp.CreateScope();
@@ -191,14 +220,14 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
         var lockManager = new DistributedLockManager();
 
         // Act & Assert
-        await Assert.ThrowsAnyAsync<ArgumentException>(() => 
-            lockManager.TryAcquireAsync(db, invalidScope, CancellationToken.None));
+        await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+            lockManager.TryExecuteInLockAsync(db, invalidScope, _ => Task.CompletedTask, CancellationToken.None));
     }
 
     // ── Gap2: CancellationRequested Throws ───────────────────────────────────
 
     [Fact]
-    public async Task TryAcquire_CancellationRequested_ThrowsOperationCanceledException()
+    public async Task TryExecuteInLock_CancellationRequested_ThrowsOperationCanceledException()
     {
         // Arrange
         using var scope = _sp.CreateScope();
@@ -208,7 +237,7 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
         cts.Cancel(); // pre-cancel the token
 
         // Act & Assert
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => 
-            lockManager.TryAcquireAsync(db, "Checkly.Test.Gap2", cts.Token));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            lockManager.TryExecuteInLockAsync(db, "Checkly.Test.Gap2", _ => Task.CompletedTask, cts.Token));
     }
 }

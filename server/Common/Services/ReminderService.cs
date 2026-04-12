@@ -48,28 +48,32 @@ public sealed class ReminderService : BackgroundService
                 var tickToken = linkedCts.Token;
 
                 // Acquire the distributed lock. Only ONE pod across the cluster will proceed.
-                // Other pods receive null and skip this tick gracefully.
-                await using var systemLock = await _lockManager.TryAcquireAsync(db, "Checkly.ReminderService", tickToken);
-                if (systemLock is null)
-                {
-                    _logger.LogDebug("JobSkipped: Tick skipped for {Service}", nameof(ReminderService));
-                    // Fall through to Task.Delay — wait for next tick.
-                }
-                else
-                {
-                    _logger.LogInformation("ReminderService: Distributed lock acquired for tick.");
-
-                    await SendDeadlineReminders(db, tickToken);
-                    await SendScheduleReminders(db, tickToken);
-
-                    // Only run retention cleanup once per 24 hours
-                    if (DateTimeOffset.UtcNow - _lastCleanupAt >= TimeSpan.FromHours(24))
+                // Other pods receive false and skip this tick gracefully.
+                // IMPORTANT: The critical section runs INSIDE TryExecuteInLockAsync's strategy closure.
+                // This prevents the NpgsqlRetryingExecutionStrategy scope leak where EF queries
+                // executed after the closure exits throw InvalidOperationException.
+                var executed = await _lockManager.TryExecuteInLockAsync(
+                    db,
+                    "Checkly.ReminderService",
+                    async tickCt =>
                     {
-                        await RunRetentionCleanup(db, tickToken);
-                        _lastCleanupAt = DateTimeOffset.UtcNow;
-                    }
-                    // await using disposes here → AcquiredLock.CommitAsync() called → lock released
-                }
+                        _logger.LogInformation("ReminderService: Distributed lock acquired for tick.");
+
+                        await SendDeadlineReminders(db, tickCt);
+                        await SendScheduleReminders(db, tickCt);
+
+                        // Only run retention cleanup once per 24 hours
+                        if (DateTimeOffset.UtcNow - _lastCleanupAt >= TimeSpan.FromHours(24))
+                        {
+                            await RunRetentionCleanup(db, tickCt);
+                            _lastCleanupAt = DateTimeOffset.UtcNow;
+                        }
+                        // Transaction committed automatically by TryExecuteInLockAsync after this delegate returns.
+                    },
+                    tickToken);
+
+                if (!executed)
+                    _logger.LogDebug("JobSkipped: Tick skipped for {Service}", nameof(ReminderService));
             }
             catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
             {

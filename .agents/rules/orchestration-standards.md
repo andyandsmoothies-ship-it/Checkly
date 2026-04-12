@@ -45,3 +45,12 @@ When writing or moving files via terminal commands (e.g., `copy`, `move`):
 1. **Idempotent Directories**: Pre-create target directories to prevent silent failures (e.g., `if not exist [dir] mkdir [dir]`).
 2. **Quote Paths**: Always wrap full source and destination paths in `""`.
 3. **Mandatory Verification**: Never trust command exit codes. You MUST execute `dir` or `list_dir` on the destination to mathematically prove the file exists before yielding.
+
+## Workflow Bypassing (TRANSPARENCY MANDATE)
+If an AI agent skips or merges a workflow phase (e.g. bypassing `[/tdd]` because `[/atdd]` provided enough coverage):
+- **Rule**: No silent skips.
+- **Action**: Add an explicit `> [!NOTE]` alert in `task.md` or `implementation_plan.md`.
+- **Format**:
+  > [!NOTE]
+  > **AI Decision:** Skipped Phase X
+  > **Why:** [1-2 concise sentences stating exact coverage overlap or rule used. No filler.]

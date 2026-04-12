@@ -207,6 +207,7 @@ A completed (or in-progress) audit execution.
 | `completed_at` | timestamptz? | When the audit was completed |
 | `created_at` | timestamptz | Draft creation time |
 | `updated_at` | timestamptz | Last update |
+| `row_version` | uint (xmin) | **Optimistic Concurrency Token**: Built-in xmin system column to prevent TOCTOU race conditions during finalization |
 
 > **Snapshot Fields**: Denormalized copies of names at submission time. Ensures historical accuracy even if stores rename or users change.
 >

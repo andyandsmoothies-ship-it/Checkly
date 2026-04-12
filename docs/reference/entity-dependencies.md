@@ -88,7 +88,7 @@
 |----------|------|-------------|
 | ListSubmissions | `Features/Submissions/ListSubmissions.cs` | Paginated list with role-scoped filtering (admin→all, auditor→owns, SM→store, AM→area) |
 | GetSubmission | `Features/Submissions/GetSubmission.cs` | IDOR-guarded detail view |
-| FinalizeSubmission | `Features/Submissions/FinalizeSubmission.cs` | Draft→completed transition, score verification, answer + action plan creation |
+| FinalizeSubmission | `Features/Submissions/FinalizeSubmission.cs` | Draft→completed transition, score verification, answer + action plan creation. Evaluates `RowVersion` (`xmin`) for optimistic concurrency control. |
 | GetSurveyResults | `Features/Submissions/GetSurveyResults.cs` | Aggregates survey answers by criteria |
 | GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Score trends, 6-month aggregation, top failures |
 | GetTopFailures | `Features/Analytics/GetTopFailures.cs` | Groups answers by criteria across submissions |

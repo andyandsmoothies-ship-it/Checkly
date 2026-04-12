@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj": {}
+    "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj": {
+    "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj",
+        "projectUniqueName": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj",
         "projectName": "Checkly.Api",
-        "projectPath": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj",
+        "projectPath": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\obj\\",
+        "outputPath": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -520,14 +520,14 @@
         }
       }
     },
-    "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj": {
+    "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj",
+        "projectUniqueName": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj",
         "projectName": "Checkly.Api.Tests",
-        "projectPath": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj",
+        "projectPath": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\Checkly.Api.Tests.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\obj\\",
+        "outputPath": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\tests\\Checkly.Api.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -542,8 +542,8 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj": {
-                "projectPath": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj"
+              "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj": {
+                "projectPath": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\server\\Checkly.Api.csproj"
               }
             }
           }

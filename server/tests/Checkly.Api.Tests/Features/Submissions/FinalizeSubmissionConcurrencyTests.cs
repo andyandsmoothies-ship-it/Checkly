@@ -50,7 +50,7 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
             Status = "draft",
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
-            TemplateSnapshot = "{\"Groups\":[{\"Id\":\"" + group.Id + "\",\"Title\":\"G1\",\"Criteria\":[{\"Id\":\"" + criteria.Id + "\",\"Label\":\"C1\",\"InputType\":\"pass_fail\",\"PointsWeight\":10}]}]}"
+            TemplateSnapshot = $"{{\"groups\":[{{\"id\":\"{group.Id}\",\"title\":\"G1\",\"criteria\":[{{\"id\":\"{criteria.Id}\",\"groupId\":\"{group.Id}\",\"label\":\"C1\",\"inputType\":\"pass_fail\",\"pointsWeight\":10}}]}}]}}"
         });
 
         await db.SaveChangesAsync();
@@ -74,29 +74,17 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         var task2 = client2.PutAsJsonAsync($"/api/submissions/{submissionId}/finalize", payload);
 
         await Task.WhenAll(task1, task2);
+        
         var response1 = await task1;
         var response2 = await task2;
-
-        // Assert
         var results = new[] { response1.StatusCode, response2.StatusCode };
         
         // One must be 200, one must be 409
-        // NOTE: In SQLite, this might fail (both 200) because SQLite serializes writes.
-        // We expect it to be RED now because both will return 200 (or one might hit the sequential guard if timing is "lucky")
-        // but it won't return the *concurrency* conflict message.
         Assert.Contains(HttpStatusCode.OK, results);
         Assert.Contains(HttpStatusCode.Conflict, results);
 
-        if (response1.StatusCode == HttpStatusCode.Conflict)
-        {
-            var content = await response1.Content.ReadAsStringAsync();
-            Assert.Contains("Submission is being finalized by another request. Please retry.", content);
-        }
-        else if (response2.StatusCode == HttpStatusCode.Conflict)
-        {
-            var content = await response2.Content.ReadAsStringAsync();
-            Assert.Contains("Submission is being finalized by another request. Please retry.", content);
-        }
+        var bodies = (await response1.Content.ReadAsStringAsync()) + (await response2.Content.ReadAsStringAsync());
+        Assert.Contains("Submission is being finalized by another request. Please retry.", bodies);
     }
 
     [Fact]
@@ -120,38 +108,45 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
     public async Task FinalizeSubmission_WhenConcurrencyError_DoesNotDuplicateActionPlans()
     {
         // Arrange
-        using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
-
-        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
-            $"concur_ap_{Guid.NewGuid()}@test.com", "Aa1234567@", "AP Auditor", "auditor");
-        
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
         var submissionId = Guid.NewGuid();
+        var criteriaId = Guid.NewGuid();
+        string token;
+        Guid userId;
 
-        db.Templates.Add(new Template { Id = templateId, Title = "AP Concur", Version = 1, IsActive = true });
-        db.Stores.Add(new Store { Id = storeId, Name = "AP Store", IsActive = true });
-        
-        var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "G1", IsActive = true, Weight = 1.0m };
-        db.Groups.Add(group);
-        var criteria = new Criterion { Id = Guid.NewGuid(), GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = 10, IsActive = true };
-        db.Criteria.Add(criteria); // Note: this criteria doesn't trigger action plan by default unless failed.
-        
-        // Make it a failure to trigger an action plan
-        db.Submissions.Add(new Submission
+        using (var scope = _factory.Services.CreateScope())
         {
-            Id = submissionId,
-            TemplateId = templateId,
-            StoreId = storeId,
-            AuditorId = userId,
-            Status = "draft",
-            CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow,
-            TemplateSnapshot = "{\"Groups\":[{\"Id\":\"" + group.Id + "\",\"Title\":\"G1\",\"Criteria\":[{\"Id\":\"" + criteria.Id + "\",\"Label\":\"C1\",\"InputType\":\"pass_fail\",\"PointsWeight\":10}]}]}"
-        });
+            var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
+            
+            var reg = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+                $"concur_ap_{Guid.NewGuid()}@test.com", "Aa1234567@", "AP Auditor", "auditor");
+            token = reg.Token;
+            userId = reg.UserId;
 
-        await db.SaveChangesAsync();
+            var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "G1", IsActive = true, Weight = 1.0m };
+            db.Groups.Add(group);
+            
+            var criteria = new Criterion { Id = criteriaId, GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = 10, IsActive = true };
+            db.Criteria.Add(criteria);
+
+            db.Templates.Add(new Template { Id = templateId, Title = "AP Concur", Version = 1, IsActive = true, ScoringLogicConfig = "{\"scoringMode\":\"penalty\"}" });
+            db.Stores.Add(new Store { Id = storeId, Name = "AP Store", IsActive = true });
+            
+            db.Submissions.Add(new Submission
+            {
+                Id = submissionId,
+                TemplateId = templateId,
+                StoreId = storeId,
+                AuditorId = userId,
+                Status = "draft",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow,
+                TemplateSnapshot = $"{{\"groups\":[{{\"id\":\"{group.Id}\",\"title\":\"G1\",\"criteria\":[{{\"id\":\"{criteriaId}\",\"groupId\":\"{group.Id}\",\"label\":\"C1\",\"inputType\":\"pass_fail\",\"pointsWeight\":10}}]}}]}}"
+            });
+
+            await db.SaveChangesAsync();
+        }
 
         var client1 = _factory.CreateAuthenticatedClient(token);
         var client2 = _factory.CreateAuthenticatedClient(token);
@@ -159,10 +154,10 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         var payload = new
         {
             ClientScore = 0m,
-            SectionScores = "{\"G1\":{\"score\":0,\"maxScore\":10}}",
+            SectionScores = $"{{\"G1\":{{\"score\":0,\"maxScore\":10}}}}",
             Answers = new[]
             {
-                new { CriteriaId = criteria.Id, NumericValue = 0m, Value = "non_conform" }
+                new { CriteriaId = criteriaId, NumericValue = 0m, Value = "non_conform" }
             }
         };
 
@@ -186,13 +181,13 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         var bodies = response1Body + response2Body;
         Assert.Contains("Submission is being finalized by another request. Please retry.", bodies);
         
-        using var verifyScope = _factory.Services.CreateScope();
-        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
-        
-        var actionPlanCount = await verifyDb.ActionPlans.CountAsync(ap => ap.SubmissionId == submissionId);
-        
-        // Expected exactly 1 action plan (if one succeeded and one failed)
-        // or 2 if the bug exists.
-        Assert.Equal(1, actionPlanCount);
+        using (var verifyScope = _factory.Services.CreateScope())
+        {
+            var verifyDb = verifyScope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
+            var actionPlanCount = await verifyDb.ActionPlans.CountAsync(ap => ap.SubmissionId == submissionId);
+            
+            // Expected exactly 1 action plan since exactly one request succeeded
+            Assert.Equal(1, actionPlanCount);
+        }
     }
 }
