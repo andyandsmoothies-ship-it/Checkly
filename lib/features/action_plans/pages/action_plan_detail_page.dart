@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
@@ -31,7 +33,6 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
     _manager = _di<ActionPlanManager>();
   }
 
-  String get _userRole => _di<AuthManager>().currentUser?.role ?? '';
 
   String get _userName =>
       _di<AuthManager>().currentUser?.email.split('@').first ?? 'Unknown';
@@ -282,11 +283,12 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
       );
     }
 
-    final role = _userRole;
     final status = plan.status;
+    final canSubmitEvidence = _di<PolicyManager>().can(AppCapabilities.actionPlansWrite);
+    final canVerify = _di<PolicyManager>().can(AppCapabilities.actionPlansVerify);
 
-    // SM can submit evidence when plan is open
-    if (status == 'open' && role == 'store_manager') {
+    // Store Manager (or anyone with action_plans:write) submits evidence when open
+    if (status == 'open' && canSubmitEvidence) {
       return SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -299,8 +301,8 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
       );
     }
 
-    // Auditor/Admin can verify or reject when pending
-    if (status == 'pending_verify' && (role == 'auditor' || role == 'admin')) {
+    // Auditor/Admin/AM (action_plans:verify) can verify or reject when pending
+    if (status == 'pending_verify' && canVerify) {
       return SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

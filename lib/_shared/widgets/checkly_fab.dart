@@ -9,12 +9,14 @@ import 'package:flutter/material.dart';
 /// nav bar and becomes invisible. Do NOT remove this padding.
 class ChecklyFab extends StatelessWidget {
   final bool isAdmin;
+  final bool canCreateSubmission;
   final VoidCallback onNewAudit;
   final VoidCallback? onAssignTask;
 
   const ChecklyFab({
     super.key,
     required this.isAdmin,
+    required this.canCreateSubmission,
     required this.onNewAudit,
     this.onAssignTask,
   });
@@ -30,8 +32,10 @@ class ChecklyFab extends StatelessWidget {
 
     final theme = Theme.of(context);
 
+    // 'Start New Audit' is only shown when user has submissions:create capability.
     final items = <PopupMenuEntry<String>>[
-      PopupMenuItem<String>(
+      if (canCreateSubmission)
+        PopupMenuItem<String>(
         value: 'new',
         child: Row(
           children: [

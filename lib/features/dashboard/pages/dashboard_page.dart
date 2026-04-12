@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
 import '../../admin/pages/schedule_audit_page.dart';
 import '../../auth/manager/auth_manager.dart';
@@ -79,6 +81,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       floatingActionButton: ChecklyFab(
         isAdmin: role == 'admin',
+        canCreateSubmission: _di<PolicyManager>().can(AppCapabilities.submissionsCreate),
         onNewAudit: () => context.push('/templates'),
         onAssignTask: () => _showScheduleSheet(context),
       ),

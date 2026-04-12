@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
@@ -23,6 +24,24 @@ public static class UpdateActionPlan
         var plan = await db.ActionPlans.FindAsync(id);
         if (plan is null)
             return TypedResults.NotFound();
+
+        // IDOR Guard: resolve AuditorId from linked submission (for auditor-role scoping).
+        // Admins bypass; store_managers scoped to plan.StoreId; auditors to their submission.
+        Guid? linkedAuditorId = null;
+        if (plan.SubmissionId.HasValue)
+        {
+            linkedAuditorId = await db.Submissions
+                .AsNoTracking()
+                .Where(s => s.Id == plan.SubmissionId.Value)
+                .Select(s => s.AuditorId)
+                .FirstOrDefaultAsync(ct);
+        }
+
+        if (!await SubmissionAccessGuard.CanAccessAsync(
+                user, plan.StoreId, areaId: null, linkedAuditorId, db, ct))
+        {
+            return TypedResults.Forbid();
+        }
 
         // Capture old status BEFORE applying updates (for PBAC gate + S2 notification logic)
         var oldStatus = plan.Status;

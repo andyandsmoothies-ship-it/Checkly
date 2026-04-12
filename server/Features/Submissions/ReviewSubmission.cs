@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Services;
@@ -36,6 +37,14 @@ public static class ReviewSubmission
         if (submission is null)
         {
             return TypedResults.NotFound(new { error = "Submission not found" });
+        }
+
+        // IDOR Guard: ensure caller has ownership/area access to THIS specific submission.
+        // Admins bypass; area_managers are scoped to their area; auditors to their own.
+        if (!await SubmissionAccessGuard.CanAccessAsync(
+                user, submission.StoreId, areaId: null, submission.AuditorId, db, ct))
+        {
+            return TypedResults.Forbid();
         }
 
         // Set review fields

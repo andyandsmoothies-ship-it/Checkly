@@ -25,3 +25,23 @@
 > **MUST** be annotated with `[FromServices]` to prevent body-binding ambiguity.
 >
 > **Status:** Empirically confirmed; tag as architectural constraint.
+
+---
+
+> [!NOTE]
+> **IDOR Guard Pattern for Action Plans**
+>
+> **Rule**: When adding ownership guards to action plan handlers, do NOT use `.Include(p => p.Submission)`.
+>
+> - `ActionPlan.StoreId` is a **direct scalar field** — sufficient for `store_manager` and `area_manager` scoping without any JOIN.
+> - For **auditor-role** scoping, resolve `AuditorId` via a lean projection query:
+>   ```csharp
+>   var linkedAuditorId = await db.Submissions
+>       .AsNoTracking()
+>       .Where(s => s.Id == plan.SubmissionId!.Value)
+>       .Select(s => s.AuditorId)
+>       .FirstOrDefaultAsync(ct);
+>   ```
+> - Then call: `SubmissionAccessGuard.CanAccessAsync(user, plan.StoreId, areaId: null, linkedAuditorId, db, ct)`
+>
+> **Status:** Empirically confirmed. Phase 4 PBAC IDOR hardening (4d280646).

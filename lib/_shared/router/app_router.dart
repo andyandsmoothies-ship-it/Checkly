@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/manager/auth_manager.dart';
 import '../../features/auth/model/auth_state.dart';
+import '../constants/app_capabilities.dart';
 import '../services/policy_manager.dart';
 import '../services/sync_engine.dart';
 import '../theme/app_theme.dart';
@@ -230,7 +231,7 @@ String? authRedirect(BuildContext context, GoRouterState state) {
   // Group Policy Trap: a user with stores:write but not manage_roles gets locked out.
   // Fail-safe deny: empty capabilities → redirect to /home.
   if (isAuthenticated && state.matchedLocation.startsWith('/admin')) {
-    if (!_di<PolicyManager>().can('admin:access')) return '/home';
+    if (!_di<PolicyManager>().can(AppCapabilities.adminAccess)) return '/home';
   }
 
   // Template mutation capability guard: requires 'templates:create' capability.
@@ -242,7 +243,7 @@ String? authRedirect(BuildContext context, GoRouterState state) {
     // and the id segment cannot be a known mutation keyword.
     final isReadOnlyDetail =
         parts.length == 3 && parts[2] != 'new' && parts[2] != 'wizard';
-    if (!isReadOnlyDetail && !_di<PolicyManager>().can('templates:create')) {
+    if (!isReadOnlyDetail && !_di<PolicyManager>().can(AppCapabilities.templatesCreate)) {
       return '/home';
     }
   }

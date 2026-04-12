@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/utils/score_utils.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../../admin/pages/schedule_audit_page.dart';
@@ -201,6 +203,7 @@ class _HistoryPageState extends State<HistoryPage> {
       appBar: AppBar(title: const Text('Audits')),
       floatingActionButton: ChecklyFab(
         isAdmin: _di<AuthManager>().currentUser?.role == 'admin',
+        canCreateSubmission: _di<PolicyManager>().can(AppCapabilities.submissionsCreate),
         onNewAudit: () => context.push('/templates'),
         onAssignTask: () => _showScheduleSheet(context),
       ),
