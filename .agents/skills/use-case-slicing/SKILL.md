@@ -22,7 +22,7 @@ A "Use-Case Slice" is a slice of a use case that provides clear value to stakeho
 
 ### Rule 2: Start with the Basic Scenario (Happy Path)
 - To find the most central slice of a new feature, focus exclusively on the **Basic Scenario**. This is the core, most straightforward way for the user to achieve their goal without hitting errors.
-- Extract the Basic Scenario as "Slice 1".
+- Extract the Basic Scenario as "Slice 1" (do not abbreviate as "S1").
 - Once the Basic Scenario slice is defined, define subsequent slices representing the **Extensions** (alternative paths, edge cases, error handling). 
 - Do not try to pack all extensions into the first slice.
 
