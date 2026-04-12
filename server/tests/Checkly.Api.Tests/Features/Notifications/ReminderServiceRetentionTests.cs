@@ -54,6 +54,7 @@ public class ReminderServiceRetentionTests(TestWebApplicationFactory fixture)
 
         var service = new ReminderService(
             _sp.GetRequiredService<IServiceScopeFactory>(),
+            new DistributedLockManager(),
             NullLogger<ReminderService>.Instance);
 
         // Act — call RunRetentionCleanup directly (internal via InternalsVisibleTo)
@@ -93,6 +94,7 @@ public class ReminderServiceRetentionTests(TestWebApplicationFactory fixture)
 
         var service = new ReminderService(
             _sp.GetRequiredService<IServiceScopeFactory>(),
+            new DistributedLockManager(),
             NullLogger<ReminderService>.Instance);
 
         // Act

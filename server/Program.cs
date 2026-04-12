@@ -1,4 +1,6 @@
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
@@ -107,6 +109,59 @@ try
                     Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
                 ClockSkew = TimeSpan.Zero
             };
+
+            // F2 Fix: Token revocation on role change.
+            // Runs once per authenticated request — single PK lookup on AspNetUsers (<5ms).
+            // Rejects tokens issued before the user's InvalidateTokensBefore timestamp.
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = async context =>
+                {
+                    try
+                    {
+                        var userId = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                        if (userId is null) return;
+
+                        var userManager = context.HttpContext.RequestServices
+                            .GetRequiredService<UserManager<AppUser>>();
+
+                        var appUser = await userManager.FindByIdAsync(userId);
+
+                        if (appUser is null)
+                        {
+                            context.Fail("User not found.");
+                            return;
+                        }
+
+                        if (appUser.InvalidateTokensBefore.HasValue)
+                        {
+                            // Fix: Use general SecurityToken.ValidFrom (which models nbf/iat) 
+                            // to avoid InvalidCastException when .NET 8+ uses JsonWebToken.
+                            var issuedAt = new DateTimeOffset(context.SecurityToken.ValidFrom, TimeSpan.Zero);
+
+                            if (issuedAt < appUser.InvalidateTokensBefore.Value)
+                            {
+                                var logger = context.HttpContext.RequestServices
+                                    .GetRequiredService<ILogger<Program>>();
+                                logger.LogWarning(
+                                    "TokenRevoked: User {UserId} presented a token issued at {IssuedAt}, " +
+                                    "revoked at {RevokedAt}",
+                                    userId, issuedAt, appUser.InvalidateTokensBefore.Value);
+
+                                context.Fail("Token revoked due to role change.");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Fail-open: a transient DB error does NOT brick all authenticated users.
+                        // The security tradeoff is explicitly documented in the F2 ADR.
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILogger<Program>>();
+                        logger.LogWarning(ex, "TokenRevoked check failed — allowing request through.");
+                    }
+                }
+            };
         });
 
     // --- Authorization Policies ---
@@ -162,6 +217,7 @@ try
     builder.Services.AddSingleton<PbacDictionaryCache>();
     builder.Services.AddSingleton<IAuthorizationHandler, CapabilityAuthorizationHandler>();
     builder.Services.AddHostedService<PbacCacheListenerService>();
+    builder.Services.AddSingleton<DistributedLockManager>();
     builder.Services.AddHostedService<ReminderService>();
 
     // --- SignalR ---

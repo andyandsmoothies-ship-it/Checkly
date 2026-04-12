@@ -248,6 +248,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTimeOffset?>("InvalidateTokensBefore")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("invalidate_tokens_before");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 

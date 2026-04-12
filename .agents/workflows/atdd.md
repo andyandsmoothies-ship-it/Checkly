@@ -48,6 +48,7 @@ Workflow: /atdd | Track: [B2 / C]
 | **Citation** | MANDATORY: Every scenario MUST cite exact line/rule from `.agents/rules/` or prompt. IF no source THEN Delete. |
 | **Coverage** | MANDATORY: `Happy-path >= 1` AND `Negative/Boundary >= 1`. |
 | **Naming** | MANDATORY: Spec-readable (e.g., `Auditor_Cannot_Delete_Template`). |
+| **Anti-Collision**| MANDATORY: Create a NEW, tightly-scoped test file per feature slice (e.g., `UpdateUser_Jwt_Tests.cs`). PROHIBITED: Appending multiple scenarios to mega-files (e.g., `UpdateUserTests.cs`). |
 
 ### 2b. Test Implementation (Iterative Loop)
 

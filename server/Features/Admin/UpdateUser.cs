@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Admin;
@@ -21,6 +22,7 @@ public static class UpdateUser
         Request request,
         ClaimsPrincipal user,
         AppDbContext db,
+        UserManager<AppUser> userManager,
         CancellationToken ct)
     {
         // Admin guard
@@ -151,6 +153,18 @@ public static class UpdateUser
         });
 
         await db.SaveChangesAsync(ct);
+
+        // F2 Fix: Invalidate all existing tokens for this user immediately on role change.
+        // Any JWT issued before this moment will be rejected by the OnTokenValidated hook.
+        if (request.Role != null)
+        {
+            var appUser = await userManager.FindByIdAsync(id.ToString());
+            if (appUser is not null)
+            {
+                appUser.InvalidateTokensBefore = DateTimeOffset.UtcNow;
+                await userManager.UpdateAsync(appUser);
+            }
+        }
 
         return TypedResults.Ok(new
         {

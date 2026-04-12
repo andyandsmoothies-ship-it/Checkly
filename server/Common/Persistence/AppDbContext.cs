@@ -423,6 +423,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         // The registration flow ensures both records are created together.
         mb.Entity<AppUser>().Ignore(u => u.Profile);
 
+        // F2 Fix: snake_case column mapping for the revocation timestamp.
+        // EF Identity would default to "InvalidateTokensBefore" (PascalCase) without this.
+        mb.Entity<AppUser>()
+            .Property(u => u.InvalidateTokensBefore)
+            .HasColumnName("invalidate_tokens_before");
+
         // UserRole → AppUser: many-to-1
         mb.Entity<UserRole>(e =>
         {

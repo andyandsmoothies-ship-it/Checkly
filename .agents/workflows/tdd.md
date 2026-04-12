@@ -54,6 +54,7 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 - **Rule (Viewport Occlusion - Flutter)**: Always call `await tester.ensureVisible(finder)` before tapping items inside scrollables (`ListView`, etc.) to prevent off-screen hit-test failures.
 - **Rule (Explicit Finders)**: Avoid brittle text-matching predicates for structural elements like dialog buttons. Mandate explicit `Key` usage in the test contract and use `find.byKey()`.
 - **Rule (Lambda Parameters - Dart)**: Never use `(_, __)` double-underscore lambdas. Modern `flutter_lints` ≥ 4.0 flags `__` as `unnecessary_underscores`. Use real parameter names (e.g., `(context, state)`) or a single `_` if only one parameter is unused.
+- **Rule (Anti-Collision / Test Slicing)**: 1 Feature Slice = 1 Dedicated Test File. NEVER append tests to a massive, generic test file (e.g. `UserServiceTests.cs` or `user_page_test.dart`). You must scaffold a brand new, tightly-scoped file (e.g. `UserService_Password_Tests`) to prevent Git merge conflicts and parallel execution locking.
 - **Rule (State Matrix)**: Your tests MUST aggressively cover:
   1. The **Happy Path** (Success State - 200 OK, expected view renders).
   2. The **Error State** (Validation failures, 404s, 403s, expected exceptions).

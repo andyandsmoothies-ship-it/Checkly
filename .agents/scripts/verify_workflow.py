@@ -22,6 +22,10 @@ import sys
 import os
 import re
 
+# Force UTF-8 encoding for standard output to prevent crash on emojis in Windows CMD
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIGURATION — mandatory section headers per artifact type
 # Add new artifact types here as the project evolves.
@@ -191,31 +195,61 @@ def check_artifact_inventory(session_dir: str) -> None:
 
     # Extract rows from the markdown table
     # Rows look like: | [NEW]  | C:\path\to\file.md | Type |
+    import time
     rows = re.findall(
-        r"\|\s*\[NEW\]\s*\|\s*([^\|]+)\|",
+        r"\|\s*\[(NEW|MOD|DEL)\]\s*\|\s*([^\|]+)\|",
         inventory_match.group(0),
         re.IGNORECASE,
     )
 
     if not rows:
-        print("       ✅ No [NEW] artifacts declared — nothing to verify.")
+        print("       ✅ No active files declared in inventory — nothing to verify.")
         return
 
     all_present = True
-    for raw_path in rows:
+    current_time = time.time()
+
+    for status, raw_path in rows:
+        status = status.upper()
         file_path = raw_path.strip()
-        if not os.path.isfile(file_path):
-            fail(
-                f"Declared artifact does not exist on disk:\n"
-                f"           Path: {file_path}\n"
-                f"           Fix: call write_to_file to physically create this file."
-            )
-            all_present = False
-        else:
-            print(f"       ✅ Found: {os.path.basename(file_path)}")
+
+        if status in ["NEW", "MOD"]:
+            if not os.path.isfile(file_path):
+                fail(
+                    f"Declared [{status}] artifact does not exist on disk:\n"
+                    f"           Path: {file_path}\n"
+                    f"           Fix: physically create this file."
+                )
+                all_present = False
+            else:
+                if status == "MOD":
+                    file_mtime = os.path.getmtime(file_path)
+                    # Require the file to have been modified in the last 4 hours during this workflow
+                    if current_time - file_mtime > (4 * 3600):
+                        fail(
+                            f"Declared [MOD] artifact is stale. It has not been updated recently:\n"
+                            f"           Path: {file_path}\n"
+                            f"           Fix: You claimed to edit this file, but MTIME shows no recent saves. Don't hallucinate edits."
+                        )
+                        all_present = False
+                    else:
+                        print(f"       ✅ Verified [{status}] recent save: {os.path.basename(file_path)}")
+                else:
+                    print(f"       ✅ Found [{status}]: {os.path.basename(file_path)}")
+                    
+        elif status == "DEL":
+            if os.path.exists(file_path):
+                fail(
+                    f"Declared [DEL] artifact still exists on disk:\n"
+                    f"           Path: {file_path}\n"
+                    f"           Fix: You claimed to delete it, but it is still there."
+                )
+                all_present = False
+            else:
+                print(f"       ✅ Verified [DEL] deletion: {os.path.basename(file_path)}")
 
     if all_present:
-        print("       ✅ All declared [NEW] artifacts exist on disk.")
+        print("       ✅ Artifact Inventory physical verification passed.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

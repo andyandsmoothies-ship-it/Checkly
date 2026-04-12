@@ -118,6 +118,7 @@ public class ReminderServiceDeadlineTests(TestWebApplicationFactory fixture)
 
     private ReminderService CreateService() => new ReminderService(
         _sp.GetRequiredService<IServiceScopeFactory>(),
+        new DistributedLockManager(),
         NullLogger<ReminderService>.Instance);
 
     // ── T1: Single eligible AP → 1 notification ─────────────────────────────

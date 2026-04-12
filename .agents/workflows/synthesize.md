@@ -34,7 +34,8 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
     3. The Red Team attack vectors.
     4. The Pugh Decision Matrix.
     5. The Final Verdict (The mathematical winner).
-    6. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Execution Slices if applicable, (3) The exact next workflow command the user should run.
+    6. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact).
+    7. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Execution Slices if applicable, (3) The exact next workflow command the user should run.
 - [ ] **Persist Copy**: Copy the deliverable to `.agents/tmp/research/decision_record_[topic]_[ConversationID].md` using the terminal. **MANDATORY: You must explicitly verify the file exists at the destination path (e.g. via `dir` or `list_dir`) before yielding control.**
 - [ ] **Verification**: Run `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"` to validate the output format.
 > **@@SCAN**: (1) ADR Schema respected (Latent Debate, Pugh Matrix)? (2) python verifier script executed and passed?

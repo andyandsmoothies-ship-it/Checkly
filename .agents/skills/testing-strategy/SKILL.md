@@ -255,6 +255,16 @@ Use the pattern: `MethodName_StateUnderTest_ExpectedBehavior`
 [Fact] public async Task CancelOrder_WhenAlreadyShipped_ReturnsConflict() { }
 ```
 
+### Test File Slicing (Anti-Collision Rule)
+
+**Rule:** 1 Feature Slice = 1 Dedicated Test File.
+Do not append tests to massive, generic files (e.g., `UserServiceTests`). Instead, create tightly scoped files (e.g., `User_PasswordReset_Tests`).
+
+**Why:**
+- Prevents Git merge conflicts in team environments.
+- Allows AI agents to work natively in parallel without file locking issues.
+- Easier to locate failing features at a glance.
+
 ## Anti-patterns
 
 ### Don't Use In-Memory Database for Integration Tests

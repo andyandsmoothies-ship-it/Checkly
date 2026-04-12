@@ -12,14 +12,20 @@ namespace Checkly.Api.Common.Services;
 public sealed class ReminderService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly DistributedLockManager _lockManager;
     private readonly ILogger<ReminderService> _logger;
     private static readonly TimeSpan Interval = TimeSpan.FromHours(12);
     private static readonly TimeSpan RetentionPeriod = TimeSpan.FromDays(90);
+    private static readonly TimeSpan TickTimeout = TimeSpan.FromMinutes(5);
     private DateTimeOffset _lastCleanupAt = DateTimeOffset.MinValue;
 
-    public ReminderService(IServiceScopeFactory scopeFactory, ILogger<ReminderService> logger)
+    public ReminderService(
+        IServiceScopeFactory scopeFactory,
+        DistributedLockManager lockManager,
+        ILogger<ReminderService> logger)
     {
         _scopeFactory = scopeFactory;
+        _lockManager = lockManager;
         _logger = logger;
     }
 
@@ -34,19 +40,46 @@ public sealed class ReminderService : BackgroundService
                 using var scope = _scopeFactory.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                await SendDeadlineReminders(db, stoppingToken);
-                await SendScheduleReminders(db, stoppingToken);
+                // Tick-level timeout: if the job exceeds 5 minutes, cancel this tick
+                // and wait for the next 12-hour window. Uses a linked token so pod
+                // shutdown (stoppingToken) still cancels immediately.
+                using var tickCts = new CancellationTokenSource(TickTimeout);
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, tickCts.Token);
+                var tickToken = linkedCts.Token;
 
-                // Only run retention cleanup once per 24 hours
-                if (DateTimeOffset.UtcNow - _lastCleanupAt >= TimeSpan.FromHours(24))
+                // Acquire the distributed lock. Only ONE pod across the cluster will proceed.
+                // Other pods receive null and skip this tick gracefully.
+                await using var systemLock = await _lockManager.TryAcquireAsync(db, "Checkly.ReminderService", tickToken);
+                if (systemLock is null)
                 {
-                    await RunRetentionCleanup(db, stoppingToken);
-                    _lastCleanupAt = DateTimeOffset.UtcNow;
+                    _logger.LogDebug("JobSkipped: Tick skipped for {Service}", nameof(ReminderService));
+                    // Fall through to Task.Delay — wait for next tick.
                 }
+                else
+                {
+                    _logger.LogInformation("ReminderService: Distributed lock acquired for tick.");
+
+                    await SendDeadlineReminders(db, tickToken);
+                    await SendScheduleReminders(db, tickToken);
+
+                    // Only run retention cleanup once per 24 hours
+                    if (DateTimeOffset.UtcNow - _lastCleanupAt >= TimeSpan.FromHours(24))
+                    {
+                        await RunRetentionCleanup(db, tickToken);
+                        _lastCleanupAt = DateTimeOffset.UtcNow;
+                    }
+                    // await using disposes here → AcquiredLock.CommitAsync() called → lock released
+                }
+            }
+            catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
+            {
+                // Tick-level timeout fired (5-minute TickTimeout CTS).
+                // This is NOT a pod shutdown — log as a warning and continue to the next cycle.
+                _logger.LogWarning("ReminderService tick timed out after {Timeout}. Waiting for next interval.", TickTimeout);
             }
             catch (OperationCanceledException)
             {
-                // Expected on shutdown
+                // stoppingToken cancelled — normal pod shutdown.
                 break;
             }
             catch (Exception ex)
@@ -56,7 +89,7 @@ public sealed class ReminderService : BackgroundService
 
             try
             {
-                await Task.Delay(Interval, stoppingToken);
+                await Task.Delay(Interval, stoppingToken); // Always raw stoppingToken (not tickToken)
             }
             catch (OperationCanceledException)
             {
