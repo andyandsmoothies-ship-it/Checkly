@@ -202,13 +202,25 @@ public static class FinalizeSubmission
             scoringLogicConfig: scoringLogicConfig);
 
         var strategy = db.Database.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync(async () =>
+        return await strategy.ExecuteAsync<IResult>(async () =>
         {
             // Start explicit transaction to guarantee all 3 saves complete atomically
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
             // Atomic flush 1: submission update + answers + audit log + action plans
-            await db.SaveChangesAsync(ct);
+            try
+            {
+                await db.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Another concurrent request finalized this submission first.
+                // Return 409 so the client retries (which will then hit the sequential status guard).
+                return TypedResults.Conflict(new
+                {
+                    error = "Submission is being finalized by another request. Please retry."
+                });
+            }
 
             // 8. Explode SectionScores JSON into relational rows (skip for survey mode)
             if (scoringMode != "survey")

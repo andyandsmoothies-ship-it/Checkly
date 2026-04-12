@@ -269,6 +269,14 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.VoidReason).HasColumnName("void_reason");
             e.Property(x => x.VoidedAt).HasColumnName("voided_at");
 
+            // Optimistic concurrency via PostgreSQL system column xmin
+            // Guards against TOCTOU race on concurrent FinalizeSubmission requests (F7)
+            e.Property(x => x.RowVersion)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
+
             e.HasIndex(x => x.IdempotencyKey)
                 .IsUnique()
                 .HasFilter("idempotency_key IS NOT NULL");

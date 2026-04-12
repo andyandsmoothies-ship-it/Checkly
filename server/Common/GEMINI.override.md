@@ -57,3 +57,9 @@
 > **Serilog + MEL `ILogger` Ambiguity (CS0104)**
 > **Problem:** Using `using Serilog;` in a class that lives in the same project as `Microsoft.Extensions.Logging` creates an ambiguous `ILogger` reference, causing CS0104 build failure.
 > **Fix:** Do NOT add `using Serilog;`. Instead, fully qualify inline: `private static readonly Serilog.ILogger Logger = Serilog.Log.ForContext<MyClass>();`. Applies to every new class in `Common/` that needs structured logging.
+
+> [!WARNING]
+> **ExecuteAsync Lambda + `catch` Return Block Requires Explicit Generic Type (CS8031)**
+> **Problem:** Adding a `return` statement inside a `catch` block within `strategy.ExecuteAsync(async () => {...})` causes CS8031. The compiler cannot infer the lambda's return type when the lambda has multiple return points (inside catch + happy path).
+> **Fix:** Specify the type parameter explicitly: `strategy.ExecuteAsync<IResult>(async () => { ... })`. This forces the compiler to treat the lambda as `Func<Task<IResult>>`.
+
