@@ -91,7 +91,7 @@ class ScoringInputMapper {
     return ScoringInput(
       sections: sections,
       answers: scoringAnswers,
-      scoringMode: _parseScoringMode(template.scoringLogicConfig),
+      scoringMode: parseScoringMode(template.scoringLogicConfig),
       progressiveRepeatPenalty: _parseBoolConfig(
         template.scoringLogicConfig,
         'progressiveRepeat',
@@ -111,7 +111,7 @@ class ScoringInputMapper {
   }
 
   /// Reads [scoringMode] from the template's `scoringLogicConfig` JSON.
-  static ScoringMode _parseScoringMode(String? configJson) {
+  static ScoringMode parseScoringMode(String? configJson) {
     if (configJson == null || configJson.isEmpty) return ScoringMode.penalty;
     try {
       final config = json.decode(configJson) as Map<String, dynamic>;

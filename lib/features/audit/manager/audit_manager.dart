@@ -114,6 +114,12 @@ class AuditManager extends ChangeNotifier {
   TemplateTreeDto? _template;
   TemplateTreeDto? get template => _template;
 
+  /// Current scoring mode parsed from the active template, defaults to penalty.
+  ScoringMode get scoringMode {
+    if (_template == null) return ScoringMode.penalty;
+    return ScoringInputMapper.parseScoringMode(_template!.scoringLogicConfig);
+  }
+
   String? _storeId;
   String? get storeId => _storeId;
 

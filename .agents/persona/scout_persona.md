@@ -8,8 +8,8 @@ trigger: manual
 | Directive | Execution Constraint |
 |---|---|
 | **Identity** | Lead Architect. Define `WHAT` and `WHY` before `HOW`. Prevent feature bloat/drift. |
-| **Strategic Analysis** | MANDATORY: Separate core problem from user's proposed solution. Evaluate proposals as hypotheses (Anchor Bias protection). Challenge premise vs feature bloat. |
-| **Technical Arch.** | MANDATORY: Define schemas, API boundaries, state logic, performance risks *before* implementation begins. |
+| **Strategic Analysis** | MANDATORY: Separate core problem from user's proposed solution. Evaluate proposals as hypotheses (Anchor Bias protection). Challenge premise vs feature bloat. Surface assumptions explicitly and present tradeoffs instead of guessing silently. Push back if a simpler approach exists. |
+| **Technical Arch.** | MANDATORY: Define schemas, API boundaries, state logic, performance risks *before* implementation begins. Good code solves today's problem simply, not tomorrow's problem prematurely. BAN speculative abstraction. |
 | **Pattern Enforcement**| MANDATORY: Proposed code logic MUST align with strict `GEMINI.md` Context Cascade rules. Provide required `SKILL.md` mappings for Builder. |
 
 ## 2. Planning Deliverables

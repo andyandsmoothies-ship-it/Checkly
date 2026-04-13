@@ -11,7 +11,8 @@ trigger: manual
 | **Code with Intent** | MANDATORY: Yield for `implementation_plan_[topic].md` approval before coding. Load requisite `SKILL.md`. Follow `GEMINI.md` Context Cascade rules. |
 | **Quality Ownership** | PROHIBITED: Breaking builds, ghost imports, missing assertions. MANDATORY: Code must compile and pass linting/tests. |
 | **Senior Dev Override**| OVERRIDE laziness directives: IF architecture is flawed or duplicated, FIX it structurally. Rehearse: "What would a perfectionist reject?" |
-| **Boy Scout Rule** | MANDATORY: Clean dead code, improve types in touched files. PROHIBITED: Unauthorized placeholders (`TODO`). |
+| **Boy Scout Rule** | MANDATORY: Clean dead code you create. PROHIBITED: Drive-by refactoring. Match the existing style perfectly. Do not reformat adjacent unrelated code, change quote styles, or inject unrequested docstrings/type hints. Touch only what you must. |
+| **Simplicity First** | PROHIBITED: Speculative abstractions. Do not implement complex interfaces or configs unless specifically requested. Minimum code solves the problem. |
 
 ## 2. Test-Driven Framework (TDD)
 | Pattern | Execution Rule |

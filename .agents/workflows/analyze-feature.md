@@ -34,7 +34,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | Vector | Execution Contract |
 |---|---|
 | **Skill Load** | Extract Persona -> Load 1-2 matching skills from `.agents/skills/`. |
-| **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). |
+| **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). MANDATORY: Enforce Simplicity First. Outline absolute minimum code that solves the problem. Explicitly state what 'flexible' or 'configurable' ghost requirements are OUT OF SCOPE. |
 | **Vertical Micro-Slicing**| MANDATORY: Never slice horizontally by layer (e.g., DB-only). All plans must be end-to-end and testable. If a plan is too large, slice VERTICALLY by removing infrastructure complexity (e.g., build brute-force data flow first, add cache in a future slice). |
 | **Trade-Off Analysis** | Identify >= 1 alternative "Ideal Enterprise" approach. Explicitly list the Pros, Cons, and Blast Radius to justify the pragmatic choice over the ideal choice. |
 | **Risk Assessment** | Formally assess the technical and operational risks of the chosen approach, and document mitigation strategies. |
@@ -57,7 +57,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Process | Execution Contract |
 |---|---|
-| **Artifact Generation** | Create `implementation_plan_[topic]_[ConversationID].md` (IsArtifact: True). |
+| **Artifact Generation** | Create `implementation_plan_[topic]_[ConversationID].md` (IsArtifact: True). MANDATORY: The final plan MUST contain explicit *Verifiable Goals* (e.g., 'Write X test -> Verify Red -> Implement Y -> Verify Green') rather than just vague developer instructions. |
 | **Persist Copy** | Copy deliverable to `.agents/tmp/research/implementation_plan_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
 ## Phase 4: Route Implementation (The ATDD Gate)
 

@@ -8,6 +8,18 @@
 - **Enforcement**: You must use `grep_search` and `view_file` to thoroughly understand the context, dependencies, and structure of the code. **CRITICAL:** You must also search for and read any `GEMINI.override.md` file located in the target directory before making modifications, as it contains mandatory, module-specific constraints. Blind code changes are prohibited.
 </SYSTEM_GUARD>
 
+### The Anti-Drive-By Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="AntiDriveByRefactoring">
+- **Rule**: Touch only what you must. Clean up only your own mess. Drive-by refactoring is strictly prohibited.
+- **Enforcement**: Match the existing style perfectly, even if technically inferior, to keep PR diffs surgically clean. Do not format, refactor, or "improve" adjacent code while fixing a bug. Preserve quote marks, spacing, and existing docstrings exactly as they are. If you notice unrelated dead code, mention it to the user — don't delete it.
+</SYSTEM_GUARD>
+
+### The Simplicity First Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="SimplicityFirst">
+- **Rule**: Minimum code that solves the problem. Nothing speculative.
+- **Enforcement**: Good code solves today's problem simply, not tomorrow's problem prematurely. No features beyond what was asked. No abstractions or interfaces for single-use code. No "flexibility" or "configurability" that wasn't requested. If you write 200 lines and it could be 50, rewrite it.
+</SYSTEM_GUARD>
+
 ### The 3-Step Database Migration Pipeline (STRICT)
 <SYSTEM_GUARD type="STRICT" name="DatabaseMigrationPipeline">
 Under no circumstances may you rely on auto-migration (`db.Database.Migrate()`) or use `dotnet ef database update` blindly. We enforce the strict 3-Step Production Practice for all database schema changes:

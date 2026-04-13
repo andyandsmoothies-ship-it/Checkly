@@ -7,6 +7,7 @@ import '../../../_shared/theme/app_theme.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
 import 'audit_criterion_sheet.dart';
+import '../../../_shared/services/scoring_models.dart';
 
 // ============================================================
 // Criterion Row — compact list item (Bottom Sheet pattern)
@@ -35,6 +36,52 @@ class AuditCriterionRow extends StatelessWidget {
     this.riskEnabled = true,
     this.index,
   });
+
+  Widget? _buildPrimaryBadge(ThemeData theme, AuditAnswer? answer) {
+    if (answer == null) return null;
+    final String input = criterion.inputType;
+
+    if (input == 'single_choice') {
+      if (answer.value != null && answer.value!.isNotEmpty) {
+        return AuditStatusBadge(
+            label: answer.value!, color: theme.colorScheme.primary);
+      }
+    } else if (input == 'multi_choice') {
+      if (answer.value != null && answer.value!.isNotEmpty) {
+        final count = answer.value!
+            .split(',')
+            .where((e) => e.trim().isNotEmpty)
+            .length;
+        if (count > 0) {
+          return AuditStatusBadge(
+              label: '$count selected', color: theme.colorScheme.primary);
+        }
+      }
+    } else if (input == 'text') {
+      if (answer.value != null && answer.value!.isNotEmpty) {
+        String text = answer.value!.replaceAll('\n', ' ').trim();
+        if (text.length > 15) {
+          text = '${text.substring(0, 15)}...';
+        }
+        return AuditStatusBadge(
+            label: text, color: theme.colorScheme.outlineVariant);
+      }
+    } else if (input == 'pass_fail') {
+      if (answer.value == 'conform') {
+        return AuditStatusBadge(label: 'PASS', color: AppTheme.success);
+      } else if (answer.value == 'non_conform') {
+        return AuditStatusBadge(label: 'FAIL', color: theme.colorScheme.error);
+      } else if (answer.value == 'na') {
+        return AuditStatusBadge(label: 'N/A', color: theme.colorScheme.outline);
+      }
+    } else if (input == 'scale') {
+      if (answer.value != null && answer.value!.isNotEmpty) {
+        return AuditStatusBadge(
+            label: answer.value!, color: theme.colorScheme.primary);
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +131,21 @@ class AuditCriterionRow extends StatelessWidget {
             Wrap(
               spacing: 4,
               children: [
+                if (_buildPrimaryBadge(theme, answer) != null)
+                  _buildPrimaryBadge(theme, answer)!,
+                  
+                if (criterion.inputType == 'numeric' && faults > 0)
+                  manager.scoringMode == ScoringMode.accumulation
+                      ? AuditStatusBadge(
+                          label: '+$faults pts',
+                          color: AppTheme.success,
+                        )
+                      : AuditStatusBadge(
+                          label: 'F:$faults',
+                          color: theme.colorScheme.error,
+                        ),
+
                 if (_isScored(criterion.inputType)) ...[
-                  if (faults > 0)
-                    AuditStatusBadge(
-                      label: 'F:$faults',
-                      color: theme.colorScheme.error,
-                    ),
                   if (repeats > 0)
                     AuditStatusBadge(
                       label: 'R:$repeats',
