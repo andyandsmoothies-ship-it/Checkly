@@ -76,6 +76,12 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **Enforcement**: Your absolute first step MUST be a Boolean Logic Tree (the "Rationality Peak") proving you understand the state boundaries. Execute code only after the tree is mapped.
 </SYSTEM_GUARD>
 
+### Scientific Method / Debugging (STRICT)
+<SYSTEM_GUARD type="STRICT" name="ScientificDebugging">
+- **Rule**: During active diagnostics, an experimental code change MUST NOT exceed 5 lines. 
+- **Enforcement**: If a test fails twice under the same hypothesis, you are forbidden from trying a third time. You must formally reject the hypothesis in `.agents/tmp/DEBUG.md` and pivot to a new theory.
+</SYSTEM_GUARD>
+
 ---
 
 ## 2. Platform Architecture

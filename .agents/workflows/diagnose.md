@@ -35,9 +35,9 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 |---|---|
 | **Context Trace** | IF (stack_trace == missing) THEN MANDATORY: Request trace from user. PROHIBITED: Debugging blind from static code. |
 | **Targeting** | MANDATORY: Use `view_file` targeted lines or `grep_search` targeted functions. PROHIBITED: Reading entire long files (Attention Bias failure). IF symptom crosses API/DTO/DB boundary: `grep_search` BOTH `lib/` and `server/` — the bug may live on the opposite side of the call. |
-| **Formal Reasoning**| MANDATORY: Output: 1. `Premises` (actual read contents), 2. `Execution Trace` (file+line path), 3. `Formal Conclusion` (proof). |
+| **Formal Reasoning**| MANDATORY: 1. `Premises` and `Execution Trace`. 2. Generate 3-5 explicit Hypotheses (with Evidence For/Against). 3. You MUST log these hypotheses strictly to `.agents/tmp/DEBUG.md` to prevent context sliding. |
 
-> **@@SCAN**: (1) Exact file/line identified? (2) Execution trace proves path? (3) If API/DB involved: were BOTH lib/ and server/ searched? (4) Root cause conclusion supported by execution trace?
+> **@@SCAN**: (1) Exact file/line identified? (2) Were BOTH lib/ and server/ searched? (3) Are 3-5 hypotheses explicitly tracked in `.agents/tmp/DEBUG.md`?
 
 ## Phase 2: Skill & Rule Discovery
 
@@ -54,9 +54,9 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 |---|---|
 | **Skill Refresh** | IF (Root cause domain != Symptom domain) THEN Re-scan and load new Domain `SKILL.md`. |
 | **Artifact Gen** | Export `failure_report_[topic]_[ConversationID].md`. |
-| **Constraint** | PROHIBITED: Making code changes directly in this workflow. |
+| **Constraint (Micro-Experiments)** | PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in `.agents/tmp/DEBUG.md` and pivot. |
 
-> **@@SCAN**: (1) File contains explicit execution trace? (2) Proposed fix strictly scoped to root cause?
+> **@@SCAN**: (1) If code was changed, was it strictly under 5 lines? (2) If a test failed twice, did you officially pivot to a new hypothesis?
 
 ## Phase 4: Deliverable Handoff
 
