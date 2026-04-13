@@ -7,7 +7,10 @@ namespace Checkly.Api.Features.ActionPlans;
 
 /// <summary>
 /// GET /api/action-plans — role-based list.
-/// admin sees all, store_manager sees their store's plans.
+/// admin sees all, store_manager sees their store's plans,
+/// area_manager sees all plans for stores in their area.
+/// Auditors and unknown roles receive an empty list by design —
+/// auditors access plan details via submission review, not this list endpoint.
 /// </summary>
 public static class ListActionPlans
 {
@@ -28,10 +31,25 @@ public static class ListActionPlans
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == userId, ct);
 
-            if (profile?.StoreId != null)
+            if (role == "store_manager" && profile?.StoreId != null)
+            {
+                // SM sees all plans for their assigned store, regardless of StoreManagerId snapshot.
                 query = query.Where(ap => ap.StoreId == profile.StoreId);
+            }
+            else if (role == "area_manager" && profile?.AreaId != null)
+            {
+                // AM sees all plans for every store in their assigned area.
+                // IN-subquery pattern: same approach as SyncSubmissions.cs:82 and ListStores.cs:85.
+                var storeIdsInArea = db.Stores
+                    .Where(s => s.AreaId == profile.AreaId.Value)
+                    .Select(s => s.Id);
+                query = query.Where(ap => ap.StoreId != null && storeIdsInArea.Contains(ap.StoreId.Value));
+            }
             else
-                query = query.Where(ap => ap.StoreManagerId == userId);
+            {
+                // Auditors, unscoped profiles, and unknown roles: return empty list by design.
+                query = query.Where(ap => false);
+            }
         }
 
         // Pagination (defaults: page 1, 50 items, max 100)
