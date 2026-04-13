@@ -241,6 +241,40 @@ public class ScoringVerifierTests
         Assert.True(result.IsValid, $"C3 ON: expected 0.00 but got {result.ServerScore}");
     }
 
+    // ====================================================================
+    // C3 RED: Linear repeat penalty when progressive is OFF — MISSING FIX
+    // ====================================================================
+
+    [Fact]
+    public void C3_Linear_Repeat_Penalty_Applied_When_Progressive_OFF_And_RepeatedFaults_GT_Zero()
+    {
+        // When progressive_repeat_penalty = false but RepeatedFaults > 0:
+        // base = numericValue × pointsWeight = 1 × 2 = 2
+        // linear repeat = repeatedFaults × pointsWeight = 2 × 2 = 4
+        // total deduction = 2 + 4 = 6
+        // sectionBefore = 10 → ratio = (10-6)/10 = 0.40 → 40.00%
+        var sectionId = Guid.NewGuid();
+        var cId = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var allCriteria = new[]
+        {
+            MakeCriterion(cId, sectionId, points: 2m),
+            MakeCriterion(Guid.NewGuid(), sectionId, points: 8m),
+        };
+        var answers = new[] { new Answer
+        {
+            Id = Guid.NewGuid(),
+            CriteriaId = cId,
+            NumericValue = 1,
+            RepeatedFaults = 2,
+        }};
+
+        // progressive OFF → linear repeat penalty (not quadratic, not ignored)
+        var result = _sut.Verify(40.00m, answers, groups, allCriteria, progressiveRepeatPenalty: false);
+        Assert.True(result.IsValid, $"C3 linear repeat: expected 40.00 but got {result.ServerScore}");
+    }
+
     [Fact]
     public void C3_Progressive_Repeat_Capped_At_MaxDeduction()
     {
@@ -399,5 +433,37 @@ public class ScoringVerifierTests
 
         // This will fail (RED) compiling until FailedCriteriaIds is added
         Assert.DoesNotContain(c1, result.FailedCriteriaIds);
+    }
+
+    // ====================================================================
+    // RED: Accumulation mode ignores RepeatedFaults — MISSING FIX
+    // ====================================================================
+
+    [Fact]
+    public void Accumulation_RepeatedFault_Denies_Points_Even_With_Zero_Base_Faults()
+    {
+        // In accumulation mode, a criterion with 0 numericValue but RepeatedFaults=1
+        // must NOT earn its points — the repeat fault signals previous non-conformance.
+        // c1: faults=0, repeatedFaults=1 → denied → earned=0 (out of 10)
+        // c2: faults=0, repeatedFaults=0 → earns 5
+        // sectionBefore = 15, sectionEarned = 5 → score = 5/15 × 100 = 33.33%
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var c2 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[]
+        {
+            MakeCriterion(c1, sectionId, points: 10m),
+            MakeCriterion(c2, sectionId, points: 5m),
+        };
+        var answers = new[]
+        {
+            new Answer { Id = Guid.NewGuid(), CriteriaId = c1, NumericValue = 0, RepeatedFaults = 1 },
+            new Answer { Id = Guid.NewGuid(), CriteriaId = c2, NumericValue = 0, RepeatedFaults = 0 },
+        };
+
+        var result = _sut.Verify(33.33m, answers, groups, criteria, scoringMode: "accumulation");
+        Assert.True(result.IsValid, $"Accumulation repeated fault: expected 33.33 but got {result.ServerScore}");
     }
 }

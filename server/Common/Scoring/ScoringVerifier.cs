@@ -205,10 +205,10 @@ public sealed class ScoringVerifier
                     }
                     else
                     {
-                        // Binary: full points if no faults
+                        // Binary: full points if no faults AND no repeated faults
                         var faults = answer.NumericValue ?? 0;
                         var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
-                        if (faults == 0 && !isNonConform)
+                        if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
                             sectionEarned += c.PointsWeight ?? 0;
                     }
                 }
@@ -301,6 +301,11 @@ public sealed class ScoringVerifier
         {
             var repeatDeduction = (decimal)(answer.RepeatedFaults * answer.RepeatedFaults) * impact;
             return baseDeduction + repeatDeduction;
+        }
+        // Linear repeat penalty (n × impact) — applied even when progressive is OFF
+        if (answer.RepeatedFaults > 0)
+        {
+            return baseDeduction + (answer.RepeatedFaults * impact);
         }
         return baseDeduction;
     }
