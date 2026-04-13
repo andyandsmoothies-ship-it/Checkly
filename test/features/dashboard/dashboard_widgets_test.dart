@@ -8,16 +8,19 @@ import 'package:checkly/features/dashboard/pages/widgets/dashboard_variants.dart
 import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/notifications/manager/notification_manager.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
+import 'package:checkly/_shared/services/policy_manager.dart';
 
 class MockDashboardManager extends Mock implements DashboardManager {}
 class MockAuthManager extends Mock implements AuthManager {}
 class MockUserSession extends Mock implements UserSession {}
 class MockNotificationManager extends Mock implements NotificationManager {}
+class MockPolicyManager extends Mock implements PolicyManager {}
 
 void main() {
   late MockDashboardManager mockManager;
   late MockAuthManager mockAuth;
   late MockNotificationManager mockNotifications;
+  late MockPolicyManager mockPolicyManager;
   
   setUp(() async {
     final di = GetIt.instance;
@@ -26,10 +29,14 @@ void main() {
     mockManager = MockDashboardManager();
     mockAuth = MockAuthManager();
     mockNotifications = MockNotificationManager();
+    mockPolicyManager = MockPolicyManager();
     
     di.registerFactory<DashboardManager>(() => mockManager);
     di.registerFactory<AuthManager>(() => mockAuth);
     di.registerFactory<NotificationManager>(() => mockNotifications);
+    di.registerFactory<PolicyManager>(() => mockPolicyManager);
+    
+    when(() => mockPolicyManager.can(any())).thenReturn(true);
     
     when(() => mockManager.loadStats()).thenAnswer((_) async {});
     when(() => mockManager.dashboardState).thenReturn(DashboardLoading());

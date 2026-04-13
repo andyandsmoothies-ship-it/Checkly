@@ -11,12 +11,15 @@ import 'package:checkly/features/auth/services/secure_storage_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/policy_dao.dart';
 import 'package:checkly/_shared/services/api_client.dart';
+import 'package:checkly/_shared/database/database_service.dart';
 
 // ── Mocktail stubs ────────────────────────────────────────────────────────────
 class _MockAuthApiService extends Mock implements AuthApiService {}
 class _MockPolicyApiService extends Mock implements PolicyApiService {}
 class _MockSecureStorageService extends Mock implements SecureStorageService {}
 class _MockApiClient extends Mock implements ApiClient {}
+class _MockDatabaseService extends Mock implements DatabaseService {}
+class _MockAppDatabase extends Mock implements AppDatabase {}
 
 // ── Shared test fixture ───────────────────────────────────────────────────────
 const _testSession = UserSession(
@@ -35,6 +38,8 @@ void main() {
   late _MockPolicyApiService mockPolicyApi;
   late _MockSecureStorageService mockStorage;
   late _MockApiClient mockApiClient;
+  late _MockDatabaseService mockDbService;
+  late _MockAppDatabase mockDb;
 
   // Mocktail requires fallback values for custom types used with any() matcher.
   setUpAll(() {
@@ -55,6 +60,8 @@ void main() {
     mockPolicyApi = _MockPolicyApiService();
     mockStorage = _MockSecureStorageService();
     mockApiClient = _MockApiClient();
+    mockDbService = _MockDatabaseService();
+    mockDb = _MockAppDatabase();
 
     // Default no-op stubs for storage and apiClient (used by login / tryAutoLogin)
     when(() => mockStorage.saveToken(any())).thenAnswer((_) async {});
@@ -64,6 +71,8 @@ void main() {
     when(() => mockStorage.clearAll()).thenAnswer((_) async {});
     when(() => mockApiClient.setAuthToken(any())).thenReturn(null);
     when(() => mockApiClient.clearAuthToken()).thenReturn(null);
+    when(() => mockDbService.db).thenReturn(mockDb);
+    when(() => mockDb.clearAllData()).thenAnswer((_) async {});
 
     authManager = AuthManager(
       authApi: mockAuth,
@@ -71,6 +80,7 @@ void main() {
       apiClient: mockApiClient,
       policyApi: mockPolicyApi,
       policyDao: policyDao,
+      dbService: mockDbService,
     );
   });
 

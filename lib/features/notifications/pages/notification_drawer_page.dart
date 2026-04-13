@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,7 +24,9 @@ class _NotificationDrawerPageState extends State<NotificationDrawerPage> {
   void initState() {
     super.initState();
     _manager = _di<NotificationManager>();
-    _manager.loadNotifications();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _manager.loadNotifications();
+    });
     _manager.addListener(_onUpdate);
   }
 
@@ -34,7 +37,14 @@ class _NotificationDrawerPageState extends State<NotificationDrawerPage> {
   }
 
   void _onUpdate() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() {});
+      });
+    } else {
+      setState(() {});
+    }
   }
 
   @override

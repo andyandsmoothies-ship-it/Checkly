@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,7 +23,9 @@ class _NotificationBellState extends State<NotificationBell> {
   void initState() {
     super.initState();
     _manager = _di<NotificationManager>();
-    _manager.loadNotifications();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _manager.loadNotifications();
+    });
     _manager.addListener(_onUpdate);
   }
 
@@ -33,7 +36,14 @@ class _NotificationBellState extends State<NotificationBell> {
   }
 
   void _onUpdate() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() {});
+      });
+    } else {
+      setState(() {});
+    }
   }
 
   @override

@@ -14,7 +14,7 @@ class UserGroupApiService {
   /// Fetches all user groups (admin-only).
   /// Backend returns paginated { items: [...], total: N } shape.
   Future<List<UserGroupDto>> listGroups() async {
-    final res = await _dio.get<Map<String, dynamic>>('/api/user-groups');
+    final res = await _dio.get<Map<String, dynamic>>('/user-groups');
     final data = res.data!;
     // Backend returns { items: [...] } paginated OR a plain list depending on version.
     // Handle both shapes defensively.
@@ -29,7 +29,7 @@ class UserGroupApiService {
   /// Returns the newly created [UserGroupDto].
   Future<UserGroupDto> createGroup(String name, String? description) async {
     final res = await _dio.post<Map<String, dynamic>>(
-      '/api/user-groups',
+      '/user-groups',
       data: {'name': name, 'description': description},
     );
     return UserGroupDto.fromJson(res.data!);
