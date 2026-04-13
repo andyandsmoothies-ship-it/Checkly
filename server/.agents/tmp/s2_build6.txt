@@ -1,0 +1,19 @@
+  Determining projects to restore...
+  Restored C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj (in 1.86 sec).
+  1 of 2 projects are up-to-date for restore.
+C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1208,5): warning : Creating directory "obj\Debug\net10.0\". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1208,5): warning : Creating directory "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\refint\". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1208,5): warning : Creating directory "obj\Debug\net10.0\ref". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+C:\Program Files\dotnet\sdk\10.0.103\Sdks\Microsoft.NET.Sdk.StaticWebAssets\targets\Microsoft.NET.Sdk.StaticWebAssets.targets(476,5): error : Creating directory "obj\Debug\net10.0\staticwebassets\". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+
+Question build FAILED. The build exited early as it encountered a target or task that was not up-to-date.
+
+C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1208,5): warning : Creating directory "obj\Debug\net10.0\". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1208,5): warning : Creating directory "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\refint\". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1208,5): warning : Creating directory "obj\Debug\net10.0\ref". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+C:\Program Files\dotnet\sdk\10.0.103\Sdks\Microsoft.NET.Sdk.StaticWebAssets\targets\Microsoft.NET.Sdk.StaticWebAssets.targets(476,5): error : Creating directory "obj\Debug\net10.0\staticwebassets\". [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+    3 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:04.07

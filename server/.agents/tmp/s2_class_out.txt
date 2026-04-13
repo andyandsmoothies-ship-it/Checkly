@@ -1,0 +1,31 @@
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1-release-26075-103 (x64)
+
+Starting test execution, please wait...
+Logging Vstest Diagnostics in file: C:\Users\HP\Documents\GitHub\Checkly\server\.agents\tmp\s2_class_diag.txt
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:04.80]     Checkly.Api.Tests.SubmissionActionPlanTests.S2_3_Evidence_Rejected_Notifies_SM [FAIL]
+[xUnit.net 00:00:04.87]     Checkly.Api.Tests.SubmissionActionPlanTests.S2_1_Evidence_Submitted_Creates_Notification [FAIL]
+[xUnit.net 00:00:05.20]     Checkly.Api.Tests.SubmissionActionPlanTests.S2_2_Plan_Closed_Notifies_SM [FAIL]
+  Failed Checkly.Api.Tests.SubmissionActionPlanTests.S2_3_Evidence_Rejected_Notifies_SM [99 ms]
+  Error Message:
+   Assert.NotNull() Failure: Value is null
+  Stack Trace:
+     at Checkly.Api.Tests.SubmissionActionPlanTests.S2_3_Evidence_Rejected_Notifies_SM() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionActionPlanTests.cs:line 452
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SubmissionActionPlanTests.S2_1_Evidence_Submitted_Creates_Notification [64 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.SubmissionActionPlanTests.S2_1_Evidence_Submitted_Creates_Notification() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionActionPlanTests.cs:line 352
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SubmissionActionPlanTests.S2_2_Plan_Closed_Notifies_SM [70 ms]
+  Error Message:
+   Assert.NotNull() Failure: Value is null
+  Stack Trace:
+     at Checkly.Api.Tests.SubmissionActionPlanTests.S2_2_Plan_Closed_Notifies_SM() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionActionPlanTests.cs:line 405
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     3, Passed:     8, Skipped:     0, Total:    11, Duration: 5 s - Checkly.Api.Tests.dll (net10.0)

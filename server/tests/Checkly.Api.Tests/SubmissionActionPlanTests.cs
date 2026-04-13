@@ -126,6 +126,19 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         return (_factory.CreateAuthenticatedClient(token), userId);
     }
 
+    /// <summary>
+    /// Registers a store_manager and returns an authenticated client + userId.
+    /// store_managers hold the 'action_plans:write' capability (evidence submission).
+    /// </summary>
+    private async Task<(HttpClient Client, Guid UserId)> CreateStoreManagerClientAsync()
+    {
+        var client = _factory.CreateClient();
+        var email = $"sm-{Guid.NewGuid():N}@test.com";
+        var (token, userId) = await _factory.RegisterUserAsync(
+            client, email, "SM123!@", "Test SM", "store_manager");
+        return (_factory.CreateAuthenticatedClient(token), userId);
+    }
+
     // ================================================================
     // S1: Auto-Create Action Plans on Submission
     // ================================================================
@@ -332,18 +345,38 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
 
+        // Register a real auditor via the API so PBAC cache recognises their role.
+        // Auditors have 'action_plans:write' per PBAC migration; IDOR passes when
+        // Submission.AuditorId == JWT userId.
+        var (auditorClient, auditorUserId) = await CreateAuditorClientAsync();
+
+        var submissionId = Guid.NewGuid();
+        seedDb.Submissions.Add(new Submission
+        {
+            Id = submissionId,
+            TemplateId = null, TemplateTitle = "S2-1 Template",
+            StoreId = storeId, StoreName = "S2-1 Store",
+            AuditorId = auditorUserId, AuditorName = "Test Auditor",
+            ScoringMode = "penalty",
+            Status = "draft",
+            TotalScore = 0m,
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+        });
+
         var apId = Guid.NewGuid();
         seedDb.ActionPlans.Add(new ActionPlan
         {
             Id = apId, StoreId = storeId, StoreManagerId = smId,
+            SubmissionId = submissionId,
             CriteriaLabel = "H1", GroupTitle = "HOSPITALITY",
             Status = "open",
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
         await seedDb.SaveChangesAsync();
 
-        var (client, _) = await CreateAuditorClientAsync();
-        var response = await client.PutAsJsonAsync($"/api/action-plans/{apId}", new
+        // Auditor submits evidence (pending_verify transition).
+        // PBAC: auditor has 'action_plans:write'. IDOR: Submission.AuditorId == auditorUserId → passes.
+        var response = await auditorClient.PutAsJsonAsync($"/api/action-plans/{apId}", new
         {
             status = "pending_verify",
             evidenceNote = "Fixed the issue"
@@ -384,18 +417,35 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
 
+        // Seed a Submission with the auditor as AuditorId
+        // so SubmissionAccessGuard resolves linkedAuditorId correctly.
+        var (auditorClient, auditorUserId) = await CreateAuditorClientAsync();
+
+        var submissionId = Guid.NewGuid();
+        seedDb.Submissions.Add(new Submission
+        {
+            Id = submissionId,
+            TemplateId = null, TemplateTitle = "S2-2 Template",
+            StoreId = storeId, StoreName = "S2-2 Store",
+            AuditorId = auditorUserId, AuditorName = "Test Auditor",
+            ScoringMode = "penalty",
+            Status = "draft",
+            TotalScore = 0m,
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+        });
+
         var apId = Guid.NewGuid();
         seedDb.ActionPlans.Add(new ActionPlan
         {
             Id = apId, StoreId = storeId, StoreManagerId = smId,
+            SubmissionId = submissionId,
             CriteriaLabel = "H2", GroupTitle = "HYGIENE",
             Status = "pending_verify",
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
         await seedDb.SaveChangesAsync();
 
-        var (client, _) = await CreateAuditorClientAsync();
-        await client.PutAsJsonAsync($"/api/action-plans/{apId}", new { status = "closed" });
+        await auditorClient.PutAsJsonAsync($"/api/action-plans/{apId}", new { status = "closed" });
 
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -431,18 +481,35 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
 
+        // Seed a Submission with the auditor as AuditorId
+        // so SubmissionAccessGuard resolves linkedAuditorId correctly.
+        var (auditorClient, auditorUserId) = await CreateAuditorClientAsync();
+
+        var submissionId = Guid.NewGuid();
+        seedDb.Submissions.Add(new Submission
+        {
+            Id = submissionId,
+            TemplateId = null, TemplateTitle = "S2-3 Template",
+            StoreId = storeId, StoreName = "S2-3 Store",
+            AuditorId = auditorUserId, AuditorName = "Test Auditor",
+            ScoringMode = "penalty",
+            Status = "draft",
+            TotalScore = 0m,
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+        });
+
         var apId = Guid.NewGuid();
         seedDb.ActionPlans.Add(new ActionPlan
         {
             Id = apId, StoreId = storeId, StoreManagerId = smId,
+            SubmissionId = submissionId,
             CriteriaLabel = "H3", GroupTitle = "HEALTH",
             Status = "pending_verify",
             CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
         await seedDb.SaveChangesAsync();
 
-        var (client, _) = await CreateAuditorClientAsync();
-        await client.PutAsJsonAsync($"/api/action-plans/{apId}", new { status = "open" });
+        await auditorClient.PutAsJsonAsync($"/api/action-plans/{apId}", new { status = "open" });
 
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

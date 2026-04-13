@@ -1,0 +1,10 @@
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+C:\Program Files\dotnet\sdk\10.0.103\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.GenerateAssemblyInfo.targets(182,5): error MSB3492: Could not read existing file "obj\Debug\net10.0\Checkly.Api.Tests.AssemblyInfoInputs.cache" to determine whether its contents are up to date. Overwriting it. [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+
+Question build FAILED. The build exited early as it encountered a target or task that was not up-to-date.
+
+C:\Program Files\dotnet\sdk\10.0.103\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.GenerateAssemblyInfo.targets(182,5): error MSB3492: Could not read existing file "obj\Debug\net10.0\Checkly.Api.Tests.AssemblyInfoInputs.cache" to determine whether its contents are up to date. Overwriting it. [C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.38
