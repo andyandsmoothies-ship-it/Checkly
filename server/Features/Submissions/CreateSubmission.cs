@@ -151,7 +151,8 @@ public static class CreateSubmission
             {
                 CriteriaId = a.CriteriaId,
                 NumericValue = a.NumericValue,
-                Value = a.Value
+                Value = a.Value,
+                RepeatedFaults = a.RepeatedFaults
             }).ToList();
 
             var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,

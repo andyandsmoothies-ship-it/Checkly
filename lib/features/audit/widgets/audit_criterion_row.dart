@@ -142,15 +142,10 @@ class AuditCriterionRow extends StatelessWidget {
                   
                 if (faults > 0) ...[
                   if (criterion.inputType == 'numeric')
-                    manager.scoringMode == ScoringMode.accumulation
-                        ? AuditStatusBadge(
-                            label: '+$faults pts',
-                            color: AppTheme.success,
-                          )
-                        : AuditStatusBadge(
-                            label: 'F:$faults',
-                            color: theme.colorScheme.error,
-                          ),
+                    AuditStatusBadge(
+                      label: 'F:$faults',
+                      color: theme.colorScheme.error,
+                    ),
                   if (criterion.inputType == 'scale' && manager.scoringMode == ScoringMode.accumulation)
                     AuditStatusBadge(
                       label: '+$faults pts',

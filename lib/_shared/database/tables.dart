@@ -199,6 +199,8 @@ class PendingAnswers extends Table {
   TextColumn get photoUrl => text().nullable()();
   BoolColumn get isRepeatedError =>
       boolean().withDefault(const Constant(false))();
+  IntColumn get repeatedFaults =>
+      integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

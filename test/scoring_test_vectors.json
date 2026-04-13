@@ -86,7 +86,7 @@
         },
         {
             "id": "V03_ccp_triggered",
-            "description": "CCP triggered → section A = 0%, section B = 100%, total = 50%",
+            "description": "CCP triggered → section A excluded from denominator, section B = 100%, total = 100%",
             "sections": [
                 {
                     "id": "s1",
@@ -131,7 +131,7 @@
                     "value": null
                 }
             ],
-            "expectedScore": 50.00
+            "expectedScore": 100.00
         },
         {
             "id": "V04_risk_triggered",

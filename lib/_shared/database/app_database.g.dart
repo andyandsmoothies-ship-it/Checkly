@@ -6594,6 +6594,18 @@ class $PendingAnswersTable extends PendingAnswers
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _repeatedFaultsMeta = const VerificationMeta(
+    'repeatedFaults',
+  );
+  @override
+  late final GeneratedColumn<int> repeatedFaults = GeneratedColumn<int>(
+    'repeated_faults',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -6604,6 +6616,7 @@ class $PendingAnswersTable extends PendingAnswers
     note,
     photoUrl,
     isRepeatedError,
+    repeatedFaults,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6677,6 +6690,15 @@ class $PendingAnswersTable extends PendingAnswers
         ),
       );
     }
+    if (data.containsKey('repeated_faults')) {
+      context.handle(
+        _repeatedFaultsMeta,
+        repeatedFaults.isAcceptableOrUnknown(
+          data['repeated_faults']!,
+          _repeatedFaultsMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -6718,6 +6740,10 @@ class $PendingAnswersTable extends PendingAnswers
         DriftSqlType.bool,
         data['${effectivePrefix}is_repeated_error'],
       )!,
+      repeatedFaults: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}repeated_faults'],
+      )!,
     );
   }
 
@@ -6736,6 +6762,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
   final String? note;
   final String? photoUrl;
   final bool isRepeatedError;
+  final int repeatedFaults;
   const PendingAnswer({
     required this.id,
     required this.pendingSubmissionId,
@@ -6745,6 +6772,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     this.note,
     this.photoUrl,
     required this.isRepeatedError,
+    required this.repeatedFaults,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6765,6 +6793,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
       map['photo_url'] = Variable<String>(photoUrl);
     }
     map['is_repeated_error'] = Variable<bool>(isRepeatedError);
+    map['repeated_faults'] = Variable<int>(repeatedFaults);
     return map;
   }
 
@@ -6784,6 +6813,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
           ? const Value.absent()
           : Value(photoUrl),
       isRepeatedError: Value(isRepeatedError),
+      repeatedFaults: Value(repeatedFaults),
     );
   }
 
@@ -6803,6 +6833,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
       note: serializer.fromJson<String?>(json['note']),
       photoUrl: serializer.fromJson<String?>(json['photoUrl']),
       isRepeatedError: serializer.fromJson<bool>(json['isRepeatedError']),
+      repeatedFaults: serializer.fromJson<int>(json['repeatedFaults']),
     );
   }
   @override
@@ -6817,6 +6848,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
       'note': serializer.toJson<String?>(note),
       'photoUrl': serializer.toJson<String?>(photoUrl),
       'isRepeatedError': serializer.toJson<bool>(isRepeatedError),
+      'repeatedFaults': serializer.toJson<int>(repeatedFaults),
     };
   }
 
@@ -6829,6 +6861,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     Value<String?> note = const Value.absent(),
     Value<String?> photoUrl = const Value.absent(),
     bool? isRepeatedError,
+    int? repeatedFaults,
   }) => PendingAnswer(
     id: id ?? this.id,
     pendingSubmissionId: pendingSubmissionId ?? this.pendingSubmissionId,
@@ -6838,6 +6871,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     note: note.present ? note.value : this.note,
     photoUrl: photoUrl.present ? photoUrl.value : this.photoUrl,
     isRepeatedError: isRepeatedError ?? this.isRepeatedError,
+    repeatedFaults: repeatedFaults ?? this.repeatedFaults,
   );
   PendingAnswer copyWithCompanion(PendingAnswersCompanion data) {
     return PendingAnswer(
@@ -6857,6 +6891,9 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
       isRepeatedError: data.isRepeatedError.present
           ? data.isRepeatedError.value
           : this.isRepeatedError,
+      repeatedFaults: data.repeatedFaults.present
+          ? data.repeatedFaults.value
+          : this.repeatedFaults,
     );
   }
 
@@ -6870,7 +6907,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
           ..write('numericValue: $numericValue, ')
           ..write('note: $note, ')
           ..write('photoUrl: $photoUrl, ')
-          ..write('isRepeatedError: $isRepeatedError')
+          ..write('isRepeatedError: $isRepeatedError, ')
+          ..write('repeatedFaults: $repeatedFaults')
           ..write(')'))
         .toString();
   }
@@ -6885,6 +6923,7 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     note,
     photoUrl,
     isRepeatedError,
+    repeatedFaults,
   );
   @override
   bool operator ==(Object other) =>
@@ -6897,7 +6936,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
           other.numericValue == this.numericValue &&
           other.note == this.note &&
           other.photoUrl == this.photoUrl &&
-          other.isRepeatedError == this.isRepeatedError);
+          other.isRepeatedError == this.isRepeatedError &&
+          other.repeatedFaults == this.repeatedFaults);
 }
 
 class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
@@ -6909,6 +6949,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
   final Value<String?> note;
   final Value<String?> photoUrl;
   final Value<bool> isRepeatedError;
+  final Value<int> repeatedFaults;
   final Value<int> rowid;
   const PendingAnswersCompanion({
     this.id = const Value.absent(),
@@ -6919,6 +6960,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     this.note = const Value.absent(),
     this.photoUrl = const Value.absent(),
     this.isRepeatedError = const Value.absent(),
+    this.repeatedFaults = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingAnswersCompanion.insert({
@@ -6930,6 +6972,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     this.note = const Value.absent(),
     this.photoUrl = const Value.absent(),
     this.isRepeatedError = const Value.absent(),
+    this.repeatedFaults = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        pendingSubmissionId = Value(pendingSubmissionId),
@@ -6943,6 +6986,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     Expression<String>? note,
     Expression<String>? photoUrl,
     Expression<bool>? isRepeatedError,
+    Expression<int>? repeatedFaults,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6955,6 +6999,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
       if (note != null) 'note': note,
       if (photoUrl != null) 'photo_url': photoUrl,
       if (isRepeatedError != null) 'is_repeated_error': isRepeatedError,
+      if (repeatedFaults != null) 'repeated_faults': repeatedFaults,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6968,6 +7013,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     Value<String?>? note,
     Value<String?>? photoUrl,
     Value<bool>? isRepeatedError,
+    Value<int>? repeatedFaults,
     Value<int>? rowid,
   }) {
     return PendingAnswersCompanion(
@@ -6979,6 +7025,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
       note: note ?? this.note,
       photoUrl: photoUrl ?? this.photoUrl,
       isRepeatedError: isRepeatedError ?? this.isRepeatedError,
+      repeatedFaults: repeatedFaults ?? this.repeatedFaults,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -7012,6 +7059,9 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     if (isRepeatedError.present) {
       map['is_repeated_error'] = Variable<bool>(isRepeatedError.value);
     }
+    if (repeatedFaults.present) {
+      map['repeated_faults'] = Variable<int>(repeatedFaults.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -7029,6 +7079,7 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
           ..write('note: $note, ')
           ..write('photoUrl: $photoUrl, ')
           ..write('isRepeatedError: $isRepeatedError, ')
+          ..write('repeatedFaults: $repeatedFaults, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -12484,6 +12535,7 @@ typedef $$PendingAnswersTableCreateCompanionBuilder =
       Value<String?> note,
       Value<String?> photoUrl,
       Value<bool> isRepeatedError,
+      Value<int> repeatedFaults,
       Value<int> rowid,
     });
 typedef $$PendingAnswersTableUpdateCompanionBuilder =
@@ -12496,6 +12548,7 @@ typedef $$PendingAnswersTableUpdateCompanionBuilder =
       Value<String?> note,
       Value<String?> photoUrl,
       Value<bool> isRepeatedError,
+      Value<int> repeatedFaults,
       Value<int> rowid,
     });
 
@@ -12574,6 +12627,11 @@ class $$PendingAnswersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get repeatedFaults => $composableBuilder(
+    column: $table.repeatedFaults,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$PendingSubmissionsTableFilterComposer get pendingSubmissionId {
     final $$PendingSubmissionsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -12642,6 +12700,11 @@ class $$PendingAnswersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get repeatedFaults => $composableBuilder(
+    column: $table.repeatedFaults,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$PendingSubmissionsTableOrderingComposer get pendingSubmissionId {
     final $$PendingSubmissionsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -12699,6 +12762,11 @@ class $$PendingAnswersTableAnnotationComposer
 
   GeneratedColumn<bool> get isRepeatedError => $composableBuilder(
     column: $table.isRepeatedError,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get repeatedFaults => $composableBuilder(
+    column: $table.repeatedFaults,
     builder: (column) => column,
   );
 
@@ -12765,6 +12833,7 @@ class $$PendingAnswersTableTableManager
                 Value<String?> note = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
                 Value<bool> isRepeatedError = const Value.absent(),
+                Value<int> repeatedFaults = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingAnswersCompanion(
                 id: id,
@@ -12775,6 +12844,7 @@ class $$PendingAnswersTableTableManager
                 note: note,
                 photoUrl: photoUrl,
                 isRepeatedError: isRepeatedError,
+                repeatedFaults: repeatedFaults,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12787,6 +12857,7 @@ class $$PendingAnswersTableTableManager
                 Value<String?> note = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
                 Value<bool> isRepeatedError = const Value.absent(),
+                Value<int> repeatedFaults = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingAnswersCompanion.insert(
                 id: id,
@@ -12797,6 +12868,7 @@ class $$PendingAnswersTableTableManager
                 note: note,
                 photoUrl: photoUrl,
                 isRepeatedError: isRepeatedError,
+                repeatedFaults: repeatedFaults,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

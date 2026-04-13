@@ -140,6 +140,7 @@ class SyncEngine {
               'note': a.note,
               'photoUrl': a.photoUrl,
               'isRepeatedError': a.isRepeatedError,
+              'repeatedFaults': a.repeatedFaults,
             }).toList(),
           });
 

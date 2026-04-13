@@ -67,6 +67,7 @@ class SubmissionAnswerInput {
   final String? note;
   final String? photoUrl;
   final bool isRepeatedError;
+  final int repeatedFaults;
 
   const SubmissionAnswerInput({
     required this.criteriaId,
@@ -75,6 +76,7 @@ class SubmissionAnswerInput {
     this.note,
     this.photoUrl,
     this.isRepeatedError = false,
+    this.repeatedFaults = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -84,6 +86,7 @@ class SubmissionAnswerInput {
     'note': note,
     'photoUrl': photoUrl,
     'isRepeatedError': isRepeatedError,
+    'repeatedFaults': repeatedFaults,
   };
 }
 

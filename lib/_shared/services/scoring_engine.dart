@@ -133,10 +133,23 @@ class ScoringEngine {
 
         if (sectionBefore == 0) continue;
 
+        // CCP triggered: exclude this section from BOTH numerator and denominator.
+        // Mirrors server ScoringVerifier.VerifyPenalty which uses `continue` to skip the section.
+        // Previously Flutter added ratio=0 keeping it in the denominator -> wrong weighted average -> 400.
+        if (ccpTriggered) {
+          sectionScores[section.id] = SectionScore(
+            sectionId: section.id,
+            maxPoints: sectionBefore,
+            deductions: sectionBefore,
+            score: 0.0,
+            hasCcpFailure: true,
+            hasRiskFailure: riskInSection,
+          );
+          continue;
+        }
+
         final sectionAfter = max(0.0, sectionBefore - sectionDeductions);
-        final sectionRatio = ccpTriggered
-            ? 0.0
-            : (sectionAfter / sectionBefore);
+        final sectionRatio = sectionAfter / sectionBefore;
 
         sectionResults.add((ratio: sectionRatio, weight: section.weight));
 
@@ -144,8 +157,8 @@ class ScoringEngine {
           sectionId: section.id,
           maxPoints: sectionBefore,
           deductions: sectionDeductions,
-          score: ccpTriggered ? 0.0 : sectionAfter,
-          hasCcpFailure: ccpTriggered,
+          score: sectionAfter,
+          hasCcpFailure: false,
           hasRiskFailure: riskInSection,
         );
       }

@@ -80,6 +80,7 @@ class AuditAnswer {
     note: note,
     photoUrl: photoUrl,
     isRepeatedError: isRepeatedError,
+    repeatedFaults: repeatedFaultCount,
   );
 }
 
@@ -423,6 +424,7 @@ class AuditManager extends ChangeNotifier {
           note: Value(a.note),
           photoUrl: Value(a.photoUrl),
           isRepeatedError: Value(a.isRepeatedError),
+          repeatedFaults: Value(a.repeatedFaultCount),
         );
       }).toList();
 

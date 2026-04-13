@@ -119,12 +119,12 @@ void main() {
   // Scenario 3: CCP triggered → section score = 0%
   // Source: SCORING_LOGIC.md §3 CCP
   // ================================================================
-  test('V03: CCP triggered → section A = 0%, total = 50%', () {
+  test('V03: CCP triggered → section A excluded from denominator, total = 100%', () {
     final v = vectors.firstWhere((v) => v['id'] == 'V03_ccp_triggered');
     final input = parseVector(v);
     final result = ScoringEngine.calculate(input);
 
-    expect(result.totalScore, closeTo(50.00, 0.01));
+    expect(result.totalScore, closeTo(100.00, 0.01));
   });
 
   // ================================================================

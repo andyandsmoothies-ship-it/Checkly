@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -101,6 +101,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 12) {
         // Orphaned Resume fix: track the server's submission ID for finalize routing.
         await m.addColumn(pendingSubmissions, pendingSubmissions.targetSubmissionId);
+      }
+      if (from < 13) {
+        // Score Verification fix: persist repeat fault count for accurate server-side scoring.
+        await m.addColumn(pendingAnswers, pendingAnswers.repeatedFaults);
       }
     },
     beforeOpen: (details) async {

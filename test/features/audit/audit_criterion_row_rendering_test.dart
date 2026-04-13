@@ -17,7 +17,7 @@ void main() {
     when(() => mockManager.answers).thenReturn({});
   });
 
-  testWidgets('AuditCriterionRow displays +X pts in green for accumulation mode', (tester) async {
+  testWidgets('AuditCriterionRow displays F:X in red for numeric input in accumulation mode', (tester) async {
     // Arrange
     final criterion = CriterionDto(
       id: 'c1',
@@ -29,12 +29,8 @@ void main() {
       orderIndex: 0,
     );
 
-    // Mock answer with 4 points
     final answer = AuditAnswer(criteriaId: 'c1', numericValue: 4);
     when(() => mockManager.answers).thenReturn({'c1': answer});
-    
-    // RED BEHAVIOR: Current UI doesn't know about scoringMode.
-    // It will render F:4 because faults = answer.numericValue.toInt() and it ignores manager.scoringMode.
     when(() => mockManager.scoringMode).thenReturn(ScoringMode.accumulation);
 
     // Act
@@ -50,16 +46,10 @@ void main() {
     );
 
     // Assert
-    // EXPECTATION: The UI should show +4 pts because the manager is in accumulation mode.
-    // This will fail currently because it renders "F:4".
-    expect(find.text('+4 pts'), findsOneWidget);
-    
-    // Verify the color is success (green) - this is a deeper check
-    final badgeText = tester.widget<Text>(find.text('+4 pts'));
-    expect(badgeText.style?.color, Colors.white); // Text is white inside colored container
-    
-
-    // We expect AppTheme.success or similar. For now, checking the text exists is enough for a RED test.
+    // CORRECT EXPECTATION: numeric inputs ALWAYS represent defect counts, never earned points.
+    // The ScoringEngine treats numeric as binary fault — so the UI must always show F:X in red.
+    expect(find.text('F:4'), findsOneWidget);
+    expect(find.text('+4 pts'), findsNothing);
   });
 
   testWidgets('AuditCriterionRow continues to display F:X in red for penalty mode', (tester) async {

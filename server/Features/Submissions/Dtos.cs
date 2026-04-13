@@ -23,7 +23,8 @@ public sealed record AnswerInput(
     decimal? NumericValue,
     string? Note,
     string? PhotoUrl,
-    bool IsRepeatedError);
+    bool IsRepeatedError,
+    int RepeatedFaults = 0);
 
 public sealed record SubmissionDto(
     Guid Id,
