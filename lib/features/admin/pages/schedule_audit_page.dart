@@ -115,9 +115,11 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
             )
             .toList();
 
-        // Base auditor filter: only auditors and admins (keep areaId)
+        // Base auditor filter: only active auditors and admins (keep areaId)
         var auditorList = users
-            .where((u) => u['role'] == 'auditor' || u['role'] == 'admin')
+            .where((u) =>
+                (u['role'] == 'auditor' || u['role'] == 'admin') &&
+                u['isLocked'] != true)
             .toList();
 
         // Role-based filtering for area_manager

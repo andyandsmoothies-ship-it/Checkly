@@ -63,7 +63,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Gotcha Protocol**| MANDATORY: Append `### Gotcha Addition Proposal` to report. IF (project-specific logic) THEN Propose bullet point for `GEMINI.override.md`. ELSE -> State "No new gotcha detected". |
-| **Routing** | Output message: *"Pass failure_report_[topic]_[ConversationID].md to Builder agent (@Forge) for /implement."* -> YIELD. |
+| **Routing** | MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] @[/implement] brain/.../failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD. |
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
@@ -72,7 +72,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Diagnostic Verdict & Persistent path.
 > 2. The required fix and its blast radius.
-> 3. The exact next workflow command the user should run (e.g. `/implement`).
+> 3. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] @[/implement] brain/.../failure_report.md`).
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
