@@ -95,7 +95,7 @@ void main() {
   });
 
   group('Non-Scored Criteria Badges', () {
-    testWidgets('displays selected option for single_choice', (tester) async {
+    testWidgets('displays selected option for single_choice without badge', (tester) async {
       final criterion = CriterionDto(id: 'c1', label: 'Single', inputType: 'single_choice', isCcp: false, isRisk: false, orderIndex: 0);
       final answer = AuditAnswer(criteriaId: 'c1', value: 'Option A');
       when(() => mockManager.answers).thenReturn({'c1': answer});
@@ -104,9 +104,14 @@ void main() {
       await tester.pumpWidget(MaterialApp(home: Scaffold(body: AuditCriterionRow(criterion: criterion, manager: mockManager))));
 
       expect(find.text('Option A'), findsOneWidget);
+      // New constraint: Should NOT be in a badge
+      expect(
+        find.ancestor(of: find.text('Option A'), matching: find.byType(AuditStatusBadge)),
+        findsNothing,
+      );
     });
 
-    testWidgets('displays count for multi_choice', (tester) async {
+    testWidgets('displays count for multi_choice INSIDE badge', (tester) async {
       final criterion = CriterionDto(id: 'c1', label: 'Multi', inputType: 'multi_choice', isCcp: false, isRisk: false, orderIndex: 0);
       final answer = AuditAnswer(criteriaId: 'c1', value: 'Opt1, Opt2, Opt3');
       when(() => mockManager.answers).thenReturn({'c1': answer});
@@ -115,20 +120,31 @@ void main() {
       await tester.pumpWidget(MaterialApp(home: Scaffold(body: AuditCriterionRow(criterion: criterion, manager: mockManager))));
 
       expect(find.text('3 selected'), findsOneWidget);
+      // multi_choice remains as a badge
+      expect(
+        find.ancestor(of: find.text('3 selected'), matching: find.byType(AuditStatusBadge)),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('displays truncated text for text type', (tester) async {
+    testWidgets('displays full text for text type without badge and without truncation', (tester) async {
       final criterion = CriterionDto(id: 'c1', label: 'Text', inputType: 'text', isCcp: false, isRisk: false, orderIndex: 0);
-      final answer = AuditAnswer(criteriaId: 'c1', value: 'This is a very long observation that should be truncated');
+      final answer = AuditAnswer(criteriaId: 'c1', value: 'This is a long observation that should not be truncated anymore');
       when(() => mockManager.answers).thenReturn({'c1': answer});
       when(() => mockManager.scoringMode).thenReturn(ScoringMode.penalty);
 
       await tester.pumpWidget(MaterialApp(home: Scaffold(body: AuditCriterionRow(criterion: criterion, manager: mockManager))));
 
-      expect(find.text('This is a very ...'), findsOneWidget);
+      // Should find full text
+      expect(find.text('This is a long observation that should not be truncated anymore'), findsOneWidget);
+      // New constraint: Should NOT be in a badge
+      expect(
+        find.ancestor(of: find.textContaining('This is a long'), matching: find.byType(AuditStatusBadge)),
+        findsNothing,
+      );
     });
 
-    testWidgets('displays PASS/FAIL for pass_fail type', (tester) async {
+    testWidgets('displays PASS/FAIL for pass_fail type INSIDE badge', (tester) async {
       final criterion = CriterionDto(id: 'c1', label: 'PF', inputType: 'pass_fail', isCcp: false, isRisk: false, orderIndex: 0);
       
       // Pass case
@@ -136,22 +152,46 @@ void main() {
       when(() => mockManager.scoringMode).thenReturn(ScoringMode.penalty);
       await tester.pumpWidget(MaterialApp(home: Scaffold(body: AuditCriterionRow(criterion: criterion, manager: mockManager))));
       expect(find.text('PASS'), findsOneWidget);
+      expect(find.ancestor(of: find.text('PASS'), matching: find.byType(AuditStatusBadge)), findsOneWidget);
 
       // Fail case
       when(() => mockManager.answers).thenReturn({'c1': AuditAnswer(criteriaId: 'c1', value: 'non_conform')});
       await tester.pumpWidget(MaterialApp(home: Scaffold(body: AuditCriterionRow(criterion: criterion, manager: mockManager))));
       expect(find.text('FAIL'), findsOneWidget);
+      expect(find.ancestor(of: find.text('FAIL'), matching: find.byType(AuditStatusBadge)), findsOneWidget);
     });
 
-    testWidgets('displays selected label for scale type', (tester) async {
+    testWidgets('displays selected label for scale type without badge', (tester) async {
       final criterion = CriterionDto(id: 'c1', label: 'Scale', inputType: 'scale', isCcp: false, isRisk: false, orderIndex: 0);
-      final answer = AuditAnswer(criteriaId: 'c1', value: 'Good');
+      final answer = AuditAnswer(criteriaId: 'c1', value: 'Excellent');
       when(() => mockManager.answers).thenReturn({'c1': answer});
       when(() => mockManager.scoringMode).thenReturn(ScoringMode.penalty);
 
       await tester.pumpWidget(MaterialApp(home: Scaffold(body: AuditCriterionRow(criterion: criterion, manager: mockManager))));
 
+      expect(find.text('Excellent'), findsOneWidget);
+      // Scale label moves out of badge
+      expect(
+        find.ancestor(of: find.text('Excellent'), matching: find.byType(AuditStatusBadge)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('displays scale label AND points badge in accumulation mode', (tester) async {
+      final criterion = CriterionDto(id: 'c1', label: 'Scale', inputType: 'scale', isCcp: false, isRisk: false, orderIndex: 0);
+      final answer = AuditAnswer(criteriaId: 'c1', value: 'Good', numericValue: 3);
+      when(() => mockManager.answers).thenReturn({'c1': answer});
+      when(() => mockManager.scoringMode).thenReturn(ScoringMode.accumulation);
+
+      await tester.pumpWidget(MaterialApp(home: Scaffold(body: AuditCriterionRow(criterion: criterion, manager: mockManager))));
+
+      // Label (no badge)
       expect(find.text('Good'), findsOneWidget);
+      expect(find.ancestor(of: find.text('Good'), matching: find.byType(AuditStatusBadge)), findsNothing);
+
+      // Points (badge)
+      expect(find.text('+3 pts'), findsOneWidget);
+      expect(find.ancestor(of: find.text('+3 pts'), matching: find.byType(AuditStatusBadge)), findsOneWidget);
     });
   });
 }

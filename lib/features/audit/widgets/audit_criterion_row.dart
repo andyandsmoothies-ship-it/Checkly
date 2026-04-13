@@ -41,12 +41,7 @@ class AuditCriterionRow extends StatelessWidget {
     if (answer == null) return null;
     final String input = criterion.inputType;
 
-    if (input == 'single_choice') {
-      if (answer.value != null && answer.value!.isNotEmpty) {
-        return AuditStatusBadge(
-            label: answer.value!, color: theme.colorScheme.primary);
-      }
-    } else if (input == 'multi_choice') {
+    if (input == 'multi_choice') {
       if (answer.value != null && answer.value!.isNotEmpty) {
         final count = answer.value!
             .split(',')
@@ -57,15 +52,6 @@ class AuditCriterionRow extends StatelessWidget {
               label: '$count selected', color: theme.colorScheme.primary);
         }
       }
-    } else if (input == 'text') {
-      if (answer.value != null && answer.value!.isNotEmpty) {
-        String text = answer.value!.replaceAll('\n', ' ').trim();
-        if (text.length > 15) {
-          text = '${text.substring(0, 15)}...';
-        }
-        return AuditStatusBadge(
-            label: text, color: theme.colorScheme.outlineVariant);
-      }
     } else if (input == 'pass_fail') {
       if (answer.value == 'conform') {
         return AuditStatusBadge(label: 'PASS', color: AppTheme.success);
@@ -74,11 +60,17 @@ class AuditCriterionRow extends StatelessWidget {
       } else if (answer.value == 'na') {
         return AuditStatusBadge(label: 'N/A', color: theme.colorScheme.outline);
       }
-    } else if (input == 'scale') {
-      if (answer.value != null && answer.value!.isNotEmpty) {
-        return AuditStatusBadge(
-            label: answer.value!, color: theme.colorScheme.primary);
-      }
+    }
+    return null;
+  }
+
+  String? _buildSubtitleText(AuditAnswer? answer) {
+    if (answer == null || answer.value == null || answer.value!.isEmpty) {
+      return null;
+    }
+    final String input = criterion.inputType;
+    if (input == 'single_choice' || input == 'scale' || input == 'text') {
+      return answer.value;
     }
     return null;
   }
@@ -116,13 +108,27 @@ class AuditCriterionRow extends StatelessWidget {
 
             // Label
             Expanded(
-              child: Text(
-                criterion.label,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    criterion.label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (_buildSubtitleText(answer) != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      _buildSubtitleText(answer)!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             const SizedBox(width: 8),
@@ -134,16 +140,23 @@ class AuditCriterionRow extends StatelessWidget {
                 if (_buildPrimaryBadge(theme, answer) != null)
                   _buildPrimaryBadge(theme, answer)!,
                   
-                if (criterion.inputType == 'numeric' && faults > 0)
-                  manager.scoringMode == ScoringMode.accumulation
-                      ? AuditStatusBadge(
-                          label: '+$faults pts',
-                          color: AppTheme.success,
-                        )
-                      : AuditStatusBadge(
-                          label: 'F:$faults',
-                          color: theme.colorScheme.error,
-                        ),
+                if (faults > 0) ...[
+                  if (criterion.inputType == 'numeric')
+                    manager.scoringMode == ScoringMode.accumulation
+                        ? AuditStatusBadge(
+                            label: '+$faults pts',
+                            color: AppTheme.success,
+                          )
+                        : AuditStatusBadge(
+                            label: 'F:$faults',
+                            color: theme.colorScheme.error,
+                          ),
+                  if (criterion.inputType == 'scale' && manager.scoringMode == ScoringMode.accumulation)
+                    AuditStatusBadge(
+                      label: '+$faults pts',
+                      color: AppTheme.success,
+                    ),
+                ],
 
                 if (_isScored(criterion.inputType)) ...[
                   if (repeats > 0)
