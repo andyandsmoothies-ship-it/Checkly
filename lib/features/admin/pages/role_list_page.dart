@@ -87,9 +87,13 @@ class _OnlineRoleList extends StatelessWidget {
     return ValueListenableBuilder<List<RoleDto>?>(
       valueListenable: manager.roles,
       builder: (context, roles, _) {
-        return ValueListenableBuilder<bool>(
-          valueListenable: manager.isLoading,
-          builder: (context, isLoading, _) {
+        return ValueListenableBuilder<List<String>?>(
+          valueListenable: manager.catalog,
+          builder: (context, catalog, _) {
+            final totalStr = catalog != null && catalog.isNotEmpty ? '/${catalog.length}' : '';
+            return ValueListenableBuilder<bool>(
+              valueListenable: manager.isLoading,
+              builder: (context, isLoading, _) {
             return ValueListenableBuilder<String?>(
               valueListenable: manager.error,
               builder: (context, error, _) {
@@ -147,7 +151,7 @@ class _OnlineRoleList extends StatelessWidget {
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                         subtitle: Text(
-                          '${role.capabilities.length} capabilities assigned',
+                          '${role.capabilities.length}$totalStr capabilities assigned',
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => context.push('/admin/roles/${role.role}'),
@@ -159,6 +163,8 @@ class _OnlineRoleList extends StatelessWidget {
             );
           },
         );
+      },
+    );
       },
     );
   }

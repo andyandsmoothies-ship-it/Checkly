@@ -31,6 +31,8 @@ import 'features/dashboard/manager/dashboard_manager.dart';
 import 'features/admin/services/admin_api_service.dart';
 import 'features/admin/manager/role_manager.dart';
 import 'features/analytics/services/analytics_api_service.dart';
+import 'features/user_groups/services/user_group_api_service.dart';
+import 'features/user_groups/manager/user_group_manager.dart';
 
 final di = GetIt.instance;
 
@@ -83,7 +85,6 @@ void configureDependencies() {
     () => SyncEngine(
       connectivity: di<ConnectivityService>(),
       api: SyncApiAdapter(di<Dio>()),
-      outbox: OutboxAdapter(di<OutboxDao>()),
       auth: AuthCheckAdapter(di<AuthManager>()),
       outboxDao: di<OutboxDao>(),
       actionPlanApi: ActionPlanApiAdapter(di<Dio>()),
@@ -123,5 +124,13 @@ void configureDependencies() {
   // ---------- Analytics (CRUD Gaps — MS5) ----------
   di.registerLazySingleton<AnalyticsApiService>(
     () => AnalyticsApiService(di<Dio>()),
+  );
+
+  // ---------- User Groups ----------
+  di.registerLazySingleton<UserGroupApiService>(
+    () => UserGroupApiService(di<Dio>()),
+  );
+  di.registerLazySingleton<UserGroupManager>(
+    () => UserGroupManager(di<UserGroupApiService>()),
   );
 }

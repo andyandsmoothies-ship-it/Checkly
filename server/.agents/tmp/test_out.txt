@@ -1,0 +1,10 @@
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:38.89]     Checkly.Api.Tests.SubmissionActionPlanTests.S2_3_Evidence_Rejected_Notifies_SM [FAIL]
+[xUnit.net 00:00:38.95]     Checkly.Api.Tests.SubmissionActionPlanTests.S2_1_Evidence_Submitted_Creates_Notification [FAIL]
+[xUnit.net 00:00:39.23]     Checkly.Api.Tests.SubmissionActionPlanTests.S2_2_Plan_Closed_Notifies_SM [FAIL]
+
+Failed!  - Failed:     3, Passed:   284, Skipped:     0, Total:   287, Duration: 57 s - Checkly.Api.Tests.dll (net10.0)

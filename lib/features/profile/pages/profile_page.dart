@@ -4,11 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../auth/manager/auth_manager.dart';
-import '../../../_shared/database/dao/outbox_dao.dart';
-import '../../../_shared/database/database_service.dart';
 import '../../../_shared/theme/app_colors.dart';
-import '../../../_shared/theme/theme_manager.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../widgets/sign_out_tile.dart';
+import '../widgets/theme_toggle_tile.dart';
 
 final _di = GetIt.instance;
 
@@ -77,7 +76,7 @@ class ProfilePage extends StatelessWidget {
           const SizedBox(height: 24),
 
           // ── Sign Out ──
-          _SignOutTile(),
+          const SignOutTile(),
           const SizedBox(height: 16),
 
           // ── Version ──
@@ -281,7 +280,7 @@ class _SettingsSectionGroup extends StatelessWidget {
                 color: theme.colorScheme.outlineVariant,
               ),
           ],
-          if (themeToggle) _ThemeToggleTile(),
+          if (themeToggle) const ThemeToggleTile(),
         ],
       ),
     );
@@ -316,168 +315,6 @@ class _MenuTile extends StatelessWidget {
           ).showSnackBar(const SnackBar(content: Text('Coming soon')));
         }
       },
-    );
-  }
-}
-
-// ── Theme Toggle Tile (embedded in General section) ────────────────────────────
-
-class _ThemeToggleTile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final themeManager = _di<ThemeManager>();
-
-    return ListenableBuilder(
-      listenable: themeManager,
-      builder: (context, _) {
-        final isDark = themeManager.themeMode == ThemeMode.dark;
-        return ListTile(
-          leading: Icon(
-            isDark ? Icons.dark_mode : Icons.light_mode,
-            color: theme.colorScheme.primary,
-          ),
-          title: const Text('Theme', style: TextStyle(fontWeight: FontWeight.w500)),
-          subtitle: Text(isDark ? 'Dark mode' : 'Light mode'),
-          trailing: Switch(
-            value: isDark,
-            onChanged: (_) {
-              HapticFeedback.lightImpact();
-              themeManager.toggleTheme();
-            },
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ── Sign Out Tile ──────────────────────────────────────────────────────────────
-
-class _SignOutTile extends StatefulWidget {
-  @override
-  State<_SignOutTile> createState() => _SignOutTileState();
-}
-
-class _SignOutTileState extends State<_SignOutTile> {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(Icons.logout, color: theme.colorScheme.error),
-      title: Text(
-        'SIGN OUT',
-        style: TextStyle(
-          color: theme.colorScheme.error,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      onTap: () => _confirmSignOut(context),
-    );
-  }
-
-  Future<void> _confirmSignOut(BuildContext context) async {
-    final outbox = OutboxDao(_di<DatabaseService>().db);
-
-    // Check both counts in parallel
-    final results = await Future.wait([
-      outbox.syncableCount(),
-      outbox.exhaustedCount(),
-    ]);
-    final syncable = results[0];
-    final exhausted = results[1];
-
-    if (!context.mounted) return;
-
-    // Case 1: Recoverable submissions in-flight — warn but allow escape.
-    if (syncable > 0) {
-      final shouldForce = await showDialog<bool>(
-        context: context,
-        builder: (dialogCtx) => AlertDialog(
-          title: const Text('Audits Still Uploading'),
-          content: Text(
-            'You have $syncable audit${syncable == 1 ? '' : 's'} still uploading. '
-            'Signing out now will permanently delete ${syncable == 1 ? 'it' : 'them'} from this device.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(false),
-              child: const Text('Wait'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(true),
-              child: Text(
-                'Sign Out Anyway',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-      if (shouldForce == true) {
-        _di<AuthManager>().logout();
-      }
-      return;
-    }
-
-    // Case 2: Only exhausted (permanently failed) rows remain — warn + allow escape.
-    if (exhausted > 0) {
-      final shouldForce = await showDialog<bool>(
-        context: context,
-        builder: (dialogCtx) => AlertDialog(
-          title: const Text('Unsynced Audits Will Be Lost'),
-          content: Text(
-            '$exhausted audit${exhausted == 1 ? '' : 's'} failed to upload and '
-            'cannot be recovered. Signing out will permanently delete '
-            '${exhausted == 1 ? 'it' : 'them'} from this device.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(true),
-              child: Text(
-                'Sign Out Anyway',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-      if (shouldForce == true) {
-        _di<AuthManager>().logout();
-      }
-      return;
-    }
-
-    // Case 3: Outbox is clean — standard confirmation.
-    await showDialog<void>(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => _di<AuthManager>().logout(),
-            child: Text(
-              'Sign Out',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

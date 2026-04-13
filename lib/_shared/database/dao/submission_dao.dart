@@ -14,7 +14,7 @@ class SubmissionDao {
     final rows = await (_db.select(_db.cachedSubmissions)
       ..orderBy([(s) => OrderingTerm.desc(s.createdAt)])
       ..limit(500)).get();
-    return rows.map(_rowToDto).toList();
+    return rows.map(SubmissionDao.rowToDto).toList();
   }
 
   /// Upsert a batch of submissions.
@@ -29,7 +29,7 @@ class SubmissionDao {
 
   // ---------- Mappers ----------
 
-  SubmissionDto _rowToDto(CachedSubmission row) => SubmissionDto(
+  static SubmissionDto rowToDto(CachedSubmission row) => SubmissionDto(
     id: row.id,
     templateId: row.templateId,
     templateTitle: row.templateTitle,

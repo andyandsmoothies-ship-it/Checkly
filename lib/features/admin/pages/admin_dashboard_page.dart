@@ -179,6 +179,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       subtitle: 'Manage role capabilities',
                       onTap: () => context.push('/admin/roles'),
                     ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.group_work_outlined,
+                      title: 'User Groups',
+                      subtitle: 'Manage user group assignments',
+                      onTap: () => context.push('/admin/user-groups'),
+                    ),
                   ],
                 ),
               ),

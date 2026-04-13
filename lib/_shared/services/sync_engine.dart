@@ -29,8 +29,7 @@ const List<int> _backoffDelays = [2, 4, 8, 60];
 class SyncEngine {
   final ConnectivityService _connectivity;
   final SyncApi _api;
-  // ignore: unused_field — Outbox interface kept as constructor seam; _outboxDao used directly for removal (TODO: cleanup in follow-up PR).
-  final Outbox _outbox;
+
   final AuthCheck _auth;
   final OutboxDao _outboxDao; // Direct DAO access for backoff writes
   final ActionPlanApi _actionPlanApi; // For draining offline evidence queue
@@ -46,14 +45,16 @@ class SyncEngine {
   SyncEngine({
     required ConnectivityService connectivity,
     required SyncApi api,
-    required Outbox outbox,
+
     required AuthCheck auth,
     required OutboxDao outboxDao,
     required ActionPlanApi actionPlanApi,
     required ActionPlanOutboxDao actionPlanOutboxDao,
+    // ignore: avoid_unused_constructor_parameters
+    @Deprecated('No-op: SyncEngine uses OutboxDao directly. Pass outboxDao instead.')
+    Outbox? outbox,
   }) : _connectivity = connectivity,
        _api = api,
-       _outbox = outbox,
        _auth = auth,
        _outboxDao = outboxDao,
        _actionPlanApi = actionPlanApi,

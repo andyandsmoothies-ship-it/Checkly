@@ -35,6 +35,7 @@ import '../../features/templates/pages/template_builder_page.dart';
 import '../../features/templates/pages/template_wizard_page.dart';
 import '../../features/notifications/pages/notification_drawer_page.dart';
 import '../../features/audit/pages/survey_results_page.dart';
+import '../../features/user_groups/pages/user_group_list_page.dart';
 import '../database/dao/outbox_dao.dart';
 
 final _di = GetIt.instance;
@@ -170,6 +171,10 @@ final appRouter = GoRouter(
       path: '/admin/roles/:role',
       builder: (context, state) =>
           RoleDetailPage(role: state.pathParameters['role']!),
+    ),
+    GoRoute(
+      path: '/admin/user-groups',
+      builder: (context, state) => const UserGroupListPage(),
     ),
 
     // Legacy redirects: old routes → new routes

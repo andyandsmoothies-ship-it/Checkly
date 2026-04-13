@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 
 import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/database_service.dart';
+import '../../../_shared/database/dao/submission_dao.dart';
+import '../../audit/model/submission_dto.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/manager/store_manager.dart';
 import 'dashboard_queries.dart';
@@ -25,7 +27,7 @@ class AuditorDashboardState extends DashboardState {
   final int openActionPlans;
   final double myAvgScore;
   final DateTime? nearestDeadline;
-  final List<CachedSubmission> recentSubmissions;
+  final List<SubmissionDto> recentSubmissions;
 
   AuditorDashboardState({
     required this.draftCount,
@@ -44,7 +46,7 @@ class ManagerDashboardState extends DashboardState {
   final int overdueActionPlans;
   final double storeAvgScore;
   final DateTime? nearestDeadline;
-  final List<CachedSubmission> recentSubmissions;
+  final List<SubmissionDto> recentSubmissions;
 
   ManagerDashboardState({
     required this.storeId,
@@ -66,7 +68,7 @@ class AdminDashboardState extends DashboardState {
   final int overdueActionPlans;
   final int monthlyCompleted;
   final int monthlyTotal;
-  final List<CachedSubmission> recentSubmissions;
+  final List<SubmissionDto> recentSubmissions;
 
   AdminDashboardState({
     required this.totalAudits,
@@ -143,7 +145,8 @@ class DashboardManager extends ChangeNotifier {
     ]);
 
     final deadline = await queries.getNearestDeadline();
-    final recent = await queries.getRecentSubmissions(limit: 10);
+    final rawRecent = await queries.getRecentSubmissions(limit: 10);
+    final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
 
     return AuditorDashboardState(
       draftCount: results[0] as int,
@@ -184,7 +187,8 @@ class DashboardManager extends ChangeNotifier {
       ]);
 
       final deadline = await queries.getNearestDeadline();
-      final recent = await queries.getRecentSubmissions(limit: 10);
+      final rawRecent = await queries.getRecentSubmissions(limit: 10);
+      final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
 
       return ManagerDashboardState(
         storeId: null,
@@ -207,7 +211,8 @@ class DashboardManager extends ChangeNotifier {
     ]);
 
     final deadline = await queries.getNearestDeadline();
-    final recent = await queries.getRecentSubmissions(limit: 10);
+    final rawRecent = await queries.getRecentSubmissions(limit: 10);
+    final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
 
     return ManagerDashboardState(
       storeId: storeId,
@@ -231,7 +236,8 @@ class DashboardManager extends ChangeNotifier {
       queries.getMonthlyTotal(),
     ]);
 
-    final recent = await queries.getRecentSubmissions(limit: 10);
+    final rawRecent = await queries.getRecentSubmissions(limit: 10);
+    final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
 
     return AdminDashboardState(
       totalAudits: results[0] as int,

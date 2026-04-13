@@ -3,6 +3,7 @@ using Checkly.Api.Common;
 using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.ActionPlans;
@@ -75,6 +76,17 @@ public static class UpdateActionPlan
             plan.ClosedAt = DateTimeOffset.UtcNow;
 
         plan.UpdatedAt = DateTimeOffset.UtcNow;
+
+        AuditLogger.Log(
+            db, user,
+            action: "action_plan_updated",
+            entityType: "ActionPlan",
+            entityId: id,
+            message: request.Status is not null
+                ? $"Status changed from '{oldStatus}' to '{request.Status}'"
+                : "Fields updated (no status change)",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
+
         await db.SaveChangesAsync(ct);
 
         // --- S2: Generate notifications on status change ---

@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.UserGroups;
@@ -16,6 +18,7 @@ public static class UpdateMembers
         Guid id,
         Request request,
         AppDbContext db,
+        ClaimsPrincipal user,
         CancellationToken ct)
     {
         var group = await db.UserGroups
@@ -42,6 +45,15 @@ public static class UpdateMembers
         }
 
         group.UpdatedAt = now;
+
+        AuditLogger.Log(
+            db, user,
+            action: "user_group_members_updated",
+            entityType: "UserGroup",
+            entityId: id,
+            message: $"{request.ProfileIds.Length} member(s) assigned",
+            userEmail: user.FindFirstValue(ClaimTypes.Email));
+
         await db.SaveChangesAsync(ct);
 
         return TypedResults.Ok();

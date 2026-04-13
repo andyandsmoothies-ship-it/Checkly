@@ -1,0 +1,15 @@
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.SubmissionActionPlanTests.S2_1_Evidence_Submitted_Creates_Notification [4 s]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.SubmissionActionPlanTests.S2_1_Evidence_Submitted_Creates_Notification() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionActionPlanTests.cs:line 352
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)
