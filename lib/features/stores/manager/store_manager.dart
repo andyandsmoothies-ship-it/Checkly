@@ -18,10 +18,8 @@ class StoreManager extends ChangeNotifier {
   late final StoreDao _dao;
 
   StoreManager({StoreApiService? api, StoreDao? dao})
-    : _api = api ?? _di<StoreApiService>() {
-    final db = _di<DatabaseService>().db;
-    _dao = dao ?? StoreDao(db);
-  }
+    : _api = api ?? _di<StoreApiService>(),
+      _dao = dao ?? StoreDao(_di<DatabaseService>().db);
 
   // ---------- State ----------
   final stores = ValueNotifier<List<StoreDto>>([]);

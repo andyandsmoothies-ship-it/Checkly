@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.checkly.checkly"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion // Commented out to resolve IDE sync error "25.0.2"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

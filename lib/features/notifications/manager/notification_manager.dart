@@ -20,10 +20,8 @@ class NotificationManager extends ChangeNotifier {
   late final NotificationDao _dao;
 
   NotificationManager({NotificationApiService? api, NotificationDao? dao})
-    : _api = api ?? _di<NotificationApiService>() {
-    final db = _di<DatabaseService>().db;
-    _dao = dao ?? NotificationDao(db);
-  }
+    : _api = api ?? _di<NotificationApiService>(),
+      _dao = dao ?? NotificationDao(_di<DatabaseService>().db);
 
   // ---------- State ----------
   final ValueNotifier<List<NotificationDto>> notifications = ValueNotifier([]);

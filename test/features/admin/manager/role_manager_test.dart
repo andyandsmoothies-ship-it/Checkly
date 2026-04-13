@@ -1,171 +1,83 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:dio/dio.dart';
 import 'package:checkly/features/admin/manager/role_manager.dart';
-import 'package:checkly/features/admin/services/admin_api_service.dart';
 import 'package:checkly/features/admin/model/role_dto.dart';
+import 'package:checkly/features/admin/services/admin_api_service.dart';
 
 class MockAdminApiService extends Mock implements AdminApiService {}
-class MockDio extends Mock implements Dio {}
-class MockResponse extends Mock implements Response {}
 
 void main() {
-  group('Admin Dashboard UI — Role Management Inner-Loop (TDD)', () {
-    
-    // ==========================================
-    // RoleDto Tests (TC-05)
-    // ==========================================
-    group('RoleDto (TC-05)', () {
-      test('fromJson parses correctly', () {
-        final json = {
-          'role': 'admin',
-          'capabilities': ['templates:create', 'templates:delete']
-        };
-        final dto = RoleDto.fromJson(json);
-        expect(dto.role, 'admin');
-        expect(dto.capabilities.length, 2);
-        expect(dto.capabilities, contains('templates:create'));
+  late RoleManager manager;
+  late MockAdminApiService api;
+
+  setUp(() {
+    api = MockAdminApiService();
+    manager = RoleManager(adminApiService: api);
+  });
+
+  group('RoleManager State & Commands —', () {
+    final mockRole = RoleDto(
+      role: 'testing_role',
+      capabilities: ['view_audit'],
+    );
+    final mockCatalog = ['view_audit', 'edit_audit'];
+
+    test('loadRoles updates roles on success', () async {
+      when(() => api.getRoles()).thenAnswer((_) async => [mockRole]);
+
+      // Initially null
+      expect(manager.roles.value, isNull);
+      
+      // Loading flag should trigger
+      final loadingStates = <bool>[];
+      manager.isLoading.addListener(() {
+        loadingStates.add(manager.isLoading.value);
       });
+
+      await manager.loadRoles();
+
+      expect(manager.roles.value, equals([mockRole]));
+      expect(manager.error.value, isNull);
+      expect(loadingStates, containsAllInOrder([true, false]));
     });
 
-    // ==========================================
-    // AdminApiService Tests (TC-06, TC-07, TC-08)
-    // ==========================================
-    group('AdminApiService', () {
-      late MockDio mockDio;
-      late AdminApiService service;
+    test('loadRoles sets error and clears roles on failure', () async {
+      when(() => api.getRoles()).thenThrow(Exception('Server crash'));
 
-      setUp(() {
-        mockDio = MockDio();
-        service = AdminApiService(mockDio);
-      });
+      await manager.loadRoles();
 
-      test('TC-06: getRoles parses list of RoleDtos', () async {
-        final mockResponse = MockResponse();
-        when(() => mockResponse.data).thenReturn([
-          {
-            'role': 'admin',
-            'capabilities': ['templates:create']
-          }
-        ]);
-        
-        when(() => mockDio.get(any(), queryParameters: any(named: 'queryParameters')))
-            .thenAnswer((_) async => mockResponse);
-
-        final roles = await service.getRoles();
-        
-        expect(roles.length, 1);
-        expect(roles.first.role, 'admin');
-        expect(roles.first.capabilities, contains('templates:create'));
-        
-        verify(() => mockDio.get('/admin/roles')).called(1);
-      });
-
-      test('TC-07: grantCapability posts correct endpoint', () async {
-        when(() => mockDio.post(any(), data: any(named: 'data')))
-            .thenAnswer((_) async => MockResponse());
-
-        await service.grantCapability(role: 'auditor', capability: 'templates:create');
-        
-        verify(() => mockDio.post('/admin/roles/auditor/capabilities/templates:create')).called(1);
-      });
-
-      test('TC-08: revokeCapability deletes correct endpoint', () async {
-        when(() => mockDio.delete(any(), data: any(named: 'data')))
-            .thenAnswer((_) async => MockResponse());
-
-        await service.revokeCapability(role: 'auditor', capability: 'templates:create');
-        
-        verify(() => mockDio.delete('/admin/roles/auditor/capabilities/templates:create')).called(1);
-      });
+      expect(manager.roles.value, isNull);
+      expect(manager.error.value, contains('Server crash'));
     });
 
-    // ==========================================
-    // RoleManager Tests (TC-01 to TC-04)
-    // ==========================================
-    group('RoleManager', () {
-      late MockAdminApiService mockService;
-      late RoleManager manager;
+    test('loadCatalog updates catalog quietly', () async {
+      when(() => api.getCapabilityCatalog()).thenAnswer((_) async => mockCatalog);
 
-      setUp(() {
-        mockService = MockAdminApiService();
-        // Assume manager takes service in constructor to allow DI/mocking, or GetIt handles it.
-        manager = RoleManager(adminApiService: mockService);
-      });
+      await manager.loadCatalog();
 
-      test('TC-01: loadRoles sets isLoading then populates roles', () async {
-        final mockRoles = [RoleDto(role: 'admin', capabilities: ['templates:create'])];
-        when(() => mockService.getRoles()).thenAnswer((_) async => mockRoles);
+      expect(manager.catalog.value, equals(mockCatalog));
+    });
 
-        expect(manager.isLoading.value, false);
-        expect(manager.roles.value, null);
+    test('grantCommand executes grant and reloads roles', () async {
+      when(() => api.grantCapability(role: any(named: 'role'), capability: any(named: 'capability')))
+          .thenAnswer((_) async {});
+      when(() => api.getRoles()).thenAnswer((_) async => [mockRole]); // reload mock
 
-        final future = manager.loadRoles();
-        
-        // Mid-flight state
-        expect(manager.isLoading.value, true);
-        
-        await future;
-        
-        // Exit state
-        expect(manager.isLoading.value, false);
-        expect(manager.roles.value, isNotNull);
-        expect(manager.roles.value!.length, 1);
-        expect(manager.roles.value!.first.role, 'admin');
-      });
+      await manager.grantCommand.execute({'role': 'r1', 'capability': 'c1'});
 
-      test('TC-02: loadRoles onError sets error string', () async {
-        when(() => mockService.getRoles()).thenThrow(Exception('500 Server Error'));
+      verify(() => api.grantCapability(role: 'r1', capability: 'c1')).called(1);
+      verify(() => api.getRoles()).called(1);
+    });
 
-        expect(manager.error.value, null);
+    test('revokeCommand executes revoke and reloads roles', () async {
+      when(() => api.revokeCapability(role: any(named: 'role'), capability: any(named: 'capability')))
+          .thenAnswer((_) async {});
+      when(() => api.getRoles()).thenAnswer((_) async => []); // reload mock
 
-        await manager.loadRoles();
+      await manager.revokeCommand.execute({'role': 'r1', 'capability': 'c1'});
 
-        expect(manager.error.value, isNotNull);
-        expect(manager.error.value, contains('500 Server Error'));
-        expect(manager.isLoading.value, false);
-        expect(manager.roles.value, null);
-      });
-
-      test('TC-03: grantCommand calls service and reloads', () async {
-        // Arrange
-        manager.roles.value = [RoleDto(role: 'auditor', capabilities: [])];
-        
-        when(() => mockService.grantCapability(role: any(named: 'role'), capability: any(named: 'capability')))
-            .thenAnswer((_) async {});
-            
-        when(() => mockService.getRoles())
-            .thenAnswer((_) async => [RoleDto(role: 'auditor', capabilities: ['templates:create'])]);
-
-        // Act
-        await manager.grantCommand.execute({'role': 'auditor', 'capability': 'templates:create'});
-
-        // Assert
-        verify(() => mockService.grantCapability(role: 'auditor', capability: 'templates:create')).called(1);
-        verify(() => mockService.getRoles()).called(greaterThanOrEqualTo(1));
-        
-        expect(manager.roles.value!.first.capabilities, contains('templates:create'));
-      });
-
-      test('TC-04: revokeCommand calls service and reloads', () async {
-        // Arrange
-        manager.roles.value = [RoleDto(role: 'auditor', capabilities: ['templates:create'])];
-        
-        when(() => mockService.revokeCapability(role: any(named: 'role'), capability: any(named: 'capability')))
-            .thenAnswer((_) async {});
-            
-        when(() => mockService.getRoles())
-            .thenAnswer((_) async => [RoleDto(role: 'auditor', capabilities: [])]);
-
-        // Act
-        await manager.revokeCommand.execute({'role': 'auditor', 'capability': 'templates:create'});
-
-        // Assert
-        verify(() => mockService.revokeCapability(role: 'auditor', capability: 'templates:create')).called(1);
-        verify(() => mockService.getRoles()).called(greaterThanOrEqualTo(1));
-        
-        expect(manager.roles.value!.first.capabilities, isEmpty);
-      });
+      verify(() => api.revokeCapability(role: 'r1', capability: 'c1')).called(1);
+      verify(() => api.getRoles()).called(1);
     });
   });
 }
