@@ -36,6 +36,7 @@ Workflow: /analyze-epic | Track: C
 
 | Vector | Execution Contract |
 |---|---|
+| **Hostile Artifact Validation** | MANDATORY: If an input artifact (e.g., ADR or Research) is provided, you MUST physically validate its assumptions against the real codebase. Check 1) Does the idea violate Clean Architecture boundaries? 2) Does it trigger severe unintended consequences (e.g., Router eviction)? If the input artifact contains physically dangerous or impossible ideas, you MUST override and reject them. Be a gatekeeper, not a blind translator. |
 | **Skill Load** | Load abstract architectural skills (e.g., `clean-architecture`). |
 | **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
 | **Options** | Explicitly define >= 2 architectural alternatives. |

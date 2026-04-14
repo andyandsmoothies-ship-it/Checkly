@@ -29,8 +29,29 @@ void main() async {
 }
 
 
-class ChecklyApp extends StatelessWidget {
+class ChecklyApp extends StatefulWidget {
   const ChecklyApp({super.key});
+
+  @override
+  State<ChecklyApp> createState() => _ChecklyAppState();
+}
+
+class _ChecklyAppState extends State<ChecklyApp> {
+  late final AppLifecycleListener _lifecycleListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycleListener = AppLifecycleListener(
+      onResume: () => GetIt.instance<AuthManager>().refreshCapabilities(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycleListener.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

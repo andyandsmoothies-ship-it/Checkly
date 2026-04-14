@@ -80,7 +80,7 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
         await db.SaveChangesAsync();
     }
 
-    private async Task<string> GetAdminTokenAsync(HttpClient client, string suffix)
+    private async Task<string> GetAdminTokenAsync(HttpClient client)
     {
         var adminToken = await _factory.LoginBootstrapAdminAsync(client);
         return adminToken;
@@ -100,7 +100,7 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        var adminToken = await GetAdminTokenAsync(client, "hp1");
+        var adminToken = await GetAdminTokenAsync(client);
         var (submissionId, _) = await SeedCompletedSubmissionAsync();
         var authClient = _factory.CreateAuthenticatedClient(adminToken);
 
@@ -126,7 +126,7 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        var adminToken = await GetAdminTokenAsync(client, "idm1");
+        var adminToken = await GetAdminTokenAsync(client);
         var (submissionId, _) = await SeedCompletedSubmissionAsync();
         var authClient = _factory.CreateAuthenticatedClient(adminToken);
         var payload = new { voidReason = "Test idempotency" };
@@ -157,7 +157,7 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        var adminToken = await GetAdminTokenAsync(client, "cascade1");
+        var adminToken = await GetAdminTokenAsync(client);
         var (submissionId, _) = await SeedCompletedSubmissionAsync();
         await SeedOpenActionPlanAsync(submissionId);
         await SeedOpenActionPlanAsync(submissionId);
@@ -191,7 +191,7 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        var adminToken = await GetAdminTokenAsync(client, "log1");
+        var adminToken = await GetAdminTokenAsync(client);
         var (submissionId, _) = await SeedCompletedSubmissionAsync();
         var authClient = _factory.CreateAuthenticatedClient(adminToken);
 
@@ -215,11 +215,11 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
     // ── Error Paths ────────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task VoidSubmission_WithDraftStatus_Returns400()
+    public async Task VoidSubmission_WithDraftStatus_Returns204()
     {
         // Arrange
         var client = _factory.CreateClient();
-        var adminToken = await GetAdminTokenAsync(client, "draft1");
+        var adminToken = await GetAdminTokenAsync(client);
 
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -238,10 +238,15 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
         // Act
         var response = await authClient.PostAsJsonAsync(
             $"/api/submissions/{submissionId}/void",
-            new { voidReason = "Should not void a draft" });
+            new { voidReason = "Voiding a draft is now allowed" });
 
         // Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+        using var verifyScope = _factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var submission = await verifyDb.Submissions.FindAsync(submissionId);
+        Assert.Equal("voided", submission!.Status);
     }
 
     [Fact]
@@ -267,7 +272,7 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        var adminToken = await GetAdminTokenAsync(client, "404a");
+        var adminToken = await GetAdminTokenAsync(client);
         var authClient = _factory.CreateAuthenticatedClient(adminToken);
 
         // Act
@@ -284,7 +289,7 @@ public class VoidSubmissionEndpointTests : IClassFixture<TestWebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        var adminToken = await GetAdminTokenAsync(client, "val1");
+        var adminToken = await GetAdminTokenAsync(client);
         var (submissionId, _) = await SeedCompletedSubmissionAsync();
         var authClient = _factory.CreateAuthenticatedClient(adminToken);
 

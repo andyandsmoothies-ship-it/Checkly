@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import '../services/policy_manager.dart';
+
+import '../../features/auth/manager/auth_manager.dart';
 
 final _di = GetIt.instance;
 
@@ -30,7 +31,12 @@ class PermissionGuard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allowed = _di<PolicyManager>().can(capability);
-    return allowed ? child : (fallback ?? const SizedBox.shrink());
+    return ValueListenableBuilder<Set<String>>(
+      valueListenable: _di<AuthManager>().capabilities,
+      builder: (context, caps, _) {
+        final allowed = caps.contains(capability);
+        return allowed ? child : (fallback ?? const SizedBox.shrink());
+      },
+    );
   }
 }

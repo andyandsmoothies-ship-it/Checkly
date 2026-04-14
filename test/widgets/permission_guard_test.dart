@@ -9,6 +9,9 @@ import 'package:checkly/features/auth/model/auth_state.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
 
 class _FakeAuthManager extends ChangeNotifier implements AuthManager {
+  @override
+  Future<void> refreshCapabilities() async {}
+
   final ValueNotifier<Set<String>> _caps;
   _FakeAuthManager(Set<String> capabilities) : _caps = ValueNotifier(capabilities);
 

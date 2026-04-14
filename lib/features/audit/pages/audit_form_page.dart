@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/services/gps_service.dart';
 import '../../../_shared/utils/date_format_utils.dart';
+import '../../dashboard/manager/dashboard_manager.dart';
 import '../../stores/manager/store_manager.dart';
 import '../../templates/manager/template_manager.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
+import '../manager/history_manager.dart';
 import '../widgets/audit_score_hud.dart';
 import '../widgets/audit_section_card.dart';
 import '../widgets/audit_section_nav_bar.dart';
@@ -480,6 +482,14 @@ class _AuditFormPageState extends State<AuditFormPage> {
               backgroundColor: AppTheme.success,
             ),
           );
+          // Force cache reload — StatefulShellRoute keeps tabs alive so
+          // initState() doesn't re-fire. Trigger manually before navigating.
+          if (_di.isRegistered<DashboardManager>()) {
+            _di<DashboardManager>().loadStats();
+          }
+          if (_di.isRegistered<HistoryManager>()) {
+            _di<HistoryManager>().loadHistory();
+          }
           context.go('/home');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

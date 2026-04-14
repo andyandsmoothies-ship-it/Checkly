@@ -13,6 +13,9 @@ import 'package:checkly/features/templates/models/template_dto.dart';
 import 'package:checkly/_shared/services/policy_manager.dart';
 
 class _StubAuthManager extends ChangeNotifier implements AuthManager {
+  @override
+  Future<void> refreshCapabilities() async {}
+
   final String? role;
   final Set<String> _caps;
   _StubAuthManager({this.role, Set<String>? capabilities})

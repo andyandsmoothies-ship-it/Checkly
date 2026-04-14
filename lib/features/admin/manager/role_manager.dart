@@ -32,6 +32,7 @@ class RoleManager extends ChangeNotifier {
 
   final roles = ValueNotifier<List<RoleDto>?>(null);
   final catalog = ValueNotifier<List<String>?>(null);
+  final catalogMeta = ValueNotifier<Map<String, CapabilityMeta>?>(null);
   final isLoading = ValueNotifier<bool>(false);
   final error = ValueNotifier<String?>(null);
 
@@ -56,7 +57,9 @@ class RoleManager extends ChangeNotifier {
   /// Fetches the static capability catalog from the server.
   Future<void> loadCatalog() async {
     try {
-      catalog.value = await _api.getCapabilityCatalog();
+      final (caps, meta) = await _api.getCapabilityCatalogFull();
+      catalog.value = caps;
+      catalogMeta.value = meta;
     } catch (_) {
       // Non-fatal — catalog is supplementary to roles list.
     }
@@ -80,6 +83,7 @@ class RoleManager extends ChangeNotifier {
   void dispose() {
     roles.dispose();
     catalog.dispose();
+    catalogMeta.dispose();
     isLoading.dispose();
     error.dispose();
     super.dispose();

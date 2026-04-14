@@ -11,6 +11,9 @@ import 'package:checkly/_shared/router/app_router.dart';
 import 'package:checkly/_shared/services/policy_manager.dart';
 
 class _StubAuthManager extends ChangeNotifier implements AuthManager {
+  @override
+  Future<void> refreshCapabilities() async {}
+
   final Set<String> _caps;
   
   _StubAuthManager({required Set<String> capabilities}) 

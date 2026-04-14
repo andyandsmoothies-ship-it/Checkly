@@ -262,7 +262,18 @@ class _SubmissionRowState extends State<SubmissionRow> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.createdAt)}',
+                      () {
+                        final isOverdue = sub.isOverdue;
+                        final isScheduled =
+                            sub.status == 'scheduled' && !isOverdue;
+                        if (isScheduled || isOverdue) {
+                          return '${sub.storeName ?? 'Unknown'} · Scheduled ${formatDate(sub.scheduledAt ?? sub.createdAt)}';
+                        }
+                        if (sub.status == 'draft') {
+                          return '${sub.storeName ?? 'Unknown'} · Started ${formatDate(sub.createdAt)}';
+                        }
+                        return '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.completedAt ?? sub.createdAt)}';
+                      }(),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -346,22 +357,36 @@ class _SubmissionRowState extends State<SubmissionRow> {
                   ],
                 )
               else
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    sub.status.toUpperCase(),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.tertiary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                Builder(
+                  builder: (_) {
+                    final isOverdue = sub.isOverdue;
+                    final label = isOverdue
+                        ? 'EXPIRED'
+                        : sub.status.toUpperCase();
+                    final bgColor = isOverdue
+                        ? theme.colorScheme.errorContainer
+                        : theme.colorScheme.tertiary.withValues(alpha: 0.1);
+                    final textColor = isOverdue
+                        ? theme.colorScheme.onErrorContainer
+                        : theme.colorScheme.tertiary;
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        label,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    );
+                  },
                 ),
             ],
           ),

@@ -180,10 +180,24 @@ class AdminApiService {
   /// NOTE: Server wraps response in CatalogResponse DTO: { "capabilities": [...] }.
   /// Do NOT cast response.data directly to List — it is a Map envelope.
   Future<List<String>> getCapabilityCatalog() async {
+    final (caps, _) = await getCapabilityCatalogFull();
+    return caps;
+  }
+
+  /// GET /admin/capabilities/catalog — returns both capabilities and metadata.
+  Future<(List<String>, Map<String, CapabilityMeta>)> getCapabilityCatalogFull() async {
     final response = await _dio.get('/admin/capabilities/catalog');
     final data = response.data as Map<String, dynamic>;
+    
     final list = data['capabilities'] as List<dynamic>;
-    return list.map((e) => e as String).toList();
+    final caps = list.map((e) => e as String).toList();
+    
+    final metaRaw = data['capabilityMetadata'] as Map<String, dynamic>? ?? {};
+    final meta = metaRaw.map(
+      (k, v) => MapEntry(k, CapabilityMeta.fromJson(v as Map<String, dynamic>)),
+    );
+    
+    return (caps, meta);
   }
 
   /// POST /admin/roles/{role}/capabilities/{capability} — idempotent grant.
@@ -200,5 +214,25 @@ class AdminApiService {
     required String capability,
   }) async {
     await _dio.delete('/admin/roles/$role/capabilities/$capability');
+  }
+}
+
+class CapabilityMeta {
+  final String label;
+  final String group;
+  final String description;
+
+  const CapabilityMeta({
+    required this.label,
+    required this.group,
+    required this.description,
+  });
+
+  factory CapabilityMeta.fromJson(Map<String, dynamic> json) {
+    return CapabilityMeta(
+      label: json['label'] as String,
+      group: json['group'] as String,
+      description: json['description'] as String,
+    );
   }
 }

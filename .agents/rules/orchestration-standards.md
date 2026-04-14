@@ -40,6 +40,11 @@ Before ANY workflow response involving analysis, design, or implementation:
 - **Copy High-Value**: Explicitly copy ADRs, Test Contracts, and Audits to `docs/` after creation.
 - **Discard Transients**: Leave Implementation Plans and tasks in `brain/`. DO NOT copy them to `docs/`.
 
+## Absolute Path Output Mandate (Cross-Session Handoffs)
+**AI agents must always provide the full, absolute file path to any artifact they generate, modify, or reference in handoff blocks.**
+- **Problem**: When a user needs to migrate a task or artifact to a new AI agent session, providing only the file name (e.g., `handoff.md`) breaks the contextual link, requiring the user to manually search for the file location in the OS.
+- **Action**: In UI responses, handoff blocks, and verify triggers, always output the full absolute path of the artifact (e.g., `C:\Users\...\brain\{conversation_id}\filename.md`).
+
 ## Terminal File System Protocol (STRICT)
 When writing or moving files via terminal commands (e.g., `copy`, `move`):
 1. **Idempotent Directories**: Pre-create target directories to prevent silent failures (e.g., `if not exist [dir] mkdir [dir]`).

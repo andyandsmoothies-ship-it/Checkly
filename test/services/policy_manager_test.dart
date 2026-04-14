@@ -7,6 +7,9 @@ import 'package:checkly/_shared/services/policy_manager.dart';
 import 'package:get_it/get_it.dart';
 
 class _FakeAuthManager extends ChangeNotifier implements AuthManager {
+  @override
+  Future<void> refreshCapabilities() async {}
+
   final ValueNotifier<Set<String>> _caps;
   
   _FakeAuthManager(Set<String> capabilities) : _caps = ValueNotifier(capabilities);

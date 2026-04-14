@@ -135,4 +135,30 @@ class AuthManager extends ChangeNotifier {
     _authState.value = AuthState.unauthenticated;
     notifyListeners();
   }
+
+  // ---------- Capability Refresh (Slice 1) ----------
+  DateTime? _lastCapabilityRefresh;
+
+  /// Fetches fresh capabilities triggered by app foreground events.
+  /// Includes a 5-minute cooldown guard to prevent API stampedes.
+  Future<void> refreshCapabilities() async {
+    // Guard: only refresh if logged in
+    if (_authState.value != AuthState.authenticated) return;
+    
+    // Guard: 5-minute cooldown
+    final now = DateTime.now();
+    if (_lastCapabilityRefresh != null &&
+        now.difference(_lastCapabilityRefresh!) < const Duration(minutes: 5)) {
+      return;
+    }
+    _lastCapabilityRefresh = now;
+    
+    try {
+      final caps = await _policyApi.fetchCapabilities();
+      await _policyDao.upsertCapabilities(caps);
+      _capabilities.value = caps.toSet();
+    } catch (e) {
+      debugPrint('[PBAC] Foreground refresh failed (non-fatal): $e');
+    }
+  }
 }
