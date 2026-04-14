@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/connectivity_service.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../manager/role_manager.dart';
@@ -196,19 +197,28 @@ class _OnlineCapabilityGrid extends StatelessWidget {
                         final cap = item;
                         final meta = catalogMeta?[cap];
                         final isAssigned = assigned.contains(cap);
-                        
+
+                        // Implicit admin:access grant via domain capability intersection.
+                        // If this checkbox is for admin:access AND the role has other admin-domain
+                        // caps (but not admin:access directly), show it as implicitly granted.
+                        final isImplicitlyGranted = cap == AppCapabilities.adminAccess &&
+                            !isAssigned &&
+                            assigned.any((c) => AppCapabilities.adminDomainCapabilities.contains(c));
+
                         // Action lock guard
-                        final isSelfLock = role == 'admin' && cap == 'admin:access';
-                        final isEnabled = canManage && !isMutating && !isSelfLock;
+                        final isSelfLock = role == 'admin' && cap == AppCapabilities.adminAccess;
+                        final isEnabled = canManage && !isMutating && !isSelfLock && !isImplicitlyGranted;
 
                         final titleText = meta?.label ?? cap;
                         final subtitleText = isSelfLock
                             ? 'Cannot revoke your own admin access'
-                            : (meta?.description ?? (isAssigned ? 'Assigned' : 'Not assigned'));
+                            : isImplicitlyGranted
+                                ? 'Implicitly Granted via assigned capabilities'
+                                : (meta?.description ?? (isAssigned ? 'Assigned' : 'Not assigned'));
 
                         return CheckboxListTile(
                           key: ValueKey(cap),
-                          value: isAssigned,
+                          value: isAssigned || isImplicitlyGranted,
                           enabled: isEnabled,
                           title: Text(titleText),
                           subtitle: Text(

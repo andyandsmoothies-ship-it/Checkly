@@ -22,4 +22,18 @@ class AppCapabilities {
   static const submissionsReview = 'submissions:review';
   static const actionPlansWrite = 'action_plans:write';
   static const actionPlansVerify = 'action_plans:verify';
+
+  // --- Implicit Admin Access Domain ---
+  // Any capability in this set grants implicit admin:access via PolicyManager.
+  // MAINTENANCE: When adding a new admin-scope capability above, also add it here.
+  static const Set<String> adminDomainCapabilities = {
+    templatesCreate,
+    templatesUpdate,
+    templatesDelete,
+    storesWrite,
+    areasWrite,
+    usersManage,
+    analyticsAdmin,
+    adminManageRoles,
+  };
 }

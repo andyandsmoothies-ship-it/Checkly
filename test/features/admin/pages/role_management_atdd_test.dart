@@ -75,8 +75,8 @@ void main() {
 
       // Default API stubs
       when(() => mockApi.getRoles()).thenAnswer((_) async => _mockRoles);
-      when(() => mockApi.getCapabilityCatalog())
-          .thenAnswer((_) async => _catalog);
+      when(() => mockApi.getCapabilityCatalogFull())
+          .thenAnswer((_) async => (_catalog, <String, CapabilityMeta>{}));
 
       _di.pushNewScope(init: (g) {
         g.registerSingleton<ConnectivityService>(connectivity);

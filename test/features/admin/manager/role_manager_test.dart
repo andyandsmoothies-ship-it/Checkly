@@ -51,7 +51,7 @@ void main() {
     });
 
     test('loadCatalog updates catalog quietly', () async {
-      when(() => api.getCapabilityCatalog()).thenAnswer((_) async => mockCatalog);
+      when(() => api.getCapabilityCatalogFull()).thenAnswer((_) async => (mockCatalog, <String, CapabilityMeta>{}));
 
       await manager.loadCatalog();
 
