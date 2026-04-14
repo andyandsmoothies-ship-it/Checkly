@@ -53,6 +53,11 @@ class SubmissionApiService implements PhotoApi {
     return SubmissionDto.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// POST /submissions/{id}/void — admin-only. Neutralizes an audit.
+  Future<void> voidSubmission(String id, String reason) async {
+    await _dio.post('/submissions/$id/void', data: {'voidReason': reason});
+  }
+
   /// PUT /submissions/{id}/finalize — atomic draft → completed.
   Future<SubmissionDto> finalizeSubmission(
     String id,

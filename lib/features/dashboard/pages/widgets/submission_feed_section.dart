@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_fonts.dart';
@@ -51,9 +52,7 @@ class SubmissionFeedSection extends StatelessWidget {
             const SizedBox(width: 8),
             const Expanded(child: SectionHeader('LATEST SUBMISSIONS')),
             InkWell(
-              onTap: () => context.findAncestorWidgetOfExactType<Scaffold>() != null
-                  ? Navigator.of(context).pushNamed('/activity')
-                  : null,
+              onTap: () => context.go('/activity'),
               borderRadius: BorderRadius.circular(8),
               child: Padding(
                 // WCAG tap target fix: raised from h:4,v:2 → h:12,v:12 (44px minimum)
@@ -127,13 +126,89 @@ class _SubmissionRowState extends State<SubmissionRow> {
     final userId = _di<AuthManager>().currentUser?.userId ?? 'anon';
     final draftKey = '$tId:$sId:$userId';
 
-    await _di<DraftService>().deleteDraft(draftKey);
-    await _di<DashboardManager>().loadStats();
+    try {
+      await _di<DraftService>().deleteDraft(draftKey);
+      await _di<DashboardManager>().loadStats();
 
-    if (mounted) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Draft discarded')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error discarding draft: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _voidAudit() async {
+    final sub = widget.submission;
+    final ctx = widget.context;
+
+    // Show reason dialog
+    final reasonController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: ctx,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Void Audit'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'This will permanently void "${sub.templateTitle ?? 'this audit'}". The auditor will no longer see it as an active task.',
+              style: Theme.of(dialogCtx).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: reasonController,
+              decoration: const InputDecoration(
+                labelText: 'Reason for voiding',
+                hintText: 'e.g. Store was closed, task reassigned...',
+              ),
+              maxLines: 2,
+              autofocus: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: const Text('Void Audit'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+    final reason = reasonController.text.trim();
+    if (reason.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Draft discarded')),
+        const SnackBar(content: Text('A void reason is required.')),
       );
+      return;
+    }
+
+    try {
+      await _di<DashboardManager>().voidAudit(sub.id, reason);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Audit voided.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to void: $e')),
+        );
+      }
     }
   }
 
@@ -142,10 +217,8 @@ class _SubmissionRowState extends State<SubmissionRow> {
     final tId = sub.templateId;
     final sId = sub.storeId;
     if (tId == null || sId == null) return;
-    widget.context.findAncestorWidgetOfExactType<Scaffold>();
-    Navigator.of(widget.context).pushNamed(
-      '/audit',
-      arguments: {'templateId': tId, 'storeId': sId, 'autoResume': true, 'submissionId': sub.id},
+    widget.context.push(
+      '/audit?templateId=$tId&storeId=$sId&autoResume=true&submissionId=${sub.id}',
     );
   }
 
@@ -170,7 +243,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
         borderRadius: BorderRadius.circular(16),
         onTap: isDraft
             ? _resumeDraft
-            : () => Navigator.of(widget.context).pushNamed('/activity'),
+            : () => widget.context.go('/activity'),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
@@ -208,31 +281,47 @@ class _SubmissionRowState extends State<SubmissionRow> {
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                   onSelected: (value) {
-                    if (value == 'resume') _resumeDraft();
-                    if (value == 'discard') _discardDraft();
+                    if (value == 'resume') Future.microtask(_resumeDraft);
+                    if (value == 'discard') Future.microtask(_discardDraft);
+                    if (value == 'void') Future.microtask(_voidAudit);
                   },
-                  itemBuilder: (_) => [
-                    const PopupMenuItem(
-                      value: 'resume',
-                      child: Row(
-                        children: [
-                          Icon(Icons.play_circle_outline, size: 18),
-                          SizedBox(width: 8),
-                          Text('Resume Audit'),
-                        ],
+                  itemBuilder: (_) {
+                    final isAdmin =
+                        _di<AuthManager>().currentUser?.role == 'admin';
+                    return [
+                      const PopupMenuItem(
+                        value: 'resume',
+                        child: Row(
+                          children: [
+                            Icon(Icons.play_circle_outline, size: 18),
+                            SizedBox(width: 8),
+                            Text('Resume Audit'),
+                          ],
+                        ),
                       ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'discard',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_outline, size: 18),
-                          SizedBox(width: 8),
-                          Text('Discard Draft'),
-                        ],
+                      const PopupMenuItem(
+                        value: 'discard',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, size: 18),
+                            SizedBox(width: 8),
+                            Text('Discard Draft'),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      if (isAdmin)
+                        const PopupMenuItem(
+                          value: 'void',
+                          child: Row(
+                            children: [
+                              Icon(Icons.block, size: 18),
+                              SizedBox(width: 8),
+                              Text('Void Audit'),
+                            ],
+                          ),
+                        ),
+                    ];
+                  },
                 )
               else if (score != null)
                 Row(

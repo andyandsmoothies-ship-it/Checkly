@@ -1,20 +1,19 @@
-# GEMINI.override.md — `lib/features/audit/manager/`
+# GEMINI.override.md — lib/features/audit/manager
 
-## [CONFIRMED] State Blindness: Remote Lists Must Merge Local SQLite Draft Overrides
+## [CONFIRMED] Scheduled Audit Resume Gap: No Local Draft on First Start
 
-**Date confirmed:** 2026-04-06 | **Fix commit:** Draft Visibility State Hydration
+**Problem:** `startAudit()` (called when opening a scheduled audit) transitions the server status
+(scheduled → draft) but does NOT create a local SQLite draft immediately.
+The local draft only starts saving after the first answer is changed (3s debounce via `DraftService.scheduleSave`).
+If the auditor leaves before answering a single question, `hasDraft = false` and clicking "Resume"
+opens a blank form.
 
-**Problem:** `HistoryManager` displayed remote API submissions without checking `DraftService` SQLite.
-A submission the user had already started locally (creating a local draft) remained in `'scheduled'` state
-on the server, so the Activity page showed it in "Todo" with a "Start" button instead of "Doing"/"Resume".
+**Impact:** First-time open of a scheduled audit always starts from zero — this is expected behavior.
+But previously, navigating away before any answer would also start from zero on the next open — this was a bug.
 
-**Rule:** Any `ChangeNotifier` that renders a remote API list of submissions MUST call
-`_applyLocalDraftOverrides()` (or equivalent) before emitting to `submissions.value`.
-- Must apply on ALL paths: cached read, fresh API fetch, and pagination `loadMore()`.
-- Must NOT write overrides back to Drift cache — cache is server ground truth on disk.
+**Fix Applied (2026-04-14):** In `startAudit()`, when `_targetSubmissionId != null`, immediately call
+`_draftService.flushSave()` with an empty answers stub after the debounced `_scheduleDraftSave()`.
+This guarantees `hasDraft = true` on the very next open, so the restore path fires correctly.
 
-**Draft Key Format:** `"${templateId}:${storeId}:${userId}"` — colon separator.
-Use `startsWith('$templateId:$storeId:')` for prefix matching (not `==`, not underscore separator).
-
-**Exemption:** `startScheduledAudit()` can set status directly on its returned DTO since the server
-has already confirmed the transition — no local draft prefix check needed there.
+**Invariant:** Do NOT move this logic inside `_scheduleDraftSave()`. Debounced saves exist for
+performance (answer input) — the flush is a targeted one-shot on scheduled audit open only.

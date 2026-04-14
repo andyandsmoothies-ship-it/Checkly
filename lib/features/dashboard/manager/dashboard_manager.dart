@@ -5,6 +5,7 @@ import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/dao/submission_dao.dart';
 import '../../audit/model/submission_dto.dart';
+import '../../audit/services/submission_api_service.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/manager/store_manager.dart';
 import 'dashboard_queries.dart';
@@ -104,6 +105,13 @@ class DashboardManager extends ChangeNotifier {
 
   bool get isLoading => _state is DashboardLoading;
   bool _isSyncingStores = false;
+
+  // ---------- Void Audit (admin-only) ----------
+  Future<void> voidAudit(String submissionId, String reason) async {
+    await _di<SubmissionApiService>().voidSubmission(submissionId, reason);
+    // Reload to reflect the voided audit in the Dashboard feed.
+    await loadStats();
+  }
 
   /// Load dashboard stats from local Drift cache, branching on role.
   Future<void> loadStats() async {

@@ -120,6 +120,20 @@ class HistoryManager extends ChangeNotifier {
     return updated;
   }
 
+  // ---------- Void Audit (admin-only) ----------
+  Future<void> voidAudit(String submissionId, String reason) async {
+    await _api.voidSubmission(submissionId, reason);
+
+    // Surgically update the in-memory list — no full reload needed.
+    final list = List<SubmissionDto>.from(submissions.value);
+    final idx = list.indexWhere((s) => s.id == submissionId);
+    if (idx >= 0) {
+      list[idx] = list[idx].withStatus('voided');
+      submissions.value = list;
+    }
+    notifyListeners();
+  }
+
   // ---------- Cloud Archive (GC Pillar A) ----------
 
   /// Whether the 90-day archive contains remote records not present in local cache.

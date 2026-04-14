@@ -378,6 +378,108 @@ class _HistoryPageState extends State<HistoryPage> {
                               (entry) => _StoreGroup(
                                 storeName: entry.key,
                                 submissions: entry.value,
+                                onVoidAudit: _di<AuthManager>().currentUser?.role == 'admin'
+                                    ? (submission) async {
+                                        final reasonController =
+                                            TextEditingController();
+                                        final confirmed =
+                                            await showDialog<bool>(
+                                          context: context,
+                                          builder: (dialogCtx) => AlertDialog(
+                                            title: const Text('Void Audit'),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'This will permanently void "${submission.templateTitle ?? 'this audit'}". The auditor will no longer see it as an active task.',
+                                                  style: Theme.of(dialogCtx)
+                                                      .textTheme
+                                                      .bodyMedium,
+                                                ),
+                                                const SizedBox(height: 16),
+                                                TextField(
+                                                  controller:
+                                                      reasonController,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    labelText:
+                                                        'Reason for voiding',
+                                                    hintText:
+                                                        'e.g. Store was closed, task reassigned...',
+                                                  ),
+                                                  maxLines: 2,
+                                                  autofocus: true,
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.of(dialogCtx)
+                                                        .pop(false),
+                                                child: const Text('Cancel'),
+                                              ),
+                                              FilledButton(
+                                                onPressed: () =>
+                                                    Navigator.of(dialogCtx)
+                                                        .pop(true),
+                                                child:
+                                                    const Text('Void Audit'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                        if (confirmed != true) return;
+                                        final reason =
+                                            reasonController.text.trim();
+                                        if (reason.isEmpty) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'A void reason is required.',
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                          return;
+                                        }
+                                        try {
+                                          await manager.voidAudit(
+                                            submission.id,
+                                            reason,
+                                          );
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Audit voided.'),
+                                              ),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Failed to void: $e',
+                                                ),
+                                                backgroundColor: Theme.of(
+                                                  context,
+                                                ).colorScheme.error,
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      }
+                                    : null,
                                 onStartAudit: (submission) async {
                                   // Draft → resume directly without a server call
                                   if (submission.status == 'draft') {
@@ -484,11 +586,13 @@ class _StoreGroup extends StatelessWidget {
   final String storeName;
   final List<SubmissionDto> submissions;
   final void Function(SubmissionDto)? onStartAudit;
+  final void Function(SubmissionDto)? onVoidAudit;
 
   const _StoreGroup({
     required this.storeName,
     required this.submissions,
     this.onStartAudit,
+    this.onVoidAudit,
   });
 
   @override
@@ -537,6 +641,9 @@ class _StoreGroup extends StatelessWidget {
                         s.status == 'draft'
                     ? () => onStartAudit?.call(s)
                     : null,
+                onVoidAudit: (s.status == 'draft' || s.status == 'scheduled')
+                    ? () => onVoidAudit?.call(s)
+                    : null,
               ),
             )
             .toList(),
@@ -550,7 +657,12 @@ class _StoreGroup extends StatelessWidget {
 class _AuditCard extends StatelessWidget {
   final SubmissionDto submission;
   final VoidCallback? onStartAudit;
-  const _AuditCard({required this.submission, this.onStartAudit});
+  final VoidCallback? onVoidAudit;
+  const _AuditCard({
+    required this.submission,
+    this.onStartAudit,
+    this.onVoidAudit,
+  });
 
   Color _scoreColor(double? score, ThemeData theme) => scoreColor(score, theme);
 
@@ -653,7 +765,7 @@ class _AuditCard extends StatelessWidget {
 
             // Action: Start / Resume button OR status badge
             if ((isScheduled || isDraft) && onStartAudit != null) ...[
-               FilledButton(
+              FilledButton(
                 onPressed: onStartAudit,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -671,6 +783,19 @@ class _AuditCard extends StatelessWidget {
                   ),
                 ),
               ),
+              // Admin-only void button
+              if (onVoidAudit != null) ...[
+                const SizedBox(width: 4),
+                IconButton(
+                  onPressed: onVoidAudit,
+                  tooltip: 'Void Audit',
+                  icon: Icon(
+                    Icons.block,
+                    size: 18,
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              ],
             ] else ...[
               _statusBadge(theme),
             ],

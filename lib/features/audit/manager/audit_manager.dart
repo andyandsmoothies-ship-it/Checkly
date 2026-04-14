@@ -205,6 +205,19 @@ class AuditManager extends ChangeNotifier {
 
     if (_pendingDraft == null) {
       _scheduleDraftSave();
+      // For scheduled audits (targetSubmissionId != null), the local SQLite draft
+      // is never written until the first answer is saved (3s debounce). If the auditor
+      // navigates away before answering, hasDraft stays false and resume opens a blank
+      // form. Flush an empty stub immediately so hasDraft = true on next open.
+      if (_targetSubmissionId != null) {
+        final answersMap = _answers.map((k, v) => MapEntry(k, v.toJson()));
+        await _draftService.flushSave(
+          draftKey: _draftKey!,
+          answersMap: answersMap,
+          notes: _notes,
+        );
+        _pendingDraft = await _draftService.loadDraft(_draftKey!);
+      }
     }
 
     _recalculateScore();

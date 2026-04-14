@@ -17,7 +17,7 @@ public static class VoidSubmission
 {
     public record Command(string VoidReason);
 
-    private static readonly HashSet<string> VoidableStatuses = ["completed", "approved", "rejected", "pending_approval"];
+    private static readonly HashSet<string> VoidableStatuses = ["draft", "scheduled", "completed", "approved", "rejected", "pending_approval"];
 
     public static async Task<IResult> HandleAsync(
         Guid id,
@@ -51,7 +51,7 @@ public static class VoidSubmission
         if (!VoidableStatuses.Contains(submission.Status))
             return TypedResults.BadRequest(new
             {
-                error = $"Cannot void a submission with status '{submission.Status}'. Only completed, approved, or rejected submissions may be voided."
+                error = $"Cannot void a submission with status '{submission.Status}'. Only draft, scheduled, completed, approved, or rejected submissions may be voided."
             });
 
         // ── 5. Compensating Transaction ──────────────────────────────────────

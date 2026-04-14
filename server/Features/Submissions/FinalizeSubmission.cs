@@ -133,7 +133,8 @@ public static class FinalizeSubmission
         {
             CriteriaId = a.CriteriaId,
             NumericValue = a.NumericValue,
-            Value = a.Value
+            Value = a.Value,
+            RepeatedFaults = a.RepeatedFaults
         }).ToList();
 
         var verification = scorer.Verify(request.ClientScore, tempAnswers, groups, criteria,
@@ -142,6 +143,9 @@ public static class FinalizeSubmission
         var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid && scoreMode == "enforce")
         {
+            var logMsg = $"Score verification failed! Client: {request.ClientScore}, Server: {verification.ServerScore}, Reason: {verification.Reason}. First Answer RptFlt: {request.Answers.FirstOrDefault()?.RepeatedFaults} \n";
+            try { System.IO.File.AppendAllText(".agents/tmp/bad_request.txt", logMsg); } catch {}
+            
             return TypedResults.BadRequest(new
             {
                 error = "Score verification failed",
@@ -182,6 +186,7 @@ public static class FinalizeSubmission
             Note = a.Note,
             PhotoUrl = a.PhotoUrl,
             IsRepeatedError = a.IsRepeatedError,
+            RepeatedFaults = a.RepeatedFaults,
             IsFailure = verification.FailedCriteriaIds.Contains(a.CriteriaId),
             CriteriaLabel = criteria.FirstOrDefault(c => c.Id == a.CriteriaId)?.Label,
             CreatedAt = now,
