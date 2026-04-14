@@ -63,8 +63,8 @@ void main() {
   }
 
   group('GoRouter PBAC Capability Guard', () {
-    test('AR-01: Blocks /admin/dashboard when admin:access capability is missing', () {
-      arrangeCapabilities({'templates:create'}); // Has other capability, but not admin
+    test('AR-01: Blocks /admin/dashboard when adminDomain capabilities are missing', () {
+      arrangeCapabilities({'submissions:create'}); // Has other non-admin capability
       expect(runRedirect('/admin/dashboard'), '/home');
     });
 

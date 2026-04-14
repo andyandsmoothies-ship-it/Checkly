@@ -30,8 +30,9 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | **Hostile Gate** | MANDATORY: Execute **Virtual Reader Scoring**. Roast the code via 3 Personas: 1) DB Architect (N+1, ops), 2) Security Auditor (IDOR, payloads), 3) Junior Dev (Coupling, unreadable logic). Score each out of 10. IF any score < 7 -> trigger `/diagnose`. |
 | **Drift OOM Scan**| IF (Flutter/Drift `*_queries.dart` / `*_manager.dart`) THEN SCAN for `.get()`. MUST possess limit OR aggregate OR explicit safety comment. IF missing -> FAIL (OOM violation). |
 | **Efficiency Eval** | MANDATORY: Evaluate N+1 queries, memory leaks, Big-O complexity. PROHIBITED: Declaring SUCCESS simply because tests pass if UX degrades. |
+| **Supportability (Crickett's Rule)** | MANDATORY: Reject code that is non-idiomatic. Demand explicit documentation answering: What does this do? Why is this done this way? What are the tradeoffs? |
 
-> **@@SCAN**: (1) Hostile Interrogation run? (2) Drift OOM Scan executed (if applicable)?
+> **@@SCAN**: (1) Hostile Interrogation run? (2) Drift OOM Scan executed (if applicable)? (3) Supportability tradeoffs documented?
 
 ## Phase 2: Continuous Integration (CI) Gate
 

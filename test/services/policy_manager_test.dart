@@ -43,7 +43,7 @@ void main() {
   });
 
   test('PM-02: can() returns false when capability is absent', () {
-    final fakeAuth = _FakeAuthManager({'templates:create'});
+    final fakeAuth = _FakeAuthManager({'submissions:create'});
     GetIt.I.registerSingleton<AuthManager>(fakeAuth);
     
     final policyManager = PolicyManager(auth: fakeAuth);

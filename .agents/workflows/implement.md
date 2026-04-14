@@ -117,6 +117,7 @@ Review from 5 angles & state findings:
    - ✅ Blast Radius Test (If modifying shared code)
    - *Exemption*: Purely cosmetic (`[SCAN Exemption: Cosmetic Only]`)
 5. **Quality Gate (Zero-Warning Mandate)**: You MUST run structural validation (e.g., `flutter analyze` or `dotnet build`). If the compiler/linter emits ANY warnings (e.g., unused imports, dead code, logic smells), you are strictly PROHIBITED from handing the task back to the user. You must fix the warnings first. No exceptions.
+6. **Supportability Sweep (Crickett's Rule)**: Is this code idiomatic for the tech stack? Would a new developer understand the What, Why, and Tradeoffs? The tradeoffs MUST be explicitly documented in the walkthrough.
 
 | Step | Execution Contract |
 |---|---|

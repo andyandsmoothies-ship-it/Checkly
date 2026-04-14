@@ -33,11 +33,12 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Vector | Execution Contract |
 |---|---|
+| **Blind Objective Research** | MANDATORY: Do NOT propose implementation solutions yet. Extract facts only. Execute a blind dependency scan to learn how the current code actually works. If you assume how it works, you will hallucinate. |
 | **Hostile Artifact Validation** | MANDATORY: If an input artifact (e.g., ADR or Research) is provided, you MUST physically validate its assumptions against the real codebase. Check 1) Does the idea violate Clean Architecture boundaries? 2) Does it trigger severe unintended consequences (e.g., Router eviction)? If the input artifact contains physically dangerous or impossible ideas, you MUST override and reject them. Be a gatekeeper, not a blind translator. |
 | **Skill Load** | Extract Persona -> Load 1-2 matching skills from `.agents/skills/`. |
 | **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). MANDATORY: Enforce Simplicity First. Outline absolute minimum code that solves the problem. Explicitly state what 'flexible' or 'configurable' ghost requirements are OUT OF SCOPE. |
 | **Vertical Micro-Slicing**| MANDATORY: Never slice horizontally by layer (e.g., DB-only). All plans must be end-to-end and testable. If a plan is too large, slice VERTICALLY by removing infrastructure complexity (e.g., build brute-force data flow first, add cache in a future slice). |
-| **Trade-Off Analysis** | Identify >= 1 alternative "Ideal Enterprise" approach. Explicitly list the Pros, Cons, and Blast Radius to justify the pragmatic choice over the ideal choice. |
+| **Trade-Off Analysis (Crickett's Rule)** | Explicitly answer: What does this approach do? Why is it done this way? What are the tradeoffs against >= 1 alternative "Ideal Enterprise" approach? Justify the pragmatic choice in simple English. |
 | **Risk Assessment** | Formally assess the technical and operational risks of the chosen approach, and document mitigation strategies. |
 | **NFR Constraints** | MANDATORY: Explicitly define 3 Non-Functional Requirements for this feature: Performance (latency/load limits), Security (Auth rules/data isolation), and Observability (required telemetry/logs). |
 
@@ -58,7 +59,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Process | Execution Contract |
 |---|---|
-| **Artifact Generation** | Create `implementation_plan_[topic]_[ConversationID].md` (IsArtifact: True). MANDATORY: The final plan MUST contain explicit *Verifiable Goals* (e.g., 'Write X test -> Verify Red -> Implement Y -> Verify Green') rather than just vague developer instructions. |
+| **High-Level Design Document** | Generate `implementation_plan_[topic]_[ConversationID].md` (IsArtifact: True). MANDATORY: This must be a High-Level Design Document (What & Why), NOT a 1,000-line monolithic tactical plan. Keep it highly readable for humans. The actual step-by-step code execution will be generated later by the Builder in `/implement`. |
+| **Artifact Generation** | The final plan MUST contain explicit *Verifiable Goals* (e.g., 'Write X test -> Verify Red -> Implement Y -> Verify Green') rather than just vague developer instructions. |
 | **Persist Copy** | Copy deliverable to `.agents/tmp/research/implementation_plan_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
 ## Phase 4: Route Implementation (The ATDD Gate)
 

@@ -153,6 +153,14 @@ Generate steps covering:
 - **Regression Checklist**: Existing features near the blast radius
 - **Edge Case Triggers**: How to manually trigger error paths
 
+### Supportability & Idiomatic Sweep (Crickett's Rule)
+
+Before declaring the feature ready for human review, explicitly answer the following questions in your Walkthrough report:
+- **What does this code do?**
+- **Why is it done this way?**
+- **What are the tradeoffs being made?**
+If a junior engineer reading the walkthrough would not understand the tradeoffs, the verification FAILS. You must rewrite the documentation to be explicitly clear.
+
 ### Final Verdict
 
 1. **Impact Statement**: "Modified [X] and verified that [Y] remains intact."
