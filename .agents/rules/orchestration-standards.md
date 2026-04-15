@@ -37,8 +37,9 @@ Before ANY workflow response involving analysis, design, or implementation:
 
 ## SDLC Artifact Storage
 - **Generate Default**: Always create ALL artifacts in the `brain/` folder first.
-- **Copy High-Value**: Explicitly copy ADRs, Test Contracts, and Audits to `docs/` after creation.
-- **Discard Transients**: Leave Implementation Plans and tasks in `brain/`. DO NOT copy them to `docs/`.
+- **Copy High-Value**: Explicitly copy ADRs, Test Contracts, Audits, and final `implementation_plan.md` to `docs/` after creation.
+- **First-Class Plans**: Implementation plans are the memory of the project. Once approved, you MUST copy `implementation_plan_[topic].md` to `docs/architecture/plans/`.
+- **Discard Transients**: Leave temporary task trackers (`task_[topic].md`) in `brain/`. Do not copy transient tasks to `docs/`.
 
 ## Absolute Path Output Mandate
 **Always provide full absolute file paths.**

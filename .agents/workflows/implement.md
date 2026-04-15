@@ -49,6 +49,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Artifact Check**| IF `implementation_plan.md` OR `specs.md` exists -> Execute Quality Checklist. ELSE -> load `technical-specification` + generate lightweight plan -> Yield Approval. |
+| **Verification Pledge** | MANDATORY: Before writing any code, explicitly declare the terminal validation commands (e.g. `flutter test`, `dotnet test`) you will run to prove "what good looks like." |
 | **JIT Harness** | MANDATORY: Declare `[ACTIVE_SKILLS]` at the top of the plan. Drop all other RAG context. The AI is legally bound to this isolation cage for the session. |
 | **ATDD Ingestion**| IF ATDD artifacts were provided in the prompt -> MANDATORY: Use `view_file` to read the `.md` test contracts AND the physical test files created by QA. Real-world engineering requires understanding the Outer Loop (ATDD) before defining the Inner Loop (TDD). |
 | **Trust But Verify** | Assume the plan is well-intentioned but might hallucinate. Spot-check 1 core plan claim against actual source via `grep_search` before coding. IF plan assumes an API/DTO exists: prove it holds in BOTH `server/` AND `lib/`. IF False → STOP and pivot. |
