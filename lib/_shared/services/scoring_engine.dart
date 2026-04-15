@@ -8,11 +8,36 @@ import 'scoring_models.dart';
 // CCP/RISK flags come from BOTH template criteria AND answer overrides.
 // ============================================================
 class ScoringEngine {
+  // Widgets that CAN carry scoring points. All others are metadata (transparent to purity).
+  static const _kMeasurableTypes = {'pass_fail', 'numeric', 'scale', 'single_choice', 'multi_choice'};
+
+  /// Returns true if every measurable criterion in the template has a points weight > 0.
+  /// Metadata widgets (text, signature, photo, header, date, image) are transparent — they
+  /// do not cause score suppression even if pointsWeight is 0.
+  static bool _isPureAudit(ScoringInput input) {
+    for (final section in input.sections) {
+      for (final c in section.criteria) {
+        if (_kMeasurableTypes.contains(c.inputType) && c.pointsWeight <= 0) return false;
+      }
+      for (final sub in section.subsections) {
+        for (final c in sub.criteria) {
+          if (_kMeasurableTypes.contains(c.inputType) && c.pointsWeight <= 0) return false;
+        }
+      }
+    }
+    return true;
+  }
   /// Calculates the audit score based on the scoring mode.
   static ScoringResult calculate(ScoringInput input) {
     // Survey mode: no scoring at all — return immediately
     if (input.scoringMode == ScoringMode.survey) {
       return const ScoringResult(totalScore: null);
+    }
+
+    // Purity gate: if any measurable criterion has no points, suppress score.
+    // Mirrors ScoringVerifier.IsPureAudit() on the server — both must agree.
+    if (!_isPureAudit(input)) {
+      return const ScoringResult(totalScore: null); // Mixed audit — score suppressed
     }
 
     final answerMap = <String, AnswerInput>{};
@@ -97,9 +122,12 @@ class ScoringEngine {
         double sectionDeductions = 0.0;
 
         // Process subsections (3-level hierarchy)
+        // subBefore = sum of actual criteria weights — matches server ScoringVerifier.VerifyPenalty().
+        // sub.maxPoints is a DEDUCTION CAP only, never the denominator.
         for (final sub in section.subsections) {
-          sectionBefore += sub.maxPoints;
-          if (sub.maxPoints == 0) continue;
+          final subBefore = sub.criteria.fold<double>(0.0, (sum, c) => sum + c.pointsWeight);
+          sectionBefore += subBefore;
+          if (subBefore == 0) continue;
 
           var subDeductions = sub.criteria.fold<double>(
             0.0,
@@ -107,7 +135,8 @@ class ScoringEngine {
                 sum +
                 _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
           );
-          subDeductions = min(subDeductions, sub.maxPoints);
+          // Apply cap: explicit maxPoints cap if set, otherwise uncapped (subBefore).
+          if (sub.maxPoints > 0) subDeductions = min(subDeductions, sub.maxPoints);
           sectionDeductions += subDeductions;
         }
 

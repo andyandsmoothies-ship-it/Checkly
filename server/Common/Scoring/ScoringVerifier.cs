@@ -11,6 +11,27 @@ public sealed class ScoringVerifier
 {
     private const decimal Tolerance = 0.01m;
 
+    /// <summary>
+    /// Input types that can carry scoring points (measurable).
+    /// Metadata types (text, signature, photo, header, date, image) are transparent to purity.
+    /// Mirror of Flutter's ScoringEngine._kMeasurableTypes.
+    /// </summary>
+    private static readonly HashSet<string> MeasurableTypes =
+        new(StringComparer.OrdinalIgnoreCase)
+        { "pass_fail", "numeric", "scale", "single_choice", "multi_choice" };
+
+    /// <summary>
+    /// Returns true if every measurable criterion has a points weight > 0.
+    /// One zero-weight measurable criterion anywhere = MIXED = null score.
+    /// Mirror of Flutter's ScoringEngine._isPureAudit().
+    /// </summary>
+    private static bool IsPureAudit(IReadOnlyList<Criterion> criteria)
+    {
+        return criteria
+            .Where(c => MeasurableTypes.Contains(c.InputType ?? string.Empty))
+            .All(c => (c.PointsWeight ?? 0) > 0);
+    }
+
     public sealed record VerificationResult(
         bool IsValid,
         decimal? ServerScore,
@@ -43,6 +64,13 @@ public sealed class ScoringVerifier
                 serverScore,
                 "RISK criteria triggered — total score forced to 0%",
                 allFailed);
+        }
+
+        // Purity gate: mirror of Flutter's _isPureAudit().
+        // If any measurable criterion has no points, both client and server return null — no mismatch.
+        if (scoringMode != "survey" && !IsPureAudit(criteria))
+        {
+            return new VerificationResult(true, null, "Mixed audit — purity gate suppressed score", []);
         }
 
         return scoringMode switch

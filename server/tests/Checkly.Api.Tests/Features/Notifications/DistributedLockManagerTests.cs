@@ -212,7 +212,7 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(null)]
-    public async Task TryExecuteInLock_WithNullOrEmptyScope_ThrowsArgumentException(string invalidScope)
+    public async Task TryExecuteInLock_WithNullOrEmptyScope_ThrowsArgumentException(string? invalidScope)
     {
         // Arrange
         using var scope = _sp.CreateScope();

@@ -466,4 +466,76 @@ public class ScoringVerifierTests
         var result = _sut.Verify(33.33m, answers, groups, criteria, scoringMode: "accumulation");
         Assert.True(result.IsValid, $"Accumulation repeated fault: expected 33.33 but got {result.ServerScore}");
     }
+
+    // ====================================================================
+    // Purity Gate Tests (new logic)
+    // Mirrors Flutter: ScoringEngine._isPureAudit()
+    // ====================================================================
+
+    [Fact]
+    public void PG1_PureAudit_AllMeasurableHavePoints_ScoreCalculated()
+    {
+        // All criteria are measurable and have points → score is calculated normally.
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var c2 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[]
+        {
+            new Criterion { Id = c1, GroupId = sectionId, PointsWeight = 10m, InputType = "pass_fail" },
+            new Criterion { Id = c2, GroupId = sectionId, PointsWeight = 5m,  InputType = "numeric" },
+        };
+        // No fault answers — perfect score = 100
+        var answers = System.Array.Empty<Answer>();
+
+        var result = _sut.Verify(100m, answers, groups, criteria);
+        Assert.True(result.IsValid, $"PG1 pure audit: expected 100 but got {result.ServerScore}");
+        Assert.NotNull(result.ServerScore);
+    }
+
+    [Fact]
+    public void PG2_MixedAudit_OneZeroWeightMeasurable_ScoreSuppressed()
+    {
+        // One pass_fail criterion has 0 points → mixed → purity gate suppresses score.
+        // Both Flutter and server must return null — no mismatch → IsValid = true.
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var c2 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[]
+        {
+            new Criterion { Id = c1, GroupId = sectionId, PointsWeight = 10m, InputType = "pass_fail" },
+            new Criterion { Id = c2, GroupId = sectionId, PointsWeight = 0m,  InputType = "pass_fail" }, // zero-weight measurable → MIXED
+        };
+        var answers = System.Array.Empty<Answer>();
+
+        // clientScore=0 is irrelevant — purity gate returns before comparison
+        var result = _sut.Verify(0m, answers, groups, criteria);
+        Assert.True(result.IsValid, "PG2: mixed audit should always be IsValid (gate bypasses comparison)");
+        Assert.Null(result.ServerScore);
+    }
+
+    [Fact]
+    public void PG3_MetadataTextWith0Points_TransparentToPurityGate()
+    {
+        // Text field with 0 points is metadata — it does NOT trigger the purity gate.
+        // Score should still be calculated.
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var c2 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[]
+        {
+            new Criterion { Id = c1, GroupId = sectionId, PointsWeight = 10m, InputType = "pass_fail" },
+            new Criterion { Id = c2, GroupId = sectionId, PointsWeight = 0m,  InputType = "text" }, // metadata — transparent
+        };
+        var answers = System.Array.Empty<Answer>();
+
+        var result = _sut.Verify(100m, answers, groups, criteria);
+        Assert.True(result.IsValid, $"PG3: text with 0 points should not suppress score, got {result.ServerScore}");
+        Assert.NotNull(result.ServerScore);
+    }
 }

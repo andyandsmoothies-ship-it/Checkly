@@ -222,7 +222,7 @@ void main() {
     final input = parseVector(v);
     final result = ScoringEngine.calculate(input);
 
-    expect(result.totalScore, closeTo(50.00, 0.01));
+    expect(result.totalScore, closeTo(44.44, 0.01));
   });
 
   // ================================================================
@@ -550,5 +550,113 @@ void main() {
     final result = ScoringEngine.calculate(input);
     expect(result.totalScore, closeTo(0.00, 0.01));
     expect(result.hasRiskFailure, true);
+  });
+
+  // ================================================================
+  // Purity Gate Tests (new logic)
+  // ================================================================
+
+  // Scenario PG1: Pure audit — all measurable criteria have points → calculates score
+  test('PG1: Pure audit \u2014 all pass_fail with points \u2014 score calculated (not null)', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 100,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'pass_fail',
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 5,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'numeric',
+            ),
+          ],
+        ),
+      ],
+      answers: [],
+      scoringMode: ScoringMode.penalty,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, isNotNull);
+    expect(result.totalScore, closeTo(100.0, 0.01));
+  });
+
+  // Scenario PG2: Mixed audit — one pass_fail with 0 points → score suppressed (null)
+  test('PG2: Mixed audit \u2014 one zero-point pass_fail \u2014 totalScore is null', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 100,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'pass_fail',
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 0, // Zero-weight measurable \u2192 MIXED
+              isCcp: false,
+              isRisk: false,
+              inputType: 'pass_fail',
+            ),
+          ],
+        ),
+      ],
+      answers: [],
+      scoringMode: ScoringMode.penalty,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, isNull);
+  });
+
+  // Scenario PG3: Text field with 0 points \u2014 transparent to gate (score NOT suppressed)
+  test('PG3: Text metadata field with 0 points is transparent \u2014 score is not null', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 100,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 10,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'pass_fail',
+            ),
+            CriterionInput(
+              id: 'c2',
+              groupId: 's1',
+              pointsWeight: 0, // Zero weight but metadata type \u2014 transparent
+              isCcp: false,
+              isRisk: false,
+              inputType: 'text',
+            ),
+          ],
+        ),
+      ],
+      answers: [],
+      scoringMode: ScoringMode.penalty,
+    );
+    final result = ScoringEngine.calculate(input);
+    expect(result.totalScore, isNotNull);
+    expect(result.totalScore, closeTo(100.0, 0.01));
   });
 }
