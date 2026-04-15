@@ -34,6 +34,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | Vector | Execution Contract |
 |---|---|
 | **Blind Objective Research** | MANDATORY: Do NOT propose implementation solutions yet. Extract facts only. Execute a blind dependency scan to learn how the current code actually works. If you assume how it works, you will hallucinate. |
+| **Origin Idea Alignment** | MANDATORY: Extract the `[ORIGIN_IDEA]` tag from upstream artifacts. Before proposing a technical plan, explicitly counter-check: Does this exact solution genuinely solve the human's original idea? If the research drifted from the original goal, halt and realign the plan immediately. |
 | **Hostile Artifact Validation** | MANDATORY: If an input artifact (e.g., ADR or Research) is provided, you MUST physically validate its assumptions against the real codebase. Check 1) Does the idea violate Clean Architecture boundaries? 2) Does it trigger severe unintended consequences (e.g., Router eviction)? If the input artifact contains physically dangerous or impossible ideas, you MUST override and reject them. Be a gatekeeper, not a blind translator. |
 | **Skill Load** | Extract Persona -> Load 1-2 matching skills from `.agents/skills/`. |
 | **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). MANDATORY: Enforce Simplicity First. Outline absolute minimum code that solves the problem. Explicitly state what 'flexible' or 'configurable' ghost requirements are OUT OF SCOPE. |

@@ -13,8 +13,9 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 - [ ] **Task Tracking**: Create `task_[ConversationID].md` using the standard schema.
 - [ ] **Load Research**: Execute `list_dir` on `.agents/tmp/research/` to find all competing research options.
 - [ ] **Read Artifacts**: Use `view_file` to thoroughly read the contents of each competing option.
-- [ ] **Normalize**: Extract the core "Hypothesis" and "Blast Radius" from each option.
-> **@@SCAN**: (1) All competing artifacts loaded? (2) Hypothesis/Blast Radius distinctly gathered?
+- [ ] **Normalize**: Extract the core "Hypothesis", "Blast Radius", and the `[ORIGIN_IDEA]` from each option.
+- [ ] **Traceability Lock**: You MUST explicitly declare the original `[ORIGIN_IDEA]` at the top of your assessment.
+> **@@SCAN**: (1) All competing artifacts loaded? (2) Hypothesis/Blast Radius distinctly gathered? (3) Origin Idea explicitly declared?
 
 ## Phase 2: Hostile Interrogation (Red Teaming)
 - [ ] **MANDATORY**: For *every single option*, you MUST invent a catastrophic production failure scenario (e.g., memory leak, offline sync conflict, build failure, security bypass). 
@@ -22,18 +23,20 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 > **@@SCAN**: (1) Hostile attack invented for EVERY option? (2) Safety mitigations analyzed without bias (No appeasement)?
 
 ## Phase 3: The Pugh Decision Matrix
-- [ ] **Evaluate NFRs**: Create a Markdown table scoring each option against the project's strict Non-Functional Requirements (e.g., Offline Sync Capability, Main Thread Performance, Database Load, Blast Radius, Token Payload Size).
-- [ ] **Scoring System**: Choose one option as the Baseline (`0`). Score competing options as Better (`+1`) or Worse (`-1`) relative to the baseline across all NFRs. Tabulate the final score.
+- [ ] **Evaluate NFRs**: Create a Markdown table scoring each option against the project's strict Non-Functional Requirements (e.g., Offline Sync Capability, Main Thread Performance, Database Load, Blast Radius).
+- [ ] **Origin Idea Alignment Gate**: You MUST include "Origin Idea Alignment" as the highest-weight row in the matrix. If a technically brilliant option does not solve the user's actual starting idea, it must be heavily penalized.
+- [ ] **Scoring System**: Choose one option as the Baseline (`0`). Score competing options as Better (`+1`) or Worse (`-1`) relative to the baseline. Tabulate the final score.
 > **@@SCAN**: (1) Matrix strictly tabulated? (2) Baseline declared? (3) Final mathematical winner identified?
 
 ## Phase 4: Architectural Decision Record (ADR) Generation
 - [ ] **Generate ADR**: Produce a final artifact named `decision_record_[topic]_[ConversationID].md` (IsArtifact: True).
 - [ ] **Payload Schema**: The output MUST include:
-    1. `<latent_space_scratchpad>` for internal debate.
-    2. The normalized summary of options.
-    3. The Red Team attack vectors.
-    4. The Pugh Decision Matrix.
-    5. The Final Verdict (The mathematical winner).
+    1. `[ORIGIN_IDEA]`: The immutable core business goal, preserved at the top.
+    2. `<latent_space_scratchpad>` for internal debate.
+    3. The normalized summary of options.
+    4. The Red Team attack vectors.
+    5. The Pugh Decision Matrix.
+    6. The Final Verdict (The mathematical winner).
     6. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact).
     7. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Strict Implementation Constraints & Human Reminders (critical context the next Agent must not ignore), (3) Execution Slices if applicable, (4) The exact next workflow command the user should run (ensure the command prompt mentions the strict constraints).
 - [ ] **Persist Copy**: Copy the deliverable to `.agents/tmp/research/decision_record_[topic]_[ConversationID].md` using the terminal. **MANDATORY: You must explicitly verify the file exists at the destination path (e.g. via `dir` or `list_dir`) before yielding control.**

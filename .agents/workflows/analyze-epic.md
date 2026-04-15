@@ -36,6 +36,7 @@ Workflow: /analyze-epic | Track: C
 
 | Vector | Execution Contract |
 |---|---|
+| **Origin Idea Alignment** | MANDATORY: Extract the `[ORIGIN_IDEA]` tag from upstream artifacts. Before proposing a technical Epic, explicitly counter-check: Does this exact architecture genuinely solve the human's original idea? If the scope drifted into severe over-engineering and abandoned the human's actual goal, halt and realign the plan immediately. |
 | **Hostile Artifact Validation** | MANDATORY: If an input artifact (e.g., ADR or Research) is provided, you MUST physically validate its assumptions against the real codebase. Check 1) Does the idea violate Clean Architecture boundaries? 2) Does it trigger severe unintended consequences (e.g., Router eviction)? If the input artifact contains physically dangerous or impossible ideas, you MUST override and reject them. Be a gatekeeper, not a blind translator. |
 | **Skill Load** | Load abstract architectural skills (e.g., `clean-architecture`). |
 | **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
@@ -46,7 +47,7 @@ Workflow: /analyze-epic | Track: C
 | **Risk Assessment** | Formally assess the technical and operational risks of each decision/alternative, and document mitigation strategies. |
 | **NFR Constraints** | MANDATORY: Explicitly define System-wide limits for Performance, Security, and Observability before proceeding. |
 
-> **@@SCAN**: (1) Dependency Roots mathematically traced via grep_search? (2) >=2 Alternatives mapped? (3) NFR Constraints defined? (4) 3-Tier Boundary proven?
+> **@@SCAN**: (1) Origin Idea explicitly counter-checked? (2) Dependency Roots mathematically traced via grep_search? (3) >=2 Alternatives mapped? (4) NFR Constraints defined?
 
 ## Phase 2: Red Team Adversarial Review
 

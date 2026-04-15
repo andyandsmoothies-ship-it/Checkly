@@ -41,7 +41,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Topology** | MANDATORY: Parse config files (`.csproj`, `pubspec.yaml`). |
 | **Step 0 Nuke** | IF structure refactor -> MANDATORY: Remove unused imports, dead props, and commented code *before* planning logic. Protects token context. |
 | **Skill Load** | MANDATORY: Load `tdd`. IF `dotnet` THEN Load `testing-strategy`. |
-| **Dynamic Skills**| Derive 2-3 keywords -> search `.agents/skills/` -> Load Top 2. |
+| **Dynamic Skills**| IF plan lacks `[ACTIVE_SKILLS]` -> Derive 2-3 keywords from prompt -> search `.agents/skills/` -> Load Top 2. |
 
 > **@@SCAN**: (1) Skills/rules loaded? (2) Core files/dependencies scanned?
 
@@ -51,7 +51,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Artifact Check**| IF `implementation_plan.md` OR `specs.md` exists -> Execute Quality Checklist. ELSE -> load `technical-specification` + generate lightweight plan -> Yield Approval. |
 | **JIT Harness** | MANDATORY: Declare `[ACTIVE_SKILLS]` at the top of the plan. Drop all other RAG context. The AI is legally bound to this isolation cage for the session. |
 | **ATDD Ingestion**| IF ATDD artifacts were provided in the prompt -> MANDATORY: Use `view_file` to read the `.md` test contracts AND the physical test files created by QA. Real-world engineering requires understanding the Outer Loop (ATDD) before defining the Inner Loop (TDD). |
-| **Verification** | Spot-check 1 plan claim against source via `grep_search`. IF plan references an API/DTO: verify claim holds in BOTH `server/` AND `lib/`. IF False → STOP. |
+| **Trust But Verify** | Assume the plan is well-intentioned but might hallucinate. Spot-check 1 core plan claim against actual source via `grep_search` before coding. IF plan assumes an API/DTO exists: prove it holds in BOTH `server/` AND `lib/`. IF False → STOP and pivot. |
 | **YAGNI Gate** | IF feature adds complexity without business value -> Create Before/After tradeoff table. |
 
 ### Plan Quality Checklist
@@ -105,7 +105,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 > **@@SCAN**: (1) Red/Green split respected? (2) Inline verify gate run?
 
 ## Phase 4: Self-Review
-Review from 5 angles & state findings:
+Review from 6 angles & state findings:
+0. **Double-Check Hack**: Re-read your loaded `[ACTIVE_SKILLS]` instructions. Explicitly verify your code did not violate any core parameters of the loaded skill. (Proven mental-model hack for catching LLM drift).
 1. **Security/Arch**: Check package dependency/illegal imports.
 2. **Logic Check**: Null handling? Acceptance criteria met?
 3. **Concurrency**: Verify Idempotency is at DB/Top-layer, not mid-layer.
