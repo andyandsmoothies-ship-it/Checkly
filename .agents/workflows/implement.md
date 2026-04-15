@@ -136,6 +136,7 @@ Review from 6 angles & state findings:
 | **Ship** | Green TDD, Blast Radius 0, Trivial | Add line to `walkthrough.md` + `executed_tests.md` -> Notify Ready. |
 | **Show** | Green TDD, Moderate Scope | Write FULL `walkthrough.md` + `executed_tests.md` -> Notify Ready. |
 | **Ask** | Arch change, Security, Migration | Notify user BEFORE action. List numbered scenarios -> Wait go-ahead. |
+| **Verify Gate** | ALL STATES | MANDATORY: Execute `verify_workflow.py` via `run_command` immediately after writing the walkthrough to prove artifact completeness. |
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
@@ -148,10 +149,12 @@ Review from 6 angles & state findings:
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
-> **Script Verification Gate**:
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > - `Code 0`: *"Implementation complete. Output User Handoff."*
-> - `Code 1`: Fix block -> retry. (Fail twice = Write Handoff).
+> - `Code 1`: Re-read artifacts, fix the missing sections, update `task.md`, and retry. (Fail twice = Write Handoff).
 
 ## 🚦 User Handoff & Next Steps
 

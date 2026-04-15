@@ -56,6 +56,9 @@ description: Guided workflow to initialize a brand new project, pick a tech stac
 | **Routing** | Output message: *"Project Inception Complete. Now that the raw folders exist and the Charter is locked, run `/analyze-epic` so I can physically map out the database patterns and folder structures before we start coding."* |
 
 ### Script Verification Gate
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
-- `Code 0`: *"Handoff complete."*
-- `Code 1`: Fix errors and retry.
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Handoff complete."*
+> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

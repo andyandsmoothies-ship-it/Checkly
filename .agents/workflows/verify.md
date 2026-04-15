@@ -53,7 +53,9 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | **Handoff Lock** | Write `handoff_[topic]_[ConversationID].md` (Phases + Gate State) before context dilution. |
 
 > [!IMPORTANT]
-> **Script Verification Gate**:
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
 > - `Code 0`: *"Workflow complete. Share summary."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

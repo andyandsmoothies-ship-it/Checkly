@@ -99,7 +99,9 @@ Workflow: /atdd | Track: [B2 / C]
 > [!IMPORTANT]
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
-> **Script Verification Gate**:
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
 > - `Code 0`: *"Workflow complete. Tell user to pass test artifacts to Builder."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

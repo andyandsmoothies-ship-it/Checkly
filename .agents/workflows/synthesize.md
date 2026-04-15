@@ -40,5 +40,9 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
     6. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact).
     7. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Strict Implementation Constraints & Human Reminders (critical context the next Agent must not ignore), (3) Execution Slices if applicable, (4) The exact next workflow command the user should run (ensure the command prompt mentions the strict constraints).
 - [ ] **Persist Copy**: Copy the deliverable to `.agents/tmp/research/decision_record_[topic]_[ConversationID].md` using the terminal. **MANDATORY: You must explicitly verify the file exists at the destination path (e.g. via `dir` or `list_dir`) before yielding control.**
-- [ ] **Verification**: Run `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"` to validate the output format.
+- [ ] **Verification**: 
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > **@@SCAN**: (1) ADR Schema respected (Latent Debate, Pugh Matrix)? (2) python verifier script executed and passed?

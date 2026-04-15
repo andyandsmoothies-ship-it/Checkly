@@ -15,12 +15,12 @@ namespace Checkly.Api.Features.Submissions;
 public static class FinalizeSubmission
 {
     public sealed record FinalizeRequest(
-        decimal ClientScore,
+        decimal? ClientScore,
         string? SectionScores,
         string? Notes,
         decimal? GpsLat,
         decimal? GpsLng,
-        List<AnswerInput> Answers);
+        List<AnswerInput>? Answers);
 
     public static async Task<IResult> HandleAsync(
         Guid id,
@@ -46,8 +46,11 @@ public static class FinalizeSubmission
         if (submission.AuditorId != auditorId)
             return TypedResults.Forbid();
 
-        // 2. Validate answers
-        if (request.Answers.Count == 0)
+        // 2. Validate required fields (nullable to survive model binding when Flutter omits keys)
+        if (request.ClientScore is null)
+            return TypedResults.BadRequest(new { error = "clientScore is required to finalize" });
+
+        if (request.Answers is null || request.Answers.Count == 0)
             return TypedResults.BadRequest(new { error = "Answers are required to finalize" });
 
         // 3. Load template data — prefer snapshot, fallback to live DB
@@ -129,7 +132,7 @@ public static class FinalizeSubmission
             catch { /* malformed config → default to penalty */ }
         }
 
-        var tempAnswers = request.Answers.Select(a => new Answer
+        var tempAnswers = request.Answers!.Select(a => new Answer
         {
             CriteriaId = a.CriteriaId,
             NumericValue = a.NumericValue,
@@ -137,13 +140,13 @@ public static class FinalizeSubmission
             RepeatedFaults = a.RepeatedFaults
         }).ToList();
 
-        var verification = scorer.Verify(request.ClientScore, tempAnswers, groups, criteria,
+        var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
             scoringMode: scoringMode);
 
         var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid && scoreMode == "enforce")
         {
-            var logMsg = $"Score verification failed! Client: {request.ClientScore}, Server: {verification.ServerScore}, Reason: {verification.Reason}. First Answer RptFlt: {request.Answers.FirstOrDefault()?.RepeatedFaults} \n";
+            var logMsg = $"Score verification failed! Client: {request.ClientScore}, Server: {verification.ServerScore}, Reason: {verification.Reason}. First Answer RptFlt: {request.Answers!.FirstOrDefault()?.RepeatedFaults} \n";
             try { System.IO.File.AppendAllText(".agents/tmp/bad_request.txt", logMsg); } catch {}
             
             return TypedResults.BadRequest(new
@@ -176,7 +179,7 @@ public static class FinalizeSubmission
         if (existingAnswers.Count > 0)
             db.Answers.RemoveRange(existingAnswers);
 
-        var answers = request.Answers.Select(a => new Answer
+        var answers = request.Answers!.Select(a => new Answer
         {
             Id = Guid.NewGuid(),
             SubmissionId = submission.Id,

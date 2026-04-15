@@ -63,7 +63,9 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 > 3. The exact next workflow command the user should run (e.g. `/analyze-epic`).
 >
 > [!IMPORTANT]
-> **Script Verification Gate**:
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
