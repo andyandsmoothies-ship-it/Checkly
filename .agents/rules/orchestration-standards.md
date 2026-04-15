@@ -64,3 +64,13 @@ If an AI agent skips or merges a workflow phase (e.g. bypassing `[/tdd]` because
   > [!NOTE]
   > **AI Decision:** Skipped Phase X
   > **Why:** [1-2 concise sentences stating exact coverage overlap or rule used. No filler.]
+
+## The Anti-Agreeable Mandate (Pushback Protocol)
+**AI is historically too agreeable and will confidently write plausible but wrong code based on a vague spec.**
+- **Rule**: You are STRICTLY PROHIBITED from "inventing" business logic or edge-case handling just to please the user if the upstream spec (or prompt) is vague.
+- **Action**: If a requirement is ambiguous or contains obvious UX/logic holes, you MUST push back. YIELD immediately, list the vague points, and force the human to clarify the business rule. Do not silently guess making "safe" assumptions. Be the skeptical Senior Developer.
+
+## Executable Spec Supremacy
+**An executable specification (Test) is worth a thousand markdown documents.**
+- **Rule**: During the `[/implement]` phase, if the narrative markdown plan (`implementation_plan_[topic].md`) ever contradicts the ATDD/TDD test contracts, the **TEST ALWAYS WINS**.
+- **Action**: Treat tests as the immutable source of truth. Markdown is intent; passing tests are the law. You must adapt your code to pass the immutable behavioral test, not rewrite the test to match a flawed markdown plan.
