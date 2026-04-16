@@ -68,6 +68,8 @@ class SubmissionAnswerInput {
   final String? photoUrl;
   final bool isRepeatedError;
   final int repeatedFaults;
+  final bool isCcp;
+  final bool isRisk;
 
   const SubmissionAnswerInput({
     required this.criteriaId,
@@ -77,6 +79,8 @@ class SubmissionAnswerInput {
     this.photoUrl,
     this.isRepeatedError = false,
     this.repeatedFaults = 0,
+    this.isCcp = false,
+    this.isRisk = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -87,6 +91,8 @@ class SubmissionAnswerInput {
     'photoUrl': photoUrl,
     'isRepeatedError': isRepeatedError,
     'repeatedFaults': repeatedFaults,
+    'isCcp': isCcp,
+    'isRisk': isRisk,
   };
 }
 

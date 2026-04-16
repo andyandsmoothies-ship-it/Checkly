@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -105,6 +105,11 @@ class AppDatabase extends _$AppDatabase {
       if (from < 13) {
         // Score Verification fix: persist repeat fault count for accurate server-side scoring.
         await m.addColumn(pendingAnswers, pendingAnswers.repeatedFaults);
+      }
+      if (from < 14) {
+        // Auditor Manual Override fix: persist answer-level RISK/CCP overrides.
+        await m.addColumn(pendingAnswers, pendingAnswers.isCcp);
+        await m.addColumn(pendingAnswers, pendingAnswers.isRisk);
       }
     },
     beforeOpen: (details) async {

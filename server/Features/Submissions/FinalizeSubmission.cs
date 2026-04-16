@@ -140,6 +140,22 @@ public static class FinalizeSubmission
             RepeatedFaults = a.RepeatedFaults
         }).ToList();
 
+        // Apply answer-level CCP/Risk overrides to the in-memory criteria list.
+        // The auditor can manually flag a criterion as CCP/Risk at answer time.
+        // These override the template defaults for this verification only.
+        var answerOverrideMap = request.Answers!
+            .Where(a => a.IsCcp || a.IsRisk)
+            .ToDictionary(a => a.CriteriaId);
+
+        foreach (var crit in criteria)
+        {
+            if (answerOverrideMap.TryGetValue(crit.Id, out var ans))
+            {
+                if (ans.IsCcp) crit.IsCcp = true;
+                if (ans.IsRisk) crit.IsRisk = true;
+            }
+        }
+
         var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
             scoringMode: scoringMode);
 

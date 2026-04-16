@@ -186,12 +186,11 @@ public sealed class ScoringVerifier
         IReadOnlyList<Criterion> criteria,
         bool progressiveRepeatPenalty)
     {
-        var totalPoints = criteria.Sum(c => c.PointsWeight ?? 0);
-        if (totalPoints == 0)
-            return new VerificationResult(clientScore == 100, 100, null, []);
-
+        // Mirror of Flutter ScoringEngine._calculateChecklist():
+        //   score = max(0, 100 - Σ(faults × pointsWeight))
+        // NOT a ratio — raw deductions from 100.
         var totalDeductions = criteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
-        var serverScore = Math.Max(0, (totalPoints - totalDeductions) / totalPoints * 100);
+        var serverScore = Math.Max(0, 100 - totalDeductions);
 
         return new VerificationResult(
             Math.Abs(clientScore - serverScore) <= Tolerance,

@@ -310,6 +310,7 @@ class ScoringEngine {
   // ── Checklist Mode (Pass/Fail Ratio) ─────────────────────
   // Algorithm: max(0, 100 - Σ(all deductions))
   // No weights, no sections — just raw deductions from 100.
+  // NOTE: Server VerifyChecklist uses a different ratio formula — see GEMINI.override.md Gotcha.
   static ScoringResult _calculateChecklist(
     ScoringInput input,
     Map<String, AnswerInput> answerMap,
@@ -353,6 +354,9 @@ class ScoringEngine {
   ) {
     final answer = answerMap[criterion.id];
     if (answer == null) return 0.0;
+    // Mirror of ScoringVerifier.GetDeduction(): conform/na → no deduction, regardless of numericValue.
+    final v = answer.value?.toLowerCase();
+    if (v == 'conform' || v == 'na') return 0.0;
     final impact = criterion.minusImpact ?? criterion.pointsWeight;
     final faults = answer.numericValue ?? 0;
     final baseDeduction = faults * impact;

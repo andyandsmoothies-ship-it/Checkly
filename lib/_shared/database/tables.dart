@@ -201,6 +201,10 @@ class PendingAnswers extends Table {
       boolean().withDefault(const Constant(false))();
   IntColumn get repeatedFaults =>
       integer().withDefault(const Constant(0))();
+  BoolColumn get isCcp =>
+      boolean().withDefault(const Constant(false))();
+  BoolColumn get isRisk =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

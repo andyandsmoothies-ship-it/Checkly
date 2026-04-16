@@ -81,6 +81,8 @@ class AuditAnswer {
     photoUrl: photoUrl,
     isRepeatedError: isRepeatedError,
     repeatedFaults: repeatedFaultCount,
+    isCcp: isCcp,
+    isRisk: isRisk,
   );
 }
 
@@ -438,6 +440,8 @@ class AuditManager extends ChangeNotifier {
           photoUrl: Value(a.photoUrl),
           isRepeatedError: Value(a.isRepeatedError),
           repeatedFaults: Value(a.repeatedFaultCount),
+          isCcp: Value(a.isCcp),
+          isRisk: Value(a.isRisk),
         );
       }).toList();
 

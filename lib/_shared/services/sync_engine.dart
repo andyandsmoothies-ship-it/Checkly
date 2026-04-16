@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:meta/meta.dart';
 
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
@@ -133,15 +134,7 @@ class SyncEngine {
             // Non-null → SyncApiAdapter routes to PUT /submissions/{id}/finalize.
             // Null    → SyncApiAdapter uses POST /submissions (fresh audit path).
             'targetSubmissionId': dbRow.targetSubmissionId,
-            'answers': answers.map((a) => {
-              'criteriaId': a.criteriaId,
-              'value': a.value,
-              'numericValue': a.numericValue,
-              'note': a.note,
-              'photoUrl': a.photoUrl,
-              'isRepeatedError': a.isRepeatedError,
-              'repeatedFaults': a.repeatedFaults,
-            }).toList(),
+            'answers': answers.map(buildAnswerPayload).toList(),
           });
 
           final entry = PendingSubmission(
@@ -248,5 +241,20 @@ class SyncEngine {
   void dispose() {
     _connectivitySub?.cancel();
     _connectivitySub = null;
+  }
+
+  @visibleForTesting
+  static Map<String, dynamic> buildAnswerPayload(dynamic a) {
+    return {
+      'criteriaId': a.criteriaId,
+      'value': a.value,
+      'numericValue': a.numericValue,
+      'note': a.note,
+      'photoUrl': a.photoUrl,
+      'isRepeatedError': a.isRepeatedError,
+      'repeatedFaults': a.repeatedFaults,
+      'isCcp': a.isCcp,   // Fix: was silently dropped — server override merge requires this
+      'isRisk': a.isRisk, // Fix: was silently dropped — RISK flag triggers total=0 on server
+    };
   }
 }

@@ -52,7 +52,7 @@ class ScoringInputMapper {
         return SubsectionInput(
           id: sub.id,
           title: sub.title,
-          maxPoints: _metaDouble(sub.metadata, 'subsection_max_points'),
+          maxPoints: sub.maxDeductionPoints ?? 0,
           criteria: subCriteria,
         );
       }).toList();
@@ -137,14 +137,4 @@ class ScoringInputMapper {
     return false;
   }
 
-  /// Extracts a double field from a group's metadata JSON string.
-  static double _metaDouble(String? metadata, String key) {
-    if (metadata == null || metadata.isEmpty) return 0;
-    try {
-      final map = json.decode(metadata) as Map<String, dynamic>;
-      return (map[key] as num?)?.toDouble() ?? 0;
-    } catch (_) {
-      return 0;
-    }
-  }
 }

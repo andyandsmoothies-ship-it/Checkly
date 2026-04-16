@@ -24,7 +24,9 @@ public sealed record AnswerInput(
     string? Note,
     string? PhotoUrl,
     bool IsRepeatedError,
-    int RepeatedFaults = 0);
+    int RepeatedFaults = 0,
+    bool IsCcp = false,
+    bool IsRisk = false);
 
 public sealed record SubmissionDto(
     Guid Id,

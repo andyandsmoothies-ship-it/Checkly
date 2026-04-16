@@ -6606,6 +6606,32 @@ class $PendingAnswersTable extends PendingAnswers
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _isCcpMeta = const VerificationMeta('isCcp');
+  @override
+  late final GeneratedColumn<bool> isCcp = GeneratedColumn<bool>(
+    'is_ccp',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_ccp" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isRiskMeta = const VerificationMeta('isRisk');
+  @override
+  late final GeneratedColumn<bool> isRisk = GeneratedColumn<bool>(
+    'is_risk',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_risk" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -6617,6 +6643,8 @@ class $PendingAnswersTable extends PendingAnswers
     photoUrl,
     isRepeatedError,
     repeatedFaults,
+    isCcp,
+    isRisk,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6699,6 +6727,18 @@ class $PendingAnswersTable extends PendingAnswers
         ),
       );
     }
+    if (data.containsKey('is_ccp')) {
+      context.handle(
+        _isCcpMeta,
+        isCcp.isAcceptableOrUnknown(data['is_ccp']!, _isCcpMeta),
+      );
+    }
+    if (data.containsKey('is_risk')) {
+      context.handle(
+        _isRiskMeta,
+        isRisk.isAcceptableOrUnknown(data['is_risk']!, _isRiskMeta),
+      );
+    }
     return context;
   }
 
@@ -6744,6 +6784,14 @@ class $PendingAnswersTable extends PendingAnswers
         DriftSqlType.int,
         data['${effectivePrefix}repeated_faults'],
       )!,
+      isCcp: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_ccp'],
+      )!,
+      isRisk: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_risk'],
+      )!,
     );
   }
 
@@ -6763,6 +6811,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
   final String? photoUrl;
   final bool isRepeatedError;
   final int repeatedFaults;
+  final bool isCcp;
+  final bool isRisk;
   const PendingAnswer({
     required this.id,
     required this.pendingSubmissionId,
@@ -6773,6 +6823,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     this.photoUrl,
     required this.isRepeatedError,
     required this.repeatedFaults,
+    required this.isCcp,
+    required this.isRisk,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6794,6 +6846,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     }
     map['is_repeated_error'] = Variable<bool>(isRepeatedError);
     map['repeated_faults'] = Variable<int>(repeatedFaults);
+    map['is_ccp'] = Variable<bool>(isCcp);
+    map['is_risk'] = Variable<bool>(isRisk);
     return map;
   }
 
@@ -6814,6 +6868,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
           : Value(photoUrl),
       isRepeatedError: Value(isRepeatedError),
       repeatedFaults: Value(repeatedFaults),
+      isCcp: Value(isCcp),
+      isRisk: Value(isRisk),
     );
   }
 
@@ -6834,6 +6890,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
       photoUrl: serializer.fromJson<String?>(json['photoUrl']),
       isRepeatedError: serializer.fromJson<bool>(json['isRepeatedError']),
       repeatedFaults: serializer.fromJson<int>(json['repeatedFaults']),
+      isCcp: serializer.fromJson<bool>(json['isCcp']),
+      isRisk: serializer.fromJson<bool>(json['isRisk']),
     );
   }
   @override
@@ -6849,6 +6907,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
       'photoUrl': serializer.toJson<String?>(photoUrl),
       'isRepeatedError': serializer.toJson<bool>(isRepeatedError),
       'repeatedFaults': serializer.toJson<int>(repeatedFaults),
+      'isCcp': serializer.toJson<bool>(isCcp),
+      'isRisk': serializer.toJson<bool>(isRisk),
     };
   }
 
@@ -6862,6 +6922,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     Value<String?> photoUrl = const Value.absent(),
     bool? isRepeatedError,
     int? repeatedFaults,
+    bool? isCcp,
+    bool? isRisk,
   }) => PendingAnswer(
     id: id ?? this.id,
     pendingSubmissionId: pendingSubmissionId ?? this.pendingSubmissionId,
@@ -6872,6 +6934,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     photoUrl: photoUrl.present ? photoUrl.value : this.photoUrl,
     isRepeatedError: isRepeatedError ?? this.isRepeatedError,
     repeatedFaults: repeatedFaults ?? this.repeatedFaults,
+    isCcp: isCcp ?? this.isCcp,
+    isRisk: isRisk ?? this.isRisk,
   );
   PendingAnswer copyWithCompanion(PendingAnswersCompanion data) {
     return PendingAnswer(
@@ -6894,6 +6958,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
       repeatedFaults: data.repeatedFaults.present
           ? data.repeatedFaults.value
           : this.repeatedFaults,
+      isCcp: data.isCcp.present ? data.isCcp.value : this.isCcp,
+      isRisk: data.isRisk.present ? data.isRisk.value : this.isRisk,
     );
   }
 
@@ -6908,7 +6974,9 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
           ..write('note: $note, ')
           ..write('photoUrl: $photoUrl, ')
           ..write('isRepeatedError: $isRepeatedError, ')
-          ..write('repeatedFaults: $repeatedFaults')
+          ..write('repeatedFaults: $repeatedFaults, ')
+          ..write('isCcp: $isCcp, ')
+          ..write('isRisk: $isRisk')
           ..write(')'))
         .toString();
   }
@@ -6924,6 +6992,8 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
     photoUrl,
     isRepeatedError,
     repeatedFaults,
+    isCcp,
+    isRisk,
   );
   @override
   bool operator ==(Object other) =>
@@ -6937,7 +7007,9 @@ class PendingAnswer extends DataClass implements Insertable<PendingAnswer> {
           other.note == this.note &&
           other.photoUrl == this.photoUrl &&
           other.isRepeatedError == this.isRepeatedError &&
-          other.repeatedFaults == this.repeatedFaults);
+          other.repeatedFaults == this.repeatedFaults &&
+          other.isCcp == this.isCcp &&
+          other.isRisk == this.isRisk);
 }
 
 class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
@@ -6950,6 +7022,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
   final Value<String?> photoUrl;
   final Value<bool> isRepeatedError;
   final Value<int> repeatedFaults;
+  final Value<bool> isCcp;
+  final Value<bool> isRisk;
   final Value<int> rowid;
   const PendingAnswersCompanion({
     this.id = const Value.absent(),
@@ -6961,6 +7035,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     this.photoUrl = const Value.absent(),
     this.isRepeatedError = const Value.absent(),
     this.repeatedFaults = const Value.absent(),
+    this.isCcp = const Value.absent(),
+    this.isRisk = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingAnswersCompanion.insert({
@@ -6973,6 +7049,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     this.photoUrl = const Value.absent(),
     this.isRepeatedError = const Value.absent(),
     this.repeatedFaults = const Value.absent(),
+    this.isCcp = const Value.absent(),
+    this.isRisk = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        pendingSubmissionId = Value(pendingSubmissionId),
@@ -6987,6 +7065,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     Expression<String>? photoUrl,
     Expression<bool>? isRepeatedError,
     Expression<int>? repeatedFaults,
+    Expression<bool>? isCcp,
+    Expression<bool>? isRisk,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -7000,6 +7080,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
       if (photoUrl != null) 'photo_url': photoUrl,
       if (isRepeatedError != null) 'is_repeated_error': isRepeatedError,
       if (repeatedFaults != null) 'repeated_faults': repeatedFaults,
+      if (isCcp != null) 'is_ccp': isCcp,
+      if (isRisk != null) 'is_risk': isRisk,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -7014,6 +7096,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     Value<String?>? photoUrl,
     Value<bool>? isRepeatedError,
     Value<int>? repeatedFaults,
+    Value<bool>? isCcp,
+    Value<bool>? isRisk,
     Value<int>? rowid,
   }) {
     return PendingAnswersCompanion(
@@ -7026,6 +7110,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
       photoUrl: photoUrl ?? this.photoUrl,
       isRepeatedError: isRepeatedError ?? this.isRepeatedError,
       repeatedFaults: repeatedFaults ?? this.repeatedFaults,
+      isCcp: isCcp ?? this.isCcp,
+      isRisk: isRisk ?? this.isRisk,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -7062,6 +7148,12 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
     if (repeatedFaults.present) {
       map['repeated_faults'] = Variable<int>(repeatedFaults.value);
     }
+    if (isCcp.present) {
+      map['is_ccp'] = Variable<bool>(isCcp.value);
+    }
+    if (isRisk.present) {
+      map['is_risk'] = Variable<bool>(isRisk.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -7080,6 +7172,8 @@ class PendingAnswersCompanion extends UpdateCompanion<PendingAnswer> {
           ..write('photoUrl: $photoUrl, ')
           ..write('isRepeatedError: $isRepeatedError, ')
           ..write('repeatedFaults: $repeatedFaults, ')
+          ..write('isCcp: $isCcp, ')
+          ..write('isRisk: $isRisk, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -12536,6 +12630,8 @@ typedef $$PendingAnswersTableCreateCompanionBuilder =
       Value<String?> photoUrl,
       Value<bool> isRepeatedError,
       Value<int> repeatedFaults,
+      Value<bool> isCcp,
+      Value<bool> isRisk,
       Value<int> rowid,
     });
 typedef $$PendingAnswersTableUpdateCompanionBuilder =
@@ -12549,6 +12645,8 @@ typedef $$PendingAnswersTableUpdateCompanionBuilder =
       Value<String?> photoUrl,
       Value<bool> isRepeatedError,
       Value<int> repeatedFaults,
+      Value<bool> isCcp,
+      Value<bool> isRisk,
       Value<int> rowid,
     });
 
@@ -12632,6 +12730,16 @@ class $$PendingAnswersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get isCcp => $composableBuilder(
+    column: $table.isCcp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isRisk => $composableBuilder(
+    column: $table.isRisk,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$PendingSubmissionsTableFilterComposer get pendingSubmissionId {
     final $$PendingSubmissionsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -12705,6 +12813,16 @@ class $$PendingAnswersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isCcp => $composableBuilder(
+    column: $table.isCcp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isRisk => $composableBuilder(
+    column: $table.isRisk,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$PendingSubmissionsTableOrderingComposer get pendingSubmissionId {
     final $$PendingSubmissionsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -12770,6 +12888,12 @@ class $$PendingAnswersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get isCcp =>
+      $composableBuilder(column: $table.isCcp, builder: (column) => column);
+
+  GeneratedColumn<bool> get isRisk =>
+      $composableBuilder(column: $table.isRisk, builder: (column) => column);
+
   $$PendingSubmissionsTableAnnotationComposer get pendingSubmissionId {
     final $$PendingSubmissionsTableAnnotationComposer composer =
         $composerBuilder(
@@ -12834,6 +12958,8 @@ class $$PendingAnswersTableTableManager
                 Value<String?> photoUrl = const Value.absent(),
                 Value<bool> isRepeatedError = const Value.absent(),
                 Value<int> repeatedFaults = const Value.absent(),
+                Value<bool> isCcp = const Value.absent(),
+                Value<bool> isRisk = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingAnswersCompanion(
                 id: id,
@@ -12845,6 +12971,8 @@ class $$PendingAnswersTableTableManager
                 photoUrl: photoUrl,
                 isRepeatedError: isRepeatedError,
                 repeatedFaults: repeatedFaults,
+                isCcp: isCcp,
+                isRisk: isRisk,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12858,6 +12986,8 @@ class $$PendingAnswersTableTableManager
                 Value<String?> photoUrl = const Value.absent(),
                 Value<bool> isRepeatedError = const Value.absent(),
                 Value<int> repeatedFaults = const Value.absent(),
+                Value<bool> isCcp = const Value.absent(),
+                Value<bool> isRisk = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingAnswersCompanion.insert(
                 id: id,
@@ -12869,6 +12999,8 @@ class $$PendingAnswersTableTableManager
                 photoUrl: photoUrl,
                 isRepeatedError: isRepeatedError,
                 repeatedFaults: repeatedFaults,
+                isCcp: isCcp,
+                isRisk: isRisk,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
