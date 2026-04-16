@@ -43,7 +43,8 @@ public static class GetSubmission
             submission.Answers.Select(a => new AnswerDto(
                 a.Id, a.CriteriaId, a.CriteriaLabel,
                 a.Value, a.NumericValue, a.Note,
-                a.PhotoUrl, a.IsRepeatedError)).ToList(),
+                a.PhotoUrl, a.IsRepeatedError,
+                a.IsCcp, a.IsRisk)).ToList(),
             submission.TemplateSnapshot,
             submission.TemplateVersion);
 

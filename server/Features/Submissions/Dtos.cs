@@ -75,4 +75,6 @@ public sealed record AnswerDto(
     decimal? NumericValue,
     string? Note,
     string? PhotoUrl,
-    bool IsRepeatedError);
+    bool IsRepeatedError,
+    bool IsCcp,
+    bool IsRisk);

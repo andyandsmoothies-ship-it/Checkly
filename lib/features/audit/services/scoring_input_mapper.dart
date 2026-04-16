@@ -33,6 +33,7 @@ class ScoringInputMapper {
           isCcp: c.isCcp,
           isRisk: c.isRisk,
           inputType: c.inputType,
+          minusImpact: c.minusImpact,
         );
       }).toList();
 
@@ -46,6 +47,7 @@ class ScoringInputMapper {
             isCcp: c.isCcp,
             isRisk: c.isRisk,
             inputType: c.inputType,
+            minusImpact: c.minusImpact,
           );
         }).toList();
 
