@@ -162,6 +162,12 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("criteria_label");
 
+                    b.Property<bool>("IsCcp")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_ccp");
+
                     b.Property<bool>("IsFailure")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -173,6 +179,12 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("is_repeated_error");
+
+                    b.Property<bool>("IsRisk")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_risk");
 
                     b.Property<string>("Metadata")
                         .HasColumnType("jsonb")

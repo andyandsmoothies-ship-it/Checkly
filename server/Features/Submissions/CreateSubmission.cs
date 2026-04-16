@@ -161,6 +161,13 @@ public static class CreateSubmission
                 .Where(a => a.IsCcp || a.IsRisk)
                 .ToDictionary(a => a.CriteriaId);
 
+            // Build explicit override set — passed to Verify() to trigger RISK unconditionally
+            // regardless of answer value (mirrors Flutter's isAnswerRisk unconditional path).
+            var explicitRiskIds = request.Answers!
+                .Where(a => a.IsRisk)
+                .Select(a => a.CriteriaId)
+                .ToHashSet();
+
             foreach (var crit in criteria)
             {
                 if (answerOverrideMap.TryGetValue(crit.Id, out var ans))
@@ -171,7 +178,7 @@ public static class CreateSubmission
             }
 
             var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
-                scoringMode: scoringMode);
+                scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds);
 
             var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
             if (!verification.IsValid)
@@ -259,6 +266,8 @@ public static class CreateSubmission
                     Note = a.Note,
                     PhotoUrl = a.PhotoUrl,
                     IsRepeatedError = a.IsRepeatedError,
+                    IsCcp = a.IsCcp,   // Persist auditor CCP escalation override
+                    IsRisk = a.IsRisk, // Persist auditor RISK escalation override
                     CriteriaLabel = criteria.FirstOrDefault(c => c.Id == a.CriteriaId)?.Label,
                     CreatedAt = now,
                     UpdatedAt = now

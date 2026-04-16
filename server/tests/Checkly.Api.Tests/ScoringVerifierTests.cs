@@ -48,6 +48,7 @@ public class ScoringVerifierTests
             MakeAnswer(c2, numericValue: 1),
         };
 
+        // Act
         var result = _sut.Verify(28.57m, answers, groups, criteria);
         Assert.True(result.IsValid, $"Expected ~28.57 but got {result.ServerScore}");
     }
@@ -72,6 +73,7 @@ public class ScoringVerifierTests
             MakeAnswer(c2, numericValue: 1),
         };
 
+        // Act
         var result = _sut.Verify(0m, answers, groups, criteria);
         Assert.True(result.IsValid, $"Expected 0 but got {result.ServerScore}");
     }
@@ -91,6 +93,7 @@ public class ScoringVerifierTests
         // Pass/fail: no numeric value, but value="non_conform"
         var answers = new[] { MakeAnswer(riskId, numericValue: null, value: "non_conform") };
 
+        // Act
         var result = _sut.Verify(0m, answers, groups, criteria);
         Assert.True(result.IsValid, $"RISK non_conform should force score to 0, got {result.ServerScore}");
         Assert.Equal(0m, result.ServerScore);
@@ -116,6 +119,7 @@ public class ScoringVerifierTests
             MakeAnswer(normalId, numericValue: 0),
         };
 
+        // Act
         var result = _sut.Verify(0m, answers, groups, criteria);
         Assert.True(result.IsValid, $"CCP non_conform should zero section, got {result.ServerScore}");
         Assert.Equal(0m, result.ServerScore);
@@ -160,6 +164,7 @@ public class ScoringVerifierTests
             MakeAnswer(normalId, numericValue: 0),
         };
 
+        // Act
         var result = _sut.Verify(100m, answers, groups, criteria);
         Assert.True(result.IsValid,
             $"Gotcha 18 CCP normalization: expected 100 (Flutter parity) but server gave {result.ServerScore}");
@@ -177,6 +182,7 @@ public class ScoringVerifierTests
         // Pass/fail: value="conform" → no fault
         var answers = new[] { MakeAnswer(riskId, numericValue: null, value: "conform") };
 
+        // Act
         var result = _sut.Verify(100m, answers, groups, criteria);
         Assert.True(result.IsValid, $"conform should not trigger RISK, got {result.ServerScore}");
         Assert.Equal(100m, result.ServerScore);
@@ -208,6 +214,7 @@ public class ScoringVerifierTests
         };
         var answers = new[] { MakeAnswer(cId, numericValue: 3) };
 
+        // Act
         var result = _sut.Verify(40.00m, answers, groups, allCriteria);
         Assert.True(result.IsValid, $"Linear deduction: expected 40.00 but got {result.ServerScore}");
     }
@@ -237,6 +244,7 @@ public class ScoringVerifierTests
             RepeatedFaults = 2,
         }};
 
+        // Act
         var result = _sut.Verify(0.00m, answers, groups, allCriteria, progressiveRepeatPenalty: true);
         Assert.True(result.IsValid, $"C3 ON: expected 0.00 but got {result.ServerScore}");
     }
@@ -271,6 +279,7 @@ public class ScoringVerifierTests
         }};
 
         // progressive OFF → linear repeat penalty (not quadratic, not ignored)
+        // Act
         var result = _sut.Verify(40.00m, answers, groups, allCriteria, progressiveRepeatPenalty: false);
         Assert.True(result.IsValid, $"C3 linear repeat: expected 40.00 but got {result.ServerScore}");
     }
@@ -298,6 +307,7 @@ public class ScoringVerifierTests
             RepeatedFaults = 3,
         }};
 
+        // Act
         var result = _sut.Verify(50.00m, answers, groups, allCriteria, progressiveRepeatPenalty: true);
         Assert.True(result.IsValid, $"C3 capped: expected 50.00 but got {result.ServerScore}");
     }
@@ -328,6 +338,7 @@ public class ScoringVerifierTests
         };
         var answers = new[] { MakeAnswer(cId, numericValue: 3) };
 
+        // Act
         var result = _sut.Verify(70.00m, answers, groups, allCriteria);
         Assert.True(result.IsValid, $"C4 with minusImpact=1: expected 70.00 but got {result.ServerScore}");
     }
@@ -344,6 +355,7 @@ public class ScoringVerifierTests
         var allCriteria = new[] { MakeCriterion(cId, sectionId, points: 5m) };
         var answers = new[] { MakeAnswer(cId, numericValue: 1) };
 
+        // Act
         var result = _sut.Verify(0.00m, answers, groups, allCriteria);
         Assert.True(result.IsValid, $"C4 fallback: expected 0.00 but got {result.ServerScore}");
     }
@@ -375,6 +387,7 @@ public class ScoringVerifierTests
             MakeAnswer(c3, numericValue: 1, value: null)              // Fault (numeric > 0)
         };
 
+        // Act
         var result = _sut.Verify(100m, answers, groups, criteria);
 
         // This will fail (RED) compiling until FailedCriteriaIds is added to VerificationResult
@@ -399,6 +412,7 @@ public class ScoringVerifierTests
         // Even with a fault answer, survey mode should bypass scoring
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "non_conform") };
 
+        // Act
         var result = _sut.Verify(0m, answers, groups, criteria, scoringMode: "survey");
 
         // This will fail (RED) compiling until FailedCriteriaIds is added
@@ -429,6 +443,7 @@ public class ScoringVerifierTests
         // Some answer value
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "Option A") };
 
+        // Act
         var result = _sut.Verify(100m, answers, groups, criteria);
 
         // This will fail (RED) compiling until FailedCriteriaIds is added
@@ -463,6 +478,7 @@ public class ScoringVerifierTests
             new Answer { Id = Guid.NewGuid(), CriteriaId = c2, NumericValue = 0, RepeatedFaults = 0 },
         };
 
+        // Act
         var result = _sut.Verify(33.33m, answers, groups, criteria, scoringMode: "accumulation");
         Assert.True(result.IsValid, $"Accumulation repeated fault: expected 33.33 but got {result.ServerScore}");
     }
@@ -489,6 +505,7 @@ public class ScoringVerifierTests
         // No fault answers — perfect score = 100
         var answers = System.Array.Empty<Answer>();
 
+        // Act
         var result = _sut.Verify(100m, answers, groups, criteria);
         Assert.True(result.IsValid, $"PG1 pure audit: expected 100 but got {result.ServerScore}");
         Assert.NotNull(result.ServerScore);
@@ -512,6 +529,7 @@ public class ScoringVerifierTests
         var answers = System.Array.Empty<Answer>();
 
         // clientScore=0 is irrelevant — purity gate returns before comparison
+        // Act
         var result = _sut.Verify(0m, answers, groups, criteria);
         Assert.True(result.IsValid, "PG2: mixed audit should always be IsValid (gate bypasses comparison)");
         Assert.Null(result.ServerScore);
@@ -534,8 +552,102 @@ public class ScoringVerifierTests
         };
         var answers = System.Array.Empty<Answer>();
 
+        // Act
         var result = _sut.Verify(100m, answers, groups, criteria);
         Assert.True(result.IsValid, $"PG3: text with 0 points should not suppress score, got {result.ServerScore}");
         Assert.NotNull(result.ServerScore);
+    }
+    
+    // ====================================================================
+    // Answer-Level Overrides (RISK Trigger Tests)
+    // ====================================================================
+
+    [Fact]
+    public void AnswerOverride_IsRisk_ConformAnswer_TriggersRisk()
+    {
+        // Arrange
+        // RT1: Answer override UNCONDITIONALLY triggers Risk, even if the answer is "conform".
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 10m, isRisk: false) }; // Template IsRisk = false!
+        
+        var answers = new[] { MakeAnswer(c1, numericValue: null, value: "conform") }; // No fault!
+        var explicitRiskIds = new HashSet<Guid> { c1 }; // Auditor flagged this explicitly
+
+        // Act
+        // Since it's conform, HasFaults is false. But explicitRiskIds contains c1, so it MUST trigger.
+        var result = _sut.Verify(0m, answers, groups, criteria, explicitRiskAnswerIds: explicitRiskIds);
+        
+        // Assert
+        Assert.True(result.IsValid, "Mismatch: Flutter scores 0, server scored 100. Should be 0.");
+        Assert.Equal(0m, result.ServerScore);
+    }
+
+    [Fact]
+    public void TemplateRisk_ConformAnswer_DoesNotTriggerRisk()
+    {
+        // Arrange
+        // RT2: Standard template RISK + Conform answer → NOT triggered (regression guard).
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 10m, isRisk: true) }; // Template IsRisk
+        
+        var answers = new[] { MakeAnswer(c1, numericValue: null, value: "conform") }; // No fault
+        var explicitRiskIds = new HashSet<Guid>(); // No explicit override
+
+        // Act
+        var result = _sut.Verify(100m, answers, groups, criteria, explicitRiskAnswerIds: explicitRiskIds);
+        
+        // Assert
+        Assert.True(result.IsValid, "Should pass because Template risk needs a fault. Got 0.");
+        Assert.Equal(100m, result.ServerScore);
+    }
+
+    [Fact]
+    public void TemplateRisk_NonConformAnswer_TriggersRisk()
+    {
+        // Arrange
+        // RT3: Standard template RISK + NonConform answer → Triggers (regression guard).
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 10m, isRisk: true) }; // Template IsRisk
+        
+        var answers = new[] { MakeAnswer(c1, numericValue: null, value: "non_conform") }; // FAULT
+        var explicitRiskIds = new HashSet<Guid>(); // No explicit override
+
+        // Act
+        var result = _sut.Verify(0m, answers, groups, criteria, explicitRiskAnswerIds: explicitRiskIds);
+        
+        // Assert
+        Assert.True(result.IsValid, "Template risk + Fault should trigger 0 score.");
+        Assert.Equal(0m, result.ServerScore);
+    }
+
+    [Fact]
+    public void AnswerOverride_IsRisk_NonConformAnswer_TriggersRisk()
+    {
+        // Arrange
+        // RT4: Both Template Risk AND Explicit Override AND Fault. Belt and suspenders.
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 10m, isRisk: true) };
+        
+        var answers = new[] { MakeAnswer(c1, numericValue: null, value: "non_conform") };
+        var explicitRiskIds = new HashSet<Guid> { c1 };
+
+        // Act
+        var result = _sut.Verify(0m, answers, groups, criteria, explicitRiskAnswerIds: explicitRiskIds);
+        
+        // Assert
+        Assert.True(result.IsValid, "Combined triggers should fail the audit.");
+        Assert.Equal(0m, result.ServerScore);
     }
 }

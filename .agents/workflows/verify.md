@@ -44,13 +44,13 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 > **@@SCAN**: (1) Build passed with zero warnings? (2) IF failed -> transitioned to `/diagnose`?
 
-## Phase 3: Deliverable (Continuous Verification)
+## Phase 3: Deliverable (The Metrics Snapshot)
 
 | Step | Execution Contract |
 |---|---|
-| **Skill Refresh** | Re-scan `.agents/skills/` for code-review/security skills to detect slow-burn tech debt. |
-| **Artifact Form** | Create `walkthrough_[topic]_[time]_[ConversationID].md`. Include EDD Executed Evidence (terminal logs/test outputs). |
-| **Handoff Lock** | Write `handoff_[topic]_[ConversationID].md` (Phases + Gate State) before context dilution. |
+| **Coverage & Metrics Gen** | MANDATORY: Execute available tooling to calculate Test Coverage, Cyclomatic Complexity, File Sizing, and Mutation scores (e.g., `dotnet test /p:CollectCoverage=true`). The human relies on these metrics to govern the factory; do not skip them. |
+| **Artifact Form** | MANDATORY: Use `write_to_file` to save `verification_[topic]_[ConversationID].md` into the `brain/` directory. MUST INCLUDE: (1) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (2) Terminal log proof of the green test suite. |
+| **Yield & Handoff** | Yield to the user with the exact Next Command explicitly referencing `{Absolute_Path_to_verification_artifact.md}`. |
 
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:

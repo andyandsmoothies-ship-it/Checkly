@@ -63,8 +63,7 @@ Workflow: /analyze-epic | Track: C
 
 | Process | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `analysis_epic_[topic]_[ConversationID].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/analysis_epic_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `analysis_epic_[topic]_[ConversationID].md` to the `brain/` directory. NEVER output the Epic plan directly to the chat UI. |
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
 ## Phase 4: Slicing & Dispatch Loop
@@ -92,7 +91,7 @@ Workflow: /analyze-epic | Track: C
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Epic Verdict & Persistent path.
 > 2. The routing table of Slices (Track A/B) and their dependencies.
-> 3. The exact next workflow command the user should run.
+> 3. The exact next workflow command the user should run, which MUST explicitly reference the `{Absolute_Path_to_analysis_epic.md}` instead of pasting contents.
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

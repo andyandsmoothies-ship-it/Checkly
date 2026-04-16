@@ -60,9 +60,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Process | Execution Contract |
 |---|---|
-| **High-Level Design Document** | Generate `implementation_plan_[topic]_[ConversationID].md` (IsArtifact: True). MANDATORY: This must be a High-Level Design Document (What & Why), NOT a 1,000-line monolithic tactical plan. Keep it highly readable for humans. The actual step-by-step code execution will be generated later by the Builder in `/implement`. |
+| **High-Level Design Document** | MANDATORY: Use `write_to_file` to generate `implementation_plan_[topic]_[ConversationID].md` into the `brain/` directory. NEVER dump the tactical plan directly into the chat UI. Keep the document highly readable for human review before execution. |
 | **Artifact Generation** | The final plan MUST contain explicit *Verifiable Goals* (e.g., 'Write X test -> Verify Red -> Implement Y -> Verify Green') rather than just vague developer instructions. |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/implementation_plan_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
 ## Phase 4: Route Implementation (The ATDD Gate)
 
 > [!CAUTION]
@@ -82,8 +81,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > 
 > **YOUR NEXT COMMAND & CONCURRENCY:**
 > - **Concurrency Strategy**: If you generated multiple Micro-Slices, explicitly declare which slices are `[BLOCKING]` (must run alone/first) and which are `[PARALLEL]` (can be dispatched concurrently in separate AI windows to save user waiting time).
-> - **If Track B2 (High Risk):** Switch to Sentinel QA and type: `@[/atdd] this implementation_plan_[topic]_[ConversationID].md`
-> - **If Track B1 (Low Risk):** Switch to Forge Builder and type: `@[/implement] this implementation_plan_[topic]_[ConversationID].md`
+> - **If Track B2 (High Risk):** Switch to Sentinel QA and type: `@[/atdd] Execute based on this exact plan: {Absolute_Path_to_implementation_plan.md}`
+> - **If Track B1 (Low Risk):** Switch to Forge Builder and type: `@[/implement] Execute based on this exact plan: {Absolute_Path_to_implementation_plan.md}`
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]

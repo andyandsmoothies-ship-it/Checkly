@@ -48,12 +48,17 @@ public sealed class ScoringVerifier
         IReadOnlyList<Group> groups,
         IReadOnlyList<Criterion> criteria,
         bool progressiveRepeatPenalty = false,
-        string scoringMode = "penalty")
+        string scoringMode = "penalty",
+        HashSet<Guid>? explicitRiskAnswerIds = null)
     {
-        // Check for RISK — any RISK criteria with faults → total score = 0
-        var riskTriggered = criteria
-            .Where(c => c.IsRisk)
-            .Any(c => HasFaults(c, answers));
+        // Check for RISK — two paths mirroring Flutter scoring_engine.dart lines 57-62:
+        //   1. Template-level RISK (c.IsRisk=true from template) → requires a fault (HasFaults)
+        //   2. Answer-level override (auditor explicitly set isRisk=true) → unconditional trigger
+        var riskTriggered = criteria.Any(c =>
+        {
+            var isExplicitOverride = explicitRiskAnswerIds?.Contains(c.Id) ?? false;
+            return (c.IsRisk || isExplicitOverride) && (isExplicitOverride || HasFaults(c, answers));
+        });
 
         if (riskTriggered)
         {

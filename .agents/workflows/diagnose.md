@@ -33,11 +33,12 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 | Vector | Execution Contract |
 |---|---|
+| **Log Extraction** | **Script-First**: Check if `.agents/scripts/collect_logs.py` exists. If so, execute it first to aggregate trace logs physically into `brain/` before making hypotheses. |
 | **Context Trace** | IF (stack_trace == missing) THEN MANDATORY: Request trace from user. PROHIBITED: Debugging blind from static code. |
-| **Targeting** | MANDATORY: Use `view_file` targeted lines or `grep_search` targeted functions. PROHIBITED: Reading entire long files (Attention Bias failure). IF symptom crosses API/DTO/DB boundary: `grep_search` BOTH `lib/` and `server/` — the bug may live on the opposite side of the call. |
+| **Targeting** | MANDATORY: Narrow `view_file` or `grep_search`. PROHIBITED: full files reading. |
 | **Formal Reasoning**| MANDATORY: 1. `Premises` and `Execution Trace`. 2. Generate 3-5 explicit Hypotheses (with Evidence For/Against). 3. You MUST log these hypotheses strictly to `.agents/tmp/DEBUG.md` to prevent context sliding. |
 
-> **@@SCAN**: (1) Exact file/line identified? (2) Were BOTH lib/ and server/ searched? (3) Are 3-5 hypotheses explicitly tracked in `.agents/tmp/DEBUG.md`?
+> **@@SCAN**: (1) Exact file/line identified? (2) Client & server both searched? (3) Are 3-5 hypotheses explicit in `.agents/tmp/DEBUG.md`?
 
 ## Phase 2: Skill & Rule Discovery
 
@@ -62,7 +63,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 | Step | Execution Contract |
 |---|---|
-| **Gotcha Protocol**| MANDATORY: Append `### Gotcha Addition Proposal` to report. IF (project-specific logic) THEN Propose bullet point for `GEMINI.override.md`. ELSE -> State "No new gotcha detected". |
+| **Gotcha Protocol**| MANDATORY: Propose edits to `GEMINI.override.md` if a project-specific rule caused the bug. ELSE: State "No new gotcha". |
 | **Routing** | MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] @[/implement] brain/.../failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD. |
 
 ### Final Generation Mandate (Suffix)
@@ -79,6 +80,6 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

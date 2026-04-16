@@ -26,4 +26,13 @@
 - **Rule (STRICT):** Any scoring-verification logic change to `FinalizeSubmission.cs` MUST be simultaneously mirrored in `CreateSubmission.cs`. These two handlers share the same verification contract. Always grep for the other file when modifying either one.
 - **Canary Search:** After any change to `scorer.Verify(` in one handler, run `grep_search "scorer.Verify("` across `server/Features/Submissions/` and verify ALL call sites received the same treatment.
 
+## ScoringVerifier — Answer Override vs Template RISK (Two-Path Contract)
 
+- **Gotcha 26 (SR): Answer-level RISK override must bypass `HasFaults`.**
+  Template-level `IsRisk=true` only triggers RISK when the answer has a fault (`HasFaults` returns true).
+  Answer-level override (`AnswerInput.IsRisk=true`) must trigger UNCONDITIONALLY — even when answer `Value` is 'conform'.
+- **Root cause:** An auditor may escalate a 'conform' answer for offline compliance reasons. Flutter respects this (`isAnswerRisk` is checked before `_hasFault`). The server must match.
+- **Implementation:** Pass `HashSet<Guid>? explicitRiskAnswerIds` to `Verify()`.
+  RISK predicate: `(c.IsRisk || isExplicit) && (isExplicit || HasFaults(c, answers))`.
+- **DO NOT simplify** back to `.Where(c => c.IsRisk).Any(c => HasFaults(...))` — this re-introduces the 400 bug (RT1 regression).
+- **Rule (STRICT):** Callers (`CreateSubmission`, `FinalizeSubmission`) MUST extract `explicitRiskIds` from `request.Answers.Where(a => a.IsRisk)` and pass it to every `scorer.Verify()` call site.

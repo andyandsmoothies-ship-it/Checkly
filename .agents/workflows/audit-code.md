@@ -19,6 +19,8 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 
 ## Phase 2: Code Quality Scan
 
+> [!TIP]
+> **Script-First Mandate**: Do NOT manually hunt for dead code or formatting issues. First, check if a script like `.agents/scripts/audit_dead_code.py` exists. If yes: execute it via `run_command`, `view_file` the output, and record the results instantly.
 | Audit Vector | Execution Contract |
 |---|---|
 | **Dead Code (`🔴`)** | Scan for unreachable branches, abandoned functions, commented logic. Flag for immediate deletion. |

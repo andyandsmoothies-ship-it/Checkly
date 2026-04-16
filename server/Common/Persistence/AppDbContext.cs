@@ -316,6 +316,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.PhotoUrl).HasColumnName("photo_url");
             e.Property(x => x.PhotoMetadata).HasColumnName("photo_metadata").HasColumnType("jsonb");
             e.Property(x => x.IsRepeatedError).HasColumnName("is_repeated_error").HasDefaultValue(false);
+            e.Property(x => x.IsCcp).HasColumnName("is_ccp").HasDefaultValue(false);
+            e.Property(x => x.IsRisk).HasColumnName("is_risk").HasDefaultValue(false);
             e.Property(x => x.IsFailure).HasColumnName("is_failure").HasDefaultValue(false);
             e.Property(x => x.RepeatedFaults).HasColumnName("repeated_faults").HasDefaultValue(0);
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");

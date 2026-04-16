@@ -10,15 +10,15 @@ This workflow executes a deterministic, zero-hallucination UX audit on the Flutt
 1. Ask the user: *"Which module or router map are we checking today?"* If they don't know, ask for the main `router.dart` file.
 2. Analyze the routing map and divide the application into logical "Chunks" (e.g., (1) Login Flow, (2) Admin Flow).
 3. Present the Chunks to the user and ask them to confirm starting with Chunk 1. Do NOT proceed until they confirm.
-4. Load the UX Copywriting skill (`view_file` on `C:\Users\HP\Documents\GitHub\Checkly\.agents\skills\ux-copywriting\SKILL.md`).
+4. Load the UX Copywriting skill (`view_file` on `.agents/skills/ux-copywriting/SKILL.md`).
 
 ## Phase 2: Deterministic Extraction
 // turbo
-1. Run the extraction script: `python .agents/scripts/scrape_strings.py --dir lib/features --out .agents/tmp/ui_strings_export.json` (Run from `C:\Users\HP\Documents\GitHub\Checkly`).
-2. Verify the output file `ui_strings_export.json` exists in `.agents/tmp/`.
+1. **Script-First**: Run `python .agents/scripts/scrape_strings.py --dir [target_dir] --out brain/[ConversationID]/strings.json` from the project root.
+2. Verify the output file exists in your `brain/` directory before proceeding.
 
 ## Phase 3: AI Semantic Audit
-1. Read the output JSON: `view_file` on `.agents/tmp/ui_strings_export.json`.
+1. Read the extracted output: `view_file` on `brain/[ConversationID]/strings.json`.
 2. Evaluate the extracted strings against the 3 rules in the `UX Copywriting` skill.
 3. Identify instances of Blaming, Developer Jargon, and weak CTAs.
 

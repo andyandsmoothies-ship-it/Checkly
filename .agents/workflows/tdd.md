@@ -80,9 +80,9 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 > **@@SCAN**: (1) Tests physically executed? (2) Failing purely for missing implementation (Valid Red)?
 
 ## Phase 4: Handoff
-- **Requirement**: Output the failed test execution log securely.
-- **Action**: Create an `executed_tests_[topic]_[ConversationID].md` artifact containing the raw terminal output proving the Valid Red test failures.
-- **Action**: Create a `walkthrough_[topic]_[ConversationID].md` declaring the scope of the tests written along with the exact commands the Builder should use to run them.
+- **Requirement**: Output the failed test execution log securely via file paths, NEVER via chat UI.
+- **Action**: MANDATORY: Use `write_to_file` to create an `executed_tests_[topic]_[ConversationID].md` artifact in the `brain/` directory containing the raw terminal output proving the Valid Red test failures.
+- **Action**: MANDATORY: Use `write_to_file` to create a `walkthrough_[topic]_[ConversationID].md` in the `brain/` directory declaring the scope of the tests written along with the exact commands the Builder should use to run them.
 - **Final Message**: You MUST output the exact block below to the user so they can pivot back to the Builder Agent:
 
 ## 🚦 User Handoff & Next Steps
@@ -91,7 +91,7 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 > **Outputs Created:** Internal Unit Tests (RED) + `executed_tests_[topic]_[ConversationID].md`.
 >
 > **YOUR NEXT COMMAND:** 
-> - Return to your suspended chat with Forge Builder and type: `Here is the result of tdd, check and continue.`
+> - Return to your suspended chat with Forge Builder and type: `Here is the result of tdd from this artifact: {Absolute_Path_to_executed_tests.md}. Go.`
 
 ---
 

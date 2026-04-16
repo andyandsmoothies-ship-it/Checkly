@@ -29,7 +29,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 > **@@SCAN**: (1) Matrix strictly tabulated? (2) Baseline declared? (3) Final mathematical winner identified?
 
 ## Phase 4: Architectural Decision Record (ADR) Generation
-- [ ] **Generate ADR**: Produce a final artifact named `decision_record_[topic]_[ConversationID].md` (IsArtifact: True).
+- [ ] **Generate ADR**: MANDATORY: Use `write_to_file` to save `decision_record_[topic]_[ConversationID].md` to the `brain/` directory. NEVER output the ADR directly to the chat UI.
 - [ ] **Payload Schema**: The output MUST include:
     1. `[ORIGIN_IDEA]`: The immutable core business goal, preserved at the top.
     2. `<latent_space_scratchpad>` for internal debate.
@@ -38,7 +38,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
     5. The Pugh Decision Matrix.
     6. The Final Verdict (The mathematical winner).
     6. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact).
-    7. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Strict Implementation Constraints & Human Reminders (critical context the next Agent must not ignore), (3) Execution Slices if applicable, (4) The exact next workflow command the user should run (ensure the command prompt mentions the strict constraints).
+    7. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Strict Constraints (critical context the next Agent must not ignore), (3) Execution Slices if applicable, (4) The exact next workflow command, which MUST explicitly reference `{Absolute_Path_to_decision_record.md}` instead of pasting contents.
 - [ ] **Persist Copy**: Copy the deliverable to `.agents/tmp/research/decision_record_[topic]_[ConversationID].md` using the terminal. **MANDATORY: You must explicitly verify the file exists at the destination path (e.g. via `dir` or `list_dir`) before yielding control.**
 - [ ] **Verification**: 
 > **Script Verification Gate (MANDATORY)**:

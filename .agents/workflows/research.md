@@ -39,8 +39,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `research_[topic]_[ConversationID].md` (IsArtifact: True). |
-| **Persist Copy** | Copy deliverable to `.agents/tmp/research/research_[topic]_[ConversationID].md` via terminal. **MANDATORY: You must explicitly verify the file exists at the destination path before yielding control.** |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[topic]_[ConversationID].md` to the `brain/` directory. NEVER output the research directly to the chat UI. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 > **Payload Schema:** Your generated `research_[topic]_[ConversationID].md` MUST INCLUDE: 
@@ -53,11 +52,11 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Verdict (Viable/Reject) & Persistent path.
 > 2. Effort Sizing (Track C / Track A/B) and Concurrency Strategy.
-> 3. The exact next workflow command the user should run (e.g. `/analyze-epic`).
+> 3. The exact next workflow command the user should run, which MUST explicitly reference `{Absolute_Path_to_research_artifact.md}` instead of pasting contents.
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > - `Code 0`: *"Workflow complete. Tell user to pass artifact to next agent."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

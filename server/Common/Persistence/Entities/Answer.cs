@@ -18,6 +18,20 @@ public sealed class Answer
     public bool IsRepeatedError { get; set; }
 
     /// <summary>
+    /// Auditor-applied CCP escalation override at answer time.
+    /// Persisted for back-office audit trail — explains why a section scored 0
+    /// even if the template criterion was not originally flagged as CCP.
+    /// </summary>
+    public bool IsCcp { get; set; }
+
+    /// <summary>
+    /// Auditor-applied RISK escalation override at answer time.
+    /// Persisted for back-office audit trail — explains why total score was forced to 0
+    /// even if the answer value is 'conform'.
+    /// </summary>
+    public bool IsRisk { get; set; }
+
+    /// <summary>
     /// Server-derived semantic failure flag. Set by FinalizeSubmission using ScoringVerifier.FailedCriteriaIds.
     /// Analytics-only — excluded from AnswerDto and AnswerInput (never sent by Flutter client).
     /// </summary>

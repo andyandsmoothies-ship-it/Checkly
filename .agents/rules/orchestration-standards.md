@@ -50,6 +50,11 @@ Before ANY workflow response involving analysis, design, or implementation:
 - **Rule:** Every generated artifact MUST embed a "Strict Implementation Constraints & Human Reminders" section. 
 - **Action:** Do not expect the user to manually carry constraints. The artifact itself must carry all chat-log context, micro-decisions, and "Gotchas" to the next agent.
 
+## The "Pull Context" Mandate (JIT Reading)
+**To cure AI Attention Collapse and context bloat:**
+- **Rule:** Workflows must NEVER "Push" massive raw code into prompts. PROHIBITED from receiving commands like "Read all these files".
+- **Action:** Agents MUST enforce Just-In-Time (JIT) dependency loading. You are required to use narrow `view_file` or `grep_search` ONLY at the exact macro step that requires that specific context.
+
 ## Terminal File System Protocol (STRICT)
 When writing or moving files via terminal commands (e.g., `copy`, `move`):
 1. **Idempotent Directories**: Pre-create target directories to prevent silent failures (e.g., `if not exist [dir] mkdir [dir]`).

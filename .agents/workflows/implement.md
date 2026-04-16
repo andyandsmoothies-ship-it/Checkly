@@ -71,17 +71,17 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 > **Anti-Bias Protocol:** Builder CANNOT write own tests.
 | Step | Execution Contract |
 |---|---|
-| **Artifact Create**| Export `test_contracts_[topic]_[ConversationID].md`. MANDATORY: Include Dependency Context Array (List all imports/services for mocking). |
+| **Artifact Create**| MANDATORY: Use `write_to_file` to save `test_contracts_[topic]_[ConversationID].md` to the brain directory. NEVER output the test contract directly to the chat. Include Dependency Context Array. |
 | **Contract Format**| Strict Template: `ID`, `Exact Text/Key` (with line #), `State Matrix` (Happy/Error/Empty), `Private Method Access`, `Why RED now`. |
 | **Execution Lock** | PROHIBITED: Entering Phase 3 without explicit TDD execution. The *Marking Your Own Homework Paradox* applies universally. MANDATORY YIELD: You MUST yield to the QA persona (@Sentinel) to write tests. Output the exact block below -> YIELD. |
 
 ## 🚦 Phase 2.5 Handoff (Yield)
 
 > [!IMPORTANT]
-> **Outputs Created:** Internal component plan.
+> **Outputs Created:** Internal component plan AND `test_contracts_[topic]_[ConversationID].md`.
 >
 > **YOUR NEXT COMMAND:** 
-> - Switch to Sentinel QA and type: `@[/tdd] The Builder proposes these classes... (describe or paste plan)`
+> - Switch to Sentinel QA and type: `@[/tdd] Execute test authoring based on this exact test contract: {Absolute_Path_to_test_contracts.md}`
 > - Once `/tdd` is complete, return here and type: `Here is the result of tdd. Go.`
 
 ## Phase 3: Coding
