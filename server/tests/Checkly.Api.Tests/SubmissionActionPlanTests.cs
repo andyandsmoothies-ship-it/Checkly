@@ -165,7 +165,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 60m,
+            templateId, storeId, clientScore = 90m,
             answers, idempotencyKey = Guid.NewGuid().ToString()
         });
 
@@ -196,7 +196,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 0m,
+            templateId, storeId, clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = Guid.NewGuid().ToString()
         });
@@ -227,7 +227,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 0m,
+            templateId, storeId, clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = Guid.NewGuid().ToString()
         });
@@ -295,7 +295,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var payload = new
         {
-            templateId, storeId, clientScore = 0m,
+            templateId, storeId, clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = key
         };
@@ -635,7 +635,7 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 0m,
+            templateId, storeId, clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = Guid.NewGuid().ToString()
         });

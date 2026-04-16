@@ -153,7 +153,7 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         
         var payload = new
         {
-            ClientScore = 0m,
+            ClientScore = 90m,
             SectionScores = $"{{\"G1\":{{\"score\":0,\"maxScore\":10}}}}",
             Answers = new[]
             {
