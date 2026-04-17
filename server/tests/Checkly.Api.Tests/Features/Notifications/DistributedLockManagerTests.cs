@@ -221,7 +221,7 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
 
         // Act & Assert
         await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-            lockManager.TryExecuteInLockAsync(db, invalidScope, _ => Task.CompletedTask, CancellationToken.None));
+            lockManager.TryExecuteInLockAsync(db, invalidScope!, _ => Task.CompletedTask, CancellationToken.None));
     }
 
     // ── Gap2: CancellationRequested Throws ───────────────────────────────────

@@ -33,3 +33,18 @@ seedDb.Submissions.Add(new Submission { TemplateId = null, TemplateTitle = "Test
 **Problem:** The `PbacDictionaryCache` starts with `IsReady = false`. When `PbacCacheListenerService` tries to initialize in the background before `EnsureDatabaseCreated()` completes, it hits the not-yet-migrated DB and fails with `SqlState: 42P01` (table does not exist). All subsequent requests get `403 Forbidden` because `CapabilityAuthorizationHandler` denies all requests when `IsReady = false`.
 
 **Fix:** Always run tests that require PBAC as part of the full `SubmissionActionPlanTests` class (using `IClassFixture<TestWebApplicationFactory>`), NOT in isolation. The class constructor calls `EnsureDatabaseCreated()` which migrates the DB AND initializes the PBAC cache synchronously before any test runs. Running a single test in isolation skips this setup.
+
+
+## Parity Shield Governance Rule (MANDATORY)
+
+**Rule**: You CANNOT fix a scoring bug by modifying production code alone.
+
+**Required sequence:**
+1. Open `test/scoring_test_vectors.json`
+2. Add a new vector that reproduces the bug
+3. Run `flutter test test/scoring_engine_test.dart` -> must be RED
+4. Run `dotnet test` filtering `ScoringVerifierJsonTests` -> must be RED
+5. Fix production code (`scoring_engine.dart` and/or `ScoringVerifier.cs`)
+6. Both must be GREEN before the fix is considered complete
+
+**Violation**: Adding a test ONLY in ScoringVerifierTests.cs manual section or ONLY in Dart inline is a governance violation.

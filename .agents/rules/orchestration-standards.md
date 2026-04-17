@@ -36,6 +36,7 @@ Before ANY workflow response involving analysis, design, or implementation:
 - **Why**: This guarantees transparency. The user can see exactly what is being modified line-by-line and safely comment out (`#`) any specific exceptions before running the script.
 
 ## SDLC Artifact Storage
+- **Workspace Visibility Mandate (STRICT)**: The `brain/` folder is invisible in the user's IDE. You MUST copy ALL generated research, plans, and walkthroughs into `.agents/tmp/` (or `docs/`) before workflow completion.
 - **Generate Default**: Always create ALL artifacts in the `brain/` folder first.
 - **Copy High-Value**: Explicitly copy ADRs, Test Contracts, Audits, and final `implementation_plan.md` to `docs/` after creation.
 - **First-Class Plans**: Implementation plans are the memory of the project. Once approved, you MUST copy `implementation_plan_[topic].md` to `docs/architecture/plans/`.
@@ -49,6 +50,11 @@ Before ANY workflow response involving analysis, design, or implementation:
 **Artifacts must be self-contained memory blocks.**
 - **Rule:** Every generated artifact MUST embed a "Strict Implementation Constraints & Human Reminders" section. 
 - **Action:** Do not expect the user to manually carry constraints. The artifact itself must carry all chat-log context, micro-decisions, and "Gotchas" to the next agent.
+
+## The "Anti-Attention Collapse" Mandate (Micro-Slicing)
+**To protect against context degradation during execution:**
+- **Rule:** If a task requires modifying more than 2 files or spans multiple architectural boundaries (e.g., Frontend + Backend), you are STRICTLY PROHIBITED from executing it in a single prompt cycle.
+- **Action:** You MUST slice the implementation into Micro-Steps. Execute ONE file or boundary, run the compiler/tests to verify, and explicitly YIELD to the user before starting the next file.
 
 ## The "Pull Context" Mandate (JIT Reading)
 **To cure AI Attention Collapse and context bloat:**

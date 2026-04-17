@@ -306,6 +306,10 @@ public sealed class ScoringVerifier
         // Pass/fail mode: non_conform → fault
         if (string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase))
             return true;
+        // Scale mode: numericValue IS earned points (higher = better).
+        // A score of 0 earned = fault. Mirror of Flutter ScoringEngine._kScaleType check.
+        if (string.Equals(criterion.InputType, "scale", StringComparison.OrdinalIgnoreCase))
+            return (answer.NumericValue ?? 0) == 0;
         // Numeric mode (Value is null): numericValue > 0 → fault
         return (answer.NumericValue ?? 0) > 0;
     }

@@ -8,7 +8,7 @@
     "vectors": [
         {
             "id": "V01_weighted_no_faults",
-            "description": "Weighted audit — no faults → 100%",
+            "description": "Weighted audit \u00e2\u20ac\u201d no faults \u00e2\u2020\u2019 100%",
             "sections": [
                 {
                     "id": "s1",
@@ -47,11 +47,11 @@
                 }
             ],
             "answers": [],
-            "expectedScore": 100.00
+            "expectedScore": 100.0
         },
         {
             "id": "V02_weighted_partial_faults",
-            "description": "Weighted audit — partial faults → deduction",
+            "description": "Weighted audit \u00e2\u20ac\u201d partial faults \u00e2\u2020\u2019 deduction",
             "sections": [
                 {
                     "id": "s1",
@@ -82,11 +82,11 @@
                     "value": null
                 }
             ],
-            "expectedScore": 37.50
+            "expectedScore": 37.5
         },
         {
             "id": "V03_ccp_triggered",
-            "description": "CCP triggered → section A excluded from denominator, section B = 100%, total = 100%",
+            "description": "CCP triggered \u00e2\u2020\u2019 section A excluded from denominator, section B = 100%, total = 100%",
             "sections": [
                 {
                     "id": "s1",
@@ -131,11 +131,11 @@
                     "value": null
                 }
             ],
-            "expectedScore": 100.00
+            "expectedScore": 100.0
         },
         {
             "id": "V04_risk_triggered",
-            "description": "RISK triggered → total = 0%",
+            "description": "RISK triggered \u00e2\u2020\u2019 total = 0%",
             "sections": [
                 {
                     "id": "s1",
@@ -166,11 +166,11 @@
                     "value": null
                 }
             ],
-            "expectedScore": 0.00
+            "expectedScore": 0.0
         },
         {
             "id": "V05_checklist_fallback",
-            "description": "Checklist mode (no weights) → 100 - deductions",
+            "description": "Checklist mode (no weights) \u00e2\u2020\u2019 100 - deductions",
             "sections": [
                 {
                     "id": "s1",
@@ -201,7 +201,7 @@
                     "value": null
                 }
             ],
-            "expectedScore": 97.00
+            "expectedScore": 97.0
         },
         {
             "id": "V06_max_deduction_cap",
@@ -245,7 +245,7 @@
         },
         {
             "id": "V07_non_conform_triggers_risk",
-            "description": "Pass/Fail non_conform on RISK criterion → 0%",
+            "description": "Pass/Fail non_conform on RISK criterion \u00e2\u2020\u2019 0%",
             "sections": [
                 {
                     "id": "s1",
@@ -269,11 +269,11 @@
                     "value": "non_conform"
                 }
             ],
-            "expectedScore": 0.00
+            "expectedScore": 0.0
         },
         {
             "id": "V08_conform_no_fault",
-            "description": "Pass/Fail conform on RISK criterion → 100% (no fault)",
+            "description": "Pass/Fail conform on RISK criterion \u00e2\u2020\u2019 100% (no fault)",
             "sections": [
                 {
                     "id": "s1",
@@ -297,7 +297,7 @@
                     "value": "conform"
                 }
             ],
-            "expectedScore": 100.00
+            "expectedScore": 100.0
         },
         {
             "id": "V09_empty_section_skipped",
@@ -325,11 +325,11 @@
                 }
             ],
             "answers": [],
-            "expectedScore": 100.00
+            "expectedScore": 100.0
         },
         {
             "id": "V10_multi_fault_multiplier",
-            "description": "2 faults × 3 points = 6 deduction → score = 0 (weighted 100%)",
+            "description": "2 faults \u00c3\u2014 3 points = 6 deduction \u00e2\u2020\u2019 score = 0 (weighted 100%)",
             "sections": [
                 {
                     "id": "s1",
@@ -353,7 +353,7 @@
                     "value": null
                 }
             ],
-            "expectedScore": 0.00
+            "expectedScore": 0.0
         },
         {
             "id": "V11_subsection_cap",
@@ -416,6 +416,785 @@
                 }
             ],
             "expectedScore": 44.44
+        },
+        {
+            "id": "V12_accumulation_partial",
+            "description": "Accumulation \u2014 2 of 3 correct \u2192 66.67%",
+            "scoringMode": "accumulation",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 0,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c3",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 0,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 0,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c3",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 66.67
+        },
+        {
+            "id": "V13_accumulation_ccp_fail",
+            "description": "Accumulation + CCP fail \u2192 section earned = 0",
+            "scoringMode": "accumulation",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 0,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": true,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 0,
+                    "value": null
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "V14_checklist_raw_deduction",
+            "description": "Checklist mode \u2014 4/5 correct \u2192 80%",
+            "scoringMode": "checklist",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 0,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 4,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 4,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c3",
+                            "groupId": "s1",
+                            "pointsWeight": 4,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c4",
+                            "groupId": "s1",
+                            "pointsWeight": 4,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c5",
+                            "groupId": "s1",
+                            "pointsWeight": 4,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 0,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 0,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c3",
+                    "numericValue": 0,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c4",
+                    "numericValue": 0,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c5",
+                    "numericValue": 5,
+                    "value": null
+                }
+            ],
+            "expectedScore": 80.0
+        },
+        {
+            "id": "V16_accumulation_scale_partial",
+            "description": "Accumulation + Scale partial credit \u2192 75%",
+            "scoringMode": "accumulation",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "scale"
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "scale"
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 5,
+                    "value": "Good"
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 10,
+                    "value": "Excellent"
+                }
+            ],
+            "expectedScore": 75.0
+        },
+        {
+            "id": "V17_scale_risk_passing",
+            "description": "Scale + is_risk with passing score \u2192 RISK NOT triggered",
+            "scoringMode": "accumulation",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": true,
+                            "inputType": "scale"
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "scale"
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 7,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 10,
+                    "value": null
+                }
+            ],
+            "expectedScore": 85.0
+        },
+        {
+            "id": "V18_scale_risk_zero",
+            "description": "Scale + is_risk with zero score \u2192 RISK triggered \u2192 0%",
+            "scoringMode": "accumulation",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": true,
+                            "inputType": "scale"
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "scale"
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 0,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 10,
+                    "value": null
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "V19_pass_fail_risk_non_conform",
+            "description": "Pass_fail + is_risk + Non-Conform \u2192 RISK triggered \u2192 0%",
+            "scoringMode": "accumulation",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 0,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": true,
+                            "inputType": "pass_fail"
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "pass_fail"
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": null,
+                    "value": "non_conform"
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": null,
+                    "value": "conform"
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "PG1_pure_audit",
+            "description": "Pure audit \u2014 all pass_fail with points \u2014 score calculated (not null)",
+            "scoringMode": "penalty",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "pass_fail"
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "numeric"
+                        }
+                    ]
+                }
+            ],
+            "answers": [],
+            "expectedScore": 100.0
+        },
+        {
+            "id": "PG2_mixed_audit",
+            "description": "Mixed audit \u2014 one zero-point pass_fail \u2014 totalScore is null",
+            "scoringMode": "penalty",
+            "isPurityGateTriggered": true,
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "pass_fail"
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 0,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "pass_fail"
+                        }
+                    ]
+                }
+            ],
+            "answers": [],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "PG3_metadata_transparent",
+            "description": "Text metadata field with 0 points is transparent \u2014 score is not null",
+            "scoringMode": "penalty",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "pass_fail"
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 0,
+                            "isCcp": false,
+                            "isRisk": false,
+                            "inputType": "text"
+                        }
+                    ]
+                }
+            ],
+            "answers": [],
+            "expectedScore": 100.0
+        },
+        {
+            "id": "C3a_linear_repeat_off",
+            "description": "C3: Progressive repeat OFF uses linear deduction",
+            "progressiveRepeatPenalty": false,
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 2,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 8,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 3,
+                    "repeatedFaults": 0
+                }
+            ],
+            "expectedScore": 40.0
+        },
+        {
+            "id": "C3b_quadratic_repeat_on",
+            "description": "C3: Progressive repeat ON uses quadratic deduction",
+            "progressiveRepeatPenalty": true,
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 2,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 8,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "repeatedFaults": 2
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "C3c_linear_repeat_with_faults",
+            "description": "C3: Linear repeat applied when progressive OFF and repeatedFaults > 0",
+            "progressiveRepeatPenalty": false,
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 2,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 8,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "repeatedFaults": 2
+                }
+            ],
+            "expectedScore": 40.0
+        },
+        {
+            "id": "C3d_progressive_capped",
+            "description": "C3: Progressive repeat capped at MaxDeduction",
+            "progressiveRepeatPenalty": true,
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": 5,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 2,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 8,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "repeatedFaults": 3
+                }
+            ],
+            "expectedScore": 50.0
+        },
+        {
+            "id": "C4a_minus_impact_override",
+            "description": "C4: Criterion with MinusImpact overrides PointsWeight",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "minusImpact": 1,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 3
+                }
+            ],
+            "expectedScore": 70.0
+        },
+        {
+            "id": "C4b_no_minus_impact_fallback",
+            "description": "C4: No MinusImpact falls back to PointsWeight",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "RT1_answer_override_conform",
+            "description": "AnswerOverride IsRisk ConformAnswer TriggersRisk",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isRisk": false,
+                            "isCcp": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "value": "conform",
+                    "isExplicitRiskOverride": true
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "RT2_template_risk_conform",
+            "description": "TemplateRisk ConformAnswer DoesNotTriggerRisk",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isRisk": true,
+                            "isCcp": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "value": "conform",
+                    "isExplicitRiskOverride": false
+                }
+            ],
+            "expectedScore": 100.0
+        },
+        {
+            "id": "RT3_template_risk_nonconform",
+            "description": "TemplateRisk NonConformAnswer TriggersRisk",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isRisk": true,
+                            "isCcp": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "value": "non_conform"
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "RT4_both_risk_nonconform",
+            "description": "AnswerOverride IsRisk NonConformAnswer TriggersRisk",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isRisk": true,
+                            "isCcp": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "value": "non_conform",
+                    "isExplicitRiskOverride": true
+                }
+            ],
+            "expectedScore": 0.0
+        },
+        {
+            "id": "Accum_RF1",
+            "description": "Accumulation RepeatedFault Denies Points Even With Zero Base Faults",
+            "scoringMode": "accumulation",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 10,
+                            "isRisk": false,
+                            "isCcp": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 5,
+                            "isRisk": false,
+                            "isCcp": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 0,
+                    "repeatedFaults": 1
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 0,
+                    "repeatedFaults": 0
+                }
+            ],
+            "expectedScore": 33.33
         }
     ]
 }

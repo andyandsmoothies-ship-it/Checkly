@@ -365,6 +365,53 @@ def check_forensic_evidence(session_dir: str) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# CHECK 5 — Workspace Visibility Mandate
+# ─────────────────────────────────────────────────────────────────────────────
+def check_workspace_visibility(session_dir: str) -> None:
+    print("\n[CHECK 5] Scanning for Workspace Visibility (Copy Mandate)...")
+    
+    active_artifacts = get_active_artifacts(session_dir)
+    
+    deliverables = [
+        f for f in active_artifacts
+        if not os.path.basename(f).lower().startswith("task")
+    ]
+
+    if not deliverables:
+        print("       ✅ No deliverables found needing workspace visibility.")
+        return
+
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    
+    all_visible = True
+    for file_path in deliverables:
+        name = os.path.basename(file_path)
+        
+        def find_in_dir(directory, filename):
+            if not os.path.exists(directory): return False
+            for root, _, files in os.walk(directory):
+                if filename in files:
+                    return True
+            return False
+            
+        found_tmp = find_in_dir(os.path.join(repo_root, ".agents", "tmp"), name)
+        found_docs = find_in_dir(os.path.join(repo_root, "docs"), name)
+        
+        if not (found_tmp or found_docs):
+            fail(
+                f"Deliverable '{name}' is trapped in the invisible brain/ folder.\n"
+                f"           Fix: You MUST copy this artifact to '.agents/tmp/' or 'docs/' so the human can read it."
+            )
+            all_visible = False
+        else:
+            print(f"       ✅ {name} is visible in the workspace.")
+            
+    if all_visible:
+        print("       ✅ Workspace Visibility check passed.")
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -395,6 +442,7 @@ def main() -> None:
     check_artifact_inventory(session_dir)
     check_artifact_sections(session_dir)
     check_forensic_evidence(session_dir)
+    check_workspace_visibility(session_dir)
 
     print(f"\n{'='*60}")
 
