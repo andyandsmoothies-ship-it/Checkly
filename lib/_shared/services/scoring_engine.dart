@@ -135,8 +135,9 @@ class ScoringEngine {
                 sum +
                 _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
           );
-          // Apply cap: explicit maxPoints cap if set, otherwise uncapped (subBefore).
-          if (sub.maxPoints > 0) subDeductions = min(subDeductions, sub.maxPoints);
+          // Apply cap: explicit maxPoints cap if set, otherwise cap at subBefore
+          final cap = sub.maxPoints > 0 ? sub.maxPoints : subBefore;
+          subDeductions = min(subDeductions, cap);
           sectionDeductions += subDeductions;
         }
 

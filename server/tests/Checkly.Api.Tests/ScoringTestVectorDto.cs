@@ -26,7 +26,7 @@ public sealed record SectionDto(
 public sealed record SubsectionDto(
     [property: JsonPropertyName("id")] string Id,
     [property: JsonPropertyName("title")] string Title,
-    [property: JsonPropertyName("maxPoints")] decimal MaxPoints,
+    [property: JsonPropertyName("maxPoints")] decimal? MaxPoints,
     [property: JsonPropertyName("criteria")] List<CriterionDto> Criteria);
 
 public sealed record CriterionDto(

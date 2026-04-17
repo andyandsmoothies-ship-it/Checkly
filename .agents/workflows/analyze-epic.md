@@ -91,7 +91,8 @@ Workflow: /analyze-epic | Track: C
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Epic Verdict & Persistent path.
 > 2. The routing table of Slices (Track A/B) and their dependencies.
-> 3. The exact next workflow command the user should run, which MUST explicitly reference the `{Absolute_Path_to_analysis_epic.md}` instead of pasting contents.
+> 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
+> 4. The exact next workflow command the user should run, which MUST explicitly reference the `{Absolute_Path_to_analysis_epic.md}` instead of pasting contents.
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

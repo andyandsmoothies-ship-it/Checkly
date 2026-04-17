@@ -59,7 +59,7 @@ void main() {
             return SubsectionInput(
               id: sub['id'] as String,
               title: sub['title'] as String,
-              maxPoints: (sub['maxPoints'] as num).toDouble(),
+              maxPoints: sub['maxPoints'] != null ? (sub['maxPoints'] as num).toDouble() : 0.0,
               criteria: subCriteria,
             );
           }).toList() ?? [];

@@ -1195,6 +1195,62 @@
                 }
             ],
             "expectedScore": 33.33
+        },
+        {
+            "id": "V20_subsection_implicit_cap",
+            "description": "Subsection deductions MUST be implicitly capped at subBefore if maxPoints is 0/null to prevent bleeding",
+            "scoringMode": "penalty",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "subsections": [
+                        {
+                            "id": "sub1",
+                            "title": "Sub 1 (Small)",
+                            "maxPoints": null,
+                            "criteria": [
+                                {
+                                    "id": "c1",
+                                    "groupId": "sub1",
+                                    "pointsWeight": 5,
+                                    "isCcp": false,
+                                    "isRisk": false
+                                }
+                            ]
+                        },
+                        {
+                            "id": "sub2",
+                            "title": "Sub 2 (Large)",
+                            "maxPoints": null,
+                            "criteria": [
+                                {
+                                    "id": "c2",
+                                    "groupId": "sub2",
+                                    "pointsWeight": 45,
+                                    "isCcp": false,
+                                    "isRisk": false
+                                }
+                            ]
+                        }
+                    ],
+                    "criteria": []
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 10,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 0,
+                    "value": null
+                }
+            ],
+            "expectedScore": 90.0
         }
     ]
 }

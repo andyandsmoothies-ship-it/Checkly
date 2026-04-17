@@ -73,7 +73,8 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Diagnostic Verdict & Persistent path.
 > 2. The required fix and its blast radius.
-> 3. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] @[/implement] brain/.../failure_report.md`).
+> 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
+> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] @[/implement] brain/.../failure_report.md`).
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

@@ -40,6 +40,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 | Step | Execution Contract |
 |---|---|
 | **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[topic]_[ConversationID].md` to the `brain/` directory. NEVER output the research directly to the chat UI. |
+| **Workspace Copy**| MANDATORY: Because the `brain/` folder is invisible to the user's IDE, you MUST copy the generated research artifact to `.agents/tmp/research/` so the user can review it. Output the absolute path to this visible file in your final message. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 > **Payload Schema:** Your generated `research_[topic]_[ConversationID].md` MUST INCLUDE: 
@@ -52,7 +53,8 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Verdict (Viable/Reject) & Persistent path.
 > 2. Effort Sizing (Track C / Track A/B) and Concurrency Strategy.
-> 3. The exact next workflow command the user should run, which MUST explicitly reference `{Absolute_Path_to_research_artifact.md}` instead of pasting contents.
+> 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
+> 4. The exact next workflow command the user should run, which MUST explicitly reference `{Absolute_Path_to_research_artifact.md}` instead of pasting contents.
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.

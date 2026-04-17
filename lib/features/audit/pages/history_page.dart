@@ -14,6 +14,7 @@ import '../../admin/pages/schedule_audit_page.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/history_manager.dart';
 import '../model/submission_dto.dart';
+import '../pages/audit_preview_sheet.dart';
 
 final _di = GetIt.instance;
 
@@ -378,6 +379,22 @@ class _HistoryPageState extends State<HistoryPage> {
                               (entry) => _StoreGroup(
                                 storeName: entry.key,
                                 submissions: entry.value,
+                                onPreviewAudit: (submission) {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    useSafeArea: true,
+                                    useRootNavigator: true,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20),
+                                      ),
+                                    ),
+                                    builder: (_) => AuditPreviewSheet(
+                                      submissionId: submission.id,
+                                    ),
+                                  );
+                                },
                                 onVoidAudit: _di<AuthManager>().currentUser?.role == 'admin'
                                     ? (submission) async {
                                         final reasonController =
@@ -587,12 +604,14 @@ class _StoreGroup extends StatelessWidget {
   final List<SubmissionDto> submissions;
   final void Function(SubmissionDto)? onStartAudit;
   final void Function(SubmissionDto)? onVoidAudit;
+  final void Function(SubmissionDto)? onPreviewAudit; // [NEW]
 
   const _StoreGroup({
     required this.storeName,
     required this.submissions,
     this.onStartAudit,
     this.onVoidAudit,
+    this.onPreviewAudit, // [NEW]
   });
 
   @override
@@ -644,6 +663,9 @@ class _StoreGroup extends StatelessWidget {
                 onVoidAudit: (s.status == 'draft' || s.status == 'scheduled')
                     ? () => onVoidAudit?.call(s)
                     : null,
+                onPreviewAudit: (s.status == 'completed' || s.status == 'voided') // [NEW]
+                    ? () => onPreviewAudit?.call(s)
+                    : null,
               ),
             )
             .toList(),
@@ -658,10 +680,12 @@ class _AuditCard extends StatelessWidget {
   final SubmissionDto submission;
   final VoidCallback? onStartAudit;
   final VoidCallback? onVoidAudit;
+  final VoidCallback? onPreviewAudit; // [NEW]
   const _AuditCard({
     required this.submission,
     this.onStartAudit,
     this.onVoidAudit,
+    this.onPreviewAudit, // [NEW]
   });
 
   Color _scoreColor(double? score, ThemeData theme) => scoreColor(score, theme);
@@ -679,9 +703,12 @@ class _AuditCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
+      child: InkWell( // [NEW] — tappable for completed/voided
+        borderRadius: BorderRadius.circular(12), // match Card's default corner radius
+        onTap: onPreviewAudit, // null = no ripple, existing cards unaffected
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
           children: [
             // Score circle or status icon
             Container(
@@ -801,7 +828,8 @@ class _AuditCard extends StatelessWidget {
             ],
           ],
         ),
-      ),
+        ), // close Padding
+      ), // close InkWell [NEW]
     );
   }
 

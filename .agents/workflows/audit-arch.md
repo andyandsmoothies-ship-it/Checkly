@@ -60,7 +60,8 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final SRE Verdict (Fatal/Brittle/Resilient) & Persistent path.
 > 2. Summary of 2AM Landmines found.
-> 3. The exact next workflow command the user should run (e.g. `/analyze-epic`).
+> 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
+> 4. The exact next workflow command the user should run (e.g. `/analyze-epic`).
 >
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:
