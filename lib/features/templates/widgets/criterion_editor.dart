@@ -375,6 +375,18 @@ class CriterionEditor extends StatelessWidget {
                   ),
                 const SizedBox(height: 16),
 
+                const Divider(),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Required'),
+                  subtitle: const Text('Auditor must complete this field to submit'),
+                  value: criterion.isRequired,
+                  onChanged: (v) {
+                    setSheetState(() => criterion.isRequired = v);
+                    onChanged();
+                  },
+                ),
+
                 // CCP / Risk toggles — two-gate logic:
                 // Gate 1 (BLOCKLIST): survey + checklist always hide both toggles.
                 // Gate 2 (ALLOWLIST + data preservation, Gotcha #6):

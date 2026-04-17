@@ -183,6 +183,17 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
         'criteria': s.criteria.asMap().entries.map((ce) {
           final ci = ce.key;
           final c = ce.value;
+
+          final meta = <String, dynamic>{};
+          if (c.isRequired) meta['isRequired'] = true;
+          if (c.inputType == 'scale' && c.scaleOptions.isNotEmpty) {
+            meta['scaleOptions'] = c.scaleOptions;
+          }
+          if ((c.inputType == 'single_choice' || c.inputType == 'multi_choice') &&
+              c.choiceOptions.isNotEmpty) {
+            meta['options'] = c.choiceOptions;
+          }
+
           return <String, dynamic>{
             if (c.id.isNotEmpty) 'id': c.id,
             'label': c.labelCtrl.text,
@@ -195,12 +206,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             'isCcp': c.isCcp,
             'isRisk': c.isRisk,
             'orderIndex': ci,
-            if (c.inputType == 'scale' && c.scaleOptions.isNotEmpty)
-              'metadata': json.encode({'scaleOptions': c.scaleOptions}),
-            if ((c.inputType == 'single_choice' ||
-                    c.inputType == 'multi_choice') &&
-                c.choiceOptions.isNotEmpty)
-              'metadata': json.encode({'options': c.choiceOptions}),
+            if (meta.isNotEmpty) 'metadata': json.encode(meta),
           };
         }).toList(),
       };
@@ -492,7 +498,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                       ccpOverride: _ccpOverride,
                       riskOverride: _riskOverride,
                       weightedDensity: _weightedDensity,
-                      confirmCorrect: _confirmCorrect,
                       progressiveRepeat: _progressiveRepeat,
                       deadlineCtrl: _deadlineCtrl,
                       reminderCtrl: _reminderCtrl,
@@ -502,8 +507,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                       onRiskChanged: (v) => setState(() => _riskOverride = v),
                       onDensityChanged: (v) =>
                           setState(() => _weightedDensity = v),
-                      onCorrectChanged: (v) =>
-                          setState(() => _confirmCorrect = v),
                       onProgressiveChanged: (v) =>
                           setState(() => _progressiveRepeat = v),
                     ),

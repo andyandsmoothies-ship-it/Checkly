@@ -49,7 +49,6 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   bool _ccpOverride = false;
   bool _riskOverride = false;
   bool _weightedDensity = false;
-  bool _confirmCorrect = false;
   bool _progressiveRepeat = false;
   final _deadlineCtrl = TextEditingController(text: '7');
   final _reminderCtrl = TextEditingController(text: '2');
@@ -305,7 +304,6 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
       'ccpOverride': _ccpOverride,
       'riskOverride': _riskOverride,
       'weightedDensity': _weightedDensity,
-      'confirmCorrect': _confirmCorrect,
       'progressiveRepeat': _progressiveRepeat,
       'deadlineDays': int.tryParse(_deadlineCtrl.text) ?? 7,
       'reminderDays': int.tryParse(_reminderCtrl.text) ?? 2,
@@ -437,14 +435,12 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                 ccpOverride: _ccpOverride,
                 riskOverride: _riskOverride,
                 weightedDensity: _weightedDensity,
-                confirmCorrect: _confirmCorrect,
                 progressiveRepeat: _progressiveRepeat,
                 deadlineCtrl: _deadlineCtrl,
                 reminderCtrl: _reminderCtrl,
                 onCcpChanged: (v) => setState(() => _ccpOverride = v),
                 onRiskChanged: (v) => setState(() => _riskOverride = v),
                 onDensityChanged: (v) => setState(() => _weightedDensity = v),
-                onCorrectChanged: (v) => setState(() => _confirmCorrect = v),
                 onProgressiveChanged: (v) => setState(() => _progressiveRepeat = v),
                 onValidityChanged: (isValid) {
                   if (_templateIsValid != isValid) {

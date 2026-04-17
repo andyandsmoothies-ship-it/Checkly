@@ -14,6 +14,7 @@ class EditableCriterion {
   List<String> choiceOptions;
   bool isCcp;
   bool isRisk;
+  bool isRequired;
 
   EditableCriterion({
     this.id = '',
@@ -25,6 +26,7 @@ class EditableCriterion {
     List<String>? choiceOptions,
     this.isCcp = false,
     this.isRisk = false,
+    this.isRequired = false,
   }) : labelCtrl = TextEditingController(text: label),
        descCtrl = TextEditingController(text: description),
        pointsCtrl = TextEditingController(text: points),
@@ -34,32 +36,33 @@ class EditableCriterion {
   factory EditableCriterion.fromDto(CriterionDto dto) {
     List<Map<String, dynamic>> options = [];
     List<String> choices = [];
-    if (dto.metadata != null && dto.inputType == 'scale') {
+    bool isRequired = false;
+
+    if (dto.metadata != null) {
       try {
         final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
-        options =
-            (meta['scaleOptions'] as List?)
-                ?.map((e) => Map<String, dynamic>.from(e as Map))
-                .toList() ??
-            [];
-      } catch (e) {
-        debugPrint('Criterion metadata parse: $e');
-      }
-    } else if (dto.metadata != null &&
-        (dto.inputType == 'single_choice' || dto.inputType == 'multi_choice')) {
-      try {
-        final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
-        choices =
-            (meta['options'] as List?)?.map((e) {
-              if (e is String) return e;
-              if (e is Map) return (e['label'] as String?) ?? '';
-              return e.toString();
-            }).toList() ??
-            [];
+        isRequired = meta['isRequired'] == true;
+        
+        if (dto.inputType == 'scale') {
+          options =
+              (meta['scaleOptions'] as List?)
+                  ?.map((e) => Map<String, dynamic>.from(e as Map))
+                  .toList() ??
+              [];
+        } else if (dto.inputType == 'single_choice' || dto.inputType == 'multi_choice') {
+          choices =
+              (meta['options'] as List?)?.map((e) {
+                if (e is String) return e;
+                if (e is Map) return (e['label'] as String?) ?? '';
+                return e.toString();
+              }).toList() ??
+              [];
+        }
       } catch (e) {
         debugPrint('Criterion metadata parse: $e');
       }
     }
+
     return EditableCriterion(
       id: dto.id,
       label: dto.label,
@@ -70,6 +73,7 @@ class EditableCriterion {
       choiceOptions: choices,
       isCcp: dto.isCcp,
       isRisk: dto.isRisk,
+      isRequired: isRequired,
     );
   }
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -89,6 +90,14 @@ class AuditCriterionRow extends StatelessWidget {
     final bool isAnswered =
         answer?.value != null || (answer?.numericValue != null);
 
+    bool isRequired = confirmRequired;
+    if (!isRequired && criterion.metadata != null && criterion.metadata!.isNotEmpty) {
+      try {
+        final meta = json.decode(criterion.metadata!) as Map<String, dynamic>;
+        isRequired = meta['isRequired'] == true;
+      } catch (_) {}
+    }
+
     return InkWell(
       onTap: () => showAuditCriterionSheet(
         context,
@@ -111,8 +120,17 @@ class AuditCriterionRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    criterion.label,
+                  Text.rich(
+                    TextSpan(
+                      text: criterion.label,
+                      children: [
+                        if (isRequired)
+                          TextSpan(
+                            text: ' *',
+                            style: TextStyle(color: theme.colorScheme.error),
+                          ),
+                      ],
+                    ),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),

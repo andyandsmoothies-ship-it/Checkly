@@ -166,6 +166,40 @@ class _AuditFormPageState extends State<AuditFormPage> {
     return true;
   }
 
+  List<CriterionDto> _getMissingRequired(AuditManager manager, TemplateTreeDto template) {
+    final missing = <CriterionDto>[];
+    final globalRequired = _isConfirmRequired(template);
+    
+    void checkGroup(GroupDto group) {
+      for (final c in group.criteria) {
+        bool isRequired = globalRequired;
+        if (!isRequired) {
+          if (c.metadata != null && c.metadata!.isNotEmpty) {
+            try {
+              final meta = json.decode(c.metadata!) as Map<String, dynamic>;
+              isRequired = meta['isRequired'] == true;
+            } catch (_) {}
+          }
+        }
+        
+        if (isRequired) {
+          final a = manager.answers[c.id];
+          if (a == null || (a.value == null && a.numericValue == null)) {
+            missing.add(c);
+          }
+        }
+      }
+      for (final child in group.children) {
+        checkGroup(child);
+      }
+    }
+    
+    for (final group in template.groups) {
+      checkGroup(group);
+    }
+    return missing;
+  }
+
   int _totalAnswered(AuditManager manager, TemplateTreeDto template) {
     int count = 0;
     for (final group in template.groups) {
@@ -343,12 +377,13 @@ class _AuditFormPageState extends State<AuditFormPage> {
     final answered = _totalAnswered(manager, template);
     final total = _totalCriteria(template);
 
-    // Gap 3: Confirm Required gate (unchanged)
-    if (_isConfirmRequired(template) && answered < total) {
+    // Gap 3: Confirm Required gate (now logically ORs global and individual flags)
+    final missingRequired = _getMissingRequired(manager, template);
+    if (missingRequired.isNotEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${total - answered} criteria still need review'),
+            content: Text('${missingRequired.length} required criteria still need review'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

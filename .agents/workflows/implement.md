@@ -91,9 +91,11 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Context Blinders** | Actively ignore test contracts for future slices. |
 | **Test Ingestion** | Read unit test files created by QA for the ACTIVE SLICE ONLY. |
 | **Cheap Verify** | Run `flutter analyze` or `dotnet build --no-restore`. Fix before complete. |
+| **Strict TDD (Legacy)**| IF altering legacy boundaries -> MANDATORY: Update legacy test FIRST (turn RED) -> THEN write PROD code (turn GREEN). |
 | **Immutable Mock Guard**| PROHIBITED: Changing existing ATDD Tests to make code pass. Adapt code to existing contract. |
 | **Red/Green Loop**| Turn RED test GREEN -> Refactor. Do NOT modify test files. |
 | **Refactor Safety**| `grep_search` 4 ways: 1) Direct calls, 2) Types, 3) Strings, 4) Test Mocks. |
+| **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
 | **State Invariants**| Explicitly verify Entry Preconditions and Exit Postconditions. |
 | **Blast Radius** | IF modifying shared code -> Execute upstream regression tests. |
 

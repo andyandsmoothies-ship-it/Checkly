@@ -16,14 +16,12 @@ class WizardStepReview extends StatefulWidget {
   final bool ccpOverride;
   final bool riskOverride;
   final bool weightedDensity;
-  final bool confirmCorrect;
   final bool progressiveRepeat;
   final TextEditingController deadlineCtrl;
   final TextEditingController reminderCtrl;
   final ValueChanged<bool> onCcpChanged;
   final ValueChanged<bool> onRiskChanged;
   final ValueChanged<bool> onDensityChanged;
-  final ValueChanged<bool> onCorrectChanged;
   final ValueChanged<bool> onProgressiveChanged;
 
   /// Called whenever the computed validity changes so the parent can
@@ -39,14 +37,12 @@ class WizardStepReview extends StatefulWidget {
     required this.ccpOverride,
     required this.riskOverride,
     required this.weightedDensity,
-    required this.confirmCorrect,
     required this.progressiveRepeat,
     required this.deadlineCtrl,
     required this.reminderCtrl,
     required this.onCcpChanged,
     required this.onRiskChanged,
     required this.onDensityChanged,
-    required this.onCorrectChanged,
     required this.onProgressiveChanged,
     required this.onValidityChanged,
   });
@@ -444,7 +440,6 @@ class _WizardStepReviewState extends State<WizardStepReview> {
             ccpOverride: widget.ccpOverride,
             riskOverride: widget.riskOverride,
             weightedDensity: widget.weightedDensity,
-            confirmCorrect: widget.confirmCorrect,
             progressiveRepeat: widget.progressiveRepeat,
             deadlineCtrl: widget.deadlineCtrl,
             reminderCtrl: widget.reminderCtrl,
@@ -452,7 +447,6 @@ class _WizardStepReviewState extends State<WizardStepReview> {
             onCcpChanged: widget.onCcpChanged,
             onRiskChanged: widget.onRiskChanged,
             onDensityChanged: widget.onDensityChanged,
-            onCorrectChanged: widget.onCorrectChanged,
             onProgressiveChanged: widget.onProgressiveChanged,
           ),
         ],

@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 import '../model/submission_dto.dart';
 import '../services/submission_api_service.dart';
 import '../widgets/read_only_criterion_row.dart';
+import '../../templates/models/template_dto.dart';
+import 'dart:convert';
 
 /// Read-only slide-up sheet showing the full detail of a completed or voided audit.
 /// Fetches [SubmissionDetailDto] from the server on open.
@@ -162,6 +164,37 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
     }
 
     final detail = _detail!;
+    
+    // Parse snapshot to recover original criterion metadata (e.g. inputType)
+    TemplateTreeDto? tree;
+    if (detail.templateSnapshot != null) {
+      try {
+        tree = TemplateTreeDto.fromJson(jsonDecode(detail.templateSnapshot!));
+      } catch (_) {}
+    }
+    
+    String scoringMode = 'penalty';
+    if (tree?.scoringLogicConfig != null) {
+      try {
+        final config = jsonDecode(tree!.scoringLogicConfig!);
+        scoringMode = config['mode'] ?? config['scoringMode'] ?? 'penalty';
+      } catch (_) {}
+    }
+
+    final Map<String, CriterionDto> criteriaMap = {};
+    if (tree != null) {
+      void walk(GroupDto group) {
+        for (final c in group.criteria) {
+          criteriaMap[c.id] = c;
+        }
+        for (final child in group.children) {
+          walk(child);
+        }
+      }
+      for (final g in tree.groups) {
+        walk(g);
+      }
+    }
 
     return ListView(
       controller: scrollController,
@@ -199,7 +232,11 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
           )
         else
           ...detail.answers.map(
-            (answer) => ReadOnlyCriterionRow(answer: answer),
+            (answer) => ReadOnlyCriterionRow(
+              answer: answer,
+              criterion: criteriaMap[answer.criteriaId],
+              scoringMode: scoringMode,
+            ),
           ),
       ],
     );

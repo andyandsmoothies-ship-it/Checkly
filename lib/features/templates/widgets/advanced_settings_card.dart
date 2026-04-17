@@ -10,7 +10,6 @@ class AdvancedSettingsCard extends StatelessWidget {
   final bool ccpOverride;
   final bool riskOverride;
   final bool weightedDensity;
-  final bool confirmCorrect;
   final bool progressiveRepeat;
   final TextEditingController deadlineCtrl;
   final TextEditingController reminderCtrl;
@@ -18,7 +17,6 @@ class AdvancedSettingsCard extends StatelessWidget {
   final ValueChanged<bool> onCcpChanged;
   final ValueChanged<bool> onRiskChanged;
   final ValueChanged<bool> onDensityChanged;
-  final ValueChanged<bool> onCorrectChanged;
   final ValueChanged<bool> onProgressiveChanged;
 
   const AdvancedSettingsCard({
@@ -27,7 +25,6 @@ class AdvancedSettingsCard extends StatelessWidget {
     required this.ccpOverride,
     required this.riskOverride,
     required this.weightedDensity,
-    required this.confirmCorrect,
     required this.progressiveRepeat,
     required this.deadlineCtrl,
     required this.reminderCtrl,
@@ -35,7 +32,6 @@ class AdvancedSettingsCard extends StatelessWidget {
     required this.onCcpChanged,
     required this.onRiskChanged,
     required this.onDensityChanged,
-    required this.onCorrectChanged,
     required this.onProgressiveChanged,
   });
 
@@ -244,15 +240,6 @@ class AdvancedSettingsCard extends StatelessWidget {
                   value: progressiveRepeat,
                   onChanged: onProgressiveChanged,
                 ),
-
-              ExpandableSettingTile(
-                title: 'Confirm Correct',
-                description:
-                    'Auditor must tap "Correct" to confirm each passing '
-                    'criteria before submitting.',
-                value: confirmCorrect,
-                onChanged: onCorrectChanged,
-              ),
             ],
 
             // Survey mode info banner

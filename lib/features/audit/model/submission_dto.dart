@@ -309,6 +309,8 @@ class AnswerDto {
   final String? note;
   final String? photoUrl;
   final bool isRepeatedError;
+  final bool isCcp;
+  final bool isRisk;
 
   const AnswerDto({
     required this.id,
@@ -319,6 +321,8 @@ class AnswerDto {
     this.note,
     this.photoUrl,
     this.isRepeatedError = false,
+    this.isCcp = false,
+    this.isRisk = false,
   });
 
   factory AnswerDto.fromJson(Map<String, dynamic> json) => AnswerDto(
@@ -330,5 +334,7 @@ class AnswerDto {
     note: json['note'] as String?,
     photoUrl: json['photoUrl'] as String?,
     isRepeatedError: json['isRepeatedError'] as bool? ?? false,
+    isCcp: json['isCcp'] as bool? ?? false,
+    isRisk: json['isRisk'] as bool? ?? false,
   );
 }
