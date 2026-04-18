@@ -7,6 +7,7 @@ import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../../../../_shared/widgets/section_header.dart';
 import '../../../audit/model/submission_dto.dart';
+import '../../../audit/pages/audit_preview_sheet.dart';
 import '../../../audit/services/draft_service.dart';
 import '../../../auth/manager/auth_manager.dart';
 import '../../manager/dashboard_manager.dart';
@@ -243,7 +244,18 @@ class _SubmissionRowState extends State<SubmissionRow> {
         borderRadius: BorderRadius.circular(16),
         onTap: isDraft
             ? _resumeDraft
-            : () => widget.context.go('/activity'),
+            : () {
+                showModalBottomSheet(
+                  context: widget.context,
+                  isScrollControlled: true,
+                  useSafeArea: true,
+                  useRootNavigator: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  builder: (_) => AuditPreviewSheet(submissionId: sub.id),
+                );
+              },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
