@@ -139,7 +139,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error discarding draft: $e')),
+          SnackBar(content: Text('We hit a snag removing this item. If it remains stuck on your screen, please restart the app.')),
         );
       }
     }
@@ -207,7 +207,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to void: $e')),
+          SnackBar(content: Text('We hit a snag removing this item. If it remains stuck on your screen, please restart the app.')),
         );
       }
     }

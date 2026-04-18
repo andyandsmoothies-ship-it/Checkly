@@ -498,7 +498,7 @@ class _TemplateCard extends StatelessWidget {
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text('Failed to delete: $e'),
+                                          content: Text('We hit a snag removing this item. If it remains stuck on your screen, please restart the app.'),
                                         ),
                                       );
                                     }

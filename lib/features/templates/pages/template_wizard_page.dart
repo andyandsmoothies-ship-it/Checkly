@@ -341,7 +341,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
         setState(() => _saving = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        ).showSnackBar(SnackBar(content: Text('We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.')));
       }
     }
   }

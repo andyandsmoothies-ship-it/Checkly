@@ -54,7 +54,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load dashboard stats: $e')),
+          SnackBar(content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.')),
         );
       }
     }

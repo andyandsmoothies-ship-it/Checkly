@@ -117,10 +117,10 @@ void main() {
         expect(
           find.descendant(
             of: find.byType(SnackBar),
-            matching: find.textContaining('error', findRichText: true),
+            matching: find.textContaining('latest data', findRichText: true),
           ),
           findsOneWidget,
-          reason: 'SnackBar must contain error text.',
+          reason: 'SnackBar must contain the UX copy text.',
         );
       },
     );

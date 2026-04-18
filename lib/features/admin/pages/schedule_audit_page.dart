@@ -149,7 +149,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         setState(() => _isLoadingData = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to load data: $e')));
+        ).showSnackBar(SnackBar(content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.')));
       }
     }
   }
@@ -266,7 +266,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to schedule: $e'),
+            content: Text('We hit a snag processing your request. Please check your internet connection and try again.'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

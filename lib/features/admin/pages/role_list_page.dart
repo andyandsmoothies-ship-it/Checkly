@@ -107,7 +107,7 @@ class _OnlineRoleList extends StatelessWidget {
                       children: [
                         const Icon(Icons.error_outline, size: 48, color: Colors.red),
                         const SizedBox(height: 16),
-                        Text('Failed to load roles', style: Theme.of(context).textTheme.titleMedium),
+                        Text('We couldn\'t load the latest data. Please check your internet connection and refresh.', style: Theme.of(context).textTheme.titleMedium),
                         const SizedBox(height: 8),
                         Text(error, textAlign: TextAlign.center),
                         const SizedBox(height: 16),

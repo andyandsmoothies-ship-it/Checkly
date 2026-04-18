@@ -486,7 +486,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                             ).showSnackBar(
                                               SnackBar(
                                                 content: Text(
-                                                  'Failed to void: $e',
+                                                  'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
                                                 ),
                                                 backgroundColor: Theme.of(
                                                   context,
@@ -548,7 +548,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
-                                          content: Text('Failed to start: $e'),
+                                          content: Text('We couldn\'t start this process right now. Please check your internet connection.'),
                                           backgroundColor: Theme.of(
                                             context,
                                           ).colorScheme.error,

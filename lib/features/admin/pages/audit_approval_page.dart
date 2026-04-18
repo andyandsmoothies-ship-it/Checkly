@@ -133,7 +133,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(content: Text('An unexpected issue occurred. Please check your connection or restart the app.'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }
@@ -181,7 +181,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(content: Text('An unexpected issue occurred. Please check your connection or restart the app.'), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     }

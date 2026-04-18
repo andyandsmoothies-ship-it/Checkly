@@ -216,7 +216,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Submit'),
+                            : const Text('Submit Action'),
                       ),
                     ],
                   ),
@@ -303,11 +303,11 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
           context,
         ).showSnackBar(SnackBar(content: Text(successMsg)));
       }
-    } on RoleGuardException catch (e) {
+    } on RoleGuardException catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Permission denied: $e')));
+        ).showSnackBar(SnackBar(content: Text('This action requires higher permissions. Please contact your workspace administrator.')));
       }
     } catch (e) {
       // H2 Fix: Sanitise generic errors — never expose raw Dart exception strings
