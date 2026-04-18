@@ -98,6 +98,11 @@ Future<void> showAuditCriterionSheet(
                                 );
                               },
                             ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            iconSize: 20,
+                            onPressed: () => Navigator.of(ctx).pop(),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),

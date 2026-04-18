@@ -201,7 +201,7 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
       children: [
         // Header card
-        _HeaderCard(detail: detail),
+        _HeaderCard(detail: detail, scoringMode: scoringMode),
         const SizedBox(height: 16),
 
         // Legacy guard
@@ -246,8 +246,9 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
 /// Header card: template, store, auditor, date, score.
 class _HeaderCard extends StatelessWidget {
   final SubmissionDetailDto detail;
+  final String scoringMode;
 
-  const _HeaderCard({required this.detail});
+  const _HeaderCard({required this.detail, required this.scoringMode});
 
   @override
   Widget build(BuildContext context) {
@@ -313,7 +314,7 @@ class _HeaderCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Score',
+                    'Score (${_formatMode(scoringMode)})',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -376,6 +377,11 @@ class _HeaderCard extends StatelessWidget {
   String _fmt(DateTime? dt) {
     if (dt == null) return '—';
     return DateFormat('dd MMM yyyy HH:mm').format(dt.toLocal());
+  }
+
+  String _formatMode(String mode) {
+    if (mode.isEmpty) return 'Penalty';
+    return mode[0].toUpperCase() + mode.substring(1).toLowerCase();
   }
 }
 
