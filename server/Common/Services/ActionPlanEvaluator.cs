@@ -55,7 +55,15 @@ public static class ActionPlanEvaluator
 
     private static bool ShouldTrigger(Answer answer, Criterion criterion)
     {
-        // 1. Criticality Override: Any CCP or RISK criterion that has a negative signal MUST trigger an action plan.
+        // 1. MANUAL OVERRIDE (Unconditional)
+        // If the auditor explicitly flipped RISK or CCP on during the audit, it ALWAYS creates an Action Plan.
+        if (answer.IsRisk || answer.IsCcp)
+        {
+            return true;
+        }
+
+        // 2. TEMPLATE DEFAULTS (The Smart Rule / Safety Net)
+        // Any CCP or RISK criterion that has a negative signal MUST trigger an action plan.
         if ((criterion.IsRisk || criterion.IsCcp) && HasNegativeSignal(answer))
         {
             return true;

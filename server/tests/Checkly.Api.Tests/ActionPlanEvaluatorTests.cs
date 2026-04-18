@@ -143,17 +143,17 @@ public class ActionPlanEvaluatorTests
     // ============================================================
 
     [Fact]
-    public void AnswerOverride_IsRisk_With_NonConform_Triggers()
+    public void AnswerOverride_IsRisk_With_NullValue_TriggersUnconditionally()
     {
         var cId = Guid.NewGuid();
         // Template criterion is a plain pass_fail with no risk flag
         var criteria = new List<Criterion> { MakeCriterion(cId, isRisk: false, isCcp: false) };
-        // But the auditor flagged THIS specific answer as a risk at submission time
-        var answers = new List<Answer> { MakeAnswer(cId, value: "non_conform", isRisk: true) };
+        // But the auditor flagged THIS specific answer as a risk at submission time, leaving primary value null
+        var answers = new List<Answer> { MakeAnswer(cId, value: null, isRisk: true) };
 
         var result = ActionPlanEvaluator.GetTriggeredAnswers(answers, criteria);
 
-        // Falls through to legacy fallback: pass_fail + non_conform → triggers
+        // Triggers unconditionally because Answer.IsRisk == true
         Assert.Single(result);
     }
 
