@@ -390,17 +390,17 @@ def check_forensic_evidence(session_dir: str) -> None:
 # CHECK 5 — Workspace Visibility Mandate
 # ─────────────────────────────────────────────────────────────────────────────
 def check_workspace_visibility(session_dir: str) -> None:
-    print("\n[CHECK 5] Scanning for Workspace Visibility (Copy Mandate)...")
+    print("\n[CHECK 5] Scanning for Workspace Visibility (Research Copy Mandate)...")
     
     active_artifacts = get_active_artifacts(session_dir)
     
     deliverables = [
         f for f in active_artifacts
-        if not os.path.basename(f).lower().startswith("task")
+        if os.path.basename(f).lower().startswith("research")
     ]
 
     if not deliverables:
-        print("       ✅ No deliverables found needing workspace visibility.")
+        print("       ✅ No research deliverables found needing workspace visibility.")
         return
 
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -416,17 +416,17 @@ def check_workspace_visibility(session_dir: str) -> None:
                     return True
             return False
             
-        found_tmp = find_in_dir(os.path.join(repo_root, ".agents", "tmp"), name)
-        found_docs = find_in_dir(os.path.join(repo_root, "docs"), name)
+        found_docs_research = find_in_dir(os.path.join(repo_root, "docs", "research"), name)
+        found_tmp_research = find_in_dir(os.path.join(repo_root, ".agents", "tmp", "research"), name)
         
-        if not (found_tmp or found_docs):
+        if not (found_docs_research or found_tmp_research):
             fail(
-                f"Deliverable '{name}' is trapped in the invisible brain/ folder.\n"
-                f"           Fix: You MUST copy this artifact to '.agents/tmp/' or 'docs/' so the human can read it."
+                f"Research deliverable '{name}' is trapped in the invisible brain/ folder.\n"
+                f"           Fix: You MUST copy this artifact to 'docs/research/' or '.agents/tmp/research/' so the human can read it."
             )
             all_visible = False
         else:
-            print(f"       ✅ {name} is visible in the workspace.")
+            print(f"       ✅ {name} is visible in the research folder.")
             
     if all_visible:
         print("       ✅ Workspace Visibility check passed.")

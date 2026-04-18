@@ -12,13 +12,22 @@ class UserGroupApiService {
   UserGroupApiService(this._dio);
 
   /// Fetches all user groups (admin-only).
-  /// Backend returns paginated { items: [...], total: N } shape.
+  /// Backend currently returns a raw JSON array `[{...}]`.
+  /// Handles both raw list and paginated envelope (`{items:[]}`) defensively.
   Future<List<UserGroupDto>> listGroups() async {
-    final res = await _dio.get<Map<String, dynamic>>('/user-groups');
-    final data = res.data!;
-    // Backend returns { items: [...] } paginated OR a plain list depending on version.
-    // Handle both shapes defensively.
-    final raw = data['items'] as List<dynamic>? ?? data['data'] as List<dynamic>? ?? [];
+    final res = await _dio.get<dynamic>('/user-groups');
+    final data = res.data;
+
+    // Handle both raw list (current backend) and object envelope (legacy/future backend)
+    List<dynamic> raw;
+    if (data is List) {
+      raw = data;
+    } else if (data is Map) {
+      raw = data['items'] as List<dynamic>? ?? data['data'] as List<dynamic>? ?? [];
+    } else {
+      raw = [];
+    }
+
     return raw
         .cast<Map<String, dynamic>>()
         .map(UserGroupDto.fromJson)

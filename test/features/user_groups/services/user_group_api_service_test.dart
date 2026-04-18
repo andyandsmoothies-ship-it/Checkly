@@ -17,11 +17,11 @@ void main() {
   group('UserGroupApiService Pathing Tests', () {
     test('listGroups should call /user-groups (NOT /api/user-groups)', () async {
       // Arrange
-      // We stub the SUCCESS state for the correct path
-      when(() => dio.get<Map<String, dynamic>>('/user-groups'))
+      // Stub with dynamic generic — backend returns a raw JSON array
+      when(() => dio.get<dynamic>('/user-groups'))
           .thenAnswer((_) async => Response(
                 requestOptions: RequestOptions(path: '/user-groups'),
-                data: {'items': []},
+                data: <dynamic>[],
                 statusCode: 200,
               ));
 
@@ -29,8 +29,7 @@ void main() {
       await service.listGroups();
 
       // Assert
-      // This will fail (RED) because the existing implementation calls '/api/user-groups'
-      verify(() => dio.get<Map<String, dynamic>>('/user-groups')).called(1);
+      verify(() => dio.get<dynamic>('/user-groups')).called(1);
     });
 
     test('createGroup should call /user-groups (NOT /api/user-groups)', () async {
