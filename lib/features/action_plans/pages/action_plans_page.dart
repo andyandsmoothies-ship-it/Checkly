@@ -313,8 +313,8 @@ class _StoreGroup extends StatelessWidget {
               style: AppFonts.displayStyle(
                 fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
-                // WCAG: raised from 0.4 → 0.62 for readable low-opacity tracking text
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.62),
+                // WCAG: raised from 0.4 → 0.85 for clear section header hierarchy
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
                 letterSpacing: 1.5,
               ),
             ),
@@ -436,7 +436,7 @@ class _ActionPlanCard extends StatelessWidget {
                   if (plan.deadline != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      '${plan.deadline!.day}/${plan.deadline!.month}',
+                      'Due: ${plan.deadline!.day}/${plan.deadline!.month}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isOverdue
                             ? theme.colorScheme.error

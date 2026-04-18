@@ -153,7 +153,7 @@ class AuditCriterionRow extends StatelessWidget {
 
             // Status badges (compact)
             Wrap(
-              spacing: 4,
+              spacing: 6,
               children: [
                 if (_buildPrimaryBadge(theme, answer) != null)
                   _buildPrimaryBadge(theme, answer)!,
@@ -187,7 +187,7 @@ class AuditCriterionRow extends StatelessWidget {
                 ],
 
                 if (hasNote)
-                  Icon(Icons.notes, size: 16, color: theme.colorScheme.primary),
+                  Icon(Icons.chat_bubble_outline, size: 16, color: theme.colorScheme.primary),
                 if (hasPhoto)
                   Icon(
                     Icons.camera_alt,

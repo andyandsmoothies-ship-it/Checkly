@@ -124,7 +124,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
 
           // Value chip row
           Wrap(
-            spacing: 4,
+            spacing: 6,
             runSpacing: 4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
@@ -168,7 +168,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  Icons.note_alt_outlined,
+                  Icons.chat_bubble_outline,
                   size: 14,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
