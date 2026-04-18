@@ -15,7 +15,7 @@ description: SRE Hostile Architecture Review — Hunts for distributed systems f
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute when a new feature implies concurrency, sync, caching, background workers, or complex state across microservices/clients. |
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **System Boundary** | Extract the target system (e.g., "Offline Sync", "Auth Cache", "Message Queue"). Identify exactly what fails if the network drops by 50% or latency spikes to 5000ms. |
 
 ## Phase 2: The Brutal Interrogation (The 4 Critics)

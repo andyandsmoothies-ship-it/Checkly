@@ -33,9 +33,12 @@ if hasattr(sys.stdout, 'reconfigure'):
 REQUIRED_SECTIONS = {
     "task": [],  # task.md is structural; sections checked via checkbox logic below
     "research": [
-        r"##\s+handoff\s+block",
+        r"\[ORIGIN_IDEA\]",
+        r"e2e\s+workflow\s+map",
+        r"impact\s+spectrum",
         r"blind\s+spots",
-        r"downsides\s+&\s+risks"
+        r"conflicts\s+with\s+rules",
+        r"##\s+handoff\s+block"
     ],
     "implementation_plan": [
         r"##\s+proposed\s+changes",
@@ -296,6 +299,16 @@ def check_artifact_sections(session_dir: str) -> None:
             else:
                 print(f"       ✅ {basename} — all required sections present.")
 
+            if prefix == "research" or prefix == "analysis":
+                blind_spots_match = re.search(r"blind\s+spots(.*?)(?:##|<|\Z)", content, re.IGNORECASE | re.DOTALL)
+                if blind_spots_match:
+                    bs_text = blind_spots_match.group(1)
+                    if not (re.search(r"1\.", bs_text) and re.search(r"2\.", bs_text) and re.search(r"3\.", bs_text)):
+                        fail(
+                            f"'{basename}' must contain exactly 3 numbered Blind Spots.\n"
+                            f"           Fix: Add '1.', '2.', and '3.' under the Blind Spots header."
+                        )
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CHECK 4 — Forensic Evidence (Proof of Work)
@@ -361,7 +374,16 @@ def check_forensic_evidence(session_dir: str) -> None:
                     f"           Fix: Provide explicit terminal/tool output to prove you did the work."
                 )
             else:
-                print(f"       ✅ {name} — Forensic Evidence validated ({len(evidence_text)} bytes).")
+                if any(k in name.lower() for k in ["research", "analysis", "audit", "diagnose"]):
+                    if "grep_search" not in evidence_text.lower() and "view_file" not in evidence_text.lower():
+                        fail(
+                            f"'{name}' Forensic Evidence lacks Proof of Search.\n"
+                            f"           Fix: You MUST use 'grep_search' or 'view_file' to audit the Status Quo before proposing architecture."
+                        )
+                    else:
+                        print(f"       ✅ {name} — Forensic Evidence validated ({len(evidence_text)} bytes, Proof of Search found).")
+                else:
+                    print(f"       ✅ {name} — Forensic Evidence validated ({len(evidence_text)} bytes).")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

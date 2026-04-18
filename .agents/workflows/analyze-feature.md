@@ -13,7 +13,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 | Step | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the implementation plan artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Contract Ingestion** | MANDATORY: If this feature is part of an Epic, you MUST read the parent Epic's API Contracts and Dispatch Map. Your sole purpose is to translate ONE specific Epic Slice into an exact execution plan. You are required to generate the specific Database Schemas, File Paths, and exact Diffs required to fulfill the Epic Contract without changing the contract itself. |
 
 ```markdown
@@ -86,13 +86,26 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `implementation_plan_[topic]_[ConversationID].md` MUST INCLUDE: `<latent_space_scratchpad>` (to artificially expand your computational thinking on edge cases prior to outputting the plan), `Executive Summary & YAGNI`, `Trade-Off Analysis (Pros/Cons)`, `Risk Assessment`, `Decision Rationale`, `4-State Matrix`, `Business Rules`, `Proposed Deltas ([NEW]/[MOD]/[DEL])`, `## Execution Slices` (MANDATORY: You must group the proposed deltas into isolated, testable Micro-Slices. E.g. Slice 1: Database, Slice 2: Core Logic. If you fail to slice the work, the Builder session will crash under context weight), `Tactical Rollback Plan`, `Verification Plan`, `<forensic_evidence>` tags (list of terminal commands run), and a `## Handoff Block` containing an **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
+> **Payload Schema:** Your generated `implementation_plan_[topic]_[ConversationID].md` MUST INCLUDE the following EXACT headers and sections:
+> - `<latent_space_scratchpad>`: To artificially expand your computational thinking on edge cases prior to outputting the plan.
+> - `## Executive Summary & YAGNI`
+> - `## Trade-Off Analysis (Pros/Cons)`
+> - `## Risk Assessment`
+> - `## Decision Rationale`
+> - `## 4-State Matrix`
+> - `## Business Rules`
+> - `## Proposed Changes`: (MANDATORY EXACT HEADER) List `[NEW]/[MOD]/[DEL]` files.
+> - `## Execution Slices`: **(CRITICAL) You MUST group the work into isolated Micro-Slices. For every [MOD] file, you MUST provide the exact `Replace this: ... With this:` code blocks. Do NOT just write English descriptions of the changes. The Builder AI needs exact diffs.**
+> - `## Tactical Rollback Plan`
+> - `## Verification Plan`
+> - `<forensic_evidence>`: Tags containing a list of terminal commands run.
+> - `## Handoff Block`: Containing an **AI Agent Mission Brief** (A short 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

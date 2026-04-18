@@ -14,7 +14,7 @@ description: Infrastructure & architecture audit — database health, security p
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute post-major feature release or pre-scaling. |
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Skill Load** | Extract 2-3 keywords (e.g., "database", "security", "api-design") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
 ## Phase 2: Database & Query Audit

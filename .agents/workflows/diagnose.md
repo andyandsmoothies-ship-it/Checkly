@@ -13,7 +13,7 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 
 | Step | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the diagnostic artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Reasoning Phases**| Structure internal thoughts via exactly 4 phases: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `task_[ConversationID].md`. |
 
 ```markdown

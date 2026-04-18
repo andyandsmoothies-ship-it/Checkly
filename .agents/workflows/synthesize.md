@@ -10,7 +10,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 > Used to compare multiple competing research artifacts from isolated `/research` sessions and force a mathematically backed, rigorously red-teamed decision.
 
 ## Phase 1: Ingestion & Task Setup
-- [ ] **Task Tracking**: Create `task_[ConversationID].md` using the standard schema.
+- [ ] **Task Tracking**: Create `task_[ConversationID].md` using the standard schema. List ONLY the final decision artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase.
 - [ ] **Load Research**: Execute `list_dir` on `.agents/tmp/research/` to find all competing research options.
 - [ ] **Read Artifacts**: Use `view_file` to thoroughly read the contents of each competing option.
 - [ ] **Normalize**: Extract the core "Hypothesis", "Blast Radius", and the `[ORIGIN_IDEA]` from each option.

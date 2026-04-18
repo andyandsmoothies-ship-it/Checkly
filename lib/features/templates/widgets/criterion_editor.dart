@@ -339,14 +339,17 @@ class CriterionEditor extends StatelessWidget {
                   const SizedBox(height: 8),
                 ],
 
-                // Points weight:
+                // Points weight visibility rules:
+                //  - survey mode:  ALWAYS HIDDEN (null score — no math applies)
                 //  - pass_fail / numeric: editable text field
                 //  - scale: read-only (auto-synced from highest option value)
-                //  - single_choice / multi_choice: HIDDEN (survey-only, no scoring)
-                if (criterion.inputType == 'single_choice' ||
+                //  - single_choice / multi_choice / text: HIDDEN (unscored input types)
+                if (scoringMode == 'survey')
+                  const SizedBox.shrink() // Survey mode: no scoring concept exists
+                else if (criterion.inputType == 'single_choice' ||
                     criterion.inputType == 'multi_choice' ||
                     criterion.inputType == 'text')
-                  const SizedBox.shrink() // No points weight for survey inputs
+                  const SizedBox.shrink() // No points weight for unscored input types
                 else if (criterion.inputType == 'scale')
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -503,6 +506,7 @@ class CriterionEditor extends StatelessWidget {
                         Row(
                           children: [
                             if (criterion.pointsCtrl.text.isNotEmpty &&
+                                scoringMode != 'survey' &&
                                 criterion.inputType != 'text' &&
                                 criterion.inputType != 'single_choice' &&
                                 criterion.inputType != 'multi_choice') ...[

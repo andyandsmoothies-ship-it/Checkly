@@ -17,7 +17,7 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 | Step | Execution Contract |
 |---|---|
 | **Governance** | IF `.agents/rules/governance-rules.md` NOT in memory THEN `view_file` it immediately. |
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the final reporting artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 
 ```markdown
 # Task: [Epic Name]
@@ -86,19 +86,32 @@ Workflow: /analyze-epic | Track: C
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `analysis_epic_[topic]_[ConversationID].md` MUST INCLUDE: `1. <latent_space_scratchpad>` (to artificially expand test-time compute by thinking through tradeoffs and edge cases *before* concluding), `2. Exec Summary`, `3. Decision Matrix`, `4. Risk Assessment`, `5. Sys Arch Flow (Mermaid)`, `6. DB Migrations`, `7. API Contracts`, `8. Blast Radius/Rollback Plan`, `9. Red Team Adversarial Log`, `10. Security/RLS`, `11. Observability Hooks`, `12. EDD Expectations`, and `13. <forensic_evidence>` tags (terminal log proof).
+> **Payload Schema:** Your generated `analysis_epic_[topic]_[ConversationID].md` MUST INCLUDE the following EXACT sections:
+> 1. `<latent_space_scratchpad>`: To artificially expand test-time compute by thinking through tradeoffs.
+> 2. `## Executive Summary`
+> 3. `## Decision Matrix`
+> 4. `## Risk Assessment`
+> 5. `## System Architecture Flow`: (Mermaid diagram)
+> 6. `## Database Migrations`
+> 7. `## API Contracts`
+> 8. `## Blast Radius & Rollback Plan`
+> 9. `## Red Team Adversarial Log`
+> 10. `## Security & RLS`
+> 11. `## Observability Hooks`
+> 12. `## EDD Expectations`
+> 13. `<forensic_evidence>`: Tags with terminal log proof.
 > 
-> **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
-> 1. Final Epic Verdict & Persistent path.
-> 2. The routing table of Slices (Track A/B) and their dependencies.
-> 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
-> 4. The exact next workflow command the user should run, which MUST explicitly reference the `{Absolute_Path_to_analysis_epic.md}` instead of pasting contents.
+> **Handoff Block Suffix:** Append `## Handoff Block` at EOF containing:
+> 1. Final Epic Verdict & persistent path.
+> 2. Routing table of Slices (Track A/B) and dependencies.
+> 3. **AI Agent Mission Brief**: 1-2 sentence TL;DR for the next agent.
+> 4. Exact next workflow command using the `{Absolute_Path}`.
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

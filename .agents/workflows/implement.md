@@ -127,12 +127,12 @@ Review from 6 angles:
 
 ### Walkthrough Schema
 > [!IMPORTANT]
-> Your `walkthrough_[topic].md` MUST INCLUDE: 
+> Your `walkthrough_[topic].md` MUST INCLUDE the following EXACT sections:
 > 1. `## Decision Log`: Proposed vs Implemented.
 > 2. `## Verification Handoff`: Steps for QA.
-> 3. `<test_trace>`: Raw terminal execution output (`dotnet test`).
+> 3. `<test_trace>`: Raw terminal execution output (`dotnet test` or `flutter test`).
 > 4. `<forensic_evidence>`: General validation commands run.
-> 5. `## Gotcha Protocol`: Propose `GEMINI.override.md` edits.
+> 5. `## Gotcha Protocol`: Propose `GEMINI.override.md` edits if new quirks found.
 >
 > **Script Verification Gate (MANDATORY)**: Execute via `run_command`
 > // turbo
