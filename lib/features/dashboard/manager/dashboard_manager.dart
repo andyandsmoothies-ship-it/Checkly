@@ -8,6 +8,7 @@ import '../../audit/model/submission_dto.dart';
 import '../../audit/services/submission_api_service.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/manager/store_manager.dart';
+import '../../../_shared/database/dao/outbox_dao.dart';
 import 'dashboard_queries.dart';
 
 final _di = GetIt.instance;
@@ -153,8 +154,7 @@ class DashboardManager extends ChangeNotifier {
     ]);
 
     final deadline = await queries.getNearestDeadline();
-    final rawRecent = await queries.getRecentSubmissions(limit: 10);
-    final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
+    final recent = await _getMergedRecentSubmissions(queries, limit: 10);
 
     return AuditorDashboardState(
       draftCount: results[0] as int,
@@ -195,8 +195,7 @@ class DashboardManager extends ChangeNotifier {
       ]);
 
       final deadline = await queries.getNearestDeadline();
-      final rawRecent = await queries.getRecentSubmissions(limit: 10);
-      final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
+      final recent = await _getMergedRecentSubmissions(queries, limit: 10);
 
       return ManagerDashboardState(
         storeId: null,
@@ -219,8 +218,7 @@ class DashboardManager extends ChangeNotifier {
     ]);
 
     final deadline = await queries.getNearestDeadline();
-    final rawRecent = await queries.getRecentSubmissions(limit: 10);
-    final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
+    final recent = await _getMergedRecentSubmissions(queries, limit: 10);
 
     return ManagerDashboardState(
       storeId: storeId,
@@ -244,8 +242,7 @@ class DashboardManager extends ChangeNotifier {
       queries.getMonthlyTotal(),
     ]);
 
-    final rawRecent = await queries.getRecentSubmissions(limit: 10);
-    final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
+    final recent = await _getMergedRecentSubmissions(queries, limit: 10);
 
     return AdminDashboardState(
       totalAudits: results[0] as int,
@@ -257,5 +254,44 @@ class DashboardManager extends ChangeNotifier {
       monthlyTotal: results[6] as int,
       recentSubmissions: recent,
     );
+  }
+
+  Future<List<SubmissionDto>> _getMergedRecentSubmissions(DashboardQueries queries, {int limit = 10}) async {
+    final rawRecent = await queries.getRecentSubmissions(limit: limit);
+    final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
+
+    final outboxDao = OutboxDao(_db);
+    final pendingRows = await outboxDao.getAllPending();
+    if (pendingRows.isNotEmpty) {
+      for (final p in pendingRows) {
+        if (p.targetSubmissionId != null) {
+          recent.removeWhere((s) => s.id == p.targetSubmissionId);
+        }
+        String? tTitle;
+        String? sName;
+        try {
+          final tRow = await (_db.select(_db.cachedTemplates)..where((t) => t.id.equals(p.templateId))).getSingleOrNull();
+          if (tRow != null) tTitle = tRow.title;
+          final sRow = await (_db.select(_db.cachedStores)..where((s) => s.id.equals(p.storeId))).getSingleOrNull();
+          if (sRow != null) sName = sRow.name;
+        } catch (_) {}
+
+        recent.insert(0, SubmissionDto(
+          id: 'local_outbox_${p.id}',
+          templateId: p.templateId,
+          templateTitle: tTitle ?? 'Audit',
+          storeId: p.storeId,
+          storeName: sName ?? 'Unknown Store',
+          status: p.syncStatus == 'pending' ? 'syncing' : (p.syncStatus == 'exhausted' ? 'failed' : 'syncing'),
+          createdAt: p.createdAt,
+          totalScore: p.clientScore,
+        ));
+      }
+      recent.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      if (recent.length > limit) {
+        return recent.sublist(0, limit);
+      }
+    }
+    return recent;
   }
 }

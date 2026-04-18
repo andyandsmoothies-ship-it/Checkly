@@ -45,9 +45,17 @@ public static class ListActionPlans
                     .Select(s => s.Id);
                 query = query.Where(ap => ap.StoreId != null && storeIdsInArea.Contains(ap.StoreId.Value));
             }
+            else if (role == "auditor")
+            {
+                // Auditors see plans linked to their own submissions.
+                var auditorSubmissionIds = db.Submissions
+                    .Where(s => s.AuditorId == userId)
+                    .Select(s => s.Id);
+                query = query.Where(ap => ap.SubmissionId != null && auditorSubmissionIds.Contains(ap.SubmissionId.Value));
+            }
             else
             {
-                // Auditors, unscoped profiles, and unknown roles: return empty list by design.
+                // Unscoped profiles and unknown roles: return empty list by design.
                 query = query.Where(ap => false);
             }
         }

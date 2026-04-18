@@ -200,7 +200,8 @@ class ActionPlanManager extends ChangeNotifier {
   Future<ActionPlanDto> submitEvidence(
     ActionPlanDto plan, {
     required String correctionPlan,
-    required String evidenceNote,
+    String? evidenceNote,
+    String? photoPath,
   }) async {
     _assertNotTerminal(plan);
     _assertRole(['store_manager'], 'submit evidence');
@@ -214,7 +215,7 @@ class ActionPlanManager extends ChangeNotifier {
           id: Value(uuid.v4()),
           actionPlanId: Value(plan.id),
           correctionPlan: Value(correctionPlan),
-          evidenceNote: Value(evidenceNote),
+          evidenceNote: Value(evidenceNote ?? ''),
           createdAt: Value(DateTime.now().toUtc()),
         ),
       );
@@ -229,7 +230,7 @@ class ActionPlanManager extends ChangeNotifier {
         storeManagerName: plan.storeManagerName,
         rootCause: plan.rootCause,
         correctionPlan: correctionPlan,
-        evidencePhotoUrl: plan.evidencePhotoUrl,
+        evidencePhotoUrl: photoPath ?? plan.evidencePhotoUrl,
         evidenceNote: evidenceNote,
         closedAt: plan.closedAt,
         verifierName: plan.verifierName,
@@ -248,11 +249,15 @@ class ActionPlanManager extends ChangeNotifier {
     }
 
     // --- Online path: direct API call (original behavior) ---
-    final result = await _api.updateActionPlan(plan.id, {
+    final Map<String, dynamic> updatePayload = {
       'status': 'pending_verify',
       'correctionPlan': correctionPlan,
-      'evidenceNote': evidenceNote,
-    });
+    };
+    if (evidenceNote != null) {
+      updatePayload['evidenceNote'] = evidenceNote;
+    }
+
+    final result = await _api.updateActionPlan(plan.id, updatePayload);
 
     // Patch in-memory list with the server response
     final updated = actionPlans.value.map(

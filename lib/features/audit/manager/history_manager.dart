@@ -6,6 +6,7 @@ import '../../../_shared/database/dao/submission_dao.dart';
 import '../model/submission_dto.dart';
 import '../services/draft_service.dart';
 import '../services/submission_api_service.dart';
+import '../../../_shared/database/dao/outbox_dao.dart';
 
 final _di = GetIt.instance;
 
@@ -17,11 +18,13 @@ class HistoryManager extends ChangeNotifier {
   final SubmissionApiService _api;
   late final SubmissionDao _dao;
   late final DraftService _draftService;
+  late final OutboxDao _outboxDao;
 
   HistoryManager({
     SubmissionApiService? api,
     SubmissionDao? dao,
     DraftService? draftService,
+    OutboxDao? outboxDao,
   }) : _api = api ?? _di<SubmissionApiService>() {
     if (dao != null) {
       _dao = dao;
@@ -29,6 +32,7 @@ class HistoryManager extends ChangeNotifier {
       _dao = SubmissionDao(_di<DatabaseService>().db);
     }
     _draftService = draftService ?? DraftService();
+    _outboxDao = outboxDao ?? OutboxDao(_di<DatabaseService>().db);
   }
 
   // ---------- State ----------
@@ -55,7 +59,7 @@ class HistoryManager extends ChangeNotifier {
       // 1. Read from Drift cache first
       final cached = await _dao.getAllSubmissions();
       if (cached.isNotEmpty) {
-        submissions.value = await _applyLocalDraftOverrides(cached);
+        submissions.value = await _applyLocalOverrides(cached);
         isLoading.value = false;
         notifyListeners();
       }
@@ -63,7 +67,7 @@ class HistoryManager extends ChangeNotifier {
       // 2. Background API fetch (page 1)
       try {
         final fresh = await _api.getSubmissions(page: 1, pageSize: _pageSize);
-        submissions.value = await _applyLocalDraftOverrides(fresh);
+        submissions.value = await _applyLocalOverrides(fresh);
         hasMore = fresh.length >= _pageSize;
         lastRefreshed = DateTime.now();
 
@@ -92,7 +96,7 @@ class HistoryManager extends ChangeNotifier {
     try {
       _page++;
       final more = await _api.getSubmissions(page: _page, pageSize: _pageSize);
-      final hydrated = await _applyLocalDraftOverrides(more);
+      final hydrated = await _applyLocalOverrides(more);
       submissions.value = [...submissions.value, ...hydrated];
       hasMore = more.length >= _pageSize;
     } catch (_) {
@@ -172,9 +176,10 @@ class HistoryManager extends ChangeNotifier {
   /// whether a local draft exists by prefix-matching the draft key:
   ///   `"${s.templateId}:${s.storeId}:"`
   /// If a match is found, overrides the status to `'draft'` in-memory.
+  /// Also injects any pending submissions from the outbox queue.
   /// The Drift cache is intentionally NOT updated — only the live in-memory
   /// list is patched, ensuring the server remains the source of truth on disk.
-  Future<List<SubmissionDto>> _applyLocalDraftOverrides(
+  Future<List<SubmissionDto>> _applyLocalOverrides(
     List<SubmissionDto> list,
   ) async {
     final draftKeys = await _draftService.getAllDraftKeys();
@@ -253,10 +258,50 @@ class HistoryManager extends ChangeNotifier {
           );
         }
       }
-
-      // Keep recent drafts at the top of the combined feed
-      result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     }
+
+    // Inject outbox pending submissions
+    final pendingRows = await _outboxDao.getAllPending();
+    if (pendingRows.isNotEmpty) {
+      final db = _di<DatabaseService>().db;
+      for (final p in pendingRows) {
+        // Remove the original row if this pending outbox is finalizing it
+        if (p.targetSubmissionId != null) {
+          result.removeWhere((s) => s.id == p.targetSubmissionId);
+        }
+
+        String? tTitle;
+        String? sName;
+        try {
+          final tRow = await (db.select(db.cachedTemplates)
+                ..where((t) => t.id.equals(p.templateId)))
+              .getSingleOrNull();
+          if (tRow != null) tTitle = tRow.title;
+
+          final sRow = await (db.select(db.cachedStores)
+                ..where((s) => s.id.equals(p.storeId)))
+              .getSingleOrNull();
+          if (sRow != null) sName = sRow.name;
+        } catch (_) {}
+
+        result.insert(
+          0,
+          SubmissionDto(
+            id: 'local_outbox_${p.id}',
+            templateId: p.templateId,
+            templateTitle: tTitle ?? 'Audit',
+            storeId: p.storeId,
+            storeName: sName ?? 'Unknown Store',
+            status: p.syncStatus == 'pending' ? 'syncing' : (p.syncStatus == 'exhausted' ? 'failed' : 'syncing'),
+            createdAt: p.createdAt,
+            totalScore: p.clientScore,
+          ),
+        );
+      }
+    }
+
+    // Sort combined feed
+    result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return result;
   }

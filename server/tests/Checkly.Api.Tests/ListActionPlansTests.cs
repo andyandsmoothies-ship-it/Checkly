@@ -141,12 +141,46 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
         Assert.Empty(items);
     }
 
+    /// <summary>
+    /// Seeds a Submission owned by a given auditor, linked to an ActionPlan.
+    /// Returns the ActionPlan Id so tests can assert on it.
+    /// </summary>
+    private async Task<Guid> SeedAuditorDataAsync(Guid auditorUserId)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var submissionId = Guid.NewGuid();
+        var actionPlanId = Guid.NewGuid();
+
+        db.Submissions.Add(new Checkly.Api.Common.Persistence.Entities.Submission
+        {
+            Id = submissionId,
+            AuditorId = auditorUserId,
+            Status = "completed",
+            ScoringMode = "penalty",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+        });
+
+        db.ActionPlans.Add(new ActionPlan
+        {
+            Id = actionPlanId,
+            SubmissionId = submissionId,
+            CriteriaLabel = "A1", GroupTitle = "AUDIT", Status = "open",
+            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow,
+        });
+
+        await db.SaveChangesAsync();
+        return actionPlanId;
+    }
+
     [Fact]
-    public async Task Auditor_GetsList_ReturnsEmpty()
+    public async Task Auditor_GetsList_ReturnsOwnSubmissionPlans()
     {
         // Arrange
-        await SeedTestDataAsync();
-        var (client, _) = await CreateManagerClientAsync("auditor");
+        var (client, auditorUserId) = await CreateManagerClientAsync("auditor");
+        var planId = await SeedAuditorDataAsync(auditorUserId);
 
         // Act
         var response = await client.GetAsync("/api/action-plans");
@@ -156,7 +190,27 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var items = body.GetProperty("items").EnumerateArray().ToList();
 
-        Assert.Empty(items);
+        Assert.NotEmpty(items);
+        Assert.Contains(items, i => i.GetProperty("id").GetString() == planId.ToString());
+    }
+
+    [Fact]
+    public async Task Auditor_GetsList_ExcludesPlansFromOtherAuditors()
+    {
+        // Arrange: create two auditors; only seed plans for auditor2
+        var (client1, _) = await CreateManagerClientAsync("auditor");
+        var (_, auditor2UserId) = await CreateManagerClientAsync("auditor");
+        var otherPlanId = await SeedAuditorDataAsync(auditor2UserId);
+
+        // Act: auditor1 queries
+        var response = await client1.GetAsync("/api/action-plans");
+
+        // Assert: auditor1 must NOT see auditor2's plan
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var items = body.GetProperty("items").EnumerateArray().ToList();
+
+        Assert.DoesNotContain(items, i => i.GetProperty("id").GetString() == otherPlanId.ToString());
     }
 
     [Fact]

@@ -66,6 +66,8 @@ class ActionTimeline extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainer,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

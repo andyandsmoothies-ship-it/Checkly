@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
@@ -40,19 +42,19 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
   // ── Submit Evidence (Store Manager) ──
   void _showSubmitEvidenceSheet(ActionPlanDto plan) {
     final correctionCtrl = TextEditingController(text: plan.correctionPlan);
-    final evidenceCtrl = TextEditingController(text: plan.evidenceNote);
     final formKey = GlobalKey<FormState>();
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
+      isDismissible: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
         var isDirty = false;
         var isSubmitting = false;
+        String? photoPath;
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
             // Attach listeners once on first build
@@ -64,9 +66,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
             // We track via the initial text to detect changes
             final correctionChanged =
                 correctionCtrl.text != (plan.correctionPlan ?? '');
-            final evidenceChanged =
-                evidenceCtrl.text != (plan.evidenceNote ?? '');
-            final computedDirty = correctionChanged || evidenceChanged;
+            final computedDirty = correctionChanged;
 
             return UnsavedChangesGuard(
               isDirty: isDirty || computedDirty,
@@ -93,36 +93,72 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.close),
-                            onPressed: isSubmitting
-                                ? null // disable close while submitting
-                                : () {
-                                    if (isDirty || computedDirty) {
-                                      Navigator.maybePop(ctx);
-                                    } else {
-                                      Navigator.pop(ctx);
-                                    }
-                                  },
+                            onPressed: () {
+                              if (isSubmitting) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Submission running in background')),
+                                );
+                              }
+                              if (isDirty || computedDirty) {
+                                Navigator.maybePop(ctx);
+                              } else {
+                                Navigator.pop(ctx);
+                              }
+                            },
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
+                      Container(
+                        width: double.infinity,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Theme.of(ctx).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Theme.of(ctx).colorScheme.outlineVariant),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            final picker = ImagePicker();
+                            final xfile = await picker.pickImage(source: ImageSource.camera);
+                            if (xfile != null) {
+                              setSheetState(() {
+                                photoPath = xfile.path;
+                                isDirty = true;
+                              });
+                            }
+                          },
+                          child: photoPath != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    File(photoPath!),
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 100,
+                                  ),
+                                )
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_a_photo, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Upload Photo',
+                                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       TextFormField(
                         controller: correctionCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Correction Plan',
-                          border: OutlineInputBorder(),
-                        ),
-                        maxLines: 3,
-                        onChanged: (_) => markDirty(),
-                        validator: (v) =>
-                            v == null || v.trim().isEmpty ? 'Required' : null,
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: evidenceCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Evidence Note',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: 'Note (Action Taken)',
+                          border: const OutlineInputBorder(borderSide: BorderSide.none),
+                          filled: true,
+                          fillColor: Theme.of(ctx).colorScheme.surfaceContainerHighest,
                         ),
                         maxLines: 3,
                         onChanged: (_) => markDirty(),
@@ -132,6 +168,11 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                       const SizedBox(height: 16),
                       // H1 Fix: spinner lives inside the button; modal stays open during the call
                       FilledButton(
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 2,
+                          backgroundColor: Theme.of(ctx).colorScheme.primary,
+                        ),
                         onPressed: isSubmitting
                             ? null
                             : () async {
@@ -143,7 +184,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                                       plan,
                                       correctionPlan:
                                           correctionCtrl.text.trim(),
-                                      evidenceNote: evidenceCtrl.text.trim(),
+                                      photoPath: photoPath,
                                     ),
                                     successMsg:
                                         'Evidence submitted — awaiting verification',
@@ -351,6 +392,12 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
             );
 
         if (plan == null) {
+          if (_manager.isLoading) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Action Plan')),
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
           return Scaffold(
             appBar: AppBar(title: const Text('Action Plan')),
             body: const Center(child: Text('Action plan not found')),
@@ -495,19 +542,26 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                         const SizedBox(height: 12),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            plan.evidencePhotoUrl!,
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, e, s) => Container(
-                              height: 100,
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              child: const Center(
-                                child: Icon(Icons.broken_image),
-                              ),
-                            ),
-                          ),
+                          child: plan.evidencePhotoUrl!.startsWith('/') || plan.evidencePhotoUrl!.startsWith('file://')
+                              ? Image.file(
+                                  File(plan.evidencePhotoUrl!),
+                                  height: 200,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  plan.evidencePhotoUrl!,
+                                  height: 200,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, e, s) => Container(
+                                    height: 100,
+                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    child: const Center(
+                                      child: Icon(Icons.broken_image),
+                                    ),
+                                  ),
+                                ),
                         ),
                       ],
                     ],
@@ -551,6 +605,8 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(children: children),
@@ -603,32 +659,32 @@ class _InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,  // Fix: was center, causing icon to float mid-block on multi-line values
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 2),  // Align icon cap-height with first text baseline
+            padding: const EdgeInsets.only(top: 2),
             child: Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(width: 12),
-          SizedBox(
-            width: 70,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                label,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-          ),
           Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: valueColor,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: valueColor,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

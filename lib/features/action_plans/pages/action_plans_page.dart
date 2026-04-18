@@ -126,16 +126,67 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Action Plans')),
+      appBar: AppBar(
+        title: const Text('Action Plans'),
+        actions: [
+          ListenableBuilder(
+            listenable: _manager,
+            builder: (context, _) {
+              if (_countByStatus('all') == 0) return const SizedBox.shrink();
+              return PopupMenuButton<String>(
+                icon: const Icon(Icons.sort),
+                tooltip: 'Sort Action Plans',
+                onSelected: (value) => setState(() => _sort = value),
+                itemBuilder: (context) => [
+                  CheckedPopupMenuItem(
+                    value: 'newest',
+                    checked: _sort == 'newest',
+                    child: const Text('Newest First'),
+                  ),
+                  CheckedPopupMenuItem(
+                    value: 'urgent',
+                    checked: _sort == 'urgent',
+                    child: const Text('Urgent First'),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {
-          if (_manager.isLoading) {
+          if (_manager.isLoading && _manager.actionPlans.value.isEmpty) {
             return const Center(child: CircularProgressIndicator());
+          }
+
+          if (_manager.error != null && _manager.actionPlans.value.isEmpty) {
+            return ChecklyEmptyState(
+              icon: Icons.error_outline,
+              title: 'Failed to load',
+              subtitle: _manager.error!,
+              actionButton: FilledButton.icon(
+                onPressed: _manager.loadActionPlans,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Try Again'),
+              ),
+            );
           }
 
           return Column(
             children: [
+              if (_manager.error != null)
+                Container(
+                  width: double.infinity,
+                  color: Theme.of(context).colorScheme.errorContainer,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    _manager.error!,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               // Search bar
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -185,36 +236,6 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
-
-              // Sort selector — unified control row, hidden when no data exists
-              if (_countByStatus('all') > 0)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Sort:',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      WarmChip(
-                        label: 'Newest',
-                        selected: _sort == 'newest',
-                        onTap: () => setState(() => _sort = 'newest'),
-                      ),
-                      const SizedBox(width: 8),
-                      WarmChip(
-                        label: 'Urgent',
-                        selected: _sort == 'urgent',
-                        onTap: () => setState(() => _sort = 'urgent'),
-                      ),
-                    ],
-                  ),
-                ),
               const SizedBox(height: 8),
 
               // Grouped list
@@ -294,7 +315,7 @@ class _StoreGroup extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 // WCAG: raised from 0.4 → 0.62 for readable low-opacity tracking text
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.62),
-                letterSpacing: 3,
+                letterSpacing: 1.5,
               ),
             ),
             const SizedBox(width: 8),
@@ -347,29 +368,34 @@ class _ActionPlanCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              // Status indicator
-              Container(
-                width: 5,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: isOverdue ? theme.colorScheme.error : statusColor,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-              const SizedBox(width: 12),
-
               // Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      plan.criteriaLabel,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        // Status indicator
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: isOverdue ? theme.colorScheme.error : statusColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            plan.criteriaLabel,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
