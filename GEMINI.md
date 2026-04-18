@@ -55,6 +55,7 @@ After any significant implementation, debug, or refactor, assess whether a new l
 <SYSTEM_GUARD type="STRICT" name="ArtifactDensityFormatting">
 - **Rule**: Keep artifacts organized and easy to read.
 - **Enforcement**: Eradicate unnecessary filler words. Use structured tables and markdown alerts to make reading easy for the user.
+- **Diagramming Protocol**: When responding to the user or explaining ideas (if/else, who/what/when), actively use simple text-based flowcharts to demonstrate the basic idea. Use simple notations like `-->`, `<`, `[ ]`. Keep the wording in these diagrams short and concise.
 </SYSTEM_GUARD>
 
 ### The Anti-Magic-String Mandate (STRICT)

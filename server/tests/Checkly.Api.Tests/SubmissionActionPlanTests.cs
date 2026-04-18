@@ -316,6 +316,36 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         Assert.Equal(1, count); // RED: currently 0
     }
 
+    /// <summary>
+    /// S1-6: RISK/CCP criterion with a negative signal (e.g. note) triggers AP even if Value is 'conform' (PASS).
+    /// </summary>
+    [Fact]
+    public async Task S1_6_Risk_Or_Ccp_With_Negative_Signal_Triggers_AP_Even_If_Conform()
+    {
+        var (templateId, storeId, criteriaIds, _) = await SeedTestDataAsync(1);
+        var (client, _) = await CreateAuditorClientAsync();
+
+        // clientScore = 0m because IsRisk = true will trigger a critical failure and 0 out the score
+        var payload = new
+        {
+            templateId, storeId, clientScore = 0m,
+            answers = new[] { new { criteriaId = criteriaIds[0], value = "conform", numericValue = 5m, note = "Needs fixing", isRisk = true, isRepeatedError = false } },
+            idempotencyKey = Guid.NewGuid().ToString()
+        };
+
+        var response = await client.PostAsJsonAsync("/api/submissions", payload);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var submissionId = body.GetProperty("id").GetGuid();
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var count = await db.ActionPlans.CountAsync(a => a.SubmissionId == submissionId);
+
+        Assert.Equal(1, count); // Should trigger because of note + isRisk
+    }
+
     // ================================================================
     // S2: Notifications on AP Status Change
     // ================================================================

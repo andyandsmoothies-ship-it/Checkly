@@ -43,22 +43,20 @@ public static class ActionPlanEvaluator
         return triggered;
     }
 
-    private static bool IsFaulty(Answer answer)
+    private static bool HasNegativeSignal(Answer answer)
     {
-        if (string.Equals(answer.Value, "conform", System.StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(answer.Value, "na", System.StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        if (string.Equals(answer.Value, "non_conform", System.StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        return (answer.NumericValue ?? 0) > 0;
+        if (string.Equals(answer.Value, "non_conform", System.StringComparison.OrdinalIgnoreCase)) return true;
+        if ((answer.NumericValue ?? 0) > 0) return true;
+        if (!string.IsNullOrWhiteSpace(answer.Note)) return true;
+        if (!string.IsNullOrWhiteSpace(answer.PhotoUrl)) return true;
+        if (answer.IsRepeatedError == true) return true;
+        return false;
     }
 
     private static bool ShouldTrigger(Answer answer, Criterion criterion)
     {
-        // 1. Criticality Override: Any CCP or RISK criterion that has faults MUST trigger an action plan.
-        if ((criterion.IsRisk || criterion.IsCcp) && IsFaulty(answer))
+        // 1. Criticality Override: Any CCP or RISK criterion that has a negative signal MUST trigger an action plan.
+        if ((criterion.IsRisk || criterion.IsCcp) && HasNegativeSignal(answer))
         {
             return true;
         }
