@@ -149,6 +149,9 @@ When a submission is completed (via `CreateSubmission` or `FinalizeSubmission`),
   - `value_equals` (e.g., `"fail"`, `"non_conform"`) — matches exact answer values
   - `numeric_lt` / `numeric_gt` — threshold triggers for `scale` and `numeric` inputs
   - **Legacy default**: `pass_fail` criteria with `value = "non_conform"` (no explicit trigger config needed)
+- **Smart Triggers (Criticality & Overrides)**:
+  - **Manual Override**: If an auditor explicitly flags an answer during the audit (`answer.IsRisk = true`), it **unconditionally** triggers an action plan.
+  - **Critical Context**: If a criterion is globally flagged as `IsCcp` or `IsRisk`, AND the auditor attaches a negative signal (Note, Photo, or Repeats > 0), it triggers an action plan **even if the answer itself is marked as "pass/conform"**. This acts as a backstop for auditor error.
 - **Idempotency**: Skips if action plans already exist for that submission
 - **Deadline**: `NOW + N days` where N = `template.scoring_logic_config.features.action_plan_deadline_days` (default: 7, range: 1–90)
 - **Cap**: Max 10 APs per submission

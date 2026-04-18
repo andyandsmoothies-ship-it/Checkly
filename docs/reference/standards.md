@@ -170,3 +170,19 @@ For refactors reducing file size by >30% or extracting logic:
 - **Rule**: Never run `flutter pub upgrade` or `dotnet update` blindly.
 - **Context**: Upgrading core packages (like `connectivity_plus`, `go_router`, `flutter_secure_storage`) often introduces massive breaking changes (e.g., Android Gradle Plugin bumps, Jetpack Security rewrites) that destroy the build.
 - **Action**: All major dependency version bumps MUST be treated as architecture-level features (Track C). They require a dedicated ATDD branch, rigorous isolated testing, and a functional specification document outlining the breaking changes.
+
+---
+
+## 6. UX Copywriting & Error Messaging
+
+### Core Principles
+The application must maintain a professional, reassuring, and non-technical tone in all user-facing surfaces.
+
+- **Zero Developer Jargon**: Never expose internal variables (e.g., `$e`), stack traces, raw HTTP status codes, or database schema names to the user.
+- **Resolution-First**: Do not strand the user with a dead-end "Failed to load" message. Always provide a path to recovery or reassurance (e.g., "We encountered a system issue. Please try again.").
+- **Action-Oriented Verbs**: Dialogs and buttons must start with strong verbs that describe the outcome ("Delete Store", "Retry Sync"). Avoid generic actions like "OK" or "Submit" when a more descriptive term exists.
+- **Blame-Free Tone**: Never imply the user broke the system. Use passive voice for errors ("An error occurred") but active voice for successes ("You successfully created...").
+
+### Implementation Guards
+- **Try/Catch Blocks**: When catching an exception `e` in Flutter/C#, you must log `e.toString()` to the console/monitoring system, but you must map it to a user-friendly generic string for the `SnackBar` or `AlertDialog`.
+- **Validation Messages**: Form validation should be instructive ("Password must contain 8 characters") rather than scolding ("Invalid password").
