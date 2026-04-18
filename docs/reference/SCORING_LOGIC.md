@@ -3,7 +3,7 @@
 This document describes the technical implementation and business rules for all scoring modes in Checkly: **Penalty**, **Accumulation**, **Checklist**, and **Survey**.
 
 > [!NOTE]
-> As of 2026-03-17, **template type is a pure filter tag**. All features (Points, CCP, RISK, Confirm Correct, Weighted Density, Progressive Repeat) are universally available regardless of type. The `templateType == 'qc'` conditional logic has been fully removed.
+> As of 2026-03-17, **template type is a pure filter tag**. All features (Points, CCP, RISK, Is Required, Weighted Density, Progressive Repeat) are universally available regardless of type. The `templateType == 'qc'` conditional logic has been fully removed.
 
 ## 1. Hierarchy & Structure
 
@@ -81,11 +81,11 @@ The live HUD in the Audit Form displays "Points Earned / Points Possible".
 > [!IMPORTANT]
 > **Multi-Mode Support**: Templates support four scoring modes via `scoring_logic_config.scoringMode`: `penalty` (default), `accumulation`, `checklist`, and `survey`. The mode determines how the scoring engine calculates the final score.
 
-### Confirm Correct (Toggle)
-When the template scoring config has `confirm_correct: true`:
-- Auditor must tap **"Confirm Correct"** on each passing criteria before submitting
-- The button is a **toggle** — tapping again reverts to unconfirmed state
-- Confirmed state shows solid green; unconfirmed shows a primary-themed outline
+### Is Required (Per-Criterion)
+The legacy global "Confirm Correct" toggle has been replaced by a granular, per-criterion `isRequired` flag:
+- A criterion marked as `isRequired` displays a mandatory red asterisk in the UI.
+- The auditor must explicitly provide an answer or verify the item before the audit can be submitted.
+- This ensures targeted accountability without forcing users to tap a button for every single trivial passing item.
 
 
 ## 5. Survey and Checklist Modes (Builder Constraints)
@@ -95,7 +95,7 @@ To prevent novice users from creating mathematically invalid templates (e.g., tr
 When a template is created as a `survey` or `checklist`:
 - **Sub-sections are Physically Disabled**: The `+ Add Sub-Section` button is greyed out. Surveys and checklists strictly enforce a flat, 2-level hierarchy (Sections → Criteria) to ensure quick field operation.
 - **Scored Input Types are Greyed Out**: Users are blocked from selecting `pass_fail`, `numeric`, `fault_count`, or `scale` in the criterion designer.
-- **Scoring Engine Bypass**: If `scoringMode == 'survey'`, the scoring engine skips all calculation (`totalScore = null`). The live points HUD is hidden in the audit form.
+- **Scoring Engine Bypass**: If `scoringMode == 'survey'`, the scoring engine skips all calculation (`totalScore = null`). The live points HUD is hidden in the audit form, and the "Points Weight" input is completely hidden in the Template Builder to prevent UX confusion.
 - **Answers stored normally** — `Answer.Value` holds the selected option label (or comma-separated for multi-choice)
 - **Analytics endpoint**: `GET /api/submissions/survey-results?templateId={id}` — admin-only, aggregates option counts per criterion
 - **Choice input types**: `single_choice` (pick one) and `multi_choice` (select all that apply) — options stored in `criteria.metadata` as `{"options": ["A","B","C"]}`

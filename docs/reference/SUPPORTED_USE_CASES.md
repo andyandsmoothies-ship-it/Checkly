@@ -12,7 +12,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 | **Input Types** | Pass/Fail (e.g., Is the floor clean?), Fault Count (e.g., How many expired items?), Scored Choices (e.g., Poor/Fair/Good), Single Choice (e.g., Which shift?), Multi Choice (e.g., Select all that apply), Text Input (free-form notes, observations) |
 | **Hierarchy** | 2-level (Section → Criteria) or 3-level (Section → Sub-section → Criteria) |
 | **Critical Failure** | CCP (Zeros the section), RISK (Zeros the entire audit) |
-| **Other Modifiers** | Progressive Repeat Penalty, Confirm Correct, Weighted Density |
+| **Other Modifiers** | Progressive Repeat Penalty, Per-Criterion "Is Required", Weighted Density |
 | **Analytics** | Survey Results — aggregated option distribution per question (admin-only) |
 
 ---
@@ -127,7 +127,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 **Admin Setup Workflow:**
 1. **Scoring Mode:** `Checklist (Pass/Fail)`.
 2. **Criteria Input Type:** `Fault Count` — use when they need to input a value (e.g., "Fridge Temperature").
-3. **Scoring Rules:** Enable `Confirm Correct` — forces the user to explicitly tap a "Standard Verified" button for every passing item, ensuring physical interaction with the checklist.
+3. **Scoring Rules:** Enable the `Is Required` toggle on critical items to force the auditor to explicitly verify or provide a value before submission.
 
 ### 11. Safety Equipment Verification (Any Industry)
 **Goal:** Routine daily walk-around to check fire extinguishers, first aid kits, etc.
@@ -175,7 +175,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 1. **Scoring Mode:** `Survey (No Scoring)`.
 2. **Criteria Input Type:** Mix of `Single Choice` (rating questions) and `Multi Choice` ("Which topics were most useful?").
 3. **Choice Options:** Configure 3-5 options per question in the Template Builder's "Choice Options" editor.
-4. **Expert Note:** Survey submissions appear on the History page with a purple **SURVEY** badge instead of a score. Points weight is hidden for choice-type criteria.
+4. **Expert Note:** Survey submissions appear on the History page with a purple **SURVEY** badge instead of a score. The "Points Weight" input is strictly hidden for all criteria in Survey mode to prevent confusion.
 
 ---
 

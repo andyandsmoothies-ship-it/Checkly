@@ -26,7 +26,7 @@
 | **Criteria Bottom Sheet** | Tap a criterion row → opens modal bottom sheet with full editing controls | `audit_form_page.dart` |
 | **Live Score HUD** | Sticky points display (`earned / max pts`) with circular progress | `_ScoreHud` widget |
 | **Status Badges** | Color-coded chips on criterion rows (pass/fail/pending) | `_StatusBadge` widget |
-| **Confirm Correct Toggle** | Primary-colored button, toggles between "Confirm Correct" and "Standard Verified" | `_showCriterionSheet` |
+| **Is Required Indicator** | Red asterisk `*` appended to criterion titles to denote mandatory fields | `CriterionCard` |
 | **Scoring Rules Card** | 3 groups: Scoring Formula → Critical Failure Rules → Audit Behavior | `_ScoringRulesCard` |
 | **Layout Locking** | Root sections commit to flat criteria OR sub-sections, never both | `_SectionEditor` |
 | **Scored Choices Input** | Radio-tile selector for scored choice criteria (e.g., Poor=0/Good=5/Excellent=10) | `_ScaleInput` |

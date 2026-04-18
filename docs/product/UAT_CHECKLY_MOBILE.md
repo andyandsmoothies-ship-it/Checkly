@@ -95,8 +95,8 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 6.3 | Fault Count Input | Tap a fault count criterion → Enter "3" faults | Faults + Repeats row shown. Deduction calculated. | [ ] |
 | 6.4 | Scored Choices Input | Tap a scored choices criterion | Radio chips appear (e.g., Poor/Fair/Good/Excellent). | [ ] |
 | 6.5 | Scale Selection | Tap "Good (5)" on a scale criterion | Score updates. Value = "Good", numericValue = 5 stored. | [ ] |
-| 6.6 | Confirm Correct | Template has Confirm Correct enabled → No faults on item | "Confirm Correct" button shown. Must tap to verify. | [ ] |
-| 6.7 | Confirm Correct Toggle | Tap "Confirm Correct" → Tap again | Toggles between "Standard Verified" ↔ "Confirm Correct". | [ ] |
+| 6.6 | Is Required Verification | Criterion is marked `isRequired` | Red asterisk shown. User must provide an answer/verify before submitting. | [ ] |
+| 6.7 | Is Required Gate | Attempt to submit audit with empty `isRequired` items | System blocks submission and highlights incomplete items. | [ ] |
 | 6.8 | Mandatory Fields | Try to submit with unanswered criteria | Shows validation error. Highlights missed items. | [ ] |
 
 ## Module 7: Scoring Engine & Logic Rules
