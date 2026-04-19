@@ -7,7 +7,7 @@ description: The Core Builder Implementation Workflow
 # /implement Workflow
 
 > [!CAUTION]
-> **[PHASE_2.5_YIELD_LOCK]**: PROHIBITED: Executing entire workflow in a single run. MANDATORY: Yield at **Phase 2.5**. PROHIBITED: Writing prod code (Phase 3) until QA writes tests.
+> **[TEST_FIRST_LOCK]**: PROHIBITED: Writing prod code until QA writes failing tests (unless explicitly instructed as Track B1).
 
 ## Phase 0: Init & Calibration
 | Step | Execution Contract |
@@ -21,16 +21,15 @@ description: The Core Builder Implementation Workflow
 Workflow: /implement | Track: [A / B1 / B2 / C]
 
 ## Upfront
-- [ ] Phase 1: Deep Discovery
-- [ ] Phase 2: Planning & Slicing
-- [ ] Phase 2.5: QA TDD Execution (Via QA session)
+- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
 
 ## Active Slice
 - [ ] Slice [N]: [Name] (Read Tests -> Code -> Verify)
 
 ## Wrap Up
-- [ ] Phase 4: Self-Review
-- [ ] Phase 5: Handoff -> Terminate session
+- [ ] Phase 2: Self-Review
+- [ ] Phase 3: Handoff -> Terminate session
 
 ## Artifacts
 | Status | File Path | Type |
@@ -39,49 +38,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | [NEW] | brain/.../executed_tests_[topic].md | Test Log |
 ```
 
-## Phase 1: Deep Discovery
-| Step | Execution Contract |
-|---|---|
-| **Topology** | Parse config files (`.csproj`, `pubspec.yaml`). |
-| **Step 0 Nuke** | IF structure refactor -> Remove unused imports/dead code first. |
-| **Skill Load** | Load `tdd`. IF `dotnet` THEN Load `testing-strategy`. Load 2 dynamic skills. |
-
-> **@@SCAN**: (1) Skills loaded? (2) Core files scanned?
-
-## Phase 2: Planning
-| Step | Execution Contract |
-|---|---|
-| **Plan Check**| IF `implementation_plan.md` exists -> Execute Quality Checklist. ELSE -> generate lightweight plan -> Yield. |
-| **Verification Pledge**| Declare terminal validation commands (e.g. `flutter test`) upfront. |
-| **JIT Harness** | Declare `[ACTIVE_SKILLS]` at the top of the plan. Drop all other context. |
-| **ATDD Ingestion**| Read existing `.md` test contracts and physical test files. |
-| **Trust But Verify**| Spot-check 1 core plan claim via `grep_search` before coding. |
-| **YAGNI Gate** | IF feature adds unrequested complexity -> Create tradeoff table. |
-
-### Plan Quality Checklist
-- [ ] Goal stated?
-- [ ] JIT Harness (`[ACTIVE_SKILLS]`) declared?
-- [ ] File delta (`[NEW]`, `[MOD]`, `[DEL]`) defined?
-- [ ] DB/Schema migrations handled?
-- [ ] Blast radius identified?
-- [ ] Verification steps concrete?
-
-> **@@SCAN**: (1) Passes Plan Checklist? (2) Spot-check Result? (3) Passes YAGNI?
-
-## Phase 2.5: QA TDD Handoff (MANDATORY YIELD)
-> [!CAUTION]
-> **Anti-Bias Protocol:** Builder CANNOT write own tests.
-| Step | Execution Contract |
-|---|---|
-| **Artifact Create**| Write `test_contracts_[topic].md` to brain dir. Format: `ID`, `Exact Text`, `State Matrix`, `Why RED`. |
-| **Execution Lock**| PROHIBITED: Entering Phase 3 without TDD execution. Output block below -> YIELD. |
-
-> [!IMPORTANT]
-> **YOUR NEXT COMMAND:** 
-> - Switch to Sentinel QA: `@[/tdd] Execute test authoring based on this contract: {Path_to_test_contracts.md}`
-> - Once `/tdd` is complete, return here and type: `Here is the result of tdd. Go.`
-
-## Phase 3: Coding
+## Phase 1: Coding (The Builder Phase)
 > **@@SCAN — Pre-Code (MANDATORY)**
 > `[SCAN] Active rules: <list>` | `[SCAN] Gotchas: <list/NONE>` | `[SCAN] Active skills: <list>`
 
@@ -101,7 +58,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 > **@@SCAN**: (1) Red/Green respected? (2) Verify gate run?
 
-## Phase 4: Self-Review
+## Phase 2: Self-Review
 Review from 6 angles:
 0. **Double-Check Hack**: Verify code did not violate loaded `[ACTIVE_SKILLS]`.
 1. **Security/Arch**: Check illegal imports.
@@ -119,7 +76,7 @@ Review from 6 angles:
 
 > **@@SCAN**: (1) 4 angles reviewed? (2) State tests exist? (3) `git diff` clean?
 
-## Phase 5: Handoff
+## Phase 3: Handoff
 | State | Condition | Result Action |
 |---|---|---|
 | **Ship/Show** | Green TDD, Blast Radius 0 | Write FULL `walkthrough.md` + `executed_tests.md` -> Execute Verify Script. |

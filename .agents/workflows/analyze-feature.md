@@ -33,17 +33,13 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Vector | Execution Contract |
 |---|---|
-| **Blind Objective Research** | MANDATORY: Do NOT propose implementation solutions yet. Extract facts only. Execute a blind dependency scan to learn how the current code actually works. If you assume how it works, you will hallucinate. |
-| **Origin Idea Alignment** | MANDATORY: Extract the `[ORIGIN_IDEA]` tag from upstream artifacts. Before proposing a technical plan, explicitly counter-check: Does this exact solution genuinely solve the human's original idea? If the research drifted from the original goal, halt and realign the plan immediately. |
-| **Hostile Artifact Validation** | MANDATORY: If an input artifact (e.g., ADR or Research) is provided, you MUST physically validate its assumptions against the real codebase. Check 1) Does the idea violate Clean Architecture boundaries? 2) Does it trigger severe unintended consequences (e.g., Router eviction)? If the input artifact contains physically dangerous or impossible ideas, you MUST override and reject them. Be a gatekeeper, not a blind translator. |
-| **Skill Load** | Extract Persona -> Load 1-2 matching skills from `.agents/skills/`. |
-| **Constraint Def**| Define Strict Boundaries (WHAT it does) AND YAGNI (WHAT is OUT OF SCOPE). MANDATORY: Enforce Simplicity First. Outline absolute minimum code that solves the problem. Explicitly state what 'flexible' or 'configurable' ghost requirements are OUT OF SCOPE. |
-| **Vertical Micro-Slicing**| MANDATORY: Never slice horizontally by layer (e.g., DB-only). All plans must be end-to-end and testable. If a plan is too large, slice VERTICALLY by removing infrastructure complexity (e.g., build brute-force data flow first, add cache in a future slice). |
-| **Trade-Off Analysis (Crickett's Rule)** | Explicitly answer: What does this approach do? Why is it done this way? What are the tradeoffs against >= 1 alternative "Ideal Enterprise" approach? Justify the pragmatic choice in simple English. |
-| **Risk Assessment** | Formally assess the technical and operational risks of the chosen approach, and document mitigation strategies. |
-| **NFR Constraints** | MANDATORY: Explicitly define 3 Non-Functional Requirements for this feature: Performance (latency/load limits), Security (Auth rules/data isolation), and Observability (required telemetry/logs). |
+| **Topology & Baseline** | Parse config files (.csproj, pubspec.yaml). Find structural boundaries. |
+| **Blind Objective Research** | Extract facts only. Execute a blind dependency scan to learn how the current code actually works before planning. |
+| **Hostile Validation** | If an input artifact (ADR/Research) is provided, physically validate its assumptions via grep_search. Reject impossible ideas. |
+| **Constraint Def (YAGNI)**| Define Strict Boundaries. Outline absolute minimum code. State what ghost requirements are OUT OF SCOPE. |
+| **Trust But Verify**| Spot-check at least 1 core plan claim via grep_search before finalizing the plan. |
 
-> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Did you restrict the generated plan to a single Micro-Slice if layers > 2? (4) NFR Constraints defined? (5) Risk Assessment included?
+> **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Spot-check complete?
 
 ## Phase 2: Resilience & Blast Radius
 
@@ -60,6 +56,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Process | Execution Contract |
 |---|---|
+| **QA Test Contracts (TDD)** | MANDATORY for Track B2/C: Generate raw data for QA. Your plan MUST include a Test Contract section (Format: ID, Exact Text, State Matrix, Why RED) that the SDET can easily ingest into their test suite. |
+| **JIT Harness & Verification** | Declare [ACTIVE_SKILLS] needed for the Builder. Declare terminal validation commands (e.g. lutter test or dotnet test) upfront. |
 | **High-Level Design Document** | MANDATORY: Use `write_to_file` to generate `implementation_plan_[topic]_[ConversationID].md` into the `brain/` directory. NEVER dump the tactical plan directly into the chat UI. Keep the document highly readable for human review before execution. |
 | **Artifact Generation** | The final plan MUST contain explicit *Verifiable Goals* (e.g., 'Write X test -> Verify Red -> Implement Y -> Verify Green') rather than just vague developer instructions. |
 ## Phase 4: Route Implementation (The ATDD Gate)
@@ -74,32 +72,34 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **State** | Simple flag | Complex state machine |
 | **Testing** | Low risk (UI/Cosmetic) | High risk (Silent corruption) |
 
-## 🚦 User Handoff & Next Steps
+## 🚦 Handoff
 
 > [!IMPORTANT]
-> **Output Created:** `implementation_plan_[topic]_[ConversationID].md`
-> 
-> **YOUR NEXT COMMAND & CONCURRENCY:**
-> - **Concurrency Strategy**: If you generated multiple Micro-Slices, explicitly declare which slices are `[BLOCKING]` (must run alone/first) and which are `[PARALLEL]` (can be dispatched concurrently in separate AI windows to save user waiting time).
-> - **If Track B2 (High Risk):** Switch to Sentinel QA and type: `@[/atdd] Execute based on this exact plan: {Absolute_Path_to_implementation_plan.md}`
-> - **If Track B1 (Low Risk):** Switch to Forge Builder and type: `@[/implement] Execute based on this exact plan: {Absolute_Path_to_implementation_plan.md}`
+> **Action:** Output the exact routing commands below for the user. Map each generated Execution Slice to its required route.
+>
+> **Route 1: Logic/Standard (QA-First)**
+> @[/tdd] Execute tests for Slice [N]: {Absolute_Path_to_plan}
+>
+> **Route 2: Cosmetic/Low-Risk (Direct Build)**
+> @[/implement] Execute build for Slice [N]: {Absolute_Path_to_plan}
+>
+> **Route 3: Epic/High-Risk (ATDD-First)**
+> @[/atdd] Execute specs for Slice [N]: {Absolute_Path_to_plan}
+>
+> **Concurrency:** State explicitly which slices are [BLOCKING] vs [PARALLEL].
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `implementation_plan_[topic]_[ConversationID].md` MUST INCLUDE the following EXACT headers and sections:
-> - `<latent_space_scratchpad>`: To artificially expand your computational thinking on edge cases prior to outputting the plan.
+> **Payload Schema:** Your generated `implementation_plan_[topic]_[ConversationID].md` MUST INCLUDE the following EXACT headers and sections. Keep it dense and brief.
+> - `<latent_space_scratchpad>`: Computational thinking on edge cases prior to outputting the plan.
 > - `## Executive Summary & YAGNI`
-> - `## Trade-Off Analysis (Pros/Cons)`
-> - `## Risk Assessment`
-> - `## Decision Rationale`
-> - `## 4-State Matrix`
-> - `## Business Rules`
-> - `## Proposed Changes`: (MANDATORY EXACT HEADER) List `[NEW]/[MOD]/[DEL]` files.
-> - `## Execution Slices`: **(CRITICAL) You MUST group the work into isolated Micro-Slices. For every [MOD] file, you MUST provide the exact `Replace this: ... With this:` code blocks. Do NOT just write English descriptions of the changes. The Builder AI needs exact diffs.**
-> - `## Tactical Rollback Plan`
-> - `## Verification Plan`
+> - `## 4-State Matrix` (Success, Error, Empty, Loading)
+> - `## Test Contracts` (ID, Exact Text, State Matrix, Why RED)
+> - `## JIT Harness & Verification` (Active skills and terminal validation commands)
+> - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
+> - `## Execution Slices`: **(CRITICAL)** Group work into isolated slices. Define the **Structural Blueprint** (e.g., 'Add nullable field', 'Wrap in Try/Catch'). **DO NOT write exact code diffs.** The Builder will write the code.
 > - `<forensic_evidence>`: Tags containing a list of terminal commands run.
-> - `## Handoff Block`: Containing an **AI Agent Mission Brief** (A short 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
+> - `## Handoff Block`: An AI Agent Mission Brief (TL;DR for the next AI agent).
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

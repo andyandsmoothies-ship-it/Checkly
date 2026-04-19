@@ -77,8 +77,10 @@ Workflow: /analyze-epic | Track: C
 | **Dispatch Map** | Generate Routing Table. `Slice N | Track A/B | Route Path`. |
 
 ### Dispatch Map Schema
-- **Track A (Cosmetic/Static):** `/analyze-feature` -> `/implement`
-- **Track B (Logic/State/Mutation):** `/analyze-feature` -> `/atdd` -> `/implement`
+The Epic must be sliced and routed to the downstream feature agents:
+- **Track B1 (Cosmetic/Static UI):** Route to -> `[/analyze-feature]` -> `[/implement]`
+- **Track B2 (Logic/State/API):** Route to -> `[/analyze-feature]` -> `[/tdd]` -> `[/implement]`
+
 - **Concurrency & Gating Strategy**: For every slice, explicitly declare its execution dependency:
     - `[BLOCKING]`: Must be analyzed/implemented FIRST and ALONE (subsequent slices depend on it).
     - `[PARALLEL]`: Independent slice. Explicitly state which other slices it can be executed concurrently with (to save waiting time via multiple AI sessions).

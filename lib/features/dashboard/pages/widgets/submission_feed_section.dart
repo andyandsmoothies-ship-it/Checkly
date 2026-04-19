@@ -245,6 +245,14 @@ class _SubmissionRowState extends State<SubmissionRow> {
         onTap: isDraft
             ? _resumeDraft
             : () {
+                if (sub.id.startsWith('local_outbox_')) {
+                  ScaffoldMessenger.of(widget.context).showSnackBar(
+                    const SnackBar(
+                      content: Text('This audit is syncing. Please wait a moment.'),
+                    ),
+                  );
+                  return;
+                }
                 showModalBottomSheet(
                   context: widget.context,
                   isScrollControlled: true,

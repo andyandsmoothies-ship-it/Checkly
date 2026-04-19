@@ -380,6 +380,14 @@ class _HistoryPageState extends State<HistoryPage> {
                                 storeName: entry.key,
                                 submissions: entry.value,
                                 onPreviewAudit: (submission) {
+                                  if (submission.id.startsWith('local_outbox_')) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('This audit is syncing. Please wait a moment.'),
+                                      ),
+                                    );
+                                    return;
+                                  }
                                   showModalBottomSheet(
                                     context: context,
                                     isScrollControlled: true,
