@@ -21,6 +21,8 @@ public static class GetSubmission
         var submission = await db.Submissions
             .AsNoTracking()
             .Include(s => s.Answers)
+            .Include(s => s.ActionPlans)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(s => s.Id == id, ct);
 
         if (submission is null)
@@ -44,7 +46,8 @@ public static class GetSubmission
                 a.Id, a.CriteriaId, a.CriteriaLabel,
                 a.Value, a.NumericValue, a.Note,
                 a.PhotoUrl, a.IsRepeatedError,
-                a.IsCcp, a.IsRisk)).ToList(),
+                a.IsCcp, a.IsRisk,
+                submission.ActionPlans.FirstOrDefault(ap => ap.AnswerId == a.Id)?.Id)).ToList(),
             submission.TemplateSnapshot,
             submission.TemplateVersion);
 

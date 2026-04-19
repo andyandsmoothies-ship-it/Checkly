@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../model/submission_dto.dart';
 import '../../templates/models/template_dto.dart';
 import '../../../_shared/theme/app_theme.dart';
+import 'package:go_router/go_router.dart';
 
 bool _isScored(String? inputType) =>
     inputType != 'text' &&
@@ -223,6 +224,19 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                     ),
                   ),
                 ),
+              ),
+            ),
+          ],
+
+          // Action Plan deep-link
+          if (answer.actionPlanId != null && answer.actionPlanId!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: OutlinedButton.icon(
+                onPressed: () => context.push('/plans/${answer.actionPlanId}'),
+                icon: const Icon(Icons.arrow_forward, size: 16),
+                label: const Text('View Action Plan'),
               ),
             ),
           ],

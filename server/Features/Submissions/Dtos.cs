@@ -77,4 +77,5 @@ public sealed record AnswerDto(
     string? PhotoUrl,
     bool IsRepeatedError,
     bool IsCcp,
-    bool IsRisk);
+    bool IsRisk,
+    Guid? ActionPlanId = null);
