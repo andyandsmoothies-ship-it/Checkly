@@ -8,6 +8,7 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 
 > [!NOTE]
 > Deep Architecture Pipeline. Target: Massive, multi-layer epics (Track C). Requires Red Team adversarial review and formal slicing.
+> **Use when:** Unknown requirements, new state machines, new user personas, or spans >1 new DB table.
 
 > [!CAUTION]
 > **ANTI-HALLUCINATION GUARDRAIL:** PROHIBITED: Generating exact implementation code, literal SQL table schemas, Dart class definitions, or C# line-by-line diffs. The Epic Analysis MUST remain at the Macro-level. Limit output to Component Architecture Flow, System API Contracts, Risk Mapping, and Use-Case Vertical Slicing. Leave code definitions for the Feature agents.

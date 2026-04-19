@@ -31,6 +31,8 @@ public sealed class ActionPlan
     public string? StoreName { get; set; }
     public string? StoreManagerName { get; set; }
     public string? VerifierName { get; set; }
+    public DateTimeOffset? EvidenceSubmittedAt { get; set; }
+    public string? EvidenceSubmittedByName { get; set; }
 
     // Navigation properties
     public Answer? Answer { get; set; }

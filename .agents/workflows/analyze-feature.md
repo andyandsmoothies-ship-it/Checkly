@@ -63,7 +63,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 ## Phase 4: Route Implementation (The ATDD Gate)
 
 > [!CAUTION]
-> **[SCOPE_ESCALATION_TRAP]**: IF (requires DB migration OR alters core infrastructure like routing/auth OR introduces new architectural patterns OR spans >2 distinct feature domains) THEN STOP -> Escalate to Track C -> Run `/analyze-epic`. DO NOT ROUTE HERE.
+> **[SCOPE_ESCALATION_TRAP]**: IF (Unknown requirements OR New state machines OR New user personas OR Spans >1 new DB table) THEN STOP -> Escalate to Track C -> Run `/analyze-epic`. DO NOT ROUTE HERE unless requirements are absolute, uses existing UI/architecture, and is an isolated addition.
 
 | Signal Check | Route: B1 (Direct Implement) | Route: B2 (QA ATDD Spec) |
 |---|---|---|

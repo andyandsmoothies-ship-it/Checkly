@@ -145,6 +145,7 @@ void main() {
       plan,
       correctionPlan: 'Fix the issue',
       evidenceNote: 'Photo attached',
+      currentUserName: 'Test User',
     );
 
     expect(result.status, 'pending_verify');
@@ -210,6 +211,7 @@ void main() {
           plan,
           correctionPlan: 'Fix',
           evidenceNote: 'Note',
+          currentUserName: 'Test User',
         ),
         throwsA(isA<RoleGuardException>()),
       );

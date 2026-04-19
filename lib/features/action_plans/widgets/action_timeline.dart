@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:intl/intl.dart';
+
 import '../../../_shared/theme/app_theme.dart';
+import '../model/action_plan_dto.dart';
 
 /// Step status for the action plan timeline.
 enum TimelineStepStatus { done, current, pending }
@@ -27,13 +30,12 @@ class ActionTimeline extends StatelessWidget {
 
   const ActionTimeline({super.key, required this.steps});
 
-  /// Convenience factory from action plan status string.
-  factory ActionTimeline.fromStatus(String status) {
+  /// Convenience factory from action plan DTO.
+  factory ActionTimeline.fromPlan(ActionPlanDto plan) {
     final steps = <TimelineStep>[];
-
     TimelineStepStatus s1, s2, s3;
 
-    switch (status.toLowerCase()) {
+    switch (plan.status.toLowerCase()) {
       case 'closed' || 'verified':
         s1 = TimelineStepStatus.done;
         s2 = TimelineStepStatus.done;
@@ -43,19 +45,36 @@ class ActionTimeline extends StatelessWidget {
         s2 = TimelineStepStatus.done;
         s3 = TimelineStepStatus.current;
       case 'open':
+      default:
         s1 = TimelineStepStatus.done;
         s2 = TimelineStepStatus.current;
         s3 = TimelineStepStatus.pending;
-      default:
-        s1 = TimelineStepStatus.current;
-        s2 = TimelineStepStatus.pending;
-        s3 = TimelineStepStatus.pending;
     }
 
+    String fmt(DateTime d) => DateFormat('MMM d, yyyy h:mm a').format(d.toLocal());
+
     steps.addAll([
-      TimelineStep(title: 'Identified', status: s1),
-      TimelineStep(title: 'Evidence Submitted', status: s2),
-      TimelineStep(title: 'Verified & Closed', status: s3),
+      TimelineStep(
+        title: 'Identified',
+        subtitle: plan.storeManagerName != null 
+            ? "by ${plan.storeManagerName} · ${fmt(plan.createdAt)}" 
+            : null,
+        status: s1,
+      ),
+      TimelineStep(
+        title: 'Evidence Submitted',
+        subtitle: plan.evidenceSubmittedAt != null
+            ? "by ${plan.evidenceSubmittedByName ?? 'Unknown'} · ${fmt(plan.evidenceSubmittedAt!)}"
+            : null,
+        status: s2,
+      ),
+      TimelineStep(
+        title: 'Verified & Closed',
+        subtitle: plan.closedAt != null
+            ? "by ${plan.verifierName ?? 'Unknown'} · ${fmt(plan.closedAt!)}"
+            : null,
+        status: s3,
+      ),
     ]);
 
     return ActionTimeline(steps: steps);

@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -110,6 +110,11 @@ class AppDatabase extends _$AppDatabase {
         // Auditor Manual Override fix: persist answer-level RISK/CCP overrides.
         await m.addColumn(pendingAnswers, pendingAnswers.isCcp);
         await m.addColumn(pendingAnswers, pendingAnswers.isRisk);
+      }
+      if (from < 15) {
+        // Action Plan Audit Trail: add evidence submission fields.
+        await m.addColumn(cachedActionPlans, cachedActionPlans.evidenceSubmittedAt);
+        await m.addColumn(cachedActionPlans, cachedActionPlans.evidenceSubmittedByName);
       }
     },
     beforeOpen: (details) async {

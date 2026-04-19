@@ -135,6 +135,8 @@ class ActionPlanManager extends ChangeNotifier {
                   evidenceNote: Value(plan.evidenceNote),
                   closedAt: Value(plan.closedAt),
                   verifierName: Value(plan.verifierName),
+                  evidenceSubmittedAt: Value(plan.evidenceSubmittedAt),
+                  evidenceSubmittedByName: Value(plan.evidenceSubmittedByName),
                   deadline: Value(plan.deadline),
                   createdAt: plan.createdAt,
                   updatedAt: plan.updatedAt,
@@ -173,6 +175,8 @@ class ActionPlanManager extends ChangeNotifier {
               evidenceNote: row.evidenceNote,
               closedAt: row.closedAt,
               verifierName: row.verifierName,
+              evidenceSubmittedAt: row.evidenceSubmittedAt,
+              evidenceSubmittedByName: row.evidenceSubmittedByName,
               deadline: row.deadline,
               createdAt: row.createdAt,
               updatedAt: row.updatedAt,
@@ -200,6 +204,7 @@ class ActionPlanManager extends ChangeNotifier {
   Future<ActionPlanDto> submitEvidence(
     ActionPlanDto plan, {
     required String correctionPlan,
+    required String currentUserName,
     String? evidenceNote,
     String? photoPath,
   }) async {
@@ -234,6 +239,8 @@ class ActionPlanManager extends ChangeNotifier {
         evidenceNote: evidenceNote,
         closedAt: plan.closedAt,
         verifierName: plan.verifierName,
+        evidenceSubmittedAt: DateTime.now().toUtc(),
+        evidenceSubmittedByName: currentUserName,
         deadline: plan.deadline,
         createdAt: plan.createdAt,
         updatedAt: DateTime.now(),

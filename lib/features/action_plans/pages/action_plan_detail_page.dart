@@ -198,6 +198,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                                       plan,
                                       correctionPlan:
                                           correctionCtrl.text.trim(),
+                                      currentUserName: _userName,
                                       photoPath: photoPath,
                                     ),
                                     successMsg:
@@ -430,7 +431,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
             padding: const EdgeInsets.all(16),
             children: [
               // ── Status Timeline ──
-              ActionTimeline.fromStatus(plan.status),
+              ActionTimeline.fromPlan(plan),
               const SizedBox(height: 16),
 
               if (plan.rootCause == 'SYSTEM_VOID')

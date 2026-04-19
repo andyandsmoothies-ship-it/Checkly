@@ -375,6 +375,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.StoreName).HasColumnName("store_name");
             e.Property(x => x.StoreManagerName).HasColumnName("store_manager_name");
             e.Property(x => x.VerifierName).HasColumnName("verifier_name");
+            e.Property(x => x.EvidenceSubmittedAt).HasColumnName("evidence_submitted_at");
+            e.Property(x => x.EvidenceSubmittedByName).HasColumnName("evidence_submitted_by_name");
 
             e.HasOne(x => x.Answer)
                 .WithMany(a => a.ActionPlans)

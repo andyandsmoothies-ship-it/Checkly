@@ -7,7 +7,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 # Workflow: /research
 
 > [!NOTE]
-> Discovery & Architecture workflow. Used to explore ideas *before* spec writing. Handoff to `/analysis` or `/implement`.
+> Discovery & Architecture workflow. Used to explore ideas *before* spec writing. Handoff to `/analyze-epic` (for massive systems) or `/analyze-feature` (for tactical additions).
 
 ## Phase 0: Pre-Flight
 > [!IMPORTANT]

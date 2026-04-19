@@ -40,5 +40,7 @@ public sealed record ActionPlanDto(
     DateTimeOffset? Deadline,
     DateTimeOffset? ClosedAt,
     string? VerifierName,
+    DateTimeOffset? EvidenceSubmittedAt,
+    string? EvidenceSubmittedByName,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);

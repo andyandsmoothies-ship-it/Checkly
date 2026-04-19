@@ -67,5 +67,6 @@ public static class CreateActionPlan
         p.RootCause, p.CorrectionPlan,
         p.EvidencePhotoUrl, p.EvidenceNote,
         p.Status, p.Deadline, p.ClosedAt,
-        p.VerifierName, p.CreatedAt, p.UpdatedAt);
+        p.VerifierName, p.EvidenceSubmittedAt, p.EvidenceSubmittedByName,
+        p.CreatedAt, p.UpdatedAt);
 }

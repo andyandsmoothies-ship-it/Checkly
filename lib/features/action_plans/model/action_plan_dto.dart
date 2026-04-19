@@ -15,6 +15,8 @@ class ActionPlanDto {
   final String? evidenceNote;
   final DateTime? closedAt;
   final String? verifierName;
+  final DateTime? evidenceSubmittedAt;
+  final String? evidenceSubmittedByName;
   final DateTime? deadline;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -33,6 +35,8 @@ class ActionPlanDto {
     this.evidenceNote,
     this.closedAt,
     this.verifierName,
+    this.evidenceSubmittedAt,
+    this.evidenceSubmittedByName,
     this.deadline,
     required this.createdAt,
     required this.updatedAt,
@@ -54,6 +58,10 @@ class ActionPlanDto {
         ? DateTime.parse(json['closedAt'] as String)
         : null,
     verifierName: json['verifierName'] as String?,
+    evidenceSubmittedAt: json['evidenceSubmittedAt'] != null
+        ? DateTime.parse(json['evidenceSubmittedAt'] as String)
+        : null,
+    evidenceSubmittedByName: json['evidenceSubmittedByName'] as String?,
     deadline: json['deadline'] != null
         ? DateTime.parse(json['deadline'] as String)
         : null,

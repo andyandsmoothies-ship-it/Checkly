@@ -89,6 +89,7 @@ void main() {
           openPlan,
           correctionPlan: 'Fix applied',
           evidenceNote: 'See photo',
+          currentUserName: 'Test User',
         );
 
         // Assert
@@ -111,6 +112,7 @@ void main() {
           openPlan,
           correctionPlan: 'Fix applied',
           evidenceNote: 'See photo',
+          currentUserName: 'Test User',
         );
 
         // Assert
@@ -125,7 +127,7 @@ void main() {
 
         // Act & Assert
         expect(
-          () => manager.submitEvidence(openPlan, correctionPlan: 'x', evidenceNote: 'x'),
+          () => manager.submitEvidence(openPlan, correctionPlan: 'x', evidenceNote: 'x', currentUserName: 'Test User'),
           throwsA(isA<RoleGuardException>()),
         );
       });
@@ -136,7 +138,7 @@ void main() {
 
         // Act & Assert
         expect(
-          () => manager.submitEvidence(pendingPlan, correctionPlan: 'x', evidenceNote: 'x'),
+          () => manager.submitEvidence(pendingPlan, correctionPlan: 'x', evidenceNote: 'x', currentUserName: 'Test User'),
           throwsA(isA<InvalidTransitionException>()),
         );
       });

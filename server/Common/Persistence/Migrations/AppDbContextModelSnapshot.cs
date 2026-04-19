@@ -65,6 +65,14 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("evidence_photo_url");
 
+                    b.Property<DateTimeOffset?>("EvidenceSubmittedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("evidence_submitted_at");
+
+                    b.Property<string>("EvidenceSubmittedByName")
+                        .HasColumnType("text")
+                        .HasColumnName("evidence_submitted_by_name");
+
                     b.Property<string>("GroupTitle")
                         .IsRequired()
                         .HasColumnType("text")

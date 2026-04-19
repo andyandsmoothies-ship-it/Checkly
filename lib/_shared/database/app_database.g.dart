@@ -3972,6 +3972,28 @@ class $CachedActionPlansTable extends CachedActionPlans
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _evidenceSubmittedAtMeta =
+      const VerificationMeta('evidenceSubmittedAt');
+  @override
+  late final GeneratedColumn<DateTime> evidenceSubmittedAt =
+      GeneratedColumn<DateTime>(
+        'evidence_submitted_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _evidenceSubmittedByNameMeta =
+      const VerificationMeta('evidenceSubmittedByName');
+  @override
+  late final GeneratedColumn<String> evidenceSubmittedByName =
+      GeneratedColumn<String>(
+        'evidence_submitted_by_name',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -4013,6 +4035,8 @@ class $CachedActionPlansTable extends CachedActionPlans
     storeId,
     storeManagerName,
     verifierName,
+    evidenceSubmittedAt,
+    evidenceSubmittedByName,
     createdAt,
     updatedAt,
   ];
@@ -4157,6 +4181,24 @@ class $CachedActionPlansTable extends CachedActionPlans
         ),
       );
     }
+    if (data.containsKey('evidence_submitted_at')) {
+      context.handle(
+        _evidenceSubmittedAtMeta,
+        evidenceSubmittedAt.isAcceptableOrUnknown(
+          data['evidence_submitted_at']!,
+          _evidenceSubmittedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('evidence_submitted_by_name')) {
+      context.handle(
+        _evidenceSubmittedByNameMeta,
+        evidenceSubmittedByName.isAcceptableOrUnknown(
+          data['evidence_submitted_by_name']!,
+          _evidenceSubmittedByNameMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -4250,6 +4292,14 @@ class $CachedActionPlansTable extends CachedActionPlans
         DriftSqlType.string,
         data['${effectivePrefix}verifier_name'],
       ),
+      evidenceSubmittedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}evidence_submitted_at'],
+      ),
+      evidenceSubmittedByName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evidence_submitted_by_name'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4286,6 +4336,8 @@ class CachedActionPlan extends DataClass
   final String? storeId;
   final String? storeManagerName;
   final String? verifierName;
+  final DateTime? evidenceSubmittedAt;
+  final String? evidenceSubmittedByName;
   final DateTime createdAt;
   final DateTime updatedAt;
   const CachedActionPlan({
@@ -4306,6 +4358,8 @@ class CachedActionPlan extends DataClass
     this.storeId,
     this.storeManagerName,
     this.verifierName,
+    this.evidenceSubmittedAt,
+    this.evidenceSubmittedByName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -4354,6 +4408,14 @@ class CachedActionPlan extends DataClass
     }
     if (!nullToAbsent || verifierName != null) {
       map['verifier_name'] = Variable<String>(verifierName);
+    }
+    if (!nullToAbsent || evidenceSubmittedAt != null) {
+      map['evidence_submitted_at'] = Variable<DateTime>(evidenceSubmittedAt);
+    }
+    if (!nullToAbsent || evidenceSubmittedByName != null) {
+      map['evidence_submitted_by_name'] = Variable<String>(
+        evidenceSubmittedByName,
+      );
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -4405,6 +4467,12 @@ class CachedActionPlan extends DataClass
       verifierName: verifierName == null && nullToAbsent
           ? const Value.absent()
           : Value(verifierName),
+      evidenceSubmittedAt: evidenceSubmittedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(evidenceSubmittedAt),
+      evidenceSubmittedByName: evidenceSubmittedByName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(evidenceSubmittedByName),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -4433,6 +4501,12 @@ class CachedActionPlan extends DataClass
       storeId: serializer.fromJson<String?>(json['storeId']),
       storeManagerName: serializer.fromJson<String?>(json['storeManagerName']),
       verifierName: serializer.fromJson<String?>(json['verifierName']),
+      evidenceSubmittedAt: serializer.fromJson<DateTime?>(
+        json['evidenceSubmittedAt'],
+      ),
+      evidenceSubmittedByName: serializer.fromJson<String?>(
+        json['evidenceSubmittedByName'],
+      ),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -4458,6 +4532,10 @@ class CachedActionPlan extends DataClass
       'storeId': serializer.toJson<String?>(storeId),
       'storeManagerName': serializer.toJson<String?>(storeManagerName),
       'verifierName': serializer.toJson<String?>(verifierName),
+      'evidenceSubmittedAt': serializer.toJson<DateTime?>(evidenceSubmittedAt),
+      'evidenceSubmittedByName': serializer.toJson<String?>(
+        evidenceSubmittedByName,
+      ),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -4481,6 +4559,8 @@ class CachedActionPlan extends DataClass
     Value<String?> storeId = const Value.absent(),
     Value<String?> storeManagerName = const Value.absent(),
     Value<String?> verifierName = const Value.absent(),
+    Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
+    Value<String?> evidenceSubmittedByName = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => CachedActionPlan(
@@ -4509,6 +4589,12 @@ class CachedActionPlan extends DataClass
         ? storeManagerName.value
         : this.storeManagerName,
     verifierName: verifierName.present ? verifierName.value : this.verifierName,
+    evidenceSubmittedAt: evidenceSubmittedAt.present
+        ? evidenceSubmittedAt.value
+        : this.evidenceSubmittedAt,
+    evidenceSubmittedByName: evidenceSubmittedByName.present
+        ? evidenceSubmittedByName.value
+        : this.evidenceSubmittedByName,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -4549,6 +4635,12 @@ class CachedActionPlan extends DataClass
       verifierName: data.verifierName.present
           ? data.verifierName.value
           : this.verifierName,
+      evidenceSubmittedAt: data.evidenceSubmittedAt.present
+          ? data.evidenceSubmittedAt.value
+          : this.evidenceSubmittedAt,
+      evidenceSubmittedByName: data.evidenceSubmittedByName.present
+          ? data.evidenceSubmittedByName.value
+          : this.evidenceSubmittedByName,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -4574,6 +4666,8 @@ class CachedActionPlan extends DataClass
           ..write('storeId: $storeId, ')
           ..write('storeManagerName: $storeManagerName, ')
           ..write('verifierName: $verifierName, ')
+          ..write('evidenceSubmittedAt: $evidenceSubmittedAt, ')
+          ..write('evidenceSubmittedByName: $evidenceSubmittedByName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -4581,7 +4675,7 @@ class CachedActionPlan extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     submissionId,
     answerId,
@@ -4599,9 +4693,11 @@ class CachedActionPlan extends DataClass
     storeId,
     storeManagerName,
     verifierName,
+    evidenceSubmittedAt,
+    evidenceSubmittedByName,
     createdAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4623,6 +4719,8 @@ class CachedActionPlan extends DataClass
           other.storeId == this.storeId &&
           other.storeManagerName == this.storeManagerName &&
           other.verifierName == this.verifierName &&
+          other.evidenceSubmittedAt == this.evidenceSubmittedAt &&
+          other.evidenceSubmittedByName == this.evidenceSubmittedByName &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -4645,6 +4743,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
   final Value<String?> storeId;
   final Value<String?> storeManagerName;
   final Value<String?> verifierName;
+  final Value<DateTime?> evidenceSubmittedAt;
+  final Value<String?> evidenceSubmittedByName;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -4666,6 +4766,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.storeId = const Value.absent(),
     this.storeManagerName = const Value.absent(),
     this.verifierName = const Value.absent(),
+    this.evidenceSubmittedAt = const Value.absent(),
+    this.evidenceSubmittedByName = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4688,6 +4790,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.storeId = const Value.absent(),
     this.storeManagerName = const Value.absent(),
     this.verifierName = const Value.absent(),
+    this.evidenceSubmittedAt = const Value.absent(),
+    this.evidenceSubmittedByName = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -4714,6 +4818,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Expression<String>? storeId,
     Expression<String>? storeManagerName,
     Expression<String>? verifierName,
+    Expression<DateTime>? evidenceSubmittedAt,
+    Expression<String>? evidenceSubmittedByName,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -4736,6 +4842,10 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
       if (storeId != null) 'store_id': storeId,
       if (storeManagerName != null) 'store_manager_name': storeManagerName,
       if (verifierName != null) 'verifier_name': verifierName,
+      if (evidenceSubmittedAt != null)
+        'evidence_submitted_at': evidenceSubmittedAt,
+      if (evidenceSubmittedByName != null)
+        'evidence_submitted_by_name': evidenceSubmittedByName,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -4760,6 +4870,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Value<String?>? storeId,
     Value<String?>? storeManagerName,
     Value<String?>? verifierName,
+    Value<DateTime?>? evidenceSubmittedAt,
+    Value<String?>? evidenceSubmittedByName,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -4782,6 +4894,9 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
       storeId: storeId ?? this.storeId,
       storeManagerName: storeManagerName ?? this.storeManagerName,
       verifierName: verifierName ?? this.verifierName,
+      evidenceSubmittedAt: evidenceSubmittedAt ?? this.evidenceSubmittedAt,
+      evidenceSubmittedByName:
+          evidenceSubmittedByName ?? this.evidenceSubmittedByName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -4842,6 +4957,16 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     if (verifierName.present) {
       map['verifier_name'] = Variable<String>(verifierName.value);
     }
+    if (evidenceSubmittedAt.present) {
+      map['evidence_submitted_at'] = Variable<DateTime>(
+        evidenceSubmittedAt.value,
+      );
+    }
+    if (evidenceSubmittedByName.present) {
+      map['evidence_submitted_by_name'] = Variable<String>(
+        evidenceSubmittedByName.value,
+      );
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -4874,6 +4999,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
           ..write('storeId: $storeId, ')
           ..write('storeManagerName: $storeManagerName, ')
           ..write('verifierName: $verifierName, ')
+          ..write('evidenceSubmittedAt: $evidenceSubmittedAt, ')
+          ..write('evidenceSubmittedByName: $evidenceSubmittedByName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -11096,6 +11223,8 @@ typedef $$CachedActionPlansTableCreateCompanionBuilder =
       Value<String?> storeId,
       Value<String?> storeManagerName,
       Value<String?> verifierName,
+      Value<DateTime?> evidenceSubmittedAt,
+      Value<String?> evidenceSubmittedByName,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -11119,6 +11248,8 @@ typedef $$CachedActionPlansTableUpdateCompanionBuilder =
       Value<String?> storeId,
       Value<String?> storeManagerName,
       Value<String?> verifierName,
+      Value<DateTime?> evidenceSubmittedAt,
+      Value<String?> evidenceSubmittedByName,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -11215,6 +11346,16 @@ class $$CachedActionPlansTableFilterComposer
 
   ColumnFilters<String> get verifierName => $composableBuilder(
     column: $table.verifierName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get evidenceSubmittedAt => $composableBuilder(
+    column: $table.evidenceSubmittedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get evidenceSubmittedByName => $composableBuilder(
+    column: $table.evidenceSubmittedByName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11323,6 +11464,16 @@ class $$CachedActionPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get evidenceSubmittedAt => $composableBuilder(
+    column: $table.evidenceSubmittedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get evidenceSubmittedByName => $composableBuilder(
+    column: $table.evidenceSubmittedByName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -11412,6 +11563,16 @@ class $$CachedActionPlansTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<DateTime> get evidenceSubmittedAt => $composableBuilder(
+    column: $table.evidenceSubmittedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get evidenceSubmittedByName => $composableBuilder(
+    column: $table.evidenceSubmittedByName,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -11476,6 +11637,8 @@ class $$CachedActionPlansTableTableManager
                 Value<String?> storeId = const Value.absent(),
                 Value<String?> storeManagerName = const Value.absent(),
                 Value<String?> verifierName = const Value.absent(),
+                Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
+                Value<String?> evidenceSubmittedByName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -11497,6 +11660,8 @@ class $$CachedActionPlansTableTableManager
                 storeId: storeId,
                 storeManagerName: storeManagerName,
                 verifierName: verifierName,
+                evidenceSubmittedAt: evidenceSubmittedAt,
+                evidenceSubmittedByName: evidenceSubmittedByName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -11520,6 +11685,8 @@ class $$CachedActionPlansTableTableManager
                 Value<String?> storeId = const Value.absent(),
                 Value<String?> storeManagerName = const Value.absent(),
                 Value<String?> verifierName = const Value.absent(),
+                Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
+                Value<String?> evidenceSubmittedByName = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -11541,6 +11708,8 @@ class $$CachedActionPlansTableTableManager
                 storeId: storeId,
                 storeManagerName: storeManagerName,
                 verifierName: verifierName,
+                evidenceSubmittedAt: evidenceSubmittedAt,
+                evidenceSubmittedByName: evidenceSubmittedByName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

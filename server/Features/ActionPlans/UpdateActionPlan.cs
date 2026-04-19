@@ -75,6 +75,19 @@ public static class UpdateActionPlan
         if (request.Status == "closed")
             plan.ClosedAt = DateTimeOffset.UtcNow;
 
+        if (request.Status == "pending_verify")
+        {
+            plan.EvidenceSubmittedAt = DateTimeOffset.UtcNow;
+
+            var callerId = Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var cid) ? cid : (Guid?)null;
+            var callerProfile = callerId.HasValue
+                ? await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == callerId.Value, ct)
+                : null;
+            plan.EvidenceSubmittedByName = callerProfile?.FullName
+                ?? user.FindFirstValue(ClaimTypes.Email)
+                ?? "Unknown";
+        }
+
         plan.UpdatedAt = DateTimeOffset.UtcNow;
 
         AuditLogger.Log(
