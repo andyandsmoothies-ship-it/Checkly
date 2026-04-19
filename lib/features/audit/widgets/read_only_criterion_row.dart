@@ -92,7 +92,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
         !photoUrl.startsWith('file://');
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -170,8 +170,8 @@ class ReadOnlyCriterionRow extends StatelessWidget {
               children: [
                 Icon(
                   Icons.chat_bubble_outline,
-                  size: 14,
-                  color: theme.colorScheme.onSurfaceVariant,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
                 const SizedBox(width: 4),
                 Expanded(
@@ -214,13 +214,16 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) => Container(
                   height: 80,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant,
+                      width: 1,
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
                     child: Icon(
                       Icons.broken_image_outlined,
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -230,10 +233,10 @@ class ReadOnlyCriterionRow extends StatelessWidget {
 
           // Action Plan deep-link
           if (answer.actionPlanId != null && answer.actionPlanId!.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: OutlinedButton.icon(
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonalIcon(
                 onPressed: () => context.push('/plans/${answer.actionPlanId}'),
                 icon: const Icon(Icons.arrow_forward, size: 16),
                 label: const Text('View Action Plan'),
