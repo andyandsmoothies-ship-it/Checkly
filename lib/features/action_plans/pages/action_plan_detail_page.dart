@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
@@ -131,7 +132,9 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                         child: InkWell(
                           onTap: () async {
                             final picker = ImagePicker();
-                            final xfile = await picker.pickImage(source: ImageSource.camera);
+                            final bool isDesktop = !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+                            final source = isDesktop ? ImageSource.gallery : ImageSource.camera;
+                            final xfile = await picker.pickImage(source: source);
                             if (xfile != null) {
                               setSheetState(() {
                                 photoPath = xfile.path;

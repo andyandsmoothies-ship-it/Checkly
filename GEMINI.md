@@ -199,3 +199,9 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
 - **Rule:** PROHIBITED from running `dotnet add package` or `flutter pub add` without explicit user approval.
 - **Action:** If solving logic problems, use existing utilities in `server/Common/` or `lib/_shared/`. Do not implicitly install third-party libraries.
 </SYSTEM_GUARD>
+
+### RTK Command Wrapper Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="RTKCommandWrapper">
+- **Rule:** Each shell command must put `rtk` ahead of it (e.g., `rtk dotnet build`, `rtk flutter analyze`) so that the RTK token optimization proxy can compress the outputs.
+- **Enforcement:** Always prefix execution commands with `rtk`.
+</SYSTEM_GUARD>
