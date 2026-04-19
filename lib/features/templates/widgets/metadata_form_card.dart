@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../_shared/widgets/section_header.dart';
 
-/// Template types matching PWA constants.
-const templateTypes = ['qc', 'training', 'general', 'task force'];
+import '../models/template_constants.dart';
 
 class MetadataFormCard extends StatelessWidget {
   final TextEditingController titleCtrl;
@@ -47,14 +46,14 @@ class MetadataFormCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              initialValue: templateTypes.contains(type) ? type : 'qc',
-              decoration: const InputDecoration(labelText: 'Template Type'),
+              initialValue: TemplateConstants.categoryTypes.any((t) => t.$1 == type) ? type : 'qc',
+              decoration: const InputDecoration(labelText: 'Category'),
               borderRadius: BorderRadius.circular(12),
-              items: templateTypes
+              items: TemplateConstants.categoryTypes
                   .map(
                     (t) => DropdownMenuItem(
-                      value: t,
-                      child: Text(t.toUpperCase()),
+                      value: t.$1,
+                      child: Text(t.$2),
                     ),
                   )
                   .toList(),

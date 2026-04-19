@@ -127,10 +127,12 @@ class AuditorDashboardVariant extends StatelessWidget {
 class ManagerDashboardVariant extends StatelessWidget {
   final ManagerDashboardState state;
   final String role;
+  final Future<void> Function()? onRefresh;
   const ManagerDashboardVariant({
     super.key,
     required this.state,
     required this.role,
+    this.onRefresh,
   });
 
   @override
@@ -143,10 +145,12 @@ class ManagerDashboardVariant extends StatelessWidget {
         ? state.storeAvgScore.toStringAsFixed(0)
         : state.storeAvgScore.toStringAsFixed(1);
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
-      children: [
-        const SizedBox(height: 24),
+    return RefreshIndicator(
+      onRefresh: onRefresh ?? () async {},
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+        children: [
+          const SizedBox(height: 24),
 
         // ── Hero: Action Required Banner ──
         if (state.overdueActionPlans > 0)
@@ -214,8 +218,9 @@ class ManagerDashboardVariant extends StatelessWidget {
           theme: theme,
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -225,7 +230,8 @@ class ManagerDashboardVariant extends StatelessWidget {
 /// Command Center for Admins — global platform view.
 class AdminDashboardVariant extends StatelessWidget {
   final AdminDashboardState state;
-  const AdminDashboardVariant({super.key, required this.state});
+  final Future<void> Function()? onRefresh;
+  const AdminDashboardVariant({super.key, required this.state, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +242,7 @@ class AdminDashboardVariant extends StatelessWidget {
         : state.globalAvgScore.toStringAsFixed(1);
 
     return RefreshIndicator(
-      onRefresh: () async {},
+      onRefresh: onRefresh ?? () async {},
       child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
         children: [

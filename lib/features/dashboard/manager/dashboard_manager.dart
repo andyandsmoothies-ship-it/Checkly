@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/database/app_database.dart';
+import '../../../_shared/services/sync_engine.dart';
 import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/dao/submission_dao.dart';
 import '../../audit/model/submission_dto.dart';
@@ -9,6 +11,8 @@ import '../../audit/services/submission_api_service.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/manager/store_manager.dart';
 import '../../../_shared/database/dao/outbox_dao.dart';
+import '../../audit/manager/history_manager.dart';
+import '../../action_plans/manager/action_plan_manager.dart';
 import 'dashboard_queries.dart';
 
 final _di = GetIt.instance;
@@ -115,13 +119,36 @@ class DashboardManager extends ChangeNotifier {
   }
 
   /// Load dashboard stats from local Drift cache, branching on role.
-  Future<void> loadStats() async {
-    _state = DashboardLoading();
-    notifyListeners();
+  Future<void> loadStats({bool showLoading = true}) async {
+    if (showLoading) {
+      _state = DashboardLoading();
+      notifyListeners();
+    }
 
     try {
       final role = _auth.currentUser?.role ?? 'admin';
       final queries = DashboardQueries(_db);
+
+      if (showLoading && _di.isRegistered<SyncEngine>()) {
+        final totalCount = await queries.getTotalAuditCount();
+        if (totalCount == 0) {
+          // Empty cache (likely fresh login) — await the sync before loading
+          await Future.wait([
+            _di<SyncEngine>().requestSync(),
+            if (_di.isRegistered<HistoryManager>()) _di<HistoryManager>().loadHistory(),
+            if (_di.isRegistered<ActionPlanManager>()) _di<ActionPlanManager>().loadActionPlans(),
+          ]);
+        } else {
+          // Cache has data — sync in background and quietly reload when done
+          unawaited(Future.wait([
+            _di<SyncEngine>().requestSync(),
+            if (_di.isRegistered<HistoryManager>()) _di<HistoryManager>().loadHistory(),
+            if (_di.isRegistered<ActionPlanManager>()) _di<ActionPlanManager>().loadActionPlans(),
+          ]).whenComplete(() {
+            loadStats(showLoading: false);
+          }));
+        }
+      }
 
       switch (role) {
         case 'auditor':

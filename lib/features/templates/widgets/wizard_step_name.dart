@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/template_constants.dart';
+
 /// Wizard Step 1: Basic info — title, description, and type.
 /// Mirrors MetadataFormCard but simplified for the guided flow.
 class WizardStepName extends StatelessWidget {
@@ -49,12 +51,6 @@ class WizardStepName extends StatelessWidget {
       ),
   };
 
-  static const _types = [
-    ('qc', 'Quality Control'),
-    ('training', 'Training'),
-    ('general', 'General'),
-    ('task force', 'Task Force'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +153,7 @@ class WizardStepName extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: _types.map((t) {
+          children: TemplateConstants.categoryTypes.map((t) {
             final isSelected = selectedType == t.$1;
             return ChoiceChip(
               label: Text(t.$2),

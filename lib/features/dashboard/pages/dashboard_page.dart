@@ -109,13 +109,17 @@ class _DashboardPageState extends State<DashboardPage> {
                   DashboardLoading() => const DashboardLoadingView(),
                   AuditorDashboardState s => AuditorDashboardVariant(
                     state: s,
-                    onRefresh: _manager.loadStats,
+                    onRefresh: () => _manager.loadStats(showLoading: false),
                   ),
                   ManagerDashboardState s => ManagerDashboardVariant(
                     state: s,
                     role: role,
+                    onRefresh: () => _manager.loadStats(showLoading: false),
                   ),
-                  AdminDashboardState s => AdminDashboardVariant(state: s),
+                  AdminDashboardState s => AdminDashboardVariant(
+                    state: s,
+                    onRefresh: () => _manager.loadStats(showLoading: false),
+                  ),
                 };
               },
             ),
