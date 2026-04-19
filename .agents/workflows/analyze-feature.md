@@ -99,7 +99,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
 > - `## Execution Slices`: **(CRITICAL)** Group work into isolated slices. Define the **Structural Blueprint** (e.g., 'Add nullable field', 'Wrap in Try/Catch'). **DO NOT write exact code diffs.** The Builder will write the code.
 > - `<forensic_evidence>`: Tags containing a list of terminal commands run.
-> - `## Handoff Block`: An AI Agent Mission Brief (TL;DR for the next AI agent).
+> - `## Handoff Block`: An AI Agent Mission Brief (TL;DR for the next AI agent). **MANDATORY:** You MUST include the exact `@[/...]` routing commands (e.g., `@[/tdd]` or `@[/implement]`) for EVERY Execution Slice here, mapping them to their absolute file paths.
 >
 > **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

@@ -23,7 +23,7 @@ This workflow executes a deterministic, zero-hallucination UX audit on the Flutt
 3. Identify instances of Blaming, Developer Jargon, and weak CTAs.
 
 ## Phase 4: Reporting
-1. Generate an artifact named `ux_copywriting_report.md`.
+1. Generate an artifact named `ux_copywriting_report.md` in the `{App Data Directory}\brain\{Conversation ID}\` directory.
 2. Format the report grouping violations by Dart file, showcasing a clear tabular comparison between the current string and the recommended rewrite.
 3. Present the report to the user.
 

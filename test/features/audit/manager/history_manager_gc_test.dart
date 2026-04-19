@@ -56,7 +56,7 @@ void main() {
     when(() => mockDao.getAllSubmissions()).thenAnswer((_) async => []);
     when(() => mockDao.upsertSubmissions(any())).thenAnswer((_) async {});
 
-    manager = HistoryManager(api: mockApi, dao: mockDao, draftService: draft);
+    manager = HistoryManager(api: mockApi, dao: mockDao, draftService: draft, outboxDao: outbox);
   });
 
   tearDown(() async {

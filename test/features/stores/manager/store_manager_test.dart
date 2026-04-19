@@ -47,23 +47,5 @@ void main() {
       verify(() => dao.upsertStores([mockStore])).called(1);
     });
 
-    test('searchStores proxies to API', () async {
-      when(() => api.getStores(search: any(named: 'search'))).thenAnswer((_) async => [mockStore]);
-
-      await manager.searchStores('Store');
-
-      verify(() => api.getStores(search: 'Store')).called(1);
-      expect(manager.stores.value, equals([mockStore]));
-    });
-
-    test('searchStores with empty query restores cache', () async {
-      when(() => dao.getAllStores()).thenAnswer((_) async => [mockStore]);
-
-      await manager.searchStores('');
-
-      verify(() => dao.getAllStores()).called(1);
-      verifyNever(() => api.getStores(search: any(named: 'search')));
-      expect(manager.stores.value, equals([mockStore]));
-    });
   });
 }

@@ -24,6 +24,7 @@ class StoreManager extends ChangeNotifier {
   // ---------- State ----------
   final stores = ValueNotifier<List<StoreDto>>([]);
   final isLoading = ValueNotifier<bool>(false);
+  List<StoreDto> _allStores = [];
   String? error;
   DateTime? lastRefreshed;
 
@@ -37,7 +38,9 @@ class StoreManager extends ChangeNotifier {
       // 1. Read from Drift cache first
       final cached = await _dao.getAllStores();
       if (cached.isNotEmpty) {
+        cached.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         stores.value = cached;
+        _allStores = List.from(cached);
         isLoading.value = false;
         notifyListeners();
       }
@@ -45,7 +48,9 @@ class StoreManager extends ChangeNotifier {
       // 2. Background API fetch
       try {
         final fresh = await _api.getStores();
+        fresh.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         stores.value = fresh;
+        _allStores = List.from(fresh);
         lastRefreshed = DateTime.now();
 
         // 3. Update Drift cache
@@ -63,27 +68,14 @@ class StoreManager extends ChangeNotifier {
     }
   }
 
-  // ---------- Search (server-side via B4) ----------
+  // ---------- Search (in-memory, offline-safe) ----------
   Future<void> searchStores(String query) async {
     if (query.isEmpty) {
-      // Empty query → show cached stores
-      final cached = await _dao.getAllStores();
-      stores.value = cached;
-      notifyListeners();
-      return;
+      stores.value = List.from(_allStores);
+    } else {
+      final q = query.toLowerCase();
+      stores.value = _allStores.where((s) => s.name.toLowerCase().contains(q)).toList();
     }
-
-    isLoading.value = true;
     notifyListeners();
-
-    try {
-      final results = await _api.getStores(search: query);
-      stores.value = results;
-    } catch (_) {
-      // On error, keep current list
-    } finally {
-      isLoading.value = false;
-      notifyListeners();
-    }
   }
 }

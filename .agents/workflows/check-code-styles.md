@@ -26,6 +26,9 @@ description: Execute a deterministic Python sweep on the Flutter UI codebase to 
 - [ ] Map all violations (e.g., `Colors.red` used instead of `AppTheme.error`) into a prioritized checklist.
 - [ ] Correlate with the `frontend-accessibility` rules to define exactly what the correct replacement code should be.
 
+## Phase 4: Reporting
+- [ ] Generate an artifact named `a11y_compliance_report.md` in the `{App Data Directory}\brain\{Conversation ID}\` directory.
+
 ## Phase 5: Guided Handoff (MANDATORY)
 > [!IMPORTANT]
 > After presenting the report, output this block verbatim:

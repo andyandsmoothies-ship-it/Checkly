@@ -45,14 +45,14 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 | Step | Execution Contract |
 |---|---|
 | **Aggregation** | Group issues. Sort by severity. Extract Top 3 Impact Fixes. |
-| **Artifact Gen** | Create `ux_heuristic_eval_[scope].md`. |
+| **Artifact Gen** | Create `ux_heuristic_eval_[scope].md` in the `{App Data Directory}\brain\{Conversation ID}\` directory. |
 | **Payload Schema**| `Summary` | `Scorecard (✅/⚠️/❌)` | `Sorted Findings` | `Top 3 Fix Priorities` | `Tradeoffs`. |
-| **Routing** | Output message: *"Route fixes through /analyze-feature -> /implement."* -> YIELD. |
+| **Routing** | Output message: *"Route fixes through /analyze-feature -> /implement using this exact path: `{Absolute_Path_to_ux_heuristic_eval.md}`"* -> YIELD. |
 
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
-> - `Code 0`: *"Workflow complete. Share summary."*
+> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> - `Code 0`: *"Workflow complete. Share summary with absolute paths."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

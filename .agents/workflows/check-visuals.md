@@ -24,15 +24,16 @@ description: Execute a screenshot-based visual and aesthetic audit using AI visi
 - [ ] Formulate a strict remediation plan utilizing the `interaction-design` and `frontend-design` backup skills to generate premium aesthetic replacements.
 
 ## Phase 4: Reporting & Red Teaming
-- [ ] Generate a markdown artifact `visual_qa_report.md`.
+- [ ] Generate a markdown artifact `visual_qa_report.md` in the `{App Data Directory}\brain\{Conversation ID}\` directory.
 - [ ] For every identified flaw, map it directly back to the exact code file requiring editing.
 - [ ] Hand the report back to the user.
 
 ## Phase 5: Guided Handoff (MANDATORY)
 > [!IMPORTANT]
-> After presenting the report, output this block verbatim:
+> After presenting the report, output this block verbatim, replacing the bracketed path with the actual absolute file path:
 
 **✅ Chunk [N] visual review done. Next steps:**
-1. **Fix** → Send `visual_qa_report.md` to the Builder Agent (`/implement`).
+1. **Fix** → Send the Builder Agent (`/implement`) this exact path:
+`{Absolute_Path_to_visual_qa_report.md}`
 2. **Re-check** → After the fix, hot-reload the emulator, screenshot the same screens, and run `/check-visuals` again.
 3. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.
