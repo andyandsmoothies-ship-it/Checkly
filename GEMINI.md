@@ -65,6 +65,13 @@ After any significant implementation, debug, or refactor, assess whether a new l
 - **Purpose**: Naked string typos bypass TDD mocks and `flutter analyze` structural checks. Strong typing forces the compiler to instantly catch and crash on AI string hallucinations during the `/verify` phase.
 </SYSTEM_GUARD>
 
+### The Strict Constructor Injection Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="StrictConstructorInjection">
+- **Rule**: Never use hidden fallback logic (`?? _di<Service>()`) inside a class constructor.
+- **Enforcement**: All dependencies MUST be explicitly passed via `required` constructor parameters. Do not mix constructor parameters with hidden `GetIt` lookups. 
+- **Purpose**: Prevents silent crashes in isolated test environments by forcing the compiler to demand every mock parameter upfront.
+</SYSTEM_GUARD>
+
 ### First-Step Logical Reasoning (FSLR)
 <SYSTEM_GUARD type="STRICT" name="FirstStepLogicalReasoning">
 - **Rule**: Never generate code immediately during diagnostics or planning.
