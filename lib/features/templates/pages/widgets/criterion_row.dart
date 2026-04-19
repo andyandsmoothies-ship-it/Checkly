@@ -58,7 +58,7 @@ class CriterionRow extends StatelessWidget {
               '${criterion.pointsWeight!.toStringAsFixed(1)} pts',
               style: AppFonts.serifStyle(
                 fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ],

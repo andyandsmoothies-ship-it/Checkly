@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/theme/app_fonts.dart';
-import '../../../../_shared/theme/app_theme.dart';
 
 /// Tiny stat chip with icon + label.
 class StatChip extends StatelessWidget {
@@ -14,13 +13,13 @@ class StatChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: AppTheme.sageGray),
+        Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurface),
         const SizedBox(width: 4),
         Text(
           label,
           style: AppFonts.displayStyle(
             fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
           ),
         ),
       ],

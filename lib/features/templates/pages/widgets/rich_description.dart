@@ -4,18 +4,28 @@ import '../../../../_shared/theme/app_fonts.dart';
 // Removed AppTheme import
 
 /// Rich description renderer that parses lines and applies premium styling.
-class RichDescription extends StatelessWidget {
+class RichDescription extends StatefulWidget {
   final String description;
   const RichDescription({super.key, required this.description});
 
   @override
+  State<RichDescription> createState() => _RichDescriptionState();
+}
+
+class _RichDescriptionState extends State<RichDescription> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final lines = description.split('\n');
+    final lines = widget.description.split('\n');
+    final hasMore = lines.length > 2;
+    final displayLines = _isExpanded ? lines : lines.take(2).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: lines.map((line) {
+      children: [
+        ...displayLines.map((line) {
         final trimmed = line.trim();
         if (trimmed.isEmpty) return const SizedBox(height: 8);
 
@@ -66,7 +76,27 @@ class RichDescription extends StatelessWidget {
             ],
           ),
         );
-      }).toList(),
+        }),
+        if (hasMore)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Text(
+                _isExpanded ? 'Show less' : 'Show more',
+                style: AppFonts.displayStyle(
+                  fontSize: theme.textTheme.bodyMedium?.fontSize,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

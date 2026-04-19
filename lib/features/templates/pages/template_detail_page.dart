@@ -40,14 +40,18 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Template Detail')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            context.push('/stores/select?templateId=${widget.templateId}'),
-        shape: const CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        elevation: 4,
-        child: const Icon(Icons.play_arrow),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push('/stores/select?templateId=${widget.templateId}'),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('START AUDIT'),
+            ),
+          ),
+        ),
       ),
       body: ListenableBuilder(
         listenable: manager,
@@ -83,53 +87,76 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
             );
           }
 
-          // Main layout: pinned header → sticky TabBar → isolated TabBarViews
+          // Main layout: NestedScrollView allows header to scroll out of view while pinning tabs
           return DefaultTabController(
             length: tree.groups.length,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Pinned overview card — always visible above the tabs
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: OverviewCard(tree: tree),
-                ),
-                const SizedBox(height: 12),
-
-                // Scrollable horizontal tab bar: one tab per top-level section
-                TabBar(
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  tabs: tree.groups
-                      .map((g) => Tab(text: g.title))
-                      .toList(),
-                ),
-
-                // Each tab gets its own isolated, independently-scrollable ListView
-                Expanded(
-                  child: TabBarView(
-                    children: tree.groups.map((group) {
-                      return ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
-                        children: [
-                          // Rare: direct criteria attached to the top-level group
-                          ...group.criteria.map(
-                            (c) => CriterionRow(criterion: c),
-                          ),
-                          // Sub-sections rendered as depth-1 (non-root) SectionCards
-                          ...group.children.map(
-                            (sub) => SectionCard(group: sub, depth: 1),
-                          ),
-                        ],
-                      );
-                    }).toList(),
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: OverviewCard(tree: tree),
+                    ),
                   ),
-                ),
-              ],
+                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _SliverTabBarDelegate(
+                      TabBar(
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.start,
+                        tabs: tree.groups.map((g) => Tab(text: g.title)).toList(),
+                      ),
+                    ),
+                  ),
+                ];
+              },
+              body: TabBarView(
+                children: tree.groups.map((group) {
+                  return ListView(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                    children: [
+                      // Rare: direct criteria attached to the top-level group
+                      ...group.criteria.map(
+                        (c) => CriterionRow(criterion: c),
+                      ),
+                      // Sub-sections rendered as depth-1 (non-root) SectionCards
+                      ...group.children.map(
+                        (sub) => SectionCard(group: sub, depth: 1),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
             ),
           );
         },
       ),
     );
+  }
+}
+
+class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
+
+  _SliverTabBarDelegate(this._tabBar);
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
+    return false;
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/theme/app_fonts.dart';
-import '../../../../_shared/theme/app_theme.dart';
 
 /// Small muted badge for scoring rules.
 class RuleBadge extends StatelessWidget {
@@ -13,16 +12,16 @@ class RuleBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: AppTheme.sageGray.withValues(alpha: 0.12),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.25)),
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
       ),
       child: Text(
         label,
         style: AppFonts.displayStyle(
           fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
           fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
     );
