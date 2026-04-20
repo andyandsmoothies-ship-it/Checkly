@@ -24,13 +24,22 @@ import 'features/stores/manager/store_manager.dart';
 import 'features/audit/services/submission_api_service.dart';
 import 'features/audit/manager/audit_manager.dart';
 import 'features/audit/manager/history_manager.dart';
+import 'features/audit/manager/survey_results_manager.dart';
 import 'features/notifications/services/notification_api_service.dart';
 import 'features/notifications/manager/notification_manager.dart';
 import 'features/action_plans/manager/action_plan_manager.dart';
 import 'features/dashboard/manager/dashboard_manager.dart';
 import 'features/admin/services/admin_api_service.dart';
 import 'features/admin/manager/role_manager.dart';
+import 'features/admin/manager/admin_user_manager.dart';
+import 'features/admin/manager/admin_store_manager.dart';
+import 'features/admin/manager/admin_area_manager.dart';
+import 'features/admin/manager/admin_dashboard_manager.dart';
+import 'features/admin/manager/admin_audit_manager.dart';
 import 'features/analytics/services/analytics_api_service.dart';
+import 'features/analytics/manager/analytics_manager.dart';
+import 'features/stores/manager/store_dashboard_manager.dart';
+import 'features/profile/manager/profile_manager.dart';
 import 'features/user_groups/services/user_group_api_service.dart';
 import 'features/user_groups/manager/user_group_manager.dart';
 
@@ -76,6 +85,7 @@ void configureDependencies() {
   );
   di.registerLazySingleton<AuditManager>(() => AuditManager());
   di.registerLazySingleton<HistoryManager>(() => HistoryManager());
+  di.registerLazySingleton<SurveyResultsManager>(() => SurveyResultsManager());
 
   // ---------- Sync Engine (Phase 3 — C1, C2) ----------
   di.registerLazySingleton<ConnectivityService>(
@@ -120,11 +130,25 @@ void configureDependencies() {
     () => RoleManager(adminApiService: di<AdminApiService>()),
     dispose: (m) => m.dispose(),
   );
+  di.registerLazySingleton<AdminUserManager>(() => AdminUserManager());
+  di.registerLazySingleton<AdminStoreManager>(() => AdminStoreManager());
+  di.registerLazySingleton<AdminAreaManager>(() => AdminAreaManager());
+  di.registerLazySingleton<AdminDashboardManager>(() => AdminDashboardManager());
+  di.registerLazySingleton<AdminAuditManager>(() => AdminAuditManager());
 
   // ---------- Analytics (CRUD Gaps — MS5) ----------
   di.registerLazySingleton<AnalyticsApiService>(
     () => AnalyticsApiService(di<Dio>()),
   );
+  di.registerLazySingleton<AnalyticsManager>(() => AnalyticsManager());
+
+  // ---------- Store Dashboard ----------
+  di.registerLazySingleton<StoreDashboardManager>(
+    () => StoreDashboardManager(),
+  );
+
+  // ---------- Profile ----------
+  di.registerLazySingleton<ProfileManager>(() => ProfileManager());
 
   // ---------- User Groups ----------
   di.registerLazySingleton<UserGroupApiService>(

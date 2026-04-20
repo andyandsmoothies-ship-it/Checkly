@@ -7,6 +7,7 @@ import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../services/admin_api_service.dart';
+import '../manager/admin_area_manager.dart';
 
 final _di = GetIt.instance;
 
@@ -19,54 +20,38 @@ class AreaManagementPage extends StatefulWidget {
 }
 
 class _AreaManagementPageState extends State<AreaManagementPage> {
-  List<Map<String, dynamic>> _areas = [];
+  late final AdminAreaManager _manager;
   List<Map<String, dynamic>> _filtered = [];
-  bool _isLoading = true;
-  String? _error;
   final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _manager = _di<AdminAreaManager>();
+    _manager.addListener(_onManagerChanged);
+    _manager.load();
   }
 
   @override
   void dispose() {
+    _manager.removeListener(_onManagerChanged);
     _searchController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _error = null;
-      });
-      final areas = await _di<AdminApiService>().getAreas();
-      if (mounted) {
-        setState(() {
-          _areas = areas;
-          _applyFilter();
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _error = e.toString();
-        });
-      }
-    }
+  void _onManagerChanged() {
+    if (mounted) setState(() => _applyFilter());
   }
+
+  Future<void> _loadData() => _manager.load();
+
 
   void _applyFilter() {
     final query = _searchController.text.toLowerCase().trim();
     if (query.isEmpty) {
-      _filtered = _areas;
+      _filtered = _manager.areas;
     } else {
-      _filtered = _areas.where((a) {
+      _filtered = _manager.areas.where((a) {
         final name = (a['name'] as String? ?? '').toLowerCase();
         final desc = (a['description'] as String? ?? '').toLowerCase();
         return name.contains(query) || desc.contains(query);
@@ -372,10 +357,10 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
   }
 
   Widget _buildBody(ThemeData theme) {
-    if (_isLoading) {
+    if (_manager.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (_manager.error != null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -404,10 +389,10 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
             ),
             const SizedBox(height: 12),
             Text(
-              _areas.isEmpty ? 'No areas yet' : 'No matching areas',
+              _manager.areas.isEmpty ? 'No areas yet' : 'No matching areas',
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
-            if (_areas.isEmpty) ...[
+            if (_manager.areas.isEmpty) ...[
               const SizedBox(height: 12),
               FilledButton.tonal(
                 onPressed: _showCreateSheet,

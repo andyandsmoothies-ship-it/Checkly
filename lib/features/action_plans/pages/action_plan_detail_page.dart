@@ -6,13 +6,16 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
-import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
 import '../widgets/action_timeline.dart';
+import '../widgets/flat_block.dart';
+import '../widgets/info_card.dart';
+import '../widgets/info_row.dart';
+import '../widgets/section_header.dart';
 
 final _di = GetIt.instance;
 
@@ -478,32 +481,32 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               const SizedBox(height: 8),
 
               // ── Info Section ──
-              _InfoCard(
+              InfoCard(
                 children: [
-                  _InfoRow(
+                  InfoRow(
                     icon: Icons.label,
                     label: 'Criteria',
                     value: plan.criteriaLabel,
                   ),
-                  _InfoRow(
+                  InfoRow(
                     icon: Icons.folder,
                     label: 'Section',
                     value: plan.groupTitle,
                   ),
                   if (plan.storeName != null)
-                    _InfoRow(
+                    InfoRow(
                       icon: Icons.store,
                       label: 'Store',
                       value: plan.storeName!,
                     ),
                   if (plan.storeManagerName != null)
-                    _InfoRow(
+                    InfoRow(
                       icon: Icons.person,
                       label: 'Manager',
                       value: plan.storeManagerName!,
                     ),
                   if (plan.deadline != null)
-                    _InfoRow(
+                    InfoRow(
                       icon: Icons.schedule,
                       label: 'Deadline',
                       value:
@@ -518,8 +521,8 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               if (plan.rootCause != null &&
                   plan.rootCause!.isNotEmpty &&
                   plan.rootCause != 'SYSTEM_VOID') ...[
-                _SectionHeader(title: 'Root Cause'),
-                _FlatBlock(
+                SectionHeader(title: 'Root Cause'),
+                FlatBlock(
                   child: Text(
                     plan.rootCause!,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -533,8 +536,8 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               // ── Correction Plan ──
               if (plan.correctionPlan != null &&
                   plan.correctionPlan!.isNotEmpty) ...[
-                _SectionHeader(title: 'Correction Plan'),
-                _FlatBlock(
+                SectionHeader(title: 'Correction Plan'),
+                FlatBlock(
                   child: Text(
                     plan.correctionPlan!,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -548,8 +551,8 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
               // ── Evidence ──
               if (plan.evidenceNote != null ||
                   plan.evidencePhotoUrl != null) ...[
-                _SectionHeader(title: 'Evidence'),
-                _FlatBlock(
+                SectionHeader(title: 'Evidence'),
+                FlatBlock(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -594,8 +597,8 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
 
               // ── Verifier ──
               if (plan.verifierName != null) ...[
-                _SectionHeader(title: 'Verified By'),
-                _FlatBlock(
+                SectionHeader(title: 'Verified By'),
+                FlatBlock(
                   child: Row(
                     children: [
                       Icon(Icons.verified, color: AppTheme.success, size: 18),
@@ -614,122 +617,6 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
           ),
         );
       },
-    );
-  }
-}
-
-// ── Info Card ──
-
-class _InfoCard extends StatelessWidget {
-  final List<Widget> children;
-  const _InfoCard({required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(children: children),
-      ),
-    );
-  }
-}
-
-// ── Flat Block (replaces Card for read-only data sections) ──
-// Renders content flush on the page surface with a subtle left accent border.
-class _FlatBlock extends StatelessWidget {
-  final Widget child;
-  const _FlatBlock({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
-      decoration: BoxDecoration(
-        border: Border(
-          left: BorderSide(
-            color: theme.colorScheme.outlineVariant,
-            width: 3,
-          ),
-        ),
-      ),
-      child: child,
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color? valueColor;
-
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.valueColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: valueColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        title,
-        style: AppFonts.serifStyle(
-          fontSize: 18,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      ),
     );
   }
 }

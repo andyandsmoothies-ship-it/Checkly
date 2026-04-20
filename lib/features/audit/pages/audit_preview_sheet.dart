@@ -1,18 +1,16 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
-
-import '../model/submission_dto.dart';
-import '../services/submission_api_service.dart';
-import '../widgets/read_only_criterion_row.dart';
-import '../../templates/models/template_dto.dart';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+import '../model/submission_dto.dart';
+import '../manager/history_manager.dart';
+import '../widgets/read_only_criterion_row.dart';
+import '../widgets/header_card.dart';
+import '../../templates/models/template_dto.dart';
+
 /// Read-only slide-up sheet showing the full detail of a completed or voided audit.
-/// Fetches [SubmissionDetailDto] from the server on open.
+/// Fetches [SubmissionDetailDto] via [HistoryManager.loadDetail] on open.
 /// Must NOT import AuditManager or AuditCriterionCard.
 class AuditPreviewSheet extends StatefulWidget {
   final String submissionId;
@@ -24,48 +22,23 @@ class AuditPreviewSheet extends StatefulWidget {
 }
 
 class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
-  SubmissionDetailDto? _detail;
-  bool _isLoading = true;
-  String? _error;
+  late final HistoryManager _manager;
 
   @override
   void initState() {
     super.initState();
-    _fetch();
+    _manager = GetIt.instance<HistoryManager>();
+    _manager.loadDetail(widget.submissionId);
   }
 
-  Future<void> _fetch() async {
-    try {
-      final detail = await GetIt.instance<SubmissionApiService>()
-          .getSubmission(widget.submissionId);
-      if (mounted) {
-        setState(() {
-          _detail = detail;
-          _isLoading = false;
-        });
-      }
-    } on SocketException {
-      if (mounted) {
-        setState(() {
-          _error = 'Requires an internet connection.';
-          _isLoading = false;
-        });
-      }
-    } on DioException catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Could not load audit (${e.response?.statusCode}).';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Unexpected error: $e';
-          _isLoading = false;
-        });
-      }
-    }
+  Future<void> _retry() => _manager.loadDetail(widget.submissionId);
+
+  // Map raw detailError to a user-friendly message matching the original UX.
+  String _friendlyError(String raw) {
+    if (raw.contains('SocketException')) return 'Requires an internet connection.';
+    final match = RegExp(r'statusCode: (\d+)').firstMatch(raw);
+    if (match != null) return 'Could not load audit (${match.group(1)}).';
+    return 'Unexpected error: $raw';
   }
 
   @override
@@ -117,7 +90,11 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
 
             // Body
             Expanded(
-              child: _buildBody(context, scrollController),
+              child: ListenableBuilder(
+                listenable: _manager,
+                builder: (context, _) =>
+                    _buildBody(context, scrollController),
+              ),
             ),
           ],
         );
@@ -128,11 +105,11 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
   Widget _buildBody(BuildContext context, ScrollController scrollController) {
     final theme = Theme.of(context);
 
-    if (_isLoading) {
+    if (_manager.isDetailLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null) {
+    if (_manager.detailError != null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -142,19 +119,13 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
               Icon(Icons.wifi_off_outlined, size: 40, color: theme.colorScheme.error),
               const SizedBox(height: 12),
               Text(
-                _error!,
+                _friendlyError(_manager.detailError!),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
               FilledButton.tonal(
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _error = null;
-                  });
-                  _fetch();
-                },
+                onPressed: _retry,
                 child: const Text('Retry'),
               ),
             ],
@@ -163,8 +134,9 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
       );
     }
 
-    final detail = _detail!;
-    
+    final detail = _manager.selectedDetail.value;
+    if (detail == null) return const SizedBox.shrink();
+
     // Parse snapshot to recover original criterion metadata (e.g. inputType)
     TemplateTreeDto? tree;
     if (detail.templateSnapshot != null) {
@@ -172,7 +144,7 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
         tree = TemplateTreeDto.fromJson(jsonDecode(detail.templateSnapshot!));
       } catch (_) {}
     }
-    
+
     String scoringMode = 'penalty';
     if (tree?.scoringLogicConfig != null) {
       try {
@@ -201,7 +173,7 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
       children: [
         // Header card
-        _HeaderCard(detail: detail, scoringMode: scoringMode),
+        HeaderCard(detail: detail, scoringMode: scoringMode),
         const SizedBox(height: 16),
 
         // Legacy guard
@@ -239,179 +211,6 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
             ),
           ),
       ],
-    );
-  }
-}
-
-/// Header card: template, store, auditor, date, score.
-class _HeaderCard extends StatelessWidget {
-  final SubmissionDetailDto detail;
-  final String scoringMode;
-
-  const _HeaderCard({required this.detail, required this.scoringMode});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isVoided = detail.status == 'voided';
-    final scoreColor = _scoreColor(detail.totalScore, theme);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Template title + status badge
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    detail.templateTitle ?? 'Audit',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _statusBadge(theme, isVoided),
-              ],
-            ),
-            const SizedBox(height: 10),
-
-            // Meta rows
-            _MetaRow(
-              icon: Icons.store_outlined,
-              label: detail.storeName ?? '—',
-            ),
-            _MetaRow(
-              icon: Icons.person_outline,
-              label: detail.auditorName ?? '—',
-            ),
-            _MetaRow(
-              icon: Icons.calendar_today_outlined,
-              label: isVoided
-                  ? 'Voided ${_fmt(detail.voidedAt)}'
-                  : 'Completed ${_fmt(detail.completedAt)}',
-            ),
-
-            // Void reason
-            if (isVoided && detail.voidReason != null) ...[
-              const SizedBox(height: 6),
-              _MetaRow(
-                icon: Icons.info_outline,
-                label: 'Reason: ${detail.voidReason}',
-                color: theme.colorScheme.error,
-              ),
-            ],
-
-            // Score
-            if (!isVoided && detail.totalScore != null) ...[
-              const SizedBox(height: 10),
-              Divider(height: 1, color: theme.colorScheme.outlineVariant),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Text(
-                    'Score (${_formatMode(scoringMode)})',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${detail.totalScore!.toStringAsFixed(1)}%',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: scoreColor,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _statusBadge(ThemeData theme, bool isVoided) {
-    final String label;
-    final Color bg;
-    final Color fg;
-
-    if (isVoided) {
-      label = 'VOIDED';
-      bg = theme.colorScheme.surfaceContainerHighest;
-      fg = theme.colorScheme.onSurfaceVariant;
-    } else {
-      label = 'COMPLETED';
-      bg = Colors.green.withAlpha(30);
-      fg = Colors.green.shade700;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: fg,
-        ),
-      ),
-    );
-  }
-
-  Color _scoreColor(double? score, ThemeData theme) {
-    if (score == null) return theme.colorScheme.onSurface;
-    if (score >= 90) return Colors.green.shade700;
-    if (score >= 70) return Colors.orange.shade700;
-    return theme.colorScheme.error;
-  }
-
-  String _fmt(DateTime? dt) {
-    if (dt == null) return '—';
-    return DateFormat('dd MMM yyyy HH:mm').format(dt.toLocal());
-  }
-
-  String _formatMode(String mode) {
-    if (mode.isEmpty) return 'Penalty';
-    return mode[0].toUpperCase() + mode.substring(1).toLowerCase();
-  }
-}
-
-class _MetaRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color? color;
-
-  const _MetaRow({required this.icon, required this.label, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final effectiveColor = color ?? theme.colorScheme.onSurfaceVariant;
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 14, color: effectiveColor),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(color: effectiveColor),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

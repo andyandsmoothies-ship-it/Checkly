@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Templates;
@@ -16,6 +18,7 @@ public static class UpdateAssignments
     public static async Task<IResult> HandleAsync(
         Guid id,
         Request request,
+        ClaimsPrincipal user,
         AppDbContext db,
         CancellationToken ct)
     {
@@ -44,6 +47,8 @@ public static class UpdateAssignments
 
         template.UpdatedAt = now;
         await db.SaveChangesAsync(ct);
+
+        AuditLogger.Log(db, user, "template_assignments_updated", "Template", template.Id, userEmail: user.FindFirstValue(ClaimTypes.Email));
 
         return TypedResults.Ok();
     }

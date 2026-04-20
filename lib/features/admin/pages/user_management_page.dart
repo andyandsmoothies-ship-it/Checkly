@@ -6,8 +6,8 @@ import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../auth/manager/auth_manager.dart';
-import '../../stores/services/store_api_service.dart';
 import '../services/admin_api_service.dart';
+import '../manager/admin_user_manager.dart';
 import '../widgets/user_card.dart';
 import '../widgets/user_create_sheet.dart';
 import '../widgets/user_edit_sheet.dart';
@@ -25,10 +25,7 @@ class UserManagementPage extends StatefulWidget {
 
 class _UserManagementPageState extends State<UserManagementPage> {
   final _searchController = TextEditingController();
-  List<Map<String, dynamic>> _users = [];
-  List<Map<String, dynamic>> _areas = [];
-  bool _isLoading = true;
-  String? _error;
+  late final AdminUserManager _manager;
   String _selectedRole = 'all';
 
   static const _roleTabs = [
@@ -44,10 +41,11 @@ class _UserManagementPageState extends State<UserManagementPage> {
   @override
   void initState() {
     super.initState();
+    _manager = _di<AdminUserManager>();
     if (widget.initialSearch != null) {
       _searchController.text = widget.initialSearch!;
     }
-    _loadData();
+    _manager.load(search: _searchController.text.trim());
   }
 
   @override
@@ -56,67 +54,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+  Future<void> _loadData() =>
+      _manager.load(search: _searchController.text.trim());
 
-    try {
-      final search = _searchController.text.trim();
-      final usersFuture = _di<AdminApiService>().getUsers(
-        search: search.isEmpty ? null : search,
-      );
-      final areasFuture = _loadAreas();
-
-      final users = await usersFuture;
-      final areas = await areasFuture;
-
-      if (!mounted) return;
-      setState(() {
-        _users = users;
-        _areas = areas;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> _loadAreas() async {
-    return _di<AdminApiService>().getAreas();
-  }
-
-  Future<List<Map<String, dynamic>>> _loadStores({
-    String? assignableAs,
-    String? exceptUser,
-  }) async {
-    final stores = await _di<StoreApiService>().getStores(
-      assignableAs: assignableAs,
-      exceptUser: exceptUser,
-    );
-    return stores
-        .map(
-          (s) => <String, dynamic>{
-            'id': s.id,
-            'name': s.name,
-            'isActive': s.isActive,
-            'managerName': s.managerName,
-          },
-        )
-        .toList();
-  }
-
-  Future<void> _onSearch(String _) async {
-    await _loadData();
-  }
+  Future<void> _onSearch(String _) => _loadData();
 
   Future<void> _banUser(Map<String, dynamic> user, bool ban) async {
-    // Only confirm when deactivating
     if (ban) {
       final confirmed = await showDialog<bool>(
         context: context,
@@ -176,8 +119,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       isDismissible: false,
       builder: (_) => UserEditSheet(
         user: user,
-        areas: _areas,
-        loadStores: _loadStores,
+        areas: _manager.areas,
+        loadStores: _manager.loadStores,
         onSave: ({required userId, fullName, role, storeId, areaId}) =>
             _saveUser(
               userId,
@@ -388,8 +331,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       isScrollControlled: true,
       isDismissible: false,
       builder: (_) => UserCreateSheet(
-        areas: _areas,
-        loadStores: _loadStores,
+        areas: _manager.areas,
+        loadStores: _manager.loadStores,
         onCreate:
             ({
               required email,
@@ -422,68 +365,73 @@ class _UserManagementPageState extends State<UserManagementPage> {
         shape: const CircleBorder(),
         child: const Icon(Icons.person_add),
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search by name or email...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          _onSearch('');
-                        },
-                      )
-                    : null,
-                border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-              onSubmitted: _onSearch,
-              textInputAction: TextInputAction.search,
-            ),
-          ),
-
-          // Role tabs
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Row(
-              children: _roleTabs.map((tab) {
-                final (role, label) = tab;
-                final count = role == 'all'
-                    ? _users.length
-                    : _users.where((u) => u['role'] == role).length;
-                final isSelected = _selectedRole == role;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: WarmChip(
-                    label: '$label ($count)',
-                    selected: isSelected,
-                    onTap: () => setState(() => _selectedRole = role),
+      body: ListenableBuilder(
+        listenable: _manager,
+        builder: (context, _) {
+          return Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search by name or email...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              _onSearch('');
+                            },
+                          )
+                        : null,
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   ),
-                );
-              }).toList(),
-            ),
-          ),
+                  onSubmitted: _onSearch,
+                  textInputAction: TextInputAction.search,
+                ),
+              ),
 
-          // Content
-          Expanded(child: _buildBody(theme)),
-        ],
+              // Role tabs
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Row(
+                  children: _roleTabs.map((tab) {
+                    final (role, label) = tab;
+                    final count = role == 'all'
+                        ? _manager.users.length
+                        : _manager.users.where((u) => u['role'] == role).length;
+                    final isSelected = _selectedRole == role;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: WarmChip(
+                        label: '$label ($count)',
+                        selected: isSelected,
+                        onTap: () => setState(() => _selectedRole = role),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              // Content
+              Expanded(child: _buildBody(theme)),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildBody(ThemeData theme) {
-    if (_isLoading) {
+    if (_manager.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (_manager.error != null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -500,10 +448,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ),
       );
     }
-    // Apply client-side role filter
+
     final filtered = _selectedRole == 'all'
-        ? _users
-        : _users.where((u) => u['role'] == _selectedRole).toList();
+        ? _manager.users
+        : _manager.users.where((u) => u['role'] == _selectedRole).toList();
 
     if (filtered.isEmpty) {
       return const ChecklyEmptyState(

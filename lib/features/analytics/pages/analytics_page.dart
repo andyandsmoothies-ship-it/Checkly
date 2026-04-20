@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:checkly/_shared/database/app_database.dart';
-import 'package:checkly/_shared/database/database_service.dart';
-import 'package:checkly/_shared/theme/app_theme.dart';
-import 'package:checkly/_shared/theme/app_fonts.dart';
-import 'package:checkly/_shared/widgets/warm_chip.dart';
-import 'package:checkly/_shared/widgets/section_header.dart';
-import 'package:checkly/_shared/widgets/checkly_empty_state.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/warm_chip.dart';
+import '../../../_shared/widgets/section_header.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
+
+import '../manager/analytics_manager.dart';
 import '../widgets/trend_chart.dart';
 import '../widgets/category_heatmap.dart';
+
+final _di = GetIt.instance;
 
 /// 6C: Analytics page — 5 KPI cards + 6-month trend + filters.
 /// Data sourced from local CachedSubmissions (filtered by reviewStatus != rejected).
@@ -22,229 +24,13 @@ class AnalyticsPage extends StatefulWidget {
 }
 
 class _AnalyticsPageState extends State<AnalyticsPage> {
-  late final AppDatabase _db;
-  bool _loading = true;
-
-  // ── Filters ──
-  String? _selectedStore;
-  String? _selectedType;
-  String? _selectedArea;
-  String? _selectedAuditor;
-  String? _selectedStatus; // 'completed' | 'in_progress'
-  String? _selectedReviewStatus; // 'pending' | 'approved'
-  String _dateRange = 'all'; // all, 30, 90, 180, custom
-  DateTimeRange? _customDateRange;
-
-  // ── Filter option lists ──
-  List<String> _storeNames = [];
-  List<String> _templateTypes = [];
-  List<String> _areaNames = [];
-  List<String> _auditorNames = [];
-
-  // ── KPIs ──
-  int _totalAudits = 0;
-  double _avgScore = 0;
-  int _openAPs = 0;
-  int _overdueAPs = 0;
-  double _completionRate = 0;
-
-  // ── Trend data ──
-  List<TrendPoint> _trend = [];
-
-  // ── Category heatmap data ──
-  List<CategoryScore> _categoryScores = [];
+  late final AnalyticsManager _manager;
 
   @override
   void initState() {
     super.initState();
-    _db = GetIt.I<DatabaseService>().db;
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    final allSubs =
-        await (_db.select(_db.cachedSubmissions)
-              ..limit(1000)) // Bounded for memory safety (Gotcha #14)
-            .get();
-    var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
-
-    // Build filter options from cached master data
-    final allStores =
-        await (_db.select(_db.cachedStores)
-              ..limit(1000)) // Bounded for memory safety (Gotcha #14)
-            .get();
-    _areaNames =
-        allStores
-            .map((s) => s.areaName)
-            .where((a) => a != null)
-            .cast<String>()
-            .toSet()
-            .toList()
-          ..sort();
-
-    // Area → Store cascade: if area selected, restrict stores to that area
-    final filteredStores = _selectedArea != null
-        ? allStores.where((s) => s.areaName == _selectedArea).toList()
-        : allStores;
-
-    _storeNames = filteredStores.map((s) => s.name).toSet().toList()..sort();
-
-    // Reset store if it's no longer valid after area change
-    if (_selectedStore != null && !_storeNames.contains(_selectedStore)) {
-      _selectedStore = null;
-    }
-
-    final templates =
-        await (_db.select(_db.cachedTemplates)
-              ..limit(500)) // Bounded for memory safety (Gotcha #14)
-            .get();
-    _templateTypes = templates.map((t) => t.type).toSet().toList()..sort();
-    final templateTypeMap = <String, String>{};
-    for (final t in templates) {
-      templateTypeMap[t.id] = t.type;
-    }
-
-    // Build auditor list from submissions
-    _auditorNames =
-        subs
-            .map((s) => s.auditorName)
-            .where((a) => a != null)
-            .cast<String>()
-            .toSet()
-            .toList()
-          ..sort();
-
-    // ── Apply filters ──
-
-    // Area filter (via store set for O(1) lookups)
-    if (_selectedArea != null) {
-      final areaStoreNames = filteredStores.map((s) => s.name).toSet();
-      subs = subs.where((s) => areaStoreNames.contains(s.storeName)).toList();
-    }
-
-    // Store filter
-    if (_selectedStore != null) {
-      subs = subs.where((s) => s.storeName == _selectedStore).toList();
-    }
-
-    // Type filter
-    if (_selectedType != null) {
-      final typeTemplateIds = templates
-          .where((t) => t.type == _selectedType)
-          .map((t) => t.id)
-          .toSet();
-      subs = subs.where((s) => typeTemplateIds.contains(s.templateId)).toList();
-    }
-
-    // Auditor filter
-    if (_selectedAuditor != null) {
-      subs = subs.where((s) => s.auditorName == _selectedAuditor).toList();
-    }
-
-    // Status filter
-    if (_selectedStatus != null) {
-      subs = subs.where((s) => s.status == _selectedStatus).toList();
-    }
-
-    // Review status filter
-    if (_selectedReviewStatus != null) {
-      subs = subs
-          .where((s) => s.reviewStatus == _selectedReviewStatus)
-          .toList();
-    }
-
-    // Date range filter
-    final now = DateTime.now();
-    if (_dateRange == 'custom' && _customDateRange != null) {
-      subs = subs
-          .where(
-            (s) =>
-                s.createdAt.isAfter(_customDateRange!.start) &&
-                s.createdAt.isBefore(
-                  _customDateRange!.end.add(const Duration(days: 1)),
-                ),
-          )
-          .toList();
-    } else if (_dateRange != 'all') {
-      final days = int.parse(_dateRange);
-      final cutoff = now.subtract(Duration(days: days));
-      subs = subs.where((s) => s.createdAt.isAfter(cutoff)).toList();
-    }
-
-    // ── Compute KPIs ──
-
-    _totalAudits = subs.length;
-    final scored = subs.where((s) => s.totalScore != null).toList();
-    _avgScore = scored.isNotEmpty
-        ? scored.map((s) => s.totalScore!).reduce((a, b) => a + b) /
-              scored.length
-        : 0;
-
-    final completed = subs.where((s) => s.status == 'completed').toList();
-    _completionRate = _totalAudits > 0
-        ? completed.length / _totalAudits * 100
-        : 0;
-
-    // APs
-    final aps =
-        await (_db.select(_db.cachedActionPlans)
-              ..limit(1000)) // Bounded for memory safety (Gotcha #14)
-            .get();
-    _openAPs = aps.where((ap) => ap.status == 'open').length;
-    _overdueAPs = aps
-        .where(
-          (ap) =>
-              ap.status == 'open' &&
-              ap.deadline != null &&
-              ap.deadline!.isBefore(now),
-        )
-        .length;
-
-    // ── 6-month trend ──
-    final sixMonthsAgo = now.subtract(const Duration(days: 180));
-    final recentSubs = subs
-        .where((s) => s.totalScore != null && s.createdAt.isAfter(sixMonthsAgo))
-        .toList();
-
-    final grouped = <String, List<double>>{};
-    for (final s in recentSubs) {
-      final key =
-          '${s.createdAt.year}-${s.createdAt.month.toString().padLeft(2, '0')}';
-      grouped.putIfAbsent(key, () => []).add(s.totalScore!);
-    }
-
-    final monthKeys = List.generate(6, (i) {
-      final d = DateTime(now.year, now.month - i);
-      return '${d.year}-${d.month.toString().padLeft(2, '0')}';
-    }).reversed.toList();
-
-    _trend = monthKeys.map((key) {
-      final scores = grouped[key];
-      if (scores != null && scores.isNotEmpty) {
-        final avg = scores.reduce((a, b) => a + b) / scores.length;
-        return TrendPoint(key, avg, scores.length);
-      }
-      return TrendPoint(key, 0, 0);
-    }).toList();
-
-    // ── Category heatmap ──
-    final catScores = <String, List<double>>{};
-    for (final s in subs) {
-      final type = templateTypeMap[s.templateId];
-      if (type != null && s.totalScore != null) {
-        catScores.putIfAbsent(type, () => []).add(s.totalScore!);
-      }
-    }
-    _categoryScores = catScores.entries.map((e) {
-      final avg = e.value.reduce((a, b) => a + b) / e.value.length;
-      return CategoryScore(
-        name: e.key,
-        avgScore: avg,
-        auditCount: e.value.length,
-      );
-    }).toList();
-
-    setState(() => _loading = false);
+    _manager = _di<AnalyticsManager>();
+    _manager.load();
   }
 
   // ── Filter Sheet ──
@@ -276,20 +62,16 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Area dropdown
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedArea,
+                    initialValue: _manager.selectedArea,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Area',
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Areas'),
-                      ),
-                      ..._areaNames.map(
+                      const DropdownMenuItem(value: null, child: Text('All Areas')),
+                      ...(_manager.data?.areaNames ?? []).map(
                         (a) => DropdownMenuItem(
                           value: a,
                           child: Text(a, overflow: TextOverflow.ellipsis),
@@ -297,30 +79,24 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                     ],
                     onChanged: (v) {
-                      _selectedArea = v;
-                      // Reset store when area changes (cascade)
-                      _selectedStore = null;
+                      _manager.selectedArea = v;
+                      _manager.selectedStore = null; // cascade reset
                       Navigator.pop(context);
-                      setState(() => _loading = true);
-                      _loadData();
+                      _manager.load();
                     },
                   ),
                   const SizedBox(height: 12),
 
-                  // Store dropdown (filtered by area)
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedStore,
+                    initialValue: _manager.selectedStore,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Store',
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Stores'),
-                      ),
-                      ..._storeNames.map(
+                      const DropdownMenuItem(value: null, child: Text('All Stores')),
+                      ...(_manager.data?.storeNames ?? []).map(
                         (s) => DropdownMenuItem(
                           value: s,
                           child: Text(s, overflow: TextOverflow.ellipsis),
@@ -328,28 +104,23 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                     ],
                     onChanged: (v) {
-                      _selectedStore = v;
+                      _manager.selectedStore = v;
                       Navigator.pop(context);
-                      setState(() => _loading = true);
-                      _loadData();
+                      _manager.load();
                     },
                   ),
                   const SizedBox(height: 12),
 
-                  // Audit Type dropdown
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedType,
+                    initialValue: _manager.selectedType,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Audit Type',
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Types'),
-                      ),
-                      ..._templateTypes.map(
+                      const DropdownMenuItem(value: null, child: Text('All Types')),
+                      ...(_manager.data?.templateTypes ?? []).map(
                         (t) => DropdownMenuItem(
                           value: t,
                           child: Text(t, overflow: TextOverflow.ellipsis),
@@ -357,28 +128,23 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                     ],
                     onChanged: (v) {
-                      _selectedType = v;
+                      _manager.selectedType = v;
                       Navigator.pop(context);
-                      setState(() => _loading = true);
-                      _loadData();
+                      _manager.load();
                     },
                   ),
                   const SizedBox(height: 12),
 
-                  // Auditor dropdown
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedAuditor,
+                    initialValue: _manager.selectedAuditor,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Auditor',
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Auditors'),
-                      ),
-                      ..._auditorNames.map(
+                      const DropdownMenuItem(value: null, child: Text('All Auditors')),
+                      ...(_manager.data?.auditorNames ?? []).map(
                         (a) => DropdownMenuItem(
                           value: a,
                           child: Text(a, overflow: TextOverflow.ellipsis),
@@ -386,72 +152,49 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                     ],
                     onChanged: (v) {
-                      _selectedAuditor = v;
+                      _manager.selectedAuditor = v;
                       Navigator.pop(context);
-                      setState(() => _loading = true);
-                      _loadData();
+                      _manager.load();
                     },
                   ),
                   const SizedBox(height: 12),
 
-                  // Status dropdown
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedStatus,
+                    initialValue: _manager.selectedStatus,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Status',
                       border: OutlineInputBorder(),
                     ),
                     items: const [
-                      DropdownMenuItem(
-                        value: null,
-                        child: Text('All Statuses'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'completed',
-                        child: Text('Completed'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'in_progress',
-                        child: Text('In Progress'),
-                      ),
+                      DropdownMenuItem(value: null, child: Text('All Statuses')),
+                      DropdownMenuItem(value: 'completed', child: Text('Completed')),
+                      DropdownMenuItem(value: 'in_progress', child: Text('In Progress')),
                     ],
                     onChanged: (v) {
-                      _selectedStatus = v;
+                      _manager.selectedStatus = v;
                       Navigator.pop(context);
-                      setState(() => _loading = true);
-                      _loadData();
+                      _manager.load();
                     },
                   ),
                   const SizedBox(height: 12),
 
-                  // Review Status dropdown
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedReviewStatus,
+                    initialValue: _manager.selectedReviewStatus,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Review Status',
                       border: OutlineInputBorder(),
                     ),
                     items: const [
-                      DropdownMenuItem(
-                        value: null,
-                        child: Text('All Review Statuses'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'pending',
-                        child: Text('Pending'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'approved',
-                        child: Text('Approved'),
-                      ),
+                      DropdownMenuItem(value: null, child: Text('All Review Statuses')),
+                      DropdownMenuItem(value: 'pending', child: Text('Pending')),
+                      DropdownMenuItem(value: 'approved', child: Text('Approved')),
                     ],
                     onChanged: (v) {
-                      _selectedReviewStatus = v;
+                      _manager.selectedReviewStatus = v;
                       Navigator.pop(context);
-                      setState(() => _loading = true);
-                      _loadData();
+                      _manager.load();
                     },
                   ),
                 ],
@@ -471,13 +214,12 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       context: context,
       firstDate: DateTime(now.year - 2),
       lastDate: now,
-      initialDateRange: _customDateRange,
+      initialDateRange: _manager.customDateRange,
     );
     if (picked != null) {
-      _customDateRange = picked;
-      _dateRange = 'custom';
-      setState(() => _loading = true);
-      _loadData();
+      _manager.customDateRange = picked;
+      _manager.dateRange = 'custom';
+      _manager.load();
     }
   }
 
@@ -485,268 +227,260 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   int get _activeFilterCount {
     int count = 0;
-    if (_selectedArea != null) count++;
-    if (_selectedStore != null) count++;
-    if (_selectedType != null) count++;
-    if (_selectedAuditor != null) count++;
-    if (_selectedStatus != null) count++;
-    if (_selectedReviewStatus != null) count++;
+    if (_manager.selectedArea != null) count++;
+    if (_manager.selectedStore != null) count++;
+    if (_manager.selectedType != null) count++;
+    if (_manager.selectedAuditor != null) count++;
+    if (_manager.selectedStatus != null) count++;
+    if (_manager.selectedReviewStatus != null) count++;
     return count;
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Analytics')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _loadData,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  // ── Filter Chip Bar ──
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        // Active filter chips (dismissible)
-                        if (_selectedArea != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: InputChip(
-                              label: Text('Area: $_selectedArea'),
-                              onDeleted: () {
-                                _selectedArea = null;
-                                _selectedStore = null; // cascade reset
-                                setState(() => _loading = true);
-                                _loadData();
-                              },
-                            ),
-                          ),
-                        if (_selectedStore != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: InputChip(
-                              label: Text(_selectedStore!),
-                              onDeleted: () {
-                                _selectedStore = null;
-                                setState(() => _loading = true);
-                                _loadData();
-                              },
-                            ),
-                          ),
-                        if (_selectedType != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: InputChip(
-                              label: Text(_selectedType!),
-                              onDeleted: () {
-                                _selectedType = null;
-                                setState(() => _loading = true);
-                                _loadData();
-                              },
-                            ),
-                          ),
-                        if (_selectedAuditor != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: InputChip(
-                              label: Text(_selectedAuditor!),
-                              onDeleted: () {
-                                _selectedAuditor = null;
-                                setState(() => _loading = true);
-                                _loadData();
-                              },
-                            ),
-                          ),
-                        if (_selectedStatus != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: InputChip(
-                              label: Text(
-                                _selectedStatus == 'completed'
-                                    ? 'Completed'
-                                    : 'In Progress',
-                              ),
-                              onDeleted: () {
-                                _selectedStatus = null;
-                                setState(() => _loading = true);
-                                _loadData();
-                              },
-                            ),
-                          ),
-                        if (_selectedReviewStatus != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: InputChip(
-                              label: Text(
-                                _selectedReviewStatus == 'pending'
-                                    ? 'Pending Review'
-                                    : 'Approved',
-                              ),
-                              onDeleted: () {
-                                _selectedReviewStatus = null;
-                                setState(() => _loading = true);
-                                _loadData();
-                              },
-                            ),
-                          ),
+      body: ListenableBuilder(
+        listenable: _manager,
+        builder: (context, _) {
+          final theme = Theme.of(context);
+          if (_manager.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final data = _manager.data;
+          final totalAudits = data?.totalAudits ?? 0;
 
-                        // Date range chips
-                        WarmChip(
-                          label: 'All Time',
-                          selected: _dateRange == 'all',
-                          onTap: () {
-                            _dateRange = 'all';
-                            _customDateRange = null;
-                            setState(() => _loading = true);
-                            _loadData();
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        WarmChip(
-                          label: '30d',
-                          selected: _dateRange == '30',
-                          onTap: () {
-                            _dateRange = '30';
-                            _customDateRange = null;
-                            setState(() => _loading = true);
-                            _loadData();
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        WarmChip(
-                          label: '90d',
-                          selected: _dateRange == '90',
-                          onTap: () {
-                            _dateRange = '90';
-                            _customDateRange = null;
-                            setState(() => _loading = true);
-                            _loadData();
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        WarmChip(
-                          label: '6mo',
-                          selected: _dateRange == '180',
-                          onTap: () {
-                            _dateRange = '180';
-                            _customDateRange = null;
-                            setState(() => _loading = true);
-                            _loadData();
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        WarmChip(
-                          label:
-                              _dateRange == 'custom' && _customDateRange != null
-                              ? '${_customDateRange!.start.day}/${_customDateRange!.start.month} – ${_customDateRange!.end.day}/${_customDateRange!.end.month}'
-                              : 'Custom',
-                          selected: _dateRange == 'custom',
-                          onTap: _pickCustomDateRange,
-                        ),
-                        const SizedBox(width: 8),
-
-                        // All Filters button (with badge)
-                        ActionChip(
-                          avatar: Badge(
-                            isLabelVisible: _activeFilterCount > 0,
-                            label: Text('$_activeFilterCount'),
-                            child: const Icon(Icons.tune, size: 16),
+          return RefreshIndicator(
+            onRefresh: _manager.load,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                // ── Filter Chip Bar ──
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      // Active filter chips (dismissible)
+                      if (_manager.selectedArea != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: InputChip(
+                            label: Text('Area: ${_manager.selectedArea}'),
+                            onDeleted: () {
+                              _manager.selectedArea = null;
+                              _manager.selectedStore = null;
+                              _manager.load();
+                            },
                           ),
-                          label: const Text('Filters'),
-                          onPressed: _showFilterSheet,
                         ),
-                      ],
-                    ),
+                      if (_manager.selectedStore != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: InputChip(
+                            label: Text(_manager.selectedStore!),
+                            onDeleted: () {
+                              _manager.selectedStore = null;
+                              _manager.load();
+                            },
+                          ),
+                        ),
+                      if (_manager.selectedType != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: InputChip(
+                            label: Text(_manager.selectedType!),
+                            onDeleted: () {
+                              _manager.selectedType = null;
+                              _manager.load();
+                            },
+                          ),
+                        ),
+                      if (_manager.selectedAuditor != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: InputChip(
+                            label: Text(_manager.selectedAuditor!),
+                            onDeleted: () {
+                              _manager.selectedAuditor = null;
+                              _manager.load();
+                            },
+                          ),
+                        ),
+                      if (_manager.selectedStatus != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: InputChip(
+                            label: Text(
+                              _manager.selectedStatus == 'completed'
+                                  ? 'Completed'
+                                  : 'In Progress',
+                            ),
+                            onDeleted: () {
+                              _manager.selectedStatus = null;
+                              _manager.load();
+                            },
+                          ),
+                        ),
+                      if (_manager.selectedReviewStatus != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: InputChip(
+                            label: Text(
+                              _manager.selectedReviewStatus == 'pending'
+                                  ? 'Pending Review'
+                                  : 'Approved',
+                            ),
+                            onDeleted: () {
+                              _manager.selectedReviewStatus = null;
+                              _manager.load();
+                            },
+                          ),
+                        ),
+
+                      // Date range chips
+                      WarmChip(
+                        label: 'All Time',
+                        selected: _manager.dateRange == 'all',
+                        onTap: () {
+                          _manager.dateRange = 'all';
+                          _manager.customDateRange = null;
+                          _manager.load();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      WarmChip(
+                        label: '30d',
+                        selected: _manager.dateRange == '30',
+                        onTap: () {
+                          _manager.dateRange = '30';
+                          _manager.customDateRange = null;
+                          _manager.load();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      WarmChip(
+                        label: '90d',
+                        selected: _manager.dateRange == '90',
+                        onTap: () {
+                          _manager.dateRange = '90';
+                          _manager.customDateRange = null;
+                          _manager.load();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      WarmChip(
+                        label: '6mo',
+                        selected: _manager.dateRange == '180',
+                        onTap: () {
+                          _manager.dateRange = '180';
+                          _manager.customDateRange = null;
+                          _manager.load();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      WarmChip(
+                        label: _manager.dateRange == 'custom' &&
+                                _manager.customDateRange != null
+                            ? '${_manager.customDateRange!.start.day}/${_manager.customDateRange!.start.month} – ${_manager.customDateRange!.end.day}/${_manager.customDateRange!.end.month}'
+                            : 'Custom',
+                        selected: _manager.dateRange == 'custom',
+                        onTap: _pickCustomDateRange,
+                      ),
+                      const SizedBox(width: 8),
+
+                      // All Filters button (with badge)
+                      ActionChip(
+                        avatar: Badge(
+                          isLabelVisible: _activeFilterCount > 0,
+                          label: Text('$_activeFilterCount'),
+                          child: const Icon(Icons.tune, size: 16),
+                        ),
+                        label: const Text('Filters'),
+                        onPressed: _showFilterSheet,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
 
-                  if (_totalAudits == 0 && _activeFilterCount > 0)
-                    const ChecklyEmptyState(
-                      icon: Icons.search_off,
-                      title: 'No Match',
-                      subtitle: 'No audits match your current filters. Clear filters to see more.',
-                    )
-                  else if (_totalAudits == 0)
-                    const ChecklyEmptyState(
-                      icon: Icons.analytics_outlined,
-                      title: 'No analytics yet',
-                      subtitle:
-                          'Complete your first audit to generate insights.',
-                    )
-                  else ...[
-                    // KPI Grid
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _KpiCard(
-                          icon: Icons.assignment,
-                          label: 'Total Audits',
-                          value: '$_totalAudits',
-                          accentColor: theme.colorScheme.primary,
-                          tooltip: 'Total non-rejected audits',
-                          onTap: () => context.go('/activity'),
-                        ),
-                        _KpiCard(
-                          icon: Icons.speed,
-                          label: 'Avg Audit Score',
-                          value: '${_avgScore.toStringAsFixed(1)}%',
-                          accentColor: AppTheme.success,
-                          tooltip: 'Mean score of all scored audits',
-                          onTap: () => context.go('/activity?filter=submitted'),
-                        ),
-                        _KpiCard(
-                          icon: Icons.pending_actions,
-                          label: 'Action Plans',
-                          value: '$_openAPs',
-                          accentColor: AppTheme.warning,
-                          tooltip: 'Action plans awaiting resolution',
-                          onTap: () => context.go('/plans?filter=open'),
-                        ),
-                        _KpiCard(
-                          icon: Icons.warning_amber,
-                          label: 'Overdue',
-                          value: '$_overdueAPs',
-                          accentColor: Theme.of(context).colorScheme.error,
-                          tooltip: 'Action plans past their deadline',
-                          onTap: () => context.go('/plans?sort=urgent'),
-                        ),
-                        _KpiCard(
-                          icon: Icons.check_circle,
-                          label: 'Completion',
-                          value: '${_completionRate.toStringAsFixed(1)}%',
-                          accentColor: AppTheme.info,
-                          onTap: () => context.go('/activity?filter=submitted'),
-                        ),
-                      ],
-                    ),
+                if (totalAudits == 0 && _activeFilterCount > 0)
+                  const ChecklyEmptyState(
+                    icon: Icons.search_off,
+                    title: 'No Match',
+                    subtitle: 'No audits match your current filters. Clear filters to see more.',
+                  )
+                else if (totalAudits == 0)
+                  const ChecklyEmptyState(
+                    icon: Icons.analytics_outlined,
+                    title: 'No analytics yet',
+                    subtitle: 'Complete your first audit to generate insights.',
+                  )
+                else ...[
+                  // KPI Grid
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _KpiCard(
+                        icon: Icons.assignment,
+                        label: 'Total Audits',
+                        value: '$totalAudits',
+                        accentColor: theme.colorScheme.primary,
+                        tooltip: 'Total non-rejected audits',
+                        onTap: () => context.go('/activity'),
+                      ),
+                      _KpiCard(
+                        icon: Icons.speed,
+                        label: 'Avg Audit Score',
+                        value: '${(data?.avgScore ?? 0).toStringAsFixed(1)}%',
+                        accentColor: AppTheme.success,
+                        tooltip: 'Mean score of all scored audits',
+                        onTap: () => context.go('/activity?filter=submitted'),
+                      ),
+                      _KpiCard(
+                        icon: Icons.pending_actions,
+                        label: 'Action Plans',
+                        value: '${data?.openAPs ?? 0}',
+                        accentColor: AppTheme.warning,
+                        tooltip: 'Action plans awaiting resolution',
+                        onTap: () => context.go('/plans?filter=open'),
+                      ),
+                      _KpiCard(
+                        icon: Icons.warning_amber,
+                        label: 'Overdue',
+                        value: '${data?.overdueAPs ?? 0}',
+                        accentColor: Theme.of(context).colorScheme.error,
+                        tooltip: 'Action plans past their deadline',
+                        onTap: () => context.go('/plans?sort=urgent'),
+                      ),
+                      _KpiCard(
+                        icon: Icons.check_circle,
+                        label: 'Completion',
+                        value: '${(data?.completionRate ?? 0).toStringAsFixed(1)}%',
+                        accentColor: AppTheme.info,
+                        onTap: () => context.go('/activity?filter=submitted'),
+                      ),
+                    ],
+                  ),
 
-                    const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                    // Trend section header
-                    const SectionHeader('6-MONTH TREND'),
+                  const SectionHeader('6-MONTH TREND'),
+                  TrendChart(
+                    data: data?.trend ?? [],
+                    onMonthTap: (month) => context.go('/activity?month=$month'),
+                  ),
 
-                    // Trend chart (fl_chart LineChart)
-                    TrendChart(
-                      data: _trend,
-                      onMonthTap: (month) =>
-                          context.go('/activity?month=$month'),
-                    ),
+                  const SizedBox(height: 24),
 
-                    const SizedBox(height: 24),
-
-                    // Category heatmap
-                    const SectionHeader('CATEGORY PERFORMANCE'),
-                    CategoryHeatmap(categories: _categoryScores),
-                  ],
+                  const SectionHeader('CATEGORY PERFORMANCE'),
+                  CategoryHeatmap(categories: data?.categoryScores ?? []),
                 ],
-              ),
+              ],
             ),
+          );
+        },
+      ),
     );
   }
 }

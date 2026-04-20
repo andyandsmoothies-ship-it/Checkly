@@ -119,19 +119,17 @@ When a template is created as a `survey` or `checklist`:
 - **Database Persistence**: `finalize_audit` RPC
 - **Server Verification**: `verify-score` Edge Function
 
-### Score Verification (Phase 2: Enforce)
-
-The `finalize_audit` RPC includes **synchronous server-side score verification**. After answers are upserted, the RPC calls the `verify-score` Edge Function (via the `http` extension) which re-computes the score independently. If the server score diverges from the client score by >5%, the submission is **rejected**.
+### Server-Side (C# .NET Core)
+The `CreateSubmission` and `FinalizeSubmission` endpoints include **synchronous server-side score verification**. After answers are parsed, the backend calls `ScoringVerifier.Verify()` which re-computes the score independently. If the server score diverges from the client score by >0.01 tolerance, the submission is **rejected** with a 400 Bad Request.
 
 | Component | Purpose |
 |:---|:---|
-| `verify-score` Edge Function | Inlines the scoring engine, re-computes from template + answers |
-| `extensions.http_post()` | Synchronous HTTP call within the RPC transaction |
-| Vault: `score_verification_mode` | Kill switch (`observe` = log only, `enforce` = block) |
-| `system_logs` category `SCORING_MISMATCH_REJECTED` | Logged when a submission is rejected |
+| `ScoringVerifier.cs` | Re-computes from template + answers, mimicking `scoring_engine.dart` |
+| `ScoringConfigParser.cs` | Safe extraction of `scoringMode` and `progressiveRepeat` from JSON configs, with logging on parse failure to prevent silent fallbacks. |
+| `scoring_input_mapper.dart` | Client-side mapper. Applies a case-insensitive check for `non_conform` answers to assign a default `numericValue=1`, ensuring parity with C#. |
 
 > [!WARNING]
-> Submissions with spoofed scores (>5% delta) are rejected. The Phase 1 async trigger (`pg_net`) also logs all mismatches as a redundant safety net.
+> Both C# and Flutter must handle `non_conform` answers consistently. The C# engine drops directly into the `faults * impact + repeat` math logic without early returns, matching Flutter perfectly. Submissions with spoofed or mathematically divergent scores are rejected.
 
 ### Template Builder Validation
 

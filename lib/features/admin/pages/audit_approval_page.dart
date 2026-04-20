@@ -7,6 +7,7 @@ import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../audit/model/submission_dto.dart';
 import '../../audit/services/submission_api_service.dart';
+import '../manager/admin_audit_manager.dart';
 
 final _di = GetIt.instance;
 
@@ -22,53 +23,34 @@ class AuditApprovalPage extends StatefulWidget {
 class _AuditApprovalPageState extends State<AuditApprovalPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  late final AdminAuditManager _manager;
   final _search = TextEditingController();
-
-  List<SubmissionDto> _allItems = [];
-  bool _isLoading = true;
-  String? _error;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadSubmissions();
+    _manager = _di<AdminAuditManager>();
+    _manager.addListener(_onManagerChanged);
+    _manager.loadApprovals();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     _search.dispose();
+    _manager.removeListener(_onManagerChanged);
     super.dispose();
   }
 
-  Future<void> _loadSubmissions() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final subs = await _di<SubmissionApiService>().getSubmissions(
-        pageSize: 100,
-      );
-      if (!mounted) return;
-      setState(() {
-        // Only show completed audits (not drafts/scheduled)
-        _allItems = subs.where((s) => s.status == 'completed').toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
+  void _onManagerChanged() {
+    if (mounted) setState(() {});
   }
 
+  Future<void> _loadSubmissions() => _manager.loadApprovals();
+
   List<SubmissionDto> _filtered(String? reviewStatus) {
-    var items = _allItems;
+    var items = _manager.submissions;
     if (reviewStatus != null) {
       items = items.where((i) => i.reviewStatus == reviewStatus).toList();
     } else {
@@ -410,9 +392,9 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
           ],
         ),
       ),
-      body: _isLoading
+      body: _manager.isApprovalsLoading
           ? const Center(child: CircularProgressIndicator())
-          : _error != null
+          : _manager.approvalsError != null
           ? Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -422,7 +404,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
-                  Text(_error!, style: Theme.of(context).textTheme.bodySmall),
+                  Text(_manager.approvalsError!, style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     onPressed: _loadSubmissions,

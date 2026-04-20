@@ -1,4 +1,3 @@
-import '../services/admin_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +8,7 @@ import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../stores/model/store_dto.dart';
+import '../manager/admin_store_manager.dart';
 
 final _di = GetIt.instance;
 
@@ -22,53 +22,18 @@ class StoreManagementPage extends StatefulWidget {
 }
 
 class _StoreManagementPageState extends State<StoreManagementPage> {
-  List<StoreDto> _stores = [];
-  List<Map<String, dynamic>> _areas = [];
-  bool _isLoading = true;
-  String? _error;
+  late final AdminStoreManager _manager;
   String? _selectedAreaId;
 
   @override
   void initState() {
     super.initState();
+    _manager = _di<AdminStoreManager>();
     _selectedAreaId = widget.initialAreaId;
-    _loadData();
+    _manager.load(areaId: _selectedAreaId);
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      final storesFuture = _di<StoreApiService>().getStores(
-        includeInactive: true,
-        areaId: _selectedAreaId,
-      );
-      final areasFuture = _loadAreas();
-
-      final stores = await storesFuture;
-      final areas = await areasFuture;
-
-      if (!mounted) return;
-      setState(() {
-        _stores = stores;
-        _areas = areas;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> _loadAreas() async {
-    return _di<AdminApiService>().getAreas();
-  }
+  Future<void> _loadData() => _manager.load(areaId: _selectedAreaId);
 
   // ─── Create / Edit ───
 
@@ -159,7 +124,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                         // Area dropdown
                         DropdownButtonFormField<String>(
                           initialValue:
-                              _areas.any((a) => a['id'] == selectedAreaId)
+                              _manager.areas.any((a) => a['id'] == selectedAreaId)
                               ? selectedAreaId
                               : null,
                           borderRadius: BorderRadius.circular(12),
@@ -172,7 +137,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                               value: null,
                               child: Text('— None —'),
                             ),
-                            ..._areas.map(
+                            ..._manager.areas.map(
                               (a) => DropdownMenuItem(
                                 value: a['id'] as String,
                                 child: Text(a['name'] as String),
@@ -431,39 +396,44 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
-      body: Column(
-        children: [
-          // Area filter dropdown
-          if (_areas.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: DropdownButtonFormField<String?>(
-                initialValue: _selectedAreaId,
-                decoration: const InputDecoration(
-                  labelText: 'Filter by Area',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                ),
-                items: [
-                  const DropdownMenuItem(value: null, child: Text('All Areas')),
-                  ..._areas.map(
-                    (a) => DropdownMenuItem(
-                      value: a['id'] as String,
-                      child: Text(a['name'] as String),
+      body: ListenableBuilder(
+        listenable: _manager,
+        builder: (context, _) {
+          return Column(
+            children: [
+              // Area filter dropdown
+              if (_manager.areas.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: DropdownButtonFormField<String?>(
+                  initialValue: _selectedAreaId,
+                  decoration: const InputDecoration(
+                    labelText: 'Filter by Area',
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
                     ),
                   ),
-                ],
-                onChanged: (v) {
-                  setState(() => _selectedAreaId = v);
-                  _loadData();
-                },
+                  items: [
+                    const DropdownMenuItem(value: null, child: Text('All Areas')),
+                    ..._manager.areas.map(
+                      (a) => DropdownMenuItem(
+                        value: a['id'] as String,
+                        child: Text(a['name'] as String),
+                      ),
+                    ),
+                  ],
+                  onChanged: (v) {
+                    setState(() => _selectedAreaId = v);
+                    _loadData();
+                  },
+                ),
               ),
-            ),
-          Expanded(child: _buildBody()),
-        ],
+              Expanded(child: _buildBody()),
+            ],
+          );
+        },
       ),
     );
   }
@@ -471,10 +441,10 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
   Widget _buildBody() {
     final theme = Theme.of(context);
 
-    if (_isLoading) {
+    if (_manager.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (_manager.error != null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -491,7 +461,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
         ),
       );
     }
-    if (_stores.isEmpty) {
+    if (_manager.stores.isEmpty) {
       return const ChecklyEmptyState(
         icon: Icons.storefront_outlined,
         title: 'No stores yet',
@@ -503,9 +473,9 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
       onRefresh: _loadData,
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-        itemCount: _stores.length,
+        itemCount: _manager.stores.length,
         itemBuilder: (context, index) {
-          final store = _stores[index];
+          final store = _manager.stores[index];
           return _StoreCard(
             store: store,
             onEdit: () => _showStoreForm(store: store),

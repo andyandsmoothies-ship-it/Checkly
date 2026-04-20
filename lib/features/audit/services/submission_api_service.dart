@@ -2,7 +2,8 @@ import 'package:dio/dio.dart';
 
 import '../../../_shared/utils/isolate_parser.dart';
 import '../model/submission_dto.dart';
-import '../pages/survey_results_page.dart';
+import '../model/survey_result_dto.dart';
+
 
 import '../../../_shared/services/sync_interfaces.dart';
 

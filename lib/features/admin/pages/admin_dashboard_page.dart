@@ -5,9 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
-import '../../stores/services/store_api_service.dart';
-import '../../templates/services/template_api_service.dart';
-import '../services/admin_api_service.dart';
+import '../manager/admin_dashboard_manager.dart';
 import '../../../_shared/widgets/compact_status_panel.dart';
 
 final _di = GetIt.instance;
@@ -23,40 +21,36 @@ class AdminDashboardPage extends StatefulWidget {
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   late final DashboardManager _manager;
-  int _userCount = 0;
-  int _storeCount = 0;
-  int _templateCount = 0;
+  late final AdminDashboardManager _countsManager;
 
   @override
   void initState() {
     super.initState();
     _manager = _di<DashboardManager>();
+    _countsManager = _di.isRegistered<AdminDashboardManager>()
+        ? _di<AdminDashboardManager>()
+        : AdminDashboardManager();
+    _countsManager.addListener(_onCountsChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _manager.loadStats();
-      _loadCounts();
+      _countsManager.loadCounts();
     });
   }
 
-  Future<void> _loadCounts() async {
-    try {
-      final usersResponse = await _di<AdminApiService>().getUsersRaw(
-        pageSize: 1,
+  @override
+  void dispose() {
+    _countsManager.removeListener(_onCountsChanged);
+    super.dispose();
+  }
+
+  void _onCountsChanged() {
+    if (!mounted) return;
+    if (_countsManager.error != null && !_countsManager.isLoading) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.'),
+        ),
       );
-      final stores = await _di<StoreApiService>().getStores();
-      final templates = await _di<TemplateApiService>().getTemplates();
-      if (mounted) {
-        setState(() {
-          _userCount = usersResponse['total'] as int? ?? 0;
-          _storeCount = stores.length;
-          _templateCount = templates.length;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.')),
-        );
-      }
     }
   }
 
@@ -67,9 +61,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Admin Dashboard')),
       body: ListenableBuilder(
-        listenable: _manager,
+        listenable: Listenable.merge([_manager, _countsManager]),
         builder: (context, _) {
-          final isLoading = _manager.isLoading;
+          final isLoading = _manager.isLoading || _countsManager.isLoading;
           final adminState = _manager.dashboardState is AdminDashboardState
               ? _manager.dashboardState as AdminDashboardState
               : null;
@@ -89,21 +83,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   StatRowData(
                     icon: Icons.people,
                     label: 'USERS',
-                    value: isLoading ? '—' : '$_userCount',
+                    value: isLoading ? '—' : '${_countsManager.userCount}',
                     iconColor: theme.colorScheme.primary,
                     onTap: () => context.push('/admin/users'),
                   ),
                   StatRowData(
                     icon: Icons.store,
                     label: 'STORES',
-                    value: isLoading ? '—' : '$_storeCount',
+                    value: isLoading ? '—' : '${_countsManager.storeCount}',
                     iconColor: AppTheme.success,
                     onTap: () => context.push('/admin/stores'),
                   ),
                   StatRowData(
                     icon: Icons.description,
                     label: 'TEMPLATES',
-                    value: isLoading ? '—' : '$_templateCount',
+                    value: isLoading ? '—' : '${_countsManager.templateCount}',
                     iconColor: AppTheme.info,
                     onTap: () {},
                   ),

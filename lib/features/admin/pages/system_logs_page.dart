@@ -4,9 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import 'system_log_detail_page.dart';
+import '../widgets/log_card.dart';
 
 final _di = GetIt.instance;
 
@@ -284,145 +284,9 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
             );
           }
           final log = _logs[index];
-          return _LogCard(log: log, onTap: () => _showLogDetail(log));
+          return LogCard(log: log, onTap: () => _showLogDetail(log));
         },
       ),
-    );
-  }
-}
-
-// ─── Log Card ───
-
-class _LogCard extends StatelessWidget {
-  final Map<String, dynamic> log;
-  final VoidCallback onTap;
-
-  const _LogCard({required this.log, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final level = log['level'] as String? ?? 'info';
-    final action = log['action'] as String? ?? '';
-    final category = log['category'] as String? ?? '';
-    final message = log['message'] as String? ?? '';
-    final createdAt = log['createdAt'] as String?;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 6),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _LevelBadge(level: level),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Action + category
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            action,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          category,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Message (truncated)
-                    if (message.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        message,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    // Timestamp
-                    if (createdAt != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatTime(createdAt),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.outline,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                size: 18,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  static String _formatTime(String raw) {
-    final dt = DateTime.tryParse(raw);
-    if (dt == null) return raw;
-    final local = dt.toLocal();
-    return '${local.hour.toString().padLeft(2, '0')}:'
-        '${local.minute.toString().padLeft(2, '0')} '
-        '${local.day}/${local.month}/${local.year}';
-  }
-}
-
-// ─── Level Badge ───
-
-class _LevelBadge extends StatelessWidget {
-  final String level;
-
-  const _LevelBadge({required this.level});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final (Color bg, Color fg, IconData icon) = switch (level) {
-      'error' => (theme.colorScheme.errorContainer, theme.colorScheme.error, Icons.error),
-      'warn' => (
-        AppTheme.warning.withValues(alpha: 0.15),
-        AppTheme.warning,
-        Icons.warning_amber,
-      ),
-      _ => (
-        AppTheme.info.withValues(alpha: 0.15),
-        AppTheme.info,
-        Icons.info_outline,
-      ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(icon, size: 16, color: fg),
     );
   }
 }

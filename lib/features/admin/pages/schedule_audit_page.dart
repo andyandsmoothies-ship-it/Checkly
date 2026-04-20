@@ -6,10 +6,8 @@ import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../audit/model/submission_dto.dart';
 import '../../audit/services/submission_api_service.dart';
-import '../../auth/manager/auth_manager.dart';
-import '../../stores/services/store_api_service.dart';
-import '../../templates/services/template_api_service.dart';
-import '../services/admin_api_service.dart';
+import '../manager/admin_audit_manager.dart';
+import '../widgets/dropdown_card.dart';
 
 final _di = GetIt.instance;
 
@@ -58,99 +56,40 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
   DateTime _scheduledDate = DateTime.now().add(const Duration(days: 1));
   bool _isSubmitting = false;
 
+  late final AdminAuditManager _manager;
+
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _manager = _di<AdminAuditManager>();
+    _manager.addListener(_onManagerChanged);
+    _manager.loadScheduleData();
   }
 
-  Future<void> _loadData() async {
-    try {
-      final templatesFuture = _di<TemplateApiService>().getTemplates();
-      final storesFuture = _di<StoreApiService>().getStores();
-      final auditorsFuture = _di<AdminApiService>().getUsers();
+  @override
+  void dispose() {
+    _manager.removeListener(_onManagerChanged);
+    super.dispose();
+  }
 
-      final results = await Future.wait([
-        templatesFuture,
-        storesFuture,
-        auditorsFuture,
-      ]);
-
-      final templates = results[0] as List<dynamic>;
-      final stores = results[1] as List<dynamic>;
-      final users = results[2] as List<Map<String, dynamic>>;
-
-      if (mounted) {
-        // Determine current user's role and area for filtering
-        final currentUserId = _di<AuthManager>().currentUser?.userId;
-        final currentUserRole =
-            _di<AuthManager>().currentUser?.role ?? 'auditor';
-        Map<String, dynamic>? currentUserRecord;
-        if (currentUserId != null) {
-          currentUserRecord = users.cast<Map<String, dynamic>?>().firstWhere(
-            (u) => u?['id'] == currentUserId,
-            orElse: () => null,
-          );
-        }
-        final myAreaId = currentUserRecord?['areaId'] as String?;
-
-        // Build template list
-        final templateList = templates
-            .map(
-              (t) => {
-                'id': (t is Map) ? t['id'] : t.id,
-                'title': (t is Map) ? t['title'] : t.title,
-              },
-            )
-            .toList();
-
-        // Build store list (with areaId for filtering)
-        var storeList = stores
-            .map(
-              (s) => {
-                'id': (s is Map) ? s['id'] : s.id,
-                'name': (s is Map) ? s['name'] : s.name,
-                'areaId': (s is Map) ? s['areaId'] : null,
-              },
-            )
-            .toList();
-
-        // Base auditor filter: only active auditors and admins (keep areaId)
-        var auditorList = users
-            .where((u) =>
-                (u['role'] == 'auditor' || u['role'] == 'admin') &&
-                u['isLocked'] != true)
-            .toList();
-
-        // Role-based filtering for area_manager
-        if (currentUserRole == 'area_manager' && myAreaId != null) {
-          storeList = storeList.where((s) => s['areaId'] == myAreaId).toList();
-          auditorList = auditorList
-              .where((u) => u['areaId'] == myAreaId || u['areaId'] == null)
-              .toList();
-        } else if (currentUserRole == 'area_manager' && myAreaId == null) {
-          // Safety: AM with no area sees nothing
-          storeList = [];
-          auditorList = [];
-        }
-
-        setState(() {
-          _templates = templateList;
-          _allStores = storeList;
-          _allAuditors = auditorList;
-          // Initially show all (no cross-filter yet)
-          _stores = List.from(_allStores);
-          _auditors = List.from(_allAuditors);
-          _isLoadingData = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoadingData = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.')));
-      }
+  void _onManagerChanged() {
+    if (!mounted) return;
+    final data = _manager.scheduleData;
+    if (data != null) {
+      setState(() {
+        _templates = data.templates;
+        _allStores = data.allStores;
+        _allAuditors = data.allAuditors;
+        // Initially show all (no cross-filter yet)
+        _stores = List.from(_allStores);
+        _auditors = List.from(_allAuditors);
+        _isLoadingData = false;
+      });
+    } else if (_manager.scheduleError != null) {
+      setState(() => _isLoadingData = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.')),
+      );
     }
   }
 
@@ -297,7 +236,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         const SizedBox(height: 24),
 
         // Template picker
-        _DropdownCard(
+        DropdownCard(
           icon: Icons.description_outlined,
           label: 'TEMPLATE',
           hint: 'Select a template',
@@ -318,7 +257,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         const SizedBox(height: 12),
 
         // Store picker
-        _DropdownCard(
+        DropdownCard(
           icon: Icons.store_outlined,
           label: 'STORE',
           hint: 'Select a store',
@@ -339,7 +278,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         const SizedBox(height: 12),
 
         // Auditor picker
-        _DropdownCard(
+        DropdownCard(
           icon: Icons.person_outlined,
           label: 'AUDITOR',
           hint: 'Assign an auditor',
@@ -449,72 +388,6 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
           ),
         ),
       ],
-    );
-  }
-}
-
-// ── Reusable dropdown card ──
-
-class _DropdownCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String hint;
-  final String? value;
-  final List<DropdownMenuItem<String>> items;
-  final ValueChanged<String?> onChanged;
-
-  const _DropdownCard({
-    required this.icon,
-    required this.label,
-    required this.hint,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 16, color: theme.colorScheme.primary),
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: AppFonts.displayStyle(
-                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                    letterSpacing: 2,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              initialValue: value,
-              borderRadius: BorderRadius.circular(12),
-              decoration: InputDecoration(
-                hintText: hint,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-              ),
-              items: items,
-              onChanged: onChanged,
-              isExpanded: true,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

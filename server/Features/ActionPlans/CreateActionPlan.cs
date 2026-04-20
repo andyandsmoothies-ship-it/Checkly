@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.ActionPlans;
@@ -56,6 +57,8 @@ public static class CreateActionPlan
 
         db.ActionPlans.Add(plan);
         await db.SaveChangesAsync(ct);
+
+        AuditLogger.Log(db, user, "action_plan_created", "ActionPlan", plan.Id, userEmail: user.FindFirstValue(ClaimTypes.Email));
 
         return TypedResults.Created($"/api/action-plans/{plan.Id}", ToDto(plan));
     }

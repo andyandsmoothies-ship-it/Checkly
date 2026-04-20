@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../_shared/theme/app_theme.dart';
 
-import '../../../_shared/theme/app_theme.dart';
-
-/// Shared severity badge — used by [SystemLogDetailPage] and [SystemPivotLogsPage].
 class LevelBadge extends StatelessWidget {
   final String level;
-  const LevelBadge({required this.level, super.key});
+
+  const LevelBadge({super.key, required this.level});
 
   @override
   Widget build(BuildContext context) {

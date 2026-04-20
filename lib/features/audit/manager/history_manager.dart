@@ -41,6 +41,11 @@ class HistoryManager extends ChangeNotifier {
   String? error;
   DateTime? lastRefreshed;
 
+  // Detail state — used by AuditPreviewSheet
+  final selectedDetail = ValueNotifier<SubmissionDetailDto?>(null);
+  bool isDetailLoading = false;
+  String? detailError;
+
   // Pagination state
   int _page = 1;
   static const int _pageSize = 50;
@@ -136,6 +141,25 @@ class HistoryManager extends ChangeNotifier {
       submissions.value = list;
     }
     notifyListeners();
+  }
+
+  // ---------- Submission Detail (used by AuditPreviewSheet) ----------
+  /// Fetches the full [SubmissionDetailDto] for the given [submissionId].
+  /// Sets [selectedDetail], [isDetailLoading], and [detailError].
+  Future<void> loadDetail(String submissionId) async {
+    selectedDetail.value = null;
+    isDetailLoading = true;
+    detailError = null;
+    notifyListeners();
+
+    try {
+      selectedDetail.value = await _api.getSubmission(submissionId);
+    } catch (e) {
+      detailError = e.toString();
+    } finally {
+      isDetailLoading = false;
+      notifyListeners();
+    }
   }
 
   // ---------- Cloud Archive (GC Pillar A) ----------

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
-import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/utils/score_utils.dart';
-import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
@@ -15,6 +11,8 @@ import '../../auth/manager/auth_manager.dart';
 import '../manager/history_manager.dart';
 import '../model/submission_dto.dart';
 import '../pages/audit_preview_sheet.dart';
+import '../utils/category_utils.dart';
+import '../widgets/store_group.dart';
 
 final _di = GetIt.instance;
 
@@ -332,7 +330,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         (type) => Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: WarmChip(
-                            label: _formatCategory(type),
+                            label: formatCategory(type),
                             selected: _categoryFilter == type,
                             onTap: () => setState(() => _categoryFilter = type),
                           ),
@@ -421,7 +419,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 140),
                           children: [
                             ..._grouped.entries.map(
-                              (entry) => _StoreGroup(
+                              (entry) => StoreGroup(
                                 storeName: entry.key,
                                 submissions: entry.value,
                                 onPreviewAudit: (submission) {
@@ -649,328 +647,3 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 }
-
-// ── Store Group (collapsible) ──
-
-class _StoreGroup extends StatelessWidget {
-  final String storeName;
-  final List<SubmissionDto> submissions;
-  final void Function(SubmissionDto)? onStartAudit;
-  final void Function(SubmissionDto)? onVoidAudit;
-  final void Function(SubmissionDto)? onPreviewAudit; // [NEW]
-
-  const _StoreGroup({
-    required this.storeName,
-    required this.submissions,
-    this.onStartAudit,
-    this.onVoidAudit,
-    this.onPreviewAudit, // [NEW]
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Theme(
-      data: theme.copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        initiallyExpanded: true,
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: EdgeInsets.zero,
-        title: Row(
-          children: [
-            Text(
-              storeName.toUpperCase(),
-              style: AppFonts.displayStyle(
-                fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                letterSpacing: 3,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '${submissions.length}',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        children: submissions
-            .map(
-              (s) => _AuditCard(
-                submission: s,
-                onStartAudit: (s.status == 'scheduled' && !s.isOverdue) ||
-                        s.status == 'draft'
-                    ? () => onStartAudit?.call(s)
-                    : null,
-                onVoidAudit: (s.status == 'draft' || s.status == 'scheduled')
-                    ? () => onVoidAudit?.call(s)
-                    : null,
-                onPreviewAudit: (s.status == 'completed' || s.status == 'voided') // [NEW]
-                    ? () => onPreviewAudit?.call(s)
-                    : null,
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
-}
-
-// ── Audit Card ──
-
-class _AuditCard extends StatelessWidget {
-  final SubmissionDto submission;
-  final VoidCallback? onStartAudit;
-  final VoidCallback? onVoidAudit;
-  final VoidCallback? onPreviewAudit; // [NEW]
-  const _AuditCard({
-    required this.submission,
-    this.onStartAudit,
-    this.onVoidAudit,
-    this.onPreviewAudit, // [NEW]
-  });
-
-  Color _scoreColor(double? score, ThemeData theme) => scoreColor(score, theme);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isOverdue = submission.isOverdue;
-    final isVoided = submission.isVoided;
-    final isScheduled = submission.status == 'scheduled' && !isOverdue;
-    final isDraft = submission.status == 'draft';
-    final color = isVoided
-        ? theme.colorScheme.onSurfaceVariant
-        : _scoreColor(submission.totalScore, theme);
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell( // [NEW] — tappable for completed/voided
-        borderRadius: BorderRadius.circular(12), // match Card's default corner radius
-        onTap: onPreviewAudit, // null = no ripple, existing cards unaffected
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-          children: [
-            // Score circle or status icon
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isVoided
-                    ? theme.colorScheme.surfaceContainerHighest
-                    : isOverdue
-                    ? theme.colorScheme.error.withValues(alpha: 0.1)
-                    : isScheduled
-                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
-                    : isDraft
-                    ? AppTheme.warning.withValues(alpha: 0.1)
-                    : color.withValues(alpha: 0.1),   // Synchronized: bg tint tracks score-semantic color
-              ),
-              child: Center(
-                child: isVoided
-                    ? Icon(
-                        Icons.block_flipped,
-                        size: 22,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      )
-                    : isOverdue
-                    ? Icon(
-                        Icons.warning_amber_rounded,
-                        size: 22,
-                        color: theme.colorScheme.error,
-                      )
-                    : isScheduled
-                    ? Icon(
-                        Icons.schedule,
-                        size: 22,
-                        color: theme.colorScheme.primary,
-                      )
-                    : isDraft
-                    ? Icon(Icons.edit_note, size: 22, color: AppTheme.warning)
-                    : Text(
-                        submission.totalScore != null
-                            ? submission.totalScore!.toStringAsFixed(0)
-                            : '—',
-                        style: AppFonts.serifStyle(
-                            fontSize: Theme.of(context).textTheme.titleMedium?.fontSize ?? 16,
-                            color: color,
-                          ),
-                      ),
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    submission.templateTitle ?? 'Audit',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    isScheduled || isOverdue
-                        ? 'Scheduled at ${_formatDateTime(submission.scheduledAt ?? submission.createdAt)}'
-                        : isDraft
-                            ? 'Started at ${_formatDateTime(submission.createdAt)}'
-                            : 'Completed at ${_formatDateTime(submission.completedAt ?? submission.createdAt)}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: isOverdue
-                          ? theme.colorScheme.error
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  if (submission.templateType != null) ...[
-                    const SizedBox(height: 4),
-                    _categoryBadge(submission.templateType!, theme),
-                  ],
-                ],
-              ),
-            ),
-
-            // Action: Start / Resume button OR status badge
-            if ((isScheduled || isDraft) && onStartAudit != null) ...[
-              FilledButton(
-                onPressed: onStartAudit,
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  minimumSize: const Size(64, 44),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  isDraft ? 'Resume' : 'Start',
-                  style: AppFonts.displayStyle(
-                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              // Admin-only void button
-              if (onVoidAudit != null) ...[
-                const SizedBox(width: 4),
-                IconButton(
-                  onPressed: onVoidAudit,
-                  tooltip: 'Void Audit',
-                  icon: Icon(
-                    Icons.block,
-                    size: 18,
-                    color: theme.colorScheme.error,
-                  ),
-                ),
-              ],
-            ] else ...[
-              _statusBadge(theme),
-            ],
-          ],
-        ),
-        ), // close Padding
-      ), // close InkWell [NEW]
-    );
-  }
-
-  Widget _statusBadge(ThemeData theme) {
-    final isOverdue = submission.isOverdue;
-    final status = isOverdue ? 'EXPIRED' : submission.status.toUpperCase();
-
-    Color bg;
-    Color fg;
-    if (isOverdue) {
-      bg = theme.colorScheme.error.withAlpha(20);
-      fg = theme.colorScheme.error;
-    } else {
-      switch (submission.status) {
-        case 'completed':
-          bg = AppTheme.success.withAlpha(20);
-          fg = AppTheme.success;
-        case 'draft':
-          bg = AppTheme.warning.withAlpha(20);
-          fg = AppTheme.warning;
-        case 'scheduled':
-          bg = theme.colorScheme.primary.withAlpha(20);
-          fg = theme.colorScheme.primary;
-        case 'voided':
-          bg = theme.colorScheme.surfaceContainerHighest;
-          fg = theme.colorScheme.onSurfaceVariant;
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              'VOIDED',
-              style: theme.textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: fg,
-              ),
-            ),
-          );
-        default:
-          bg = AppTheme.oatmeal.withValues(alpha: 0.5);
-          fg = theme.colorScheme.onSurfaceVariant;
-      }
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        status,
-        style: theme.textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: fg,
-        ),
-      ),
-    );
-  }
-
-  String _formatDateTime(DateTime date) => DateFormat('dd MMM yyyy HH:mm:ss').format(date.toLocal());
-
-  Widget _categoryBadge(String type, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        _formatCategory(type),
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.w600,
-          fontSize: 10,
-        ),
-      ),
-    );
-  }
-}
-
-/// Converts a raw templateType value (e.g. 'food_safety') to a
-/// display-friendly label (e.g. 'Food Safety').
-String _formatCategory(String type) =>
-    type.split('_').map((w) => w.isEmpty ? '' : '${w[0].toUpperCase()}${w.substring(1)}').join(' ');

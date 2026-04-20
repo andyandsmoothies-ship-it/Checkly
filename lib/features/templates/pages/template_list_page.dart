@@ -4,20 +4,15 @@ import '../../../_shared/widgets/permission_guard.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../_shared/utils/date_format_utils.dart';
-
-import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/template_manager.dart';
 import '../models/template_dto.dart';
+import '../widgets/template_card.dart';
+import '../widgets/type_section.dart';
 
 final _di = GetIt.instance;
 
-/// Returns a human-readable relative time string.
-/// Delegates to shared [timeAgo] utility.
-String _timeAgo(DateTime dt) => timeAgo(dt);
 
 /// Template type labels matching PWA TemplateCard constants.
 const kTemplateTypeLabels = <String, String>{
@@ -273,12 +268,12 @@ class _TemplateListPageState extends State<TemplateListPage> {
                       final templates = entry.value;
                       final label =
                           kTemplateTypeLabels[type] ?? type.toUpperCase();
-                      return _TypeSection(
+                      return TypeSection(
                         label: label,
                         count: templates.length,
                         initiallyExpanded: false,
                         children: templates
-                            .map((t) => _TemplateCard(template: t, isAdmin: isAdmin))
+                            .map((t) => TemplateCard(template: t, isAdmin: isAdmin))
                             .toList(),
                       );
                     }).toList(),
@@ -288,304 +283,6 @@ class _TemplateListPageState extends State<TemplateListPage> {
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-// ── Type Section (collapsible group) ──
-
-class _TypeSection extends StatelessWidget {
-  final String label;
-  final int count;
-  final bool initiallyExpanded;
-  final List<Widget> children;
-
-  const _TypeSection({
-    required this.label,
-    required this.count,
-    this.initiallyExpanded = true,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Theme(
-      data: theme.copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        initiallyExpanded: initiallyExpanded,
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: EdgeInsets.zero,
-        title: Row(
-          children: [
-            Text(
-              label,
-              style: AppFonts.displayStyle(
-                fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                letterSpacing: 3,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '$count',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        children: children,
-      ),
-    );
-  }
-}
-
-// ── Template Card ──
-
-/// Card for a single template in the list.
-class _TemplateCard extends StatelessWidget {
-  final TemplateDto template;
-  /// Whether the current user has admin role. Controls mutation actions.
-  final bool isAdmin;
-
-  const _TemplateCard({required this.template, required this.isAdmin});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => context.push('/templates/${template.id}'),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Icon
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.assignment, color: theme.colorScheme.primary),
-              ),
-              const SizedBox(width: 16),
-
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      template.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        _TypeBadge(type: template.type),
-                        const SizedBox(width: 8),
-                        Text(
-                          'v${template.version}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        if (!template.isActive) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 1,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppTheme.softPeach,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'DRAFT',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    // Updated time (Fix 2)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        'Updated ${_timeAgo(template.updatedAt)}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Context menu
-              PopupMenuButton<String>(
-                tooltip: '',
-                icon: Icon(
-                  Icons.more_vert,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                onSelected: (action) {
-                  switch (action) {
-                    case 'start':
-                      context.push('/stores/select?templateId=${template.id}');
-                    case 'edit':
-                      if (isAdmin) context.push('/templates/edit/${template.id}');
-                    case 'duplicate':
-                      if (isAdmin) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Duplicate — coming soon'),
-                          ),
-                        );
-                      }
-                    case 'delete':
-                      if (isAdmin) {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: const Text('Delete Template'),
-                            content: Text(
-                              'Delete "${template.title}"? This cannot be undone.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx),
-                                child: const Text('Cancel'),
-                              ),
-                              FilledButton(
-                                onPressed: () async {
-                                  Navigator.pop(ctx);
-                                  try {
-                                    await _di<TemplateManager>().deleteTemplate(
-                                      template.id,
-                                    );
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Template deleted'),
-                                        ),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('We hit a snag removing this item. If it remains stuck on your screen, please restart the app.'),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                },
-                                child: const Text('Delete'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'start',
-                    child: ListTile(
-                      leading: Icon(Icons.play_arrow),
-                      title: Text('Quick Start'),
-                      dense: true,
-                    ),
-                  ),
-                  if (isAdmin) ...[  
-                    const PopupMenuItem(
-                      value: 'edit',
-                      child: ListTile(
-                        leading: Icon(Icons.edit),
-                        title: Text('Edit'),
-                        dense: true,
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'duplicate',
-                      child: ListTile(
-                        leading: Icon(Icons.copy),
-                        title: Text('Duplicate'),
-                        dense: true,
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Builder(
-                        builder: (ctx) {
-                          final errorColor = Theme.of(ctx).colorScheme.error;
-                          return ListTile(
-                            leading: Icon(Icons.delete_outline, color: errorColor),
-                            title: Text(
-                              'Delete',
-                              style: TextStyle(color: errorColor),
-                            ),
-                            dense: true,
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Badge showing template type (weighted, checklist, etc.)
-class _TypeBadge extends StatelessWidget {
-  final String type;
-
-  const _TypeBadge({required this.type});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        type.toUpperCase(),
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }
