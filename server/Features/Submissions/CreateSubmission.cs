@@ -136,6 +136,7 @@ public static class CreateSubmission
         if (!isDraft && !isScheduled)
         {
             var scoringMode = "penalty";
+            bool progressiveRepeatPenalty = false;
             if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
             {
                 try
@@ -143,6 +144,8 @@ public static class CreateSubmission
                     var configDoc = System.Text.Json.JsonDocument.Parse(template.ScoringLogicConfig);
                     if (configDoc.RootElement.TryGetProperty("scoringMode", out var modeElem))
                         scoringMode = modeElem.GetString() ?? "penalty";
+                    if (configDoc.RootElement.TryGetProperty("progressiveRepeat", out var progElem) && progElem.ValueKind == System.Text.Json.JsonValueKind.True)
+                        progressiveRepeatPenalty = true;
                 }
                 catch { /* malformed config → default to penalty */ }
             }
@@ -178,7 +181,7 @@ public static class CreateSubmission
             }
 
             var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
-                scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds);
+                scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty);
 
             var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
             if (!verification.IsValid)

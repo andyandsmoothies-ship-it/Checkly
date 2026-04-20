@@ -36,3 +36,14 @@
   RISK predicate: `(c.IsRisk || isExplicit) && (isExplicit || HasFaults(c, answers))`.
 - **DO NOT simplify** back to `.Where(c => c.IsRisk).Any(c => HasFaults(...))` — this re-introduces the 400 bug (RT1 regression).
 - **Rule (STRICT):** Callers (`CreateSubmission`, `FinalizeSubmission`) MUST extract `explicitRiskIds` from `request.Answers.Where(a => a.IsRisk)` and pass it to every `scorer.Verify()` call site.
+
+## JSON Config Sync — ScoringLogicConfig Keys Must Be Explicitly Parsed AND Passed
+
+- **Problem (April 2026):** `progressiveRepeat: true` was stored in the template's `ScoringLogicConfig` JSON. Flutter correctly read this and applied n²×rate deduction. The server read only `scoringMode` from the JSON and left `progressiveRepeatPenalty` at its C# default (`false`), applying n×rate. This caused a systematic score mismatch (client 80.0, server 91.43).
+- **Root cause:** `ScoringVerifier.Verify()` optional parameters do **NOT** auto-read from the JSON blob. Each key must be explicitly parsed and passed.
+- **Rule (STRICT):** Any new key added to `ScoringLogicConfig` MUST be parsed and forwarded in **BOTH** `CreateSubmission.cs` AND `FinalizeSubmission.cs`. Use the established `TryGetProperty` + `JsonValueKind.True` pattern:
+  ```csharp
+  if (configDoc.RootElement.TryGetProperty("progressiveRepeat", out var progElem) && progElem.ValueKind == JsonValueKind.True)
+      progressiveRepeatPenalty = true;
+  ```
+- **Canary Search:** After adding any new config key, run `grep_search "TryGetProperty"` in `server/Features/Submissions/` and verify BOTH handlers are updated.

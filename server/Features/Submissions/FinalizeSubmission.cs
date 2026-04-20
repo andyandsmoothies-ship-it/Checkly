@@ -121,6 +121,7 @@ public static class FinalizeSubmission
 
         // 4. Verify score — parse scoring mode from template config
         var scoringMode = "penalty";
+        bool progressiveRepeatPenalty = false;
         if (!string.IsNullOrEmpty(scoringLogicConfig))
         {
             try
@@ -128,6 +129,8 @@ public static class FinalizeSubmission
                 var configDoc = System.Text.Json.JsonDocument.Parse(scoringLogicConfig);
                 if (configDoc.RootElement.TryGetProperty("scoringMode", out var modeElem))
                     scoringMode = modeElem.GetString() ?? "penalty";
+                if (configDoc.RootElement.TryGetProperty("progressiveRepeat", out var progElem) && progElem.ValueKind == System.Text.Json.JsonValueKind.True)
+                    progressiveRepeatPenalty = true;
             }
             catch { /* malformed config → default to penalty */ }
         }
@@ -164,7 +167,7 @@ public static class FinalizeSubmission
         }
 
         var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
-            scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds);
+            scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty);
 
         var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid && scoreMode == "enforce")
