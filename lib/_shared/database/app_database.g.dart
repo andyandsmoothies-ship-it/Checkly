@@ -1428,6 +1428,17 @@ class $CachedCriteriaTable extends CachedCriteria
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _minusImpactMeta = const VerificationMeta(
+    'minusImpact',
+  );
+  @override
+  late final GeneratedColumn<double> minusImpact = GeneratedColumn<double>(
+    'minus_impact',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isCcpMeta = const VerificationMeta('isCcp');
   @override
   late final GeneratedColumn<bool> isCcp = GeneratedColumn<bool>(
@@ -1522,6 +1533,7 @@ class $CachedCriteriaTable extends CachedCriteria
     description,
     inputType,
     pointsWeight,
+    minusImpact,
     isCcp,
     isRisk,
     orderIndex,
@@ -1586,6 +1598,15 @@ class $CachedCriteriaTable extends CachedCriteria
         pointsWeight.isAcceptableOrUnknown(
           data['points_weight']!,
           _pointsWeightMeta,
+        ),
+      );
+    }
+    if (data.containsKey('minus_impact')) {
+      context.handle(
+        _minusImpactMeta,
+        minusImpact.isAcceptableOrUnknown(
+          data['minus_impact']!,
+          _minusImpactMeta,
         ),
       );
     }
@@ -1668,6 +1689,10 @@ class $CachedCriteriaTable extends CachedCriteria
         DriftSqlType.double,
         data['${effectivePrefix}points_weight'],
       ),
+      minusImpact: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}minus_impact'],
+      ),
       isCcp: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_ccp'],
@@ -1713,6 +1738,7 @@ class CachedCriteriaData extends DataClass
   final String? description;
   final String inputType;
   final double? pointsWeight;
+  final double? minusImpact;
   final bool isCcp;
   final bool isRisk;
   final int orderIndex;
@@ -1727,6 +1753,7 @@ class CachedCriteriaData extends DataClass
     this.description,
     required this.inputType,
     this.pointsWeight,
+    this.minusImpact,
     required this.isCcp,
     required this.isRisk,
     required this.orderIndex,
@@ -1747,6 +1774,9 @@ class CachedCriteriaData extends DataClass
     map['input_type'] = Variable<String>(inputType);
     if (!nullToAbsent || pointsWeight != null) {
       map['points_weight'] = Variable<double>(pointsWeight);
+    }
+    if (!nullToAbsent || minusImpact != null) {
+      map['minus_impact'] = Variable<double>(minusImpact);
     }
     map['is_ccp'] = Variable<bool>(isCcp);
     map['is_risk'] = Variable<bool>(isRisk);
@@ -1772,6 +1802,9 @@ class CachedCriteriaData extends DataClass
       pointsWeight: pointsWeight == null && nullToAbsent
           ? const Value.absent()
           : Value(pointsWeight),
+      minusImpact: minusImpact == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minusImpact),
       isCcp: Value(isCcp),
       isRisk: Value(isRisk),
       orderIndex: Value(orderIndex),
@@ -1796,6 +1829,7 @@ class CachedCriteriaData extends DataClass
       description: serializer.fromJson<String?>(json['description']),
       inputType: serializer.fromJson<String>(json['inputType']),
       pointsWeight: serializer.fromJson<double?>(json['pointsWeight']),
+      minusImpact: serializer.fromJson<double?>(json['minusImpact']),
       isCcp: serializer.fromJson<bool>(json['isCcp']),
       isRisk: serializer.fromJson<bool>(json['isRisk']),
       orderIndex: serializer.fromJson<int>(json['orderIndex']),
@@ -1815,6 +1849,7 @@ class CachedCriteriaData extends DataClass
       'description': serializer.toJson<String?>(description),
       'inputType': serializer.toJson<String>(inputType),
       'pointsWeight': serializer.toJson<double?>(pointsWeight),
+      'minusImpact': serializer.toJson<double?>(minusImpact),
       'isCcp': serializer.toJson<bool>(isCcp),
       'isRisk': serializer.toJson<bool>(isRisk),
       'orderIndex': serializer.toJson<int>(orderIndex),
@@ -1832,6 +1867,7 @@ class CachedCriteriaData extends DataClass
     Value<String?> description = const Value.absent(),
     String? inputType,
     Value<double?> pointsWeight = const Value.absent(),
+    Value<double?> minusImpact = const Value.absent(),
     bool? isCcp,
     bool? isRisk,
     int? orderIndex,
@@ -1846,6 +1882,7 @@ class CachedCriteriaData extends DataClass
     description: description.present ? description.value : this.description,
     inputType: inputType ?? this.inputType,
     pointsWeight: pointsWeight.present ? pointsWeight.value : this.pointsWeight,
+    minusImpact: minusImpact.present ? minusImpact.value : this.minusImpact,
     isCcp: isCcp ?? this.isCcp,
     isRisk: isRisk ?? this.isRisk,
     orderIndex: orderIndex ?? this.orderIndex,
@@ -1866,6 +1903,9 @@ class CachedCriteriaData extends DataClass
       pointsWeight: data.pointsWeight.present
           ? data.pointsWeight.value
           : this.pointsWeight,
+      minusImpact: data.minusImpact.present
+          ? data.minusImpact.value
+          : this.minusImpact,
       isCcp: data.isCcp.present ? data.isCcp.value : this.isCcp,
       isRisk: data.isRisk.present ? data.isRisk.value : this.isRisk,
       orderIndex: data.orderIndex.present
@@ -1887,6 +1927,7 @@ class CachedCriteriaData extends DataClass
           ..write('description: $description, ')
           ..write('inputType: $inputType, ')
           ..write('pointsWeight: $pointsWeight, ')
+          ..write('minusImpact: $minusImpact, ')
           ..write('isCcp: $isCcp, ')
           ..write('isRisk: $isRisk, ')
           ..write('orderIndex: $orderIndex, ')
@@ -1906,6 +1947,7 @@ class CachedCriteriaData extends DataClass
     description,
     inputType,
     pointsWeight,
+    minusImpact,
     isCcp,
     isRisk,
     orderIndex,
@@ -1924,6 +1966,7 @@ class CachedCriteriaData extends DataClass
           other.description == this.description &&
           other.inputType == this.inputType &&
           other.pointsWeight == this.pointsWeight &&
+          other.minusImpact == this.minusImpact &&
           other.isCcp == this.isCcp &&
           other.isRisk == this.isRisk &&
           other.orderIndex == this.orderIndex &&
@@ -1940,6 +1983,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
   final Value<String?> description;
   final Value<String> inputType;
   final Value<double?> pointsWeight;
+  final Value<double?> minusImpact;
   final Value<bool> isCcp;
   final Value<bool> isRisk;
   final Value<int> orderIndex;
@@ -1955,6 +1999,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     this.description = const Value.absent(),
     this.inputType = const Value.absent(),
     this.pointsWeight = const Value.absent(),
+    this.minusImpact = const Value.absent(),
     this.isCcp = const Value.absent(),
     this.isRisk = const Value.absent(),
     this.orderIndex = const Value.absent(),
@@ -1971,6 +2016,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     this.description = const Value.absent(),
     required String inputType,
     this.pointsWeight = const Value.absent(),
+    this.minusImpact = const Value.absent(),
     this.isCcp = const Value.absent(),
     this.isRisk = const Value.absent(),
     this.orderIndex = const Value.absent(),
@@ -1992,6 +2038,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     Expression<String>? description,
     Expression<String>? inputType,
     Expression<double>? pointsWeight,
+    Expression<double>? minusImpact,
     Expression<bool>? isCcp,
     Expression<bool>? isRisk,
     Expression<int>? orderIndex,
@@ -2008,6 +2055,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
       if (description != null) 'description': description,
       if (inputType != null) 'input_type': inputType,
       if (pointsWeight != null) 'points_weight': pointsWeight,
+      if (minusImpact != null) 'minus_impact': minusImpact,
       if (isCcp != null) 'is_ccp': isCcp,
       if (isRisk != null) 'is_risk': isRisk,
       if (orderIndex != null) 'order_index': orderIndex,
@@ -2026,6 +2074,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     Value<String?>? description,
     Value<String>? inputType,
     Value<double?>? pointsWeight,
+    Value<double?>? minusImpact,
     Value<bool>? isCcp,
     Value<bool>? isRisk,
     Value<int>? orderIndex,
@@ -2042,6 +2091,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
       description: description ?? this.description,
       inputType: inputType ?? this.inputType,
       pointsWeight: pointsWeight ?? this.pointsWeight,
+      minusImpact: minusImpact ?? this.minusImpact,
       isCcp: isCcp ?? this.isCcp,
       isRisk: isRisk ?? this.isRisk,
       orderIndex: orderIndex ?? this.orderIndex,
@@ -2073,6 +2123,9 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     }
     if (pointsWeight.present) {
       map['points_weight'] = Variable<double>(pointsWeight.value);
+    }
+    if (minusImpact.present) {
+      map['minus_impact'] = Variable<double>(minusImpact.value);
     }
     if (isCcp.present) {
       map['is_ccp'] = Variable<bool>(isCcp.value);
@@ -2110,6 +2163,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
           ..write('description: $description, ')
           ..write('inputType: $inputType, ')
           ..write('pointsWeight: $pointsWeight, ')
+          ..write('minusImpact: $minusImpact, ')
           ..write('isCcp: $isCcp, ')
           ..write('isRisk: $isRisk, ')
           ..write('orderIndex: $orderIndex, ')
@@ -10002,6 +10056,7 @@ typedef $$CachedCriteriaTableCreateCompanionBuilder =
       Value<String?> description,
       required String inputType,
       Value<double?> pointsWeight,
+      Value<double?> minusImpact,
       Value<bool> isCcp,
       Value<bool> isRisk,
       Value<int> orderIndex,
@@ -10019,6 +10074,7 @@ typedef $$CachedCriteriaTableUpdateCompanionBuilder =
       Value<String?> description,
       Value<String> inputType,
       Value<double?> pointsWeight,
+      Value<double?> minusImpact,
       Value<bool> isCcp,
       Value<bool> isRisk,
       Value<int> orderIndex,
@@ -10093,6 +10149,11 @@ class $$CachedCriteriaTableFilterComposer
 
   ColumnFilters<double> get pointsWeight => $composableBuilder(
     column: $table.pointsWeight,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get minusImpact => $composableBuilder(
+    column: $table.minusImpact,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10189,6 +10250,11 @@ class $$CachedCriteriaTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get minusImpact => $composableBuilder(
+    column: $table.minusImpact,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isCcp => $composableBuilder(
     column: $table.isCcp,
     builder: (column) => ColumnOrderings(column),
@@ -10276,6 +10342,11 @@ class $$CachedCriteriaTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<double> get minusImpact => $composableBuilder(
+    column: $table.minusImpact,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get isCcp =>
       $composableBuilder(column: $table.isCcp, builder: (column) => column);
 
@@ -10359,6 +10430,7 @@ class $$CachedCriteriaTableTableManager
                 Value<String?> description = const Value.absent(),
                 Value<String> inputType = const Value.absent(),
                 Value<double?> pointsWeight = const Value.absent(),
+                Value<double?> minusImpact = const Value.absent(),
                 Value<bool> isCcp = const Value.absent(),
                 Value<bool> isRisk = const Value.absent(),
                 Value<int> orderIndex = const Value.absent(),
@@ -10374,6 +10446,7 @@ class $$CachedCriteriaTableTableManager
                 description: description,
                 inputType: inputType,
                 pointsWeight: pointsWeight,
+                minusImpact: minusImpact,
                 isCcp: isCcp,
                 isRisk: isRisk,
                 orderIndex: orderIndex,
@@ -10391,6 +10464,7 @@ class $$CachedCriteriaTableTableManager
                 Value<String?> description = const Value.absent(),
                 required String inputType,
                 Value<double?> pointsWeight = const Value.absent(),
+                Value<double?> minusImpact = const Value.absent(),
                 Value<bool> isCcp = const Value.absent(),
                 Value<bool> isRisk = const Value.absent(),
                 Value<int> orderIndex = const Value.absent(),
@@ -10406,6 +10480,7 @@ class $$CachedCriteriaTableTableManager
                 description: description,
                 inputType: inputType,
                 pointsWeight: pointsWeight,
+                minusImpact: minusImpact,
                 isCcp: isCcp,
                 isRisk: isRisk,
                 orderIndex: orderIndex,

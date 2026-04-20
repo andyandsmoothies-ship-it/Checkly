@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 16;
+  int get schemaVersion => 17;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -119,6 +119,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 16) {
         // Audit Category Filters: add template_type snapshot column.
         await m.addColumn(cachedSubmissions, cachedSubmissions.templateType);
+      }
+      if (from < 17) {
+        // Score Mismatch fix: add minusImpact to CachedCriteria table for checklist deductions.
+        await m.addColumn(cachedCriteria, cachedCriteria.minusImpact);
       }
     },
     beforeOpen: (details) async {

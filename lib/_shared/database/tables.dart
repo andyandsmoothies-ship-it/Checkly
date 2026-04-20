@@ -48,6 +48,7 @@ class CachedCriteria extends Table {
   TextColumn get description => text().nullable()();
   TextColumn get inputType => text()();
   RealColumn get pointsWeight => real().nullable()();
+  RealColumn get minusImpact => real().nullable()();
   BoolColumn get isCcp => boolean().withDefault(const Constant(false))();
   BoolColumn get isRisk => boolean().withDefault(const Constant(false))();
   IntColumn get orderIndex => integer().withDefault(const Constant(0))();
