@@ -135,20 +135,7 @@ public static class CreateSubmission
 
         if (!isDraft && !isScheduled)
         {
-            var scoringMode = "penalty";
-            bool progressiveRepeatPenalty = false;
-            if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
-            {
-                try
-                {
-                    var configDoc = System.Text.Json.JsonDocument.Parse(template.ScoringLogicConfig);
-                    if (configDoc.RootElement.TryGetProperty("scoringMode", out var modeElem))
-                        scoringMode = modeElem.GetString() ?? "penalty";
-                    if (configDoc.RootElement.TryGetProperty("progressiveRepeat", out var progElem) && progElem.ValueKind == System.Text.Json.JsonValueKind.True)
-                        progressiveRepeatPenalty = true;
-                }
-                catch { /* malformed config → default to penalty */ }
-            }
+            var (scoringMode, progressiveRepeatPenalty) = ScoringConfigParser.Parse(template.ScoringLogicConfig);
 
             var tempAnswers = request.Answers!.Select(a => new Answer
             {
@@ -207,17 +194,7 @@ public static class CreateSubmission
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == auditorId, ct);
 
-        var submissionScoringMode = "penalty";
-        if (!string.IsNullOrEmpty(template.ScoringLogicConfig))
-        {
-            try
-            {
-                var cfgDoc = System.Text.Json.JsonDocument.Parse(template.ScoringLogicConfig);
-                if (cfgDoc.RootElement.TryGetProperty("scoringMode", out var modeVal))
-                    submissionScoringMode = modeVal.GetString() ?? "penalty";
-            }
-            catch { /* malformed config → default to penalty */ }
-        }
+        var (submissionScoringMode, _) = ScoringConfigParser.Parse(template.ScoringLogicConfig);
 
         var now = DateTimeOffset.UtcNow;
         var submission = new Submission

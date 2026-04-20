@@ -120,20 +120,7 @@ public static class FinalizeSubmission
         }
 
         // 4. Verify score — parse scoring mode from template config
-        var scoringMode = "penalty";
-        bool progressiveRepeatPenalty = false;
-        if (!string.IsNullOrEmpty(scoringLogicConfig))
-        {
-            try
-            {
-                var configDoc = System.Text.Json.JsonDocument.Parse(scoringLogicConfig);
-                if (configDoc.RootElement.TryGetProperty("scoringMode", out var modeElem))
-                    scoringMode = modeElem.GetString() ?? "penalty";
-                if (configDoc.RootElement.TryGetProperty("progressiveRepeat", out var progElem) && progElem.ValueKind == System.Text.Json.JsonValueKind.True)
-                    progressiveRepeatPenalty = true;
-            }
-            catch { /* malformed config → default to penalty */ }
-        }
+        var (scoringMode, progressiveRepeatPenalty) = ScoringConfigParser.Parse(scoringLogicConfig);
 
         var tempAnswers = request.Answers!.Select(a => new Answer
         {

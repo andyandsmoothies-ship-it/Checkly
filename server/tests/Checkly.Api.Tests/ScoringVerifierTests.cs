@@ -20,8 +20,8 @@ public class ScoringVerifierTests
         bool isRisk = false, bool isCcp = false) =>
         new() { Id = id, GroupId = groupId, PointsWeight = points, IsRisk = isRisk, IsCcp = isCcp };
 
-    private static Answer MakeAnswer(Guid criteriaId, decimal? numericValue = null, string? value = null) =>
-        new() { Id = Guid.NewGuid(), CriteriaId = criteriaId, NumericValue = numericValue, Value = value };
+    private static Answer MakeAnswer(Guid criteriaId, decimal? numericValue = null, string? value = null, int repeatedFaults = 0) =>
+        new() { Id = Guid.NewGuid(), CriteriaId = criteriaId, NumericValue = numericValue, Value = value, RepeatedFaults = repeatedFaults };
 
     // ====================================================================
     // ATDD SC-A1: FailedCriteriaIds populated for faulted criteria only
@@ -108,5 +108,65 @@ public class ScoringVerifierTests
         var result = _sut.Verify(100m, answers, groups, criteria);
 
         Assert.DoesNotContain(c1, result.FailedCriteriaIds);
+    }
+
+    // ====================================================================
+    // Scoring Logic Parity Tests (Slice 1 - Early Return Fix)
+    // ====================================================================
+
+    [Fact]
+    public void NonConform_With_RepeatedFaults_Applies_Linear_Penalty()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m) };
+        
+        // Flutter sends numericValue = 1 for non_conform answers
+        var answers = new[] { MakeAnswer(c1, numericValue: 1, value: "non_conform", repeatedFaults: 2) };
+
+        // Act - checklist mode score = 100 - deductions
+        // Expected deduction: 1 (base impact) + (2 * 1) (linear penalty) = 3
+        // Expected Score: 100 - 3 = 97
+        var result = _sut.Verify(97m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+
+        Assert.Equal(97m, result.ServerScore);
+    }
+
+    [Fact]
+    public void NonConform_With_ProgressiveRepeat_Applies_Quadratic_Penalty()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m) };
+        
+        // Flutter sends numericValue = 1 for non_conform answers
+        var answers = new[] { MakeAnswer(c1, numericValue: 1, value: "non_conform", repeatedFaults: 2) };
+
+        // Act - checklist mode score = 100 - deductions
+        // Expected deduction: 1 (base impact) + (2^2 * 1) (quadratic penalty) = 5
+        // Expected Score: 100 - 5 = 95
+        var result = _sut.Verify(95m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: true);
+
+        Assert.Equal(95m, result.ServerScore);
+    }
+
+    [Fact]
+    public void NonConform_Without_RepeatedFaults_Returns_Impact_Only()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m) };
+        
+        var answers = new[] { MakeAnswer(c1, numericValue: 1, value: "non_conform", repeatedFaults: 0) };
+
+        // Act - checklist mode score = 100 - deductions
+        // Expected deduction: 1
+        // Expected Score: 100 - 1 = 99
+        var result = _sut.Verify(99m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+
+        Assert.Equal(99m, result.ServerScore);
     }
 }

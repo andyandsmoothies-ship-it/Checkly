@@ -72,7 +72,7 @@ class ScoringInputMapper {
         .map((a) {
           // non_conform without an explicit numeric value defaults to 1 fault.
           double? numFaults = a.numericValue;
-          if (numFaults == null && a.value == 'non_conform') {
+          if (numFaults == null && a.value?.toLowerCase() == 'non_conform') {
             numFaults = 1;
           }
           return AnswerInput(

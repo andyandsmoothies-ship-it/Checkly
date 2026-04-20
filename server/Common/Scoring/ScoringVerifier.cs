@@ -324,14 +324,14 @@ public sealed class ScoringVerifier
             return 0;
         // C4: minus_impact overrides pointsWeight for deduction
         var impact = criterion.MinusImpact ?? criterion.PointsWeight ?? 0;
-        if (string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase))
-        {
-            // Pass/fail non_conform: 1 fault × impact
-            return impact;
-        }
+
         // Numeric mode: faults × impact
-        var faults = answer.NumericValue ?? 0;
-        var baseDeduction = faults * impact;
+        var faults = answer.NumericValue;
+        if ((faults == null || faults == 0) && string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase))
+        {
+            faults = 1;
+        }
+        var baseDeduction = (faults ?? 0) * impact;
         // C3: progressive repeat penalty (n² × impact)
         if (progressiveRepeatPenalty && answer.RepeatedFaults > 0)
         {
