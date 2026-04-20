@@ -224,6 +224,7 @@ class HistoryManager extends ChangeNotifier {
           final tId = parts[0];
           final sId = parts[1];
           String? tTitle;
+          String? tType;
           String? sName;
           DateTime savedAt = DateTime.now();
 
@@ -231,7 +232,10 @@ class HistoryManager extends ChangeNotifier {
             final tRow = await (db.select(db.cachedTemplates)
                   ..where((t) => t.id.equals(tId)))
                 .getSingleOrNull();
-            if (tRow != null) tTitle = tRow.title;
+            if (tRow != null) {
+              tTitle = tRow.title;
+              tType = tRow.type;
+            }
 
             final sRow = await (db.select(db.cachedStores)
                   ..where((s) => s.id.equals(sId)))
@@ -250,6 +254,7 @@ class HistoryManager extends ChangeNotifier {
               id: 'local_draft_$key',
               templateId: tId,
               templateTitle: tTitle ?? 'Draft Audit',
+              templateType: tType,
               storeId: sId,
               storeName: sName ?? 'Unknown Store',
               status: 'draft',
@@ -271,12 +276,16 @@ class HistoryManager extends ChangeNotifier {
         }
 
         String? tTitle;
+        String? tType;
         String? sName;
         try {
           final tRow = await (db.select(db.cachedTemplates)
                 ..where((t) => t.id.equals(p.templateId)))
               .getSingleOrNull();
-          if (tRow != null) tTitle = tRow.title;
+          if (tRow != null) {
+            tTitle = tRow.title;
+            tType = tRow.type;
+          }
 
           final sRow = await (db.select(db.cachedStores)
                 ..where((s) => s.id.equals(p.storeId)))
@@ -290,6 +299,7 @@ class HistoryManager extends ChangeNotifier {
             id: 'local_outbox_${p.id}',
             templateId: p.templateId,
             templateTitle: tTitle ?? 'Audit',
+            templateType: tType,
             storeId: p.storeId,
             storeName: sName ?? 'Unknown Store',
             status: p.syncStatus == 'pending' ? 'syncing' : (p.syncStatus == 'exhausted' ? 'failed' : 'syncing'),

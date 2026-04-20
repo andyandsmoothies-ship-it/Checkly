@@ -13,7 +13,6 @@ class AdvancedSettingsCard extends StatelessWidget {
   final bool progressiveRepeat;
   final TextEditingController deadlineCtrl;
   final TextEditingController reminderCtrl;
-  final ValueChanged<String?> onScoringModeChanged;
   final ValueChanged<bool> onCcpChanged;
   final ValueChanged<bool> onRiskChanged;
   final ValueChanged<bool> onDensityChanged;
@@ -28,7 +27,6 @@ class AdvancedSettingsCard extends StatelessWidget {
     required this.progressiveRepeat,
     required this.deadlineCtrl,
     required this.reminderCtrl,
-    required this.onScoringModeChanged,
     required this.onCcpChanged,
     required this.onRiskChanged,
     required this.onDensityChanged,
@@ -62,34 +60,7 @@ class AdvancedSettingsCard extends StatelessWidget {
             ),
           ),
           children: [
-            // ── GROUP 1: SCORING MODE + SCHEDULING ──
-            DropdownButtonFormField<String>(
-              initialValue: scoringMode,
-              decoration: const InputDecoration(
-                labelText: 'Scoring Mode',
-                isDense: true,
-              ),
-              items: const [
-                DropdownMenuItem(
-                  value: 'penalty',
-                  child: Text('Penalty (Top-Down)'),
-                ),
-                DropdownMenuItem(
-                  value: 'accumulation',
-                  child: Text('Accumulation (Zero-to-Top)'),
-                ),
-                DropdownMenuItem(
-                  value: 'checklist',
-                  child: Text('Checklist (Pass/Fail)'),
-                ),
-                DropdownMenuItem(
-                  value: 'survey',
-                  child: Text('Survey (No Scoring)'),
-                ),
-              ],
-              onChanged: onScoringModeChanged,
-            ),
-            const SizedBox(height: 16),
+            // ── GROUP 1: SCHEDULING ──
 
             // Action Plan Deadline
             Row(

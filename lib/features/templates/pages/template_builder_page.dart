@@ -483,12 +483,10 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                     descCtrl: _descCtrl,
                     type: _type,
                     onTypeChanged: (v) => setState(() => _type = v ?? _type),
+                    scoringMode: _scoringMode,
+                    onScoringModeChanged: (v) =>
+                        setState(() => _scoringMode = v ?? _scoringMode),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // ── Blueprint Guide Banner (onboarding) ──
-                  _BlueprintGuideBanner(scoringMode: _scoringMode),
 
                   const SizedBox(height: 16),
                   KeyedSubtree(
@@ -501,8 +499,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                       progressiveRepeat: _progressiveRepeat,
                       deadlineCtrl: _deadlineCtrl,
                       reminderCtrl: _reminderCtrl,
-                      onScoringModeChanged: (v) =>
-                          setState(() => _scoringMode = v ?? _scoringMode),
                       onCcpChanged: (v) => setState(() => _ccpOverride = v),
                       onRiskChanged: (v) => setState(() => _riskOverride = v),
                       onDensityChanged: (v) =>
@@ -608,68 +604,3 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   }
 }
 
-/// Informational banner that explains how the selected scoring mode works.
-class _BlueprintGuideBanner extends StatelessWidget {
-  final String scoringMode;
-
-  const _BlueprintGuideBanner({required this.scoringMode});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    final (String emoji, String text) = switch (scoringMode) {
-      'penalty' => (
-        '💡',
-        'How it works: Your audit starts with a perfect score. '
-            'Each fault deducts points. Use Pass/Fail or Fault Count '
-            'inputs for best results.',
-      ),
-      'accumulation' => (
-        '💡',
-        'How it works: Your audit starts at zero. '
-            'Each correct answer adds points. Use Scored Choices or '
-            'Scale inputs for best results.',
-      ),
-      'checklist' => (
-        '✅',
-        'How it works: Simple pass/fail compliance checks with no '
-            'point scoring. The report shows compliance status for each item.',
-      ),
-      'survey' => (
-        '📊',
-        'How it works: Collect responses without scoring. '
-            'Results are aggregated for analysis. Use Single Choice '
-            'or Multi Choice inputs.',
-      ),
-      _ => ('💡', 'Select a scoring mode to see how it works.'),
-    };
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

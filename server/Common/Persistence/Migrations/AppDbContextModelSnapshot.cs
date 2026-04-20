@@ -883,6 +883,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("template_title");
 
+                    b.Property<string>("TemplateType")
+                        .HasColumnType("text")
+                        .HasColumnName("template_type");
+
                     b.Property<int?>("TemplateVersion")
                         .HasColumnType("integer")
                         .HasColumnName("template_version");

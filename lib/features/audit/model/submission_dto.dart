@@ -101,6 +101,7 @@ class SubmissionDto {
   final String id;
   final String? templateId;
   final String? templateTitle;
+  final String? templateType;
   final String? displayNoun;
   final String? storeId;
   final String? storeName;
@@ -126,6 +127,7 @@ class SubmissionDto {
     required this.id,
     this.templateId,
     this.templateTitle,
+    this.templateType,
     this.displayNoun,
     this.storeId,
     this.storeName,
@@ -171,6 +173,7 @@ class SubmissionDto {
     id: json['id'] as String,
     templateId: json['templateId'] as String?,
     templateTitle: json['templateTitle'] as String?,
+    templateType: json['templateType'] as String?,
     displayNoun: json['displayNoun'] as String?,
     storeId: json['storeId'] as String?,
     storeName: json['storeName'] as String?,
@@ -207,6 +210,7 @@ class SubmissionDto {
     id: id,
     templateId: templateId,
     templateTitle: templateTitle,
+    templateType: templateType,
     displayNoun: displayNoun,
     storeId: storeId,
     storeName: storeName,

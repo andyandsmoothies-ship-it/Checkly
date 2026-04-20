@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -115,6 +115,10 @@ class AppDatabase extends _$AppDatabase {
         // Action Plan Audit Trail: add evidence submission fields.
         await m.addColumn(cachedActionPlans, cachedActionPlans.evidenceSubmittedAt);
         await m.addColumn(cachedActionPlans, cachedActionPlans.evidenceSubmittedByName);
+      }
+      if (from < 16) {
+        // Audit Category Filters: add template_type snapshot column.
+        await m.addColumn(cachedSubmissions, cachedSubmissions.templateType);
       }
     },
     beforeOpen: (details) async {

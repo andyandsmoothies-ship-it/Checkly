@@ -260,6 +260,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.AuditorEmail).HasColumnName("auditor_email");
             e.Property(x => x.StoreName).HasColumnName("store_name");
             e.Property(x => x.TemplateTitle).HasColumnName("template_title");
+            e.Property(x => x.TemplateType).HasColumnName("template_type");
             e.Property(x => x.DisplayNoun).HasColumnName("display_noun");
             e.Property(x => x.ApproverName).HasColumnName("approver_name");
             e.Property(x => x.ReviewStatus).HasColumnName("review_status");

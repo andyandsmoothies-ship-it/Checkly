@@ -34,8 +34,15 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
   void initState() {
     super.initState();
     _manager = _di<ActionPlanManager>();
+    
+    // Auto-fetch if not found in current cache (e.g. freshly generated on backend)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final exists = _manager.actionPlans.value.any((p) => p.id == widget.actionPlanId);
+      if (!exists) {
+        _manager.loadActionPlans();
+      }
+    });
   }
-
 
   String get _userName =>
       _di<AuthManager>().currentUser?.email.split('@').first ?? 'Unknown';

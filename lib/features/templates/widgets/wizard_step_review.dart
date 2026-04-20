@@ -443,7 +443,6 @@ class _WizardStepReviewState extends State<WizardStepReview> {
             progressiveRepeat: widget.progressiveRepeat,
             deadlineCtrl: widget.deadlineCtrl,
             reminderCtrl: widget.reminderCtrl,
-            onScoringModeChanged: (_) {},
             onCcpChanged: widget.onCcpChanged,
             onRiskChanged: widget.onRiskChanged,
             onDensityChanged: widget.onDensityChanged,

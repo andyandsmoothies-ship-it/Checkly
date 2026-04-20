@@ -32,6 +32,7 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   String _search = '';
   String _filter = 'all'; // all, todo, doing, submitted, overdue
+  String _categoryFilter = 'all'; // all, or any templateType value
   final _scrollController = ScrollController();
 
   static const _validFilters = {'all', 'todo', 'doing', 'submitted', 'overdue'};
@@ -100,6 +101,11 @@ class _HistoryPageState extends State<HistoryPage> {
         break;
     }
 
+    // Filter by category (templateType)
+    if (_categoryFilter != 'all') {
+      items = items.where((s) => s.templateType == _categoryFilter).toList();
+    }
+
     // Filter by search
     if (_search.isNotEmpty) {
       final q = _search.toLowerCase();
@@ -136,6 +142,19 @@ class _HistoryPageState extends State<HistoryPage> {
       map.putIfAbsent(store, () => []).add(sub);
     }
     return map;
+  }
+
+  /// Returns the unique set of templateType values present in the current
+  /// (status-filtered) submission list. Used to build the category chip row.
+  List<String> get _availableCategories {
+    final manager = _di<HistoryManager>();
+    final types = manager.submissions.value
+        .map((s) => s.templateType)
+        .whereType<String>()
+        .toSet()
+        .toList()
+        ..sort();
+    return types;
   }
 
   int _countByStatus(String filter) {
@@ -296,6 +315,32 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ),
               const SizedBox(height: 8),
+
+              // Category filter chips (only shown when >1 type is in the list)
+              if (_availableCategories.length > 1)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Row(
+                    children: [
+                      WarmChip(
+                        label: 'All categories',
+                        selected: _categoryFilter == 'all',
+                        onTap: () => setState(() => _categoryFilter = 'all'),
+                      ),
+                      ..._availableCategories.map(
+                        (type) => Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: WarmChip(
+                            label: _formatCategory(type),
+                            selected: _categoryFilter == type,
+                            onTap: () => setState(() => _categoryFilter = type),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
               // ── Cloud Archive Banner (GC Pillar A) ──
               ValueListenableBuilder<bool>(
@@ -794,6 +839,10 @@ class _AuditCard extends StatelessWidget {
                           : theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                  if (submission.templateType != null) ...[
+                    const SizedBox(height: 4),
+                    _categoryBadge(submission.templateType!, theme),
+                  ],
                 ],
               ),
             ),
@@ -901,4 +950,27 @@ class _AuditCard extends StatelessWidget {
   }
 
   String _formatDateTime(DateTime date) => DateFormat('dd MMM yyyy HH:mm:ss').format(date.toLocal());
+
+  Widget _categoryBadge(String type, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        _formatCategory(type),
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.colorScheme.onSecondaryContainer,
+          fontWeight: FontWeight.w600,
+          fontSize: 10,
+        ),
+      ),
+    );
+  }
 }
+
+/// Converts a raw templateType value (e.g. 'food_safety') to a
+/// display-friendly label (e.g. 'Food Safety').
+String _formatCategory(String type) =>
+    type.split('_').map((w) => w.isEmpty ? '' : '${w[0].toUpperCase()}${w.substring(1)}').join(' ');

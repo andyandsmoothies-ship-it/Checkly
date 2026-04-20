@@ -83,6 +83,7 @@ class CachedSubmissions extends Table {
   TextColumn get id => text()();
   TextColumn get templateId => text().nullable()();
   TextColumn get templateTitle => text().nullable()();
+  TextColumn get templateType => text().nullable()();
   TextColumn get storeId => text().nullable()();
   TextColumn get storeName => text().nullable()();
   TextColumn get auditorId => text().nullable()();

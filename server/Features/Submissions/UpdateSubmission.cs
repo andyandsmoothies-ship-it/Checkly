@@ -90,7 +90,7 @@ public static class UpdateSubmission
         await db.SaveChangesAsync(ct);
 
         return TypedResults.Ok(new SubmissionDto(
-            submission.Id, submission.TemplateId, submission.TemplateTitle, submission.DisplayNoun,
+            submission.Id, submission.TemplateId, submission.TemplateTitle, submission.TemplateType, submission.DisplayNoun,
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,

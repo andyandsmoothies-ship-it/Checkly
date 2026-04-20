@@ -2766,6 +2766,17 @@ class $CachedSubmissionsTable extends CachedSubmissions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _templateTypeMeta = const VerificationMeta(
+    'templateType',
+  );
+  @override
+  late final GeneratedColumn<String> templateType = GeneratedColumn<String>(
+    'template_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _storeIdMeta = const VerificationMeta(
     'storeId',
   );
@@ -2932,6 +2943,7 @@ class $CachedSubmissionsTable extends CachedSubmissions
     id,
     templateId,
     templateTitle,
+    templateType,
     storeId,
     storeName,
     auditorId,
@@ -2977,6 +2989,15 @@ class $CachedSubmissionsTable extends CachedSubmissions
         templateTitle.isAcceptableOrUnknown(
           data['template_title']!,
           _templateTitleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('template_type')) {
+      context.handle(
+        _templateTypeMeta,
+        templateType.isAcceptableOrUnknown(
+          data['template_type']!,
+          _templateTypeMeta,
         ),
       );
     }
@@ -3113,6 +3134,10 @@ class $CachedSubmissionsTable extends CachedSubmissions
         DriftSqlType.string,
         data['${effectivePrefix}template_title'],
       ),
+      templateType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_type'],
+      ),
       storeId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}store_id'],
@@ -3187,6 +3212,7 @@ class CachedSubmission extends DataClass
   final String id;
   final String? templateId;
   final String? templateTitle;
+  final String? templateType;
   final String? storeId;
   final String? storeName;
   final String? auditorId;
@@ -3206,6 +3232,7 @@ class CachedSubmission extends DataClass
     required this.id,
     this.templateId,
     this.templateTitle,
+    this.templateType,
     this.storeId,
     this.storeName,
     this.auditorId,
@@ -3231,6 +3258,9 @@ class CachedSubmission extends DataClass
     }
     if (!nullToAbsent || templateTitle != null) {
       map['template_title'] = Variable<String>(templateTitle);
+    }
+    if (!nullToAbsent || templateType != null) {
+      map['template_type'] = Variable<String>(templateType);
     }
     if (!nullToAbsent || storeId != null) {
       map['store_id'] = Variable<String>(storeId);
@@ -3285,6 +3315,9 @@ class CachedSubmission extends DataClass
       templateTitle: templateTitle == null && nullToAbsent
           ? const Value.absent()
           : Value(templateTitle),
+      templateType: templateType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateType),
       storeId: storeId == null && nullToAbsent
           ? const Value.absent()
           : Value(storeId),
@@ -3338,6 +3371,7 @@ class CachedSubmission extends DataClass
       id: serializer.fromJson<String>(json['id']),
       templateId: serializer.fromJson<String?>(json['templateId']),
       templateTitle: serializer.fromJson<String?>(json['templateTitle']),
+      templateType: serializer.fromJson<String?>(json['templateType']),
       storeId: serializer.fromJson<String?>(json['storeId']),
       storeName: serializer.fromJson<String?>(json['storeName']),
       auditorId: serializer.fromJson<String?>(json['auditorId']),
@@ -3362,6 +3396,7 @@ class CachedSubmission extends DataClass
       'id': serializer.toJson<String>(id),
       'templateId': serializer.toJson<String?>(templateId),
       'templateTitle': serializer.toJson<String?>(templateTitle),
+      'templateType': serializer.toJson<String?>(templateType),
       'storeId': serializer.toJson<String?>(storeId),
       'storeName': serializer.toJson<String?>(storeName),
       'auditorId': serializer.toJson<String?>(auditorId),
@@ -3384,6 +3419,7 @@ class CachedSubmission extends DataClass
     String? id,
     Value<String?> templateId = const Value.absent(),
     Value<String?> templateTitle = const Value.absent(),
+    Value<String?> templateType = const Value.absent(),
     Value<String?> storeId = const Value.absent(),
     Value<String?> storeName = const Value.absent(),
     Value<String?> auditorId = const Value.absent(),
@@ -3405,6 +3441,7 @@ class CachedSubmission extends DataClass
     templateTitle: templateTitle.present
         ? templateTitle.value
         : this.templateTitle,
+    templateType: templateType.present ? templateType.value : this.templateType,
     storeId: storeId.present ? storeId.value : this.storeId,
     storeName: storeName.present ? storeName.value : this.storeName,
     auditorId: auditorId.present ? auditorId.value : this.auditorId,
@@ -3436,6 +3473,9 @@ class CachedSubmission extends DataClass
       templateTitle: data.templateTitle.present
           ? data.templateTitle.value
           : this.templateTitle,
+      templateType: data.templateType.present
+          ? data.templateType.value
+          : this.templateType,
       storeId: data.storeId.present ? data.storeId.value : this.storeId,
       storeName: data.storeName.present ? data.storeName.value : this.storeName,
       auditorId: data.auditorId.present ? data.auditorId.value : this.auditorId,
@@ -3476,6 +3516,7 @@ class CachedSubmission extends DataClass
           ..write('id: $id, ')
           ..write('templateId: $templateId, ')
           ..write('templateTitle: $templateTitle, ')
+          ..write('templateType: $templateType, ')
           ..write('storeId: $storeId, ')
           ..write('storeName: $storeName, ')
           ..write('auditorId: $auditorId, ')
@@ -3500,6 +3541,7 @@ class CachedSubmission extends DataClass
     id,
     templateId,
     templateTitle,
+    templateType,
     storeId,
     storeName,
     auditorId,
@@ -3523,6 +3565,7 @@ class CachedSubmission extends DataClass
           other.id == this.id &&
           other.templateId == this.templateId &&
           other.templateTitle == this.templateTitle &&
+          other.templateType == this.templateType &&
           other.storeId == this.storeId &&
           other.storeName == this.storeName &&
           other.auditorId == this.auditorId &&
@@ -3544,6 +3587,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
   final Value<String> id;
   final Value<String?> templateId;
   final Value<String?> templateTitle;
+  final Value<String?> templateType;
   final Value<String?> storeId;
   final Value<String?> storeName;
   final Value<String?> auditorId;
@@ -3564,6 +3608,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.id = const Value.absent(),
     this.templateId = const Value.absent(),
     this.templateTitle = const Value.absent(),
+    this.templateType = const Value.absent(),
     this.storeId = const Value.absent(),
     this.storeName = const Value.absent(),
     this.auditorId = const Value.absent(),
@@ -3585,6 +3630,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     required String id,
     this.templateId = const Value.absent(),
     this.templateTitle = const Value.absent(),
+    this.templateType = const Value.absent(),
     this.storeId = const Value.absent(),
     this.storeName = const Value.absent(),
     this.auditorId = const Value.absent(),
@@ -3608,6 +3654,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Expression<String>? id,
     Expression<String>? templateId,
     Expression<String>? templateTitle,
+    Expression<String>? templateType,
     Expression<String>? storeId,
     Expression<String>? storeName,
     Expression<String>? auditorId,
@@ -3629,6 +3676,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       if (id != null) 'id': id,
       if (templateId != null) 'template_id': templateId,
       if (templateTitle != null) 'template_title': templateTitle,
+      if (templateType != null) 'template_type': templateType,
       if (storeId != null) 'store_id': storeId,
       if (storeName != null) 'store_name': storeName,
       if (auditorId != null) 'auditor_id': auditorId,
@@ -3652,6 +3700,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Value<String>? id,
     Value<String?>? templateId,
     Value<String?>? templateTitle,
+    Value<String?>? templateType,
     Value<String?>? storeId,
     Value<String?>? storeName,
     Value<String?>? auditorId,
@@ -3673,6 +3722,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       id: id ?? this.id,
       templateId: templateId ?? this.templateId,
       templateTitle: templateTitle ?? this.templateTitle,
+      templateType: templateType ?? this.templateType,
       storeId: storeId ?? this.storeId,
       storeName: storeName ?? this.storeName,
       auditorId: auditorId ?? this.auditorId,
@@ -3703,6 +3753,9 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     }
     if (templateTitle.present) {
       map['template_title'] = Variable<String>(templateTitle.value);
+    }
+    if (templateType.present) {
+      map['template_type'] = Variable<String>(templateType.value);
     }
     if (storeId.present) {
       map['store_id'] = Variable<String>(storeId.value);
@@ -3761,6 +3814,7 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
           ..write('id: $id, ')
           ..write('templateId: $templateId, ')
           ..write('templateTitle: $templateTitle, ')
+          ..write('templateType: $templateType, ')
           ..write('storeId: $storeId, ')
           ..write('storeName: $storeName, ')
           ..write('auditorId: $auditorId, ')
@@ -10729,6 +10783,7 @@ typedef $$CachedSubmissionsTableCreateCompanionBuilder =
       required String id,
       Value<String?> templateId,
       Value<String?> templateTitle,
+      Value<String?> templateType,
       Value<String?> storeId,
       Value<String?> storeName,
       Value<String?> auditorId,
@@ -10751,6 +10806,7 @@ typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String?> templateId,
       Value<String?> templateTitle,
+      Value<String?> templateType,
       Value<String?> storeId,
       Value<String?> storeName,
       Value<String?> auditorId,
@@ -10790,6 +10846,11 @@ class $$CachedSubmissionsTableFilterComposer
 
   ColumnFilters<String> get templateTitle => $composableBuilder(
     column: $table.templateTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templateType => $composableBuilder(
+    column: $table.templateType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10893,6 +10954,11 @@ class $$CachedSubmissionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get templateType => $composableBuilder(
+    column: $table.templateType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get storeId => $composableBuilder(
     column: $table.storeId,
     builder: (column) => ColumnOrderings(column),
@@ -10988,6 +11054,11 @@ class $$CachedSubmissionsTableAnnotationComposer
 
   GeneratedColumn<String> get templateTitle => $composableBuilder(
     column: $table.templateTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get templateType => $composableBuilder(
+    column: $table.templateType,
     builder: (column) => column,
   );
 
@@ -11096,6 +11167,7 @@ class $$CachedSubmissionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> templateId = const Value.absent(),
                 Value<String?> templateTitle = const Value.absent(),
+                Value<String?> templateType = const Value.absent(),
                 Value<String?> storeId = const Value.absent(),
                 Value<String?> storeName = const Value.absent(),
                 Value<String?> auditorId = const Value.absent(),
@@ -11116,6 +11188,7 @@ class $$CachedSubmissionsTableTableManager
                 id: id,
                 templateId: templateId,
                 templateTitle: templateTitle,
+                templateType: templateType,
                 storeId: storeId,
                 storeName: storeName,
                 auditorId: auditorId,
@@ -11138,6 +11211,7 @@ class $$CachedSubmissionsTableTableManager
                 required String id,
                 Value<String?> templateId = const Value.absent(),
                 Value<String?> templateTitle = const Value.absent(),
+                Value<String?> templateType = const Value.absent(),
                 Value<String?> storeId = const Value.absent(),
                 Value<String?> storeName = const Value.absent(),
                 Value<String?> auditorId = const Value.absent(),
@@ -11158,6 +11232,7 @@ class $$CachedSubmissionsTableTableManager
                 id: id,
                 templateId: templateId,
                 templateTitle: templateTitle,
+                templateType: templateType,
                 storeId: storeId,
                 storeName: storeName,
                 auditorId: auditorId,
