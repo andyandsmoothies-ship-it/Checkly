@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
+import 'dropdown_card.dart';
 
 /// Bottom sheet for editing an existing user's role, store and area assignment.
 ///
@@ -191,62 +192,53 @@ class _UserEditSheetState extends State<UserEditSheet> {
               },
             ),
 
-            // ── Store dropdown (store_manager only) ──────────────────────
+            // ── Store picker (store_manager only) ──────────────────────────
             if (selectedRole == 'store_manager') ...[
               const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue:
-                    assignableStores.any((s) => s['id'] == selectedStoreId)
-                    ? selectedStoreId
-                    : null,
-                borderRadius: BorderRadius.circular(12),
-                decoration: const InputDecoration(
-                  labelText: 'Assigned Store',
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem(value: null, child: Text('— None —')),
-                  ...assignableStores.map((s) {
-                    final mgr = s['managerName'] as String?;
-                    final label = mgr != null
-                        ? '${s['name']} (SM: $mgr)'
-                        : '${s['name']} (Vacant)';
-                    return DropdownMenuItem(
-                      value: s['id'] as String,
-                      child: Text(label),
-                    );
-                  }),
-                ],
-                onChanged: (v) => setState(() => selectedStoreId = v),
+              DropdownCard(
+                icon: Icons.store_outlined,
+                label: 'ASSIGNED STORE',
+                hint: 'Select a store',
+                value: selectedStoreId,
+                itemIcon: Icons.store_outlined,
+                nullable: true,
+                items: assignableStores.map((s) {
+                  final mgr = s['managerName'] as String?;
+                  return (
+                    id: s['id'] as String,
+                    label: s['name'] as String,
+                    subtitle: mgr != null ? 'SM: $mgr' : 'Vacant',
+                  );
+                }).toList(),
+                onChanged: (v) {
+                  _markDirty();
+                  setState(() => selectedStoreId = v);
+                },
               ),
             ],
 
-            // ── Area dropdown (area_manager only) ────────────────────────
+            // ── Area picker (area_manager only) ──────────────────────────
             if (selectedRole == 'area_manager') ...[
               const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: widget.areas.any((a) => a['id'] == selectedAreaId)
-                    ? selectedAreaId
-                    : null,
-                borderRadius: BorderRadius.circular(12),
-                decoration: const InputDecoration(
-                  labelText: 'Assigned Area',
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem(value: null, child: Text('— None —')),
-                  ...widget.areas.map((a) {
-                    final mgr = a['managerName'] as String?;
-                    final label = mgr != null
-                        ? '${a['name']} (AM: $mgr)'
-                        : '${a['name']} (Vacant)';
-                    return DropdownMenuItem(
-                      value: a['id'] as String,
-                      child: Text(label),
-                    );
-                  }),
-                ],
-                onChanged: (v) => setState(() => selectedAreaId = v),
+              DropdownCard(
+                icon: Icons.map_outlined,
+                label: 'ASSIGNED AREA',
+                hint: 'Select an area',
+                value: selectedAreaId,
+                itemIcon: Icons.map_outlined,
+                nullable: true,
+                items: widget.areas.map((a) {
+                  final mgr = a['managerName'] as String?;
+                  return (
+                    id: a['id'] as String,
+                    label: a['name'] as String,
+                    subtitle: mgr != null ? 'AM: $mgr' : 'Vacant',
+                  );
+                }).toList(),
+                onChanged: (v) {
+                  _markDirty();
+                  setState(() => selectedAreaId = v);
+                },
               ),
             ],
             const SizedBox(height: 20),

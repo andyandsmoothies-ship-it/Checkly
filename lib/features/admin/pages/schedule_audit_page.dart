@@ -241,14 +241,13 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
           label: 'TEMPLATE',
           hint: 'Select a template',
           value: _selectedTemplateId,
+          itemIcon: Icons.description_outlined,
           items: _templates
               .map(
-                (t) => DropdownMenuItem<String>(
-                  value: t['id'] as String,
-                  child: Text(
-                    t['title'] as String,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                (t) => (
+                  id: t['id'] as String,
+                  label: t['title'] as String,
+                  subtitle: null as String?,
                 ),
               )
               .toList(),
@@ -262,14 +261,13 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
           label: 'STORE',
           hint: 'Select a store',
           value: _selectedStoreId,
+          itemIcon: Icons.store_outlined,
           items: _stores
               .map(
-                (s) => DropdownMenuItem<String>(
-                  value: s['id'] as String,
-                  child: Text(
-                    s['name'] as String,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                (s) => (
+                  id: s['id'] as String,
+                  label: s['name'] as String,
+                  subtitle: s['areaName'] as String?,
                 ),
               )
               .toList(),
@@ -283,16 +281,15 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
           label: 'AUDITOR',
           hint: 'Assign an auditor',
           value: _selectedAuditorId,
+          itemIcon: Icons.person_outlined,
           items: _auditors
               .map(
-                (u) => DropdownMenuItem<String>(
-                  value: u['id'] as String,
-                  child: Text(
-                    u['fullName'] as String? ??
-                        u['email'] as String? ??
-                        'Unknown',
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                (u) => (
+                  id: u['id'] as String,
+                  label: u['fullName'] as String? ??
+                      u['email'] as String? ??
+                      'Unknown',
+                  subtitle: u['email'] as String?,
                 ),
               )
               .toList(),

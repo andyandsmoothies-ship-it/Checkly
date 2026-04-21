@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
+import 'dropdown_card.dart';
 
 /// Bottom sheet for creating a new user.
 ///
@@ -291,54 +292,48 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
                 },
               ),
 
-              // ── Store dropdown (store_manager only) ──────────────────────
+              // ── Store picker (store_manager only) ──────────────────────────
               if (selectedRole == 'store_manager') ...[
                 const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: selectedStoreId,
-                  borderRadius: BorderRadius.circular(12),
-                  decoration: const InputDecoration(
-                    labelText: 'Assigned Store',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('— None —'),
-                    ),
-                    ...assignableStores.map(
-                      (s) => DropdownMenuItem(
-                        value: s['id'] as String,
-                        child: Text(s['name'] as String),
-                      ),
-                    ),
-                  ],
+                DropdownCard(
+                  icon: Icons.store_outlined,
+                  label: 'ASSIGNED STORE',
+                  hint: 'Select a store',
+                  value: selectedStoreId,
+                  itemIcon: Icons.store_outlined,
+                  nullable: true,
+                  items: assignableStores
+                      .map(
+                        (s) => (
+                          id: s['id'] as String,
+                          label: s['name'] as String,
+                          subtitle: null as String?,
+                        ),
+                      )
+                      .toList(),
                   onChanged: (v) => setState(() => selectedStoreId = v),
                 ),
               ],
 
-              // ── Area dropdown (area_manager only) ────────────────────────
+              // ── Area picker (area_manager only) ──────────────────────────
               if (selectedRole == 'area_manager') ...[
                 const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: selectedAreaId,
-                  borderRadius: BorderRadius.circular(12),
-                  decoration: const InputDecoration(
-                    labelText: 'Assigned Area',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('— None —'),
-                    ),
-                    ...widget.areas.map(
-                      (a) => DropdownMenuItem(
-                        value: a['id'] as String,
-                        child: Text(a['name'] as String),
-                      ),
-                    ),
-                  ],
+                DropdownCard(
+                  icon: Icons.map_outlined,
+                  label: 'ASSIGNED AREA',
+                  hint: 'Select an area',
+                  value: selectedAreaId,
+                  itemIcon: Icons.map_outlined,
+                  nullable: true,
+                  items: widget.areas
+                      .map(
+                        (a) => (
+                          id: a['id'] as String,
+                          label: a['name'] as String,
+                          subtitle: null as String?,
+                        ),
+                      )
+                      .toList(),
                   onChanged: (v) => setState(() => selectedAreaId = v),
                 ),
               ],
