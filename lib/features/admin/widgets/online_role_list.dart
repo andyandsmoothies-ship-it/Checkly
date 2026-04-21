@@ -30,7 +30,7 @@ class OnlineRoleList extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                            Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
                             const SizedBox(height: 16),
                             Text('We couldn\'t load the latest data. Please check your internet connection and refresh.', style: Theme.of(context).textTheme.titleMedium),
                             const SizedBox(height: 8),

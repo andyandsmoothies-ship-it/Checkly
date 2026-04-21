@@ -370,7 +370,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
                     Text(
                       '${score.toStringAsFixed(0)}%',
                       style: AppFonts.serifStyle(
-                        fontSize: 18,
+                        fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
                         color: scoreColor,
                       ),
                     ),

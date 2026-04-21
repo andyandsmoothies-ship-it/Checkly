@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../model/submission_dto.dart';
+import '../../../_shared/theme/app_theme.dart';
 
 class HeaderCard extends StatelessWidget {
   final SubmissionDetailDto detail;
@@ -105,8 +106,8 @@ class HeaderCard extends StatelessWidget {
       fg = theme.colorScheme.onSurfaceVariant;
     } else {
       label = 'COMPLETED';
-      bg = Colors.green.withAlpha(30);
-      fg = Colors.green.shade700;
+      bg = AppTheme.success.withAlpha(30);
+      fg = AppTheme.success;
     }
 
     return Container(
@@ -127,8 +128,8 @@ class HeaderCard extends StatelessWidget {
 
   Color _scoreColor(double? score, ThemeData theme) {
     if (score == null) return theme.colorScheme.onSurface;
-    if (score >= 90) return Colors.green.shade700;
-    if (score >= 70) return Colors.orange.shade700;
+    if (score >= 90) return AppTheme.success;
+    if (score >= 70) return AppTheme.warning;
     return theme.colorScheme.error;
   }
 

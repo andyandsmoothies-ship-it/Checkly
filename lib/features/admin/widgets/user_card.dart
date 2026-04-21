@@ -22,7 +22,7 @@ class UserCard extends StatelessWidget {
       'admin' => theme.colorScheme.tertiary,
       'auditor' => theme.colorScheme.primary,
       'store_manager' => theme.colorScheme.secondary,
-      'area_manager' => theme.colorScheme.primaryContainer.withValues(alpha: 2.0),
+      'area_manager' => theme.colorScheme.onSurfaceVariant,
       _ => theme.colorScheme.onSurfaceVariant,
     };
   }

@@ -92,9 +92,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
                 const SizedBox(height: 12),
                 Text(
                   'This draft is saved only on this device. It will expire in 14 days.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontStyle: FontStyle.italic,
                   ),
                 ),

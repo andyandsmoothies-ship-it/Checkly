@@ -22,6 +22,7 @@ class AppTheme {
   static const successContainer = AppColors.successContainer;
   static const warning = AppColors.warning;
   static const warningContainer = AppColors.warningContainer;
+  static const warningText = AppColors.warningText;
   static const info = AppColors.info;
 
   // ---------- Light Theme ----------

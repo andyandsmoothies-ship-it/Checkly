@@ -16,6 +16,7 @@ class AppColors {
   static const successContainer = Color(0xFFE8F5E9); // Light green tint for success banners
   static const warning = Color(0xFFF59E0B);
   static const warningContainer = Color(0xFFFEEAD1); // Warm amber tint for stat card bg
+  static const warningText = Color(0xFFB45309); // High contrast warning text for badges
   static const info = Color(0xFF0EA5E9);
 
   // ── Apothecary Palette ──

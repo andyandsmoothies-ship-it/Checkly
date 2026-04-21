@@ -630,33 +630,52 @@ class _StoreCard extends StatelessWidget {
 
               // Manager row (always visible)
               const SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(
-                    store.managerName != null
-                        ? Icons.person_outline
-                        : Icons.warning_amber,
-                    size: 14,
-                    color: store.managerName != null
-                        ? theme.colorScheme.onSurfaceVariant
-                        : AppTheme.warning,
-                  ),
-                  const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      store.managerName != null
-                          ? 'SM: ${store.managerName!}'
-                          : 'SM: Unassigned',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: store.managerName != null
-                            ? theme.colorScheme.onSurfaceVariant
-                            : AppTheme.warning,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+              if (store.managerName != null)
+                Row(
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      size: 14,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        'SM: ${store.managerName!}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppTheme.warning.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                ],
-              ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.warning_amber,
+                        size: 12,
+                        color: AppTheme.warningText,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'SM: Unassigned',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppTheme.warningText,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

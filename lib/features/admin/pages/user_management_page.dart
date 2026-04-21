@@ -1,12 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
-import '../../auth/manager/auth_manager.dart';
-import '../services/admin_api_service.dart';
 import '../manager/admin_user_manager.dart';
 import '../widgets/user_card.dart';
 import '../widgets/user_create_sheet.dart';
@@ -35,8 +32,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
     ('area_manager', 'Area Mgr'),
     ('store_manager', 'Store Mgr'),
   ];
-
-  String get _currentUserId => _di<AuthManager>().currentUser?.userId ?? '';
 
   @override
   void initState() {
@@ -88,7 +83,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     }
 
     try {
-      await _di<AdminApiService>().banUser(user['id'] as String, ban: ban);
+      await _manager.banUser(user['id'] as String, ban: ban);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -98,13 +93,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 : AppTheme.success,
           ),
         );
-        _loadData();
       }
-    } on DioException catch (_) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('An unexpected issue occurred. Please check your connection or restart the app.'),
+            content: const Text(
+              'An unexpected issue occurred. Please check your connection or restart the app.',
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -144,7 +140,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     Navigator.of(context).pop(); // Close sheet first
 
     try {
-      await _di<AdminApiService>().updateUser(
+      await _manager.saveUser(
         id,
         fullName: fullName,
         role: role,
@@ -158,78 +154,80 @@ class _UserManagementPageState extends State<UserManagementPage> {
             backgroundColor: AppTheme.success,
           ),
         );
-        _loadData();
       }
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 409 && mounted) {
-        final data = e.response?.data as Map<String, dynamic>?;
-        final existingName =
-            data?['existingManagerName'] as String? ?? 'another user';
-
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Transfer Required'),
-            content: Text(
-              'This position is currently held by $existingName. '
-              'Do you want to remove them and assign this user instead?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Confirm Transfer'),
-              ),
-            ],
-          ),
-        );
-
-        if (confirmed == true && mounted) {
-          try {
-            await _di<AdminApiService>().updateUser(
-              id,
-              fullName: fullName,
-              role: role,
-              storeId: storeId,
-              areaId: areaId,
-              forceReassign: true,
-            );
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Transferred from $existingName'),
-                  backgroundColor: AppTheme.success,
-                ),
-              );
-              _loadData();
-            }
-          } catch (retryErr) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Transfer failed: $retryErr'),
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                ),
-              );
-            }
-          }
-        }
-      } else if (mounted) {
+    } on RootSuicideException {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed: ${e.message}'),
+            content: const Text(
+              'You cannot remove your own Admin role. '
+              'Assign another Admin first.',
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
-    } catch (e) {
+    } on TransferConflictException catch (e) {
+      if (!mounted) return;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Transfer Required'),
+          content: Text(
+            'This position is currently held by ${e.existingManagerName}. '
+            'Do you want to remove them and assign this user instead?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Confirm Transfer'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed == true && mounted) {
+        try {
+          await _manager.saveUser(
+            id,
+            fullName: fullName,
+            role: role,
+            storeId: storeId,
+            areaId: areaId,
+            forceReassign: true,
+          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Transferred from ${e.existingManagerName}'),
+                backgroundColor: AppTheme.success,
+              ),
+            );
+          }
+        } catch (_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text(
+                  'Transfer failed. Please try again.',
+                ),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
+        }
+      }
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('An unexpected issue occurred. Please check your connection or restart the app.'),
+            content: const Text(
+              'An unexpected issue occurred. Please check your connection or restart the app.',
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -251,7 +249,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         return StatefulBuilder(
           builder: (dlgCtx, setDlgState) {
             return AlertDialog(
-              title: Text('Reset Password'),
+              title: const Text('Reset Password'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -290,7 +288,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       return;
                     }
                     try {
-                      await _di<AdminApiService>().resetPassword(userId, pass);
+                      await _manager.resetPassword(userId, pass);
                       if (dlgCtx.mounted) {
                         Navigator.of(dlgCtx).pop(); // Close dialog
                         Navigator.of(sheetCtx).pop(); // Close edit sheet
@@ -301,18 +299,11 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           ),
                         );
                       }
-                      if (mounted) _loadData();
                     } catch (e) {
-                      String? msg;
-                      if (e is DioException) {
-                        final data = e.response?.data;
-                        msg = data is Map
-                            ? data['message']?.toString()
-                            : data?.toString() ?? e.message;
-                      } else {
-                        msg = e.toString();
-                      }
-                      setDlgState(() => passError = msg);
+                      setDlgState(
+                        () => passError =
+                            'We couldn\'t reset the password. Please try again.',
+                      );
                     }
                   },
                   child: const Text('Reset'),
@@ -333,15 +324,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
       builder: (_) => UserCreateSheet(
         areas: _manager.areas,
         loadStores: _manager.loadStores,
-        onCreate:
-            ({
-              required email,
-              required password,
-              required fullName,
-              required role,
-              storeId,
-              areaId,
-            }) => _di<AdminApiService>().createUser(
+        onCreate: ({
+          required email,
+          required password,
+          required fullName,
+          required role,
+          storeId,
+          areaId,
+        }) =>
+            _manager.createUser(
               email: email,
               password: password,
               fullName: fullName,
@@ -351,6 +342,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
             ),
       ),
     );
+    // createUser already prepends to users[] in the manager.
+    // Only trigger a reload if the sheet returned true (create succeeded)
+    // AND somehow the manager list is stale (defensive).
     if (created == true && mounted) _loadData();
   }
 
@@ -438,7 +432,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
           children: [
             Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
-            Text('We couldn\'t load the latest data. Please check your internet connection and refresh.', style: theme.textTheme.titleMedium),
+            Text(
+              'We couldn\'t load the latest data. Please check your internet connection and refresh.',
+              style: theme.textTheme.titleMedium,
+            ),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: _loadData,
@@ -468,7 +465,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         itemCount: filtered.length,
         itemBuilder: (context, index) => UserCard(
           user: filtered[index],
-          isSelf: filtered[index]['id'] == _currentUserId,
+          isSelf: filtered[index]['id'] == _manager.currentUserId,
           onEdit: () => _showEditSheet(filtered[index]),
           onResetPassword: () => _showResetPasswordDialog(
             context,

@@ -240,8 +240,7 @@ class _CriterionNumberBadge extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         number != null ? '$number' : '·',
-        style: TextStyle(
-          fontSize: 10,
+        style: theme.textTheme.labelSmall?.copyWith(
           fontWeight: FontWeight.w800,
           color: textColor,
           height: 1,

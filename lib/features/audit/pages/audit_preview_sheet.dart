@@ -28,7 +28,9 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
   void initState() {
     super.initState();
     _manager = GetIt.instance<HistoryManager>();
-    _manager.loadDetail(widget.submissionId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _manager.loadDetail(widget.submissionId);
+    });
   }
 
   Future<void> _retry() => _manager.loadDetail(widget.submissionId);

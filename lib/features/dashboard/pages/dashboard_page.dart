@@ -165,7 +165,7 @@ class Greeting extends StatelessWidget {
         Text(
           'Store Overview',
           style: AppFonts.serifStyle(
-            fontSize: 22,
+            fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),

@@ -147,7 +147,7 @@ class _AuditCard extends StatelessWidget {
             style: TextStyle(
               color: scoreColor,
               fontWeight: FontWeight.w700,
-              fontSize: 14,
+              fontSize: Theme.of(context).textTheme.titleSmall?.fontSize,
             ),
           ),
         ),

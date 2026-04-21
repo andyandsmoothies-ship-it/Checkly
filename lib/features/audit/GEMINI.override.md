@@ -11,3 +11,7 @@
 - **Gotcha 19: Sub-sections Are ALLOWLIST-Only — Not a Blocklist**
   - **Problem:** AI agents hallucinate sub-section restrictions as a blocklist.
   - **Fix:** `mode IN ('penalty', 'accumulation', null)` → allowed. All other modes → unconditionally forbidden.
+
+- **Gotcha: Manager Initialization in UI Lifecycles**
+  - **Problem:** Calling a Manager method from `initState()` that triggers `notifyListeners()` causes a fatal "setState() called during build" exception.
+  - **Fix:** Whenever calling a Manager method from `initState()` that triggers `notifyListeners()`, you MUST wrap the call in `WidgetsBinding.instance.addPostFrameCallback((_) { ... })`.

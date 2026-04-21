@@ -241,7 +241,6 @@ class AuditCard extends StatelessWidget {
         style: theme.textTheme.labelSmall?.copyWith(
           color: theme.colorScheme.onSecondaryContainer,
           fontWeight: FontWeight.w600,
-          fontSize: 10,
         ),
       ),
     );
