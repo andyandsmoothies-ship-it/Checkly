@@ -97,6 +97,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Test Contracts` (ID, Exact Text, State Matrix, Why RED)
 > - `## JIT Harness & Verification` (Active skills and terminal validation commands)
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
+> - `## Concept Diagram`: A short, concise text-based flowchart (e.g., `[Actor] --> [Action] --> [System]`) explaining the core logic or state changes.
 > - `## Execution Slices`: **(CRITICAL)** Group work into isolated slices. Define the **Structural Blueprint** (e.g., 'Add nullable field', 'Wrap in Try/Catch'). **DO NOT write exact code diffs.** The Builder will write the code.<br><br>**CRITICAL:** For each slice or major design decision, you MUST present the **Trade-offs / Pros & Cons** of the chosen approach versus alternatives. Yield to the user to make the final executive decision before jumping to implementation.
 > - `<forensic_evidence>`: Tags containing a list of terminal commands run.
 > - `## Handoff Block`: An AI Agent Mission Brief (TL;DR for the next AI agent). **MANDATORY:** You MUST include the exact `@[/...]` routing commands (e.g., `@[/tdd]` or `@[/implement]`) for EVERY Execution Slice here, mapping them to their absolute file paths.

@@ -95,14 +95,15 @@ The Epic must be sliced and routed to the downstream feature agents:
 > 3. `## Decision Matrix`
 > 4. `## Risk Assessment`
 > 5. `## System Architecture Flow`: (Mermaid diagram)
-> 6. `## Database Migrations`
-> 7. `## API Contracts`
-> 8. `## Blast Radius & Rollback Plan`
-> 9. `## Red Team Adversarial Log`
-> 10. `## Security & RLS`
-> 11. `## Observability Hooks`
-> 12. `## EDD Expectations`
-> 13. `<forensic_evidence>`: Tags with terminal log proof.
+> 6. `## Concept Diagrams`: Short, concise text-based flowcharts (e.g., `[Actor] --> [Action] --> [System]`) for each major architectural component to simplify understanding.
+> 7. `## Database Migrations`
+> 8. `## API Contracts`
+> 9. `## Blast Radius & Rollback Plan`
+> 10. `## Red Team Adversarial Log`
+> 11. `## Security & RLS`
+> 12. `## Observability Hooks`
+> 13. `## EDD Expectations`
+> 14. `<forensic_evidence>`: Tags with terminal log proof.
 > 
 > **Handoff Block Suffix:** Append `## Handoff Block` at EOF containing:
 > 1. Final Epic Verdict & persistent path.

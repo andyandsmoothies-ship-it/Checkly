@@ -39,7 +39,8 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
     3. The Use Case Narrative (Basic Scenario + Extensions).
     4. Use-Case Slices and their associated Test Cases (Acceptance Criteria).
     5. Selected Shape & Fit Check.
-    6. **Handoff Block**: Brief for the next Agent, and the next command (usually `[/analyze-feature]`, `[/atdd]`, or `[/research]`).
+    6. **Concept Diagram**: A short, concise text-based flowchart (e.g., `[Actor] --> [Action] --> [System]`) explaining the core logic of the chosen shape.
+    7. **Handoff Block**: Brief for the next Agent, and the next command (usually `[/analyze-feature]`, `[/atdd]`, or `[/research]`).
 - [ ] **Workspace Copy**: Copy the artifact to `.agents/tmp/research/` so the user can review it.
 
 > **Script Verification Gate (MANDATORY)**:
