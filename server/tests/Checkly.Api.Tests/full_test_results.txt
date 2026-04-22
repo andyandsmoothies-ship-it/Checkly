@@ -1,0 +1,65 @@
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:32.85]     Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_AccumulationMode_SetsRawScoreFields [FAIL]
+[xUnit.net 00:00:32.97]     Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.ListSubmissions_SubmissionDto_IncludesRawScoringFields [FAIL]
+[xUnit.net 00:00:33.17]     Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_PenaltyWeightedMode_RawFieldsAreNull_IsWeightedTrue [FAIL]
+[xUnit.net 00:00:33.26]     Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_PenaltyUnweightedMode_IsWeightedFalse [FAIL]
+[xUnit.net 00:00:33.36]     Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.SyncSubmissions_IncludesRawScoringFields [FAIL]
+[xUnit.net 00:00:33.60]     Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.GetSubmission_DetailDto_IncludesRawScoringFields [FAIL]
+  Failed Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_AccumulationMode_SetsRawScoreFields [444 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   BadRequest
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_AccumulationMode_SetsRawScoreFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\DualLayerScoringIntegrationTests.cs:line 71
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.ListSubmissions_SubmissionDto_IncludesRawScoringFields [119 ms]
+  Error Message:
+   System.InvalidOperationException : The requested operation requires an element of type 'Number', but the target element has type 'Null'.
+  Stack Trace:
+     at System.Text.Json.ThrowHelper.ThrowJsonElementWrongTypeException(JsonTokenType expectedType, JsonTokenType actualType)
+   at System.Text.Json.JsonDocument.TryGetValue(Int32 index, Decimal& value)
+   at System.Text.Json.JsonElement.GetDecimal()
+   at Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.ListSubmissions_SubmissionDto_IncludesRawScoringFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\DualLayerScoringIntegrationTests.cs:line 214
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_PenaltyWeightedMode_RawFieldsAreNull_IsWeightedTrue [101 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   BadRequest
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_PenaltyWeightedMode_RawFieldsAreNull_IsWeightedTrue() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\DualLayerScoringIntegrationTests.cs:line 96
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_PenaltyUnweightedMode_IsWeightedFalse [89 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   BadRequest
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_PenaltyUnweightedMode_IsWeightedFalse() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\DualLayerScoringIntegrationTests.cs:line 121
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.SyncSubmissions_IncludesRawScoringFields [96 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   BadRequest
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.SyncSubmissions_IncludesRawScoringFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\DualLayerScoringIntegrationTests.cs:line 163
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.GetSubmission_DetailDto_IncludesRawScoringFields [239 ms]
+  Error Message:
+   System.InvalidOperationException : The requested operation requires an element of type 'Number', but the target element has type 'Null'.
+  Stack Trace:
+     at System.Text.Json.ThrowHelper.ThrowJsonElementWrongTypeException(JsonTokenType expectedType, JsonTokenType actualType)
+   at System.Text.Json.JsonDocument.TryGetValue(Int32 index, Decimal& value)
+   at System.Text.Json.JsonElement.GetDecimal()
+   at Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.GetSubmission_DetailDto_IncludesRawScoringFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\DualLayerScoringIntegrationTests.cs:line 191
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     6, Passed:   345, Skipped:     0, Total:   351, Duration: 1 m 11 s - Checkly.Api.Tests.dll (net10.0)

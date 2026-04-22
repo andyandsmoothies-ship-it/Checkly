@@ -49,7 +49,9 @@ public static class GetSubmission
                 a.IsCcp, a.IsRisk,
                 submission.ActionPlans.FirstOrDefault(ap => ap.AnswerId == a.Id)?.Id)).ToList(),
             submission.TemplateSnapshot,
-            submission.TemplateVersion);
+            submission.TemplateVersion,
+            submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted,
+            submission.ScoringMode);
 
         return TypedResults.Ok(dto);
     }

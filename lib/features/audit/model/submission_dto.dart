@@ -122,6 +122,10 @@ class SubmissionDto {
   final int? templateVersion;
   final String? voidReason;
   final DateTime? voidedAt;
+  final double? rawEarnedPoints;
+  final double? rawMaxPoints;
+  final bool? isWeighted;
+  final String? scoringMode;
 
   const SubmissionDto({
     required this.id,
@@ -148,6 +152,10 @@ class SubmissionDto {
     this.templateVersion,
     this.voidReason,
     this.voidedAt,
+    this.rawEarnedPoints,
+    this.rawMaxPoints,
+    this.isWeighted,
+    this.scoringMode,
   });
 
   /// Whether this audit has been voided.
@@ -202,6 +210,10 @@ class SubmissionDto {
     voidedAt: json['voidedAt'] != null
         ? DateTime.parse(json['voidedAt'] as String)
         : null,
+    rawEarnedPoints: (json['rawEarnedPoints'] as num?)?.toDouble(),
+    rawMaxPoints: (json['rawMaxPoints'] as num?)?.toDouble(),
+    isWeighted: json['isWeighted'] as bool?,
+    scoringMode: json['scoringMode'] as String?,
   );
 
   /// Returns a copy of this DTO with [status] overridden.
@@ -231,6 +243,10 @@ class SubmissionDto {
     templateVersion: templateVersion,
     voidReason: voidReason,
     voidedAt: voidedAt,
+    rawEarnedPoints: rawEarnedPoints,
+    rawMaxPoints: rawMaxPoints,
+    isWeighted: isWeighted,
+    scoringMode: scoringMode,
   );
 }
 
@@ -254,6 +270,10 @@ class SubmissionDetailDto {
   final int? templateVersion;
   final String? voidReason;
   final DateTime? voidedAt;
+  final double? rawEarnedPoints;
+  final double? rawMaxPoints;
+  final bool? isWeighted;
+  final String? scoringMode;
 
   const SubmissionDetailDto({
     required this.id,
@@ -273,6 +293,10 @@ class SubmissionDetailDto {
     this.templateVersion,
     this.voidReason,
     this.voidedAt,
+    this.rawEarnedPoints,
+    this.rawMaxPoints,
+    this.isWeighted,
+    this.scoringMode,
   });
 
   factory SubmissionDetailDto.fromJson(Map<String, dynamic> json) =>
@@ -300,6 +324,10 @@ class SubmissionDetailDto {
         voidedAt: json['voidedAt'] != null
             ? DateTime.parse(json['voidedAt'] as String)
             : null,
+        rawEarnedPoints: (json['rawEarnedPoints'] as num?)?.toDouble(),
+        rawMaxPoints: (json['rawMaxPoints'] as num?)?.toDouble(),
+        isWeighted: json['isWeighted'] as bool?,
+        scoringMode: json['scoringMode'] as String?,
       );
 }
 

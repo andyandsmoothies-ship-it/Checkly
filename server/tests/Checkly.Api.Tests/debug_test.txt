@@ -1,0 +1,16 @@
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:05.11]     Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_AccumulationMode_SetsRawScoreFields [FAIL]
+  Failed Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_AccumulationMode_SetsRawScoreFields [4 s]
+  Error Message:
+   Expected OK, but got BadRequest. Content: {"error":"Score verification failed","clientScore":100,"serverScore":0,"reason":null}
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.DualLayerScoringIntegrationTests.FinalizeSubmission_AccumulationMode_SetsRawScoreFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\DualLayerScoringIntegrationTests.cs:line 72
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)

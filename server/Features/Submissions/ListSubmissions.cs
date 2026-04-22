@@ -50,7 +50,9 @@ public static class ListSubmissions
                 s.AuditorName, s.Status, s.TotalScore,
                 s.SectionScores, s.Notes,
                 s.CreatedAt, s.CompletedAt, s.ScheduledAt,
-                s.TemplateVersion))
+                s.TemplateVersion,
+                s.RawEarnedPoints, s.RawMaxPoints, s.IsWeighted,
+                s.ScoringMode))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<SubmissionDto>(submissions, total, page, pageSize));

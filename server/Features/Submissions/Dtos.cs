@@ -45,7 +45,11 @@ public sealed record SubmissionDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset? CompletedAt,
     DateTimeOffset? ScheduledAt,
-    int? TemplateVersion = null);
+    int? TemplateVersion = null,
+    decimal? RawEarnedPoints = null,
+    decimal? RawMaxPoints = null,
+    bool? IsWeighted = null,
+    string? ScoringMode = null);
 
 public sealed record SubmissionDetailDto(
     Guid Id,
@@ -67,7 +71,11 @@ public sealed record SubmissionDetailDto(
     DateTimeOffset? CompletedAt,
     List<AnswerDto> Answers,
     string? TemplateSnapshot = null,
-    int? TemplateVersion = null);
+    int? TemplateVersion = null,
+    decimal? RawEarnedPoints = null,
+    decimal? RawMaxPoints = null,
+    bool? IsWeighted = null,
+    string? ScoringMode = null);
 
 public sealed record AnswerDto(
     Guid Id,

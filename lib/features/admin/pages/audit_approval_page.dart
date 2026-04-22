@@ -7,6 +7,7 @@ import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../audit/model/submission_dto.dart';
 import '../../audit/services/submission_api_service.dart';
+import '../../audit/utils/score_formatter.dart';
 import '../manager/admin_audit_manager.dart';
 
 final _di = GetIt.instance;
@@ -80,7 +81,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
         title: const Text('Approve Audit'),
         content: Text(
           'Approve audit for ${item.storeName ?? "unknown store"}?\n\n'
-          'Score: ${item.totalScore != null ? "${item.totalScore!.toStringAsFixed(1)}%" : "N/A"}',
+          'Score: ${() { final s = ScoreFormatter.format(scoringMode: item.scoringMode, rawEarned: item.rawEarnedPoints, rawMax: item.rawMaxPoints, totalScore: item.totalScore, isWeighted: item.isWeighted); return s.isEmpty ? "N/A" : s; }()}',
         ),
         actions: [
           TextButton(
@@ -172,9 +173,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
   void _showReviewSheet(SubmissionDto item) {
     final theme = Theme.of(context);
     final dateStr = DateFormat('dd/MM/yyyy – HH:mm').format(item.createdAt);
-    final scoreStr = item.totalScore != null
-        ? '${item.totalScore!.toStringAsFixed(1)}%'
-        : '—';
+    final scoreStr = () { final s = ScoreFormatter.format(scoringMode: item.scoringMode, rawEarned: item.rawEarnedPoints, rawMax: item.rawMaxPoints, totalScore: item.totalScore, isWeighted: item.isWeighted); return s.isEmpty ? '—' : s; }();
     final scoreColor = item.totalScore != null
         ? (item.totalScore! >= 80
               ? AppTheme.success
@@ -508,9 +507,7 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scoreStr = item.totalScore != null
-        ? '${item.totalScore!.toStringAsFixed(1)}%'
-        : '—';
+    final scoreStr = () { final s = ScoreFormatter.format(scoringMode: item.scoringMode, rawEarned: item.rawEarnedPoints, rawMax: item.rawMaxPoints, totalScore: item.totalScore, isWeighted: item.isWeighted); return s.isEmpty ? '—' : s; }();
     final scoreColor = item.totalScore != null
         ? (item.totalScore! >= 80
               ? AppTheme.success

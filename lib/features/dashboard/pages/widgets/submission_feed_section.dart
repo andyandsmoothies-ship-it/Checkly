@@ -11,6 +11,7 @@ import '../../../audit/pages/audit_preview_sheet.dart';
 import '../../../audit/services/draft_service.dart';
 import '../../../auth/manager/auth_manager.dart';
 import '../../manager/dashboard_manager.dart';
+import '../../../audit/utils/score_formatter.dart';
 
 // ────────────────────────────────────────────────────────────────
 // Submission Feed Section
@@ -229,6 +230,13 @@ class _SubmissionRowState extends State<SubmissionRow> {
     final sub = widget.submission;
     final score = sub.totalScore;
     final isDraft = sub.status == 'draft';
+    final scoreText = ScoreFormatter.format(
+      scoringMode: sub.scoringMode,
+      rawEarned: sub.rawEarnedPoints,
+      rawMax: sub.rawMaxPoints,
+      totalScore: sub.totalScore,
+      isWeighted: sub.isWeighted,
+    );
     final scoreColor = theme.colorScheme.onSurface;
     final semanticColor = score != null
         ? (score >= 80
@@ -354,7 +362,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
                     ];
                   },
                 )
-              else if (score != null)
+              else if (scoreText.isNotEmpty)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -368,7 +376,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${score.toStringAsFixed(0)}%',
+                      scoreText,
                       style: AppFonts.serifStyle(
                         fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
                         color: scoreColor,

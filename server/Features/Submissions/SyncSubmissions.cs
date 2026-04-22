@@ -29,7 +29,10 @@ public static class SyncSubmissions
         Guid? StoreId,
         string? StoreName,
         decimal? TotalScore,
-        string? ScoringMode);
+        string? ScoringMode,
+        decimal? RawEarnedPoints = null,
+        decimal? RawMaxPoints = null,
+        bool? IsWeighted = null);
 
     public static async Task<IResult> HandleAsync(
         ClaimsPrincipal user,
@@ -100,7 +103,8 @@ public static class SyncSubmissions
                 s.StoreId,
                 s.StoreName,
                 s.TotalScore,
-                s.ScoringMode))
+                s.ScoringMode,
+                s.RawEarnedPoints, s.RawMaxPoints, s.IsWeighted))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<SubmissionSyncDto>(items, total, page, pageSize));

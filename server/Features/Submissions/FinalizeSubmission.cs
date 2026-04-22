@@ -175,6 +175,9 @@ public static class FinalizeSubmission
         var now = DateTimeOffset.UtcNow;
         submission.Status = "completed";
         submission.TotalScore = scoringMode == "survey" ? null : verification.ServerScore;
+        submission.RawEarnedPoints = scoringMode == "survey" ? null : verification.RawEarned;
+        submission.RawMaxPoints = scoringMode == "survey" ? null : verification.RawMax;
+        submission.IsWeighted = scoringMode == "survey" ? null : verification.IsWeighted;
         submission.ScoringMode = scoringMode;
         submission.SectionScores = request.SectionScores;
         submission.Notes = request.Notes;
@@ -262,7 +265,8 @@ public static class FinalizeSubmission
                 submission.AuditorName, submission.Status, submission.TotalScore,
                 submission.SectionScores, submission.Notes,
                 submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
-                submission.TemplateVersion));
+                submission.TemplateVersion,
+                submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted));
         });
     }
 }

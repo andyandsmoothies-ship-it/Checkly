@@ -36,7 +36,10 @@ public sealed class ScoringVerifier
         bool IsValid,
         decimal? ServerScore,
         string? Reason,
-        HashSet<Guid> FailedCriteriaIds);
+        HashSet<Guid> FailedCriteriaIds,
+        decimal? RawEarned = null,
+        decimal? RawMax = null,
+        bool? IsWeighted = null);
 
 
     /// <summary>
@@ -177,11 +180,15 @@ public sealed class ScoringVerifier
                 Math.Abs(clientScore - Math.Round(serverScore, 2)) <= Tolerance,
                 Math.Round(serverScore, 2),
                 null,
-                BuildFailedSet(criteria, answers));
+                BuildFailedSet(criteria, answers),
+                IsWeighted: true);
         }
         else
         {
-            return VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty);
+            // Unweighted penalty falls back to checklist scoring.
+            // Intercept result and stamp IsWeighted=false — VerifyChecklist must not be modified.
+            var checklistResult = VerifyChecklist(clientScore, answers, criteria, progressiveRepeatPenalty);
+            return checklistResult with { IsWeighted = false };
         }
     }
 
@@ -237,11 +244,21 @@ public sealed class ScoringVerifier
                     }
                     else
                     {
-                        // Binary: full points if no faults AND no repeated faults
-                        var faults = answer.NumericValue ?? 0;
                         var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
-                        if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
-                            sectionEarned += c.PointsWeight ?? 0;
+                        var isConform = string.Equals(answer.Value, "conform", StringComparison.OrdinalIgnoreCase);
+
+                        if (answer.NumericValue.HasValue && answer.Value != null && !isNonConform && !isConform)
+                        {
+                            // Numeric answer with explicit value label (e.g. "input"): numericValue IS earned points
+                            sectionEarned += answer.NumericValue.Value;
+                        }
+                        else
+                        {
+                            // Binary: full points if numericValue=0 (no faults), not non_conform, no repeated faults
+                            var faults = answer.NumericValue ?? 0;
+                            if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
+                                sectionEarned += c.PointsWeight ?? 0;
+                        }
                     }
                 }
             }
@@ -258,7 +275,9 @@ public sealed class ScoringVerifier
             Math.Abs(clientScore - Math.Round(serverScore, 2)) <= Tolerance,
             Math.Round(serverScore, 2),
             null,
-            BuildFailedSet(criteria, answers));
+            BuildFailedSet(criteria, answers),
+            RawEarned: totalEarned,
+            RawMax: totalPossible);
     }
 
     /// <summary>

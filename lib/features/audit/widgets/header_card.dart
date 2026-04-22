@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../model/submission_dto.dart';
+import '../utils/score_formatter.dart';
 import '../../../_shared/theme/app_theme.dart';
 
 class HeaderCard extends StatelessWidget {
@@ -14,6 +15,13 @@ class HeaderCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isVoided = detail.status == 'voided';
     final scoreColor = _scoreColor(detail.totalScore, theme);
+    final scoreText = ScoreFormatter.format(
+      scoringMode: detail.scoringMode ?? scoringMode,
+      rawEarned: detail.rawEarnedPoints,
+      rawMax: detail.rawMaxPoints,
+      totalScore: detail.totalScore,
+      isWeighted: detail.isWeighted,
+    );
 
     return Card(
       child: Padding(
@@ -66,7 +74,7 @@ class HeaderCard extends StatelessWidget {
             ],
 
             // Score
-            if (!isVoided && detail.totalScore != null) ...[
+            if (!isVoided && scoreText.isNotEmpty) ...[
               const SizedBox(height: 10),
               Divider(height: 1, color: theme.colorScheme.outlineVariant),
               const SizedBox(height: 10),
@@ -80,7 +88,7 @@ class HeaderCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    '${detail.totalScore!.toStringAsFixed(1)}%',
+                    scoreText,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: scoreColor,

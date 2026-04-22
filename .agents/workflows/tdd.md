@@ -72,7 +72,8 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
   - `Flutter`: `flutter test --machine > test_results.json`
   - `Node`: `npm test -- --json > test_results.json`
 - **Gate Verdict**: Look at the parsed results instead of truncated terminal output.
-  - ✅ **Valid Red**: The test fails because `MethodNotFound`, `NotImplementedException`, or `Expected 200 but got 404` (because the endpoint does not physically exist yet). -> **Proceed to Phase 4**.
+  - ✅ **Valid Red**: The test fails because `MethodNotFound`, `NotImplementedException`, `Expected 200 but got 404`, or fails exactly at the expected business assertion. -> **Proceed to Phase 4**.
+  - ❌ **False RED (Validation Trap)**: The test fails early because the server immediately rejects the request (e.g., `400 BadRequest`, `422 Unprocessable Entity`) due to structurally invalid test data, missing query parameters, or bad setup. -> **Fix the test payload to bypass initial validation and re-run immediately.**
   - ❌ **Invalid Syntax**: The test fails to compile due to a missing semicolon, incorrect syntax in the test file itself, or a broken import path not specified in the plan. -> **Fix it and re-run immediately.**
   - ❌ **Invalid Setup (The Arrange Rule)**: The test crashes during the `// Arrange` setup phase (e.g., seeding users, setting up auth tokens, registering dependencies) BEFORE hitting the business logic. -> **Fix the test setup and re-run immediately.**
 - You must repeat this loop until you prove 100% of the tests are syntactically valid, properly configured, and failing purely because the logic implementation is missing.

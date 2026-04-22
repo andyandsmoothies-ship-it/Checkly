@@ -2,7 +2,7 @@ namespace Checkly.Api.Common.Persistence.Entities;
 
 /// <summary>
 /// Audit headers with scores and GPS.
-/// Maps to: public.submissions (24 columns)
+/// Maps to: public.submissions (27 columns)
 /// Status check: 'scheduled', 'draft', 'completed', 'pending_approval', 'approved', 'rejected'
 /// ReviewStatus check: 'approved', 'rejected'
 /// </summary>
@@ -42,6 +42,11 @@ public sealed class Submission
     // Template versioning — frozen template tree at submission creation
     public string? TemplateSnapshot { get; set; }
     public int? TemplateVersion { get; set; }
+
+    // Dual-layer scoring — raw points captured from ScoringVerifier (accumulation mode only)
+    public decimal? RawEarnedPoints { get; set; }
+    public decimal? RawMaxPoints { get; set; }
+    public bool? IsWeighted { get; set; }
 
     public string? VoidReason { get; set; }
     public DateTimeOffset? VoidedAt { get; set; }

@@ -823,9 +823,21 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("idempotency_key");
 
+                    b.Property<bool?>("IsWeighted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_weighted");
+
                     b.Property<string>("Notes")
                         .HasColumnType("text")
                         .HasColumnName("notes");
+
+                    b.Property<decimal?>("RawEarnedPoints")
+                        .HasColumnType("numeric")
+                        .HasColumnName("raw_earned_points");
+
+                    b.Property<decimal?>("RawMaxPoints")
+                        .HasColumnType("numeric")
+                        .HasColumnName("raw_max_points");
 
                     b.Property<string>("ReviewStatus")
                         .HasColumnType("text")

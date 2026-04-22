@@ -6,6 +6,7 @@ import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/utils/score_utils.dart';
 import '../model/submission_dto.dart';
 import '../utils/category_utils.dart';
+import '../utils/score_formatter.dart';
 
 class AuditCard extends StatelessWidget {
   final SubmissionDto submission;
@@ -78,14 +79,21 @@ class AuditCard extends StatelessWidget {
                       )
                     : isDraft
                     ? Icon(Icons.edit_note, size: 22, color: AppTheme.warning)
-                    : Text(
-                        submission.totalScore != null
-                            ? submission.totalScore!.toStringAsFixed(0)
-                            : '—',
-                        style: AppFonts.serifStyle(
-                            fontSize: Theme.of(context).textTheme.titleMedium?.fontSize ?? 16,
-                            color: color,
+                    : FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          ScoreFormatter.format(
+                            scoringMode: submission.scoringMode,
+                            rawEarned: submission.rawEarnedPoints,
+                            rawMax: submission.rawMaxPoints,
+                            totalScore: submission.totalScore,
+                            isWeighted: submission.isWeighted,
                           ),
+                          style: AppFonts.serifStyle(
+                              fontSize: Theme.of(context).textTheme.titleMedium?.fontSize ?? 16,
+                              color: color,
+                            ),
+                        ),
                       ),
               ),
             ),

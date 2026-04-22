@@ -1,0 +1,17 @@
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.45]     Checkly.Api.Tests.ScoringVerifierJsonTests.Verify_MatchesExpectedScore(v: TestVector { Id = V17_scale_risk_passing, Description = Scale + is_risk with passing score → RISK NOT triggered, ScoringMode = accumulation, ProgressiveRepeatPenalty = False, IsPurityGateTriggered = False, ExpectedError = , Sections = System.Collections.Generic.List`1[Checkly.Api.Tests.SectionDto], Answers = System.Collections.Generic.List`1[Checkly.Api.Tests.AnswerDto], ExpectedScore = 85.0 }) [FAIL]
+  Failed Checkly.Api.Tests.ScoringVerifierJsonTests.Verify_MatchesExpectedScore(v: TestVector { Id = V17_scale_risk_passing, Description = Scale + is_risk with passing score → RISK NOT triggered, ScoringMode = accumulation, ProgressiveRepeatPenalty = False, IsPurityGateTriggered = False, ExpectedError = , Sections = System.Collections.Generic.List`1[Checkly.Api.Tests.SectionDto], Answers = System.Collections.Generic.List`1[Checkly.Api.Tests.AnswerDto], ExpectedScore = 85.0 }) [< 1 ms]
+  Error Message:
+   [V17_scale_risk_passing] Expected 85.0 but server returned 0
+  Stack Trace:
+     at Checkly.Api.Tests.ScoringVerifierJsonTests.Verify_MatchesExpectedScore(TestVector v) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\ScoringVerifierJsonTests.cs:line 44
+   at InvokeStub_ScoringVerifierJsonTests.Verify_MatchesExpectedScore(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Failed!  - Failed:     1, Passed:    45, Skipped:     0, Total:    46, Duration: 113 ms - Checkly.Api.Tests.dll (net10.0)
