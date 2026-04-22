@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
@@ -353,50 +354,84 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
     final canSubmitEvidence = _di<PolicyManager>().can(AppCapabilities.actionPlansWrite);
     final canVerify = _di<PolicyManager>().can(AppCapabilities.actionPlansVerify);
 
-    // Store Manager (or anyone with action_plans:write) submits evidence when open
-    if (status == 'open' && canSubmitEvidence) {
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: FilledButton.icon(
-            onPressed: () => _showSubmitEvidenceSheet(plan),
-            icon: const Icon(Icons.upload_file),
-            label: const Text('Submit Evidence'),
+    if (status == 'open') {
+      if (!canVerify) {
+        if (canSubmitEvidence) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: FilledButton.icon(
+                onPressed: () => _showSubmitEvidenceSheet(plan),
+                icon: const Icon(Icons.upload_file),
+                label: const Text('Submit Evidence'),
+              ),
+            ),
+          );
+        }
+      } else {
+        return SafeArea(
+          child: Container(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            child: Text(
+              'Waiting for Store Manager to submit evidence.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
 
-    // Auditor/Admin/AM (action_plans:verify) can verify or reject when pending
-    if (status == 'pending_verify' && canVerify) {
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.error,
-                    side: BorderSide(color: Theme.of(context).colorScheme.error),
+    if (status == 'pending_verify') {
+      if (canVerify) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.error,
+                      side: BorderSide(color: Theme.of(context).colorScheme.error),
+                    ),
+                    onPressed: () => _showRejectDialog(plan),
+                    child: const Text('Reject'),
                   ),
-                  onPressed: () => _showRejectDialog(plan),
-                  child: const Text('Reject'),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 2,
-                child: FilledButton.icon(
-                  onPressed: () => _showVerifyDialog(plan),
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text('Verify & Close'),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: FilledButton.icon(
+                    onPressed: () => _showVerifyDialog(plan),
+                    icon: const Icon(Icons.check_circle),
+                    label: const Text('Verify & Close'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        return SafeArea(
+          child: Container(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            child: Text(
+              'Awaiting Auditor Verification.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+          ),
+        );
+      }
     }
 
     return null; // No actions for this role/status combo
@@ -425,7 +460,26 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
           }
           return Scaffold(
             appBar: AppBar(title: const Text('Action Plan')),
-            body: const Center(child: Text('Action plan not found')),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Action plan not found'),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/home');
+                      }
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Go Back'),
+                  ),
+                ],
+              ),
+            ),
           );
         }
 
@@ -434,8 +488,33 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
           now: DateTime.now(),
         );
 
+        final canSubmitEvidence = _di<PolicyManager>().can(AppCapabilities.actionPlansWrite);
+        final canVerify = _di<PolicyManager>().can(AppCapabilities.actionPlansVerify);
+        final showOverride = plan.status == 'open' && canSubmitEvidence && canVerify;
+
         return Scaffold(
-          appBar: AppBar(title: const Text('Action Plan')),
+          appBar: AppBar(
+            title: const Text('Action Plan'),
+            actions: showOverride
+                ? [
+                    PopupMenuButton<String>(
+                      onSelected: (_) => _showSubmitEvidenceSheet(plan),
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'override',
+                          child: Row(
+                            children: [
+                              Icon(Icons.upload_file, size: 20),
+                              SizedBox(width: 12),
+                              Text('Override: Submit Evidence'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]
+                : null,
+          ),
           bottomNavigationBar: _buildActionBar(plan),
           body: ListView(
             padding: const EdgeInsets.all(16),

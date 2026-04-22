@@ -35,6 +35,10 @@ public static class TemplateEndpoints
             .WithName("DeleteTemplate")
             .RequireCapability(AppCapabilities.TemplatesDelete);
 
+        group.MapPost("/{id}/clone", CloneTemplate.HandleAsync)
+            .WithName("CloneTemplate")
+            .RequireCapability(AppCapabilities.TemplatesCreate);
+
         // Group CRUD
         group.MapPost("/{templateId}/groups", CreateGroup.HandleAsync)
             .WithName("CreateGroup")

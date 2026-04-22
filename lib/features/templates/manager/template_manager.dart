@@ -191,6 +191,14 @@ class TemplateManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---------- Duplicate template ----------
+  Future<TemplateDto> duplicateTemplate(String id) async {
+    final cloned = await _api.cloneTemplate(id);
+    templates.value = [...templates.value, cloned];
+    notifyListeners();
+    return cloned;
+  }
+
   // ---------- Delete group ----------
   Future<void> deleteGroup(String templateId, String groupId) async {
     await _api.deleteGroup(templateId, groupId);

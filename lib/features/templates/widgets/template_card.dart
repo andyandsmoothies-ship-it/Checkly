@@ -113,11 +113,22 @@ class TemplateCard extends StatelessWidget {
                       if (isAdmin) context.push('/templates/edit/${template.id}');
                     case 'duplicate':
                       if (isAdmin) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Duplicate — coming soon'),
-                          ),
-                        );
+                        () async {
+                          try {
+                            final cloned = await GetIt.instance<TemplateManager>().duplicateTemplate(template.id);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("'${cloned.title}' created as draft")),
+                              );
+                            }
+                          } catch (_) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Could not duplicate template. Please try again.')),
+                              );
+                            }
+                          }
+                        }();
                       }
                     case 'delete':
                       if (isAdmin) {

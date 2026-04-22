@@ -12,7 +12,7 @@ import '../../stores/manager/store_manager.dart';
 import '../../templates/manager/template_manager.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
-import '../manager/history_manager.dart';
+
 import '../widgets/audit_score_hud.dart';
 import '../widgets/audit_section_card.dart';
 import '../widgets/audit_section_nav_bar.dart';
@@ -520,9 +520,6 @@ class _AuditFormPageState extends State<AuditFormPage> {
           // initState() doesn't re-fire. Trigger manually before navigating.
           if (_di.isRegistered<DashboardManager>()) {
             _di<DashboardManager>().loadStats();
-          }
-          if (_di.isRegistered<HistoryManager>()) {
-            _di<HistoryManager>().loadHistory();
           }
           context.go('/home');
         } else {

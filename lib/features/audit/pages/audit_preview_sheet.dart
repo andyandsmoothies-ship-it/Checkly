@@ -204,6 +204,14 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
               ),
             ),
           )
+        else if (tree != null)
+          ...tree.groups.map((g) => _buildGroup(
+                g,
+                {for (var a in detail.answers) if (a.criteriaId != null) a.criteriaId!: a},
+                scoringMode,
+                0,
+                theme,
+              ))
         else
           ...detail.answers.map(
             (answer) => ReadOnlyCriterionRow(
@@ -213,6 +221,63 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
             ),
           ),
       ],
+    );
+  }
+
+  bool _groupHasAnswers(GroupDto group, Map<String, AnswerDto> answersMap) {
+    if (group.criteria.any((c) => answersMap.containsKey(c.id))) return true;
+    if (group.children.any((child) => _groupHasAnswers(child, answersMap))) return true;
+    return false;
+  }
+
+  Widget _buildGroup(
+      GroupDto group, Map<String, AnswerDto> answersMap, String scoringMode, int depth, ThemeData theme) {
+    if (!_groupHasAnswers(group, answersMap)) return const SizedBox.shrink();
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: depth == 0 ? 1 : 0,
+      color: depth == 0 ? theme.colorScheme.surface : Colors.transparent,
+      shape: depth == 0
+          ? null
+          : RoundedRectangleBorder(
+              side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+        shape: const Border(), // remove the border when expanded
+        title: Text(
+          group.title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: depth == 0 ? FontWeight.w700 : FontWeight.w600,
+            fontSize: depth == 0 ? 16 : 14,
+          ),
+        ),
+        children: [
+          ...group.criteria.where((c) => answersMap.containsKey(c.id)).map(
+                (c) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ReadOnlyCriterionRow(
+                    answer: answersMap[c.id]!,
+                    criterion: c,
+                    scoringMode: scoringMode,
+                  ),
+                ),
+              ),
+          ...group.children.where((child) => _groupHasAnswers(child, answersMap)).map(
+                (child) => Padding(
+                  padding: EdgeInsets.only(
+                    left: depth == 0 ? 16 : 8,
+                    right: depth == 0 ? 16 : 8,
+                    bottom: 12,
+                  ),
+                  child: _buildGroup(child, answersMap, scoringMode, depth + 1, theme),
+                ),
+              ),
+        ],
+      ),
     );
   }
 }

@@ -71,6 +71,12 @@ class TemplateApiService {
     await _dio.delete('/templates/$id');
   }
 
+  /// POST /templates/{id}/clone — duplicate template tree as a draft.
+  Future<TemplateDto> cloneTemplate(String id) async {
+    final response = await _dio.post('/templates/$id/clone');
+    return TemplateDto.fromJson(response.data as Map<String, dynamic>);
+  }
+
   // ── Group CRUD ──────────────────────────────────────────────
 
   /// POST /templates/{templateId}/groups — create group.

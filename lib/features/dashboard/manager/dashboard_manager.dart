@@ -133,20 +133,24 @@ class DashboardManager extends ChangeNotifier {
         final totalCount = await queries.getTotalAuditCount();
         if (totalCount == 0) {
           // Empty cache (likely fresh login) — await the sync before loading
+          await _di<SyncEngine>().requestSync();
           await Future.wait([
-            _di<SyncEngine>().requestSync(),
             if (_di.isRegistered<HistoryManager>()) _di<HistoryManager>().loadHistory(),
             if (_di.isRegistered<ActionPlanManager>()) _di<ActionPlanManager>().loadActionPlans(),
           ]);
         } else {
           // Cache has data — sync in background and quietly reload when done
-          unawaited(Future.wait([
-            _di<SyncEngine>().requestSync(),
-            if (_di.isRegistered<HistoryManager>()) _di<HistoryManager>().loadHistory(),
-            if (_di.isRegistered<ActionPlanManager>()) _di<ActionPlanManager>().loadActionPlans(),
-          ]).whenComplete(() {
-            loadStats(showLoading: false);
-          }));
+          unawaited(() async {
+            try {
+              await _di<SyncEngine>().requestSync();
+              await Future.wait([
+                if (_di.isRegistered<HistoryManager>()) _di<HistoryManager>().loadHistory(),
+                if (_di.isRegistered<ActionPlanManager>()) _di<ActionPlanManager>().loadActionPlans(),
+              ]);
+            } finally {
+              loadStats(showLoading: false);
+            }
+          }());
         }
       }
 
