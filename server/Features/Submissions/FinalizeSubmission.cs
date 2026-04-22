@@ -220,18 +220,18 @@ public static class FinalizeSubmission
             $"Finalized submission for store '{submission.StoreName}'",
             $"/api/submissions/{submission.Id}/finalize");
 
-        // 7. Auto-create action plans for triggered answers (stages only, no flush)
-        await ActionPlanService.AutoCreateAsync(
-            submission.Id, submission.StoreId,
-            answers, criteria, groups, now, db, ct,
-            scoringMode: scoringMode,
-            scoringLogicConfig: scoringLogicConfig);
-
         var strategy = db.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync<IResult>(async () =>
         {
-            // Start explicit transaction to guarantee all 3 saves complete atomically
+            // Start explicit transaction to guarantee all saves complete atomically
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
+
+            // 7. Auto-create action plans for triggered answers (stages only, no flush)
+            await ActionPlanService.AutoCreateAsync(
+                submission.Id, submission.StoreId,
+                answers, criteria, groups, now, db, ct,
+                scoringMode: scoringMode,
+                scoringLogicConfig: scoringLogicConfig);
 
             // Atomic flush 1: submission update + answers + audit log + action plans
             try

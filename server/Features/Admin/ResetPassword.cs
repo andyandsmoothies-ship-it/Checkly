@@ -38,7 +38,11 @@ public static class ResetPassword
             return TypedResults.BadRequest(new { message = errors });
         }
 
-        // 4. Success
+        // 4. Invalidate existing tokens
+        targetUser.InvalidateTokensBefore = DateTimeOffset.UtcNow;
+        await userManager.UpdateAsync(targetUser);
+
+        // 5. Success
         return TypedResults.Ok(new { message = "Password updated successfully." });
     }
 }

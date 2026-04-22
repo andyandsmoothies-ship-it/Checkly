@@ -28,6 +28,7 @@ public static class AuthEndpoints
         {
             return await handler.ExecuteAsync(request, ct);
         })
-        .WithName("Login");
+        .WithName("Login")
+        .RequireRateLimiting("LoginPolicy");
     }
 }

@@ -39,22 +39,7 @@ public static class CreateUser
         if (existing is not null)
             return TypedResults.Conflict(new { message = "A user with this email already exists." });
 
-        // 4. Create Identity user
-        var appUser = new AppUser
-        {
-            Id = Guid.NewGuid(),
-            UserName = request.Email,
-            Email = request.Email
-        };
-
-        var identityResult = await userManager.CreateAsync(appUser, request.Password);
-        if (!identityResult.Succeeded)
-        {
-            var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
-            return TypedResults.BadRequest(new { message = errors });
-        }
-
-        // 5. Assignment guards (S9/S10)
+        // 4. Assignment guards (S9/S10) BEFORE Identity Creation
         if (request.Role == "store_manager" && request.StoreId.HasValue)
         {
             var store = await db.Stores.AsNoTracking()
@@ -86,30 +71,53 @@ public static class CreateUser
                 });
         }
 
-        // 6. Create Profile
-        var profile = new Profile
-        {
-            Id = appUser.Id,
-            FullName = request.FullName,
-            Email = request.Email,
-            StoreId = request.StoreId,
-            AreaId = request.AreaId,
-            CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow
-        };
-        db.Profiles.Add(profile);
-
-        // 6. Create UserRole
-        var userRole = new UserRole
+        // 5. Create Identity user
+        var appUser = new AppUser
         {
             Id = Guid.NewGuid(),
-            UserId = appUser.Id,
-            Role = request.Role,
-            CreatedAt = DateTimeOffset.UtcNow
+            UserName = request.Email,
+            Email = request.Email
         };
-        db.AppUserRoles.Add(userRole);
 
-        await db.SaveChangesAsync(ct);
+        var identityResult = await userManager.CreateAsync(appUser, request.Password);
+        if (!identityResult.Succeeded)
+        {
+            var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
+            return TypedResults.BadRequest(new { message = errors });
+        }
+
+        // 6. Create Profile and UserRole with compensating transaction
+        try
+        {
+            var profile = new Profile
+            {
+                Id = appUser.Id,
+                FullName = request.FullName,
+                Email = request.Email,
+                StoreId = request.StoreId,
+                AreaId = request.AreaId,
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            };
+            db.Profiles.Add(profile);
+
+            var userRole = new UserRole
+            {
+                Id = Guid.NewGuid(),
+                UserId = appUser.Id,
+                Role = request.Role,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+            db.AppUserRoles.Add(userRole);
+
+            await db.SaveChangesAsync(ct);
+        }
+        catch
+        {
+            // Roll back Identity user to prevent phantom account
+            await userManager.DeleteAsync(appUser);
+            throw;
+        }
 
         // 7. Return 201 Created
         return TypedResults.Created(

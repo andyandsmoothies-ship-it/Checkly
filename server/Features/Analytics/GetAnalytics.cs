@@ -28,20 +28,18 @@ public static class GetAnalytics
         var areaIdStr = httpContext.Request.Query["areaId"].FirstOrDefault();
         if (!string.IsNullOrEmpty(areaIdStr) && Guid.TryParse(areaIdStr, out var areaIdParsed))
         {
-            var storeIds = await db.Stores.AsNoTracking()
+            var storeSubquery = db.Stores.AsNoTracking()
                 .Where(st => st.AreaId == areaIdParsed)
-                .Select(st => st.Id)
-                .ToListAsync(ct);
-            query = query.Where(s => s.StoreId.HasValue && storeIds.Contains(s.StoreId.Value));
+                .Select(st => st.Id);
+            query = query.Where(s => s.StoreId.HasValue && storeSubquery.Contains(s.StoreId.Value));
         }
 
         if (!string.IsNullOrEmpty(type))
         {
-            var templateIds = await db.Templates.AsNoTracking()
+            var templateSubquery = db.Templates.AsNoTracking()
                 .Where(t => t.Type == type)
-                .Select(t => t.Id)
-                .ToListAsync(ct);
-            query = query.Where(s => s.TemplateId.HasValue && templateIds.Contains(s.TemplateId.Value));
+                .Select(t => t.Id);
+            query = query.Where(s => s.TemplateId.HasValue && templateSubquery.Contains(s.TemplateId.Value));
         }
 
         // Scoring mode filter (new)

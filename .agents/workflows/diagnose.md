@@ -68,7 +68,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your `failure_report_[topic]_[ConversationID].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.
+> **Payload Schema:** Your `failure_report_[topic]_[ConversationID].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
 > 
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Diagnostic Verdict & Persistent path.

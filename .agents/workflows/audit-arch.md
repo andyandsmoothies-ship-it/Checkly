@@ -46,7 +46,7 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 |---|---|
 | **Artifact Gen** | Create `audit_arch_report_[date-time]_[ConversationID].md` in `brain/` folder. Format as a stark, unappeasing teardown. |
 | **Severity Matrix**| `🔴 Fatal` (Bricks the system / Data Corruption / DDoS) | `🟡 Brittle` (Fake-Smart. Will scale poorly or fail silently) | `🟢 Resilient` (Actually viable). |
-| **Actionable Fix** | MANDATORY: Do not just complain. Provide the exact system design fix (e.g., "Implement Exponential Backoff Retry", "Switch to distributed cache like Redis", "Add DLQ handler", "Implement CRDTs"). |
+| **Actionable Fix & Trade-offs** | MANDATORY: Do not just complain. Provide the exact system design fix (e.g., "Implement Exponential Backoff Retry").<br><br>**CRITICAL:** When proposing a fix, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., "Pro: Solves OOM. Con: Adds 200ms latency."). Yield for the user to make the final executive decision before writing code. |
 
 ## Phase 4: Deliverable Handoff
 

@@ -134,6 +134,12 @@ try
                             return;
                         }
 
+                        if (appUser.LockoutEnd.HasValue && appUser.LockoutEnd.Value > DateTimeOffset.UtcNow)
+                        {
+                            context.Fail("Token revoked due to user lockout/ban.");
+                            return;
+                        }
+
                         if (appUser.InvalidateTokensBefore.HasValue)
                         {
                             // Fix: Use general SecurityToken.ValidFrom (which models nbf/iat) 
@@ -149,7 +155,8 @@ try
                                     "revoked at {RevokedAt}",
                                     userId, issuedAt, appUser.InvalidateTokensBefore.Value);
 
-                                context.Fail("Token revoked due to role change.");
+                                context.Fail("Token revoked due to role/password change.");
+                                return;
                             }
                         }
                     }
@@ -193,6 +200,12 @@ try
                 Extensions = { ["correlationId"] = Guid.NewGuid().ToString("N")[..12] }
             }, options: null, contentType: "application/problem+json", cancellationToken: token);
         };
+        options.AddFixedWindowLimiter("LoginPolicy", opt =>
+        {
+            opt.Window = TimeSpan.FromMinutes(1);
+            opt.PermitLimit = 5;
+            opt.QueueLimit = 0;
+        });
         options.AddConcurrencyLimiter("SyncPolicy", limiterOptions =>
         {
             limiterOptions.PermitLimit = 50;

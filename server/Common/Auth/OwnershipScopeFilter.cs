@@ -55,11 +55,10 @@ public static class OwnershipScopeFilter
                     .FirstOrDefaultAsync(p => p.Id == userId, ct);
                 if (amProfile?.AreaId != null)
                 {
-                    var storeIds = await db.Stores
+                    var storeSubquery = db.Stores
                         .Where(s => s.AreaId == amProfile.AreaId)
-                        .Select(s => s.Id)
-                        .ToListAsync(ct);
-                    query = query.Where(s => storeIds.Contains(s.StoreId!.Value));
+                        .Select(s => s.Id);
+                    query = query.Where(s => s.StoreId.HasValue && storeSubquery.Contains(s.StoreId.Value));
                 }
                 else
                 {
