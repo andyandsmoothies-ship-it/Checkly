@@ -22,13 +22,20 @@ public static class GetAnalytics
         var query = db.Submissions.AsNoTracking()
             .Where(s => s.Status == "completed" && s.ReviewStatus != "rejected");
 
-        if (!string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out var sid))
+        // Pre-declare sid so it is reusable by the section score filter block below (C-01).
+        var sid = Guid.Empty;
+        if (!string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out sid))
             query = query.Where(s => s.StoreId == sid);
 
         var areaIdStr = httpContext.Request.Query["areaId"].FirstOrDefault();
+
+        // Hoist subquery references so they are reusable by the section score query below.
+        IQueryable<Guid>? storeSubquery = null;
+        IQueryable<Guid>? templateSubquery = null;
+
         if (!string.IsNullOrEmpty(areaIdStr) && Guid.TryParse(areaIdStr, out var areaIdParsed))
         {
-            var storeSubquery = db.Stores.AsNoTracking()
+            storeSubquery = db.Stores.AsNoTracking()
                 .Where(st => st.AreaId == areaIdParsed)
                 .Select(st => st.Id);
             query = query.Where(s => s.StoreId.HasValue && storeSubquery.Contains(s.StoreId.Value));
@@ -36,7 +43,7 @@ public static class GetAnalytics
 
         if (!string.IsNullOrEmpty(type))
         {
-            var templateSubquery = db.Templates.AsNoTracking()
+            templateSubquery = db.Templates.AsNoTracking()
                 .Where(t => t.Type == type)
                 .Select(t => t.Id);
             query = query.Where(s => s.TemplateId.HasValue && templateSubquery.Contains(s.TemplateId.Value));
@@ -90,10 +97,25 @@ public static class GetAnalytics
                 x.Count))
             .ToList();
 
-        // ── Section breakdown from relational table (GroupBy server, project in memory) ──
-        var sectionRaw = await db.SubmissionSectionScores
+        // ── Section breakdown — C-01 Fix: apply same store/area/type filters ──
+        var sectionScoreQuery = db.SubmissionSectionScores
             .AsNoTracking()
-            .Where(ss => ss.MaxScore > 0)
+            .Where(ss => ss.MaxScore > 0);
+
+        // Mirror storeId filter — reuse `sid` already parsed at line 25 (avoids CS0128 duplicate declaration).
+        var storeIdParsed = !string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out sid);
+        if (storeIdParsed)
+            sectionScoreQuery = sectionScoreQuery.Where(ss => ss.StoreId == sid);
+
+        // Mirror areaId filter (re-use hoisted storeSubquery)
+        if (storeSubquery is not null)
+            sectionScoreQuery = sectionScoreQuery.Where(ss => ss.StoreId.HasValue && storeSubquery.Contains(ss.StoreId.Value));
+
+        // Mirror type filter (re-use hoisted templateSubquery)
+        if (templateSubquery is not null)
+            sectionScoreQuery = sectionScoreQuery.Where(ss => ss.TemplateId.HasValue && templateSubquery.Contains(ss.TemplateId.Value));
+
+        var sectionRaw = await sectionScoreQuery
             .GroupBy(ss => ss.SectionTitle)
             .Select(g => new
             {

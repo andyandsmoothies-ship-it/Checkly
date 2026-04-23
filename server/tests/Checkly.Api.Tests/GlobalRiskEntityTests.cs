@@ -70,7 +70,7 @@ public class GlobalRiskEntityTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
-    public async Task GlobalRisk_UpdatedAt_IsIndexed_ForDeltaSync()
+    public Task GlobalRisk_UpdatedAt_IsIndexed_ForDeltaSync()
     {
         // Arrange
         using var scope = _factory.Services.CreateScope();
@@ -84,7 +84,10 @@ public class GlobalRiskEntityTests : IClassFixture<TestWebApplicationFactory>
         Assert.NotNull(entityType);
         Assert.NotNull(indexes);
         Assert.Contains(indexes, i => i.Properties.Any(p => p.Name == "UpdatedAt"));
+
+        return Task.CompletedTask;
     }
+
 
     [Fact]
     public async Task SubmissionRisk_CanInsertWithValidFKs()

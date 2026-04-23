@@ -9,6 +9,7 @@ class CriterionInput {
   final bool isCcp;
   final bool isRisk;
   final double? minusImpact; // C4: overrides pointsWeight for deduction
+  final double? maxDeductionPoints; // Phase 1A: per-criterion deduction cap
   final String inputType; // 'numeric', 'pass_fail', 'scale'
 
   const CriterionInput({
@@ -18,6 +19,7 @@ class CriterionInput {
     required this.isCcp,
     required this.isRisk,
     this.minusImpact,
+    this.maxDeductionPoints,
     this.inputType = 'numeric',
   });
 }

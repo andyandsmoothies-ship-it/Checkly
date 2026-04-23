@@ -95,7 +95,7 @@ public class ScoringVerifierJsonTests
             groups.Add(new Group { Id = idMap[s.Id], ParentId = null, Weight = s.Weight, MaxDeductionPoints = s.MaxDeductionPoints });
             foreach (var c in s.Criteria)
             {
-                criteria.Add(new Criterion { Id = idMap[c.Id], GroupId = idMap[s.Id], PointsWeight = c.PointsWeight, IsRisk = c.IsRisk, IsCcp = c.IsCcp, MinusImpact = c.MinusImpact, InputType = c.InputType ?? "numeric" });
+                criteria.Add(new Criterion { Id = idMap[c.Id], GroupId = idMap[s.Id], PointsWeight = c.PointsWeight, IsRisk = c.IsRisk, IsCcp = c.IsCcp, MinusImpact = c.MinusImpact, MaxDeductionPoints = c.MaxDeductionPoints, InputType = c.InputType ?? "numeric" });
             }
 
             if (s.Subsections is not null)
@@ -105,7 +105,7 @@ public class ScoringVerifierJsonTests
                     groups.Add(new Group { Id = idMap[sub.Id], ParentId = idMap[s.Id], MaxDeductionPoints = sub.MaxPoints });
                     foreach (var c in sub.Criteria)
                     {
-                        criteria.Add(new Criterion { Id = idMap[c.Id], GroupId = idMap[sub.Id], PointsWeight = c.PointsWeight, IsRisk = c.IsRisk, IsCcp = c.IsCcp, MinusImpact = c.MinusImpact, InputType = c.InputType ?? "numeric" });
+                        criteria.Add(new Criterion { Id = idMap[c.Id], GroupId = idMap[sub.Id], PointsWeight = c.PointsWeight, IsRisk = c.IsRisk, IsCcp = c.IsCcp, MinusImpact = c.MinusImpact, MaxDeductionPoints = c.MaxDeductionPoints, InputType = c.InputType ?? "numeric" });
                     }
                 }
             }

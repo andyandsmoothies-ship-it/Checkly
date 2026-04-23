@@ -75,12 +75,29 @@ class SyncApiAdapter implements SyncApi {
 
   @override
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async {
-    final params = since != null ? {'since': since.toIso8601String()} : null;
-    final response = await _dio.get<List<dynamic>>(
-      '/global-risks',
-      queryParameters: params,
-    );
-    return response.data ?? [];
+    final allRisks = <dynamic>[];
+    int page = 1;
+    const pageSize = 100;
+    
+    while (true) {
+      final params = <String, dynamic>{'page': page, 'pageSize': pageSize};
+      if (since != null) {
+        params['since'] = since.toIso8601String();
+      }
+      
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/global-risks',
+        queryParameters: params,
+      );
+      
+      final list = response.data?['items'] as List<dynamic>? ?? [];
+      allRisks.addAll(list);
+      
+      if (list.length < pageSize) break;
+      page++;
+    }
+    
+    return allRisks;
   }
 
   @override

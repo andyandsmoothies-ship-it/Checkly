@@ -38,6 +38,7 @@ import 'features/admin/manager/admin_store_manager.dart';
 import 'features/admin/manager/admin_area_manager.dart';
 import 'features/admin/manager/admin_dashboard_manager.dart';
 import 'features/admin/manager/admin_audit_manager.dart';
+import 'features/admin/manager/admin_global_risk_manager.dart';
 import 'features/analytics/services/analytics_api_service.dart';
 import 'features/analytics/manager/analytics_manager.dart';
 import 'features/stores/manager/store_dashboard_manager.dart';
@@ -145,6 +146,7 @@ void configureDependencies() {
   di.registerLazySingleton<AdminAreaManager>(() => AdminAreaManager());
   di.registerLazySingleton<AdminDashboardManager>(() => AdminDashboardManager());
   di.registerLazySingleton<AdminAuditManager>(() => AdminAuditManager());
+  di.registerLazySingleton<AdminGlobalRiskManager>(() => AdminGlobalRiskManager());
 
   // ---------- Analytics (CRUD Gaps — MS5) ----------
   di.registerLazySingleton<AnalyticsApiService>(

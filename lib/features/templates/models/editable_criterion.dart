@@ -9,6 +9,8 @@ class EditableCriterion {
   final TextEditingController labelCtrl;
   final TextEditingController descCtrl;
   final TextEditingController pointsCtrl;
+  final TextEditingController minusImpactCtrl;
+  final TextEditingController maxDeductionCtrl;
   String inputType;
   List<Map<String, dynamic>> scaleOptions;
   List<String> choiceOptions;
@@ -21,6 +23,8 @@ class EditableCriterion {
     String label = '',
     String description = '',
     String points = '',
+    String minusImpact = '',
+    String maxDeduction = '',
     this.inputType = 'numeric',
     List<Map<String, dynamic>>? scaleOptions,
     List<String>? choiceOptions,
@@ -30,6 +34,8 @@ class EditableCriterion {
   }) : labelCtrl = TextEditingController(text: label),
        descCtrl = TextEditingController(text: description),
        pointsCtrl = TextEditingController(text: points),
+       minusImpactCtrl = TextEditingController(text: minusImpact),
+       maxDeductionCtrl = TextEditingController(text: maxDeduction),
        scaleOptions = scaleOptions ?? [],
        choiceOptions = choiceOptions ?? [];
 
@@ -68,6 +74,8 @@ class EditableCriterion {
       label: dto.label,
       description: dto.description ?? '',
       points: dto.pointsWeight?.toString() ?? '',
+      minusImpact: dto.minusImpact?.toString() ?? '',
+      maxDeduction: dto.maxDeductionPoints?.toString() ?? '',
       inputType: dto.inputType,
       scaleOptions: options,
       choiceOptions: choices,
@@ -81,5 +89,7 @@ class EditableCriterion {
     labelCtrl.dispose();
     descCtrl.dispose();
     pointsCtrl.dispose();
+    minusImpactCtrl.dispose();
+    maxDeductionCtrl.dispose();
   }
 }

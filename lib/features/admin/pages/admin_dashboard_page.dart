@@ -180,6 +180,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       subtitle: 'Manage user group assignments',
                       onTap: () => context.push('/admin/user-groups'),
                     ),
+                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
+                    _MenuItem(
+                      icon: Icons.shield_outlined,
+                      title: 'Global Risk Management',
+                      subtitle: 'Configure risk categories for audits',
+                      onTap: () => context.push('/admin/global-risks'),
+                    ),
                   ],
                 ),
               ),

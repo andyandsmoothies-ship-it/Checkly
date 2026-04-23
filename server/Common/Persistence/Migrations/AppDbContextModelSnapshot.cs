@@ -401,6 +401,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("label");
 
+                    b.Property<decimal?>("MaxDeductionPoints")
+                        .HasColumnType("numeric")
+                        .HasColumnName("max_deduction_points");
+
                     b.Property<string>("Metadata")
                         .HasColumnType("jsonb")
                         .HasColumnName("metadata");

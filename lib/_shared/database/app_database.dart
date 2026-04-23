@@ -44,7 +44,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 19;
+  int get schemaVersion => 20;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -130,6 +130,10 @@ class AppDatabase extends _$AppDatabase {
         // Slice 4: Global Risks offline sync tables.
         await m.createTable(cachedGlobalRisks);
         await m.createTable(submissionRiskOutboxEntries);
+      }
+      if (from < 20) {
+        // Phase 1B Visual Folders: criterion-level deduction cap.
+        await m.addColumn(cachedCriteria, cachedCriteria.maxDeductionPoints);
       }
     },
     beforeOpen: (details) async {

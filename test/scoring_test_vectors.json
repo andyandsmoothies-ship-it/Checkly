@@ -1251,6 +1251,82 @@
                 }
             ],
             "expectedScore": 90.0
+        },
+        {
+            "id": "V21_criterion_max_deduction_cap",
+            "description": "Cap individual criterion deduction at MaxDeductionPoints",
+            "scoringMode": "penalty",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 3,
+                            "minusImpact": 5,
+                            "maxDeductionPoints": 6,
+                            "isCcp": false,
+                            "isRisk": false
+                        },
+                        {
+                            "id": "c2",
+                            "groupId": "s1",
+                            "pointsWeight": 7,
+                            "minusImpact": 2,
+                            "maxDeductionPoints": null,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 2,
+                    "value": null
+                },
+                {
+                    "criteriaId": "c2",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 20.0
+        },
+        {
+            "id": "V22_criterion_fallback_points_weight",
+            "description": "Fallback to pointsWeight when minusImpact is null",
+            "scoringMode": "penalty",
+            "sections": [
+                {
+                    "id": "s1",
+                    "weight": 100,
+                    "maxDeductionPoints": null,
+                    "criteria": [
+                        {
+                            "id": "c1",
+                            "groupId": "s1",
+                            "pointsWeight": 4,
+                            "minusImpact": null,
+                            "maxDeductionPoints": null,
+                            "isCcp": false,
+                            "isRisk": false
+                        }
+                    ]
+                }
+            ],
+            "answers": [
+                {
+                    "criteriaId": "c1",
+                    "numericValue": 1,
+                    "value": null
+                }
+            ],
+            "expectedScore": 0.0
         }
     ]
 }

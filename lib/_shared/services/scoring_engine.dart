@@ -369,17 +369,22 @@ class ScoringEngine {
     final impact = criterion.minusImpact ?? criterion.pointsWeight;
     final faults = answer.numericValue ?? 0;
     final baseDeduction = faults * impact;
+    
+    double totalDeduction = baseDeduction;
     // progressive repeat penalty (n² × impact)
     if (progressiveRepeatPenalty && answer.repeatedFaults > 0) {
       final repeatDeduction =
           answer.repeatedFaults * answer.repeatedFaults * impact;
-      return baseDeduction + repeatDeduction;
+      totalDeduction = baseDeduction + repeatDeduction;
+    } else if (answer.repeatedFaults > 0) {
+      // Linear repeat penalty
+      totalDeduction = baseDeduction + (answer.repeatedFaults * impact);
     }
-    // Linear repeat penalty
-    if (answer.repeatedFaults > 0) {
-      return baseDeduction + (answer.repeatedFaults * impact);
+    
+    if (criterion.maxDeductionPoints != null) {
+      return min(totalDeduction, criterion.maxDeductionPoints!);
     }
-    return baseDeduction;
+    return totalDeduction;
   }
 
   /// Rounds to 2 decimal places.

@@ -215,6 +215,63 @@ class AdminApiService {
   }) async {
     await _dio.delete('/admin/roles/$role/capabilities/$capability');
   }
+
+  // ── Global Risk API ──
+
+  /// GET /global-risks — list all global risks (paginated, any authenticated user).
+  /// NOTE: Backend returns a PagedResult[T] envelope: { "items": [...], "total": N }.
+  /// Unwrap the 'items' key per Gotcha D.
+  Future<List<Map<String, dynamic>>> getGlobalRisks() async {
+    final allRisks = <Map<String, dynamic>>[];
+    int page = 1;
+    const pageSize = 100;
+    
+    while (true) {
+      final response = await _dio.get(
+        '/global-risks',
+        queryParameters: {'page': page, 'pageSize': pageSize},
+      );
+      final data = response.data as Map<String, dynamic>;
+      final list = data['items'] as List<dynamic>;
+      allRisks.addAll(list.cast<Map<String, dynamic>>());
+      
+      if (list.length < pageSize) break;
+      page++;
+    }
+    
+    return allRisks;
+  }
+
+  /// POST /global-risks — create a new global risk (requires global_risks:manage).
+  Future<Map<String, dynamic>> createGlobalRisk({
+    required String label,
+    String? description,
+  }) async {
+    final body = <String, dynamic>{'label': label};
+    if (description != null && description.isNotEmpty) body['description'] = description;
+    final response = await _dio.post('/global-risks', data: body);
+    return response.data as Map<String, dynamic>;
+  }
+
+  /// PUT /global-risks/{id} — partial update (requires global_risks:manage).
+  Future<Map<String, dynamic>> updateGlobalRisk(
+    String id, {
+    String? label,
+    String? description,
+    bool? isActive,
+  }) async {
+    final body = <String, dynamic>{};
+    if (label != null) body['label'] = label;
+    if (description != null) body['description'] = description;
+    if (isActive != null) body['isActive'] = isActive;
+    final response = await _dio.put('/global-risks/$id', data: body);
+    return response.data as Map<String, dynamic>;
+  }
+
+  /// DELETE /global-risks/{id} — soft-delete (sets isActive=false) via delete endpoint.
+  Future<void> deleteGlobalRisk(String id) async {
+    await _dio.delete('/global-risks/$id');
+  }
 }
 
 class CapabilityMeta {

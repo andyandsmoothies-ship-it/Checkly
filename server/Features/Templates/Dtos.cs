@@ -49,6 +49,7 @@ public sealed record CriterionDto(
     bool IsCcp,
     bool IsRisk,
     decimal? MinusImpact,
+    decimal? MaxDeductionPoints,
     int OrderIndex,
     string? Metadata);
 

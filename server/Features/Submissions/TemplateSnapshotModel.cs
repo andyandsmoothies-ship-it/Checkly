@@ -83,6 +83,9 @@ public sealed class SnapshotCriterion
     [JsonPropertyName("minusImpact")]
     public decimal? MinusImpact { get; set; }
 
+    [JsonPropertyName("maxDeductionPoints")]
+    public decimal? MaxDeductionPoints { get; set; }
+
     [JsonPropertyName("orderIndex")]
     public int OrderIndex { get; set; }
 

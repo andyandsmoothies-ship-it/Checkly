@@ -47,6 +47,7 @@ public static class SaveTemplateTree
         bool IsCcp,
         bool IsRisk,
         decimal? MinusImpact,
+        decimal? MaxDeductionPoints,
         int OrderIndex,
         string? Metadata);
 
@@ -262,6 +263,7 @@ public static class SaveTemplateTree
                         IsCcp = c.IsCcp,
                         IsRisk = c.IsRisk,
                         MinusImpact = c.MinusImpact,
+                        MaxDeductionPoints = c.MaxDeductionPoints,
                         OrderIndex = c.OrderIndex,
                         Metadata = c.Metadata,
                         IsActive = true,
@@ -280,6 +282,7 @@ public static class SaveTemplateTree
                     existingC.IsCcp = c.IsCcp;
                     existingC.IsRisk = c.IsRisk;
                     existingC.MinusImpact = c.MinusImpact;
+                    existingC.MaxDeductionPoints = c.MaxDeductionPoints;
                     existingC.OrderIndex = c.OrderIndex;
                     existingC.Metadata = c.Metadata;
                     existingC.IsActive = true;
@@ -299,6 +302,7 @@ public static class SaveTemplateTree
                         IsCcp = c.IsCcp,
                         IsRisk = c.IsRisk,
                         MinusImpact = c.MinusImpact,
+                        MaxDeductionPoints = c.MaxDeductionPoints,
                         OrderIndex = c.OrderIndex,
                         Metadata = c.Metadata,
                         IsActive = true,

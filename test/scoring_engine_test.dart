@@ -38,6 +38,7 @@ void main() {
               isCcp: c['isCcp'] as bool,
               isRisk: c['isRisk'] as bool,
               minusImpact: c['minusImpact'] != null ? (c['minusImpact'] as num).toDouble() : null,
+              maxDeductionPoints: c['maxDeductionPoints'] != null ? (c['maxDeductionPoints'] as num).toDouble() : null,
               inputType: c['inputType'] as String? ?? 'numeric',
             );
           }).toList() ?? [];
@@ -52,6 +53,7 @@ void main() {
                 isCcp: c['isCcp'] as bool,
                 isRisk: c['isRisk'] as bool,
                 minusImpact: c['minusImpact'] != null ? (c['minusImpact'] as num).toDouble() : null,
+                maxDeductionPoints: c['maxDeductionPoints'] != null ? (c['maxDeductionPoints'] as num).toDouble() : null,
                 inputType: c['inputType'] as String? ?? 'numeric',
               );
             }).toList();

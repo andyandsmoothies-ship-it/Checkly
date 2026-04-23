@@ -213,6 +213,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.IsCcp).HasColumnName("is_ccp").HasDefaultValue(false);
             e.Property(x => x.IsRisk).HasColumnName("is_risk").HasDefaultValue(false);
             e.Property(x => x.MinusImpact).HasColumnName("minus_impact");
+            e.Property(x => x.MaxDeductionPoints).HasColumnName("max_deduction_points");
             e.Property(x => x.OrderIndex).HasColumnName("order_index").HasDefaultValue(0);
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");

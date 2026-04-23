@@ -258,6 +258,10 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
       'inputType': c.inputType,
       if (!isChoiceType && c.inputType != 'text')
         'pointsWeight': double.tryParse(c.pointsCtrl.text),
+      if (!isChoiceType && c.inputType != 'text' && c.minusImpactCtrl.text.isNotEmpty)
+        'minusImpact': double.tryParse(c.minusImpactCtrl.text),
+      if (!isChoiceType && c.inputType != 'text' && c.maxDeductionCtrl.text.isNotEmpty)
+        'maxDeductionPoints': double.tryParse(c.maxDeductionCtrl.text),
       'isCcp': c.isCcp,
       'isRisk': c.isRisk,
       'orderIndex': ci,

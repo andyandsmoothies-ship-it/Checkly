@@ -63,7 +63,7 @@ public static class GetTemplate
                 BuildGroupTree(allGroups, g.Id),
                 g.Criteria.Select(c => new CriterionDto(
                     c.Id, c.Label, c.Description, c.InputType, c.PointsWeight,
-                    c.IsCcp, c.IsRisk, c.MinusImpact, c.OrderIndex, c.Metadata)).ToList()))
+                    c.IsCcp, c.IsRisk, c.MinusImpact, c.MaxDeductionPoints, c.OrderIndex, c.Metadata)).ToList()))
             .ToList();
     }
 }

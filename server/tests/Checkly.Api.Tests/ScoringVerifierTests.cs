@@ -17,8 +17,8 @@ public class ScoringVerifierTests
         new() { Id = id, ParentId = null, Weight = weight, MaxDeductionPoints = maxDeduction };
 
     private static Criterion MakeCriterion(Guid id, Guid groupId, decimal points,
-        bool isRisk = false, bool isCcp = false) =>
-        new() { Id = id, GroupId = groupId, PointsWeight = points, IsRisk = isRisk, IsCcp = isCcp };
+        bool isRisk = false, bool isCcp = false, decimal? minusImpact = null, decimal? maxDeductionPoints = null) =>
+        new() { Id = id, GroupId = groupId, PointsWeight = points, IsRisk = isRisk, IsCcp = isCcp, MinusImpact = minusImpact, MaxDeductionPoints = maxDeductionPoints };
 
     private static Answer MakeAnswer(Guid criteriaId, decimal? numericValue = null, string? value = null, int repeatedFaults = 0) =>
         new() { Id = Guid.NewGuid(), CriteriaId = criteriaId, NumericValue = numericValue, Value = value, RepeatedFaults = repeatedFaults };
@@ -192,5 +192,70 @@ public class ScoringVerifierTests
         var result = _sut.Verify(99m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
 
         Assert.Equal(99m, result.ServerScore);
+    }
+    // ====================================================================
+    // Phase 1A: Visual Folders Math (TC-1, TC-2, TC-3)
+    // ====================================================================
+
+    [Fact]
+    public void TC1_Should_Calculate_Deduction_Using_MinusImpact_When_Set()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        
+        // Setup: PointsWeight = 1, but MinusImpact = 5.
+        // The deduction per fault should be 5, not 1.
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m, minusImpact: 5m) };
+        
+        // 2 faults
+        var answers = new[] { MakeAnswer(c1, numericValue: 2, value: null) };
+
+        // Act
+        // 2 faults * 5 impact = 10 deduction. Score = 100 - 10 = 90.
+        var result = _sut.Verify(90m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+
+        Assert.Equal(90m, result.ServerScore);
+    }
+
+    [Fact]
+    public void TC2_Should_Cap_Individual_Criterion_Deduction_At_MaxDeductionPoints()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        
+        // Setup: MinusImpact = 5, but MaxDeductionPoints = 8.
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m, minusImpact: 5m, maxDeductionPoints: 8m) };
+        
+        // 2 faults
+        var answers = new[] { MakeAnswer(c1, numericValue: 2, value: null) };
+
+        // Act
+        // 2 faults * 5 impact = 10 deduction.
+        // Cap is 8. So deduction is 8. Score = 100 - 8 = 92.
+        var result = _sut.Verify(92m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+
+        Assert.Equal(92m, result.ServerScore);
+    }
+
+    [Fact]
+    public void TC3_Should_Fallback_To_PointsWeight_When_MinusImpact_Is_Null()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        
+        // Setup: PointsWeight = 3, MinusImpact = null.
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 3m, minusImpact: null) };
+        
+        // 2 faults
+        var answers = new[] { MakeAnswer(c1, numericValue: 2, value: null) };
+
+        // Act
+        // 2 faults * 3 impact (fallback) = 6 deduction. Score = 100 - 6 = 94.
+        var result = _sut.Verify(94m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+
+        Assert.Equal(94m, result.ServerScore);
     }
 }

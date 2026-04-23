@@ -84,7 +84,7 @@ public static class SyncTemplates
             .Where(c => c.UpdatedAt > since)
             .Select(c => new CriterionDto(
                 c.Id, c.Label, c.Description, c.InputType, c.PointsWeight,
-                c.IsCcp, c.IsRisk, c.MinusImpact, c.OrderIndex, c.Metadata))
+                c.IsCcp, c.IsRisk, c.MinusImpact, c.MaxDeductionPoints, c.OrderIndex, c.Metadata))
             .Take(limit)
             .ToListAsync(ct);
 

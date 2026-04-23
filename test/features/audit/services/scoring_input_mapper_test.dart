@@ -11,6 +11,7 @@ CriterionDto _criterion(
   String id, {
   double? weight,
   String inputType = 'numeric',
+  double? maxDeductionPoints,
 }) => CriterionDto(
   id: id,
   label: 'Q $id',
@@ -20,6 +21,7 @@ CriterionDto _criterion(
   isCcp: false,
   isRisk: false,
   minusImpact: null,
+  maxDeductionPoints: maxDeductionPoints,
   orderIndex: 0,
   metadata: null,
 );
@@ -138,6 +140,27 @@ void main() {
       final answer = input.answers.firstWhere((a) => a.criteriaId == 'c1');
       expect(answer.numericValue, 1.0);
       expect(answer.value, 'non_conform');
+    });
+
+    // TC5: Phase 1B Visual Folders maxDeductionPoints
+    test('maps maxDeductionPoints from CriterionDto to CriterionInput', () {
+      final tmpl = _template(
+        groups: [
+          _group(
+            'g1',
+            criteria: [
+              _criterion('c1', weight: 5, maxDeductionPoints: 3.5),
+            ],
+            weight: 1,
+          ),
+        ],
+      );
+
+      final input = ScoringInputMapper.fromTemplate(tmpl, {});
+
+      final section = input.sections.first;
+      expect(section.criteria.length, 1);
+      expect(section.criteria.first.maxDeductionPoints, 3.5);
     });
   });
 }

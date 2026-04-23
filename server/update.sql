@@ -1412,19 +1412,19 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260408112945_AddRoleCapabilities') THEN
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('241c036f-edae-45e8-a3e9-8589ab10ea35', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-23T01:40:33.511156+00:00');
+    VALUES ('f6688ca6-9a67-4692-8964-43dc3f6ad7e6', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-23T13:18:19.263772+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('b19e64ea-0efa-4eb3-837f-b873b4412a9e', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
+    VALUES ('a95e0ab3-b30e-49ba-853a-8ace499ce972', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-23T13:18:19.263773+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('1164ff16-abc5-4d96-9571-95a62a389d9d', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
+    VALUES ('2745e4b1-cd86-41ba-8f2e-5276d01175e2', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-23T13:18:19.263774+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('d1147d5c-60c0-4216-b490-a66b7be06063', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
+    VALUES ('3ab0d61b-471b-4e48-93c4-160b717c8bfb', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-23T13:18:19.263774+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('7669cad3-86cb-4e92-a57d-80a2fc03a270', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
+    VALUES ('1434c911-c7c1-4e80-a06a-fcdded009727', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-23T13:18:19.263775+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('535b99ee-4952-4ed5-9cd4-b8eb8fd7ff32', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-23T01:40:33.511158+00:00');
+    VALUES ('80aea81c-d669-46ab-803b-5543b190669c', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-23T13:18:19.263775+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('e9a2adb4-9b61-4e70-9278-275c37dc450e', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-23T01:40:33.511158+00:00');
+    VALUES ('e7a9992c-3802-4c7b-8017-b9ab979b3702', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-23T13:18:19.263775+00:00');
     END IF;
 END $EF$;
 
@@ -1853,6 +1853,24 @@ BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
     VALUES ('20260422152534_AddGlobalRisksDomain', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260423131757_Phase1A_VisualFolders_MaxDeductionPoints') THEN
+    ALTER TABLE criteria ADD max_deduction_points numeric;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260423131757_Phase1A_VisualFolders_MaxDeductionPoints') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260423131757_Phase1A_VisualFolders_MaxDeductionPoints', '10.0.4');
     END IF;
 END $EF$;
 COMMIT;

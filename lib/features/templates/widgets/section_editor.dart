@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
@@ -268,43 +267,8 @@ class SectionEditor extends StatelessWidget {
                 ),
               ),
 
-            // Sub-section metadata (non-root sections always show Max Points)
-            if (!isRoot) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: section.maxPointsCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Max Points',
-                        isDense: true,
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      onChanged: (_) => onChanged(),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: section.minusPerFaultCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Minus / Fault',
-                        isDense: true,
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      onChanged: (_) => onChanged(),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-            ],
+            // Sub-section metadata removed for Phase 1C: Visual Folders architecture.
+            // Sub-sections are now purely visual groupings. Math is handled at the criterion level.
 
             // Criteria list
             ...section.criteria.asMap().entries.map((e) {

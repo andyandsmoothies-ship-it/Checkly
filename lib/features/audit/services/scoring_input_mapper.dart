@@ -35,6 +35,7 @@ class ScoringInputMapper {
           isRisk: c.isRisk,
           inputType: c.inputType,
           minusImpact: c.minusImpact,
+          maxDeductionPoints: c.maxDeductionPoints,
         );
       }).toList();
 
@@ -49,6 +50,7 @@ class ScoringInputMapper {
             isRisk: c.isRisk,
             inputType: c.inputType,
             minusImpact: c.minusImpact,
+            maxDeductionPoints: c.maxDeductionPoints,
           );
         }).toList();
 

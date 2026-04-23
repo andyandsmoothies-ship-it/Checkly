@@ -203,6 +203,16 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                 c.inputType != 'single_choice' &&
                 c.inputType != 'multi_choice')
               'pointsWeight': double.tryParse(c.pointsCtrl.text),
+            if (c.inputType != 'text' &&
+                c.inputType != 'single_choice' &&
+                c.inputType != 'multi_choice' &&
+                c.minusImpactCtrl.text.isNotEmpty)
+              'minusImpact': double.tryParse(c.minusImpactCtrl.text),
+            if (c.inputType != 'text' &&
+                c.inputType != 'single_choice' &&
+                c.inputType != 'multi_choice' &&
+                c.maxDeductionCtrl.text.isNotEmpty)
+              'maxDeductionPoints': double.tryParse(c.maxDeductionCtrl.text),
             'isCcp': c.isCcp,
             'isRisk': c.isRisk,
             'orderIndex': ci,

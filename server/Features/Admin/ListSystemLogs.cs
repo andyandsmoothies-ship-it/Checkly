@@ -58,7 +58,8 @@ public static class ListSystemLogs
         if (!string.IsNullOrEmpty(traceIdFilter))
             query = query.Where(l => l.TraceId == traceIdFilter);
 
-        if (!string.IsNullOrEmpty(search))
+        // C-02 Guard: Bound search length to prevent ILike DoS wildcard attacks
+        if (!string.IsNullOrEmpty(search) && search.Length >= 2 && search.Length <= 100)
             query = query.Where(l =>
                 EF.Functions.ILike(l.Message ?? "", $"%{search}%") ||
                 EF.Functions.ILike(l.Action, $"%{search}%") ||

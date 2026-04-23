@@ -36,6 +36,7 @@ public sealed record CriterionDto(
     [property: JsonPropertyName("isCcp")] bool IsCcp,
     [property: JsonPropertyName("isRisk")] bool IsRisk,
     [property: JsonPropertyName("minusImpact")] decimal? MinusImpact,
+    [property: JsonPropertyName("maxDeductionPoints")] decimal? MaxDeductionPoints,
     [property: JsonPropertyName("inputType")] string InputType);
 
 public sealed record AnswerDto(

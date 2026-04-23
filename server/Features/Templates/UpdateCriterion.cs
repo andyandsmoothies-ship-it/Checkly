@@ -15,6 +15,7 @@ public static class UpdateCriterion
         bool? IsCcp,
         bool? IsRisk,
         decimal? MinusImpact,
+        decimal? MaxDeductionPoints,
         int? OrderIndex,
         string? Metadata);
 
@@ -51,6 +52,8 @@ public static class UpdateCriterion
             criterion.IsRisk = request.IsRisk.Value;
         if (request.MinusImpact.HasValue)
             criterion.MinusImpact = request.MinusImpact;
+        if (request.MaxDeductionPoints.HasValue)
+            criterion.MaxDeductionPoints = request.MaxDeductionPoints;
         if (request.OrderIndex.HasValue)
             criterion.OrderIndex = request.OrderIndex.Value;
         if (request.Metadata != null)

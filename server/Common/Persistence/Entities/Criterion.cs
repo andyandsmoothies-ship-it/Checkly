@@ -16,6 +16,7 @@ public sealed class Criterion
     public bool IsCcp { get; set; }
     public bool IsRisk { get; set; }
     public decimal? MinusImpact { get; set; }
+    public decimal? MaxDeductionPoints { get; set; }
     public int OrderIndex { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }

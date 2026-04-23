@@ -376,6 +376,42 @@ class CriterionEditor extends StatelessWidget {
                     keyboardType: TextInputType.number,
                     onChanged: (_) => onChanged(),
                   ),
+                if (scoringMode == 'penalty' &&
+                    criterion.inputType != 'text' &&
+                    criterion.inputType != 'single_choice' &&
+                    criterion.inputType != 'multi_choice') ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: criterion.minusImpactCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Minus / Fault',
+                            helperText: 'Default: Points Weight',
+                            isDense: true,
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (_) => onChanged(),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: TextFormField(
+                          controller: criterion.maxDeductionCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Max Points Lost',
+                            helperText: 'Optional deduction cap',
+                            isDense: true,
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (_) => onChanged(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 16),
 
                 const Divider(),

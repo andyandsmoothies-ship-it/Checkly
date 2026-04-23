@@ -353,17 +353,29 @@ public sealed class ScoringVerifier
             faults = 1;
         }
         var baseDeduction = (faults ?? 0) * impact;
+
+        decimal rawDeduction;
         // C3: progressive repeat penalty (n² × impact)
         if (progressiveRepeatPenalty && answer.RepeatedFaults > 0)
         {
             var repeatDeduction = (decimal)(answer.RepeatedFaults * answer.RepeatedFaults) * impact;
-            return baseDeduction + repeatDeduction;
+            rawDeduction = baseDeduction + repeatDeduction;
         }
         // Linear repeat penalty (n × impact) — applied even when progressive is OFF
-        if (answer.RepeatedFaults > 0)
+        else if (answer.RepeatedFaults > 0)
         {
-            return baseDeduction + (answer.RepeatedFaults * impact);
+            rawDeduction = baseDeduction + (answer.RepeatedFaults * impact);
         }
-        return baseDeduction;
+        else
+        {
+            rawDeduction = baseDeduction;
+        }
+
+        // Phase 1A: per-criterion MaxDeductionPoints cap (TC-2).
+        // Null = no cap → backward compatible with all existing templates.
+        if (criterion.MaxDeductionPoints.HasValue)
+            rawDeduction = Math.Min(rawDeduction, criterion.MaxDeductionPoints.Value);
+
+        return rawDeduction;
     }
 }
