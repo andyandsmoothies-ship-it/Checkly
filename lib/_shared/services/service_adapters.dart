@@ -72,6 +72,24 @@ class SyncApiAdapter implements SyncApi {
     // For now, individual managers handle their own cache refresh.
     return DeltaPullResult(serverTimestamp: DateTime.now());
   }
+
+  @override
+  Future<List<dynamic>> pullGlobalRisks(DateTime? since) async {
+    final params = since != null ? {'since': since.toIso8601String()} : null;
+    final response = await _dio.get<List<dynamic>>(
+      '/global-risks',
+      queryParameters: params,
+    );
+    return response.data ?? [];
+  }
+
+  @override
+  Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {
+    await _dio.post(
+      '/submissions/${risk.submissionId}/risks',
+      data: {'globalRiskId': risk.globalRiskId},
+    );
+  }
 }
 
 // ============================================================

@@ -1,13 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:drift/drift.dart' show Value;
 import 'package:meta/meta.dart';
 
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
+import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'connectivity_service.dart';
 import 'sync_state.dart';
 import 'sync_interfaces.dart';
+
 
 // ============================================================
 // SyncEngine — orchestrator
@@ -35,6 +40,8 @@ class SyncEngine {
   final OutboxDao _outboxDao; // Direct DAO access for backoff writes
   final ActionPlanApi _actionPlanApi; // For draining offline evidence queue
   final ActionPlanOutboxDao _actionPlanOutboxDao;
+  final GlobalRiskDao _globalRiskDao;
+  final SubmissionRiskOutboxDao _submissionRiskOutboxDao;
 
   StreamSubscription<bool>? _connectivitySub;
 
@@ -51,6 +58,8 @@ class SyncEngine {
     required OutboxDao outboxDao,
     required ActionPlanApi actionPlanApi,
     required ActionPlanOutboxDao actionPlanOutboxDao,
+    required GlobalRiskDao globalRiskDao,
+    required SubmissionRiskOutboxDao submissionRiskOutboxDao,
     // ignore: avoid_unused_constructor_parameters
     @Deprecated('No-op: SyncEngine uses OutboxDao directly. Pass outboxDao instead.')
     Outbox? outbox,
@@ -59,7 +68,9 @@ class SyncEngine {
        _auth = auth,
        _outboxDao = outboxDao,
        _actionPlanApi = actionPlanApi,
-       _actionPlanOutboxDao = actionPlanOutboxDao {
+       _actionPlanOutboxDao = actionPlanOutboxDao,
+       _globalRiskDao = globalRiskDao,
+       _submissionRiskOutboxDao = submissionRiskOutboxDao {
     // Initialize state based on current connectivity
     if (!_connectivity.isOnline) {
       _state = SyncState.offline;
@@ -103,6 +114,19 @@ class SyncEngine {
       // --- Pull phase ---
       final pullResult = await _api.pullDeltas(lastSyncTimestamp);
       lastSyncTimestamp = pullResult.serverTimestamp;
+
+      // --- Pull phase: Global Risks ---
+      final globalRisks = await _api.pullGlobalRisks(lastSyncTimestamp);
+      for (final json in globalRisks) {
+        await _globalRiskDao.upsertRisk(CachedGlobalRisksCompanion.insert(
+          id: json['id'] as String,
+          label: json['label'] as String,
+          description: Value(json['description'] as String?),
+          isActive: Value(json['isActive'] as bool? ?? true),
+          createdAt: DateTime.parse(json['createdAt'] as String),
+          updatedAt: DateTime.parse(json['updatedAt'] as String),
+        ));
+      }
 
       // --- Push phase: build payload from normalized DAO tables (FIFO) ---
       // Fetch backoff-eligible entries directly from DAO — ordered by createdAt ASC.
@@ -229,6 +253,29 @@ class SyncEngine {
           _state = SyncState.error;
           return;
         }
+      }
+
+      // --- SubmissionRisk outbox drain phase ---
+      final pendingRisks = await _submissionRiskOutboxDao.getEligiblePending();
+      for (final row in pendingRisks) {
+        if (!_connectivity.isOnline) {
+          _state = SyncState.offline;
+          return;
+        }
+        try {
+          await _api.pushSubmissionRisk(PendingSubmissionRisk(
+            submissionId: row.submissionId,
+            globalRiskId: row.globalRiskId,
+          ));
+        } catch (e) {
+          // 409 Conflict = already triggered on server. Treat as success → drain.
+          if (!e.toString().contains('409')) {
+            _state = SyncState.error;
+            return;
+          }
+        }
+        // Always remove — success OR idempotent 409.
+        await _submissionRiskOutboxDao.remove(row.id);
       }
 
       _state = SyncState.idle;

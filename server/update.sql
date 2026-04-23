@@ -1412,19 +1412,19 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260408112945_AddRoleCapabilities') THEN
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('8bfae2fb-b18b-4121-b7d0-9ed57ea04a0a', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-10T08:46:26.530889+00:00');
+    VALUES ('241c036f-edae-45e8-a3e9-8589ab10ea35', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-23T01:40:33.511156+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('ac995fb4-a97e-4ce0-a61c-0d0225f4d3a9', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-10T08:46:26.53089+00:00');
+    VALUES ('b19e64ea-0efa-4eb3-837f-b873b4412a9e', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('17b63eb6-c89e-4423-8167-ef0a369e9684', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-10T08:46:26.530891+00:00');
+    VALUES ('1164ff16-abc5-4d96-9571-95a62a389d9d', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('67dd4921-5713-4a8c-b2f1-7e43a68a4405', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
+    VALUES ('d1147d5c-60c0-4216-b490-a66b7be06063', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('b02e6832-0f57-4c28-bbc6-d6aa8b7ef1ac', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
+    VALUES ('7669cad3-86cb-4e92-a57d-80a2fc03a270', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-23T01:40:33.511157+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('464fca1e-d150-414a-871b-f4a1601d78a8', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
+    VALUES ('535b99ee-4952-4ed5-9cd4-b8eb8fd7ff32', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-23T01:40:33.511158+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('6b264137-8a09-4834-8ae1-5df2945232ee', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-10T08:46:26.530892+00:00');
+    VALUES ('e9a2adb4-9b61-4e70-9278-275c37dc450e', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-23T01:40:33.511158+00:00');
     END IF;
 END $EF$;
 
@@ -1568,6 +1568,291 @@ BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260410021648_SeedAdminAccessCapability') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
     VALUES ('20260410021648_SeedAdminAccessCapability', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260411165653_AddNotificationTypeIndex') THEN
+    CREATE INDEX "IX_notifications_user_id_type" ON notifications (user_id, type);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260411165653_AddNotificationTypeIndex') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260411165653_AddNotificationTypeIndex', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260412062737_AddInvalidateTokensBeforeToUser') THEN
+    ALTER TABLE "AspNetUsers" ADD invalidate_tokens_before timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260412062737_AddInvalidateTokensBeforeToUser') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260412062737_AddInvalidateTokensBeforeToUser', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260412094921_AddSubmissionConcurrencyToken') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260412094921_AddSubmissionConcurrencyToken', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260412120753_SeedPbacCompleteCapabilities') THEN
+    INSERT INTO role_capabilities (id, role, capability, created_at)
+    VALUES
+        (gen_random_uuid(), 'admin',         'submissions:create',  now()),
+        (gen_random_uuid(), 'auditor',       'submissions:create',  now()),
+        (gen_random_uuid(), 'area_manager',  'submissions:create',  now()),
+        (gen_random_uuid(), 'admin',         'submissions:review',  now()),
+        (gen_random_uuid(), 'area_manager',  'submissions:review',  now()),
+        (gen_random_uuid(), 'admin',         'action_plans:write',  now()),
+        (gen_random_uuid(), 'auditor',       'action_plans:write',  now()),
+        (gen_random_uuid(), 'store_manager', 'action_plans:write',  now()),
+        (gen_random_uuid(), 'admin',         'action_plans:verify', now()),
+        (gen_random_uuid(), 'auditor',       'action_plans:verify', now()),
+        (gen_random_uuid(), 'area_manager',  'action_plans:verify', now())
+    ON CONFLICT (role, capability) DO NOTHING;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260412120753_SeedPbacCompleteCapabilities') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260412120753_SeedPbacCompleteCapabilities', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260416112429_AddAnswerCcpRiskOverrides') THEN
+    ALTER TABLE answers ADD is_ccp boolean NOT NULL DEFAULT FALSE;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260416112429_AddAnswerCcpRiskOverrides') THEN
+    ALTER TABLE answers ADD is_risk boolean NOT NULL DEFAULT FALSE;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260416112429_AddAnswerCcpRiskOverrides') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260416112429_AddAnswerCcpRiskOverrides', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260419075332_AddEvidenceAuditFields') THEN
+    ALTER TABLE action_plans ADD evidence_submitted_at timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260419075332_AddEvidenceAuditFields') THEN
+    ALTER TABLE action_plans ADD evidence_submitted_by_name text;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260419075332_AddEvidenceAuditFields') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260419075332_AddEvidenceAuditFields', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260419114737_AddSubmissionTemplateType') THEN
+    ALTER TABLE submissions ADD template_type text;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260419114737_AddSubmissionTemplateType') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260419114737_AddSubmissionTemplateType', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260419120907_SyncSnapshot') THEN
+
+                    DO $$
+                    BEGIN
+                        IF EXISTS (
+                            SELECT 1 FROM information_schema.columns
+                            WHERE table_name = 'submissions' AND column_name = 'TemplateType'
+                        ) THEN
+                            ALTER TABLE submissions RENAME COLUMN "TemplateType" TO template_type;
+                        END IF;
+                    END $$;
+                
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260419120907_SyncSnapshot') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260419120907_SyncSnapshot', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260421133018_AddRawScoringMetadata') THEN
+    ALTER TABLE submissions ADD is_weighted boolean;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260421133018_AddRawScoringMetadata') THEN
+    ALTER TABLE submissions ADD raw_earned_points numeric;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260421133018_AddRawScoringMetadata') THEN
+    ALTER TABLE submissions ADD raw_max_points numeric;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260421133018_AddRawScoringMetadata') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260421133018_AddRawScoringMetadata', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    CREATE TABLE global_risks (
+        id uuid NOT NULL DEFAULT (gen_random_uuid()),
+        label character varying(200) NOT NULL,
+        description text,
+        is_active boolean NOT NULL DEFAULT TRUE,
+        created_at timestamp with time zone NOT NULL DEFAULT (now()),
+        updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+        CONSTRAINT "PK_global_risks" PRIMARY KEY (id)
+    );
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    CREATE TABLE submission_risks (
+        id uuid NOT NULL DEFAULT (gen_random_uuid()),
+        submission_id uuid NOT NULL,
+        global_risk_id uuid NOT NULL,
+        triggered_by_id uuid,
+        note text,
+        triggered_at timestamp with time zone NOT NULL,
+        created_at timestamp with time zone NOT NULL DEFAULT (now()),
+        CONSTRAINT "PK_submission_risks" PRIMARY KEY (id),
+        CONSTRAINT "FK_submission_risks_global_risks_global_risk_id" FOREIGN KEY (global_risk_id) REFERENCES global_risks (id) ON DELETE RESTRICT,
+        CONSTRAINT "FK_submission_risks_submissions_submission_id" FOREIGN KEY (submission_id) REFERENCES submissions (id) ON DELETE CASCADE
+    );
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    CREATE INDEX "IX_global_risks_is_active" ON global_risks (is_active) WHERE is_active = true;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    CREATE INDEX "IX_global_risks_updated_at" ON global_risks (updated_at);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    CREATE INDEX "IX_submission_risks_global_risk_id" ON submission_risks (global_risk_id);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    CREATE INDEX "IX_submission_risks_submission_id" ON submission_risks (submission_id);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    CREATE UNIQUE INDEX "IX_submission_risks_submission_id_global_risk_id" ON submission_risks (submission_id, global_risk_id);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260422152534_AddGlobalRisksDomain') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260422152534_AddGlobalRisksDomain', '10.0.4');
     END IF;
 END $EF$;
 COMMIT;

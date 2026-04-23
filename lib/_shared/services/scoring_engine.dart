@@ -40,6 +40,14 @@ class ScoringEngine {
       return const ScoringResult(totalScore: null); // Mixed audit — score suppressed
     }
 
+    // Global Risk short-circuit: if the auditor has flagged at least one global
+    // risk, the total score is immediately forced to 0. This mirrors the server's
+    // SubmissionRisk check which runs before the ScoringVerifier math.
+    // Gotcha 22: this MUST run after the purity gate but before the answer loop.
+    if (input.hasGlobalRisk) {
+      return const ScoringResult(totalScore: 0.0, hasRiskFailure: true);
+    }
+
     final answerMap = <String, AnswerInput>{};
     for (final a in input.answers) {
       answerMap[a.criteriaId] = a;

@@ -8,6 +8,8 @@ import 'package:uuid/uuid.dart';
 
 import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/app_database.dart';
+import '../../../_shared/database/dao/global_risk_dao.dart';
+import '../../../_shared/database/dao/submission_risk_outbox_dao.dart';
 import '../../../_shared/database/dao/outbox_dao.dart'; // Kept as it's used
 import '../../../_shared/services/connectivity_service.dart'; // Kept as it's used
 import '../../../_shared/services/scoring_engine.dart'; // Kept as it's used
@@ -96,15 +98,22 @@ class AuditManager extends ChangeNotifier {
   // ignore: unused_field — kept as injectable test seam; SpySubmissionApiService verifies HTTP path is never reached.
   final SubmissionApiService _api;
   late final OutboxDao _outbox;
+  late final GlobalRiskDao _globalRiskDao;
+  late final SubmissionRiskOutboxDao _riskOutboxDao;
   late final ConnectivityService? _connectivity;
 
   AuditManager({
     SubmissionApiService? api,
     OutboxDao? outbox,
+    GlobalRiskDao? globalRiskDao,
+    SubmissionRiskOutboxDao? riskOutboxDao,
     ConnectivityService? connectivity,
     DraftService? draftService,
   }) : _api = api ?? _di<SubmissionApiService>() {
-    _outbox = outbox ?? OutboxDao(_di<DatabaseService>().db);
+    final db = _di<DatabaseService>().db;
+    _outbox = outbox ?? OutboxDao(db);
+    _globalRiskDao = globalRiskDao ?? GlobalRiskDao(db);
+    _riskOutboxDao = riskOutboxDao ?? SubmissionRiskOutboxDao(db);
     _draftService = draftService ?? DraftService();
     try {
       _connectivity = connectivity ?? _di<ConnectivityService>();
@@ -116,6 +125,14 @@ class AuditManager extends ChangeNotifier {
   // ---------- State ----------
   TemplateTreeDto? _template;
   TemplateTreeDto? get template => _template;
+
+  String? _pendingSubmissionId;
+
+  List<CachedGlobalRisk> _availableRisks = [];
+  List<CachedGlobalRisk> get availableRisks => _availableRisks;
+
+  final Set<String> _triggeredRiskIds = {};
+  Set<String> get triggeredRiskIds => Set.unmodifiable(_triggeredRiskIds);
 
   /// Current scoring mode parsed from the active template, defaults to penalty.
   ScoringMode get scoringMode {
@@ -189,6 +206,8 @@ class AuditManager extends ChangeNotifier {
     _wasQueuedOffline = false;
     _draftSavedAt = null;
     _targetSubmissionId = targetSubmissionId;
+    _pendingSubmissionId = _uuid.v4(); // Stable ID for this local session
+    _triggeredRiskIds.clear();
 
     // Pre-populate answers for all criteria
     for (final group in template.groups) {
@@ -204,6 +223,8 @@ class AuditManager extends ChangeNotifier {
 
     // Check for existing draft
     _pendingDraft = await _draftService.loadDraft(_draftKey!);
+
+    _availableRisks = await _globalRiskDao.getActiveRisks();
 
     if (_pendingDraft == null) {
       _scheduleDraftSave();
@@ -316,7 +337,11 @@ class AuditManager extends ChangeNotifier {
   // ---------- Live scoring ----------
   void _recalculateScore() {
     if (_template == null) return;
-    final input = ScoringInputMapper.fromTemplate(_template!, _answers);
+    final input = ScoringInputMapper.fromTemplate(
+      _template!, 
+      _answers,
+      hasGlobalRisk: _triggeredRiskIds.isNotEmpty,
+    );
     final result = ScoringEngine.calculate(input);
     _liveScore = result.totalScore;
     _sectionScores = result.sectionScores;
@@ -422,7 +447,7 @@ class AuditManager extends ChangeNotifier {
 
       final idempotencyKey = _uuid.v4();
       final now = DateTime.now();
-      final submissionId = _uuid.v4();
+      final submissionId = _pendingSubmissionId ?? _uuid.v4();
 
       if (_answers.isEmpty) {
         throw Exception('Cannot submit an audit with zero answers. Please complete the audit first.');
@@ -490,6 +515,28 @@ class AuditManager extends ChangeNotifier {
     }
   }
 
+  // ---------- Global Risk Actions ----------
+
+  Future<void> triggerGlobalRisk(String globalRiskId) async {
+    if (_pendingSubmissionId == null) return;
+    
+    _triggeredRiskIds.add(globalRiskId);
+    await _riskOutboxDao.enqueueRisk(_pendingSubmissionId!, globalRiskId);
+    
+    _recalculateScore();
+    notifyListeners();
+  }
+
+  Future<void> unTriggerGlobalRisk(String globalRiskId) async {
+    if (_pendingSubmissionId == null) return;
+
+    _triggeredRiskIds.remove(globalRiskId);
+    await _riskOutboxDao.removeByRiskId(_pendingSubmissionId!, globalRiskId);
+    
+    _recalculateScore();
+    notifyListeners();
+  }
+
   // ---------- Pending count (syncable-only — excludes exhausted) ----------
   Future<int> get pendingCount => _outbox.syncableCount();
 
@@ -510,6 +557,9 @@ class AuditManager extends ChangeNotifier {
     _pendingDraft = null;
     _draftSavedAt = null;
     _targetSubmissionId = null;
+    _pendingSubmissionId = null;
+    _triggeredRiskIds.clear();
+    _availableRisks = [];
     notifyListeners();
   }
 }

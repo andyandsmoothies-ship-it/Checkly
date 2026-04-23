@@ -421,7 +421,7 @@ These are managed automatically by the ASP.NET Identity framework. You typically
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `AspNetUsers` | 7 | Core user accounts (email, password hash, lockout) |
+| `AspNetUsers` | 7 | Core user accounts (email, password hash, lockout, InvalidateTokensBefore timestamp) |
 | `AspNetRoles` | 0 | Identity role definitions (unused — app uses `user_roles` instead) |
 | `AspNetUserRoles` | 0 | Identity user-role mapping (unused — app uses `user_roles` instead) |
 | `AspNetUserClaims` | 0 | Per-user claims storage |

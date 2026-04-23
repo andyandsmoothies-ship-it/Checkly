@@ -205,3 +205,10 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
 - **Rule:** Each shell command must put `rtk` ahead of it (e.g., `rtk dotnet build`, `rtk flutter analyze`) so that the RTK token optimization proxy can compress the outputs.
 - **Enforcement:** Always prefix execution commands with `rtk`.
 </SYSTEM_GUARD>
+
+### The Anti-Hallucination Type Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="AntiHallucinationTypes">
+- **Rule**: Never use naked strings (`string`) for statuses, roles, or categories that have strict database constraints.
+- **Enforcement**: You MUST use strongly-typed Enums, Unions, or Static Constants.
+- **Purpose**: AI agents will hallucinate plain text strings causing silent crashes. Strong types force the compiler to guide the AI to the exact allowed values during the TDD RED phase.
+</SYSTEM_GUARD>

@@ -283,3 +283,36 @@ class PendingActionPlanUpdates extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+// ============================================================
+// Global Risks Tables (Slice 4)
+// ============================================================
+
+/// Cached global risks — delta synced via `GET /api/global-risks?since=`.
+/// Active risks only (is_active = true) are shown to auditors in the UI.
+class CachedGlobalRisks extends Table {
+  TextColumn get id => text()();
+  TextColumn get label => text()();
+  TextColumn get description => text().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Pending submission risk triggers — written offline when auditor triggers
+/// a global risk, drained by SyncEngine when connectivity is restored.
+class SubmissionRiskOutboxEntries extends Table {
+  TextColumn get id => text()(); // client-generated UUID
+  TextColumn get submissionId => text()(); // server-side submission UUID
+  TextColumn get globalRiskId => text()(); // server-side global risk UUID
+  TextColumn get syncStatus =>
+      text().withDefault(const Constant('pending'))();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+

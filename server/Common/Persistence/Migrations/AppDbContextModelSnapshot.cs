@@ -439,6 +439,52 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("criteria", (string)null);
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.GlobalRisk", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("label");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive")
+                        .HasFilter("is_active = true");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.ToTable("global_risks", (string)null);
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Group", b =>
                 {
                     b.Property<Guid>("Id")
@@ -942,6 +988,52 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("TemplateId", "ScoringMode");
 
                     b.ToTable("submissions", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SubmissionRisk", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("GlobalRiskId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("global_risk_id");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text")
+                        .HasColumnName("note");
+
+                    b.Property<Guid>("SubmissionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("submission_id");
+
+                    b.Property<DateTimeOffset>("TriggeredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("triggered_at");
+
+                    b.Property<Guid?>("TriggeredById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("triggered_by_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GlobalRiskId");
+
+                    b.HasIndex("SubmissionId");
+
+                    b.HasIndex("SubmissionId", "GlobalRiskId")
+                        .IsUnique();
+
+                    b.ToTable("submission_risks", (string)null);
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SubmissionSectionScore", b =>
@@ -1532,6 +1624,25 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Template");
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SubmissionRisk", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.GlobalRisk", "GlobalRisk")
+                        .WithMany("SubmissionRisks")
+                        .HasForeignKey("GlobalRiskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Submission", "Submission")
+                        .WithMany("SubmissionRisks")
+                        .HasForeignKey("SubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GlobalRisk");
+
+                    b.Navigation("Submission");
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.SubmissionSectionScore", b =>
                 {
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Submission", "Submission")
@@ -1658,6 +1769,11 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Answers");
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.GlobalRisk", b =>
+                {
+                    b.Navigation("SubmissionRisks");
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Group", b =>
                 {
                     b.Navigation("Children");
@@ -1679,6 +1795,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("ActionPlans");
 
                     b.Navigation("Answers");
+
+                    b.Navigation("SubmissionRisks");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Template", b =>

@@ -5846,6 +5846,422 @@ class CachedPoliciesCompanion extends UpdateCompanion<CachedPolicy> {
   }
 }
 
+class $CachedGlobalRisksTable extends CachedGlobalRisks
+    with TableInfo<$CachedGlobalRisksTable, CachedGlobalRisk> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedGlobalRisksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    label,
+    description,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_global_risks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CachedGlobalRisk> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CachedGlobalRisk map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedGlobalRisk(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CachedGlobalRisksTable createAlias(String alias) {
+    return $CachedGlobalRisksTable(attachedDatabase, alias);
+  }
+}
+
+class CachedGlobalRisk extends DataClass
+    implements Insertable<CachedGlobalRisk> {
+  final String id;
+  final String label;
+  final String? description;
+  final bool isActive;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const CachedGlobalRisk({
+    required this.id,
+    required this.label,
+    this.description,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['label'] = Variable<String>(label);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CachedGlobalRisksCompanion toCompanion(bool nullToAbsent) {
+    return CachedGlobalRisksCompanion(
+      id: Value(id),
+      label: Value(label),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CachedGlobalRisk.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedGlobalRisk(
+      id: serializer.fromJson<String>(json['id']),
+      label: serializer.fromJson<String>(json['label']),
+      description: serializer.fromJson<String?>(json['description']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'label': serializer.toJson<String>(label),
+      'description': serializer.toJson<String?>(description),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CachedGlobalRisk copyWith({
+    String? id,
+    String? label,
+    Value<String?> description = const Value.absent(),
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => CachedGlobalRisk(
+    id: id ?? this.id,
+    label: label ?? this.label,
+    description: description.present ? description.value : this.description,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CachedGlobalRisk copyWithCompanion(CachedGlobalRisksCompanion data) {
+    return CachedGlobalRisk(
+      id: data.id.present ? data.id.value : this.id,
+      label: data.label.present ? data.label.value : this.label,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedGlobalRisk(')
+          ..write('id: $id, ')
+          ..write('label: $label, ')
+          ..write('description: $description, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, label, description, isActive, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedGlobalRisk &&
+          other.id == this.id &&
+          other.label == this.label &&
+          other.description == this.description &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CachedGlobalRisksCompanion extends UpdateCompanion<CachedGlobalRisk> {
+  final Value<String> id;
+  final Value<String> label;
+  final Value<String?> description;
+  final Value<bool> isActive;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CachedGlobalRisksCompanion({
+    this.id = const Value.absent(),
+    this.label = const Value.absent(),
+    this.description = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedGlobalRisksCompanion.insert({
+    required String id,
+    required String label,
+    this.description = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       label = Value(label),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<CachedGlobalRisk> custom({
+    Expression<String>? id,
+    Expression<String>? label,
+    Expression<String>? description,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (label != null) 'label': label,
+      if (description != null) 'description': description,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedGlobalRisksCompanion copyWith({
+    Value<String>? id,
+    Value<String>? label,
+    Value<String?>? description,
+    Value<bool>? isActive,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CachedGlobalRisksCompanion(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      description: description ?? this.description,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedGlobalRisksCompanion(')
+          ..write('id: $id, ')
+          ..write('label: $label, ')
+          ..write('description: $description, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PendingSubmissionsTable extends PendingSubmissions
     with TableInfo<$PendingSubmissionsTable, PendingSubmission> {
   @override
@@ -8483,6 +8899,390 @@ class PendingActionPlanUpdatesCompanion
   }
 }
 
+class $SubmissionRiskOutboxEntriesTable extends SubmissionRiskOutboxEntries
+    with
+        TableInfo<
+          $SubmissionRiskOutboxEntriesTable,
+          SubmissionRiskOutboxEntry
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SubmissionRiskOutboxEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _submissionIdMeta = const VerificationMeta(
+    'submissionId',
+  );
+  @override
+  late final GeneratedColumn<String> submissionId = GeneratedColumn<String>(
+    'submission_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _globalRiskIdMeta = const VerificationMeta(
+    'globalRiskId',
+  );
+  @override
+  late final GeneratedColumn<String> globalRiskId = GeneratedColumn<String>(
+    'global_risk_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    submissionId,
+    globalRiskId,
+    syncStatus,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'submission_risk_outbox_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SubmissionRiskOutboxEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('submission_id')) {
+      context.handle(
+        _submissionIdMeta,
+        submissionId.isAcceptableOrUnknown(
+          data['submission_id']!,
+          _submissionIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_submissionIdMeta);
+    }
+    if (data.containsKey('global_risk_id')) {
+      context.handle(
+        _globalRiskIdMeta,
+        globalRiskId.isAcceptableOrUnknown(
+          data['global_risk_id']!,
+          _globalRiskIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_globalRiskIdMeta);
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SubmissionRiskOutboxEntry map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SubmissionRiskOutboxEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      submissionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}submission_id'],
+      )!,
+      globalRiskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}global_risk_id'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SubmissionRiskOutboxEntriesTable createAlias(String alias) {
+    return $SubmissionRiskOutboxEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class SubmissionRiskOutboxEntry extends DataClass
+    implements Insertable<SubmissionRiskOutboxEntry> {
+  final String id;
+  final String submissionId;
+  final String globalRiskId;
+  final String syncStatus;
+  final DateTime createdAt;
+  const SubmissionRiskOutboxEntry({
+    required this.id,
+    required this.submissionId,
+    required this.globalRiskId,
+    required this.syncStatus,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['submission_id'] = Variable<String>(submissionId);
+    map['global_risk_id'] = Variable<String>(globalRiskId);
+    map['sync_status'] = Variable<String>(syncStatus);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  SubmissionRiskOutboxEntriesCompanion toCompanion(bool nullToAbsent) {
+    return SubmissionRiskOutboxEntriesCompanion(
+      id: Value(id),
+      submissionId: Value(submissionId),
+      globalRiskId: Value(globalRiskId),
+      syncStatus: Value(syncStatus),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory SubmissionRiskOutboxEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SubmissionRiskOutboxEntry(
+      id: serializer.fromJson<String>(json['id']),
+      submissionId: serializer.fromJson<String>(json['submissionId']),
+      globalRiskId: serializer.fromJson<String>(json['globalRiskId']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'submissionId': serializer.toJson<String>(submissionId),
+      'globalRiskId': serializer.toJson<String>(globalRiskId),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  SubmissionRiskOutboxEntry copyWith({
+    String? id,
+    String? submissionId,
+    String? globalRiskId,
+    String? syncStatus,
+    DateTime? createdAt,
+  }) => SubmissionRiskOutboxEntry(
+    id: id ?? this.id,
+    submissionId: submissionId ?? this.submissionId,
+    globalRiskId: globalRiskId ?? this.globalRiskId,
+    syncStatus: syncStatus ?? this.syncStatus,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  SubmissionRiskOutboxEntry copyWithCompanion(
+    SubmissionRiskOutboxEntriesCompanion data,
+  ) {
+    return SubmissionRiskOutboxEntry(
+      id: data.id.present ? data.id.value : this.id,
+      submissionId: data.submissionId.present
+          ? data.submissionId.value
+          : this.submissionId,
+      globalRiskId: data.globalRiskId.present
+          ? data.globalRiskId.value
+          : this.globalRiskId,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubmissionRiskOutboxEntry(')
+          ..write('id: $id, ')
+          ..write('submissionId: $submissionId, ')
+          ..write('globalRiskId: $globalRiskId, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, submissionId, globalRiskId, syncStatus, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SubmissionRiskOutboxEntry &&
+          other.id == this.id &&
+          other.submissionId == this.submissionId &&
+          other.globalRiskId == this.globalRiskId &&
+          other.syncStatus == this.syncStatus &&
+          other.createdAt == this.createdAt);
+}
+
+class SubmissionRiskOutboxEntriesCompanion
+    extends UpdateCompanion<SubmissionRiskOutboxEntry> {
+  final Value<String> id;
+  final Value<String> submissionId;
+  final Value<String> globalRiskId;
+  final Value<String> syncStatus;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const SubmissionRiskOutboxEntriesCompanion({
+    this.id = const Value.absent(),
+    this.submissionId = const Value.absent(),
+    this.globalRiskId = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SubmissionRiskOutboxEntriesCompanion.insert({
+    required String id,
+    required String submissionId,
+    required String globalRiskId,
+    this.syncStatus = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       submissionId = Value(submissionId),
+       globalRiskId = Value(globalRiskId),
+       createdAt = Value(createdAt);
+  static Insertable<SubmissionRiskOutboxEntry> custom({
+    Expression<String>? id,
+    Expression<String>? submissionId,
+    Expression<String>? globalRiskId,
+    Expression<String>? syncStatus,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (submissionId != null) 'submission_id': submissionId,
+      if (globalRiskId != null) 'global_risk_id': globalRiskId,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SubmissionRiskOutboxEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? submissionId,
+    Value<String>? globalRiskId,
+    Value<String>? syncStatus,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return SubmissionRiskOutboxEntriesCompanion(
+      id: id ?? this.id,
+      submissionId: submissionId ?? this.submissionId,
+      globalRiskId: globalRiskId ?? this.globalRiskId,
+      syncStatus: syncStatus ?? this.syncStatus,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (submissionId.present) {
+      map['submission_id'] = Variable<String>(submissionId.value);
+    }
+    if (globalRiskId.present) {
+      map['global_risk_id'] = Variable<String>(globalRiskId.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubmissionRiskOutboxEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('submissionId: $submissionId, ')
+          ..write('globalRiskId: $globalRiskId, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncMetaTable extends SyncMeta
     with TableInfo<$SyncMetaTable, SyncMetaData> {
   @override
@@ -9050,12 +9850,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CachedNotificationsTable cachedNotifications =
       $CachedNotificationsTable(this);
   late final $CachedPoliciesTable cachedPolicies = $CachedPoliciesTable(this);
+  late final $CachedGlobalRisksTable cachedGlobalRisks =
+      $CachedGlobalRisksTable(this);
   late final $PendingSubmissionsTable pendingSubmissions =
       $PendingSubmissionsTable(this);
   late final $PendingAnswersTable pendingAnswers = $PendingAnswersTable(this);
   late final $PendingPhotosTable pendingPhotos = $PendingPhotosTable(this);
   late final $PendingActionPlanUpdatesTable pendingActionPlanUpdates =
       $PendingActionPlanUpdatesTable(this);
+  late final $SubmissionRiskOutboxEntriesTable submissionRiskOutboxEntries =
+      $SubmissionRiskOutboxEntriesTable(this);
   late final $SyncMetaTable syncMeta = $SyncMetaTable(this);
   late final $DraftAnswersTable draftAnswers = $DraftAnswersTable(this);
   @override
@@ -9071,10 +9875,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cachedActionPlans,
     cachedNotifications,
     cachedPolicies,
+    cachedGlobalRisks,
     pendingSubmissions,
     pendingAnswers,
     pendingPhotos,
     pendingActionPlanUpdates,
+    submissionRiskOutboxEntries,
     syncMeta,
     draftAnswers,
   ];
@@ -12311,6 +13117,240 @@ typedef $$CachedPoliciesTableProcessedTableManager =
       CachedPolicy,
       PrefetchHooks Function()
     >;
+typedef $$CachedGlobalRisksTableCreateCompanionBuilder =
+    CachedGlobalRisksCompanion Function({
+      required String id,
+      required String label,
+      Value<String?> description,
+      Value<bool> isActive,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CachedGlobalRisksTableUpdateCompanionBuilder =
+    CachedGlobalRisksCompanion Function({
+      Value<String> id,
+      Value<String> label,
+      Value<String?> description,
+      Value<bool> isActive,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$CachedGlobalRisksTableFilterComposer
+    extends Composer<_$AppDatabase, $CachedGlobalRisksTable> {
+  $$CachedGlobalRisksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CachedGlobalRisksTableOrderingComposer
+    extends Composer<_$AppDatabase, $CachedGlobalRisksTable> {
+  $$CachedGlobalRisksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CachedGlobalRisksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CachedGlobalRisksTable> {
+  $$CachedGlobalRisksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$CachedGlobalRisksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CachedGlobalRisksTable,
+          CachedGlobalRisk,
+          $$CachedGlobalRisksTableFilterComposer,
+          $$CachedGlobalRisksTableOrderingComposer,
+          $$CachedGlobalRisksTableAnnotationComposer,
+          $$CachedGlobalRisksTableCreateCompanionBuilder,
+          $$CachedGlobalRisksTableUpdateCompanionBuilder,
+          (
+            CachedGlobalRisk,
+            BaseReferences<
+              _$AppDatabase,
+              $CachedGlobalRisksTable,
+              CachedGlobalRisk
+            >,
+          ),
+          CachedGlobalRisk,
+          PrefetchHooks Function()
+        > {
+  $$CachedGlobalRisksTableTableManager(
+    _$AppDatabase db,
+    $CachedGlobalRisksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CachedGlobalRisksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CachedGlobalRisksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CachedGlobalRisksTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedGlobalRisksCompanion(
+                id: id,
+                label: label,
+                description: description,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String label,
+                Value<String?> description = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CachedGlobalRisksCompanion.insert(
+                id: id,
+                label: label,
+                description: description,
+                isActive: isActive,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CachedGlobalRisksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CachedGlobalRisksTable,
+      CachedGlobalRisk,
+      $$CachedGlobalRisksTableFilterComposer,
+      $$CachedGlobalRisksTableOrderingComposer,
+      $$CachedGlobalRisksTableAnnotationComposer,
+      $$CachedGlobalRisksTableCreateCompanionBuilder,
+      $$CachedGlobalRisksTableUpdateCompanionBuilder,
+      (
+        CachedGlobalRisk,
+        BaseReferences<
+          _$AppDatabase,
+          $CachedGlobalRisksTable,
+          CachedGlobalRisk
+        >,
+      ),
+      CachedGlobalRisk,
+      PrefetchHooks Function()
+    >;
 typedef $$PendingSubmissionsTableCreateCompanionBuilder =
     PendingSubmissionsCompanion Function({
       required String id,
@@ -14064,6 +15104,231 @@ typedef $$PendingActionPlanUpdatesTableProcessedTableManager =
       PendingActionPlanUpdate,
       PrefetchHooks Function()
     >;
+typedef $$SubmissionRiskOutboxEntriesTableCreateCompanionBuilder =
+    SubmissionRiskOutboxEntriesCompanion Function({
+      required String id,
+      required String submissionId,
+      required String globalRiskId,
+      Value<String> syncStatus,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$SubmissionRiskOutboxEntriesTableUpdateCompanionBuilder =
+    SubmissionRiskOutboxEntriesCompanion Function({
+      Value<String> id,
+      Value<String> submissionId,
+      Value<String> globalRiskId,
+      Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$SubmissionRiskOutboxEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $SubmissionRiskOutboxEntriesTable> {
+  $$SubmissionRiskOutboxEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get submissionId => $composableBuilder(
+    column: $table.submissionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get globalRiskId => $composableBuilder(
+    column: $table.globalRiskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SubmissionRiskOutboxEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SubmissionRiskOutboxEntriesTable> {
+  $$SubmissionRiskOutboxEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get submissionId => $composableBuilder(
+    column: $table.submissionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get globalRiskId => $composableBuilder(
+    column: $table.globalRiskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SubmissionRiskOutboxEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SubmissionRiskOutboxEntriesTable> {
+  $$SubmissionRiskOutboxEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get submissionId => $composableBuilder(
+    column: $table.submissionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get globalRiskId => $composableBuilder(
+    column: $table.globalRiskId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$SubmissionRiskOutboxEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SubmissionRiskOutboxEntriesTable,
+          SubmissionRiskOutboxEntry,
+          $$SubmissionRiskOutboxEntriesTableFilterComposer,
+          $$SubmissionRiskOutboxEntriesTableOrderingComposer,
+          $$SubmissionRiskOutboxEntriesTableAnnotationComposer,
+          $$SubmissionRiskOutboxEntriesTableCreateCompanionBuilder,
+          $$SubmissionRiskOutboxEntriesTableUpdateCompanionBuilder,
+          (
+            SubmissionRiskOutboxEntry,
+            BaseReferences<
+              _$AppDatabase,
+              $SubmissionRiskOutboxEntriesTable,
+              SubmissionRiskOutboxEntry
+            >,
+          ),
+          SubmissionRiskOutboxEntry,
+          PrefetchHooks Function()
+        > {
+  $$SubmissionRiskOutboxEntriesTableTableManager(
+    _$AppDatabase db,
+    $SubmissionRiskOutboxEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SubmissionRiskOutboxEntriesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$SubmissionRiskOutboxEntriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SubmissionRiskOutboxEntriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> submissionId = const Value.absent(),
+                Value<String> globalRiskId = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SubmissionRiskOutboxEntriesCompanion(
+                id: id,
+                submissionId: submissionId,
+                globalRiskId: globalRiskId,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String submissionId,
+                required String globalRiskId,
+                Value<String> syncStatus = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SubmissionRiskOutboxEntriesCompanion.insert(
+                id: id,
+                submissionId: submissionId,
+                globalRiskId: globalRiskId,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SubmissionRiskOutboxEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SubmissionRiskOutboxEntriesTable,
+      SubmissionRiskOutboxEntry,
+      $$SubmissionRiskOutboxEntriesTableFilterComposer,
+      $$SubmissionRiskOutboxEntriesTableOrderingComposer,
+      $$SubmissionRiskOutboxEntriesTableAnnotationComposer,
+      $$SubmissionRiskOutboxEntriesTableCreateCompanionBuilder,
+      $$SubmissionRiskOutboxEntriesTableUpdateCompanionBuilder,
+      (
+        SubmissionRiskOutboxEntry,
+        BaseReferences<
+          _$AppDatabase,
+          $SubmissionRiskOutboxEntriesTable,
+          SubmissionRiskOutboxEntry
+        >,
+      ),
+      SubmissionRiskOutboxEntry,
+      PrefetchHooks Function()
+    >;
 typedef $$SyncMetaTableCreateCompanionBuilder =
     SyncMetaCompanion Function({
       required String entityType,
@@ -14414,6 +15679,8 @@ class $AppDatabaseManager {
       $$CachedNotificationsTableTableManager(_db, _db.cachedNotifications);
   $$CachedPoliciesTableTableManager get cachedPolicies =>
       $$CachedPoliciesTableTableManager(_db, _db.cachedPolicies);
+  $$CachedGlobalRisksTableTableManager get cachedGlobalRisks =>
+      $$CachedGlobalRisksTableTableManager(_db, _db.cachedGlobalRisks);
   $$PendingSubmissionsTableTableManager get pendingSubmissions =>
       $$PendingSubmissionsTableTableManager(_db, _db.pendingSubmissions);
   $$PendingAnswersTableTableManager get pendingAnswers =>
@@ -14424,6 +15691,12 @@ class $AppDatabaseManager {
       $$PendingActionPlanUpdatesTableTableManager(
         _db,
         _db.pendingActionPlanUpdates,
+      );
+  $$SubmissionRiskOutboxEntriesTableTableManager
+  get submissionRiskOutboxEntries =>
+      $$SubmissionRiskOutboxEntriesTableTableManager(
+        _db,
+        _db.submissionRiskOutboxEntries,
       );
   $$SyncMetaTableTableManager get syncMeta =>
       $$SyncMetaTableTableManager(_db, _db.syncMeta);

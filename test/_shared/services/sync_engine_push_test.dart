@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_interfaces.dart';
@@ -37,6 +39,12 @@ class FakeSyncApi implements SyncApi {
   @override
   Future<DeltaPullResult> pullDeltas(DateTime? since) async =>
       DeltaPullResult(serverTimestamp: DateTime.now());
+
+  @override
+  Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
+
+  @override
+  Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {}
 }
 
 class FakeOutbox implements Outbox {
@@ -88,6 +96,8 @@ void main() {
       outboxDao: outboxDao,
       actionPlanApi: FakeActionPlanApi(),
       actionPlanOutboxDao: actionPlanOutboxDao,
+      globalRiskDao: GlobalRiskDao(testDb),
+      submissionRiskOutboxDao: SubmissionRiskOutboxDao(testDb),
     );
 
     // Pre-seed — 1 pending submission, 2 answers directly into DAO

@@ -59,6 +59,30 @@ public class ScoringVerifierTests
     }
 
     // ====================================================================
+    // ATDD: Global Risk Forces Score to Zero
+    // ====================================================================
+
+    [Fact]
+    public void Verify_With_HasGlobalRisk_True_Forces_ServerScore_To_Zero()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+
+        var groups = new[] { MakeSection(sectionId, weight: 100) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 5m) };
+        
+        // Perfect score natively
+        var answers = new[] { MakeAnswer(c1, numericValue: null, value: "conform") };
+
+        // Act
+        var result = _sut.Verify(0m, answers, groups, criteria, hasGlobalRisk: true);
+
+        Assert.True(result.IsValid); // Client sent 0m, server calculated 0m
+        Assert.Equal(0m, result.ServerScore);
+        Assert.Contains("forced to 0%", result.Reason);
+    }
+
+    // ====================================================================
     // ATDD SC-A2: Survey mode produces empty FailedCriteriaIds
     // ====================================================================
 

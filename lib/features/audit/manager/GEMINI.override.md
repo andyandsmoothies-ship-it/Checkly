@@ -17,3 +17,6 @@ This guarantees `hasDraft = true` on the very next open, so the restore path fir
 
 **Invariant:** Do NOT move this logic inside `_scheduleDraftSave()`. Debounced saves exist for
 performance (answer input) — the flush is a targeted one-shot on scheduled audit open only.
+- **Gotcha 18: Implicit Dependency Lookup Failure in Testing**
+  - **Problem:** Using `?? _di<Service>()` fallbacks inside a constructor hides dependencies from the test suite, causing silent `GetIt` crashes when testing paths that don't mock it.
+  - **Fix:** All required dependencies MUST be passed via explicit constructor parameters.

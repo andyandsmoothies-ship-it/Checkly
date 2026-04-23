@@ -58,6 +58,8 @@ void main() {
     when(() => mockAuditManager.isSubmitting).thenReturn(false);
     when(() => mockAuditManager.wasQueuedOffline).thenReturn(false);
     when(() => mockAuditManager.error).thenReturn(null);
+    when(() => mockAuditManager.triggeredRiskIds).thenReturn({});
+    when(() => mockAuditManager.draftSavedAt).thenReturn(null);
     when(() => mockAuditManager.submitAudit()).thenAnswer((_) async {});
 
     when(() => mockGpsService.getCurrentPosition()).thenAnswer((_) async => null);

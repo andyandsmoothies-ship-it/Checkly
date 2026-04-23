@@ -56,9 +56,10 @@ Workflow: /analyze-epic | Track: C
 |---|---|
 | **Skill Swap** | Load `dotnet-resilience` / concurrency skills. |
 | **Virtual Readers**| MANDATORY: Execute **Virtual Reader Scoring**. Roast the architectural plan via 3 Personas: 1) DB Architect, 2) Security Auditor, 3) Junior Dev (maintenance burden). Score each out of 10. IF any score < 7 -> FAIL. |
+| **Constraint Paradox** | MANDATORY: Cross-check the proposed "System Architecture Flow" against the "Strict Implementation Constraints". IF a constraint makes a proposed flow impossible, resolve the paradox before finalizing the Epic. |
 | **Resolution** | Define mitigations for every low score/flaw OR reject the Epic entirely. |
 
-> **@@SCAN**: (1) Hostile Interrogation run? (2) 3 Failure Scenarios? (3) Mitigations concrete?
+> **@@SCAN**: (1) Hostile Interrogation run? (2) 3 Failure Scenarios? (3) Mitigations concrete? (4) Constraint paradoxes resolved?
 
 ## Phase 3: Production-Grade Deliverable
 
@@ -94,7 +95,7 @@ The Epic must be sliced and routed to the downstream feature agents:
 > 2. `## Executive Summary`
 > 3. `## Decision Matrix`
 > 4. `## Risk Assessment`
-> 5. `## System Architecture Flow`: (Mermaid diagram)
+> 5. `## System Architecture Flow`: (Clear text-based summary of how data/control moves)
 > 6. `## Concept Diagrams`: Short, concise text-based flowcharts (e.g., `[Actor] --> [Action] --> [System]`) for each major architectural component to simplify understanding.
 > 7. `## Database Migrations`
 > 8. `## API Contracts`

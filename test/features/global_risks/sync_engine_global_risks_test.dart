@@ -1,0 +1,155 @@
+// ATDD: Slice 4.1 — SyncEngine Global Risks
+// Status: 🔴 RED — production classes do not exist yet
+
+import 'dart:async';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
+import 'package:checkly/_shared/database/dao/outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
+import 'package:checkly/_shared/services/sync_engine.dart';
+import 'package:checkly/_shared/services/sync_interfaces.dart';
+import 'package:checkly/_shared/services/connectivity_service.dart';
+import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
+import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
+
+class FakeConnectivity implements ConnectivityService {
+  @override
+  bool isOnline = true;
+  @override
+  Stream<bool> get onConnectivityChanged => const Stream.empty();
+}
+
+class FakeAuthCheck implements AuthCheck {
+  @override
+  bool get isLoggedIn => true;
+}
+
+class FakeOutbox implements Outbox {
+  @override List<PendingSubmission> get pending => [];
+  @override Future<void> add(PendingSubmission e) async {}
+  @override Future<void> remove(String key) async {}
+}
+
+class _FakeActionPlanApi implements ActionPlanApi {
+  @override
+  Future<ActionPlanDto> updateActionPlan(String id, Map<String, dynamic> f) async => throw UnimplementedError();
+  @override
+  Future<List<ActionPlanDto>> fetchActionPlans() async => [];
+}
+
+class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
+  @override Future<List<PendingActionPlanUpdate>> getEligiblePending() async => [];
+  @override Future<void> enqueue(PendingActionPlanUpdatesCompanion entry) async {}
+  @override Future<void> remove(String id) async {}
+  @override Future<void> markExhausted(String id, String error) async {}
+  @override Future<int> pendingCount() async => 0;
+}
+
+class FakeSyncApi implements SyncApi {
+  int pullRisksCallCount = 0;
+  int pushRisksCallCount = 0;
+  List<PendingSubmissionRisk> pushedRisks = [];
+  bool throw409 = false;
+
+  @override
+  Future<DeltaPullResult> pullDeltas(DateTime? since) async {
+    return DeltaPullResult(serverTimestamp: DateTime.now());
+  }
+
+  @override
+  Future<void> pushSubmission(PendingSubmission submission) async {}
+
+  // NEW INTERFACES (Should fail to compile until added to SyncApi)
+  @override
+  Future<List<dynamic>> pullGlobalRisks(DateTime? since) async {
+    pullRisksCallCount++;
+    return [
+      {'id': 'risk-1', 'label': 'Test Risk 1', 'isActive': true, 'createdAt': DateTime.now().toIso8601String(), 'updatedAt': DateTime.now().toIso8601String()}
+    ];
+  }
+
+  @override
+  Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {
+    pushRisksCallCount++;
+    pushedRisks.add(risk);
+    if (throw409) {
+      throw Exception('DioException [409 Conflict]');
+    }
+  }
+}
+
+void main() {
+  late AppDatabase testDb;
+  late SyncEngine engine;
+  late FakeSyncApi fakeApi;
+  late GlobalRiskDao globalRiskDao;
+  late SubmissionRiskOutboxDao riskOutboxDao;
+
+  setUp(() {
+    testDb = AppDatabase.forTesting(NativeDatabase.memory());
+    fakeApi = FakeSyncApi();
+    globalRiskDao = GlobalRiskDao(testDb);
+    riskOutboxDao = SubmissionRiskOutboxDao(testDb);
+
+    engine = SyncEngine(
+      connectivity: FakeConnectivity(),
+      api: fakeApi,
+      outbox: FakeOutbox(),
+      auth: FakeAuthCheck(),
+      outboxDao: OutboxDao(testDb),
+      actionPlanApi: _FakeActionPlanApi(),
+      actionPlanOutboxDao: _FakeActionPlanOutboxDao(),
+      globalRiskDao: globalRiskDao,
+      submissionRiskOutboxDao: riskOutboxDao,
+    );
+  });
+
+  tearDown(() async {
+    await testDb.close();
+  });
+
+  // T1: SyncEngine pulls delta GlobalRisks and stores in CachedGlobalRisks
+  test('T1: SyncEngine pulls delta GlobalRisks and stores in CachedGlobalRisks', () async {
+    await engine.requestSync();
+
+    expect(fakeApi.pullRisksCallCount, 1);
+    
+    final cached = await globalRiskDao.getAllRisks();
+    expect(cached.length, 1);
+    expect(cached.first.id, 'risk-1');
+  });
+
+  // T2: SyncEngine pushes PendingSubmissionRisk and removes from outbox
+  test('T2: SyncEngine pushes PendingSubmissionRisk and removes from outbox', () async {
+    // Seed outbox
+    await riskOutboxDao.enqueueRisk('sub-1', 'risk-1');
+    
+    await engine.requestSync();
+
+    expect(fakeApi.pushRisksCallCount, 1);
+    expect(fakeApi.pushedRisks.first.submissionId, 'sub-1');
+    expect(fakeApi.pushedRisks.first.globalRiskId, 'risk-1');
+
+    final pending = await riskOutboxDao.getEligiblePending();
+    expect(pending, isEmpty, reason: 'Outbox should be drained');
+  });
+
+  // T3: SyncEngine treats 409 Conflict on Push as successful drain
+  test('T3: SyncEngine treats 409 Conflict on Push as successful drain', () async {
+    // Seed outbox
+    await riskOutboxDao.enqueueRisk('sub-1', 'risk-1');
+    fakeApi.throw409 = true;
+
+    await engine.requestSync();
+
+    expect(fakeApi.pushRisksCallCount, 1);
+    
+    // Even though it threw 409, the engine should consider it a success and remove from outbox
+    final pending = await riskOutboxDao.getEligiblePending();
+    expect(pending, isEmpty, reason: '409 Conflict means it already exists, outbox should drain');
+  });
+}

@@ -26,6 +26,17 @@ class DeltaPullResult {
   const DeltaPullResult({required this.serverTimestamp});
 }
 
+/// Represents a pending offline global risk trigger waiting to be pushed.
+class PendingSubmissionRisk {
+  final String submissionId;
+  final String globalRiskId;
+
+  const PendingSubmissionRisk({
+    required this.submissionId,
+    required this.globalRiskId,
+  });
+}
+
 // ============================================================
 // Interfaces
 // ============================================================
@@ -37,6 +48,12 @@ abstract class SyncApi {
 
   /// Pull delta updates from server since [since].
   Future<DeltaPullResult> pullDeltas(DateTime? since);
+
+  /// Pull global risks delta from server since [since].
+  Future<List<dynamic>> pullGlobalRisks(DateTime? since);
+
+  /// Push a pending submission risk trigger to the server.
+  Future<void> pushSubmissionRisk(PendingSubmissionRisk risk);
 }
 
 /// Abstract API for media/photo uploads during Phase 2 queueing.

@@ -76,8 +76,9 @@
 | Notifications | `Features/Notifications/` | Per-user delivery |
 | Admin CRUD | `Features/Admin/` | Full lifecycle management |
 
-### Ban Impact (via Identity LockoutEnd)
+### Ban & Role Change Impact (via InvalidateTokensBefore & LockoutEnd)
 - **Blocked**: Login (returns 423 Locked)
+- **Revoked**: Active JWT tokens issued before the change/ban are instantly rejected by `OnTokenValidated` middleware.
 - **Unaffected**: Historical submissions, action plans, profile data
 
 ---

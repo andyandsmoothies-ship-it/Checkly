@@ -32,6 +32,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<SubmissionSectionScore> SubmissionSectionScores => Set<SubmissionSectionScore>();
     public DbSet<StoreAnalyticsSnapshot> StoreAnalyticsSnapshots => Set<StoreAnalyticsSnapshot>();
     public DbSet<RoleCapability> RoleCapabilities => Set<RoleCapability>();
+    public DbSet<GlobalRisk> GlobalRisks => Set<GlobalRisk>();
+    public DbSet<SubmissionRisk> SubmissionRisks => Set<SubmissionRisk>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,6 +58,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureSubmissionSectionScore(modelBuilder);
         ConfigureStoreAnalyticsSnapshot(modelBuilder);
         ConfigureRoleCapability(modelBuilder);
+        ConfigureGlobalRisk(modelBuilder);
+        ConfigureSubmissionRisk(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -628,6 +632,60 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             // Performance index: cache warm-up queries by role
             e.HasIndex(x => x.Role)
                 .HasDatabaseName("IX_role_capabilities_role");
+        });
+    }
+
+    private static void ConfigureGlobalRisk(ModelBuilder mb)
+    {
+        mb.Entity<GlobalRisk>(e =>
+        {
+            e.ToTable("global_risks");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.Label).HasColumnName("label").IsRequired().HasMaxLength(200);
+            e.Property(x => x.Description).HasColumnName("description");
+            e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+
+            // Performance indexes
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync
+            e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
+        });
+    }
+
+    private static void ConfigureSubmissionRisk(ModelBuilder mb)
+    {
+        mb.Entity<SubmissionRisk>(e =>
+        {
+            e.ToTable("submission_risks");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.SubmissionId).HasColumnName("submission_id").IsRequired();
+            e.Property(x => x.GlobalRiskId).HasColumnName("global_risk_id").IsRequired();
+            e.Property(x => x.TriggeredById).HasColumnName("triggered_by_id");
+            e.Property(x => x.Note).HasColumnName("note");
+            e.Property(x => x.TriggeredAt).HasColumnName("triggered_at");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            // FK: submission_id → submissions (cascade: deleting submission deletes its risks)
+            e.HasOne(x => x.Submission)
+                .WithMany(s => s.SubmissionRisks)
+                .HasForeignKey(x => x.SubmissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // FK: global_risk_id → global_risks (restrict: cannot delete a risk that has been triggered)
+            e.HasOne(x => x.GlobalRisk)
+                .WithMany(r => r.SubmissionRisks)
+                .HasForeignKey(x => x.GlobalRiskId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Unique constraint: prevents double-triggering same risk on a submission
+            e.HasIndex(x => new { x.SubmissionId, x.GlobalRiskId }).IsUnique();
+
+            // Performance indexes
+            e.HasIndex(x => x.SubmissionId);
+            e.HasIndex(x => x.GlobalRiskId);
         });
     }
 }

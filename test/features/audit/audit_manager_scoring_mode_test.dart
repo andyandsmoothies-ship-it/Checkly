@@ -1,5 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
+import 'package:drift/native.dart';
+import 'package:checkly/_shared/database/app_database.dart';
+import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/features/audit/manager/audit_manager.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
 import 'package:checkly/_shared/services/scoring_models.dart';
@@ -14,6 +18,12 @@ class MockOutboxDao extends Mock implements OutboxDao {}
 class MockDraftService extends Mock implements DraftService {}
 
 void main() {
+  setUpAll(() async {
+    await GetIt.instance.reset();
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    GetIt.instance.registerSingleton<DatabaseService>(DatabaseService.forTesting(db));
+  });
+
   group('AuditManager.scoringMode', () {
     test('returns accumulation when template is configured for maturity assessment', () async {
       final template = TemplateTreeDto(

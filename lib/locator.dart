@@ -5,6 +5,8 @@ import '_shared/services/api_client.dart';
 import '_shared/database/database_service.dart';
 import '_shared/database/dao/outbox_dao.dart';
 import '_shared/database/dao/action_plan_outbox_dao.dart';
+import '_shared/database/dao/global_risk_dao.dart';
+import '_shared/database/dao/submission_risk_outbox_dao.dart';
 import '_shared/services/connectivity_service.dart';
 import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
@@ -59,6 +61,12 @@ void configureDependencies() {
   di.registerLazySingleton<ActionPlanOutboxDao>(
     () => ActionPlanOutboxDao(di<DatabaseService>().db),
   );
+  di.registerLazySingleton<GlobalRiskDao>(
+    () => GlobalRiskDao(di<DatabaseService>().db),
+  );
+  di.registerLazySingleton<SubmissionRiskOutboxDao>(
+    () => SubmissionRiskOutboxDao(di<DatabaseService>().db),
+  );
   di.registerLazySingleton<GpsService>(() => GpsService());
 
   // ---------- Auth (Slice 2 + PBAC Slice 4) ----------
@@ -99,6 +107,8 @@ void configureDependencies() {
       outboxDao: di<OutboxDao>(),
       actionPlanApi: ActionPlanApiAdapter(di<Dio>()),
       actionPlanOutboxDao: di<ActionPlanOutboxDao>(),
+      globalRiskDao: di<GlobalRiskDao>(),
+      submissionRiskOutboxDao: di<SubmissionRiskOutboxDao>(),
     ),
   );
 

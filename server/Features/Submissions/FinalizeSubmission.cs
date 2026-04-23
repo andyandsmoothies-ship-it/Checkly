@@ -46,6 +46,13 @@ public static class FinalizeSubmission
         if (submission.AuditorId != auditorId)
             return TypedResults.Forbid();
 
+        // 1.5 Load Global Risks for this submission
+        var globalRisks = await db.SubmissionRisks
+            .Include(r => r.GlobalRisk)
+            .Where(r => r.SubmissionId == submission.Id)
+            .ToListAsync(ct);
+        bool hasGlobalRisk = globalRisks.Count > 0;
+
         // 2. Validate required fields (nullable to survive model binding when Flutter omits keys)
         if (request.ClientScore is null)
             return TypedResults.BadRequest(new { error = "clientScore is required to finalize" });
@@ -154,7 +161,7 @@ public static class FinalizeSubmission
         }
 
         var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
-            scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty);
+            scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty, hasGlobalRisk: hasGlobalRisk);
 
         var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid && scoreMode == "enforce")
@@ -231,7 +238,8 @@ public static class FinalizeSubmission
                 submission.Id, submission.StoreId,
                 answers, criteria, groups, now, db, ct,
                 scoringMode: scoringMode,
-                scoringLogicConfig: scoringLogicConfig);
+                scoringLogicConfig: scoringLogicConfig,
+                globalRisks: globalRisks);
 
             // Atomic flush 1: submission update + answers + audit log + action plans
             try

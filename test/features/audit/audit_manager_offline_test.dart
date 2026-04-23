@@ -15,8 +15,10 @@ import 'dart:async';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 
 import 'package:checkly/_shared/database/app_database.dart';
+import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/features/audit/manager/audit_manager.dart';
 import 'package:checkly/features/audit/services/submission_api_service.dart';
@@ -93,9 +95,11 @@ void main() {
   late OutboxDao outboxDao;
   final fakeConnectivity = FakeConnectivity();
 
-  setUp(() {
+  setUp(() async {
+    await GetIt.instance.reset();
     testDb = _createTestDb();
     outboxDao = OutboxDao(testDb);
+    GetIt.instance.registerSingleton<DatabaseService>(DatabaseService.forTesting(testDb));
   });
 
   tearDown(() async => testDb.close());

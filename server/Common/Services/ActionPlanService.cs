@@ -30,14 +30,17 @@ public static class ActionPlanService
         AppDbContext db,
         CancellationToken ct,
         string? scoringMode = null,
-        string? scoringLogicConfig = null)
+        string? scoringLogicConfig = null,
+        List<SubmissionRisk>? globalRisks = null)
     {
         // F2: Survey-mode submissions should never generate action plans
         if (string.Equals(scoringMode, "survey", StringComparison.OrdinalIgnoreCase))
             return;
 
         var failedAnswers = ActionPlanEvaluator.GetTriggeredAnswers(answers, criteria);
-        if (failedAnswers.Count == 0)
+        var hasGlobalRisks = globalRisks != null && globalRisks.Count > 0;
+
+        if (failedAnswers.Count == 0 && !hasGlobalRisks)
             return;
 
         // Idempotency: skip if action plans already exist for this submission
@@ -98,6 +101,29 @@ public static class ActionPlanService
                 CreatedAt = now,
                 UpdatedAt = now
             });
+        }
+
+        if (globalRisks != null)
+        {
+            foreach (var risk in globalRisks)
+            {
+                db.ActionPlans.Add(new ActionPlan
+                {
+                    Id = Guid.NewGuid(),
+                    SubmissionId = submissionId,
+                    AnswerId = null, // Global risks are not tied to a specific answer
+                    StoreId = storeId,
+                    StoreManagerId = smProfile?.Id,
+                    CriteriaLabel = risk.GlobalRisk?.Label ?? "Unknown Risk",
+                    GroupTitle = "Global Risk",
+                    Status = "open",
+                    Deadline = deadline,
+                    StoreName = store?.Name,
+                    StoreManagerName = smProfile?.FullName,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                });
+            }
         }
     }
 }

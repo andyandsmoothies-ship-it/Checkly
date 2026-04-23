@@ -16,6 +16,7 @@ import '../manager/audit_manager.dart';
 import '../widgets/audit_score_hud.dart';
 import '../widgets/audit_section_card.dart';
 import '../widgets/audit_section_nav_bar.dart';
+import '../widgets/risks_panel.dart';
 
 final _di = GetIt.instance;
 
@@ -601,6 +602,20 @@ class _AuditFormPageState extends State<AuditFormPage> {
             appBar: AppBar(
               title: Text(template.title, overflow: TextOverflow.ellipsis),
               actions: [
+                // Global risks trigger
+                if (riskEnabled)
+                  IconButton(
+                    icon: Icon(
+                      manager.triggeredRiskIds.isNotEmpty
+                          ? Icons.shield
+                          : Icons.shield_outlined,
+                      color: manager.triggeredRiskIds.isNotEmpty
+                          ? Colors.red
+                          : null,
+                    ),
+                    onPressed: () => showRisksPanel(context, manager),
+                    tooltip: 'Critical Risks',
+                  ),
                 // Draft saved indicator
                 if (manager.draftSavedAt != null)
                   Padding(

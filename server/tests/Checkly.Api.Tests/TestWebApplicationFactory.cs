@@ -104,47 +104,79 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             // must be hydrated from the DB, otherwise the Fail-Closed security gate blocks all requests.
             using var scopeCache = Services.CreateScope();
             var pbacCache = scopeCache.ServiceProvider.GetRequiredService<PbacDictionaryCache>();
+
+            // Seed PBAC capabilities that Program.cs seeds on startup.
+            // EnsureDeleted() wipes those rows, so we must re-seed them here.
+            var dbCache = scopeCache.ServiceProvider.GetRequiredService<AppDbContext>();
+            dbCache.Database.ExecuteSqlRaw("""
+                INSERT INTO role_capabilities (id, role, capability, created_at)
+                VALUES (gen_random_uuid(), 'admin', 'global_risks:manage', now())
+                ON CONFLICT (role, capability) DO NOTHING;
+                """);
+
             pbacCache.InitializeAsync(scopeCache.ServiceProvider).GetAwaiter().GetResult();
         }
     }
 
     /// <summary>
     /// Returns a valid admin JWT by logging in as the seeded bootstrap admin.
+    /// Includes a retry loop to bypass 429 rate limits during parallel test execution.
     /// </summary>
     public async Task<string> LoginBootstrapAdminAsync(HttpClient client)
     {
-        var response = await client.PostAsJsonAsync("/api/auth/login", new
+        for (int i = 0; i < 5; i++)
         {
-            email = "bootstrap@admin.test",
-            password = "Bootstrap123!@"
-        });
-        response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        return json.GetProperty("token").GetString()!;
+            var response = await client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email = "bootstrap@admin.test",
+                password = "Bootstrap123!@"
+            });
+            
+            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                await Task.Delay(200 * (int)Math.Pow(2, i));
+                continue;
+            }
+            
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return json.GetProperty("token").GetString()!;
+        }
+        throw new Exception("Rate limit exceeded for LoginBootstrapAdminAsync after retries.");
     }
 
     public async Task<(string Token, Guid UserId)> RegisterUserAsync(
         HttpClient client, string email, string password, string fullName, string role,
         string? adminToken = null)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/register")
+        for (int i = 0; i < 5; i++)
         {
-            Content = JsonContent.Create(new { email, password, fullName, role })
-        };
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/register")
+            {
+                Content = JsonContent.Create(new { email, password, fullName, role })
+            };
 
-        if (adminToken is not null)
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+            if (adminToken is not null)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
-        var response = await client.SendAsync(request);
+            var response = await client.SendAsync(request);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorBody = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Registration failed ({response.StatusCode}): {errorBody}");
+            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                await Task.Delay(200 * (int)Math.Pow(2, i));
+                continue;
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Registration failed ({response.StatusCode}): {errorBody}");
+            }
+
+            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return (json.GetProperty("token").GetString()!, Guid.Parse(json.GetProperty("userId").GetString()!));
         }
-
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        return (json.GetProperty("token").GetString()!, Guid.Parse(json.GetProperty("userId").GetString()!));
+        throw new Exception("Rate limit exceeded for RegisterUserAsync after retries.");
     }
 
     public HttpClient CreateAuthenticatedClient(string token)

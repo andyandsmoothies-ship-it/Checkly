@@ -35,6 +35,7 @@ public static class AppCapabilities
     public const string SubmissionsCreate = "submissions:create";
     public const string SubmissionsReview = "submissions:review";
     public const string AdminManageRoles = "admin:manage_roles";
+    public const string GlobalRisksManage = "global_risks:manage";
 
     // ── Action Plan Transitions ───────────────────────────────────────────────
     // Imperative checks inside UpdateActionPlan.HandleAsync — not route-level guards.

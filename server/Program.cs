@@ -15,6 +15,7 @@ using Checkly.Api.Features.Analytics;
 using Checkly.Api.Features.Areas;
 using Checkly.Api.Features.UserGroups;
 using Checkly.Api.Features.Templates;
+using Checkly.Api.Features.GlobalRisks;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
 using Checkly.Api.Common.Exceptions;
@@ -203,7 +204,7 @@ try
         options.AddFixedWindowLimiter("LoginPolicy", opt =>
         {
             opt.Window = TimeSpan.FromMinutes(1);
-            opt.PermitLimit = 5;
+            opt.PermitLimit = builder.Environment.IsDevelopment() ? 1000 : 5;
             opt.QueueLimit = 0;
         });
         options.AddConcurrencyLimiter("SyncPolicy", limiterOptions =>
@@ -288,6 +289,17 @@ try
 
         // Reload cache so the new submissions:list rows are immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
+
+        // GlobalRisks Slice 2: Seed global_risks:manage for admin only (idempotent)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'admin', 'global_risks:manage', now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so new global_risks:manage row is immediately visible in-memory
+        await pbacCache.InitializeAsync(app.Services);
     }
 
     // Diagnostic endpoint — only available in Development/Test environments,
@@ -332,6 +344,7 @@ try
     app.MapActionPlanEndpoints();
     app.MapNotificationEndpoints();
     app.MapAdminEndpoints();
+    app.MapGlobalRiskEndpoints();
     app.MapAnalyticsEndpoints();
     app.MapAreaEndpoints();
     app.MapUserGroupEndpoints();

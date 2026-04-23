@@ -12,13 +12,14 @@ This skill implements the formal Vertical Slicing strategy defined by Ivar Jacob
 A "Use-Case Slice" is a slice of a use case that provides clear value to stakeholders. When slicing features into "Micro-Specs", you must adhere strictly to these 4 Golden Rules:
 
 ### Rule 1: Slices MUST be Vertical (End-to-End)
-- A slice is **more** than just requirements. It must cut completely through every tier of the architecture.
-- For a slice to be valid, it MUST include:
+- A slice is **more** than just requirements. It generally cuts completely through every tier of the architecture.
+- **Exception for AI Context Limits (Maximum Thickness):** If a vertical slice is too heavy (e.g., requires touching >3 files or complex DB relationships), you MUST split it horizontally (e.g., "Data Layer Slice" first, then "API Endpoint Slice") to protect the AI's context window.
+- Otherwise, for a standard slice to be valid, it MUST include:
   1. **Requirements** (The specific interaction being tested)
   2. **Design** (The architectural elements involved)
   3. **Implementation** (The actual code spanning Frontend UI, Backend API, and Database)
   4. **Test** (The test scripts and test results)
-- **ANTI-PATTERN TO AVOID**: Never create horizontal slices like "Build the DB layout" or "Build the UI". If a slice doesn't touch every architectural layer necessary to complete a single user action, it is invalid.
+- **ANTI-PATTERN TO AVOID**: Do not create horizontal slices ("Build the DB layout") *unless* the full vertical slice exceeds the maximum thickness limit.
 
 ### Rule 2: Start with the Basic Scenario (Happy Path)
 - To find the most central slice of a new feature, focus exclusively on the **Basic Scenario**. This is the core, most straightforward way for the user to achieve their goal without hitting errors.

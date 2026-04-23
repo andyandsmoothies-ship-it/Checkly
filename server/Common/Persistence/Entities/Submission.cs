@@ -59,4 +59,5 @@ public sealed class Submission
     public Store? Store { get; set; }
     public ICollection<Answer> Answers { get; set; } = [];
     public ICollection<ActionPlan> ActionPlans { get; set; } = [];
+    public ICollection<SubmissionRisk> SubmissionRisks { get; set; } = [];
 }

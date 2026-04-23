@@ -94,3 +94,21 @@ Future<List<PendingSubmission>> getEligiblePending() async {
 ```
 
 **Discovered in:** Pillar D Sync Engine. Verification identified `OutboxDao.getEligiblePending()` loading unbounded rows to evaluate exponential backoff.
+
+---
+
+## Gotcha: Drift Table vs. Domain Class Naming Collisions
+
+**Problem:** If you have a domain data class named `PendingSubmissionRisk` (e.g., in `sync_interfaces.dart`), and you create a Drift table class named `PendingSubmissionRisks`, Drift will automatically generate a row data class also named `PendingSubmissionRisk`. When you import both files into a DAO or service, you will hit an `ambiguous_import` compiler error. Using `hide` everywhere becomes unmaintainable.
+
+**Fix:** Avoid naming Drift outbox tables with the exact plural of the domain class. Instead, append `Entries` or `OutboxEntries` to the table class name.
+
+```dart
+// WRONG ❌ — Drift generates 'PendingSubmissionRisk' (collides with domain model)
+class PendingSubmissionRisks extends Table { ... }
+
+// CORRECT ✅ — Drift generates 'SubmissionRiskOutboxEntry' (no collision)
+class SubmissionRiskOutboxEntries extends Table { ... }
+```
+
+**Discovered in:** Global Risks Epic (Slice 4.1). SyncEngine required importing both the Drift table and the SyncApi interface models.

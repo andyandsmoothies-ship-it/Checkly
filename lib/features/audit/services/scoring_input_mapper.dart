@@ -21,8 +21,9 @@ class ScoringInputMapper {
   /// - Reads `scoringMode` and `progressiveRepeat` from `scoringLogicConfig` JSON.
   static ScoringInput fromTemplate(
     TemplateTreeDto template,
-    Map<String, AuditAnswer> answers,
-  ) {
+    Map<String, AuditAnswer> answers, {
+    bool hasGlobalRisk = false,
+  }) {
     final sections = template.groups.map((g) {
       // Top-level (flat) criteria on this section
       final flatCriteria = g.criteria.map((c) {
@@ -98,6 +99,7 @@ class ScoringInputMapper {
         template.scoringLogicConfig,
         'progressiveRepeat',
       ),
+      hasGlobalRisk: hasGlobalRisk,
     );
   }
 

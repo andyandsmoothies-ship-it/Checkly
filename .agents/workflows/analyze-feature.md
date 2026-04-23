@@ -36,7 +36,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **Topology & Baseline** | Parse config files (.csproj, pubspec.yaml). Find structural boundaries. |
 | **Blind Objective Research** | Extract facts only. Execute a blind dependency scan to learn how the current code actually works before planning. |
 | **Hostile Validation** | If an input artifact (ADR/Research) is provided, physically validate its assumptions via grep_search. Reject impossible ideas. |
-| **Constraint Def (YAGNI)**| Define Strict Boundaries. Outline absolute minimum code. State what ghost requirements are OUT OF SCOPE. |
+| **Constraint Def (YAGNI)**| Define Strict Boundaries. State what ghost requirements are OUT OF SCOPE. MANDATORY: IF an Epic's implementation step contradicts an Epic's Strict Constraint, you MUST yield to the user immediately. Do NOT silently scope out the requirement using YAGNI. |
 | **Trust But Verify**| Spot-check at least 1 core plan claim via grep_search before finalizing the plan. |
 
 > **@@SCAN**: (1) Core business value? (2) YAGNI defined? (3) Spot-check complete?
@@ -76,6 +76,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 > [!IMPORTANT]
 > **Action:** Output the exact routing commands below for the user. Map each generated Execution Slice to its required route.
+> 
+> **CRITICAL SLICE-BY-SLICE EXECUTION MANDATE:** Explicitly instruct the user to run these commands **ONE AT A TIME**, completing each slice before starting the next. Do not run them all at once to prevent AI context overload and silent failures.
 >
 > **Route 1: Logic/Standard (QA-First)**
 > @[/tdd] Execute tests for Slice [N]: {Absolute_Path_to_plan}
@@ -98,7 +100,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## JIT Harness & Verification` (Active skills and terminal validation commands)
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
 > - `## Concept Diagram`: A short, concise text-based flowchart (e.g., `[Actor] --> [Action] --> [System]`) explaining the core logic or state changes.
-> - `## Execution Slices`: **(CRITICAL)** Group work into isolated slices. Define the **Structural Blueprint** (e.g., 'Add nullable field', 'Wrap in Try/Catch'). **DO NOT write exact code diffs.** The Builder will write the code.<br><br>**CRITICAL:** For each slice or major design decision, you MUST present the **Trade-offs / Pros & Cons** of the chosen approach versus alternatives. Yield to the user to make the final executive decision before jumping to implementation.
+> - `## Execution Slices`: **(CRITICAL)** Group work into atomic, isolated slices. **Micro-Slicing Mandate:** If an implementation plan touches >3 files or requires >5 tests, you MUST break it down into sequential Sub-Phases (e.g., Phase A: Database Entity, Phase B: EF Configuration) so that the subsequent TDD/Implement agents do not exhaust their context windows. Define the **Structural Blueprint** (e.g., 'Add nullable field', 'Wrap in Try/Catch'). **DO NOT write exact code diffs.** The Builder will write the code.<br><br>**CRITICAL:** For each slice or major design decision, you MUST present the **Trade-offs / Pros & Cons** of the chosen approach versus alternatives. Yield to the user to make the final executive decision before jumping to implementation.
 > - `<forensic_evidence>`: Tags containing a list of terminal commands run.
 > - `## Handoff Block`: An AI Agent Mission Brief (TL;DR for the next AI agent). **MANDATORY:** You MUST include the exact `@[/...]` routing commands (e.g., `@[/tdd]` or `@[/implement]`) for EVERY Execution Slice here, mapping them to their absolute file paths.
 >

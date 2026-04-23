@@ -44,7 +44,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 | Step | Execution Contract |
 |---|---|
-| **Zero-Drift Execution**| PROHIBITED: Multiple slices in a single `/implement` session. Execute EXACTLY ONE slice. Read Active Slice tests -> Code -> Make GREEN -> Generate `handoff.md` -> YIELD. |
+| **Zero-Drift Execution**| PROHIBITED: Multiple slices in a single `/implement` session. Execute EXACTLY ONE slice. **Task Runner Protocol:** Create an atomic checklist from the plan. Execute EXACTLY ONE logical block (file/test suite) per prompt turn, automatically yielding to the user after each step to prevent hallucination. Make GREEN -> Generate `handoff.md` -> YIELD. |
 | **Context Blinders** | Actively ignore test contracts for future slices. |
 | **Test Ingestion** | Read unit test files created by QA for the ACTIVE SLICE ONLY. |
 | **Cheap Verify** | Run `flutter analyze` or `dotnet build --no-restore`. Fix before complete. |
