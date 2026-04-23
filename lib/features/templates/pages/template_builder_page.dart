@@ -435,8 +435,15 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     int sumMaxPoints(List<EditableGroup> groups) {
       var pts = 0;
       for (final g in groups) {
-        final mp = double.tryParse(g.maxPointsCtrl.text) ?? 0;
-        pts += mp.toInt();
+        // Sum criteria directly attached to this group
+        for (final c in g.criteria) {
+          if (c.inputType != 'text' &&
+              c.inputType != 'single_choice' &&
+              c.inputType != 'multi_choice') {
+            pts += (double.tryParse(c.pointsCtrl.text) ?? 0).toInt();
+          }
+        }
+        // Add recursive sub-sections
         pts += sumMaxPoints(g.subSections);
       }
       return pts;
