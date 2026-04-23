@@ -151,6 +151,7 @@ When a submission is completed (via `CreateSubmission` or `FinalizeSubmission`),
   - **Legacy default**: `pass_fail` criteria with `value = "non_conform"` (no explicit trigger config needed)
 - **Smart Triggers (Criticality & Overrides)**:
   - **Manual Override**: If an auditor explicitly flags an answer during the audit (`answer.IsRisk = true`), it **unconditionally** triggers an action plan.
+  - **Global Risk**: If the auditor triggers a template-agnostic Global Risk from the Risks panel, it **unconditionally** triggers an action plan for each risk, mapping the `GlobalRisk.Label` to the action plan's `criteria_label`.
   - **Critical Context**: If a criterion is globally flagged as `IsCcp` or `IsRisk`, AND the auditor attaches a negative signal (Note, Photo, or Repeats > 0), it triggers an action plan **even if the answer itself is marked as "pass/conform"**. This acts as a backstop for auditor error.
 - **Idempotency**: Skips if action plans already exist for that submission
 - **Deadline**: `NOW + N days` where N = `template.scoring_logic_config.features.action_plan_deadline_days` (default: 7, range: 1–90)

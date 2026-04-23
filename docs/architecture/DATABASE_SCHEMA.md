@@ -10,19 +10,19 @@
 
 ## Table Overview
 
-The Checkly database contains **25 tables** organized into 3 categories:
+The Checkly database contains **27 tables** organized into 3 categories:
 
-> **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
+> **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`, `global_risks`, `submission_risks`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| **Business Domain** | 17 tables | Core audit workflow data |
+| **Business Domain** | 19 tables | Core audit workflow data |
 | **ASP.NET Identity** | 7 tables | Authentication & identity infrastructure |
 | **EF Core Internal** | 1 table | Migration tracking |
 
 ---
 
-## Business Domain Tables (17)
+## Business Domain Tables (19)
 
 ### `profiles`
 **Rows**: 7 | **Soft Delete**: No (ban via `AspNetUsers.LockoutEnd`)
@@ -262,6 +262,37 @@ Legacy: `pass_fail` criteria with `non_conform` answer. Max 10 per submission.
 | `updated_at` | timestamptz | Last update |
 
 > **Constraints**: Unique index on `(submission_id, answer_id)` to prevent duplicate action plans from double-clicks or offline sync race conditions.
+
+---
+
+### `global_risks`
+**Rows**: dynamic | **Soft Delete**: `is_active = false`
+
+Company-wide risk flags that auditors can trigger independently of any specific audit template.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique risk ID |
+| `label` | text | Name/Title of the global risk (e.g., "Food poisoning incident") |
+| `description` | text? | Optional description/instructions |
+| `is_active` | boolean | Soft delete flag |
+| `created_at` | timestamptz | Record creation |
+| `updated_at` | timestamptz | Last update |
+
+---
+
+### `submission_risks`
+**Rows**: dynamic | **Never deleted**
+
+Records which global risks were triggered during a specific submission. Triggers a 0% final score and auto-generates Action Plans on the backend.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique record ID |
+| `submission_id` | UUID (FK → submissions) | Parent submission |
+| `global_risk_id` | UUID (FK → global_risks) | The triggered risk |
+| `created_at` | timestamptz | Record creation |
+| `updated_at` | timestamptz | Last update |
 
 ---
 

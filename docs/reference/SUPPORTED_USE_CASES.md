@@ -11,7 +11,7 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 | **Scoring Modes** | Penalty (Top-Down), Accumulation (Zero-to-Top), Checklist (Flat Deduction), Survey (No Scoring) |
 | **Input Types** | Pass/Fail (e.g., Is the floor clean?), Fault Count (e.g., How many expired items?), Scored Choices (e.g., Poor/Fair/Good), Single Choice (e.g., Which shift?), Multi Choice (e.g., Select all that apply), Text Input (free-form notes, observations) |
 | **Hierarchy** | 2-level (Section → Criteria) or 3-level (Section → Sub-section → Criteria) |
-| **Critical Failure** | CCP (Zeros the section), RISK (Zeros the entire audit) |
+| **Critical Failure** | CCP (Zeros the section), Template RISK (Zeros the audit), Global Risk (Universal template-agnostic trigger, zeros the audit + generates Action Plan) |
 | **Other Modifiers** | Progressive Repeat Penalty, Per-Criterion "Is Required", Weighted Density |
 | **Analytics** | Survey Results — aggregated option distribution per question (admin-only) |
 

@@ -106,6 +106,21 @@
 
 ---
 
+## GlobalRisk
+
+| Consumer | File | Relationship |
+|----------|------|-------------|
+| FinalizeSubmission | `Features/Submissions/FinalizeSubmission.cs` | Queries `SubmissionRisks`, forces 0 score |
+| ActionPlanService | `Common/Services/ActionPlanService.cs` | Generates Action Plans for triggered global risks |
+| SyncRisks | `Features/Submissions/SyncRisks.cs` | Delta sync for offline clients |
+| ListSubmissionRisks | `Features/Submissions/SubmissionRisks/ListSubmissionRisks.cs` | Loads risks for a specific submission |
+
+### Deletion Policy
+- **GlobalRisk**: Soft deleted (`is_active = false`). Prevents future audits from seeing it.
+- **SubmissionRisk**: Never deleted. Immutable audit record linked to the submission.
+
+---
+
 ## ActionPlan
 
 | Consumer | File | Relationship |

@@ -59,17 +59,25 @@ The system includes two types of logical overrides that bypass standard arithmet
     - The section's absolute points earned becomes **0** in the HUD display.
     - Standard weighting still applies (e.g., if a 15% section fails CCP, the total audit score drops by 15 points).
 
-### ⚠️ RISK
+### ⚠️ RISK (Template-Bound)
 - **Trigger**: Any criteria with `is_risk = true` that has a **fault** (input-type-aware via `_hasFault()`).
   - `pass_fail`: fault = answer is `non_conform`
   - `numeric`: fault = `numericValue > 0` (fault count)
   - `scale`: fault = `numericValue == 0` (earned zero points)
-- **Also triggered by**: `answer.isRisk = true` (auditor manual override)
+- **Also triggered by**: `answer.isRisk = true` (auditor manual override on a specific criterion)
 - **Scope**: **Audit-Level**.
 - **Impact**:
     - The **Final Audit Score** is forced to **0%**.
     - All absolute points earned are forced to **0**.
     - This reflects a fundamental failure that invalidates the entire audit.
+
+### 🚨 Global Risk (Template-Agnostic)
+- **Trigger**: Auditor manually flags a company-wide risk from the universal Risks Panel during an audit, regardless of the template being used.
+- **Scope**: **Audit-Level**.
+- **Impact**:
+    - The **Final Audit Score** is forced to **0%**.
+    - An **Action Plan** is automatically generated on the backend for each triggered Global Risk, bypassing the standard fault evaluation.
+    - Operates in parallel with legacy template-bound RISK flags.
 
 ---
 
