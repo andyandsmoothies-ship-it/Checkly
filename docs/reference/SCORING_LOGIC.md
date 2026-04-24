@@ -88,11 +88,11 @@ The live HUD in the Audit Form displays "Points Earned / Points Possible".
 > [!IMPORTANT]
 > **Multi-Mode Support**: Templates support four scoring modes via `scoring_logic_config.scoringMode`: `penalty` (default), `accumulation`, `checklist`, and `survey`. The mode determines how the scoring engine calculates the final score.
 
-### Is Required (Per-Criterion)
-The legacy global "Confirm Correct" toggle has been replaced by a granular, per-criterion `isRequired` flag:
-- A criterion marked as `isRequired` displays a mandatory red asterisk in the UI.
-- The auditor must explicitly provide an answer or verify the item before the audit can be submitted.
-- This ensures targeted accountability without forcing users to tap a button for every single trivial passing item.
+### Is Required (Per-Criterion) & Global Confirm Correct
+Accountability and validation are enforced through the `isRequired` flag rather than redundant bottom-sheet buttons:
+- **Per-Criterion**: A criterion marked as `isRequired` displays a mandatory red asterisk in the UI. The auditor must explicitly provide an answer or verify the item before the audit can be submitted.
+- **Global Override ("Require Confirmation")**: The template-level `confirmCorrect` configuration acts as a master switch. When enabled, it forces **all** criteria to `isRequired = true` during the save payload generation, and locks the individual toggles in the Template Builder UI to "ON" to ensure transparency.
+- This simplifies the auditor UX by unifying all validation under a single `isRequired` mechanism, rather than relying on disparate confirmation buttons.
 
 
 ## 5. Survey and Checklist Modes (Builder Constraints)

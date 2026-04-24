@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
 import '../models/editable_criterion.dart';
+import 'criterion_choice_editor.dart';
+import 'criterion_scale_editor.dart';
 import 'input_type_bottom_sheet.dart';
 
 class CriterionEditor extends StatelessWidget {
@@ -163,183 +165,31 @@ class CriterionEditor extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Scale Options editor (only for scale type)
-                if (criterion.inputType == 'scale') ...[
-                  Text(
-                    'Scale Options',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: Theme.of(ctx).textTheme.bodyMedium?.fontSize),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Define maturity levels and their respective points (e.g. 1=Poor, 5=Excellent)',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...criterion.scaleOptions.asMap().entries.map((entry) {
-                    final idx = entry.key;
-                    final opt = entry.value;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              initialValue: opt['label'] as String? ?? '',
-                              decoration: InputDecoration(
-                                labelText: 'Label ${idx + 1}',
-                                isDense: true,
-                              ),
-                              onChanged: (v) {
-                                criterion.scaleOptions[idx]['label'] = v;
-                                onChanged();
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            flex: 1,
-                            child: TextFormField(
-                              initialValue:
-                                  (opt['points'] as num?)?.toString() ?? '0',
-                              decoration: const InputDecoration(
-                                labelText: 'Pts',
-                                isDense: true,
-                              ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                criterion.scaleOptions[idx]['points'] =
-                                    double.tryParse(v) ?? 0;
-                                // Auto-sync pointsWeight to highest
-                                final maxPts = criterion.scaleOptions
-                                    .fold<double>(
-                                      0,
-                                      (m, o) =>
-                                          (o['points'] as num? ?? 0)
-                                                  .toDouble() >
-                                              m
-                                          ? (o['points'] as num).toDouble()
-                                          : m,
-                                    );
-                                criterion.pointsCtrl.text = maxPts
-                                    .toStringAsFixed(0);
-                                onChanged();
-                              },
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.remove_circle_outline,
-                              size: 18,
-                              color: Theme.of(ctx).colorScheme.error,
-                            ),
-                            onPressed: () {
-                              criterion.scaleOptions.removeAt(idx);
-                              onChanged();
-                              Navigator.pop(ctx);
-                              Future.microtask(() {
-                                if (context.mounted) _openDrawer(context);
-                              });
-                            },
-                            constraints: const BoxConstraints(
-                              minWidth: 32,
-                              minHeight: 32,
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                  TextButton.icon(
-                    onPressed: () {
-                      criterion.scaleOptions.add({'label': '', 'points': 0});
-                      onChanged();
+                if (criterion.inputType == 'scale')
+                  CriterionScaleEditor(
+                    criterion: criterion,
+                    onChanged: onChanged,
+                    onRequestRebuild: () {
                       Navigator.pop(ctx);
                       Future.microtask(() {
                         if (context.mounted) _openDrawer(context);
                       });
                     },
-                    icon: const Icon(Icons.add, size: 16),
-                    label: const Text('Add Option'),
                   ),
-                  const SizedBox(height: 8),
-                ],
 
                 // Choice Options editor (for single_choice / multi_choice)
                 if (criterion.inputType == 'single_choice' ||
-                    criterion.inputType == 'multi_choice') ...[
-                  Text(
-                    'Choice Options',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: Theme.of(ctx).textTheme.bodyMedium?.fontSize),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'List the specific options the auditor can select from',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...criterion.choiceOptions.asMap().entries.map((entry) {
-                    final idx = entry.key;
-                    final label = entry.value;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              initialValue: label,
-                              decoration: InputDecoration(
-                                labelText: 'Option ${idx + 1}',
-                                isDense: true,
-                              ),
-                              onChanged: (v) {
-                                criterion.choiceOptions[idx] = v;
-                                onChanged();
-                              },
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.remove_circle_outline,
-                              size: 18,
-                              color: Theme.of(ctx).colorScheme.error,
-                            ),
-                            onPressed: () {
-                              criterion.choiceOptions.removeAt(idx);
-                              onChanged();
-                              Navigator.pop(ctx);
-                              Future.microtask(() {
-                                if (context.mounted) _openDrawer(context);
-                              });
-                            },
-                            constraints: const BoxConstraints(
-                              minWidth: 32,
-                              minHeight: 32,
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                  TextButton.icon(
-                    onPressed: () {
-                      criterion.choiceOptions.add('');
-                      onChanged();
+                    criterion.inputType == 'multi_choice')
+                  CriterionChoiceEditor(
+                    criterion: criterion,
+                    onChanged: onChanged,
+                    onRequestRebuild: () {
                       Navigator.pop(ctx);
                       Future.microtask(() {
                         if (context.mounted) _openDrawer(context);
                       });
                     },
-                    icon: const Icon(Icons.add, size: 16),
-                    label: const Text('Add Option'),
                   ),
-                  const SizedBox(height: 8),
-                ],
 
                 // Points weight visibility rules:
                 //  - survey mode:  ALWAYS HIDDEN (null score — no math applies)

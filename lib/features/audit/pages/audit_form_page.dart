@@ -13,6 +13,7 @@ import '../../templates/manager/template_manager.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
 
+import '../widgets/audit_quick_jump_sheet.dart';
 import '../widgets/audit_score_hud.dart';
 import '../widgets/audit_section_card.dart';
 import '../widgets/audit_section_nav_bar.dart';
@@ -219,95 +220,15 @@ class _AuditFormPageState extends State<AuditFormPage> {
   // ── Quick Jump ──
 
   void _showQuickJump(AuditManager manager, TemplateTreeDto template) {
-    final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (ctx) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                child: Text(
-                  'Jump to Section',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(template.groups.length, (i) {
-                      final group = template.groups[i];
-                      final answered = _groupAnsweredCount(manager, group);
-                      final total = _groupTotalCount(group);
-                      final isCurrent = i == _currentSection;
-                      final isComplete = answered >= total;
-
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 16,
-                          backgroundColor: isComplete
-                              ? AppTheme.success.withAlpha(30)
-                              : isCurrent
-                              ? theme.colorScheme.primaryContainer
-                              : theme.colorScheme.surfaceContainerHighest,
-                          child: isComplete
-                              ? const Icon(
-                                  Icons.check,
-                                  size: 16,
-                                  color: AppTheme.success,
-                                )
-                              : Text(
-                                  '${i + 1}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize:
-                                        theme.textTheme.labelSmall?.fontSize,
-                                    color: isCurrent
-                                        ? theme.colorScheme.primary
-                                        : theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                        ),
-                        title: Text(
-                          group.title,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: isCurrent
-                                ? FontWeight.w700
-                                : FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        trailing: Text(
-                          '$answered / $total done',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: isComplete
-                                ? AppTheme.success
-                                : theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        selected: isCurrent,
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          setState(() => _currentSection = i);
-                        },
-                      );
-                    }),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        );
-      },
+      builder: (_) => AuditQuickJumpSheet(
+        manager: manager,
+        template: template,
+        currentSection: _currentSection,
+        onSectionSelected: (i) => setState(() => _currentSection = i),
+      ),
     );
   }
 
@@ -610,7 +531,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
                           ? Icons.shield
                           : Icons.shield_outlined,
                       color: manager.triggeredRiskIds.isNotEmpty
-                          ? Colors.red
+                          ? Theme.of(context).colorScheme.error
                           : null,
                     ),
                     onPressed: () => showRisksPanel(context, manager),
@@ -701,9 +622,9 @@ class _AuditFormPageState extends State<AuditFormPage> {
                     ],
                   ),
                   if (_isSubmitting)
-                    const ColoredBox(
-                      color: Colors.black26,
-                      child: Center(child: CircularProgressIndicator()),
+                    ColoredBox(
+                      color: Theme.of(context).colorScheme.scrim.withAlpha(66),
+                      child: const Center(child: CircularProgressIndicator()),
                     ),
                 ],
               ),

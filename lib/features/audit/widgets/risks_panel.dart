@@ -57,21 +57,27 @@ void showRisksPanel(BuildContext context, AuditManager manager) {
                         return ListTile(
                           leading: Icon(
                             isTriggered ? Icons.warning : Icons.warning_amber,
-                            color: isTriggered ? Colors.red : Colors.grey,
+                            color: isTriggered
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context).colorScheme.outline,
                           ),
                           title: Text(risk.label),
                           trailing: FilterChip(
                             label: Text(
                               isTriggered ? 'Triggered' : 'Flag Risk',
                               style: TextStyle(
-                                color: isTriggered ? Colors.red : null,
+                                color: isTriggered
+                                    ? Theme.of(context).colorScheme.error
+                                    : null,
                                 fontWeight:
                                     isTriggered ? FontWeight.bold : null,
                               ),
                             ),
                             selected: isTriggered,
-                            selectedColor: Colors.red.withValues(alpha: 0.15),
-                            checkmarkColor: Colors.red,
+                            selectedColor:
+                                Theme.of(context).colorScheme.errorContainer,
+                            checkmarkColor:
+                                Theme.of(context).colorScheme.error,
                             onSelected: (selected) {
                               if (selected) {
                                 manager.triggerGlobalRisk(risk.id);

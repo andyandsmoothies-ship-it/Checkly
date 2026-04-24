@@ -1,22 +1,22 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
+import '../widgets/action_plan_action_bar.dart';
 import '../widgets/action_timeline.dart';
 import '../widgets/flat_block.dart';
 import '../widgets/info_card.dart';
 import '../widgets/info_row.dart';
 import '../widgets/section_header.dart';
+import '../widgets/submit_evidence_sheet.dart';
 
 final _di = GetIt.instance;
 
@@ -53,9 +53,6 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
 
   // ── Submit Evidence (Store Manager) ──
   void _showSubmitEvidenceSheet(ActionPlanDto plan) {
-    final correctionCtrl = TextEditingController(text: plan.correctionPlan);
-    final formKey = GlobalKey<FormState>();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -63,184 +60,11 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) {
-        var isDirty = false;
-        var isSubmitting = false;
-        String? photoPath;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            // Attach listeners once on first build
-            void markDirty() {
-              if (!isDirty) setSheetState(() => isDirty = true);
-            }
-
-            // Use addListener carefully — only attach once
-            // We track via the initial text to detect changes
-            final correctionChanged =
-                correctionCtrl.text != (plan.correctionPlan ?? '');
-            final computedDirty = correctionChanged;
-
-            return UnsavedChangesGuard(
-              isDirty: isDirty || computedDirty,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  24,
-                  24,
-                  24,
-                  24 + MediaQuery.of(ctx).viewInsets.bottom,
-                ),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(ctx).colorScheme.outlineVariant,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Submit Evidence',
-                            style: Theme.of(ctx).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              if (isSubmitting) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Submission running in background')),
-                                );
-                              }
-                              if (isDirty || computedDirty) {
-                                Navigator.maybePop(ctx);
-                              } else {
-                                Navigator.pop(ctx);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Theme.of(ctx).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Theme.of(ctx).colorScheme.outlineVariant),
-                        ),
-                        child: InkWell(
-                          onTap: () async {
-                            final picker = ImagePicker();
-                            final bool isDesktop = !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
-                            final source = isDesktop ? ImageSource.gallery : ImageSource.camera;
-                            final xfile = await picker.pickImage(source: source);
-                            if (xfile != null) {
-                              setSheetState(() {
-                                photoPath = xfile.path;
-                                isDirty = true;
-                              });
-                            }
-                          },
-                          child: photoPath != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.file(
-                                    File(photoPath!),
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: 100,
-                                  ),
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.add_a_photo, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Upload Photo',
-                                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant),
-                                    ),
-                                  ],
-                                ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: correctionCtrl,
-                        decoration: InputDecoration(
-                          labelText: 'Note (Action Taken)',
-                          border: const OutlineInputBorder(borderSide: BorderSide.none),
-                          filled: true,
-                          fillColor: Theme.of(ctx).colorScheme.surfaceContainerHighest,
-                        ),
-                        maxLines: 3,
-                        onChanged: (_) => markDirty(),
-                        validator: (v) =>
-                            v == null || v.trim().isEmpty ? 'Required' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      // H1 Fix: spinner lives inside the button; modal stays open during the call
-                      FilledButton(
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          elevation: 2,
-                          backgroundColor: Theme.of(ctx).colorScheme.primary,
-                        ),
-                        onPressed: isSubmitting
-                            ? null
-                            : () async {
-                                if (!formKey.currentState!.validate()) return;
-                                setSheetState(() => isSubmitting = true);
-                                try {
-                                  await _callManager(
-                                    () => _manager.submitEvidence(
-                                      plan,
-                                      correctionPlan:
-                                          correctionCtrl.text.trim(),
-                                      currentUserName: _userName,
-                                      photoPath: photoPath,
-                                    ),
-                                    successMsg:
-                                        'Evidence submitted — awaiting verification',
-                                  );
-                                  if (ctx.mounted) Navigator.pop(ctx);
-                                } finally {
-                                  if (ctx.mounted) {
-                                    setSheetState(() => isSubmitting = false);
-                                  }
-                                }
-                              },
-                        child: isSubmitting
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text('Submit Action'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
+      builder: (_) => SubmitEvidenceSheet(
+        plan: plan,
+        manager: _manager,
+        currentUserName: _userName,
+      ),
     );
   }
 
@@ -341,100 +165,26 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
 
   // ── Build role-aware action bar ──
   Widget? _buildActionBar(ActionPlanDto plan) {
-    if (_busy) {
-      return const SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      );
-    }
-
     final status = plan.status;
-    final canSubmitEvidence = _di<PolicyManager>().can(AppCapabilities.actionPlansWrite);
-    final canVerify = _di<PolicyManager>().can(AppCapabilities.actionPlansVerify);
+    if (status != 'open' && status != 'pending_verify') return null;
 
-    if (status == 'open') {
-      if (!canVerify) {
-        if (canSubmitEvidence) {
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: FilledButton.icon(
-                onPressed: () => _showSubmitEvidenceSheet(plan),
-                icon: const Icon(Icons.upload_file),
-                label: const Text('Submit Evidence'),
-              ),
-            ),
-          );
-        }
-      } else {
-        return SafeArea(
-          child: Container(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            child: Text(
-              'Waiting for Store Manager to submit evidence.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ),
-        );
-      }
-    }
+    final canSubmitEvidence =
+        _di<PolicyManager>().can(AppCapabilities.actionPlansWrite);
+    final canVerify =
+        _di<PolicyManager>().can(AppCapabilities.actionPlansVerify);
 
-    if (status == 'pending_verify') {
-      if (canVerify) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                      side: BorderSide(color: Theme.of(context).colorScheme.error),
-                    ),
-                    onPressed: () => _showRejectDialog(plan),
-                    child: const Text('Reject'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: FilledButton.icon(
-                    onPressed: () => _showVerifyDialog(plan),
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Verify & Close'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      } else {
-        return SafeArea(
-          child: Container(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            child: Text(
-              'Awaiting Auditor Verification.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ),
-        );
-      }
-    }
+    // Guard: open + no role that acts → no bar
+    if (status == 'open' && !canSubmitEvidence && !canVerify) return null;
 
-    return null; // No actions for this role/status combo
+    return ActionPlanActionBar(
+      plan: plan,
+      busy: _busy,
+      canSubmitEvidence: canSubmitEvidence,
+      canVerify: canVerify,
+      onSubmitEvidence: () => _showSubmitEvidenceSheet(plan),
+      onVerify: () => _showVerifyDialog(plan),
+      onReject: () => _showRejectDialog(plan),
+    );
   }
 
   @override
