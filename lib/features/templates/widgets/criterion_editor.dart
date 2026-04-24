@@ -8,8 +8,9 @@ class CriterionEditor extends StatelessWidget {
   final EditableCriterion criterion;
   final List<String> errors;
   final String? scoringMode; // optional — filters input type bottom sheet
-  final bool globalCcpEnabled;  // gates CCP toggle visibility
-  final bool globalRiskEnabled; // gates Risk toggle visibility
+  final bool globalCcpEnabled;     // gates CCP toggle visibility
+  final bool globalRiskEnabled;    // gates Risk toggle visibility
+  final bool globalConfirmRequired; // when true, locks Required toggle ON
 
   final VoidCallback onRemove;
   final VoidCallback onChanged;
@@ -21,6 +22,7 @@ class CriterionEditor extends StatelessWidget {
     this.scoringMode,
     this.globalCcpEnabled = false,
     this.globalRiskEnabled = false,
+    this.globalConfirmRequired = false,
     required this.onRemove,
     required this.onChanged,
   });
@@ -418,12 +420,16 @@ class CriterionEditor extends StatelessWidget {
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Required'),
-                  subtitle: const Text('Auditor must complete this field to submit'),
-                  value: criterion.isRequired,
-                  onChanged: (v) {
-                    setSheetState(() => criterion.isRequired = v);
-                    onChanged();
-                  },
+                  subtitle: globalConfirmRequired
+                      ? const Text('Required by global Confirm Correct setting')
+                      : const Text('Auditor must complete this field to submit'),
+                  value: globalConfirmRequired ? true : criterion.isRequired,
+                  onChanged: globalConfirmRequired
+                      ? null
+                      : (v) {
+                          setSheetState(() => criterion.isRequired = v);
+                          onChanged();
+                        },
                 ),
 
                 // CCP / Risk toggles — two-gate logic:

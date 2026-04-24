@@ -37,7 +37,6 @@ Future<void> showAuditCriterionSheet(
         builder: (ctx, _) {
           final theme = Theme.of(ctx);
           final answer = manager.answers[criterion.id];
-          final hasFaults = (answer?.numericValue ?? 0) > 0;
 
           return Padding(
             padding: EdgeInsets.only(
@@ -186,64 +185,7 @@ Future<void> showAuditCriterionSheet(
                         ),
                       ],
 
-                      // Confirm Correct button
-                      if (confirmRequired &&
-                          !hasFaults &&
-                          _isScored(criterion.inputType)) ...[
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: () {
-                              if (answer?.value == 'conform') {
-                                manager.clearAnswerValue(criterion.id);
-                              } else {
-                                manager.setAnswer(
-                                  criterion.id,
-                                  value: 'conform',
-                                );
-                              }
-                            },
-                            icon: Icon(
-                              answer?.value == 'conform'
-                                  ? Icons.check_circle
-                                  : Icons.check_circle_outline,
-                              size: 20,
-                            ),
-                            label: Text(
-                              answer?.value == 'conform'
-                                  ? 'Standard Verified'
-                                  : 'Confirm Correct',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: Theme.of(ctx).textTheme.bodyLarge?.fontSize,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: answer?.value == 'conform'
-                                  ? AppTheme.success
-                                  : theme.colorScheme.primaryContainer,
-                              foregroundColor: answer?.value == 'conform'
-                                  ? Colors.white
-                                  : theme.colorScheme.primary,
-                              disabledBackgroundColor: AppTheme.success,
-                              disabledForegroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              elevation: answer?.value == 'conform' ? 0 : 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                side: BorderSide(
-                                  color: answer?.value == 'conform'
-                                      ? Colors.transparent
-                                      : theme.colorScheme.primary.withAlpha(40),
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+
 
                       // CCP / RISK toggle buttons
                       if ((ccpEnabled || riskEnabled) &&

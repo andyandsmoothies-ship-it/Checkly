@@ -185,7 +185,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
           final c = ce.value;
 
           final meta = <String, dynamic>{};
-          if (c.isRequired) meta['isRequired'] = true;
+          if (c.isRequired || _confirmCorrect) meta['isRequired'] = true;
           if (c.inputType == 'scale' && c.scaleOptions.isNotEmpty) {
             meta['scaleOptions'] = c.scaleOptions;
           }
@@ -596,6 +596,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                         scoringMode: _scoringMode,
                         globalCcpEnabled: _ccpOverride,
                         globalRiskEnabled: _riskOverride,
+                        globalConfirmRequired: _confirmCorrect,
                         onRemoveSection: () => _removeSection(i),
                         onAddCriterion: (inputType) =>
                             _addCriterionToGroup(section, inputType),

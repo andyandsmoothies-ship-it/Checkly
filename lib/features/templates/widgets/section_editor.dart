@@ -37,6 +37,9 @@ class SectionEditor extends StatelessWidget {
   /// Defaults to false (toggles hidden) when not passed (sub-section recursion).
   final bool globalCcpEnabled;
   final bool globalRiskEnabled;
+  /// When true, locks the Required toggle ON in all CriterionEditor drawers.
+  /// Defaults to false when not passed (sub-section recursion).
+  final bool globalConfirmRequired;
 
   const SectionEditor({
     super.key,
@@ -57,6 +60,7 @@ class SectionEditor extends StatelessWidget {
     this.scoringMode,             // optional, null → no constraint
     this.globalCcpEnabled = false,
     this.globalRiskEnabled = false,
+    this.globalConfirmRequired = false,
   });
 
   @override
@@ -277,6 +281,7 @@ class SectionEditor extends StatelessWidget {
                   scoringMode: scoringMode,
                   globalCcpEnabled: globalCcpEnabled,
                   globalRiskEnabled: globalRiskEnabled,
+                  globalConfirmRequired: globalConfirmRequired,
                   onRemove: () => onRemoveCriterion(ci),
                   onChanged: onChanged,
                 ),
@@ -388,6 +393,7 @@ class SectionEditor extends StatelessWidget {
                 scoringMode: scoringMode,
                 globalCcpEnabled: globalCcpEnabled,
                 globalRiskEnabled: globalRiskEnabled,
+                globalConfirmRequired: globalConfirmRequired,
                 onRemove: () => onRemoveCriterion(ci),
                 onChanged: onChanged,
               ),

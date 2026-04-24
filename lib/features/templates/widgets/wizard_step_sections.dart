@@ -12,8 +12,9 @@ class WizardStepSections extends StatefulWidget {
   final List<EditableGroup> sections;
   final String scoringMode;
   final int currentSectionIndex;
-  final bool ccpEnabled;  // gates CCP toggle in criterion drawer
-  final bool riskEnabled; // gates Risk toggle in criterion drawer
+  final bool ccpEnabled;         // gates CCP toggle in criterion drawer
+  final bool riskEnabled;        // gates Risk toggle in criterion drawer
+  final bool confirmRequired;    // when true, locks Required toggle ON in criterion drawer
   final VoidCallback onChanged;
   final ValueChanged<int> onSectionChanged;
 
@@ -24,6 +25,7 @@ class WizardStepSections extends StatefulWidget {
     required this.currentSectionIndex,
     this.ccpEnabled = false,
     this.riskEnabled = false,
+    this.confirmRequired = false,
     required this.onChanged,
     required this.onSectionChanged,
   });
@@ -308,6 +310,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 scoringMode: widget.scoringMode,
                 globalCcpEnabled: widget.ccpEnabled,
                 globalRiskEnabled: widget.riskEnabled,
+                globalConfirmRequired: widget.confirmRequired,
                 onRemoveSection: () {
                   // No-op: wizard manages section removal via Step 2 (Structure)
                 },

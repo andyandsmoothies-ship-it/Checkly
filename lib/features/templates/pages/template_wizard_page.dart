@@ -266,6 +266,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
       'isCcp': c.isCcp,
       'isRisk': c.isRisk,
       'orderIndex': ci,
+      if (c.isRequired || _confirmCorrect) 'isRequired': true,
       if (isChoiceType && c.choiceOptions.isNotEmpty)
         'metadata': json.encode({'options': c.choiceOptions}),
       if (isScaleType && c.scaleOptions.isNotEmpty)
@@ -429,6 +430,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                 currentSectionIndex: _currentSectionIndex,
                 ccpEnabled: _ccpOverride,
                 riskEnabled: _riskOverride,
+                confirmRequired: _confirmCorrect,
                 onChanged: _markDirty,
                 onSectionChanged: (i) => setState(() => _currentSectionIndex = i),
               ),
