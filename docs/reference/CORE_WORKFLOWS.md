@@ -134,6 +134,7 @@ Notifications are generated server-side by `handle_action_plan_status_change()` 
 |:---|:---|:---|:---|
 | Action Plan Deadline | `scoring_logic_config.features.action_plan_deadline_days` | 7 Days | 1-90 Days |
 | Deadline Reminder | `scoring_logic_config.features.action_plan_reminder_days` | 2 Days | 1-30 Days |
+| Confirm Required | `scoring_logic_config.features.confirm_required` | false | true/false |
 
 > [!NOTE]
 > Both are configurable per template within the Template Builder. The reminder fires X days **before** the deadline.

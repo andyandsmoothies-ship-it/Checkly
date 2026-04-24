@@ -138,7 +138,6 @@ erDiagram
     USERS ||--|| USER_ROLES : "has"
     PROFILES }o--|| STORES : "assigned to"
     TEMPLATES ||--o{ GROUPS : "contains"
-    GROUPS ||--o{ GROUPS : "subsections"
     GROUPS ||--o{ CRITERIA : "contains"
     TEMPLATES ||--o{ SUBMISSIONS : "based on"
     STORES ||--o{ SUBMISSIONS : "audited at"
@@ -158,7 +157,7 @@ erDiagram
 | `user_roles` | 43 | user_id, role (enum: admin/auditor/SM/AM) |
 | `stores` | 37 | name, address, area_id (FK → areas), gps_lat/lng, is_active |
 | `templates` | 16 | title, type, scoring_logic_config (JSONB), version |
-| `groups` | 107 | template_id, parent_id (self-ref), title, weight, order_index |
+| `groups` | 107 | template_id, title, weight, order_index |
 | `criteria` | 98 | group_id, label, input_type, metadata (scale options), is_ccp, is_risk, points_weight |
 | `submissions` | 62 | template_id, store_id, auditor_id, total_score, status, GPS, snapshots |
 | `answers` | 55 | submission_id, criteria_id, value, numeric_value, photo_url |

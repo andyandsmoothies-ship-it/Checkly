@@ -120,7 +120,7 @@ Audit templates define the structure of an audit (what to check).
 | `type` | text? | Category: `qc`, `training`, `general`, `task force` |
 | `is_active` | boolean | Soft delete flag |
 | `version` | integer | Template version counter — incremented on every template/group/criterion update. Used for snapshot versioning |
-| `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, repeat config, and `actionPlanDeadlineDays` |
+| `scoring_logic_config` | jsonb? | Scoring rules: mode (`penalty`/`accumulation`/`checklist`/`survey`), density flags, repeat config, `actionPlanDeadlineDays`, and `confirm_required` |
 | `display_noun` | text? | Custom terminology override (e.g., "Inspection" instead of default derived from scoring mode) |
 | `created_by` | UUID? (FK → AspNetUsers) | Admin who created the template |
 | `created_at` | timestamptz | Record creation |
@@ -131,13 +131,12 @@ Audit templates define the structure of an audit (what to check).
 ### `groups`
 **Rows**: 4 | **Soft Delete**: `is_active = false`
 
-Sections within a template. Supports nesting (subsections via `parent_id`).
+Sections within a template.
 
 | Column | Type | Purpose |
 |--------|------|---------|
 | `id` | UUID (PK) | Unique group ID |
 | `template_id` | UUID (FK → templates) | Parent template |
-| `parent_id` | UUID? (FK → groups, self-ref) | Parent group for subsections (null = top-level) |
 | `title` | text | Section title |
 | `description` | text? | Section description |
 | `weight` | decimal? | Section weight for weighted scoring (optional) |

@@ -7,10 +7,9 @@ This document describes the technical implementation and business rules for all 
 
 ## 1. Hierarchy & Structure
 
-The scoring logic operates on a two-level hierarchy (Visual Folders Architecture):
-1.  **Section (Top-Level Group)**: Has a "Density Weight" (Percentage of the total audit score) and "Max Points" (Absolute contribution to the section points).
-2.  **Subsection (Visual Folder)**: Purely organizational. Has no impact on scoring math.
-3.  **Criteria (Audit Item)**: Has "Minus Per Fault", "Penalty Weights", and "Max Deduction Points" cap.
+The scoring logic operates on a two-level hierarchy:
+1.  **Section (Group)**: Has a "Density Weight" (Percentage of the total audit score) and "Max Points" (Absolute contribution to the section points).
+2.  **Criteria (Audit Item)**: Has "Minus Per Fault", "Penalty Weights", and "Max Deduction Points" cap.
 
 > [!NOTE]
 > **Non-scored input types** (`text`, `single_choice`, `multi_choice`) are data-collection only — they have no `pointsWeight`, are excluded from scoring calculations, and do not show points in any UI.
@@ -29,7 +28,7 @@ Each criterion calculates its deductions based on faults found.
 - **Total Criteria Deduction** = `MIN(Base Deduction, Criteria Cap)`
 
 ### B. Section Score (Top-Level Group)
-A section's score is a percentage representing the health of that section. Subsections (Visual Folders) are ignored in math.
+A section's score is a percentage representing the health of that section.
 - **Section Before** = `SUM(All Criteria Caps within the Section)`
 - **Section Deduction** = `SUM(All Total Criteria Deductions within the Section)`
 - **Section After** = `Section Before - Section Deduction`
