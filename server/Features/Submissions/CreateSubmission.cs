@@ -205,7 +205,7 @@ public static class CreateSubmission
         var now = DateTimeOffset.UtcNow;
         var submission = new Submission
         {
-            Id = Guid.NewGuid(),
+            Id = request.Id ?? Guid.NewGuid(),
             TemplateId = request.TemplateId,
             StoreId = request.StoreId,
             AuditorId = auditorId,

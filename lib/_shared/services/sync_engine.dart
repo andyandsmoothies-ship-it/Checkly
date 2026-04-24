@@ -152,6 +152,7 @@ class SyncEngine {
 
           // Build the JSON payload the API expects
           final payload = jsonEncode({
+            'id': dbRow.id,
             'templateId': dbRow.templateId,
             'storeId': dbRow.storeId,
             'clientScore': dbRow.clientScore,

@@ -16,7 +16,8 @@ public sealed record CreateSubmissionRequest(
     string? Status = null,
     DateTimeOffset? ScheduledAt = null,
     Guid? AssignToAuditorId = null,
-    bool HasGlobalRisk = false);  // Client signals a GlobalRisk was triggered during one-shot submission
+    bool HasGlobalRisk = false,
+    Guid? Id = null);  // Allows client-provided UUIDs for offline-first sync mapping
 
 public sealed record AnswerInput(
     Guid CriteriaId,
