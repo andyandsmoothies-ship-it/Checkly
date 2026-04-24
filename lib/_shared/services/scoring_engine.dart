@@ -171,9 +171,9 @@ class ScoringEngine {
 
         if (sectionBefore == 0) continue;
 
-        // CCP triggered: exclude this section from BOTH numerator and denominator.
-        // Mirrors server ScoringVerifier.VerifyPenalty which uses `continue` to skip the section.
-        // Previously Flutter added ratio=0 keeping it in the denominator -> wrong weighted average -> 400.
+        // CCP triggered: section score is 0%, but MUST keep its weight in the denominator!
+        // Previously this used `continue` which excluded it from the total entirely, 
+        // causing artificially high scores even when critical failures occurred.
         if (ccpTriggered) {
           sectionScores[section.id] = SectionScore(
             sectionId: section.id,
@@ -183,6 +183,7 @@ class ScoringEngine {
             hasCcpFailure: true,
             hasRiskFailure: riskInSection,
           );
+          sectionResults.add((ratio: 0.0, weight: section.weight));
           continue;
         }
 

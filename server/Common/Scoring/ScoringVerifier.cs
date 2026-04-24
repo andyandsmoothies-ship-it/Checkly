@@ -157,11 +157,14 @@ public sealed class ScoringVerifier
 
                 if (sectionBefore == 0) continue;
 
-                // CCP triggered → exclude this section from BOTH numerator and denominator.
-                // Mirrors Flutter ScoringEngine._calculatePenalty which uses `continue` to skip the section.
-                // Setting ratio=0 while keeping the weight in participatingWeight produces a different
-                // weighted average than Flutter → score mismatch → 400. (See GEMINI.override.md)
-                if (ccpTriggered) continue;
+                // CCP triggered → exclude this section's score (0%), but MUST keep its weight in the denominator!
+                // Previously, this used `continue;` which ignored the section entirely, resulting in high overall scores
+                // even when a critical failure occurred.
+                if (ccpTriggered)
+                {
+                    sectionResults.Add((0m, section.Weight ?? 0));
+                    continue;
+                }
 
                 var sectionAfter = Math.Max(0m, sectionBefore - sectionDeductions);
                 var sectionRatio = sectionAfter / sectionBefore;
