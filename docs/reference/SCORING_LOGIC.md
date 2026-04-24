@@ -7,10 +7,10 @@ This document describes the technical implementation and business rules for all 
 
 ## 1. Hierarchy & Structure
 
-The scoring logic operates on a three-level hierarchy:
-1.  **Section (Top-Level Group)**: Has a "Density Weight" (Percentage of the total audit score).
-2.  **Subsection (Sub-Group)**: Has "Max Points" (Absolute contribution to the section points).
-3.  **Criteria (Audit Item)**: Has "Minus Per Fault" and "Penalty Weights".
+The scoring logic operates on a two-level hierarchy (Visual Folders Architecture):
+1.  **Section (Top-Level Group)**: Has a "Density Weight" (Percentage of the total audit score) and "Max Points" (Absolute contribution to the section points).
+2.  **Subsection (Visual Folder)**: Purely organizational. Has no impact on scoring math.
+3.  **Criteria (Audit Item)**: Has "Minus Per Fault", "Penalty Weights", and "Max Deduction Points" cap.
 
 > [!NOTE]
 > **Non-scored input types** (`text`, `single_choice`, `multi_choice`) are data-collection only — they have no `pointsWeight`, are excluded from scoring calculations, and do not show points in any UI.
@@ -19,20 +19,20 @@ The scoring logic operates on a three-level hierarchy:
 
 ## 2. Core Formulas
 
-### A. Subsection Score
-Each subsection calculates its deductions based on faults found in its criteria.
-- **Criteria Deduction** = `(Faults × Minus Per Fault) + (Repeated Faults × Minus Per Fault)`
+### A. Criteria Deduction
+Each criterion calculates its deductions based on faults found.
+- **Base Deduction** = `(Faults × Minus Per Fault) + (Repeated Faults × Minus Per Fault)`
 - **Progressive Repeat Penalty** (optional, per-template): When enabled, repeated faults use **quadratic escalation** instead of linear:
-  - `Repeat Deduction = Repeated Faults² × Minus Per Fault` (capped at subsection max)
+  - `Repeat Deduction = Repeated Faults² × Minus Per Fault`
   - Controlled by `scoring_logic_config.features.progressive_repeat_penalty` (default: `false`)
-- **Criteria Override**: If a criteria has a specific `minus_impact` metadata value, it overrides the Subsection's `Minus Per Fault`.
-- **Subsection Deduction** = `SUM(Criteria Deductions)` (Capped at `Subsection Max Points`)
-- **Subsection Score** = `Subsection Max Points - Subsection Deduction`
+- **Criteria Cap**: The total deduction for a single criterion is capped by its `max_deduction_points` (or `points_weight`).
+- **Total Criteria Deduction** = `MIN(Base Deduction, Criteria Cap)`
 
 ### B. Section Score (Top-Level Group)
-A section's score is a percentage representing the health of that section.
-- **Section Before** = `SUM(All Subsection Max Points)`
-- **Section After** = `SUM(All Subsection Scores)`
+A section's score is a percentage representing the health of that section. Subsections (Visual Folders) are ignored in math.
+- **Section Before** = `SUM(All Criteria Caps within the Section)`
+- **Section Deduction** = `SUM(All Total Criteria Deductions within the Section)`
+- **Section After** = `Section Before - Section Deduction`
 - **Section Ratio** = `Section After / Section Before`
 
 ### C. Total Weighted Score (Percentage)
@@ -83,7 +83,7 @@ The system includes two types of logical overrides that bypass standard arithmet
 
 ## 4. Points HUD Logic (Live Feedback)
 The live HUD in the Audit Form displays "Points Earned / Points Possible".
-- **Points Possible**: `SUM(All Subsection Max Points)`
+- **Points Possible**: `SUM(All Criteria Caps)`
 - **Points Earned**: `SUM(Section After)` (where `Section After` is forced to 0 if a CCP is present in that section).
 
 > [!IMPORTANT]

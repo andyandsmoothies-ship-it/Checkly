@@ -166,6 +166,7 @@ Individual checklist items within a group that auditors evaluate.
 | `is_ccp` | boolean | Critical Control Point — fail = section score → 0% |
 | `is_risk` | boolean | RISK item — fail = entire audit score → 0% |
 | `points_weight` | decimal? | Deduction weight for standard scoring. `null` for non-scored types (`text`, `single_choice`, `multi_choice`) |
+| `max_deduction_points` | decimal? | Cap on deductions for this specific criterion (Visual Folders Architecture) |
 | `minus_per_fault` | decimal? | Deduction per fault for numeric input |
 | `minus_impact` | decimal? | C4 override: uses this instead of `points_weight`. **Offline Sync**: Persisted locally in Drift `CachedCriteria` table to prevent score mismatch on checklist audits. |
 | `order_index` | integer | Display order within group |

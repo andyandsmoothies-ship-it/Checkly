@@ -118,7 +118,9 @@ public sealed class ScoringVerifier
                     allCriteria.AddRange(criteria.Where(c => c.GroupId == sub.Id));
                 }
 
-                bool ccpTriggered = allCriteria.Any(c => c.IsCcp && HasFaults(c, answers));
+                bool ccpTriggered = allCriteria.Any(c => 
+                    (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) || 
+                    (c.IsCcp && HasFaults(c, answers)));
 
                 decimal sectionBefore = 0m;
                 decimal sectionDeductions = 0m;
@@ -203,8 +205,17 @@ public sealed class ScoringVerifier
         // Mirror of Flutter ScoringEngine._calculateChecklist():
         //   score = max(0, 100 - Σ(faults × pointsWeight))
         // NOT a ratio — raw deductions from 100.
+        var ccpTriggered = criteria.Any(c => 
+            (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) || 
+            (c.IsCcp && HasFaults(c, answers)));
+
         var totalDeductions = criteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
         var serverScore = Math.Max(0, 100 - totalDeductions);
+
+        if (ccpTriggered)
+        {
+            serverScore = 0m;
+        }
 
         return new VerificationResult(
             Math.Abs(clientScore - serverScore) <= Tolerance,
@@ -226,7 +237,9 @@ public sealed class ScoringVerifier
         foreach (var section in rootGroups)
         {
             var sectionCriteria = GetCriteriaForGroup(section.Id, groups, criteria);
-            var ccpTriggered = sectionCriteria.Any(c => c.IsCcp && HasFaults(c, answers));
+            var ccpTriggered = sectionCriteria.Any(c => 
+                (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) || 
+                (c.IsCcp && HasFaults(c, answers)));
 
             var sectionPossible = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
             var sectionEarned = 0m;
@@ -331,7 +344,8 @@ public sealed class ScoringVerifier
         // A score of 0 earned = fault. Mirror of Flutter ScoringEngine._kScaleType check.
         if (string.Equals(criterion.InputType, "scale", StringComparison.OrdinalIgnoreCase))
             return (answer.NumericValue ?? 0) == 0;
-        // Numeric mode (Value is null): numericValue > 0 → fault
+        // All other widgets (including numeric, single_choice, etc):
+        // Flutter sends the explicit fault count in NumericValue.
         return (answer.NumericValue ?? 0) > 0;
     }
 

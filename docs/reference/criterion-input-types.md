@@ -64,7 +64,7 @@ The scoring engine processes the template tree recursively. Input type choices a
 
 ```
 Criterion (inputType + isCcp + isRisk)
-    └─> Sub-Section score (maxPoints - deductions, capped)
+    └─> Criterion deduction (capped by maxDeductionPoints)
             └─> Section score (if ANY criterion has isCcp=true AND fails → section = 0%)
                     └─> Final score (if ANY criterion has isRisk=true AND fails → audit = 0%)
 ```
