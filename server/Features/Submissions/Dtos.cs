@@ -15,7 +15,8 @@ public sealed record CreateSubmissionRequest(
     string? IdempotencyKey = null,
     string? Status = null,
     DateTimeOffset? ScheduledAt = null,
-    Guid? AssignToAuditorId = null);
+    Guid? AssignToAuditorId = null,
+    bool HasGlobalRisk = false);  // Client signals a GlobalRisk was triggered during one-shot submission
 
 public sealed record AnswerInput(
     Guid CriteriaId,

@@ -63,7 +63,8 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
     {
         // Arrange
         var setup = await SeedDataAsync("accumulation", weight: 0, pointsWeight: 10);
-        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 10m, Value = "pass" } } };
+        // numericValue=0 → binary pass → earns full 10 points (Flutter binary accumulation logic)
+        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 0m, Value = "pass" } } };
 
         // Act
         var response = await setup.Client.PutAsJsonAsync($"/api/submissions/{setup.SubmissionId}/finalize", requestPayload);
@@ -77,6 +78,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         var rawMax = doc.RootElement.GetProperty("rawMaxPoints").GetDecimal();
         var isWeighted = doc.RootElement.GetProperty("isWeighted").ValueKind;
         
+        // numericValue=0 (no faults) → binary pass → earned = full pointsWeight = 10
         Assert.Equal(10m, rawEarned);
         Assert.Equal(10m, rawMax);
         Assert.Equal(JsonValueKind.Null, isWeighted);
@@ -154,7 +156,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
     {
         // Arrange
         var setup = await SeedDataAsync("accumulation", weight: 0, pointsWeight: 10);
-        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 10m, Value = "pass" } } };
+        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 0m, Value = "pass" } } };
         await setup.Client.PutAsJsonAsync($"/api/submissions/{setup.SubmissionId}/finalize", requestPayload);
 
         // Act
@@ -178,7 +180,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
     {
         // Arrange
         var setup = await SeedDataAsync("accumulation", weight: 0, pointsWeight: 10);
-        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 10m, Value = "pass" } } };
+        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 0m, Value = "pass" } } };
         await setup.Client.PutAsJsonAsync($"/api/submissions/{setup.SubmissionId}/finalize", requestPayload);
 
         // Act
@@ -198,7 +200,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
     {
         // Arrange
         var setup = await SeedDataAsync("accumulation", weight: 0, pointsWeight: 10);
-        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 10m, Value = "pass" } } };
+        var requestPayload = new { ClientScore = 100m, SectionScores = "{}", Answers = new[] { new { CriteriaId = setup.CriteriaId, NumericValue = 0m, Value = "pass" } } };
         await setup.Client.PutAsJsonAsync($"/api/submissions/{setup.SubmissionId}/finalize", requestPayload);
 
         // Act

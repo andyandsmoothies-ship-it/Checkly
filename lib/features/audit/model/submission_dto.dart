@@ -27,6 +27,7 @@ class CreateSubmissionRequest {
   final String? status;
   final DateTime? scheduledAt;
   final String? assignToAuditorId;
+  final bool hasGlobalRisk;
 
   const CreateSubmissionRequest({
     required this.templateId,
@@ -41,6 +42,7 @@ class CreateSubmissionRequest {
     this.status,
     this.scheduledAt,
     this.assignToAuditorId,
+    this.hasGlobalRisk = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -56,6 +58,7 @@ class CreateSubmissionRequest {
     if (status != null) 'status': status,
     if (scheduledAt != null) 'scheduledAt': scheduledAt!.toIso8601String(),
     if (assignToAuditorId != null) 'assignToAuditorId': assignToAuditorId,
+    'hasGlobalRisk': hasGlobalRisk,
   };
 }
 

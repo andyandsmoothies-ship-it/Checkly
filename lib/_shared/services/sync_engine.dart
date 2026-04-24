@@ -144,6 +144,12 @@ class SyncEngine {
           // Fetch answers for this submission from the normalized table
           final answers = await _outboxDao.getAnswersForSubmission(dbRow.id);
 
+          // Check if this submission has pending global risk triggers.
+          // Since risk outbox drains AFTER submission outbox, the risks are not on
+          // the server yet. We must signal hasGlobalRisk=true so CreateSubmission.cs
+          // uses 0 as the expected serverScore, matching the Flutter-calculated clientScore.
+          final hasGlobalRisk = await _submissionRiskOutboxDao.hasPendingRisks(dbRow.id);
+
           // Build the JSON payload the API expects
           final payload = jsonEncode({
             'templateId': dbRow.templateId,
@@ -158,6 +164,7 @@ class SyncEngine {
             // Non-null → SyncApiAdapter routes to PUT /submissions/{id}/finalize.
             // Null    → SyncApiAdapter uses POST /submissions (fresh audit path).
             'targetSubmissionId': dbRow.targetSubmissionId,
+            'hasGlobalRisk': hasGlobalRisk,
             'answers': answers.map(buildAnswerPayload).toList(),
           });
 

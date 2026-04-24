@@ -18,18 +18,41 @@ public class ScoringVerifierRawPointsTests
         new() { Id = Guid.NewGuid(), CriteriaId = criteriaId, NumericValue = numericValue, Value = value, RepeatedFaults = repeatedFaults };
 
     // TC-S1-08
+    // Mirrors Flutter ScoringEngine._calculateAccumulation():
+    // Non-scale inputs use BINARY logic — numericValue is a fault COUNT.
+    // numericValue=0 → no faults → earn full pointsWeight.
+    // numericValue>0 → has faults → earn 0 points.
     [Fact]
-    public void VerifyAccumulation_ReturnsRawFields()
+    public void VerifyAccumulation_ReturnsRawFields_FullPointsWhenNoFaults()
     {
         var sectionId = Guid.NewGuid();
         var c1 = Guid.NewGuid();
         var groups = new[] { MakeSection(sectionId, weight: 0) };
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 15m) };
-        var answers = new[] { MakeAnswer(c1, numericValue: 10m, value: "input") };
+        // numericValue=0 → binary pass → earns full 15 points
+        var answers = new[] { MakeAnswer(c1, numericValue: 0m, value: "pass") };
 
-        dynamic result = _sut.Verify(66.67m, answers, groups, criteria, scoringMode: "accumulation");
+        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoringMode: "accumulation");
 
-        Assert.Equal(10m, result.RawEarned);
+        Assert.Equal(15m, result.RawEarned);
+        Assert.Equal(15m, result.RawMax);
+        Assert.Null(result.IsWeighted);
+    }
+
+    // TC-S1-08b: fault in accumulation earns 0 points for that criterion
+    [Fact]
+    public void VerifyAccumulation_ZeroPointsWhenFaultPresent()
+    {
+        var sectionId = Guid.NewGuid();
+        var c1 = Guid.NewGuid();
+        var groups = new[] { MakeSection(sectionId, weight: 0) };
+        var criteria = new[] { MakeCriterion(c1, sectionId, points: 15m) };
+        // numericValue=1 → binary fail → earns 0 points
+        var answers = new[] { MakeAnswer(c1, numericValue: 1m, value: null) };
+
+        dynamic result = _sut.Verify(0m, answers, groups, criteria, scoringMode: "accumulation");
+
+        Assert.Equal(0m, result.RawEarned);
         Assert.Equal(15m, result.RawMax);
         Assert.Null(result.IsWeighted);
     }

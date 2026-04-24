@@ -330,12 +330,28 @@ class ScoringEngine {
       (s) => [...s.criteria, ...s.subsections.expand((sub) => sub.criteria)],
     );
 
+    bool ccpTriggered = false;
+    for (final c in allCriteria) {
+      final answer = answerMap[c.id];
+      final isAnswerCcp = answer?.isCcp ?? false;
+      final isTemplateCcp = c.isCcp && answer != null && _hasFault(c, answer);
+      if (isAnswerCcp || isTemplateCcp) {
+        ccpTriggered = true;
+        break;
+      }
+    }
+
     final totalDeductions = allCriteria.fold<double>(
       0.0,
       (sum, c) =>
           sum + _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
     );
-    final score = max(0.0, 100.0 - totalDeductions);
+    double score = max(0.0, 100.0 - totalDeductions);
+    
+    if (ccpTriggered) {
+      score = 0.0;
+    }
+
     return ScoringResult(
       totalScore: hasRiskFailure ? 0.0 : _round2(score),
       hasRiskFailure: hasRiskFailure,

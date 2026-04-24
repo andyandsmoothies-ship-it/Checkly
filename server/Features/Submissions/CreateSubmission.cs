@@ -167,8 +167,14 @@ public static class CreateSubmission
                 }
             }
 
+            // Global Risk: for one-shot submissions, the client sends hasGlobalRisk in the payload.
+            // Since there are no persisted SubmissionRisks yet (submission doesn't exist),
+            // we rely entirely on the flag the client sends. This mirrors FinalizeSubmission which
+            // loads from DB — but here we have no submission row yet.
+            bool hasGlobalRisk = request.HasGlobalRisk;
+
             var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
-                scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty);
+                scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty, hasGlobalRisk: hasGlobalRisk);
 
             var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
             if (!verification.IsValid)

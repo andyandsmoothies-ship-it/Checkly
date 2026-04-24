@@ -23,7 +23,7 @@ class ScoreFormatter {
     }
 
     // penalty or unknown / null mode
-    return totalScore != null ? '${_fmtPct(totalScore)}' : '—';
+    return totalScore != null ? _fmtPct(totalScore) : '—';
   }
 
   /// Formats a points value — whole numbers show no decimal, fractional show 1 dp.

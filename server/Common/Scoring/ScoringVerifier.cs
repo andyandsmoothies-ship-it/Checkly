@@ -263,20 +263,11 @@ public sealed class ScoringVerifier
                     else
                     {
                         var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
-                        var isConform = string.Equals(answer.Value, "conform", StringComparison.OrdinalIgnoreCase);
-
-                        if (answer.NumericValue.HasValue && answer.Value != null && !isNonConform && !isConform)
-                        {
-                            // Numeric answer with explicit value label (e.g. "input"): numericValue IS earned points
-                            sectionEarned += answer.NumericValue.Value;
-                        }
-                        else
-                        {
-                            // Binary: full points if numericValue=0 (no faults), not non_conform, no repeated faults
-                            var faults = answer.NumericValue ?? 0;
-                            if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
-                                sectionEarned += c.PointsWeight ?? 0;
-                        }
+                        
+                        // Binary: full points if numericValue=0 (no faults), not non_conform, no repeated faults
+                        var faults = answer.NumericValue ?? 0;
+                        if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
+                            sectionEarned += c.PointsWeight ?? 0;
                     }
                 }
             }
