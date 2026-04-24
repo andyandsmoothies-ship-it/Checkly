@@ -38,6 +38,9 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 - [ ] **The "Root" Suicide**: Can an administrator accidentally revoke their own root access? Is there a hard-coded superuser guard, or can the system permanently brick its own control plane?
 - [ ] **Contextual Illusion (IDOR)**: Does the authorization check just verify a string (e.g., `can_write`), but forget to verify the *target* ID (e.g., `Resource == User.Resource`)? Is it relying on a generic role check to do a job Attribute-Based Access Control (ABAC) should be doing?
 
+### Critic 5: Cognitive Debt (The Easy Button)
+- [ ] **Hasty Abstractions**: Did the AI generate an overly complex Design Pattern (e.g., massive AbstractFactories, Repositories) when a simple JSON dictionary, flat struct, or static function would suffice? Flag and demand deletion of fake-smart architectural bloat.
+
 > **@@SCAN**: Execute the interrogation. Record exact failure scenarios for each critic.
 
 ## Phase 3: The Verdict Payload

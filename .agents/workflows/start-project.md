@@ -36,9 +36,10 @@ description: Guided workflow to initialize a brand new project, pick a tech stac
 | Step | Execution Contract |
 |---|---|
 | **Documentation**| Create `project_charter.md` to permanently capture the foundation. |
-| **Charter Content**| Must include: `1. Exec Summary`, `2. The Stack`, `3. Feature In-Scope`, `4. Feature Out-of-Scope (No-Gos)`, `5. Target Audience & Constraints`. |
+| **Domain Glossary**| MANDATORY: Establish a "Ubiquitous Language" defining strict names for core entities (e.g., "Auditor" vs "User") to prevent future AI hallucination. |
+| **Charter Content**| Must include: `1. Exec Summary`, `2. The Stack`, `3. Domain Glossary`, `4. Feature In-Scope`, `5. Feature Out-of-Scope (No-Gos)`. |
 
-## Phase 4: Scaffolding
+## Phase 4: Scaffolding & Governance
 
 > [!CAUTION]
 > **[SYSTEM_GUARD: Anti-Terminal-Bloat]**: DO NOT automatically run `dotnet new`, `flutter create`, or heavy CLI generators on behalf of the user. Terminal hangs will break the session.
@@ -47,6 +48,7 @@ description: Guided workflow to initialize a brand new project, pick a tech stac
 |---|---|
 | **Instructions** | Provide the exact copy-paste terminal commands needed to build the base folders for the chosen stack (e.g., `npx create-next-app`, `flutter create`, etc). |
 | **Execution** | MANDATORY: Prompt the user: *"Please run these commands in your IDE terminal. Reply 'Done' when the folders exist."* |
+| **The Constitution**| Ask the user: *"What are the strict Don'ts or specific quirks for this project?"* Generate a local `GEMINI.md` file in the project root to prevent Context Rot. |
 | **Yield** | YIELD execution until user confirms scaffolding is complete. |
 
 ## Phase 5: Handoff & Routing

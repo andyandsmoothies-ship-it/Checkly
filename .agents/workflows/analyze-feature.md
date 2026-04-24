@@ -33,6 +33,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Vector | Execution Contract |
 |---|---|
+| **The Scout Pattern** | MANDATORY: To prevent Context Rot and hitting the 1M token wall, NEVER load full files blindly. You MUST use `grep_search` to find the exact line numbers needed, then use JIT `view_file` to read only those specific chunks. |
 | **Topology & Baseline** | Parse config files (.csproj, pubspec.yaml). Find structural boundaries. |
 | **Blind Objective Research** | Extract facts only. Execute a blind dependency scan to learn how the current code actually works before planning. |
 | **Hostile Validation** | If an input artifact (ADR/Research) is provided, physically validate its assumptions via grep_search. Reject impossible ideas. |

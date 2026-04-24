@@ -41,7 +41,9 @@ Workflow: /analyze-epic | Track: C
 | **Hostile Artifact Validation** | MANDATORY: If an input artifact (e.g., ADR or Research) is provided, you MUST physically validate its assumptions against the real codebase. Check 1) Does the idea violate Clean Architecture boundaries? 2) Does it trigger severe unintended consequences (e.g., Router eviction)? If the input artifact contains physically dangerous or impossible ideas, you MUST override and reject them. Be a gatekeeper, not a blind translator. |
 | **Skill Load** | Load abstract architectural skills (e.g., `clean-architecture`). |
 | **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
-| **Options** | Explicitly define >= 2 architectural alternatives. |
+| **The Deep Module Mandate** | MANDATORY: Ensure all core APIs are "Deep Modules" (simple interfaces hiding deep complexity). Explicitly reject "Shallow Modules" (wrappers that just pass data around). |
+| **Core vs. Leaf Map** | MANDATORY: Explicitly declare which components are **Core Nodes** (needs robust design) and which are **Leaf Nodes** (needs simple, WET code). |
+| **Cognitive Debt Budget**| MANDATORY: If proposing a complex Design Pattern (e.g. Factory, EventBus), you MUST justify why a simple flat structure or static function would fail. |
 | **Infrastructure Check**| MANDATORY: Identify if the Epic is "Backend-Only Infrastructure" (e.g., cron jobs, DB locks). If true, exempt the Epic from UI and Cross-Platform API generation. |
 | **Dependency Root Tracing**| MANDATORY: Before proposing an architecture, you MUST execute `grep_search` using exact entity names across the entire project. You must mathematically prove the 3-Tier Boundary: Database roots, DI Container registrations, and Cross-Platform API contracts. |
 | **Trade-Off Matrix**| MANDATORY: For each alternative, explicitly document Pros, Cons, and Blast Radius. Justify the chosen option over the ideal enterprise option. |

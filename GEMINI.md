@@ -16,8 +16,8 @@
 
 ### The Simplicity First Mandate (STRICT)
 <SYSTEM_GUARD type="STRICT" name="SimplicityFirst">
-- **Rule**: Minimum code that solves the problem. Nothing speculative.
-- **Enforcement**: Good code solves today's problem simply, not tomorrow's problem prematurely. No features beyond what was asked. No abstractions or interfaces for single-use code. No "flexibility" or "configurability" that wasn't requested. If you write 200 lines and it could be 50, rewrite it.
+- **Rule**: Minimum code that solves the problem. Avoid Hasty Abstractions (AHA).
+- **Enforcement**: Duplication is cheaper than the wrong abstraction (WET - Write Everything Twice). You are strictly forbidden from extracting shared helpers, base classes, or interfaces for leaf nodes unless you see the exact same logic used in at least 3 different places. If you write 200 lines and it could be 50 simple lines, rewrite it without complex patterns.
 </SYSTEM_GUARD>
 
 ### The 3-Step Database Migration Pipeline (STRICT)
@@ -82,6 +82,12 @@ After any significant implementation, debug, or refactor, assess whether a new l
 <SYSTEM_GUARD type="STRICT" name="ScientificDebugging">
 - **Rule**: During active diagnostics, an experimental code change MUST NOT exceed 5 lines. 
 - **Enforcement**: If a test fails twice under the same hypothesis, you are forbidden from trying a third time. You must formally reject the hypothesis in `.agents/tmp/DEBUG.md` and pivot to a new theory.
+</SYSTEM_GUARD>
+
+### The Zero-Ghost Policy (STRICT)
+<SYSTEM_GUARD type="STRICT" name="ZeroGhostPolicy">
+- **Rule**: Do not write new features in an environment with existing errors or warnings.
+- **Enforcement**: If you open a codebase and the baseline build has existing warnings (ghosts), you MUST halt feature work and run the `de-sloppify` skill to fix them. If you see a warning during implementation, ignore it unless it was created in the current slice, preventing you from spiraling into unrelated code.
 </SYSTEM_GUARD>
 
 ---

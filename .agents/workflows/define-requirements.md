@@ -22,12 +22,12 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Actors & RBAC**: Explicitly list every user role (e.g., Admin, Auditor) and their strict permissions.
 - [ ] **Use Case Narrative**: Write the Main Success Scenario and all Alternate Flows (extensions/error states).
 - [ ] **Use-Case Slicing**: Apply Use-Case 3.0 slicing. Break the large use case into smaller, logical, deliverable slices.
-- [ ] **Test Cases (Acceptance Criteria)**: For each slice, explicitly define the plain-English Test Cases (Rules) that MUST pass before implementation begins. These will fuel the `/atdd` workflow.
+- [ ] **Testability Check (Binary Truth)**: For each slice, define plain-English Test Cases (Rules). MANDATORY: Acceptance criteria must be strictly binary (e.g. "Score returns 0", not "Score works well"). If a requirement is vague, push back and force a binary test contract.
 
 > **@@SCAN**: (1) Are Use Cases sliced? (2) Do slices have plain-English Test Cases?
 
 ## Phase 3: The Fit Check
-- [ ] **Apply Shaping**: Propose 1-3 high-level UX/Feature "Shapes" (mechanisms, not code).
+- [ ] **Apply Shaping**: Propose 1-3 high-level UX/Feature "Shapes" (mechanisms, not code). MANDATORY: To prevent Cognitive Debt, you MUST include a "Dumb Shape" (the absolute simplest flat/procedural solution) alongside any complex patterns.
 - [ ] **Fit Matrix**: Create a Markdown table comparing the proposed Shapes against the Requirements.
 - [ ] **Identify Unknowns**: Flag any unresolved business logic with ⚠️.
 

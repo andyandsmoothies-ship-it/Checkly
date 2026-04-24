@@ -55,10 +55,11 @@ Before ANY workflow response involving analysis, design, or implementation:
 - **Rule:** If a task requires modifying more than 2 files or spans multiple architectural boundaries (e.g., Frontend + Backend), you are STRICTLY PROHIBITED from executing it in a single prompt cycle.
 - **Action:** You MUST slice the implementation into Micro-Steps. Execute ONE file or boundary, run the compiler/tests to verify, and explicitly YIELD to the user before starting the next file.
 
-## The "Pull Context" Mandate (JIT Reading)
-**To cure AI Attention Collapse and context bloat:**
-- **Rule:** Workflows must NEVER "Push" massive raw code into prompts. PROHIBITED from receiving commands like "Read all these files".
-- **Action:** Agents MUST enforce Just-In-Time (JIT) dependency loading. You are required to use narrow `view_file` or `grep_search` ONLY at the exact macro step that requires that specific context.
+## Context Pruning & The "Pull Context" Mandate
+**To cure Context Rot and AI Attention Collapse:**
+- **Rule:** Workflows must NEVER "Push" massive raw code into prompts. 
+- **Action:** Enforce JIT (Just-In-Time) loading via narrow `view_file` or `grep_search` ONLY at the macro step requiring it.
+- **Pruning:** During long loops, actively summarize your state and explicitly state what old context you are dropping from memory to keep the working memory pristine.
 
 ## Terminal File System Protocol (STRICT)
 When writing or moving files via terminal commands (e.g., `copy`, `move`):
