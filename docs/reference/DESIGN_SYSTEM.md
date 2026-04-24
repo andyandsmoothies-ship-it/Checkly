@@ -29,8 +29,9 @@
 | **Is Required Indicator** | Red asterisk `*` appended to criterion titles to denote mandatory fields | `CriterionCard` |
 | **Scoring Rules Card** | 3 groups: Scoring Formula → Critical Failure Rules → Audit Behavior | `_ScoringRulesCard` |
 | **Layout Locking** | Root sections commit to flat criteria OR sub-sections, never both | `_SectionEditor` |
-| **Scored Choices Input** | Radio-tile selector for scored choice criteria (e.g., Poor=0/Good=5/Excellent=10) | `_ScaleInput` |
-| **Input Type Badge** | Colored badge on collapsed criterion row showing input type (YES·NO, 0·1·2, LOW→HIGH, 1 OF N, N OF N) | `_CriteriaEditor.build()` |
+| **Scored Choices Input** | Radio-tile selector for scored choice criteria (e.g., Poor=0/Good=5/Excellent=10) | `CriterionScaleEditor` |
+| **Input Type Badge** | Colored badge on collapsed criterion row showing input type (YES·NO, 0·1·2, LOW→HIGH, 1 OF N, N OF N) | `CriterionEditor.build()` |
+| **Quick Jump Navigation** | Bottom sheet allowing quick navigation to any section/group | `AuditQuickJumpSheet` |
 | **Empty States** | Standardized fallback for empty datasets (icons, title, subtitle). Never use raw `Text`. | `ChecklyEmptyState` widget |
 
 ---
