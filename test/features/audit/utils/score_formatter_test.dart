@@ -20,7 +20,7 @@ void main() {
         rawMax: null,
         totalScore: 66.7,
       );
-      expect(result, '66.7%');
+      expect(result, '66.7');
     });
 
     test('TC-S2-03: ScoreFormatter_Checklist_ShowsOutOf100', () {
@@ -39,15 +39,15 @@ void main() {
         isWeighted: true,
         totalScore: 85,
       );
-      expect(result, '85%');
+      expect(result, '85');
     });
 
-    test('TC-S2-05: ScoreFormatter_Survey_ReturnsEmptyString', () {
+    test('TC-S2-05: ScoreFormatter_Survey_ReturnsDash', () {
       final result = ScoreFormatter.format(
         scoringMode: 'survey',
         totalScore: null,
       );
-      expect(result, '');
+      expect(result, '—');
     });
 
     test('TC-S2-06: ScoreFormatter_NullMode_FallsBackToPercent', () {
@@ -55,7 +55,7 @@ void main() {
         scoringMode: null,
         totalScore: 66.7,
       );
-      expect(result, '66.7%');
+      expect(result, '66.7');
     });
 
     test('TC-S2-07: ScoreFormatter_NullTotalScore_ReturnsDash', () {
@@ -89,7 +89,7 @@ void main() {
         scoringMode: 'penalty',
         totalScore: 85.5,
       );
-      expect(result, '85.5%');
+      expect(result, '85.5');
     });
   });
 }

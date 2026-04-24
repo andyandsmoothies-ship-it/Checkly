@@ -9,13 +9,13 @@ class ScoreFormatter {
     double? totalScore,
     bool? isWeighted,
   }) {
-    if (scoringMode == 'survey') return '';
+    if (scoringMode == 'survey') return '—';
 
     if (scoringMode == 'accumulation') {
       if (rawEarned != null && rawMax != null) {
         return '${_fmtPts(rawEarned)} / ${_fmtPts(rawMax)} pts';
       }
-      return totalScore != null ? '${_fmtPct(totalScore)}%' : '—';
+      return totalScore != null ? _fmtPct(totalScore) : '—';
     }
 
     if (scoringMode == 'checklist') {

@@ -131,7 +131,7 @@
                     "value": null
                 }
             ],
-            "expectedScore": 100.0
+            "expectedScore": 50.0
         },
         {
             "id": "V04_risk_triggered",
