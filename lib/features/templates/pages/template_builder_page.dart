@@ -514,6 +514,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                       riskOverride: _riskOverride,
                       weightedDensity: _weightedDensity,
                       progressiveRepeat: _progressiveRepeat,
+                      confirmRequired: _confirmCorrect,
                       deadlineCtrl: _deadlineCtrl,
                       reminderCtrl: _reminderCtrl,
                       onCcpChanged: (v) => setState(() => _ccpOverride = v),
@@ -522,6 +523,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
                           setState(() => _weightedDensity = v),
                       onProgressiveChanged: (v) =>
                           setState(() => _progressiveRepeat = v),
+                      onConfirmChanged: (v) =>
+                          setState(() => _confirmCorrect = v),
                     ),
                   ),
 

@@ -38,13 +38,6 @@ class SectionEditor extends StatelessWidget {
   final bool globalCcpEnabled;
   final bool globalRiskEnabled;
 
-  /// True when the current scoring mode allows sub-sections.
-  /// Survey and Checklist modes enforce a flat structure.
-  bool get _allowSubSections =>
-      scoringMode == null ||
-      scoringMode == 'penalty' ||
-      scoringMode == 'accumulation';
-
   const SectionEditor({
     super.key,
     required this.index,
@@ -291,36 +284,18 @@ class SectionEditor extends StatelessWidget {
             }),
 
             // "Add Criterion" ghost card
-            if (isRoot && section.subSections.isEmpty || !isRoot)
-              GhostAddButton(
-                label: 'Add Criterion',
-                icon: Icons.add,
-                onPressed: () => onAddCriterion('pass_fail'),
-                tintColor: Theme.of(context).colorScheme.primary,
-              ),
+            GhostAddButton(
+              label: 'Add Criterion',
+              icon: Icons.add,
+              onPressed: () => onAddCriterion('pass_fail'),
+              tintColor: Theme.of(context).colorScheme.primary,
+            ),
 
-            // Gap 1: Sub-sections
-            if (isRoot) ...[
-              if (section.criteria.isNotEmpty || section.subSections.isNotEmpty)
-                const Divider(),
-
-              if (section.criteria.isEmpty && section.subSections.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Center(
-                    child: Text(
-                      '— OR —',
-                      style: TextStyle(
-                        fontSize: theme.textTheme.labelSmall?.fontSize,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.4,
-                        ),
-                        letterSpacing: 2.0,
-                      ),
-                    ),
-                  ),
-                ),
+            // Legacy sub-sections rendering (read-only — Visual Folders arch).
+            // The Add Sub-Section button has been removed to enforce the 2-level
+            // hierarchy. This loop renders existing sub-sections on old templates.
+            if (isRoot && section.subSections.isNotEmpty) ...[
+              const Divider(),
               ...section.subSections.asMap().entries.map((e) {
                 final si = e.key;
                 final sub = e.value;
@@ -349,24 +324,6 @@ class SectionEditor extends StatelessWidget {
                   ),
                 );
               }),
-              if (section.criteria.isEmpty || !_allowSubSections)
-                GhostAddButton(
-                  label: 'Add Sub-Section',
-                  icon: Icons.subdirectory_arrow_right,
-                  tintColor: _allowSubSections
-                      ? theme.colorScheme.outline
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.45),
-                  onPressed: _allowSubSections
-                      ? onAddSubSection
-                      : () => ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Sub-sections require Penalty or Accumulation mode.',
-                              ),
-                              duration: Duration(seconds: 3),
-                            ),
-                          ),
-                ),
             ],
           ],
         ),
@@ -436,78 +393,47 @@ class SectionEditor extends StatelessWidget {
               ),
             );
           }),
-          // "Add Criterion" ghost button — only when no sub-sections
-          if (section.subSections.isEmpty)
-            GhostAddButton(
-              label: 'Add Criterion',
-              icon: Icons.add,
-              onPressed: () => onAddCriterion('pass_fail'),
-              tintColor: theme.colorScheme.primary,
-            ),
-          // Sub-sections zone
-          if (section.criteria.isNotEmpty || section.subSections.isNotEmpty)
+          // "Add Criterion" ghost button
+          GhostAddButton(
+            label: 'Add Criterion',
+            icon: Icons.add,
+            onPressed: () => onAddCriterion('pass_fail'),
+            tintColor: theme.colorScheme.primary,
+          ),
+          // Legacy sub-sections rendering (read-only — Visual Folders arch).
+          // The Add Sub-Section button has been removed to enforce the 2-level
+          // hierarchy. This loop renders existing sub-sections on old templates.
+          if (section.subSections.isNotEmpty) ...[
             const Divider(),
-          if (section.criteria.isEmpty && section.subSections.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Center(
-                child: Text(
-                  '— OR —',
-                  style: TextStyle(
-                    fontSize: theme.textTheme.labelSmall?.fontSize,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                    letterSpacing: 2.0,
-                  ),
+            ...section.subSections.asMap().entries.map((e) {
+              final si = e.key;
+              final sub = e.value;
+              final subKey = '$sKey:sub:$si';
+              return KeyedSubtree(
+                key: errorKeys?[subKey] ?? ObjectKey(sub),
+                child: SectionEditor(
+                  index: si,
+                  section: sub,
+                  depth: depth + 1,
+                  densityEnabled: densityEnabled,
+                  errors: errors,
+                  errorKeyPrefix: subKey,
+                  errorKeys: errorKeys,
+                  onRemoveSection: () => onRemoveSubSection?.call(si),
+                  onAddCriterion: (inputType) {
+                    sub.criteria.add(EditableCriterion(inputType: inputType));
+                    onChanged();
+                  },
+                  onRemoveCriterion: (ci) {
+                    sub.criteria[ci].dispose();
+                    sub.criteria.removeAt(ci);
+                    onChanged();
+                  },
+                  onChanged: onChanged,
                 ),
-              ),
-            ),
-          ...section.subSections.asMap().entries.map((e) {
-            final si = e.key;
-            final sub = e.value;
-            final subKey = '$sKey:sub:$si';
-            return KeyedSubtree(
-              key: errorKeys?[subKey] ?? ObjectKey(sub),
-              child: SectionEditor(
-                index: si,
-                section: sub,
-                depth: depth + 1,
-                densityEnabled: densityEnabled,
-                errors: errors,
-                errorKeyPrefix: subKey,
-                errorKeys: errorKeys,
-                onRemoveSection: () => onRemoveSubSection?.call(si),
-                onAddCriterion: (inputType) {
-                  sub.criteria.add(EditableCriterion(inputType: inputType));
-                  onChanged();
-                },
-                onRemoveCriterion: (ci) {
-                  sub.criteria[ci].dispose();
-                  sub.criteria.removeAt(ci);
-                  onChanged();
-                },
-                onChanged: onChanged,
-              ),
-            );
-          }),
-          if (section.criteria.isEmpty || !_allowSubSections)
-            GhostAddButton(
-              label: 'Add Sub-Section',
-              icon: Icons.subdirectory_arrow_right,
-              tintColor: _allowSubSections
-                  ? theme.colorScheme.outline
-                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.45),
-              onPressed: _allowSubSections
-                  ? onAddSubSection
-                  : () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Sub-sections require Penalty or Accumulation mode.',
-                          ),
-                          duration: Duration(seconds: 3),
-                        ),
-                      ),
-            ),
+              );
+            }),
+          ],
         ],
       ),
     );

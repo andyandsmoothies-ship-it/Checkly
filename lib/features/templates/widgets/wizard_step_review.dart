@@ -17,12 +17,14 @@ class WizardStepReview extends StatefulWidget {
   final bool riskOverride;
   final bool weightedDensity;
   final bool progressiveRepeat;
+  final bool confirmRequired;
   final TextEditingController deadlineCtrl;
   final TextEditingController reminderCtrl;
   final ValueChanged<bool> onCcpChanged;
   final ValueChanged<bool> onRiskChanged;
   final ValueChanged<bool> onDensityChanged;
   final ValueChanged<bool> onProgressiveChanged;
+  final ValueChanged<bool> onConfirmChanged;
 
   /// Called whenever the computed validity changes so the parent can
   /// enable/disable the Save button.
@@ -38,12 +40,14 @@ class WizardStepReview extends StatefulWidget {
     required this.riskOverride,
     required this.weightedDensity,
     required this.progressiveRepeat,
+    required this.confirmRequired,
     required this.deadlineCtrl,
     required this.reminderCtrl,
     required this.onCcpChanged,
     required this.onRiskChanged,
     required this.onDensityChanged,
     required this.onProgressiveChanged,
+    required this.onConfirmChanged,
     required this.onValidityChanged,
   });
 
@@ -441,12 +445,14 @@ class _WizardStepReviewState extends State<WizardStepReview> {
             riskOverride: widget.riskOverride,
             weightedDensity: widget.weightedDensity,
             progressiveRepeat: widget.progressiveRepeat,
+            confirmRequired: widget.confirmRequired,
             deadlineCtrl: widget.deadlineCtrl,
             reminderCtrl: widget.reminderCtrl,
             onCcpChanged: widget.onCcpChanged,
             onRiskChanged: widget.onRiskChanged,
             onDensityChanged: widget.onDensityChanged,
             onProgressiveChanged: widget.onProgressiveChanged,
+            onConfirmChanged: widget.onConfirmChanged,
           ),
         ],
         const SizedBox(height: 16),
