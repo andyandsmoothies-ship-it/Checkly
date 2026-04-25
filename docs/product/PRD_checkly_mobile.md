@@ -52,13 +52,8 @@
 
 ### 3.2 Audit Execution (The Core Flow)
 
-```mermaid
-flowchart LR
-    A["Select Template\n& Store"] --> B["Fill Audit\n(Section by Section)"]
-    B --> C["Capture Photos\n& Notes"]
-    C --> D["Review Score\n(Real-time)"]
-    D --> E["Submit Audit"]
-    E --> F["Auto-generate\nAction Plans"]
+```text
+[Select Template & Store] --> [Fill Audit] --> [Capture Photos & Notes] --> [Review Score] --> [Submit] --> [Auto-generate Action Plans]
 ```
 
 | Requirement | Detail |
@@ -132,21 +127,19 @@ flowchart LR
 
 Full ERD with column details: see [Architecture Decision](file:///C:/Users/HP/.gemini/antigravity/brain/a5535011-f330-4ba9-91c5-fd83a11be81b/analysis_architecture_decision.md#6-entity-relationship-diagram-from-live-supabase-schema)
 
-```mermaid
-erDiagram
-    USERS ||--|| PROFILES : "has"
-    USERS ||--|| USER_ROLES : "has"
-    PROFILES }o--|| STORES : "assigned to"
-    TEMPLATES ||--o{ GROUPS : "contains"
-    GROUPS ||--o{ CRITERIA : "contains"
-    TEMPLATES ||--o{ SUBMISSIONS : "based on"
-    STORES ||--o{ SUBMISSIONS : "audited at"
-    USERS ||--o{ SUBMISSIONS : "audits"
-    SUBMISSIONS ||--o{ ANSWERS : "contains"
-    SUBMISSIONS ||--o{ ACTION_PLANS : "generates"
-    ANSWERS ||--o| ACTION_PLANS : "triggers"
-    ANSWERS }o--|| CRITERIA : "for"
-    USERS ||--o{ NOTIFICATIONS : "receives"
+```text
+[USERS] ---has---> [PROFILES]
+[USERS] ---has---> [USER_ROLES]
+[PROFILES] ---assigned to---> [STORES]
+[TEMPLATES] ---contains---> [GROUPS] ---contains---> [CRITERIA]
+[TEMPLATES] ---based on---> [SUBMISSIONS]
+[STORES] ---audited at---> [SUBMISSIONS]
+[USERS] ---audits---> [SUBMISSIONS]
+[SUBMISSIONS] ---contains---> [ANSWERS]
+[SUBMISSIONS] ---generates---> [ACTION_PLANS]
+[ANSWERS] ---triggers---> [ACTION_PLANS]
+[ANSWERS] ---for---> [CRITERIA]
+[USERS] ---receives---> [NOTIFICATIONS]
 ```
 
 ### 4.2 Core Entities (9 tables)
@@ -228,15 +221,12 @@ server/
 
 ### 5.4 Offline Architecture
 
-```mermaid
-flowchart TD
-    WRITE["User Action\n(Submit Audit)"] --> LOCAL["Write to\nDrift (SQLite)"]
-    LOCAL --> OUTBOX["Enqueue in\nSync Outbox"]
-    OUTBOX --> ENGINE["Sync Engine\n(Background)"]
-    ENGINE --> CHECK{Online?}
-    CHECK -->|Yes| PUSH["Push to\nASP.NET API"]
-    CHECK -->|No| WAIT["Wait for\nConnectivity"]
-    PUSH --> CONFIRM["Mark synced\nin local DB"]
+```text
+[Submit Audit] --> [Write to SQLite] --> [Enqueue in Sync Outbox] --> [Sync Engine]
+
+[Sync Engine] --> (Online?)
+                    |--> (Yes) --> [Push to API] --> [Mark Synced Locally]
+                    |--> (No) ---> [Wait for Connectivity]
 ```
 
 ---

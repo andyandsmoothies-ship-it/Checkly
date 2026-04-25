@@ -158,9 +158,9 @@ For refactors reducing file size by >30% or extracting logic:
 ## 4. Documentation & Visualization
 
 ### Visual Spec Protocol
-- **Complex Logic**: For state machines, data flows, or multi-step processes, you MUST provide a visual diagram (Mermaid/Draw.io) in the Functional Spec or Implementation Plan.
-- **Skill Usage**: Use `drawio-diagrams` skill to generate and embed these diagrams.
-- **Editable Source**: Always provide the `open_drawio_mermaid` call for future editing.
+- **Complex Logic**: For state machines, data flows, or multi-step processes, you MUST provide a simple text-based flowchart to demonstrate the basic idea.
+- **Diagramming Protocol**: Use simple notations like `-->`, `<`, `[ ]`. Keep the wording in these diagrams short and concise.
+- **Prohibition**: Do NOT use Mermaid or Draw.io unless explicitly requested by the user.
 
 ---
 

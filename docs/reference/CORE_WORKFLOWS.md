@@ -11,15 +11,13 @@
 
 The audit lifecycle tracks the progress of a submission from scheduling to final completion.
 
-```mermaid
-stateDiagram-v2
-    [*] --> SCHEDULED: Auto/Admin Created
-    SCHEDULED --> DRAFT: Start Audit (on-time)
-    SCHEDULED --> BLOCKED: Start Audit (overdue)
-    SCHEDULED --> SCHEDULED: Date passes (visual OVERDUE)
-    DRAFT --> DRAFT: Auto-save
-    DRAFT --> COMPLETED: Submit (Scored)
-    COMPLETED --> [*]
+```text
+[Created] --------> [SCHEDULED]
+[SCHEDULED] ------> (Start on-time) ----> [DRAFT]
+[SCHEDULED] ------> (Start overdue) ----> [BLOCKED]
+[SCHEDULED] ------> (Date passes) ------> [OVERDUE]
+[DRAFT] ----------> (Auto-save) --------> [DRAFT]
+[DRAFT] ----------> (Submit) -----------> [COMPLETED]
 ```
 
 ### State Definitions
@@ -40,18 +38,13 @@ stateDiagram-v2
 
 Independent from the primary lifecycle, the review disposition runs in parallel after an audit is completed.
 
-```mermaid
-flowchart LR
-    COMPLETED["Audit Completed"] --> NULL["— (No Action)"]
-    NULL --> FLAGGED["FLAGGED"]
-    NULL --> APPROVED["APPROVED"]
-    NULL --> REJECTED["REJECTED"]
-    FLAGGED --> APPROVED
-    FLAGGED --> REJECTED
-
-    style APPROVED fill:#10b981,color:#fff
-    style REJECTED fill:#ef4444,color:#fff
-    style FLAGGED fill:#f59e0b,color:#fff
+```text
+[Audit Completed] --> [No Action]
+[No Action] --------> [FLAGGED]
+[No Action] --------> [APPROVED]
+[No Action] --------> [REJECTED]
+[FLAGGED] ----------> [APPROVED]
+[FLAGGED] ----------> [REJECTED]
 ```
 
 ### Review State Definitions
@@ -72,16 +65,11 @@ flowchart LR
 
 Corrective tasks generated from non-conformities (failed answers) in a completed audit.
 
-```mermaid
-flowchart LR
-    FAIL["Answer Failed"] --> OPEN["OPEN"]
-    OPEN --> VERIFY["PENDING VERIFY"]
-    VERIFY --> CLOSED["CLOSED"]
-    VERIFY -- "Reject Evidence" --> OPEN
-
-    style OPEN fill:#ef4444,color:#fff
-    style VERIFY fill:#f59e0b,color:#fff
-    style CLOSED fill:#10b981,color:#fff
+```text
+[Answer Failed] --> [OPEN]
+[OPEN] -----------> [PENDING VERIFY]
+[PENDING VERIFY] -> [CLOSED]
+[PENDING VERIFY] -> (Reject Evidence) --> [OPEN]
 ```
 
 ### Action Plan States
