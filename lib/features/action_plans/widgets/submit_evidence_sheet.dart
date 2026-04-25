@@ -182,14 +182,34 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                     final source = isDesktop
                         ? ImageSource.gallery
                         : ImageSource.camera;
-                    final xfile =
-                        await picker.pickImage(source: source);
-                    if (xfile != null) {
-                      setState(() {
-                        _photoPath = xfile.path;
-                        _isDirty = true;
-                      });
+                    final xfile = await picker.pickImage(
+                      source: source,
+                      maxWidth: 1280,
+                      maxHeight: 1280,
+                      imageQuality: 80,
+                    );
+                    if (xfile == null) return;
+
+                    // Rule 1.3: Hard-cap fallback — reject if still > 5 MB after native resize.
+                    const maxPhotoBytes = 5 * 1024 * 1024; // 5 MB
+                    final fileSize = await File(xfile.path).length();
+                    if (fileSize > maxPhotoBytes) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Photo is too complex to compress. Please take a simpler picture.',
+                            ),
+                          ),
+                        );
+                      }
+                      return;
                     }
+
+                    setState(() {
+                      _photoPath = xfile.path;
+                      _isDirty = true;
+                    });
                   },
                   child: _photoPath != null
                       ? ClipRRect(

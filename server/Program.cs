@@ -192,12 +192,13 @@ try
         options.OnRejected = async (context, token) =>
         {
             context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+            context.HttpContext.Response.Headers.RetryAfter = "30";
             await context.HttpContext.Response.WriteAsJsonAsync(new ProblemDetails
             {
                 Status = 429,
                 Title = "Too Many Requests",
                 Type = "https://tools.ietf.org/html/rfc6585#section-4",
-                Detail = "Server is at capacity. Please retry after a moment.",
+                Detail = "Server is at capacity. Please retry after 30 seconds.",
                 Extensions = { ["correlationId"] = Guid.NewGuid().ToString("N")[..12] }
             }, options: null, contentType: "application/problem+json", cancellationToken: token);
         };
@@ -215,9 +216,11 @@ try
         });
         options.AddConcurrencyLimiter("UploadPolicy", limiterOptions =>
         {
-            limiterOptions.PermitLimit = 20;
+            // ADR: Photo Avalanche — max 6 concurrent photo file writes to prevent
+            // thread-pool starvation. Queue up to 16 requests before issuing 503.
+            limiterOptions.PermitLimit = 6;
             limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-            limiterOptions.QueueLimit = 0;
+            limiterOptions.QueueLimit = 16;
         });
     });
     builder.Services.AddProblemDetails();

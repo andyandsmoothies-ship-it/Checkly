@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import '../database/dao/outbox_dao.dart';
 import 'sync_interfaces.dart';
@@ -29,13 +30,18 @@ class PhotoQueueService {
   /// Exposed for testing without touching the real filesystem.
   final bool Function(String path) fileExists;
 
+  /// Injectable [Random] instance — allows seeding in tests to produce deterministic jitter.
+  final Random _random;
+
   PhotoQueueService(
     this._outbox,
     this._api, {
     bool Function(String)? fileExists,
     List<int> backoffDelays = _defaultBackoffDelays,
+    Random? random,
   }) : fileExists = fileExists ?? ((path) => File(path).existsSync()),
-       _backoffDelays = backoffDelays;
+       _backoffDelays = backoffDelays,
+       _random = random ?? Random();
 
   /// Uploads all pending photos for [submissionId] in FIFO order.
   Future<bool> drainQueue(String submissionId) async {
@@ -45,6 +51,13 @@ class PhotoQueueService {
     final pending = photos.where((p) => p.syncStatus == 'pending').toList();
 
     if (pending.isEmpty) return true;
+
+    // Rule 1.1 & 1.2: Jitter delay occurs ONCE before the loop — NOT per-photo.
+    // Breaks up synchronized reconnect stampedes (e.g. 10 auditors returning to office Wi-Fi).
+    final jitterSecs = _random.nextInt(16); // 0 to 15 inclusive
+    if (jitterSecs > 0) {
+      await Future<void>.delayed(Duration(seconds: jitterSecs));
+    }
 
     for (final photo in pending) {
       // ── Deterministic failure: missing local file ──
@@ -68,7 +81,16 @@ class PhotoQueueService {
           answerId: photo.answerId,
         );
         await _outbox.updatePhotoSyncStatus(photo.id, 'uploaded');
-      } catch (e) {
+      } on Exception catch (e) {
+        // Rule 1.3: If server returned 429 with Retry-After header (ConcurrencyLimiter overload),
+        // respect the server's wait time instead of writing a backoff entry to SQLite.
+        // The SyncEngine will re-trigger drainQueue after the connection recovers.
+        final retryAfterSecs = _extractRetryAfter(e);
+        if (retryAfterSecs != null) {
+          await Future<void>.delayed(Duration(seconds: retryAfterSecs));
+          return false;
+        }
+
         // Apply SQLite-backed exponential backoff (Pillar D).
         final currentRetries = photo.retryCount;
         if (currentRetries < _backoffDelays.length) {
@@ -96,5 +118,28 @@ class PhotoQueueService {
     }
 
     return true;
+  }
+
+  /// Extracts the [Retry-After] seconds value from a [DioException] response header.
+  /// Returns null if the error is not a 429 or the header is absent/unparseable.
+  int? _extractRetryAfter(Exception e) {
+    // Avoid importing Dio here directly — use duck-typing via runtimeType string
+    // so this class stays testable without a real HTTP stack.
+    // For Dio v5: DioException.response?.headers['retry-after']
+    // We use dynamic dispatch to avoid a hard Dio import at the service layer.
+    try {
+      final dynamic dioEx = e;
+      final dynamic response = dioEx.response;
+      if (response == null) return null;
+      final int? statusCode = response.statusCode as int?;
+      if (statusCode != 429) return null;
+      final dynamic headers = response.headers;
+      final dynamic retryAfterValues = headers['retry-after'];
+      if (retryAfterValues == null) return null;
+      final String? raw = (retryAfterValues as List<dynamic>).firstOrNull?.toString();
+      return int.tryParse(raw ?? '');
+    } catch (_) {
+      return null;
+    }
   }
 }

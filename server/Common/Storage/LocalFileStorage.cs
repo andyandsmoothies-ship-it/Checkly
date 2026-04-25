@@ -22,7 +22,7 @@ public sealed class LocalFileStorage(IWebHostEnvironment env) : IFileStorage
 
         Logger.Debug("LocalFileStorage: saving to {Path}", physicalPath);
 
-        await using var fs = new FileStream(physicalPath, FileMode.Create, FileAccess.Write);
+        await using var fs = new FileStream(physicalPath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 81920, FileOptions.Asynchronous);
         await content.CopyToAsync(fs, ct);
     }
 
@@ -37,7 +37,7 @@ public sealed class LocalFileStorage(IWebHostEnvironment env) : IFileStorage
         }
 
         Logger.Debug("LocalFileStorage: reading from {Path}", physicalPath);
-        Stream stream = new FileStream(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        Stream stream = new FileStream(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 81920, FileOptions.Asynchronous);
         return Task.FromResult<Stream?>(stream);
     }
 
