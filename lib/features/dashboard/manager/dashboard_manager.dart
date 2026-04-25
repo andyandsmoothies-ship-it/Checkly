@@ -135,8 +135,10 @@ class DashboardManager extends ChangeNotifier {
           // Empty cache (likely fresh login) — await the sync before loading
           await _di<SyncEngine>().requestSync();
           await Future.wait([
-            if (_di.isRegistered<HistoryManager>()) _di<HistoryManager>().loadHistory(),
-            if (_di.isRegistered<ActionPlanManager>()) _di<ActionPlanManager>().loadActionPlans(),
+            if (_di.isRegistered<HistoryManager>())
+              _di<HistoryManager>().loadHistory(),
+            if (_di.isRegistered<ActionPlanManager>())
+              _di<ActionPlanManager>().loadActionPlans(),
           ]);
         } else {
           // Cache has data — sync in background and quietly reload when done
@@ -144,8 +146,10 @@ class DashboardManager extends ChangeNotifier {
             try {
               await _di<SyncEngine>().requestSync();
               await Future.wait([
-                if (_di.isRegistered<HistoryManager>()) _di<HistoryManager>().loadHistory(),
-                if (_di.isRegistered<ActionPlanManager>()) _di<ActionPlanManager>().loadActionPlans(),
+                if (_di.isRegistered<HistoryManager>())
+                  _di<HistoryManager>().loadHistory(),
+                if (_di.isRegistered<ActionPlanManager>())
+                  _di<ActionPlanManager>().loadActionPlans(),
               ]);
             } finally {
               loadStats(showLoading: false);
@@ -221,8 +225,8 @@ class DashboardManager extends ChangeNotifier {
 
       final results = await Future.wait([
         queries.getMyOpenApCount(), // Personal open APs
-        Future.value(0),            // No "store" overdue yet
-        queries.getMyAvgScore(),    // Personal avg score
+        Future.value(0), // No "store" overdue yet
+        queries.getMyAvgScore(), // Personal avg score
       ]);
 
       final deadline = await queries.getNearestDeadline();
@@ -287,7 +291,10 @@ class DashboardManager extends ChangeNotifier {
     );
   }
 
-  Future<List<SubmissionDto>> _getMergedRecentSubmissions(DashboardQueries queries, {int limit = 10}) async {
+  Future<List<SubmissionDto>> _getMergedRecentSubmissions(
+    DashboardQueries queries, {
+    int limit = 10,
+  }) async {
     final rawRecent = await queries.getRecentSubmissions(limit: limit);
     final recent = rawRecent.map(SubmissionDao.rowToDto).toList();
 
@@ -301,22 +308,31 @@ class DashboardManager extends ChangeNotifier {
         String? tTitle;
         String? sName;
         try {
-          final tRow = await (_db.select(_db.cachedTemplates)..where((t) => t.id.equals(p.templateId))).getSingleOrNull();
+          final tRow = await (_db.select(
+            _db.cachedTemplates,
+          )..where((t) => t.id.equals(p.templateId))).getSingleOrNull();
           if (tRow != null) tTitle = tRow.title;
-          final sRow = await (_db.select(_db.cachedStores)..where((s) => s.id.equals(p.storeId))).getSingleOrNull();
+          final sRow = await (_db.select(
+            _db.cachedStores,
+          )..where((s) => s.id.equals(p.storeId))).getSingleOrNull();
           if (sRow != null) sName = sRow.name;
         } catch (_) {}
 
-        recent.insert(0, SubmissionDto(
-          id: 'local_outbox_${p.id}',
-          templateId: p.templateId,
-          templateTitle: tTitle ?? 'Audit',
-          storeId: p.storeId,
-          storeName: sName ?? 'Unknown Store',
-          status: p.syncStatus == 'pending' ? 'syncing' : (p.syncStatus == 'exhausted' ? 'failed' : 'syncing'),
-          createdAt: p.createdAt,
-          totalScore: p.clientScore,
-        ));
+        recent.insert(
+          0,
+          SubmissionDto(
+            id: 'local_outbox_${p.id}',
+            templateId: p.templateId,
+            templateTitle: tTitle ?? 'Audit',
+            storeId: p.storeId,
+            storeName: sName ?? 'Unknown Store',
+            status: p.syncStatus == 'pending'
+                ? 'syncing'
+                : (p.syncStatus == 'exhausted' ? 'failed' : 'syncing'),
+            createdAt: p.createdAt,
+            totalScore: p.clientScore,
+          ),
+        );
       }
       recent.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       if (recent.length > limit) {

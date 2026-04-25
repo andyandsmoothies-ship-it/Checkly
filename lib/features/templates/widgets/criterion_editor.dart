@@ -10,8 +10,8 @@ class CriterionEditor extends StatelessWidget {
   final EditableCriterion criterion;
   final List<String> errors;
   final String? scoringMode; // optional — filters input type bottom sheet
-  final bool globalCcpEnabled;     // gates CCP toggle visibility
-  final bool globalRiskEnabled;    // gates Risk toggle visibility
+  final bool globalCcpEnabled; // gates CCP toggle visibility
+  final bool globalRiskEnabled; // gates Risk toggle visibility
   final bool globalConfirmRequired; // when true, locks Required toggle ON
 
   final VoidCallback onRemove;
@@ -117,15 +117,15 @@ class CriterionEditor extends StatelessWidget {
                     );
                     if (selected != null && context.mounted) {
                       criterion.inputType = selected;
-                      // Reset irrelevant data when switching types to guarantee 
+                      // Reset irrelevant data when switching types to guarantee
                       // structural data integrity (prevent hidden payload corruption)
                       if (selected == 'text' ||
                           selected == 'single_choice' ||
                           selected == 'multi_choice') {
                         criterion.pointsCtrl.clear();
-                        
-                        // Critical P0 fix: Scrub CCP/Risk flags if type becomes unscored. 
-                        // The UI hides the toggles, so the in-memory value MUST be zeroed 
+
+                        // Critical P0 fix: Scrub CCP/Risk flags if type becomes unscored.
+                        // The UI hides the toggles, so the in-memory value MUST be zeroed
                         // manually to avoid sending hidden 'true' flags to the backend.
                         criterion.isCcp = false;
                         criterion.isRisk = false;
@@ -136,7 +136,8 @@ class CriterionEditor extends StatelessWidget {
 
                       // Trim memory bloat to ensure clean structural payloads
                       if (selected != 'scale') criterion.scaleOptions.clear();
-                      if (selected != 'single_choice' && selected != 'multi_choice') {
+                      if (selected != 'single_choice' &&
+                          selected != 'multi_choice') {
                         criterion.choiceOptions.clear();
                       }
 
@@ -272,7 +273,9 @@ class CriterionEditor extends StatelessWidget {
                   title: const Text('Required'),
                   subtitle: globalConfirmRequired
                       ? const Text('Required by global Confirm Correct setting')
-                      : const Text('Auditor must complete this field to submit'),
+                      : const Text(
+                          'Auditor must complete this field to submit',
+                        ),
                   value: globalConfirmRequired ? true : criterion.isRequired,
                   onChanged: globalConfirmRequired
                       ? null
@@ -294,10 +297,12 @@ class CriterionEditor extends StatelessWidget {
                       criterion.inputType != 'multi_choice';
                   final modeAllows =
                       scoringMode != 'survey' && scoringMode != 'checklist';
-                  final showCcp = modeAllows &&
+                  final showCcp =
+                      modeAllows &&
                       inputTypeScored &&
                       (globalCcpEnabled || criterion.isCcp);
-                  final showRisk = modeAllows &&
+                  final showRisk =
+                      modeAllows &&
                       inputTypeScored &&
                       (globalRiskEnabled || criterion.isRisk);
 
@@ -324,8 +329,9 @@ class CriterionEditor extends StatelessWidget {
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
                           title: const Text('Risk'),
-                          subtitle:
-                              const Text('Failure zeros the entire audit score'),
+                          subtitle: const Text(
+                            'Failure zeros the entire audit score',
+                          ),
                           value: criterion.isRisk,
                           onChanged: (v) {
                             setSheetState(() => criterion.isRisk = v);
@@ -405,7 +411,8 @@ class CriterionEditor extends StatelessWidget {
                               Text(
                                 '${criterion.pointsCtrl.text}pt',
                                 style: AppFonts.serifStyle(
-                                  fontSize: theme.textTheme.labelSmall?.fontSize,
+                                  fontSize:
+                                      theme.textTheme.labelSmall?.fontSize,
                                   color: theme.colorScheme.primary,
                                 ),
                               ),
@@ -417,9 +424,8 @@ class CriterionEditor extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.secondaryContainer.withValues(
-                                  alpha: 0.5,
-                                ),
+                                color: theme.colorScheme.secondaryContainer
+                                    .withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
@@ -428,14 +434,19 @@ class CriterionEditor extends StatelessWidget {
                                   Icon(
                                     inputTypeIcon(criterion.inputType),
                                     size: 10,
-                                    color: theme.colorScheme.onSecondaryContainer,
+                                    color:
+                                        theme.colorScheme.onSecondaryContainer,
                                   ),
                                   const SizedBox(width: 3),
                                   Text(
-                                    inputTypeLabel(criterion.inputType).toUpperCase(),
+                                    inputTypeLabel(
+                                      criterion.inputType,
+                                    ).toUpperCase(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.w700,
-                                      color: theme.colorScheme.onSecondaryContainer,
+                                      color: theme
+                                          .colorScheme
+                                          .onSecondaryContainer,
                                     ),
                                   ),
                                 ],

@@ -192,8 +192,11 @@ class AuditManager extends ChangeNotifier {
   String? _targetSubmissionId;
 
   // ---------- Init ----------
-  Future<void> startAudit(TemplateTreeDto template, String storeId,
-      {String? targetSubmissionId}) async {
+  Future<void> startAudit(
+    TemplateTreeDto template,
+    String storeId, {
+    String? targetSubmissionId,
+  }) async {
     _template = template;
     _storeId = storeId;
     _answers.clear();
@@ -338,7 +341,7 @@ class AuditManager extends ChangeNotifier {
   void _recalculateScore() {
     if (_template == null) return;
     final input = ScoringInputMapper.fromTemplate(
-      _template!, 
+      _template!,
       _answers,
       hasGlobalRisk: _triggeredRiskIds.isNotEmpty,
     );
@@ -415,7 +418,7 @@ class AuditManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Forces an immediate synchronous lock to the local database, 
+  /// Forces an immediate synchronous lock to the local database,
   /// bypassing the 3-second debounce. Use this before teardown.
   Future<void> forceSave() async {
     if (_draftKey == null) return;
@@ -450,7 +453,9 @@ class AuditManager extends ChangeNotifier {
       final submissionId = _pendingSubmissionId ?? _uuid.v4();
 
       if (_answers.isEmpty) {
-        throw Exception('Cannot submit an audit with zero answers. Please complete the audit first.');
+        throw Exception(
+          'Cannot submit an audit with zero answers. Please complete the audit first.',
+        );
       }
 
       // 1. Build answer companions
@@ -493,7 +498,8 @@ class AuditManager extends ChangeNotifier {
 
       if (_draftKey != null) {
         await _draftService.deleteDraft(_draftKey!);
-        _draftKey = null;      // Prevent PopScope from resurrecting the draft on navigation teardown
+        _draftKey =
+            null; // Prevent PopScope from resurrecting the draft on navigation teardown
         _draftSavedAt = null;
       }
 
@@ -519,10 +525,10 @@ class AuditManager extends ChangeNotifier {
 
   Future<void> triggerGlobalRisk(String globalRiskId) async {
     if (_pendingSubmissionId == null) return;
-    
+
     _triggeredRiskIds.add(globalRiskId);
     await _riskOutboxDao.enqueueRisk(_pendingSubmissionId!, globalRiskId);
-    
+
     _recalculateScore();
     notifyListeners();
   }
@@ -532,7 +538,7 @@ class AuditManager extends ChangeNotifier {
 
     _triggeredRiskIds.remove(globalRiskId);
     await _riskOutboxDao.removeByRiskId(_pendingSubmissionId!, globalRiskId);
-    
+
     _recalculateScore();
     notifyListeners();
   }

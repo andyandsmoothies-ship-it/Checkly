@@ -124,7 +124,9 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                         // Area dropdown
                         DropdownButtonFormField<String>(
                           initialValue:
-                              _manager.areas.any((a) => a['id'] == selectedAreaId)
+                              _manager.areas.any(
+                                (a) => a['id'] == selectedAreaId,
+                              )
                               ? selectedAreaId
                               : null,
                           borderRadius: BorderRadius.circular(12),
@@ -223,7 +225,9 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                                         height: 40,
                                         child: Icon(
                                           Icons.location_on,
-                                          color: Theme.of(ctx).colorScheme.primary,
+                                          color: Theme.of(
+                                            ctx,
+                                          ).colorScheme.primary,
                                           size: 40,
                                         ),
                                       ),
@@ -326,7 +330,12 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An unexpected issue occurred. Please check your connection or restart the app.'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+            content: Text(
+              'An unexpected issue occurred. Please check your connection or restart the app.',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -354,7 +363,9 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error,
+              ),
               child: const Text('Deactivate'),
             ),
           ],
@@ -377,7 +388,12 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An unexpected issue occurred. Please check your connection or restart the app.'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+            content: Text(
+              'An unexpected issue occurred. Please check your connection or restart the app.',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -403,33 +419,36 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
             children: [
               // Area filter dropdown
               if (_manager.areas.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: DropdownButtonFormField<String?>(
-                  initialValue: _selectedAreaId,
-                  decoration: const InputDecoration(
-                    labelText: 'Filter by Area',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                  ),
-                  items: [
-                    const DropdownMenuItem(value: null, child: Text('All Areas')),
-                    ..._manager.areas.map(
-                      (a) => DropdownMenuItem(
-                        value: a['id'] as String,
-                        child: Text(a['name'] as String),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: DropdownButtonFormField<String?>(
+                    initialValue: _selectedAreaId,
+                    decoration: const InputDecoration(
+                      labelText: 'Filter by Area',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
                       ),
                     ),
-                  ],
-                  onChanged: (v) {
-                    setState(() => _selectedAreaId = v);
-                    _loadData();
-                  },
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Areas'),
+                      ),
+                      ..._manager.areas.map(
+                        (a) => DropdownMenuItem(
+                          value: a['id'] as String,
+                          child: Text(a['name'] as String),
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      setState(() => _selectedAreaId = v);
+                      _loadData();
+                    },
+                  ),
                 ),
-              ),
               Expanded(child: _buildBody()),
             ],
           );
@@ -451,7 +470,10 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
           children: [
             Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
-            Text('We couldn\'t load the latest data. Please check your internet connection and refresh.', style: theme.textTheme.titleMedium),
+            Text(
+              'We couldn\'t load the latest data. Please check your internet connection and refresh.',
+              style: theme.textTheme.titleMedium,
+            ),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: _loadData,
@@ -652,7 +674,10 @@ class _StoreCard extends StatelessWidget {
                 )
               else
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.warning.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),

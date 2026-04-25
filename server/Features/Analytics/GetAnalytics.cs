@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Analytics;
@@ -16,8 +17,53 @@ public static class GetAnalytics
         CancellationToken ct)
     {
         var storeId = httpContext.Request.Query["storeId"].FirstOrDefault();
+        var areaIdStr = httpContext.Request.Query["areaId"].FirstOrDefault();
         var type = httpContext.Request.Query["type"].FirstOrDefault();
         var scoringModeFilter = httpContext.Request.Query["scoringMode"].FirstOrDefault();
+
+        // ── WARN-SEC-05: Enforce role-based data tenancy ──────────────────────
+        var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
+        var userIdStr = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if ((role == "store_manager" || role == "area_manager") && Guid.TryParse(userIdStr, out var callerId))
+        {
+            var profile = await db.Profiles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == callerId, ct);
+
+            if (role == "store_manager")
+            {
+                // Profile must have an assigned store — otherwise the data makes no sense.
+                if (profile?.StoreId is null)
+                    return TypedResults.Forbid();
+
+                // If the caller explicitly requested a different store, that is an IDOR attempt.
+                if (!string.IsNullOrEmpty(storeId) &&
+                    Guid.TryParse(storeId, out var requestedStore) &&
+                    requestedStore != profile.StoreId.Value)
+                    return TypedResults.Forbid();
+
+                // Force scope to the manager's own store.
+                storeId = profile.StoreId.Value.ToString();
+            }
+            else // area_manager
+            {
+                var areaIdStrRaw = httpContext.Request.Query["areaId"].FirstOrDefault();
+
+                if (profile?.AreaId is null)
+                    return TypedResults.Forbid();
+
+                // If the caller explicitly requested a different area, return 403.
+                if (!string.IsNullOrEmpty(areaIdStrRaw) &&
+                    Guid.TryParse(areaIdStrRaw, out var requestedArea) &&
+                    requestedArea != profile.AreaId.Value)
+                    return TypedResults.Forbid();
+
+                // Force scope to the manager's own area — override query param.
+                areaIdStr = profile.AreaId.Value.ToString();
+            }
+        }
+        // ──────────────────────────────────────────────────────────────────────
 
         var query = db.Submissions.AsNoTracking()
             .Where(s => s.Status == "completed" && s.ReviewStatus != "rejected");
@@ -26,8 +72,6 @@ public static class GetAnalytics
         var sid = Guid.Empty;
         if (!string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out sid))
             query = query.Where(s => s.StoreId == sid);
-
-        var areaIdStr = httpContext.Request.Query["areaId"].FirstOrDefault();
 
         // Hoist subquery references so they are reusable by the section score query below.
         IQueryable<Guid>? storeSubquery = null;
@@ -98,9 +142,11 @@ public static class GetAnalytics
             .ToList();
 
         // ── Section breakdown — C-01 Fix: apply same store/area/type filters ──
+        // WARN-DB-03 Fix: scope to last 90 days to prevent full table scan as data grows.
+        var ninetyDaysAgo = DateTimeOffset.UtcNow.AddDays(-90);
         var sectionScoreQuery = db.SubmissionSectionScores
             .AsNoTracking()
-            .Where(ss => ss.MaxScore > 0);
+            .Where(ss => ss.MaxScore > 0 && ss.CreatedAt >= ninetyDaysAgo);
 
         // Mirror storeId filter — reuse `sid` already parsed at line 25 (avoids CS0128 duplicate declaration).
         var storeIdParsed = !string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out sid);

@@ -46,7 +46,9 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => context.push('/stores/select?templateId=${widget.templateId}'),
+              onPressed: () => context.push(
+                '/stores/select?templateId=${widget.templateId}',
+              ),
               icon: const Icon(Icons.play_arrow),
               label: const Text('START AUDIT'),
             ),
@@ -106,7 +108,9 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
                       TabBar(
                         isScrollable: true,
                         tabAlignment: TabAlignment.start,
-                        tabs: tree.groups.map((g) => Tab(text: g.title)).toList(),
+                        tabs: tree.groups
+                            .map((g) => Tab(text: g.title))
+                            .toList(),
                       ),
                     ),
                   ),
@@ -118,9 +122,7 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                     children: [
                       // Rare: direct criteria attached to the top-level group
-                      ...group.criteria.map(
-                        (c) => CriterionRow(criterion: c),
-                      ),
+                      ...group.criteria.map((c) => CriterionRow(criterion: c)),
                       // Sub-sections rendered as depth-1 (non-root) SectionCards
                       ...group.children.map(
                         (sub) => SectionCard(group: sub, depth: 1),
@@ -148,7 +150,11 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: _tabBar,

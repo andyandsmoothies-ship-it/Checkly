@@ -20,8 +20,8 @@ void showRisksPanel(BuildContext context, AuditManager manager) {
                   child: Text(
                     '⚠ Critical Risks',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 Padding(
@@ -29,8 +29,8 @@ void showRisksPanel(BuildContext context, AuditManager manager) {
                   child: Text(
                     'Tap to flag a risk. This will zero the audit score.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -52,8 +52,9 @@ void showRisksPanel(BuildContext context, AuditManager manager) {
                       itemCount: manager.availableRisks.length,
                       itemBuilder: (context, index) {
                         final risk = manager.availableRisks[index];
-                        final isTriggered =
-                            manager.triggeredRiskIds.contains(risk.id);
+                        final isTriggered = manager.triggeredRiskIds.contains(
+                          risk.id,
+                        );
                         return ListTile(
                           leading: Icon(
                             isTriggered ? Icons.warning : Icons.warning_amber,
@@ -69,15 +70,16 @@ void showRisksPanel(BuildContext context, AuditManager manager) {
                                 color: isTriggered
                                     ? Theme.of(context).colorScheme.error
                                     : null,
-                                fontWeight:
-                                    isTriggered ? FontWeight.bold : null,
+                                fontWeight: isTriggered
+                                    ? FontWeight.bold
+                                    : null,
                               ),
                             ),
                             selected: isTriggered,
-                            selectedColor:
-                                Theme.of(context).colorScheme.errorContainer,
-                            checkmarkColor:
-                                Theme.of(context).colorScheme.error,
+                            selectedColor: Theme.of(
+                              context,
+                            ).colorScheme.errorContainer,
+                            checkmarkColor: Theme.of(context).colorScheme.error,
                             onSelected: (selected) {
                               if (selected) {
                                 manager.triggerGlobalRisk(risk.id);

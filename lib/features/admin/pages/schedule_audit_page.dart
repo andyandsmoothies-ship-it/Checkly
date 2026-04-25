@@ -88,7 +88,11 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
     } else if (_manager.scheduleError != null) {
       setState(() => _isLoadingData = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.')),
+        SnackBar(
+          content: Text(
+            'We couldn\'t load the latest data. Please check your internet connection and refresh.',
+          ),
+        ),
       );
     }
   }
@@ -205,7 +209,9 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('We hit a snag processing your request. Please check your internet connection and try again.'),
+            content: Text(
+              'We hit a snag processing your request. Please check your internet connection and try again.',
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -286,7 +292,8 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
               .map(
                 (u) => (
                   id: u['id'] as String,
-                  label: u['fullName'] as String? ??
+                  label:
+                      u['fullName'] as String? ??
                       u['email'] as String? ??
                       'Unknown',
                   subtitle: u['email'] as String?,
@@ -309,7 +316,9 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
                   style: AppFonts.displayStyle(
                     fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                     fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.4),
                     letterSpacing: 2,
                   ),
                 ),

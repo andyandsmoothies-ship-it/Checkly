@@ -89,7 +89,8 @@ Future<void> showAuditCriterionSheet(
                                     ),
                                     actions: [
                                       TextButton(
-                                        onPressed: () => Navigator.pop(dialogCtx),
+                                        onPressed: () =>
+                                            Navigator.pop(dialogCtx),
                                         child: const Text('CLOSE'),
                                       ),
                                     ],
@@ -184,8 +185,6 @@ Future<void> showAuditCriterionSheet(
                           ],
                         ),
                       ],
-
-
 
                       // CCP / RISK toggle buttons
                       if ((ccpEnabled || riskEnabled) &&

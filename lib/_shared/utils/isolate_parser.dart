@@ -32,9 +32,7 @@ List<T> _isolateParseTask<T>(_ParseArgs<T> args) {
     );
   }
 
-  return jsonList
-      .map((j) => args.parser(j as Map<String, dynamic>))
-      .toList();
+  return jsonList.map((j) => args.parser(j as Map<String, dynamic>)).toList();
 }
 
 /// Threshold-gated JSON parser.

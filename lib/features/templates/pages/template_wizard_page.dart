@@ -66,7 +66,13 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   // ── Review validity (V6 gate from WizardStepReview) ──
   bool _templateIsValid = true;
 
-  static const _stepTitles = ['Name', 'Structure', 'Build Criteria', 'Review', 'Done'];
+  static const _stepTitles = [
+    'Name',
+    'Structure',
+    'Build Criteria',
+    'Review',
+    'Done',
+  ];
 
   @override
   void initState() {
@@ -179,7 +185,9 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
       case 2: // Build Criteria
         for (int i = 0; i < _sections.length; i++) {
           final sec = _sections[i];
-          final secName = sec.titleCtrl.text.isEmpty ? 'Section ${i + 1}' : '"${sec.titleCtrl.text}"';
+          final secName = sec.titleCtrl.text.isEmpty
+              ? 'Section ${i + 1}'
+              : '"${sec.titleCtrl.text}"';
           // BL-3: section is valid if it has criteria OR sub-sections.
           if (sec.criteria.isEmpty && sec.subSections.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -191,14 +199,19 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
           final rootError = _validateCriteriaList(sec.criteria, secName);
           if (rootError != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(rootError), duration: const Duration(seconds: 4)),
+              SnackBar(
+                content: Text(rootError),
+                duration: const Duration(seconds: 4),
+              ),
             );
             return false;
           }
           // BL-3: every sub-section must have >= 1 criterion
           for (int si = 0; si < sec.subSections.length; si++) {
             final sub = sec.subSections[si];
-            final subName = sub.titleCtrl.text.isEmpty ? 'Sub-section ${si + 1} in $secName' : '"${sub.titleCtrl.text}"';
+            final subName = sub.titleCtrl.text.isEmpty
+                ? 'Sub-section ${si + 1} in $secName'
+                : '"${sub.titleCtrl.text}"';
             if (sub.criteria.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('$subName has no criteria')),
@@ -208,7 +221,10 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
             final subError = _validateCriteriaList(sub.criteria, subName);
             if (subError != null) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(subError), duration: const Duration(seconds: 4)),
+                SnackBar(
+                  content: Text(subError),
+                  duration: const Duration(seconds: 4),
+                ),
               );
               return false;
             }
@@ -228,7 +244,10 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
 
   /// Validates [criteria] labels and V6 choice-option rules.
   /// Returns the first error message or null if all pass.
-  String? _validateCriteriaList(List<EditableCriterion> criteria, String parentName) {
+  String? _validateCriteriaList(
+    List<EditableCriterion> criteria,
+    String parentName,
+  ) {
     for (int ci = 0; ci < criteria.length; ci++) {
       final c = criteria[ci];
       if (c.labelCtrl.text.trim().isEmpty) {
@@ -259,9 +278,13 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
       'inputType': c.inputType,
       if (!isChoiceType && c.inputType != 'text')
         'pointsWeight': double.tryParse(c.pointsCtrl.text),
-      if (!isChoiceType && c.inputType != 'text' && c.minusImpactCtrl.text.isNotEmpty)
+      if (!isChoiceType &&
+          c.inputType != 'text' &&
+          c.minusImpactCtrl.text.isNotEmpty)
         'minusImpact': double.tryParse(c.minusImpactCtrl.text),
-      if (!isChoiceType && c.inputType != 'text' && c.maxDeductionCtrl.text.isNotEmpty)
+      if (!isChoiceType &&
+          c.inputType != 'text' &&
+          c.maxDeductionCtrl.text.isNotEmpty)
         'maxDeductionPoints': double.tryParse(c.maxDeductionCtrl.text),
       'isCcp': c.isCcp,
       'isRisk': c.isRisk,
@@ -325,7 +348,9 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
         id: null,
         title: _titleCtrl.text.trim(),
         type: _type,
-        description: _descCtrl.text.trim().isNotEmpty ? _descCtrl.text.trim() : null,
+        description: _descCtrl.text.trim().isNotEmpty
+            ? _descCtrl.text.trim()
+            : null,
         scoringLogicConfig: _buildScoringLogicConfig(),
         version: 0,
         groups: _buildGroups(),
@@ -346,9 +371,13 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.',
+            ),
+          ),
+        );
       }
     }
   }
@@ -385,7 +414,10 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Guided Creation', style: theme.textTheme.titleMedium),
+                      Text(
+                        'Guided Creation',
+                        style: theme.textTheme.titleMedium,
+                      ),
                       Text(
                         '${_currentStep + 1} of 5 — ${_stepTitles[_currentStep]}',
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -398,7 +430,8 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                     preferredSize: const Size.fromHeight(4),
                     child: LinearProgressIndicator(
                       value: (_currentStep + 1) / 5,
-                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                      backgroundColor:
+                          theme.colorScheme.surfaceContainerHighest,
                     ),
                   ),
                 ),
@@ -432,7 +465,8 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                 riskEnabled: _riskOverride,
                 confirmRequired: _confirmCorrect,
                 onChanged: _markDirty,
-                onSectionChanged: (i) => setState(() => _currentSectionIndex = i),
+                onSectionChanged: (i) =>
+                    setState(() => _currentSectionIndex = i),
               ),
               // Step 4: Review
               WizardStepReview(
@@ -450,7 +484,8 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                 onCcpChanged: (v) => setState(() => _ccpOverride = v),
                 onRiskChanged: (v) => setState(() => _riskOverride = v),
                 onDensityChanged: (v) => setState(() => _weightedDensity = v),
-                onProgressiveChanged: (v) => setState(() => _progressiveRepeat = v),
+                onProgressiveChanged: (v) =>
+                    setState(() => _progressiveRepeat = v),
                 onConfirmChanged: (v) => setState(() => _confirmCorrect = v),
                 onValidityChanged: (isValid) {
                   if (_templateIsValid != isValid) {
@@ -504,7 +539,9 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                           ),
                         const Spacer(),
                         FilledButton(
-                          onPressed: (_saving || (_currentStep == 3 && !_templateIsValid))
+                          onPressed:
+                              (_saving ||
+                                  (_currentStep == 3 && !_templateIsValid))
                               ? null
                               : () {
                                   if (_currentStep == 3) {
@@ -517,9 +554,13 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                               ? const SizedBox(
                                   width: 20,
                                   height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
-                              : Text(_currentStep == 3 ? 'Save Template' : 'Next'),
+                              : Text(
+                                  _currentStep == 3 ? 'Save Template' : 'Next',
+                                ),
                         ),
                       ],
                     ),

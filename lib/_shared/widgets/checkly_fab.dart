@@ -36,35 +36,35 @@ class ChecklyFab extends StatelessWidget {
     final items = <PopupMenuEntry<String>>[
       if (canCreateSubmission)
         PopupMenuItem<String>(
-        value: 'new',
-        child: Row(
-          children: [
-            Icon(
-              Icons.assignment_outlined,
-              size: 20,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Start New Audit',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+          value: 'new',
+          child: Row(
+            children: [
+              Icon(
+                Icons.assignment_outlined,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Start New Audit',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Text(
-                  'Self-performed audit',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                  Text(
+                    'Self-performed audit',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
     ];
 
     if (isAdmin && onAssignTask != null) {

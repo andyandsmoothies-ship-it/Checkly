@@ -118,8 +118,8 @@ public sealed class ScoringVerifier
                     allCriteria.AddRange(criteria.Where(c => c.GroupId == sub.Id));
                 }
 
-                bool ccpTriggered = allCriteria.Any(c => 
-                    (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) || 
+                bool ccpTriggered = allCriteria.Any(c =>
+                    (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) ||
                     (c.IsCcp && HasFaults(c, answers)));
 
                 decimal sectionBefore = 0m;
@@ -208,8 +208,8 @@ public sealed class ScoringVerifier
         // Mirror of Flutter ScoringEngine._calculateChecklist():
         //   score = max(0, 100 - Σ(faults × pointsWeight))
         // NOT a ratio — raw deductions from 100.
-        var ccpTriggered = criteria.Any(c => 
-            (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) || 
+        var ccpTriggered = criteria.Any(c =>
+            (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) ||
             (c.IsCcp && HasFaults(c, answers)));
 
         var totalDeductions = criteria.Sum(c => GetDeduction(c, answers, progressiveRepeatPenalty));
@@ -240,8 +240,8 @@ public sealed class ScoringVerifier
         foreach (var section in rootGroups)
         {
             var sectionCriteria = GetCriteriaForGroup(section.Id, groups, criteria);
-            var ccpTriggered = sectionCriteria.Any(c => 
-                (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) || 
+            var ccpTriggered = sectionCriteria.Any(c =>
+                (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) ||
                 (c.IsCcp && HasFaults(c, answers)));
 
             var sectionPossible = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
@@ -263,7 +263,7 @@ public sealed class ScoringVerifier
                     else
                     {
                         var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
-                        
+
                         // Binary: full points if numericValue=0 (no faults), not non_conform, no repeated faults
                         var faults = answer.NumericValue ?? 0;
                         if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)

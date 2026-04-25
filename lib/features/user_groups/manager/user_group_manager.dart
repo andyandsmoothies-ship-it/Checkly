@@ -57,8 +57,12 @@ class UserGroupManager extends ChangeNotifier {
 
   static String _friendlyError(Object e) {
     final msg = e.toString();
-    if (msg.contains('403')) return 'You do not have permission to manage user groups.';
-    if (msg.contains('401')) return 'Your session has expired. Please sign in again.';
+    if (msg.contains('403')) {
+      return 'You do not have permission to manage user groups.';
+    }
+    if (msg.contains('401')) {
+      return 'Your session has expired. Please sign in again.';
+    }
     if (msg.contains('SocketException') || msg.contains('network')) {
       return 'No internet connection. Please try again.';
     }

@@ -95,7 +95,10 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                     // Action Plan Deadline
                     Row(
                       children: [
-                        const Expanded(flex: 3, child: Text('Action Plan Deadline')),
+                        const Expanded(
+                          flex: 3,
+                          child: Text('Action Plan Deadline'),
+                        ),
                         SizedBox(
                           width: 60,
                           child: TextFormField(
@@ -109,10 +112,15 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                               ),
                             ),
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             onEditingComplete: () {
-                              final v = int.tryParse(widget.deadlineCtrl.text) ?? 7;
-                              widget.deadlineCtrl.text = v.clamp(1, 90).toString();
+                              final v =
+                                  int.tryParse(widget.deadlineCtrl.text) ?? 7;
+                              widget.deadlineCtrl.text = v
+                                  .clamp(1, 90)
+                                  .toString();
                             },
                           ),
                         ),
@@ -133,7 +141,10 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                     // Deadline Reminder
                     Row(
                       children: [
-                        const Expanded(flex: 3, child: Text('Deadline\nReminder')),
+                        const Expanded(
+                          flex: 3,
+                          child: Text('Deadline\nReminder'),
+                        ),
                         const Text('before  '),
                         SizedBox(
                           width: 60,
@@ -148,10 +159,15 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                               ),
                             ),
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             onEditingComplete: () {
-                              final v = int.tryParse(widget.reminderCtrl.text) ?? 2;
-                              widget.reminderCtrl.text = v.clamp(1, 30).toString();
+                              final v =
+                                  int.tryParse(widget.reminderCtrl.text) ?? 2;
+                              widget.reminderCtrl.text = v
+                                  .clamp(1, 30)
+                                  .toString();
                             },
                           ),
                         ),
@@ -181,7 +197,9 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                         decoration: BoxDecoration(
                           color: AppColors.warningContainer,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppTheme.warning.withValues(alpha: 0.4)),
+                          border: Border.all(
+                            color: AppTheme.warning.withValues(alpha: 0.4),
+                          ),
                         ),
                         child: Row(
                           children: [
@@ -194,9 +212,8 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                             Expanded(
                               child: Text(
                                 'These settings affect how audits are scored. Change with care.',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppTheme.warning,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: AppTheme.warning),
                               ),
                             ),
                           ],
@@ -262,7 +279,9 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                           ),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.2,
+                            ),
                           ),
                         ),
                         child: Row(
@@ -276,9 +295,10 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                             Expanded(
                               child: Text(
                                 'Survey mode — responses are collected without scoring.',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: theme.colorScheme.primary,
+                                    ),
                               ),
                             ),
                           ],

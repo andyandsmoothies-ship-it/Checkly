@@ -153,75 +153,77 @@ class ManagerDashboardVariant extends StatelessWidget {
         children: [
           const SizedBox(height: 24),
 
-        // ── Hero: Action Required Banner ──
-        if (state.overdueActionPlans > 0)
-          HeroCard(
-            icon: Icons.warning_amber_rounded,
-            title:
-                '${state.overdueActionPlans} Overdue Action Plan${state.overdueActionPlans > 1 ? 's' : ''}',
-            subtitle: '$contextLabel · Immediate attention needed',
-            color: AppColors.destructive.withValues(alpha: 0.10),
-            iconColor: AppColors.destructive,
-            onTap: () => context.go('/plans?sort=urgent'),
-          )
-        else
-          HeroCard(
-            icon: Icons.check_circle_outline,
-            title: 'All Clear — No Overdue Plans',
-            subtitle: '$contextLabel · ${state.storeName ?? ''}',
-            color: AppTheme.success.withValues(alpha: 0.10),
-            iconColor: AppTheme.success,
-            onTap: () => context.go('/plans'),
+          // ── Hero: Action Required Banner ──
+          if (state.overdueActionPlans > 0)
+            HeroCard(
+              icon: Icons.warning_amber_rounded,
+              title:
+                  '${state.overdueActionPlans} Overdue Action Plan${state.overdueActionPlans > 1 ? 's' : ''}',
+              subtitle: '$contextLabel · Immediate attention needed',
+              color: AppColors.destructive.withValues(alpha: 0.10),
+              iconColor: AppColors.destructive,
+              onTap: () => context.go('/plans?sort=urgent'),
+            )
+          else
+            HeroCard(
+              icon: Icons.check_circle_outline,
+              title: 'All Clear — No Overdue Plans',
+              subtitle: '$contextLabel · ${state.storeName ?? ''}',
+              color: AppTheme.success.withValues(alpha: 0.10),
+              iconColor: AppTheme.success,
+              onTap: () => context.go('/plans'),
+            ),
+
+          const SizedBox(height: 16),
+
+          // ── Compact Status Panel ──
+          CompactStatusPanel(
+            metrics: [
+              StatRowData(
+                icon: Icons.pending_actions,
+                label: isArea ? 'Area Action Plans' : 'Store Action Plans',
+                value: '${state.openActionPlans}',
+                iconColor: AppTheme.warning,
+                onTap: () => context.go('/plans?filter=open'),
+              ),
+              StatRowData(
+                icon: Icons.speed,
+                label: isArea ? 'Area Avg Score' : 'Store Avg Score',
+                value: '$avgFormatted%',
+                iconColor: AppTheme.success,
+                onTap: () => context.push('/analytics'),
+              ),
+              // Approvals quick-link: visible only if user holds submissions:review.
+              // Area Managers with this capability can reach /admin/approvals
+              // (router whitelist applied in app_router.dart).
+              if (GetIt.instance<PolicyManager>().can(
+                AppCapabilities.submissionsReview,
+              ))
+                StatRowData(
+                  icon: Icons.fact_check_outlined,
+                  label: 'Pending Approvals',
+                  value: 'View →',
+                  iconColor: theme.colorScheme.primary,
+                  onTap: () => context.push('/admin/approvals'),
+                ),
+            ],
           ),
 
-        const SizedBox(height: 16),
-
-        // ── Compact Status Panel ──
-        CompactStatusPanel(
-          metrics: [
-            StatRowData(
-              icon: Icons.pending_actions,
-              label: isArea ? 'Area Action Plans' : 'Store Action Plans',
-              value: '${state.openActionPlans}',
-              iconColor: AppTheme.warning,
-              onTap: () => context.go('/plans?filter=open'),
-            ),
-            StatRowData(
-              icon: Icons.speed,
-              label: isArea ? 'Area Avg Score' : 'Store Avg Score',
-              value: '$avgFormatted%',
-              iconColor: AppTheme.success,
-              onTap: () => context.push('/analytics'),
-            ),
-            // Approvals quick-link: visible only if user holds submissions:review.
-            // Area Managers with this capability can reach /admin/approvals
-            // (router whitelist applied in app_router.dart).
-            if (GetIt.instance<PolicyManager>().can(AppCapabilities.submissionsReview))
-              StatRowData(
-                icon: Icons.fact_check_outlined,
-                label: 'Pending Approvals',
-                value: 'View →',
-                iconColor: theme.colorScheme.primary,
-                onTap: () => context.push('/admin/approvals'),
-              ),
+          if (state.nearestDeadline != null) ...[
+            const SizedBox(height: 12),
+            DeadlineBanner(deadline: state.nearestDeadline!),
           ],
-        ),
 
-        if (state.nearestDeadline != null) ...[
-          const SizedBox(height: 12),
-          DeadlineBanner(deadline: state.nearestDeadline!),
+          const SizedBox(height: 32),
+          SubmissionFeedSection(
+            submissions: state.recentSubmissions,
+            context: context,
+            theme: theme,
+          ),
         ],
-
-        const SizedBox(height: 32),
-        SubmissionFeedSection(
-          submissions: state.recentSubmissions,
-          context: context,
-          theme: theme,
-        ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -256,7 +258,8 @@ class AdminDashboardVariant extends StatelessWidget {
               Text(
                 'Mission Control',
                 style: AppFonts.serifStyle(
-                  fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
+                  fontSize:
+                      Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -264,10 +267,13 @@ class AdminDashboardVariant extends StatelessWidget {
               Text(
                 'PLATFORM OVERVIEW',
                 style: AppFonts.displayStyle(
-                  fontSize: Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
+                  fontSize:
+                      Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
                   fontWeight: FontWeight.w500,
                   // WCAG fix: raised from 0.5 → 0.65
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.65),
                   letterSpacing: 1.5,
                 ),
               ),
@@ -325,7 +331,6 @@ class AdminDashboardVariant extends StatelessWidget {
 // ────────────────────────────────────────────────────────────────
 // Shared sub-components
 // ────────────────────────────────────────────────────────────────
-
 
 /// Compact deadline warning banner.
 @visibleForTesting

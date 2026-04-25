@@ -55,7 +55,9 @@ class HeroCard extends StatelessWidget {
                     Text(
                       title,
                       style: AppFonts.serifStyle(
-                        fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                        fontSize: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.fontSize,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
@@ -71,7 +73,9 @@ class HeroCard extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
             ],
           ),

@@ -177,10 +177,15 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                 Container(
                   width: double.infinity,
                   color: Theme.of(context).colorScheme.errorContainer,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Text(
                     _manager.error!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onErrorContainer,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),

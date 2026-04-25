@@ -12,10 +12,7 @@ import 'criterion_row.dart';
 // ---------------------------------------------------------------------------
 int _totalCriteriaCount(GroupDto group) {
   return group.criteria.length +
-      group.children.fold(
-        0,
-        (sum, child) => sum + _totalCriteriaCount(child),
-      );
+      group.children.fold(0, (sum, child) => sum + _totalCriteriaCount(child));
 }
 
 /// Expandable section card that recursively renders sub-sections.
@@ -52,8 +49,9 @@ class SectionCard extends StatelessWidget {
       subtitleParts.add('${maxPts.toStringAsFixed(0)} pts max');
     }
 
-    final subtitleText =
-        subtitleParts.isNotEmpty ? subtitleParts.join(' • ') : null;
+    final subtitleText = subtitleParts.isNotEmpty
+        ? subtitleParts.join(' • ')
+        : null;
 
     return Container(
       margin: EdgeInsets.only(left: isRoot ? 0 : 12, bottom: isRoot ? 12 : 8),

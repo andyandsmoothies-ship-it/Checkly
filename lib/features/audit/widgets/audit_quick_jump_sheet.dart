@@ -92,8 +92,7 @@ class AuditQuickJumpSheet extends StatelessWidget {
                               '${i + 1}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                fontSize:
-                                    theme.textTheme.labelSmall?.fontSize,
+                                fontSize: theme.textTheme.labelSmall?.fontSize,
                                 color: isCurrent
                                     ? theme.colorScheme.primary
                                     : theme.colorScheme.onSurfaceVariant,

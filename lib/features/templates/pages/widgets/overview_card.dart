@@ -41,7 +41,9 @@ class OverviewCard extends StatelessWidget {
                 child: Text(
                   tree.title,
                   style: AppFonts.serifStyle(
-                    fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
+                    fontSize: Theme.of(
+                      context,
+                    ).textTheme.headlineSmall?.fontSize,
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),

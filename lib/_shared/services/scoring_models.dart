@@ -94,7 +94,6 @@ class ScoringInput {
   });
 }
 
-
 /// Per-section score breakdown.
 class SectionScore {
   final String sectionId;

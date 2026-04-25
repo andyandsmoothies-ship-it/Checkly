@@ -180,7 +180,8 @@ class PendingSubmissions extends Table {
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   TextColumn get syncError => text().nullable()();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
-  DateTimeColumn get nextRetryAt => dateTime().nullable()(); // UTC — evaluated by SyncEngine
+  DateTimeColumn get nextRetryAt =>
+      dateTime().nullable()(); // UTC — evaluated by SyncEngine
   DateTimeColumn get createdAt => dateTime()();
 
   /// When non-null, this outbox row is finalizing an EXISTING server-side draft.
@@ -204,12 +205,9 @@ class PendingAnswers extends Table {
   TextColumn get photoUrl => text().nullable()();
   BoolColumn get isRepeatedError =>
       boolean().withDefault(const Constant(false))();
-  IntColumn get repeatedFaults =>
-      integer().withDefault(const Constant(0))();
-  BoolColumn get isCcp =>
-      boolean().withDefault(const Constant(false))();
-  BoolColumn get isRisk =>
-      boolean().withDefault(const Constant(false))();
+  IntColumn get repeatedFaults => integer().withDefault(const Constant(0))();
+  BoolColumn get isCcp => boolean().withDefault(const Constant(false))();
+  BoolColumn get isRisk => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -221,12 +219,14 @@ class PendingPhotos extends Table {
   TextColumn get id => text()();
   TextColumn get pendingSubmissionId =>
       text().references(PendingSubmissions, #id)();
-  TextColumn get answerId => text().nullable()(); // links to PendingAnswers.id for server-side patching
+  TextColumn get answerId => text()
+      .nullable()(); // links to PendingAnswers.id for server-side patching
   TextColumn get localPath => text()();
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   TextColumn get syncError => text().nullable()();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
-  DateTimeColumn get nextRetryAt => dateTime().nullable()(); // UTC — evaluated by PhotoQueueService
+  DateTimeColumn get nextRetryAt =>
+      dateTime().nullable()(); // UTC — evaluated by PhotoQueueService
   DateTimeColumn get createdAt => dateTime()();
 
   @override
@@ -276,8 +276,7 @@ class PendingActionPlanUpdates extends Table {
   TextColumn get actionPlanId => text()(); // links CachedActionPlans.id
   TextColumn get correctionPlan => text()();
   TextColumn get evidenceNote => text()();
-  TextColumn get syncStatus =>
-      text().withDefault(const Constant('pending'))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   TextColumn get syncError => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 
@@ -309,11 +308,9 @@ class SubmissionRiskOutboxEntries extends Table {
   TextColumn get id => text()(); // client-generated UUID
   TextColumn get submissionId => text()(); // server-side submission UUID
   TextColumn get globalRiskId => text()(); // server-side global risk UUID
-  TextColumn get syncStatus =>
-      text().withDefault(const Constant('pending'))();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   DateTimeColumn get createdAt => dateTime()();
 
   @override
   Set<Column> get primaryKey => {id};
 }
-

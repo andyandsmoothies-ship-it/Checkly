@@ -21,7 +21,9 @@ class AuditPassFailInput extends StatelessWidget {
             selectedColor: AppTheme.success,
             labelStyle: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: value == 'conform' ? Colors.white : theme.colorScheme.onSurface,
+              color: value == 'conform'
+                  ? Colors.white
+                  : theme.colorScheme.onSurface,
             ),
             checkmarkColor: Colors.white,
             onSelected: (selected) {
@@ -37,7 +39,9 @@ class AuditPassFailInput extends StatelessWidget {
             selectedColor: theme.colorScheme.error,
             labelStyle: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: value == 'non_conform' ? Colors.white : theme.colorScheme.onSurface,
+              color: value == 'non_conform'
+                  ? Colors.white
+                  : theme.colorScheme.onSurface,
             ),
             checkmarkColor: Colors.white,
             onSelected: (selected) {

@@ -19,5 +19,8 @@ public static class ActionPlanEndpoints
 
         group.MapPut("/{id}", UpdateActionPlan.HandleAsync)
             .WithName("UpdateActionPlan");
+
+        group.MapPost("/{id}/comments", AddComment.HandleAsync)
+            .WithName("AddComment");
     }
 }

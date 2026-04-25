@@ -25,7 +25,11 @@ class InfoRow extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
+            child: Icon(
+              icon,
+              size: 18,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(

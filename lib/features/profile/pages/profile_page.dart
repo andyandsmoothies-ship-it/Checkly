@@ -117,28 +117,34 @@ class ProfilePage extends StatelessWidget {
   List<MenuItemData> _managementItems(BuildContext context, String role) {
     final items = <MenuItemData>[];
     if (role == 'admin') {
-      items.add(MenuItemData(
-        icon: Icons.admin_panel_settings,
-        label: 'Admin Dashboard',
-        description: 'Manage users and approvals',
-        route: '/admin/dashboard',
-      ));
+      items.add(
+        MenuItemData(
+          icon: Icons.admin_panel_settings,
+          label: 'Admin Dashboard',
+          description: 'Manage users and approvals',
+          route: '/admin/dashboard',
+        ),
+      );
     }
     if (role == 'area_manager') {
-      items.add(MenuItemData(
-        icon: Icons.map_outlined,
-        label: 'My Region',
-        description: 'View stores in your area',
-        route: '/analytics',
-      ));
+      items.add(
+        MenuItemData(
+          icon: Icons.map_outlined,
+          label: 'My Region',
+          description: 'View stores in your area',
+          route: '/analytics',
+        ),
+      );
     }
     if (role == 'store_manager') {
-      items.add(MenuItemData(
-        icon: Icons.store,
-        label: 'My Store',
-        description: 'View your store details',
-        route: '/analytics',
-      ));
+      items.add(
+        MenuItemData(
+          icon: Icons.store,
+          label: 'My Store',
+          description: 'View your store details',
+          route: '/analytics',
+        ),
+      );
     }
     return items;
   }

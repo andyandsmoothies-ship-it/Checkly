@@ -4,7 +4,6 @@ import '../../../_shared/utils/isolate_parser.dart';
 import '../model/submission_dto.dart';
 import '../model/survey_result_dto.dart';
 
-
 import '../../../_shared/services/sync_interfaces.dart';
 
 /// API service for submission endpoints.
@@ -31,7 +30,7 @@ class SubmissionApiService implements PhotoApi {
       queryParameters: {'page': page, 'pageSize': pageSize},
       options: Options(responseType: ResponseType.plain),
     );
-    
+
     return IsolateParser.parseList<SubmissionDto>(
       json: response.data,
       parser: SubmissionDto.fromJson,
@@ -131,7 +130,7 @@ class SubmissionApiService implements PhotoApi {
       },
       options: Options(responseType: ResponseType.plain),
     );
-    
+
     return IsolateParser.parseList<SubmissionDto>(
       json: response.data,
       parser: SubmissionDto.fromJson,

@@ -17,6 +17,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 // --- IMPORTS (will fail until implemented) ---
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
+import 'package:checkly/features/action_plans/models/add_comment_request.dart';
+import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
@@ -55,6 +57,19 @@ class FakeActionPlanApi implements ActionPlanApi {
   /// Not used by S1–S8 state machine tests. Satisfies the ActionPlanApi interface.
   @override
   Future<List<ActionPlanDto>> fetchActionPlans() async => [];
+
+  @override
+  Future<CommentDto> addComment(
+    String actionPlanId,
+    AddCommentRequest request,
+  ) async {
+    return CommentDto(
+      id: 'comment-123',
+      userId: 'user-123',
+      body: request.body,
+      createdAt: DateTime.now(),
+    );
+  }
 }
 
 /// Minimal user role provider for testing role guards.
@@ -96,6 +111,12 @@ class FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
 
   @override
   Future<void> markExhausted(String id, String error) async {}
+
+  @override
+  Future<void> markStaleConflict(String id) async {}
+
+  @override
+  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(String planId) async => null;
 
   @override
   Future<int> pendingCount() async => 0;
@@ -309,6 +330,19 @@ class FakeActionPlanApiWithFetch implements ActionPlanApi {
     Map<String, dynamic> fields,
   ) async {
     return _plans.first;
+  }
+
+  @override
+  Future<CommentDto> addComment(
+    String actionPlanId,
+    AddCommentRequest request,
+  ) async {
+    return CommentDto(
+      id: 'comment-123',
+      userId: 'user-123',
+      body: request.body,
+      createdAt: DateTime.now(),
+    );
   }
 }
 

@@ -167,10 +167,12 @@ class _PickerSheetState extends State<_PickerSheet> {
       _filtered = query.isEmpty
           ? widget.items
           : widget.items
-              .where((i) =>
-                  i.label.toLowerCase().contains(query) ||
-                  (i.subtitle?.toLowerCase().contains(query) ?? false))
-              .toList();
+                .where(
+                  (i) =>
+                      i.label.toLowerCase().contains(query) ||
+                      (i.subtitle?.toLowerCase().contains(query) ?? false),
+                )
+                .toList();
     });
   }
 
@@ -196,7 +198,9 @@ class _PickerSheetState extends State<_PickerSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                color: theme.colorScheme.onSurfaceVariant.withValues(
+                  alpha: 0.3,
+                ),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -207,11 +211,17 @@ class _PickerSheetState extends State<_PickerSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Icon(widget.itemIcon, color: theme.colorScheme.primary, size: 20),
+                  Icon(
+                    widget.itemIcon,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Select ${widget.label.toLowerCase().split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : w).join(' ')}',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
@@ -253,10 +263,8 @@ class _PickerSheetState extends State<_PickerSheet> {
                       controller: scrollCtrl,
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 24),
                       itemCount: _filtered.length + (widget.nullable ? 1 : 0),
-                      separatorBuilder: (_, _) => const Divider(
-                        height: 1,
-                        indent: 56,
-                      ),
+                      separatorBuilder: (_, _) =>
+                          const Divider(height: 1, indent: 56),
                       itemBuilder: (_, i) {
                         // First row is the "None" option when nullable
                         if (widget.nullable && i == 0) {
@@ -281,15 +289,19 @@ class _PickerSheetState extends State<_PickerSheet> {
                             title: Text(
                               '— None —',
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: isNoneSelected ? FontWeight.w700 : FontWeight.normal,
+                                fontWeight: isNoneSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.normal,
                                 color: isNoneSelected
                                     ? theme.colorScheme.error
                                     : theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                             trailing: isNoneSelected
-                                ? Icon(Icons.check_circle_rounded,
-                                    color: theme.colorScheme.error)
+                                ? Icon(
+                                    Icons.check_circle_rounded,
+                                    color: theme.colorScheme.error,
+                                  )
                                 : null,
                             onTap: () => Navigator.pop(context, _kNoneValue),
                           );
@@ -317,7 +329,9 @@ class _PickerSheetState extends State<_PickerSheet> {
                           title: Text(
                             item.label,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.normal,
                               color: isSelected
                                   ? theme.colorScheme.primary
                                   : theme.colorScheme.onSurface,
@@ -332,8 +346,10 @@ class _PickerSheetState extends State<_PickerSheet> {
                                 )
                               : null,
                           trailing: isSelected
-                              ? Icon(Icons.check_circle_rounded,
-                                  color: theme.colorScheme.primary)
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: theme.colorScheme.primary,
+                                )
                               : null,
                           onTap: () => Navigator.pop(context, item.id),
                         );

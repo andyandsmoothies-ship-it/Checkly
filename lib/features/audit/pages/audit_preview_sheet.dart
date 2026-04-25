@@ -37,7 +37,9 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
 
   // Map raw detailError to a user-friendly message matching the original UX.
   String _friendlyError(String raw) {
-    if (raw.contains('SocketException')) return 'Requires an internet connection.';
+    if (raw.contains('SocketException')) {
+      return 'Requires an internet connection.';
+    }
     final match = RegExp(r'statusCode: (\d+)').firstMatch(raw);
     if (match != null) return 'Could not load audit (${match.group(1)}).';
     return 'Unexpected error: $raw';
@@ -94,8 +96,7 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
             Expanded(
               child: ListenableBuilder(
                 listenable: _manager,
-                builder: (context, _) =>
-                    _buildBody(context, scrollController),
+                builder: (context, _) => _buildBody(context, scrollController),
               ),
             ),
           ],
@@ -118,7 +119,11 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.wifi_off_outlined, size: 40, color: theme.colorScheme.error),
+              Icon(
+                Icons.wifi_off_outlined,
+                size: 40,
+                color: theme.colorScheme.error,
+              ),
               const SizedBox(height: 12),
               Text(
                 _friendlyError(_manager.detailError!),
@@ -126,10 +131,7 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
                 style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
-              FilledButton.tonal(
-                onPressed: _retry,
-                child: const Text('Retry'),
-              ),
+              FilledButton.tonal(onPressed: _retry, child: const Text('Retry')),
             ],
           ),
         ),
@@ -145,61 +147,72 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
     if (detail.templateSnapshot != null) {
       try {
         final map = jsonDecode(detail.templateSnapshot!);
-        
+
         if (map['scoringLogicConfig'] != null) {
           try {
-            final configMap = map['scoringLogicConfig'] is String 
-                ? jsonDecode(map['scoringLogicConfig']) 
+            final configMap = map['scoringLogicConfig'] is String
+                ? jsonDecode(map['scoringLogicConfig'])
                 : map['scoringLogicConfig'];
-            scoringMode = configMap['mode'] ?? configMap['scoringMode'] ?? 'penalty';
+            scoringMode =
+                configMap['mode'] ?? configMap['scoringMode'] ?? 'penalty';
           } catch (_) {}
         }
 
         if (map['groups'] != null) {
-          final rawGroups = (map['groups'] as List<dynamic>).cast<Map<String, dynamic>>();
+          final rawGroups = (map['groups'] as List<dynamic>)
+              .cast<Map<String, dynamic>>();
           final Map<String, GroupDto> groupMap = {};
-          
+
           for (final rg in rawGroups) {
             final gid = rg['id'] as String;
-            final rawCriteria = (rg['criteria'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-            final criteria = rawCriteria.map((c) => CriterionDto(
-              id: c['id'] as String,
-              label: c['label'] as String,
-              inputType: c['inputType'] as String? ?? 'pass_fail',
-              pointsWeight: (c['pointsWeight'] as num?)?.toDouble(),
-              isCcp: c['isCcp'] as bool? ?? false,
-              isRisk: c['isRisk'] as bool? ?? false,
-              minusImpact: (c['minusImpact'] as num?)?.toDouble(),
-              maxDeductionPoints: (c['maxDeductionPoints'] as num?)?.toDouble(),
-              orderIndex: c['orderIndex'] as int? ?? 0,
-            )).toList();
-            
+            final rawCriteria =
+                (rg['criteria'] as List<dynamic>?)
+                    ?.cast<Map<String, dynamic>>() ??
+                [];
+            final criteria = rawCriteria
+                .map(
+                  (c) => CriterionDto(
+                    id: c['id'] as String,
+                    label: c['label'] as String,
+                    inputType: c['inputType'] as String? ?? 'pass_fail',
+                    pointsWeight: (c['pointsWeight'] as num?)?.toDouble(),
+                    isCcp: c['isCcp'] as bool? ?? false,
+                    isRisk: c['isRisk'] as bool? ?? false,
+                    minusImpact: (c['minusImpact'] as num?)?.toDouble(),
+                    maxDeductionPoints: (c['maxDeductionPoints'] as num?)
+                        ?.toDouble(),
+                    orderIndex: c['orderIndex'] as int? ?? 0,
+                  ),
+                )
+                .toList();
+
             groupMap[gid] = GroupDto(
               id: gid,
               title: rg['title'] as String,
               description: rg['description'] as String?,
               weight: (rg['weight'] as num?)?.toDouble(),
-              maxDeductionPoints: (rg['maxDeductionPoints'] as num?)?.toDouble(),
+              maxDeductionPoints: (rg['maxDeductionPoints'] as num?)
+                  ?.toDouble(),
               minusPerFault: (rg['minusPerFault'] as num?)?.toDouble(),
               orderIndex: rg['orderIndex'] as int? ?? 0,
               children: [],
               criteria: criteria,
             );
           }
-          
+
           rootGroups = [];
           for (final rg in rawGroups) {
             final gid = rg['id'] as String;
             final parentId = rg['parentId'] as String?;
             final group = groupMap[gid]!;
-            
+
             if (parentId != null && groupMap.containsKey(parentId)) {
               groupMap[parentId]!.children.add(group);
             } else {
               rootGroups.add(group);
             }
           }
-          
+
           void sortGroups(List<GroupDto> groups) {
             groups.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
             for (final g in groups) {
@@ -207,6 +220,7 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
               sortGroups(g.children);
             }
           }
+
           sortGroups(rootGroups);
         }
       } catch (e) {
@@ -224,6 +238,7 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
           walk(child);
         }
       }
+
       for (final g in rootGroups) {
         walk(g);
       }
@@ -264,13 +279,18 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
             ),
           )
         else if (rootGroups != null)
-          ...rootGroups.map((g) => _buildGroup(
-                g,
-                {for (var a in detail.answers) if (a.criteriaId != null) a.criteriaId!: a},
-                scoringMode,
-                0,
-                theme,
-              ))
+          ...rootGroups.map(
+            (g) => _buildGroup(
+              g,
+              {
+                for (var a in detail.answers)
+                  if (a.criteriaId != null) a.criteriaId!: a,
+              },
+              scoringMode,
+              0,
+              theme,
+            ),
+          )
         else
           ...detail.answers.map(
             (answer) => ReadOnlyCriterionRow(
@@ -285,19 +305,28 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
 
   bool _groupHasAnswers(GroupDto group, Map<String, AnswerDto> answersMap) {
     if (group.criteria.any((c) => answersMap.containsKey(c.id))) return true;
-    if (group.children.any((child) => _groupHasAnswers(child, answersMap))) return true;
+    if (group.children.any((child) => _groupHasAnswers(child, answersMap))) {
+      return true;
+    }
     return false;
   }
 
   Widget _buildGroup(
-      GroupDto group, Map<String, AnswerDto> answersMap, String scoringMode, int depth, ThemeData theme) {
+    GroupDto group,
+    Map<String, AnswerDto> answersMap,
+    String scoringMode,
+    int depth,
+    ThemeData theme,
+  ) {
     if (!_groupHasAnswers(group, answersMap)) return const SizedBox.shrink();
 
     if (depth == 0) {
       // Top-level Visual Folder / Area (e.g., "H - Hospitality")
       // Render as a bold header, followed by its children
-      final topLevelCriteria = group.criteria.where((c) => answersMap.containsKey(c.id)).toList();
-      
+      final topLevelCriteria = group.criteria
+          .where((c) => answersMap.containsKey(c.id))
+          .toList();
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -317,7 +346,11 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
               margin: const EdgeInsets.only(bottom: 16),
               elevation: 0,
               shape: RoundedRectangleBorder(
-                side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+                side: BorderSide(
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.5,
+                  ),
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -338,21 +371,33 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
               ),
             ),
           // Render children
-          ...group.children.where((child) => _groupHasAnswers(child, answersMap)).map(
-                (child) => _buildGroup(child, answersMap, scoringMode, depth + 1, theme),
+          ...group.children
+              .where((child) => _groupHasAnswers(child, answersMap))
+              .map(
+                (child) => _buildGroup(
+                  child,
+                  answersMap,
+                  scoringMode,
+                  depth + 1,
+                  theme,
+                ),
               ),
         ],
       );
     } else {
       // Depth >= 1 (e.g., "H1", "H2")
       // Render as a single static Card containing the title and criteria
-      final matchingCriteria = group.criteria.where((c) => answersMap.containsKey(c.id)).toList();
-      
+      final matchingCriteria = group.criteria
+          .where((c) => answersMap.containsKey(c.id))
+          .toList();
+
       return Card(
         margin: const EdgeInsets.only(bottom: 16),
         elevation: 0,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+          side: BorderSide(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -362,8 +407,12 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.3,
+                ),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
               ),
               child: Text(
                 group.title,
@@ -386,12 +435,22 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
               ),
             ],
             // Nested children (if any)
-            if (group.children.any((child) => _groupHasAnswers(child, answersMap))) ...[
+            if (group.children.any(
+              (child) => _groupHasAnswers(child, answersMap),
+            )) ...[
               const Divider(height: 1),
-              ...group.children.where((child) => _groupHasAnswers(child, answersMap)).map(
+              ...group.children
+                  .where((child) => _groupHasAnswers(child, answersMap))
+                  .map(
                     (child) => Padding(
                       padding: const EdgeInsets.all(16),
-                      child: _buildGroup(child, answersMap, scoringMode, depth + 1, theme),
+                      child: _buildGroup(
+                        child,
+                        answersMap,
+                        scoringMode,
+                        depth + 1,
+                        theme,
+                      ),
                     ),
                   ),
             ],

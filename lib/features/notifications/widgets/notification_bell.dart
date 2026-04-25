@@ -56,7 +56,9 @@ class _NotificationBellState extends State<NotificationBell> {
         isLabelVisible: unread > 0,
         label: Text(
           unread > 99 ? '99+' : '$unread',
-          style: TextStyle(fontSize: Theme.of(context).textTheme.labelSmall?.fontSize),
+          style: TextStyle(
+            fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
+          ),
         ),
         child: const Icon(Icons.notifications_outlined),
       ),

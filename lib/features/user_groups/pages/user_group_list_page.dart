@@ -50,10 +50,7 @@ class _UserGroupListPageState extends State<UserGroupListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Groups'),
-        centerTitle: false,
-      ),
+      appBar: AppBar(title: const Text('User Groups'), centerTitle: false),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateSheet(context),
         icon: const Icon(Icons.add),
@@ -104,5 +101,3 @@ class _UserGroupListPageState extends State<UserGroupListPage> {
     );
   }
 }
-
-

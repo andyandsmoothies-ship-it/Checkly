@@ -15,7 +15,9 @@ class OnlineRoleList extends StatelessWidget {
         return ValueListenableBuilder<List<String>?>(
           valueListenable: manager.catalog,
           builder: (context, catalog, _) {
-            final totalStr = catalog != null && catalog.isNotEmpty ? '/${catalog.length}' : '';
+            final totalStr = catalog != null && catalog.isNotEmpty
+                ? '/${catalog.length}'
+                : '';
             return ValueListenableBuilder<bool>(
               valueListenable: manager.isLoading,
               builder: (context, isLoading, _) {
@@ -30,9 +32,16 @@ class OnlineRoleList extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
+                            Icon(
+                              Icons.error_outline,
+                              size: 48,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                             const SizedBox(height: 16),
-                            Text('We couldn\'t load the latest data. Please check your internet connection and refresh.', style: Theme.of(context).textTheme.titleMedium),
+                            Text(
+                              'We couldn\'t load the latest data. Please check your internet connection and refresh.',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
                             const SizedBox(height: 8),
                             Text(error, textAlign: TextAlign.center),
                             const SizedBox(height: 16),
@@ -62,7 +71,9 @@ class OnlineRoleList extends StatelessWidget {
                             leading: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primaryContainer,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -73,13 +84,16 @@ class OnlineRoleList extends StatelessWidget {
                             ),
                             title: Text(
                               role.role,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             subtitle: Text(
                               '${role.capabilities.length}$totalStr capabilities assigned',
                             ),
                             trailing: const Icon(Icons.chevron_right),
-                            onTap: () => context.push('/admin/roles/${role.role}'),
+                            onTap: () =>
+                                context.push('/admin/roles/${role.role}'),
                           ),
                         );
                       },

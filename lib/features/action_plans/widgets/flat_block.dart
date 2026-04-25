@@ -11,10 +11,7 @@ class FlatBlock extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(
-            color: theme.colorScheme.outlineVariant,
-            width: 3,
-          ),
+          left: BorderSide(color: theme.colorScheme.outlineVariant, width: 3),
         ),
       ),
       child: child,

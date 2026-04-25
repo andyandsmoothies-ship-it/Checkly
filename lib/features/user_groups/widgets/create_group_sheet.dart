@@ -28,7 +28,9 @@ class _CreateGroupSheetState extends State<CreateGroupSheet> {
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        24, 24, 24,
+        24,
+        24,
+        24,
         MediaQuery.of(context).viewInsets.bottom + 24,
       ),
       child: Form(
@@ -53,8 +55,12 @@ class _CreateGroupSheetState extends State<CreateGroupSheet> {
               textInputAction: TextInputAction.next,
               maxLength: 200,
               validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Group name is required.';
-                if (v.trim().length > 200) return 'Name must not exceed 200 characters.';
+                if (v == null || v.trim().isEmpty) {
+                  return 'Group name is required.';
+                }
+                if (v.trim().length > 200) {
+                  return 'Name must not exceed 200 characters.';
+                }
                 return null;
               },
             ),
@@ -99,9 +105,9 @@ class _CreateGroupSheetState extends State<CreateGroupSheet> {
 
     if (success) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Group "$name" created.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Group "$name" created.')));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

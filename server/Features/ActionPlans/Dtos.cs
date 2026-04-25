@@ -44,3 +44,10 @@ public sealed record ActionPlanDto(
     string? EvidenceSubmittedByName,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
+public sealed record AddCommentRequest(string Body);
+
+public sealed record CommentDto(
+    Guid Id,
+    Guid UserId,
+    string Body,
+    DateTimeOffset CreatedAt);

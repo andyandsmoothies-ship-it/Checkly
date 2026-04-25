@@ -46,8 +46,7 @@ class AnalyticsData {
 class AnalyticsManager extends ChangeNotifier {
   final AppDatabase _db;
 
-  AnalyticsManager({AppDatabase? db})
-    : _db = db ?? _di<DatabaseService>().db;
+  AnalyticsManager({AppDatabase? db}) : _db = db ?? _di<DatabaseService>().db;
 
   // ---------- State ----------
   bool isLoading = false;
@@ -136,7 +135,9 @@ class AnalyticsManager extends ChangeNotifier {
             .where((t) => t.type == selectedType)
             .map((t) => t.id)
             .toSet();
-        subs = subs.where((s) => typeTemplateIds.contains(s.templateId)).toList();
+        subs = subs
+            .where((s) => typeTemplateIds.contains(s.templateId))
+            .toList();
       }
       if (selectedAuditor != null) {
         subs = subs.where((s) => s.auditorName == selectedAuditor).toList();
@@ -145,7 +146,9 @@ class AnalyticsManager extends ChangeNotifier {
         subs = subs.where((s) => s.status == selectedStatus).toList();
       }
       if (selectedReviewStatus != null) {
-        subs = subs.where((s) => s.reviewStatus == selectedReviewStatus).toList();
+        subs = subs
+            .where((s) => s.reviewStatus == selectedReviewStatus)
+            .toList();
       }
 
       final now = DateTime.now();
@@ -174,8 +177,9 @@ class AnalyticsManager extends ChangeNotifier {
           : 0.0;
 
       final completed = subs.where((s) => s.status == 'completed').toList();
-      final completionRate =
-          totalAudits > 0 ? completed.length / totalAudits * 100 : 0.0;
+      final completionRate = totalAudits > 0
+          ? completed.length / totalAudits * 100
+          : 0.0;
 
       final aps =
           await (_db.select(_db.cachedActionPlans)
@@ -194,7 +198,9 @@ class AnalyticsManager extends ChangeNotifier {
       // ── 6-month trend ──
       final sixMonthsAgo = now.subtract(const Duration(days: 180));
       final recentSubs = subs
-          .where((s) => s.totalScore != null && s.createdAt.isAfter(sixMonthsAgo))
+          .where(
+            (s) => s.totalScore != null && s.createdAt.isAfter(sixMonthsAgo),
+          )
           .toList();
 
       final grouped = <String, List<double>>{};

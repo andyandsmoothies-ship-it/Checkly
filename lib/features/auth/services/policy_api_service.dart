@@ -15,7 +15,9 @@ class PolicyApiService {
   /// Returns the list of capability strings for the authenticated user's role.
   /// Throws [DioException] on network error or non-2xx response.
   Future<List<String>> fetchCapabilities() async {
-    final response = await _dio.get<Map<String, dynamic>>('/system/capabilities');
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/system/capabilities',
+    );
     final data = response.data!;
     return List<String>.from(data['capabilities'] as List);
   }

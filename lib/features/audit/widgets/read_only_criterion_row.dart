@@ -19,7 +19,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
   final String scoringMode;
 
   const ReadOnlyCriterionRow({
-    super.key, 
+    super.key,
     required this.answer,
     this.criterion,
     this.scoringMode = 'penalty',
@@ -34,7 +34,9 @@ class ReadOnlyCriterionRow extends StatelessWidget {
             .length;
         if (count > 0) {
           return AuditStatusBadge(
-              label: '$count selected', color: theme.colorScheme.primary);
+            label: '$count selected',
+            color: theme.colorScheme.primary,
+          );
         }
       }
     } else if (criterion?.inputType == 'pass_fail' || criterion == null) {
@@ -46,7 +48,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
         return AuditStatusBadge(label: 'N/A', color: theme.colorScheme.outline);
       }
     }
-    
+
     // Fallback if no specific format is matched (e.g., text, scale)
     if (answer.value != null && criterion?.inputType != 'multi_choice') {
       return _ValueChip(value: answer.value!, theme: theme);
@@ -68,10 +70,13 @@ class ReadOnlyCriterionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final label = answer.criteriaLabel ?? criterion?.label ?? 'Unknown criterion';
+    final label =
+        answer.criteriaLabel ?? criterion?.label ?? 'Unknown criterion';
     final numericValue = answer.numericValue;
     final faults = (numericValue ?? 0).toInt();
-    final repeats = answer.isRepeatedError ? 1 : 0; // The DTO boolean flag is our indicator
+    final repeats = answer.isRepeatedError
+        ? 1
+        : 0; // The DTO boolean flag is our indicator
     final isCcp = answer.isCcp;
     final isRisk = answer.isRisk;
     final note = answer.note;
@@ -86,7 +91,8 @@ class ReadOnlyCriterionRow extends StatelessWidget {
     }
 
     // Local paths (from offline draft) are never on server history — skip them.
-    final hasPhoto = photoUrl != null &&
+    final hasPhoto =
+        photoUrl != null &&
         photoUrl.isNotEmpty &&
         !photoUrl.startsWith('/') &&
         !photoUrl.startsWith('file://');
@@ -129,16 +135,16 @@ class ReadOnlyCriterionRow extends StatelessWidget {
             runSpacing: 4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              if (_buildPrimaryBadge(theme) != null)
-                _buildPrimaryBadge(theme)!,
-                
+              if (_buildPrimaryBadge(theme) != null) _buildPrimaryBadge(theme)!,
+
               if (faults > 0) ...[
                 if (criterion?.inputType == 'numeric' || criterion == null)
                   AuditStatusBadge(
                     label: 'F:$faults',
                     color: theme.colorScheme.error,
                   ),
-                if (criterion?.inputType == 'scale' && scoringMode == 'accumulation')
+                if (criterion?.inputType == 'scale' &&
+                    scoringMode == 'accumulation')
                   AuditStatusBadge(
                     label: '+$faults pts',
                     color: AppTheme.success,
@@ -147,10 +153,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
 
               if (criterion == null || _isScored(criterion?.inputType)) ...[
                 if (repeats > 0)
-                  AuditStatusBadge(
-                    label: 'REPEAT',
-                    color: AppTheme.warning,
-                  ),
+                  AuditStatusBadge(label: 'REPEAT', color: AppTheme.warning),
                 if (isCcp)
                   AuditStatusBadge(
                     label: 'CCP',
@@ -171,7 +174,9 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                 Icon(
                   Icons.chat_bubble_outline,
                   size: 16,
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.7,
+                  ),
                 ),
                 const SizedBox(width: 4),
                 Expanded(
@@ -204,7 +209,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                       child: CircularProgressIndicator(
                         value: progress.expectedTotalBytes != null
                             ? progress.cumulativeBytesLoaded /
-                                progress.expectedTotalBytes!
+                                  progress.expectedTotalBytes!
                             : null,
                         strokeWidth: 2,
                       ),
@@ -223,7 +228,9 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                   child: Center(
                     child: Icon(
                       Icons.broken_image_outlined,
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                   ),
                 ),
@@ -232,7 +239,8 @@ class ReadOnlyCriterionRow extends StatelessWidget {
           ],
 
           // Action Plan deep-link
-          if (answer.actionPlanId != null && answer.actionPlanId!.isNotEmpty) ...[
+          if (answer.actionPlanId != null &&
+              answer.actionPlanId!.isNotEmpty) ...[
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -287,10 +295,7 @@ class _ValueChip extends StatelessWidget {
   final String value;
   final ThemeData theme;
 
-  const _ValueChip({
-    required this.value,
-    required this.theme,
-  });
+  const _ValueChip({required this.value, required this.theme});
 
   @override
   Widget build(BuildContext context) {

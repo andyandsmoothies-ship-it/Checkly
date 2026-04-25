@@ -33,7 +33,9 @@ import '../../features/analytics/pages/analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
 import '../../features/templates/pages/template_builder_page.dart';
 import '../../features/templates/pages/template_wizard_page.dart';
-import '../../features/notifications/pages/notification_drawer_page.dart';
+import '../../features/notifications/pages/inbox_page.dart';
+import '../../features/notifications/manager/notification_manager.dart';
+import '../../features/notifications/model/notification_dto.dart';
 import '../../features/audit/pages/survey_results_page.dart';
 import '../../features/user_groups/pages/user_group_list_page.dart';
 import '../../features/admin/pages/global_risk_management_page.dart';
@@ -54,7 +56,7 @@ final appRouter = GoRouter(
       builder: (context, state) => const AccessPendingPage(),
     ),
 
-    // ---------- Shell (bottom nav — 5 tabs) ----------
+    // ---------- Shell (bottom nav — 6 tabs) ----------
     ShellRoute(
       builder: (context, state, child) => _MainShell(child: child),
       routes: [
@@ -84,6 +86,7 @@ final appRouter = GoRouter(
           path: '/profile',
           builder: (context, state) => const ProfilePage(),
         ),
+        GoRoute(path: '/inbox', builder: (context, state) => const InboxPage()),
       ],
     ),
 
@@ -101,10 +104,8 @@ final appRouter = GoRouter(
       builder: (context, state) =>
           TemplateBuilderPage(templateId: state.pathParameters['id']!),
     ),
-    GoRoute(
-      path: '/notifications',
-      builder: (context, state) => const NotificationDrawerPage(),
-    ),
+    // Legacy redirect: /notifications → /inbox (preserves deep links)
+    GoRoute(path: '/notifications', redirect: (context, state) => '/inbox'),
     GoRoute(
       path: '/templates/:id',
       builder: (context, state) =>
@@ -267,7 +268,8 @@ String? authRedirect(BuildContext context, GoRouterState state) {
     // and the id segment cannot be a known mutation keyword.
     final isReadOnlyDetail =
         parts.length == 3 && parts[2] != 'new' && parts[2] != 'wizard';
-    if (!isReadOnlyDetail && !_di<PolicyManager>().can(AppCapabilities.templatesCreate)) {
+    if (!isReadOnlyDetail &&
+        !_di<PolicyManager>().can(AppCapabilities.templatesCreate)) {
       return '/home';
     }
   }
@@ -283,7 +285,6 @@ String? authRedirect(BuildContext context, GoRouterState state) {
   return null;
 }
 
-
 @visibleForTesting
 int shellIndexFromLocation(String location) {
   if (location.startsWith('/activity')) return 1;
@@ -291,11 +292,12 @@ int shellIndexFromLocation(String location) {
   if (location.startsWith('/templates')) return 3;
   if (location.startsWith('/profile')) return 4;
   if (location.startsWith('/admin')) return 4;
+  if (location.startsWith('/inbox')) return 5;
   return 0; // /home
 }
 
-/// Main shell with 5-tab bottom navigation matching PWA.
-/// Tabs: Home | Audits | Actions | Templates | Profile
+/// Main shell with 6-tab bottom navigation.
+/// Tabs: Home | Activity | Plans | Templates | Profile | Inbox
 class _MainShell extends StatelessWidget {
   final Widget child;
 
@@ -325,22 +327,30 @@ class _MainShell extends StatelessWidget {
 
                 return Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   color: Theme.of(context).colorScheme.error,
                   child: SafeArea(
                     top: false,
                     bottom: false,
                     child: Row(
                       children: [
-                        const Icon(Icons.cloud_off, color: Colors.white, size: 20),
+                        const Icon(
+                          Icons.cloud_off,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             '$count unsynced record${count > 1 ? 's' : ''} exhausted',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ),
                         IconButton(
@@ -356,14 +366,20 @@ class _MainShell extends StatelessWidget {
                                 ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.of(dialogCtx).pop(false),
+                                    onPressed: () =>
+                                        Navigator.of(dialogCtx).pop(false),
                                     child: const Text('Cancel'),
                                   ),
                                   TextButton(
-                                    onPressed: () => Navigator.of(dialogCtx).pop(true),
+                                    onPressed: () =>
+                                        Navigator.of(dialogCtx).pop(true),
                                     child: Text(
                                       'Discard',
-                                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.error,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -373,7 +389,11 @@ class _MainShell extends StatelessWidget {
                               await _di<OutboxDao>().discardExhausted();
                             }
                           },
-                          icon: const Icon(Icons.delete_outline, color: Colors.white, size: 20),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           tooltip: 'Discard permanently',
@@ -453,6 +473,19 @@ class _MainShell extends StatelessWidget {
                   isActive: currentIndex == 4,
                   onTap: () => context.go('/profile'),
                 ),
+                ValueListenableBuilder<List<NotificationDto>>(
+                  valueListenable: _di<NotificationManager>().notifications,
+                  builder: (context, items, _) {
+                    final unread = items.where((n) => !n.isRead).length;
+                    return _NavItem(
+                      icon: Icons.inbox_outlined,
+                      label: 'INBOX',
+                      isActive: currentIndex == 5,
+                      onTap: () => context.go('/inbox'),
+                      badgeCount: unread,
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -467,12 +500,14 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback onTap;
+  final int badgeCount;
 
   const _NavItem({
     required this.icon,
     required this.label,
     required this.isActive,
     required this.onTap,
+    this.badgeCount = 0,
   });
 
   @override
@@ -487,7 +522,41 @@ class _NavItem extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 24, color: color),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(icon, size: 24, color: color),
+              if (badgeCount > 0)
+                Positioned(
+                  top: -4,
+                  right: -6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 1,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 14,
+                    ),
+                    child: Text(
+                      badgeCount > 99 ? '99+' : '$badgeCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           const SizedBox(height: 4),
           Text(
             label,

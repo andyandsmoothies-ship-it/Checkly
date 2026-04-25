@@ -23,15 +23,15 @@ class UserGroupApiService {
     if (data is List) {
       raw = data;
     } else if (data is Map) {
-      raw = data['items'] as List<dynamic>? ?? data['data'] as List<dynamic>? ?? [];
+      raw =
+          data['items'] as List<dynamic>? ??
+          data['data'] as List<dynamic>? ??
+          [];
     } else {
       raw = [];
     }
 
-    return raw
-        .cast<Map<String, dynamic>>()
-        .map(UserGroupDto.fromJson)
-        .toList();
+    return raw.cast<Map<String, dynamic>>().map(UserGroupDto.fromJson).toList();
   }
 
   /// Creates a new user group.

@@ -21,9 +21,9 @@ class AdminDashboardManager extends ChangeNotifier {
     AdminApiService? adminApi,
     StoreApiService? storeApi,
     TemplateApiService? templateApi,
-  })  : _adminApi = adminApi ?? _di<AdminApiService>(),
-        _storeApi = storeApi ?? _di<StoreApiService>(),
-        _templateApi = templateApi ?? _di<TemplateApiService>();
+  }) : _adminApi = adminApi ?? _di<AdminApiService>(),
+       _storeApi = storeApi ?? _di<StoreApiService>(),
+       _templateApi = templateApi ?? _di<TemplateApiService>();
 
   // ---------- State ----------
   bool isLoading = false;

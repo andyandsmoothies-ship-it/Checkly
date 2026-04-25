@@ -22,6 +22,7 @@ public static class ReviewSubmission
         Request request,
         ClaimsPrincipal user,
         AppDbContext db,
+        IFcmDispatchService fcm,
         CancellationToken ct)
     {
         // Validate status
@@ -88,6 +89,11 @@ public static class ReviewSubmission
             message: $"Submission '{submission.Id}' reviewed as '{request.Status}' by admin",
             userEmail: user.FindFirstValue(ClaimTypes.Email));
         await db.SaveChangesAsync(ct);
+
+        if (submission.AuditorId.HasValue)
+        {
+            await fcm.DispatchSyncNeededAsync(submission.AuditorId.Value);
+        }
 
         return TypedResults.Ok(new
         {

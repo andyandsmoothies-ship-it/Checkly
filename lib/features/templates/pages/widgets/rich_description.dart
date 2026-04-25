@@ -26,56 +26,58 @@ class _RichDescriptionState extends State<RichDescription> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ...displayLines.map((line) {
-        final trimmed = line.trim();
-        if (trimmed.isEmpty) return const SizedBox(height: 8);
+          final trimmed = line.trim();
+          if (trimmed.isEmpty) return const SizedBox(height: 8);
 
-        // Header/Intro line
-        if (!trimmed.startsWith('-')) {
+          // Header/Intro line
+          if (!trimmed.startsWith('-')) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                trimmed,
+                style: AppFonts.displayStyle(
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                  fontWeight: trimmed.endsWith(':') ? FontWeight.w700 : null,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(
+                    alpha: trimmed.endsWith(':') ? 0.8 : 0.6,
+                  ),
+                  height: 1.5,
+                ),
+              ),
+            );
+          }
+
+          // Bullet point line
+          final content = trimmed.substring(1).trim();
           return Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Text(
-              trimmed,
-              style: AppFonts.displayStyle(
-                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                fontWeight: trimmed.endsWith(':') ? FontWeight.w700 : null,
-                color: Theme.of(context).colorScheme.onSurface.withValues(
-                  alpha: trimmed.endsWith(':') ? 0.8 : 0.6,
+            padding: const EdgeInsets.only(left: 4, bottom: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '• ',
+                  style: TextStyle(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                    fontSize: theme.textTheme.bodyLarge?.fontSize,
+                  ),
                 ),
-                height: 1.5,
-              ),
-            ),
-          );
-        }
-
-        // Bullet point line
-        final content = trimmed.substring(1).trim();
-        return Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '• ',
-                style: TextStyle(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                  fontSize: theme.textTheme.bodyLarge?.fontSize,
-                ),
-              ),
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    children: _parseLine(content, theme),
-                    style: AppFonts.displayStyle(
-                      fontSize: theme.textTheme.bodyMedium?.fontSize,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      height: 1.5,
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      children: _parseLine(content, theme),
+                      style: AppFonts.displayStyle(
+                        fontSize: theme.textTheme.bodyMedium?.fontSize,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
+              ],
+            ),
+          );
         }),
         if (hasMore)
           Padding(

@@ -49,7 +49,9 @@ class CompactStatusPanel extends StatelessWidget {
                     onTap: item.onTap,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 14),
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
                       child: Row(
                         children: [
                           Icon(item.icon, size: 20, color: item.iconColor),
@@ -57,9 +59,7 @@ class CompactStatusPanel extends StatelessWidget {
                           Expanded(
                             child: Text(
                               item.label,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
+                              style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: Theme.of(context)
@@ -81,10 +81,9 @@ class CompactStatusPanel extends StatelessWidget {
                           Icon(
                             Icons.chevron_right,
                             size: 16,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.3),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.3),
                           ),
                         ],
                       ),

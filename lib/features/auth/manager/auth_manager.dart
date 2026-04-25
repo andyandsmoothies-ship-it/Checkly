@@ -35,12 +35,12 @@ class AuthManager extends ChangeNotifier {
     PolicyApiService? policyApi,
     PolicyDao? policyDao,
     DatabaseService? dbService,
-  })  : _authApi = authApi ?? _di<AuthApiService>(),
-        _storage = storage ?? _di<SecureStorageService>(),
-        _apiClient = apiClient ?? _di<ApiClient>(),
-        _policyApi = policyApi ?? _di<PolicyApiService>(),
-        _policyDao = policyDao ?? _di<PolicyDao>(),
-        _dbService = dbService ?? _di<DatabaseService>();
+  }) : _authApi = authApi ?? _di<AuthApiService>(),
+       _storage = storage ?? _di<SecureStorageService>(),
+       _apiClient = apiClient ?? _di<ApiClient>(),
+       _policyApi = policyApi ?? _di<PolicyApiService>(),
+       _policyDao = policyDao ?? _di<PolicyDao>(),
+       _dbService = dbService ?? _di<DatabaseService>();
 
   // ---------- State ----------
   final _authState = ValueNotifier<AuthState>(AuthState.loading);
@@ -127,11 +127,12 @@ class AuthManager extends ChangeNotifier {
   // ---------- Logout ----------
   Future<void> logout() async {
     await _storage.clearAll();
-    await _dbService.db.clearAllData();  // Full SQLite wipe to prevent data bleed
+    await _dbService.db
+        .clearAllData(); // Full SQLite wipe to prevent data bleed
     await _policyDao.clearCapabilities(); // [PBAC Slice 4] clear Drift cache
     _apiClient.clearAuthToken();
     _currentUser = null;
-    _capabilities.value = {};            // [PBAC Slice 4] clear memory cache
+    _capabilities.value = {}; // [PBAC Slice 4] clear memory cache
     _authState.value = AuthState.unauthenticated;
     notifyListeners();
   }
@@ -144,7 +145,7 @@ class AuthManager extends ChangeNotifier {
   Future<void> refreshCapabilities() async {
     // Guard: only refresh if logged in
     if (_authState.value != AuthState.authenticated) return;
-    
+
     // Guard: 5-minute cooldown
     final now = DateTime.now();
     if (_lastCapabilityRefresh != null &&
@@ -152,7 +153,7 @@ class AuthManager extends ChangeNotifier {
       return;
     }
     _lastCapabilityRefresh = now;
-    
+
     try {
       final caps = await _policyApi.fetchCapabilities();
       await _policyDao.upsertCapabilities(caps);

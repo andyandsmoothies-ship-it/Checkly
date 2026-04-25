@@ -12,9 +12,9 @@ namespace Checkly.Api.Features.Notifications;
 public static class MarkRead
 {
     public static async Task<IResult> HandleAsync(
-        Guid id, 
+        Guid id,
         ClaimsPrincipal user,
-        AppDbContext db, 
+        AppDbContext db,
         CancellationToken ct)
     {
         var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);

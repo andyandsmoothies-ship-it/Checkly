@@ -15,7 +15,7 @@
 | GetSubmission | `Features/Submissions/GetSubmission.cs` | IDOR check via `StoreId` |
 | UpdateUser | `Features/Admin/UpdateUser.cs` | Assigns user to store, checks `IsActive` |
 | TransferStoreManager | `Features/Admin/TransferStoreManager.cs` | Transfers SM, checks `IsActive` |
-| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Filters by `StoreId` |
+| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Role tenancy enforcement (IDOR protection) via `StoreId` |
 | StoreAnalyticsSnapshot | `Features/Submissions/FinalizeSubmission.cs` | Upserts 30-day snapshot on finalize |
 | ActionPlans | `Features/ActionPlans/` | Ownership via `StoreId` |
 | Photos | `Features/Photos/` | IDOR via submission → store chain |
@@ -38,7 +38,7 @@
 | CreateSubmission | `Features/Submissions/CreateSubmission.cs` | Checks `area.IsActive` via store's AreaId |
 | GetSubmission | `Features/Submissions/GetSubmission.cs` | IDOR check via `IsUserArea` |
 | ListSubmissions | `Features/Submissions/ListSubmissions.cs` | AM scoping via area → stores |
-| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Filters by `areaId` → store list |
+| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Role tenancy enforcement (IDOR protection) via `areaId` → store list |
 | UpdateUser | `Features/Admin/UpdateUser.cs` | Assigns AM to area |
 
 ### Deactivation Impact
@@ -91,7 +91,7 @@
 | GetSubmission | `Features/Submissions/GetSubmission.cs` | IDOR-guarded detail view |
 | FinalizeSubmission | `Features/Submissions/FinalizeSubmission.cs` | Draft→completed transition, score verification, answer + action plan creation. Evaluates `RowVersion` (`xmin`) for optimistic concurrency control. |
 | GetSurveyResults | `Features/Submissions/GetSurveyResults.cs` | Aggregates survey answers by criteria |
-| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Score trends, 6-month aggregation, top failures |
+| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Score trends, 6-month aggregation, section breakdown (90-day scope) |
 | GetTopFailures | `Features/Analytics/GetTopFailures.cs` | Groups answers by criteria across submissions |
 | GetStoreDashboard | `Features/Stores/GetStoreDashboard.cs` | Recent audits, avg score, open APs for a store |
 | StoreAnalyticsSnapshot | `Features/Submissions/FinalizeSubmission.cs` | Upserts 30-day snapshot on finalize |
@@ -150,3 +150,4 @@
 | `ScoringVerifier` | `Common/Scoring/ScoringVerifier.cs` | Score validation | CreateSubmission, FinalizeSubmission |
 | `ActionPlanService` | `Features/ActionPlans/ActionPlanService.cs` | Auto-create action plans (runs in caller's Unit of Work) | CreateSubmission, FinalizeSubmission |
 | `ReminderService` | `Common/Services/ReminderService.cs` | Background cleanup + reminders | Hosted service (scheduled) |
+| `FcmDispatchService` | `Common/Services/FcmDispatchService.cs` | Push notifications to mobile devices via Firebase (Polly Resilience) | FinalizeSubmission |

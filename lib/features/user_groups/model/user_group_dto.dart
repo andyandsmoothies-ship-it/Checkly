@@ -5,11 +5,7 @@ class UserGroupDto {
   final String name;
   final String? description;
 
-  const UserGroupDto({
-    required this.id,
-    required this.name,
-    this.description,
-  });
+  const UserGroupDto({required this.id, required this.name, this.description});
 
   factory UserGroupDto.fromJson(Map<String, dynamic> json) => UserGroupDto(
     id: json['id'] as String,

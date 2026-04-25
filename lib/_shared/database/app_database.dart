@@ -78,7 +78,7 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(cachedSubmissions, cachedSubmissions.voidReason);
         await m.addColumn(cachedSubmissions, cachedSubmissions.voidedAt);
         await m.addColumn(cachedActionPlans, cachedActionPlans.rootCause);
-        
+
         await _createVoidTriggers(customStatement);
       }
       if (from < 8) {
@@ -102,7 +102,10 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 12) {
         // Orphaned Resume fix: track the server's submission ID for finalize routing.
-        await m.addColumn(pendingSubmissions, pendingSubmissions.targetSubmissionId);
+        await m.addColumn(
+          pendingSubmissions,
+          pendingSubmissions.targetSubmissionId,
+        );
       }
       if (from < 13) {
         // Score Verification fix: persist repeat fault count for accurate server-side scoring.
@@ -115,8 +118,14 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 15) {
         // Action Plan Audit Trail: add evidence submission fields.
-        await m.addColumn(cachedActionPlans, cachedActionPlans.evidenceSubmittedAt);
-        await m.addColumn(cachedActionPlans, cachedActionPlans.evidenceSubmittedByName);
+        await m.addColumn(
+          cachedActionPlans,
+          cachedActionPlans.evidenceSubmittedAt,
+        );
+        await m.addColumn(
+          cachedActionPlans,
+          cachedActionPlans.evidenceSubmittedByName,
+        );
       }
       if (from < 16) {
         // Audit Category Filters: add template_type snapshot column.
@@ -148,7 +157,9 @@ class AppDatabase extends _$AppDatabase {
     },
   );
 
-  static Future<void> _createVoidTriggers(void Function(String) executor) async {
+  static Future<void> _createVoidTriggers(
+    void Function(String) executor,
+  ) async {
     // AFTER UPDATE trigger: Handles status changes for existing submissions.
     executor('''
       CREATE TRIGGER IF NOT EXISTS tr_void_submissions_update
@@ -181,24 +192,34 @@ class AppDatabase extends _$AppDatabase {
     // Instead of doing column math `/ 1000` in SQL causing full table scans,
     // we evaluate the 90-day cutoff in Dart and pass it as a bind variable.
     // This allows SQLite to use indexes on `completed_at` and `voided_at`.
-    final cutoffSeconds = DateTime.now().subtract(const Duration(days: 90)).millisecondsSinceEpoch ~/ 1000;
+    final cutoffSeconds =
+        DateTime.now()
+            .subtract(const Duration(days: 90))
+            .millisecondsSinceEpoch ~/
+        1000;
 
     // 1. Delete linked action plans first (FK child-before-parent ordering).
-    await customStatement('''
+    await customStatement(
+      '''
       DELETE FROM cached_action_plans
       WHERE submission_id IN (
         SELECT id FROM cached_submissions
         WHERE (status = 'completed' AND completed_at < ?)
            OR (status = 'voided'    AND voided_at   < ?)
       )
-    ''', [cutoffSeconds, cutoffSeconds]);
+    ''',
+      [cutoffSeconds, cutoffSeconds],
+    );
 
     // 2. Delete stale submissions.
-    await customStatement('''
+    await customStatement(
+      '''
       DELETE FROM cached_submissions
       WHERE (status = 'completed' AND completed_at < ?)
          OR (status = 'voided'    AND voided_at   < ?)
-    ''', [cutoffSeconds, cutoffSeconds]);
+    ''',
+      [cutoffSeconds, cutoffSeconds],
+    );
   }
 
   /// Public testing entry point. Do NOT call from production code.
@@ -221,13 +242,18 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'checkly_local.db'));
-    return NativeDatabase.createInBackground(file, setup: (db) {
-      // Diagnostic check for JSON1 extension (required for JSONB columns)
-      try {
-        db.execute("SELECT json_valid('{}')");
-      } catch (e) {
-        throw Exception('FATAL: Compiled sqlite3 binary is missing JSON1 extension support. $e');
-      }
-    });
+    return NativeDatabase.createInBackground(
+      file,
+      setup: (db) {
+        // Diagnostic check for JSON1 extension (required for JSONB columns)
+        try {
+          db.execute("SELECT json_valid('{}')");
+        } catch (e) {
+          throw Exception(
+            'FATAL: Compiled sqlite3 binary is missing JSON1 extension support. $e',
+          );
+        }
+      },
+    );
   });
 }

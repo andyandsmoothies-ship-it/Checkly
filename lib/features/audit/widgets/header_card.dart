@@ -8,7 +8,11 @@ class HeaderCard extends StatelessWidget {
   final SubmissionDetailDto detail;
   final String scoringMode;
 
-  const HeaderCard({super.key, required this.detail, required this.scoringMode});
+  const HeaderCard({
+    super.key,
+    required this.detail,
+    required this.scoringMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +52,7 @@ class HeaderCard extends StatelessWidget {
             const SizedBox(height: 10),
 
             // Meta rows
-            MetaRow(
-              icon: Icons.store_outlined,
-              label: detail.storeName ?? '—',
-            ),
+            MetaRow(icon: Icons.store_outlined, label: detail.storeName ?? '—'),
             MetaRow(
               icon: Icons.person_outline,
               label: detail.auditorName ?? '—',
@@ -157,7 +158,12 @@ class MetaRow extends StatelessWidget {
   final String label;
   final Color? color;
 
-  const MetaRow({super.key, required this.icon, required this.label, this.color});
+  const MetaRow({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {

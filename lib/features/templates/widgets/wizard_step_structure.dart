@@ -42,15 +42,18 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final suggestions =
-        WizardSuggestions.getSectionSuggestions(widget.scoringMode);
+    final suggestions = WizardSuggestions.getSectionSuggestions(
+      widget.scoringMode,
+    );
 
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
         Text(
           'Build your structure',
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -138,21 +141,26 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
         // Suggestions Block
         Text(
           'Suggested sections for this type:',
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: suggestions.map((title) {
-            final alreadyAdded =
-                widget.sections.any((s) => s.titleCtrl.text == title);
+            final alreadyAdded = widget.sections.any(
+              (s) => s.titleCtrl.text == title,
+            );
             return ActionChip(
               label: Text(title),
               avatar: const Icon(Icons.add, size: 16),
               onPressed: alreadyAdded ? null : () => _addSection(title),
               backgroundColor: alreadyAdded
-                  ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                  ? theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    )
                   : theme.colorScheme.secondaryContainer,
               labelStyle: TextStyle(
                 color: alreadyAdded

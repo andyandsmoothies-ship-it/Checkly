@@ -29,6 +29,8 @@ import 'features/audit/manager/history_manager.dart';
 import 'features/audit/manager/survey_results_manager.dart';
 import 'features/notifications/services/notification_api_service.dart';
 import 'features/notifications/manager/notification_manager.dart';
+import 'features/notifications/manager/notification_sync_manager.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'features/action_plans/manager/action_plan_manager.dart';
 import 'features/dashboard/manager/dashboard_manager.dart';
 import 'features/admin/services/admin_api_service.dart';
@@ -74,9 +76,13 @@ void configureDependencies() {
   di.registerLazySingleton<SecureStorageService>(() => SecureStorageService());
   di.registerLazySingleton<AuthApiService>(() => AuthApiService(di<Dio>()));
   di.registerLazySingleton<PolicyApiService>(() => PolicyApiService(di<Dio>()));
-  di.registerLazySingleton<PolicyDao>(() => PolicyDao(di<DatabaseService>().db));
+  di.registerLazySingleton<PolicyDao>(
+    () => PolicyDao(di<DatabaseService>().db),
+  );
   di.registerLazySingleton<AuthManager>(() => AuthManager());
-  di.registerLazySingleton<PolicyManager>(() => PolicyManager(auth: di<AuthManager>()));
+  di.registerLazySingleton<PolicyManager>(
+    () => PolicyManager(auth: di<AuthManager>()),
+  );
 
   // ---------- Templates (Slice 3) ----------
   di.registerLazySingleton<TemplateApiService>(
@@ -129,6 +135,17 @@ void configureDependencies() {
     () => NotificationApiService(di<Dio>()),
   );
   di.registerLazySingleton<NotificationManager>(() => NotificationManager());
+  
+  // ---------- Notification V3 Sync Engine ----------
+  di.registerLazySingleton<FlutterLocalNotificationsPlugin>(
+    () => FlutterLocalNotificationsPlugin(),
+  );
+  di.registerLazySingleton<NotificationSyncManager>(
+    () => NotificationSyncManager(
+      notificationManager: di<NotificationManager>(),
+      localNotifications: di<FlutterLocalNotificationsPlugin>(),
+    ),
+  );
 
   // ---------- Dashboard (Slice 7) ----------
   di.registerLazySingleton<DashboardManager>(() => DashboardManager());
@@ -144,9 +161,13 @@ void configureDependencies() {
   di.registerLazySingleton<AdminUserManager>(() => AdminUserManager());
   di.registerLazySingleton<AdminStoreManager>(() => AdminStoreManager());
   di.registerLazySingleton<AdminAreaManager>(() => AdminAreaManager());
-  di.registerLazySingleton<AdminDashboardManager>(() => AdminDashboardManager());
+  di.registerLazySingleton<AdminDashboardManager>(
+    () => AdminDashboardManager(),
+  );
   di.registerLazySingleton<AdminAuditManager>(() => AdminAuditManager());
-  di.registerLazySingleton<AdminGlobalRiskManager>(() => AdminGlobalRiskManager());
+  di.registerLazySingleton<AdminGlobalRiskManager>(
+    () => AdminGlobalRiskManager(),
+  );
 
   // ---------- Analytics (CRUD Gaps — MS5) ----------
   di.registerLazySingleton<AnalyticsApiService>(

@@ -70,7 +70,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('All Areas')),
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Areas'),
+                      ),
                       ...(_manager.data?.areaNames ?? []).map(
                         (a) => DropdownMenuItem(
                           value: a,
@@ -95,7 +98,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('All Stores')),
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Stores'),
+                      ),
                       ...(_manager.data?.storeNames ?? []).map(
                         (s) => DropdownMenuItem(
                           value: s,
@@ -119,7 +125,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('All Types')),
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Types'),
+                      ),
                       ...(_manager.data?.templateTypes ?? []).map(
                         (t) => DropdownMenuItem(
                           value: t,
@@ -143,7 +152,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('All Auditors')),
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('All Auditors'),
+                      ),
                       ...(_manager.data?.auditorNames ?? []).map(
                         (a) => DropdownMenuItem(
                           value: a,
@@ -167,9 +179,18 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       border: OutlineInputBorder(),
                     ),
                     items: const [
-                      DropdownMenuItem(value: null, child: Text('All Statuses')),
-                      DropdownMenuItem(value: 'completed', child: Text('Completed')),
-                      DropdownMenuItem(value: 'in_progress', child: Text('In Progress')),
+                      DropdownMenuItem(
+                        value: null,
+                        child: Text('All Statuses'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'completed',
+                        child: Text('Completed'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'in_progress',
+                        child: Text('In Progress'),
+                      ),
                     ],
                     onChanged: (v) {
                       _manager.selectedStatus = v;
@@ -187,9 +208,18 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       border: OutlineInputBorder(),
                     ),
                     items: const [
-                      DropdownMenuItem(value: null, child: Text('All Review Statuses')),
-                      DropdownMenuItem(value: 'pending', child: Text('Pending')),
-                      DropdownMenuItem(value: 'approved', child: Text('Approved')),
+                      DropdownMenuItem(
+                        value: null,
+                        child: Text('All Review Statuses'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'pending',
+                        child: Text('Pending'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'approved',
+                        child: Text('Approved'),
+                      ),
                     ],
                     onChanged: (v) {
                       _manager.selectedReviewStatus = v;
@@ -379,7 +409,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                       const SizedBox(width: 8),
                       WarmChip(
-                        label: _manager.dateRange == 'custom' &&
+                        label:
+                            _manager.dateRange == 'custom' &&
                                 _manager.customDateRange != null
                             ? '${_manager.customDateRange!.start.day}/${_manager.customDateRange!.start.month} – ${_manager.customDateRange!.end.day}/${_manager.customDateRange!.end.month}'
                             : 'Custom',
@@ -407,7 +438,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   const ChecklyEmptyState(
                     icon: Icons.search_off,
                     title: 'No Match',
-                    subtitle: 'No audits match your current filters. Clear filters to see more.',
+                    subtitle:
+                        'No audits match your current filters. Clear filters to see more.',
                   )
                 else if (totalAudits == 0)
                   const ChecklyEmptyState(
@@ -456,7 +488,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       _KpiCard(
                         icon: Icons.check_circle,
                         label: 'Completion',
-                        value: '${(data?.completionRate ?? 0).toStringAsFixed(1)}%',
+                        value:
+                            '${(data?.completionRate ?? 0).toStringAsFixed(1)}%',
                         accentColor: AppTheme.info,
                         onTap: () => context.go('/activity?filter=submitted'),
                       ),
@@ -531,7 +564,9 @@ class _KpiCard extends StatelessWidget {
                         child: Icon(
                           Icons.info_outline,
                           size: 14,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.3),
                         ),
                       ),
                   ],
@@ -540,7 +575,9 @@ class _KpiCard extends StatelessWidget {
                 Text(
                   value,
                   style: AppFonts.serifStyle(
-                    fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
+                    fontSize: Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.fontSize,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),

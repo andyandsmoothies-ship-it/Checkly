@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import '../../features/action_plans/model/action_plan_dto.dart';
+import '../../features/action_plans/models/add_comment_request.dart';
+import '../../features/action_plans/models/comment_dto.dart';
 import '../../features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/_shared/services/sync_interfaces.dart';
 import '../../features/auth/manager/auth_manager.dart';
@@ -27,8 +29,9 @@ class SyncApiAdapter implements SyncApi {
   Future<void> pushSubmission(PendingSubmission submission) async {
     // Decode the stored JSON string and strip local file paths from photoUrl
     // fields so they never pollute the backend Postgres database.
-    final payload =
-        Map<String, dynamic>.from(jsonDecode(submission.payload) as Map);
+    final payload = Map<String, dynamic>.from(
+      jsonDecode(submission.payload) as Map,
+    );
 
     final answers = payload['answers'];
     if (answers is List) {
@@ -78,25 +81,25 @@ class SyncApiAdapter implements SyncApi {
     final allRisks = <dynamic>[];
     int page = 1;
     const pageSize = 100;
-    
+
     while (true) {
       final params = <String, dynamic>{'page': page, 'pageSize': pageSize};
       if (since != null) {
         params['since'] = since.toIso8601String();
       }
-      
+
       final response = await _dio.get<Map<String, dynamic>>(
         '/global-risks',
         queryParameters: params,
       );
-      
+
       final list = response.data?['items'] as List<dynamic>? ?? [];
       allRisks.addAll(list);
-      
+
       if (list.length < pageSize) break;
       page++;
     }
-    
+
     return allRisks;
   }
 
@@ -162,8 +165,19 @@ class ActionPlanApiAdapter implements ActionPlanApi {
     String id,
     Map<String, dynamic> fields,
   ) async {
-    final response = await _dio.put('/action-plans/$id', data: fields);
-    return ActionPlanDto.fromJson(response.data as Map<String, dynamic>);
+    try {
+      final response = await _dio.put('/action-plans/$id', data: fields);
+      return ActionPlanDto.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 409) {
+        final data = e.response?.data;
+        if (data is Map<String, dynamic> &&
+            data['extensions']?['code'] == 'action_plan_already_closed') {
+          throw const ActionPlanAlreadyClosedException();
+        }
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -192,6 +206,18 @@ class ActionPlanApiAdapter implements ActionPlanApi {
     }
 
     return allPlans;
+  }
+
+  @override
+  Future<CommentDto> addComment(
+    String actionPlanId,
+    AddCommentRequest request,
+  ) async {
+    final response = await _dio.post(
+      '/action-plans/$actionPlanId/comments',
+      data: request.toJson(),
+    );
+    return CommentDto.fromJson(response.data as Map<String, dynamic>);
   }
 }
 

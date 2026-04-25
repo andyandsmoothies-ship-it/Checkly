@@ -24,7 +24,10 @@ class ThemeToggleTile extends StatelessWidget {
             isDark ? Icons.dark_mode : Icons.light_mode,
             color: theme.colorScheme.primary,
           ),
-          title: const Text('Theme', style: TextStyle(fontWeight: FontWeight.w500)),
+          title: const Text(
+            'Theme',
+            style: TextStyle(fontWeight: FontWeight.w500),
+          ),
           subtitle: Text(isDark ? 'Dark mode' : 'Light mode'),
           trailing: Switch(
             value: isDark,

@@ -4,7 +4,7 @@ import '../model/survey_result_dto.dart';
 
 class SurveyQuestionCard extends StatelessWidget {
   final SurveyQuestionResult result;
-  
+
   const SurveyQuestionCard({super.key, required this.result});
 
   @override

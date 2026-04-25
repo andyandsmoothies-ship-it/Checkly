@@ -51,13 +51,14 @@ class ActionTimeline extends StatelessWidget {
         s3 = TimelineStepStatus.pending;
     }
 
-    String fmt(DateTime d) => DateFormat('MMM d, yyyy h:mm a').format(d.toLocal());
+    String fmt(DateTime d) =>
+        DateFormat('MMM d, yyyy h:mm a').format(d.toLocal());
 
     steps.addAll([
       TimelineStep(
         title: 'Identified',
-        subtitle: plan.storeManagerName != null 
-            ? "by ${plan.storeManagerName} · ${fmt(plan.createdAt)}" 
+        subtitle: plan.storeManagerName != null
+            ? "by ${plan.storeManagerName} · ${fmt(plan.createdAt)}"
             : null,
         status: s1,
       ),

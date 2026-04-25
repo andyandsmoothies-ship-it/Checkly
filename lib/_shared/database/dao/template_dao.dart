@@ -138,18 +138,19 @@ class TemplateDao {
 
     // Gotcha prevention: Pre-fetch ALL criteria assigned to this template's groups to avert an N+1 recursive loop!
     final groupIds = allGroups.map((g) => g.id).toList();
-    final allCriteria = groupIds.isEmpty 
-        ? <CachedCriteriaData>[] 
+    final allCriteria = groupIds.isEmpty
+        ? <CachedCriteriaData>[]
         : await (_db.select(_db.cachedCriteria)
-            ..where((c) => c.groupId.isIn(groupIds))
-            ..orderBy([(c) => OrderingTerm.asc(c.orderIndex)])).get();
+                ..where((c) => c.groupId.isIn(groupIds))
+                ..orderBy([(c) => OrderingTerm.asc(c.orderIndex)]))
+              .get();
 
     List<GroupDto> buildTree(List<CachedGroup> groups) {
       final result = <GroupDto>[];
       for (final g in groups) {
         final children = allGroups.where((c) => c.parentId == g.id).toList();
         final criteria = allCriteria.where((c) => c.groupId == g.id).toList();
-        
+
         result.add(
           GroupDto(
             id: g.id,

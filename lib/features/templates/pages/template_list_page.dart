@@ -13,7 +13,6 @@ import '../widgets/type_section.dart';
 
 final _di = GetIt.instance;
 
-
 /// Template type labels matching PWA TemplateCard constants.
 const kTemplateTypeLabels = <String, String>{
   'qc': 'QUALITY CONTROL',
@@ -164,24 +163,24 @@ class _TemplateListPageState extends State<TemplateListPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Templates')),
       floatingActionButton: PermissionGuard(
-          capability: AppCapabilities.templatesCreate,
-          child: Padding(
-              padding: const EdgeInsets.only(bottom: 80),
-              child: Builder(
-                builder: (context) {
-                  final theme = Theme.of(context);
-                  return FloatingActionButton(
-                    onPressed: () => _showCreateMenu(context),
-                    shape: const CircleBorder(),
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    elevation: 4,
-                    child: const Icon(Icons.add),
-                  );
-                },
-              ),
-            ),
+        capability: AppCapabilities.templatesCreate,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 80),
+          child: Builder(
+            builder: (context) {
+              final theme = Theme.of(context);
+              return FloatingActionButton(
+                onPressed: () => _showCreateMenu(context),
+                shape: const CircleBorder(),
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                elevation: 4,
+                child: const Icon(Icons.add),
+              );
+            },
           ),
+        ),
+      ),
       body: ListenableBuilder(
         listenable: manager,
         builder: (context, _) {
@@ -273,7 +272,10 @@ class _TemplateListPageState extends State<TemplateListPage> {
                         count: templates.length,
                         initiallyExpanded: false,
                         children: templates
-                            .map((t) => TemplateCard(template: t, isAdmin: isAdmin))
+                            .map(
+                              (t) =>
+                                  TemplateCard(template: t, isAdmin: isAdmin),
+                            )
                             .toList(),
                       );
                     }).toList(),

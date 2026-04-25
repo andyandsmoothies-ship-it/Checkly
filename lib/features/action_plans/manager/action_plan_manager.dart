@@ -6,7 +6,8 @@ import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/dao/action_plan_outbox_dao.dart';
 import '../../../_shared/services/connectivity_service.dart';
 import '../model/action_plan_dto.dart';
-
+import '../models/add_comment_request.dart';
+import '../models/comment_dto.dart';
 // ============================================================
 // Interfaces
 // ============================================================
@@ -23,6 +24,13 @@ abstract class ActionPlanApi {
   /// Concrete adapters override this. Default throws to prevent silent misuse.
   Future<List<ActionPlanDto>> fetchActionPlans() =>
       throw UnimplementedError('fetchActionPlans() not implemented');
+
+  /// Add a comment to an action plan.
+  Future<CommentDto> addComment(
+    String actionPlanId,
+    AddCommentRequest request,
+  ) =>
+      throw UnimplementedError('addComment() not implemented');
 }
 
 /// Provides the current user's role for client-side role guards.
@@ -52,10 +60,20 @@ class InvalidTransitionException implements Exception {
   String toString() => 'InvalidTransitionException: $message';
 }
 
+/// Thrown when the backend rejects an action plan mutation because the plan is already closed.
+/// Used by [ActionPlanApiAdapter] to signal a terminal-state conflict (HTTP 409
+/// with code=action_plan_already_closed). The SyncEngine safe-drains this entry.
+class ActionPlanAlreadyClosedException implements Exception {
+  const ActionPlanAlreadyClosedException();
+
+  @override
+  String toString() =>
+      'ActionPlanAlreadyClosedException: The action plan is already in a terminal state.';
+}
+
 // ============================================================
 // ActionPlanManager — role-guarded state machine + list loading
 // ============================================================
-
 
 /// Manages action plan lifecycle with client-side role guards.
 ///
@@ -72,6 +90,7 @@ class ActionPlanManager extends ChangeNotifier {
   final UserRoleProvider _userRole;
   final ConnectivityService _connectivity;
   final ActionPlanOutboxDao _outboxDao;
+
   /// Injected database — required for [loadActionPlans]. Optional to allow
   /// state-machine-only test construction (S1–S8 never call loadActionPlans).
   final AppDatabase? _db;
@@ -87,6 +106,17 @@ class ActionPlanManager extends ChangeNotifier {
        _connectivity = connectivity,
        _outboxDao = outboxDao,
        _db = db;
+
+  // ---------- Offline Conflict Recovery ----------
+  /// Get the stale offline conflict for this plan, if it exists.
+  Future<PendingActionPlanUpdate?> getStaleConflict(String planId) {
+    return _outboxDao.getStaleConflictForPlan(planId);
+  }
+
+  /// Dismiss the stale conflict by removing it from the outbox.
+  Future<void> dismissStaleConflict(String id) {
+    return _outboxDao.remove(id);
+  }
 
   // ---------- List state ----------
   final actionPlans = ValueNotifier<List<ActionPlanDto>>([]);
@@ -155,9 +185,11 @@ class ActionPlanManager extends ChangeNotifier {
       }
 
       // --- Offline / error fallback: read local cache ---
-      final rows = await (db.select(db.cachedActionPlans)
-            ..limit(500)) // Bounded to 500 for mobile performance safety (Gotcha #14)
-          .get();
+      final rows =
+          await (db.select(db.cachedActionPlans)..limit(
+                500,
+              )) // Bounded to 500 for mobile performance safety (Gotcha #14)
+              .get();
 
       actionPlans.value = rows
           .map(
@@ -247,9 +279,9 @@ class ActionPlanManager extends ChangeNotifier {
       );
 
       // Patch in-memory list so the UI reflects the change without a DB reload
-      final updated = actionPlans.value.map(
-        (p) => p.id == plan.id ? optimistic : p,
-      ).toList();
+      final updated = actionPlans.value
+          .map((p) => p.id == plan.id ? optimistic : p)
+          .toList();
       actionPlans.value = updated;
 
       return optimistic;
@@ -267,9 +299,9 @@ class ActionPlanManager extends ChangeNotifier {
     final result = await _api.updateActionPlan(plan.id, updatePayload);
 
     // Patch in-memory list with the server response
-    final updated = actionPlans.value.map(
-      (p) => p.id == plan.id ? result : p,
-    ).toList();
+    final updated = actionPlans.value
+        .map((p) => p.id == plan.id ? result : p)
+        .toList();
     actionPlans.value = updated;
 
     return result;

@@ -60,6 +60,7 @@ public sealed class ReminderService : BackgroundService
                         _logger.LogInformation("ReminderService: Distributed lock acquired for tick.");
 
                         await SendDeadlineReminders(db, tickCt);
+                        await SendOverdueEscalations(db, tickCt);
                         await SendScheduleReminders(db, tickCt);
 
                         // Only run retention cleanup once per 24 hours
@@ -138,6 +139,7 @@ public sealed class ReminderService : BackgroundService
             .ToListAsync(ct);
 
         var count = 0;
+        var fcmTargets = new HashSet<Guid>();
         foreach (var item in openAPs)
         {
             var ap = item.AP;
@@ -178,12 +180,93 @@ public sealed class ReminderService : BackgroundService
                 CreatedAt = now,
             });
             count++;
+            fcmTargets.Add(ap.StoreManagerId.Value);
         }
 
         if (count > 0)
         {
             await db.SaveChangesAsync(ct);
+            using var scope = _scopeFactory.CreateScope();
+            var fcm = scope.ServiceProvider.GetRequiredService<IFcmDispatchService>();
+            foreach (var target in fcmTargets)
+            {
+                await fcm.DispatchSyncNeededAsync(target);
+            }
             _logger.LogInformation("S6: Sent {Count} deadline reminders", count);
+        }
+    }
+
+    /// <summary>
+    /// Escalates overdue action plans to the Area Manager.
+    /// </summary>
+    internal async Task SendOverdueEscalations(AppDbContext db, CancellationToken ct)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var threshold = now.AddHours(-24);
+
+        var overdueAPs = await db.ActionPlans
+            .AsNoTracking()
+            .Where(ap => (ap.Status == "open" || ap.Status == "overdue")
+                && ap.Deadline.HasValue
+                && ap.Deadline.Value < threshold)
+            .Join(db.Submissions.AsNoTracking(),
+                ap => ap.SubmissionId,
+                s => s.Id,
+                (ap, s) => new { AP = ap, s.StoreId })
+            .Join(db.Stores.AsNoTracking(),
+                x => x.StoreId,
+                st => st.Id,
+                (x, st) => new { x.AP, st.AreaId })
+            .GroupJoin(
+                db.Notifications.AsNoTracking().Where(n => n.Type == "action_plan_overdue_escalation"),
+                x => "/action-plans/" + x.AP.Id.ToString(),
+                n => n.ActionUrl,
+                (x, notifs) => new { x.AP, x.AreaId, Notifs = notifs })
+            .SelectMany(
+                x => x.Notifs.DefaultIfEmpty(),
+                (x, n) => new { x.AP, x.AreaId, Notification = n })
+            .Where(x => x.Notification == null && x.AreaId != null)
+            .ToListAsync(ct);
+
+        var count = 0;
+        var fcmTargets = new HashSet<Guid>();
+        foreach (var item in overdueAPs)
+        {
+            var areaId = item.AreaId;
+            var ap = item.AP;
+
+            var areaManagerId = await (from p in db.Profiles.AsNoTracking()
+                                       join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
+                                       where p.AreaId == areaId && r.Role == "area_manager"
+                                       select p.Id).FirstOrDefaultAsync(ct);
+
+            if (areaManagerId != Guid.Empty)
+            {
+                db.Notifications.Add(new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = areaManagerId,
+                    Type = "action_plan_overdue_escalation",
+                    Title = "Action Plan Overdue",
+                    Message = $"Action plan for \"{ap.CriteriaLabel}\" at {ap.StoreName} is overdue.",
+                    ActionUrl = $"/action-plans/{ap.Id}",
+                    CreatedAt = now,
+                });
+                count++;
+                fcmTargets.Add(areaManagerId);
+            }
+        }
+
+        if (count > 0)
+        {
+            await db.SaveChangesAsync(ct);
+            using var scope = _scopeFactory.CreateScope();
+            var fcm = scope.ServiceProvider.GetRequiredService<IFcmDispatchService>();
+            foreach (var target in fcmTargets)
+            {
+                await fcm.DispatchSyncNeededAsync(target);
+            }
+            _logger.LogInformation("Sent {Count} overdue escalations", count);
         }
     }
 

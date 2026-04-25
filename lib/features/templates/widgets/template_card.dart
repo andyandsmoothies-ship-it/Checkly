@@ -10,10 +10,15 @@ import 'type_badge.dart';
 
 class TemplateCard extends StatelessWidget {
   final TemplateDto template;
+
   /// Whether the current user has admin role. Controls mutation actions.
   final bool isAdmin;
 
-  const TemplateCard({super.key, required this.template, required this.isAdmin});
+  const TemplateCard({
+    super.key,
+    required this.template,
+    required this.isAdmin,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +81,9 @@ class TemplateCard extends StatelessWidget {
                             child: Text(
                               'DRAFT',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.7),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -110,21 +117,33 @@ class TemplateCard extends StatelessWidget {
                     case 'start':
                       context.push('/stores/select?templateId=${template.id}');
                     case 'edit':
-                      if (isAdmin) context.push('/templates/edit/${template.id}');
+                      if (isAdmin) {
+                        context.push('/templates/edit/${template.id}');
+                      }
                     case 'duplicate':
                       if (isAdmin) {
                         () async {
                           try {
-                            final cloned = await GetIt.instance<TemplateManager>().duplicateTemplate(template.id);
+                            final cloned =
+                                await GetIt.instance<TemplateManager>()
+                                    .duplicateTemplate(template.id);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("'${cloned.title}' created as draft")),
+                                SnackBar(
+                                  content: Text(
+                                    "'${cloned.title}' created as draft",
+                                  ),
+                                ),
                               );
                             }
                           } catch (_) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Could not duplicate template. Please try again.')),
+                                const SnackBar(
+                                  content: Text(
+                                    'Could not duplicate template. Please try again.',
+                                  ),
+                                ),
                               );
                             }
                           }
@@ -148,11 +167,12 @@ class TemplateCard extends StatelessWidget {
                                 onPressed: () async {
                                   Navigator.pop(ctx);
                                   try {
-                                    await GetIt.instance<TemplateManager>().deleteTemplate(
-                                      template.id,
-                                    );
+                                    await GetIt.instance<TemplateManager>()
+                                        .deleteTemplate(template.id);
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
                                           content: Text('Template deleted'),
                                         ),
@@ -160,9 +180,13 @@ class TemplateCard extends StatelessWidget {
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('We hit a snag removing this item. If it remains stuck on your screen, please restart the app.'),
+                                          content: Text(
+                                            'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+                                          ),
                                         ),
                                       );
                                     }
@@ -185,7 +209,7 @@ class TemplateCard extends StatelessWidget {
                       dense: true,
                     ),
                   ),
-                  if (isAdmin) ...[  
+                  if (isAdmin) ...[
                     const PopupMenuItem(
                       value: 'edit',
                       child: ListTile(
@@ -208,7 +232,10 @@ class TemplateCard extends StatelessWidget {
                         builder: (ctx) {
                           final errorColor = Theme.of(ctx).colorScheme.error;
                           return ListTile(
-                            leading: Icon(Icons.delete_outline, color: errorColor),
+                            leading: Icon(
+                              Icons.delete_outline,
+                              color: errorColor,
+                            ),
                             title: Text(
                               'Delete',
                               style: TextStyle(color: errorColor),

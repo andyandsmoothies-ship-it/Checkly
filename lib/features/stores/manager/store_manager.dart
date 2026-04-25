@@ -38,7 +38,9 @@ class StoreManager extends ChangeNotifier {
       // 1. Read from Drift cache first
       final cached = await _dao.getAllStores();
       if (cached.isNotEmpty) {
-        cached.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        cached.sort(
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        );
         stores.value = cached;
         _allStores = List.from(cached);
         isLoading.value = false;
@@ -48,7 +50,9 @@ class StoreManager extends ChangeNotifier {
       // 2. Background API fetch
       try {
         final fresh = await _api.getStores();
-        fresh.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        fresh.sort(
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        );
         stores.value = fresh;
         _allStores = List.from(fresh);
         lastRefreshed = DateTime.now();
@@ -74,7 +78,9 @@ class StoreManager extends ChangeNotifier {
       stores.value = List.from(_allStores);
     } else {
       final q = query.toLowerCase();
-      stores.value = _allStores.where((s) => s.name.toLowerCase().contains(q)).toList();
+      stores.value = _allStores
+          .where((s) => s.name.toLowerCase().contains(q))
+          .toList();
     }
     notifyListeners();
   }

@@ -252,7 +252,10 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
           children: [
             Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
-            Text('We couldn\'t load the latest data. Please check your internet connection and refresh.', style: theme.textTheme.titleMedium),
+            Text(
+              'We couldn\'t load the latest data. Please check your internet connection and refresh.',
+              style: theme.textTheme.titleMedium,
+            ),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: () => _loadLogs(reset: true),

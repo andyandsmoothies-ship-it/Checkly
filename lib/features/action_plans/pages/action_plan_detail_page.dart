@@ -16,7 +16,9 @@ import '../widgets/flat_block.dart';
 import '../widgets/info_card.dart';
 import '../widgets/info_row.dart';
 import '../widgets/section_header.dart';
+import '../widgets/stale_conflict_banner.dart';
 import '../widgets/submit_evidence_sheet.dart';
+import '../../../_shared/database/app_database.dart';
 
 final _di = GetIt.instance;
 
@@ -33,19 +35,33 @@ class ActionPlanDetailPage extends StatefulWidget {
 class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
   late final ActionPlanManager _manager;
   bool _busy = false;
+  PendingActionPlanUpdate? _staleConflict;
 
   @override
   void initState() {
     super.initState();
     _manager = _di<ActionPlanManager>();
-    
+
     // Auto-fetch if not found in current cache (e.g. freshly generated on backend)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final exists = _manager.actionPlans.value.any((p) => p.id == widget.actionPlanId);
+      final exists = _manager.actionPlans.value.any(
+        (p) => p.id == widget.actionPlanId,
+      );
       if (!exists) {
         _manager.loadActionPlans();
       }
     });
+
+    _loadStaleConflict();
+  }
+
+  Future<void> _loadStaleConflict() async {
+    final conflict = await _manager.getStaleConflict(widget.actionPlanId);
+    if (mounted) {
+      setState(() {
+        _staleConflict = conflict;
+      });
+    }
   }
 
   String get _userName =>
@@ -113,7 +129,9 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
             onPressed: () async {
               Navigator.pop(ctx);
               await _callManager(
@@ -144,9 +162,13 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
       }
     } on RoleGuardException catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('This action requires higher permissions. Please contact your workspace administrator.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'This action requires higher permissions. Please contact your workspace administrator.',
+            ),
+          ),
+        );
       }
     } catch (e) {
       // H2 Fix: Sanitise generic errors — never expose raw Dart exception strings
@@ -168,10 +190,12 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
     final status = plan.status;
     if (status != 'open' && status != 'pending_verify') return null;
 
-    final canSubmitEvidence =
-        _di<PolicyManager>().can(AppCapabilities.actionPlansWrite);
-    final canVerify =
-        _di<PolicyManager>().can(AppCapabilities.actionPlansVerify);
+    final canSubmitEvidence = _di<PolicyManager>().can(
+      AppCapabilities.actionPlansWrite,
+    );
+    final canVerify = _di<PolicyManager>().can(
+      AppCapabilities.actionPlansVerify,
+    );
 
     // Guard: open + no role that acts → no bar
     if (status == 'open' && !canSubmitEvidence && !canVerify) return null;
@@ -238,9 +262,14 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
           now: DateTime.now(),
         );
 
-        final canSubmitEvidence = _di<PolicyManager>().can(AppCapabilities.actionPlansWrite);
-        final canVerify = _di<PolicyManager>().can(AppCapabilities.actionPlansVerify);
-        final showOverride = plan.status == 'open' && canSubmitEvidence && canVerify;
+        final canSubmitEvidence = _di<PolicyManager>().can(
+          AppCapabilities.actionPlansWrite,
+        );
+        final canVerify = _di<PolicyManager>().can(
+          AppCapabilities.actionPlansVerify,
+        );
+        final showOverride =
+            plan.status == 'open' && canSubmitEvidence && canVerify;
 
         return Scaffold(
           appBar: AppBar(
@@ -269,6 +298,18 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              if (_staleConflict != null) ...[
+                StaleConflictBanner(
+                  correctionPlan: _staleConflict!.correctionPlan,
+                  evidenceNote: _staleConflict!.evidenceNote,
+                  onDismiss: () async {
+                    await _manager.dismissStaleConflict(_staleConflict!.id);
+                    _loadStaleConflict();
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+
               // ── Status Timeline ──
               ActionTimeline.fromPlan(plan),
               const SizedBox(height: 16),
@@ -389,14 +430,18 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                         Text(
                           plan.evidenceNote!,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.8,
+                            ),
                           ),
                         ),
                       if (plan.evidencePhotoUrl != null) ...[
                         const SizedBox(height: 12),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: plan.evidencePhotoUrl!.startsWith('/') || plan.evidencePhotoUrl!.startsWith('file://')
+                          child:
+                              plan.evidencePhotoUrl!.startsWith('/') ||
+                                  plan.evidencePhotoUrl!.startsWith('file://')
                               ? Image.file(
                                   File(plan.evidencePhotoUrl!),
                                   height: 200,
@@ -410,7 +455,9 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                                   fit: BoxFit.cover,
                                   errorBuilder: (_, e, s) => Container(
                                     height: 100,
-                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    color: theme
+                                        .colorScheme
+                                        .surfaceContainerHighest,
                                     child: const Center(
                                       child: Icon(Icons.broken_image),
                                     ),

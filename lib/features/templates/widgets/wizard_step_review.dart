@@ -76,7 +76,9 @@ class _WizardStepReviewState extends State<WizardStepReview> {
     final isSurvey = widget.scoringMode == 'survey';
     for (int si = 0; si < widget.sections.length; si++) {
       final s = widget.sections[si];
-      final sName = s.titleCtrl.text.trim().isEmpty ? 'Section ${si + 1}' : '"${s.titleCtrl.text.trim()}"';
+      final sName = s.titleCtrl.text.trim().isEmpty
+          ? 'Section ${si + 1}'
+          : '"${s.titleCtrl.text.trim()}"';
       // BL-3: section must have criteria OR sub-sections
       if (s.criteria.isEmpty && s.subSections.isEmpty) {
         errors.add('$sName has no criteria.');
@@ -112,7 +114,8 @@ class _WizardStepReviewState extends State<WizardStepReview> {
       final cName = c.labelCtrl.text.trim().isEmpty
           ? 'Criterion ${ci + 1} in $parentName'
           : '"${c.labelCtrl.text.trim()}"';
-      final isChoice = c.inputType == 'single_choice' || c.inputType == 'multi_choice';
+      final isChoice =
+          c.inputType == 'single_choice' || c.inputType == 'multi_choice';
       final isScored = !isSurvey && c.inputType != 'text' && !isChoice;
       if (isChoice && c.choiceOptions.length < 2) {
         errors.add('$cName needs at least 2 options.');
@@ -190,7 +193,11 @@ class _WizardStepReviewState extends State<WizardStepReview> {
               border: Border.all(color: theme.colorScheme.error, width: 1),
             ),
             child: ExpansionTile(
-              leading: Icon(Icons.cancel_outlined, color: theme.colorScheme.error, size: 20),
+              leading: Icon(
+                Icons.cancel_outlined,
+                color: theme.colorScheme.error,
+                size: 20,
+              ),
               title: Text(
                 'Needs Attention — ${v6Errors.length} issue${v6Errors.length == 1 ? '' : 's'} to fix',
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -200,11 +207,22 @@ class _WizardStepReviewState extends State<WizardStepReview> {
               ),
               initiallyExpanded: true,
               children: v6Errors
-                  .map((e) => ListTile(
-                        dense: true,
-                        leading: Icon(Icons.error_outline, size: 16, color: theme.colorScheme.error),
-                        title: Text(e, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onErrorContainer)),
-                      ))
+                  .map(
+                    (e) => ListTile(
+                      dense: true,
+                      leading: Icon(
+                        Icons.error_outline,
+                        size: 16,
+                        color: theme.colorScheme.error,
+                      ),
+                      title: Text(
+                        e,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -216,11 +234,17 @@ class _WizardStepReviewState extends State<WizardStepReview> {
             decoration: BoxDecoration(
               color: AppTheme.successContainer,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.success.withValues(alpha: 0.4)),
+              border: Border.all(
+                color: AppTheme.success.withValues(alpha: 0.4),
+              ),
             ),
             child: Row(
               children: [
-                Icon(Icons.check_circle_outline, color: AppTheme.success, size: 18),
+                Icon(
+                  Icons.check_circle_outline,
+                  color: AppTheme.success,
+                  size: 18,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -240,11 +264,17 @@ class _WizardStepReviewState extends State<WizardStepReview> {
             decoration: BoxDecoration(
               color: AppTheme.warningContainer,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.warning.withValues(alpha: 0.4)),
+              border: Border.all(
+                color: AppTheme.warning.withValues(alpha: 0.4),
+              ),
             ),
             child: Row(
               children: [
-                Icon(Icons.warning_amber_outlined, color: AppTheme.warning, size: 18),
+                Icon(
+                  Icons.warning_amber_outlined,
+                  color: AppTheme.warning,
+                  size: 18,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -305,7 +335,9 @@ class _WizardStepReviewState extends State<WizardStepReview> {
         if (widget.sections.isNotEmpty) ...[
           Text(
             'Sections',
-            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 8),
           ...widget.sections.asMap().entries.map((entry) {
@@ -332,8 +364,12 @@ class _WizardStepReviewState extends State<WizardStepReview> {
                         children: [
                           Expanded(
                             child: Text(
-                              s.titleCtrl.text.isEmpty ? 'Section ${i + 1}' : s.titleCtrl.text,
-                              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                              s.titleCtrl.text.isEmpty
+                                  ? 'Section ${i + 1}'
+                                  : s.titleCtrl.text,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                           // BL-BADGE: dual-stat when sub-sections exist
@@ -355,19 +391,32 @@ class _WizardStepReviewState extends State<WizardStepReview> {
                       ),
                       // BL-NO-REGRESSION: root-only sections unchanged.
                       // BL-INDENT: sub-section titles at left:8, their criteria at left:24.
-                      if (isExpanded && (s.criteria.isNotEmpty || s.subSections.isNotEmpty)) ...[
+                      if (isExpanded &&
+                          (s.criteria.isNotEmpty ||
+                              s.subSections.isNotEmpty)) ...[
                         const SizedBox(height: 8),
                         // Root criteria
-                        ...s.criteria.map((c) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4, left: 8),
-                          child: Row(
-                            children: [
-                              Icon(Icons.circle, size: 5, color: theme.colorScheme.onSurfaceVariant),
-                              const SizedBox(width: 8),
-                              Expanded(child: Text(c.labelCtrl.text, style: theme.textTheme.bodySmall)),
-                            ],
+                        ...s.criteria.map(
+                          (c) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4, left: 8),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.circle,
+                                  size: 5,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    c.labelCtrl.text,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        )),
+                        ),
                         // Sub-sections with indented criteria
                         ...s.subSections.asMap().entries.map((subEntry) {
                           final si = subEntry.key;
@@ -377,43 +426,67 @@ class _WizardStepReviewState extends State<WizardStepReview> {
                             children: [
                               // Sub-section title row
                               Padding(
-                                padding: const EdgeInsets.only(top: 4, bottom: 2, left: 8),
+                                padding: const EdgeInsets.only(
+                                  top: 4,
+                                  bottom: 2,
+                                  left: 8,
+                                ),
                                 child: Row(
                                   children: [
                                     Icon(
                                       Icons.subdirectory_arrow_right,
                                       size: 14,
-                                      color: theme.colorScheme.primary.withValues(alpha: 0.7),
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.7),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       sub.titleCtrl.text.isEmpty
                                           ? 'Sub-section ${si + 1}'
                                           : sub.titleCtrl.text,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                     ),
                                     Text(
                                       ' (${sub.criteria.length})',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                     ),
                                   ],
                                 ),
                               ),
                               // Sub-section criteria (double-indented)
-                              ...sub.criteria.map((c) => Padding(
-                                padding: const EdgeInsets.only(bottom: 4, left: 24),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.circle, size: 4, color: theme.colorScheme.onSurfaceVariant),
-                                    const SizedBox(width: 8),
-                                    Expanded(child: Text(c.labelCtrl.text, style: theme.textTheme.bodySmall)),
-                                  ],
+                              ...sub.criteria.map(
+                                (c) => Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 4,
+                                    left: 24,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.circle,
+                                        size: 4,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          c.labelCtrl.text,
+                                          style: theme.textTheme.bodySmall,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              )),
+                              ),
                             ],
                           );
                         }),

@@ -146,12 +146,13 @@ class _HistoryPageState extends State<HistoryPage> {
   /// (status-filtered) submission list. Used to build the category chip row.
   List<String> get _availableCategories {
     final manager = _di<HistoryManager>();
-    final types = manager.submissions.value
-        .map((s) => s.templateType)
-        .whereType<String>()
-        .toSet()
-        .toList()
-        ..sort();
+    final types =
+        manager.submissions.value
+            .map((s) => s.templateType)
+            .whereType<String>()
+            .toSet()
+            .toList()
+          ..sort();
     return types;
   }
 
@@ -204,7 +205,12 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(sheetContext)),
+              child: ScheduleAuditForm(
+                onSuccess: () {
+                  Navigator.pop(sheetContext);
+                  _di<HistoryManager>().loadHistory();
+                },
+              ),
             ),
           ],
         ),
@@ -221,7 +227,9 @@ class _HistoryPageState extends State<HistoryPage> {
       appBar: AppBar(title: const Text('Audits')),
       floatingActionButton: ChecklyFab(
         isAdmin: _di<AuthManager>().currentUser?.role == 'admin',
-        canCreateSubmission: _di<PolicyManager>().can(AppCapabilities.submissionsCreate),
+        canCreateSubmission: _di<PolicyManager>().can(
+          AppCapabilities.submissionsCreate,
+        ),
         onNewAudit: () => context.push('/templates'),
         onAssignTask: () => _showScheduleSheet(context),
       ),
@@ -378,9 +386,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         TextButton(
                           onPressed: () => manager.searchCloudArchive(),
                           style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
@@ -423,10 +429,14 @@ class _HistoryPageState extends State<HistoryPage> {
                                 storeName: entry.key,
                                 submissions: entry.value,
                                 onPreviewAudit: (submission) {
-                                  if (submission.id.startsWith('local_outbox_')) {
+                                  if (submission.id.startsWith(
+                                    'local_outbox_',
+                                  )) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text('This audit is syncing. Please wait a moment.'),
+                                        content: Text(
+                                          'This audit is syncing. Please wait a moment.',
+                                        ),
                                       ),
                                     );
                                     return;
@@ -446,12 +456,13 @@ class _HistoryPageState extends State<HistoryPage> {
                                     ),
                                   );
                                 },
-                                onVoidAudit: _di<AuthManager>().currentUser?.role == 'admin'
+                                onVoidAudit:
+                                    _di<AuthManager>().currentUser?.role ==
+                                        'admin'
                                     ? (submission) async {
                                         final reasonController =
                                             TextEditingController();
-                                        final confirmed =
-                                            await showDialog<bool>(
+                                        final confirmed = await showDialog<bool>(
                                           context: context,
                                           builder: (dialogCtx) => AlertDialog(
                                             title: const Text('Void Audit'),
@@ -462,16 +473,14 @@ class _HistoryPageState extends State<HistoryPage> {
                                               children: [
                                                 Text(
                                                   'This will permanently void "${submission.templateTitle ?? 'this audit'}". The auditor will no longer see it as an active task.',
-                                                  style: Theme.of(dialogCtx)
-                                                      .textTheme
-                                                      .bodyMedium,
+                                                  style: Theme.of(
+                                                    dialogCtx,
+                                                  ).textTheme.bodyMedium,
                                                 ),
                                                 const SizedBox(height: 16),
                                                 TextField(
-                                                  controller:
-                                                      reasonController,
-                                                  decoration:
-                                                      const InputDecoration(
+                                                  controller: reasonController,
+                                                  decoration: const InputDecoration(
                                                     labelText:
                                                         'Reason for voiding',
                                                     hintText:
@@ -484,24 +493,23 @@ class _HistoryPageState extends State<HistoryPage> {
                                             ),
                                             actions: [
                                               TextButton(
-                                                onPressed: () =>
-                                                    Navigator.of(dialogCtx)
-                                                        .pop(false),
+                                                onPressed: () => Navigator.of(
+                                                  dialogCtx,
+                                                ).pop(false),
                                                 child: const Text('Cancel'),
                                               ),
                                               FilledButton(
-                                                onPressed: () =>
-                                                    Navigator.of(dialogCtx)
-                                                        .pop(true),
-                                                child:
-                                                    const Text('Void Audit'),
+                                                onPressed: () => Navigator.of(
+                                                  dialogCtx,
+                                                ).pop(true),
+                                                child: const Text('Void Audit'),
                                               ),
                                             ],
                                           ),
                                         );
                                         if (confirmed != true) return;
-                                        final reason =
-                                            reasonController.text.trim();
+                                        final reason = reasonController.text
+                                            .trim();
                                         if (reason.isEmpty) {
                                           if (context.mounted) {
                                             ScaffoldMessenger.of(
@@ -555,7 +563,9 @@ class _HistoryPageState extends State<HistoryPage> {
                                     final sId = submission.storeId;
                                     if (tId == null || sId == null) {
                                       if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
                                           const SnackBar(
                                             content: Text(
                                               'Cannot resume — draft is missing template or store data.',
@@ -580,10 +590,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                   }
                                   // Scheduled → standard server-transition flow
                                   try {
-                                    final updated =
-                                        await manager.startScheduledAudit(
-                                      submission.id,
-                                    );
+                                    final updated = await manager
+                                        .startScheduledAudit(submission.id);
                                     if (context.mounted) {
                                       final tId = updated.templateId;
                                       final sId = updated.storeId;
@@ -599,7 +607,9 @@ class _HistoryPageState extends State<HistoryPage> {
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
-                                          content: Text('We couldn\'t start this process right now. Please check your internet connection.'),
+                                          content: Text(
+                                            'We couldn\'t start this process right now. Please check your internet connection.',
+                                          ),
                                           backgroundColor: Theme.of(
                                             context,
                                           ).colorScheme.error,

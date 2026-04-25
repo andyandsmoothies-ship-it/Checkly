@@ -16,13 +16,13 @@ internal static class ScoringConfigParser
         {
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
-            
+
             string scoringMode = "penalty";
             if (root.TryGetProperty("scoringMode", out var smProp) && smProp.ValueKind == JsonValueKind.String)
             {
                 scoringMode = smProp.GetString() ?? "penalty";
             }
-            
+
             bool progressiveRepeat = false;
             if (root.TryGetProperty("progressiveRepeat", out var prProp))
             {

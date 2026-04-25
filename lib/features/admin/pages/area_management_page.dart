@@ -45,7 +45,6 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
 
   Future<void> _loadData() => _manager.load();
 
-
   void _applyFilter() {
     final query = _searchController.text.toLowerCase().trim();
     if (query.isEmpty) {
@@ -102,7 +101,9 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                         Text(
                           'New Area',
                           style: AppFonts.displayStyle(
-                            fontSize: Theme.of(ctx).textTheme.titleLarge?.fontSize,
+                            fontSize: Theme.of(
+                              ctx,
+                            ).textTheme.titleLarge?.fontSize,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -171,7 +172,9 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(msg.toString()),
-                                backgroundColor: Theme.of(context).colorScheme.error,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.error,
                               ),
                             );
                           }
@@ -230,7 +233,9 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                         Text(
                           'Edit Area',
                           style: AppFonts.displayStyle(
-                            fontSize: Theme.of(ctx).textTheme.titleLarge?.fontSize,
+                            fontSize: Theme.of(
+                              ctx,
+                            ).textTheme.titleLarge?.fontSize,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -292,8 +297,12 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('An unexpected issue occurred. Please check your connection or restart the app.'),
-                                backgroundColor: Theme.of(context).colorScheme.error,
+                                content: Text(
+                                  'An unexpected issue occurred. Please check your connection or restart the app.',
+                                ),
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.error,
                               ),
                             );
                           }
@@ -367,7 +376,10 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
           children: [
             Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 8),
-            Text('We couldn\'t load the latest data. Please check your internet connection and refresh.', style: theme.textTheme.titleMedium),
+            Text(
+              'We couldn\'t load the latest data. Please check your internet connection and refresh.',
+              style: theme.textTheme.titleMedium,
+            ),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: _loadData,
@@ -465,7 +477,9 @@ class _AreaCard extends StatelessWidget {
                     Text(
                       name,
                       style: AppFonts.displayStyle(
-                        fontSize: Theme.of(context).textTheme.titleSmall?.fontSize,
+                        fontSize: Theme.of(
+                          context,
+                        ).textTheme.titleSmall?.fontSize,
                         fontWeight: FontWeight.w600,
                       ),
                       overflow: TextOverflow.ellipsis,

@@ -22,35 +22,39 @@ class WizardStepName extends StatelessWidget {
 
   static String _hintText(String mode) => switch (mode) {
     'accumulation' => 'e.g. New Staff Onboarding Assessment',
-    'survey'       => 'e.g. Customer Satisfaction Survey',
-    'checklist'    => 'e.g. Daily Opening Checklist',
-    _              => 'e.g. Monthly Store Compliance Audit',
+    'survey' => 'e.g. Customer Satisfaction Survey',
+    'checklist' => 'e.g. Daily Opening Checklist',
+    _ => 'e.g. Monthly Store Compliance Audit',
   };
 
-  static ({IconData icon, String title, String body}) _explainer(String mode) =>
-      switch (mode) {
+  static ({IconData icon, String title, String body}) _explainer(
+    String mode,
+  ) => switch (mode) {
     'accumulation' => (
-        icon: Icons.school_outlined,
-        title: 'Training Assessment',
-        body: 'Evaluates staff knowledge and performance. Points accumulate as criteria are met.',
-      ),
+      icon: Icons.school_outlined,
+      title: 'Training Assessment',
+      body:
+          'Evaluates staff knowledge and performance. Points accumulate as criteria are met.',
+    ),
     'survey' => (
-        icon: Icons.sentiment_satisfied_outlined,
-        title: 'Feedback Survey',
-        body: 'Collects qualitative feedback without scoring. Ideal for customer or employee satisfaction.',
-      ),
+      icon: Icons.sentiment_satisfied_outlined,
+      title: 'Feedback Survey',
+      body:
+          'Collects qualitative feedback without scoring. Ideal for customer or employee satisfaction.',
+    ),
     'checklist' => (
-        icon: Icons.checklist_outlined,
-        title: 'Custom Checklist',
-        body: 'A simple pass/fail checklist for recurring tasks. No complex scoring required.',
-      ),
+      icon: Icons.checklist_outlined,
+      title: 'Custom Checklist',
+      body:
+          'A simple pass/fail checklist for recurring tasks. No complex scoring required.',
+    ),
     _ => (
-        icon: Icons.gpp_good_outlined,
-        title: 'Compliance Audit',
-        body: 'Measures conformance to standards. Deductions apply for each failed criterion.',
-      ),
+      icon: Icons.gpp_good_outlined,
+      title: 'Compliance Audit',
+      body:
+          'Measures conformance to standards. Deductions apply for each failed criterion.',
+    ),
   };
-
 
   @override
   Widget build(BuildContext context) {
@@ -101,45 +105,51 @@ class WizardStepName extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Mode explainer
-        Builder(builder: (context) {
-          final theme = Theme.of(context);
-          final ex = _explainer(scoringMode);
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(ex.icon, size: 22, color: theme.colorScheme.onSecondaryContainer),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        ex.title,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        ex.body,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer,
-                        ),
-                      ),
-                    ],
+        Builder(
+          builder: (context) {
+            final theme = Theme.of(context);
+            final ex = _explainer(scoringMode);
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    ex.icon,
+                    size: 22,
+                    color: theme.colorScheme.onSecondaryContainer,
                   ),
-                ),
-              ],
-            ),
-          );
-        }),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          ex.title,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          ex.body,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
         const SizedBox(height: 28),
 
         // Template type

@@ -34,6 +34,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<RoleCapability> RoleCapabilities => Set<RoleCapability>();
     public DbSet<GlobalRisk> GlobalRisks => Set<GlobalRisk>();
     public DbSet<SubmissionRisk> SubmissionRisks => Set<SubmissionRisk>();
+    public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,6 +61,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureRoleCapability(modelBuilder);
         ConfigureGlobalRisk(modelBuilder);
         ConfigureSubmissionRisk(modelBuilder);
+        ConfigureUserDeviceToken(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -687,6 +689,23 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             // Performance indexes
             e.HasIndex(x => x.SubmissionId);
             e.HasIndex(x => x.GlobalRiskId);
+        });
+    }
+
+    private static void ConfigureUserDeviceToken(ModelBuilder mb)
+    {
+        mb.Entity<UserDeviceToken>(e =>
+        {
+            e.ToTable("user_device_tokens");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.UserId).HasColumnName("user_id").IsRequired();
+            e.Property(x => x.FcmToken).HasColumnName("fcm_token").IsRequired();
+            e.Property(x => x.Platform).HasColumnName("platform").IsRequired();
+            e.Property(x => x.LastUsedAt).HasColumnName("last_used_at").HasDefaultValueSql("now()");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            e.HasIndex(x => new { x.UserId, x.FcmToken }).IsUnique();
         });
     }
 }

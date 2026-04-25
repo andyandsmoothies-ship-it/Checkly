@@ -189,7 +189,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
           if (c.inputType == 'scale' && c.scaleOptions.isNotEmpty) {
             meta['scaleOptions'] = c.scaleOptions;
           }
-          if ((c.inputType == 'single_choice' || c.inputType == 'multi_choice') &&
+          if ((c.inputType == 'single_choice' ||
+                  c.inputType == 'multi_choice') &&
               c.choiceOptions.isNotEmpty) {
             meta['options'] = c.choiceOptions;
           }
@@ -377,9 +378,13 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.',
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -624,4 +629,3 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     );
   }
 }
-

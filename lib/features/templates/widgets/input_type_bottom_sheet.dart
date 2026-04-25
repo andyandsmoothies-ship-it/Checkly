@@ -83,8 +83,8 @@ class InputTypeBottomSheet extends StatelessWidget {
       switch (scoringMode) {
         'survey' =>
           inputType == 'pass_fail' ||
-          inputType == 'numeric' ||
-          inputType == 'scale',
+              inputType == 'numeric' ||
+              inputType == 'scale',
         'checklist' => inputType == 'numeric' || inputType == 'scale',
         _ => false,
       };
@@ -155,11 +155,15 @@ class InputTypeBottomSheet extends StatelessWidget {
                                 color: theme.colorScheme.primary,
                                 width: 1.5,
                               )
-                            : BorderSide(color: theme.colorScheme.outlineVariant),
+                            : BorderSide(
+                                color: theme.colorScheme.outlineVariant,
+                              ),
                       ),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(12),
-                        onTap: isDisabled ? null : () => Navigator.pop(context, t.value),
+                        onTap: isDisabled
+                            ? null
+                            : () => Navigator.pop(context, t.value),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -186,24 +190,30 @@ class InputTypeBottomSheet extends StatelessWidget {
                                     Text(
                                       t.title,
                                       style: theme.textTheme.titleMedium
-                                          ?.copyWith(fontWeight: FontWeight.w600),
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       t.desc,
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: theme.colorScheme.onSurface,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: theme.colorScheme.onSurface,
+                                          ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       isDisabled
                                           ? 'Not available in ${_modeLabel(scoringMode)} mode.'
                                           : t.helper,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                        fontStyle: FontStyle.italic,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                            fontStyle: FontStyle.italic,
+                                          ),
                                     ),
                                   ],
                                 ),

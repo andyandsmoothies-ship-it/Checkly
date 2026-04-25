@@ -45,15 +45,18 @@ app.*.map.json
 /android/app/release
 
 # ASP.NET Core / .NET
-server/bin/
-server/obj/
+[Bb]in/
+[Oo]bj/
+[Tt]est[Rr]esults/
+test_results.json
+server/data/
 server/appsettings.Development.json
 *.user
 *.suo
 .vs/
 
 # Agent temp files
-.agents/tmp/
+**/.agents/tmp/
 
 # Android release signing (never commit secrets)
 android/keystore.properties

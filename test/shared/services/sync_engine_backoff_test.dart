@@ -22,6 +22,8 @@ import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
+import 'package:checkly/features/action_plans/models/comment_dto.dart';
+import 'package:checkly/features/action_plans/models/add_comment_request.dart';
 
 // ─── Fakes ────────────────────────────────────────────────────────────────
 
@@ -80,6 +82,9 @@ class _FakeActionPlanApi implements ActionPlanApi {
   /// Not used by backoff tests. Satisfies the ActionPlanApi interface.
   @override
   Future<List<ActionPlanDto>> fetchActionPlans() async => [];
+
+  @override
+  Future<CommentDto> addComment(String actionPlanId, AddCommentRequest request) => Future.error('not used');
 }
 
 class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
@@ -92,6 +97,10 @@ class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
   Future<void> remove(String id) async {}
   @override
   Future<void> markExhausted(String id, String error) async {}
+  @override
+  Future<void> markStaleConflict(String id) async {}
+  @override
+  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(String planId) async => null;
   @override
   Future<int> pendingCount() async => 0;
 }

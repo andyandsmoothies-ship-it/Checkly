@@ -39,6 +39,6 @@ public static class AppCapabilities
 
     // ── Action Plan Transitions ───────────────────────────────────────────────
     // Imperative checks inside UpdateActionPlan.HandleAsync — not route-level guards.
-    public const string ActionPlansWrite  = "action_plans:write";   // store_manager: submit evidence
+    public const string ActionPlansWrite = "action_plans:write";   // store_manager: submit evidence
     public const string ActionPlansVerify = "action_plans:verify";  // auditor/area_manager: close or reject
 }

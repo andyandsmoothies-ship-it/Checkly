@@ -1,2 +1,4 @@
 Score verification failed! Client: 24.0, Server: 91.00, Reason: . First Answer RptFlt: 0 
 Score verification failed! Client: 3.0, Server: 100, Reason: . First Answer RptFlt: 0 
+Score verification failed! Client: 63.64, Server: 90.91, Reason: . First Answer RptFlt: 0 
+Score verification failed! Client: 63.64, Server: 90.91, Reason: . First Answer RptFlt: 0 

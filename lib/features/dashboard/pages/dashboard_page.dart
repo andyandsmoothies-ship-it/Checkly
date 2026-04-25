@@ -10,7 +10,6 @@ import '../../auth/manager/auth_manager.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
 import '../manager/dashboard_manager.dart';
-import '../../notifications/widgets/notification_bell.dart';
 import 'widgets/dashboard_variants.dart';
 
 final _di = GetIt.instance;
@@ -66,7 +65,12 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: ScheduleAuditForm(onSuccess: () => Navigator.pop(sheetContext)),
+              child: ScheduleAuditForm(
+                onSuccess: () {
+                  Navigator.pop(sheetContext);
+                  _manager.loadStats();
+                },
+              ),
             ),
           ],
         ),
@@ -81,23 +85,20 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       floatingActionButton: ChecklyFab(
         isAdmin: role == 'admin',
-        canCreateSubmission: _di<PolicyManager>().can(AppCapabilities.submissionsCreate),
+        canCreateSubmission: _di<PolicyManager>().can(
+          AppCapabilities.submissionsCreate,
+        ),
         onNewAudit: () => context.push('/templates'),
         onAssignTask: () => _showScheduleSheet(context),
       ),
       body: Column(
         children: [
-          // ── Compact header: greeting + bell ──
+          // ── Compact header: greeting ──
           SafeArea(
             bottom: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              child: Row(
-                children: [
-                  Expanded(child: Greeting(role: role)),
-                  const NotificationBell(),
-                ],
-              ),
+              child: Greeting(role: role),
             ),
           ),
           // ── Role-scoped body ──
@@ -147,8 +148,9 @@ class Greeting extends StatelessWidget {
         : hour < 18
         ? 'Good Afternoon'
         : 'Good Evening';
-    final personalizedGreeting =
-        name.isNotEmpty ? '$timeGreeting, $name' : timeGreeting;
+    final personalizedGreeting = name.isNotEmpty
+        ? '$timeGreeting, $name'
+        : timeGreeting;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,10 +158,12 @@ class Greeting extends StatelessWidget {
         Text(
           personalizedGreeting.toUpperCase(),
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.w700,
-              ),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.65),
+            letterSpacing: 1.2,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 2),
         Text(

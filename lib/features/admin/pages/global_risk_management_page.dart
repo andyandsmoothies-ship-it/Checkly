@@ -23,8 +23,7 @@ class GlobalRiskManagementPage extends StatefulWidget {
       _GlobalRiskManagementPageState();
 }
 
-class _GlobalRiskManagementPageState
-    extends State<GlobalRiskManagementPage> {
+class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
   late final AdminGlobalRiskManager _manager;
   List<Map<String, dynamic>> _filtered = [];
   final _searchController = TextEditingController();
@@ -106,8 +105,9 @@ class _GlobalRiskManagementPageState
                         Text(
                           'New Global Risk',
                           style: AppFonts.displayStyle(
-                            fontSize:
-                                Theme.of(ctx).textTheme.titleLarge?.fontSize,
+                            fontSize: Theme.of(
+                              ctx,
+                            ).textTheme.titleLarge?.fontSize,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -176,8 +176,9 @@ class _GlobalRiskManagementPageState
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(msg.toString()),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.error,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.error,
                               ),
                             );
                           }
@@ -196,10 +197,12 @@ class _GlobalRiskManagementPageState
   }
 
   void _showEditSheet(Map<String, dynamic> risk) {
-    final labelCtrl =
-        TextEditingController(text: risk['label'] as String? ?? '');
-    final descCtrl =
-        TextEditingController(text: risk['description'] as String? ?? '');
+    final labelCtrl = TextEditingController(
+      text: risk['label'] as String? ?? '',
+    );
+    final descCtrl = TextEditingController(
+      text: risk['description'] as String? ?? '',
+    );
     final isActive = risk['isActive'] as bool? ?? true;
 
     showModalBottomSheet(
@@ -237,8 +240,9 @@ class _GlobalRiskManagementPageState
                         Text(
                           'Edit Global Risk',
                           style: AppFonts.displayStyle(
-                            fontSize:
-                                Theme.of(ctx).textTheme.titleLarge?.fontSize,
+                            fontSize: Theme.of(
+                              ctx,
+                            ).textTheme.titleLarge?.fontSize,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -314,8 +318,7 @@ class _GlobalRiskManagementPageState
                       const SizedBox(height: 8),
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              Theme.of(ctx).colorScheme.error,
+                          foregroundColor: Theme.of(ctx).colorScheme.error,
                           side: BorderSide(
                             color: Theme.of(ctx).colorScheme.error,
                           ),
@@ -341,7 +344,9 @@ class _GlobalRiskManagementPageState
                                   child: Text(
                                     'Deactivate',
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.error,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
                                     ),
                                   ),
                                 ),
@@ -554,8 +559,7 @@ class _RiskCard extends StatelessWidget {
                           child: Text(
                             label,
                             style: AppFonts.displayStyle(
-                              fontSize:
-                                  theme.textTheme.titleSmall?.fontSize,
+                              fontSize: theme.textTheme.titleSmall?.fontSize,
                               fontWeight: FontWeight.w600,
                             ),
                             overflow: TextOverflow.ellipsis,

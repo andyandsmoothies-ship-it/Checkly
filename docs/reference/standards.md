@@ -128,6 +128,7 @@ src/entities/[entity]/
 - **Pagination**: All list endpoints MUST return `PagedResult<T>` (from `Common/PagedResult.cs`). Use `page`/`pageSize` query params with defaults (page=1, pageSize=50) and enforced max (200). Pattern: `Skip((page-1)*pageSize).Take(pageSize)` + `CountAsync`.
 - **Transaction Singularity**: Shared services (e.g., `ActionPlanService`) MUST NOT call `SaveChangesAsync` internally. They must participate in the caller's transaction (`CreateSubmission`, `FinalizeSubmission`) to ensure atomicity and prevent orphaned records or race conditions.
 - **Audit Logging**: All sensitive operations (template CRUD, submission finalization, admin user actions) MUST write to `system_logs` via `AuditLogger.Log()` (`Common/Services/AuditLogger.cs`). Use `EntityType` + `EntityId` for entity-level traceability. Logs participate in the same SaveChanges transaction as the primary operation.
+- **External API Resilience**: All external API calls (e.g., Firebase/FCM) MUST be wrapped in a Polly resilience pipeline (`ResiliencePipelineProvider<string>`) configured with exponential backoff, jitter, and timeouts. Fire-and-forget operations must swallow transient errors but log them appropriately without crashing the parent HTTP request.
 
 ---
 

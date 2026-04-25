@@ -48,7 +48,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     if (_countsManager.error != null && !_countsManager.isLoading) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('We couldn\'t load the latest data. Please check your internet connection and refresh.'),
+          content: Text(
+            'We couldn\'t load the latest data. Please check your internet connection and refresh.',
+          ),
         ),
       );
     }
@@ -72,126 +74,164 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 600),
               child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              // Subtitle
-              const SectionHeader('SYSTEM MANAGEMENT'),
+                padding: const EdgeInsets.all(16),
+                children: [
+                  // Subtitle
+                  const SectionHeader('SYSTEM MANAGEMENT'),
 
-              // Dense stats panel
-              CompactStatusPanel(
-                metrics: [
-                  StatRowData(
-                    icon: Icons.people,
-                    label: 'USERS',
-                    value: isLoading ? '—' : '${_countsManager.userCount}',
-                    iconColor: theme.colorScheme.primary,
-                    onTap: () => context.push('/admin/users'),
+                  // Dense stats panel
+                  CompactStatusPanel(
+                    metrics: [
+                      StatRowData(
+                        icon: Icons.people,
+                        label: 'USERS',
+                        value: isLoading ? '—' : '${_countsManager.userCount}',
+                        iconColor: theme.colorScheme.primary,
+                        onTap: () => context.push('/admin/users'),
+                      ),
+                      StatRowData(
+                        icon: Icons.store,
+                        label: 'STORES',
+                        value: isLoading ? '—' : '${_countsManager.storeCount}',
+                        iconColor: AppTheme.success,
+                        onTap: () => context.push('/admin/stores'),
+                      ),
+                      StatRowData(
+                        icon: Icons.description,
+                        label: 'TEMPLATES',
+                        value: isLoading
+                            ? '—'
+                            : '${_countsManager.templateCount}',
+                        iconColor: AppTheme.info,
+                        onTap: () {},
+                      ),
+                      StatRowData(
+                        icon: Icons.hourglass_empty,
+                        label: 'OPEN PLANS',
+                        value: isLoading
+                            ? '—'
+                            : '${adminState?.openActionPlans ?? 0}',
+                        iconColor: AppTheme.warning,
+                        onTap: () {},
+                      ),
+                    ],
                   ),
-                  StatRowData(
-                    icon: Icons.store,
-                    label: 'STORES',
-                    value: isLoading ? '—' : '${_countsManager.storeCount}',
-                    iconColor: AppTheme.success,
-                    onTap: () => context.push('/admin/stores'),
-                  ),
-                  StatRowData(
-                    icon: Icons.description,
-                    label: 'TEMPLATES',
-                    value: isLoading ? '—' : '${_countsManager.templateCount}',
-                    iconColor: AppTheme.info,
-                    onTap: () {},
-                  ),
-                  StatRowData(
-                    icon: Icons.hourglass_empty,
-                    label: 'OPEN PLANS',
-                    value: isLoading
-                        ? '—'
-                        : '${adminState?.openActionPlans ?? 0}',
-                    iconColor: AppTheme.warning,
-                    onTap: () {},
+                  const SizedBox(height: 24),
+
+                  // Menu items — grouped elegantly in a single card
+                  Card(
+                    child: Column(
+                      children: [
+                        _MenuItem(
+                          icon: Icons.people,
+                          title: 'User Management',
+                          subtitle: 'Manage auditors & managers',
+                          onTap: () => context.push('/admin/users'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.store,
+                          title: 'Store Management',
+                          subtitle: 'Manage store locations',
+                          onTap: () => context.push('/admin/stores'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.map_outlined,
+                          title: 'Area Management',
+                          subtitle: 'Manage geographic areas',
+                          onTap: () => context.push('/admin/areas'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.assignment,
+                          title: 'Audit Approvals',
+                          subtitle: 'Review submitted audits',
+                          onTap: () => context.push('/admin/approvals'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.warning_amber,
+                          title: 'System Logs',
+                          subtitle: 'Monitor application events',
+                          onTap: () => context.push('/admin/logs'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.bar_chart,
+                          title: 'Analytics',
+                          subtitle: 'View performance data',
+                          onTap: () => context.push('/analytics'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.event_note,
+                          title: 'Schedule Audit',
+                          subtitle: 'Delegate audits to auditors',
+                          onTap: () => context.push('/admin/schedule'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.manage_accounts,
+                          title: 'Role Management',
+                          subtitle: 'Manage role capabilities',
+                          onTap: () => context.push('/admin/roles'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.group_work_outlined,
+                          title: 'User Groups',
+                          subtitle: 'Manage user group assignments',
+                          onTap: () => context.push('/admin/user-groups'),
+                        ),
+                        Divider(
+                          height: 1,
+                          indent: 56,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                        _MenuItem(
+                          icon: Icons.shield_outlined,
+                          title: 'Global Risk Management',
+                          subtitle: 'Configure risk categories for audits',
+                          onTap: () => context.push('/admin/global-risks'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-
-              // Menu items — grouped elegantly in a single card
-              Card(
-                child: Column(
-                  children: [
-                    _MenuItem(
-                      icon: Icons.people,
-                      title: 'User Management',
-                      subtitle: 'Manage auditors & managers',
-                      onTap: () => context.push('/admin/users'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.store,
-                      title: 'Store Management',
-                      subtitle: 'Manage store locations',
-                      onTap: () => context.push('/admin/stores'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.map_outlined,
-                      title: 'Area Management',
-                      subtitle: 'Manage geographic areas',
-                      onTap: () => context.push('/admin/areas'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.assignment,
-                      title: 'Audit Approvals',
-                      subtitle: 'Review submitted audits',
-                      onTap: () => context.push('/admin/approvals'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.warning_amber,
-                      title: 'System Logs',
-                      subtitle: 'Monitor application events',
-                      onTap: () => context.push('/admin/logs'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.bar_chart,
-                      title: 'Analytics',
-                      subtitle: 'View performance data',
-                      onTap: () => context.push('/analytics'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.event_note,
-                      title: 'Schedule Audit',
-                      subtitle: 'Delegate audits to auditors',
-                      onTap: () => context.push('/admin/schedule'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.manage_accounts,
-                      title: 'Role Management',
-                      subtitle: 'Manage role capabilities',
-                      onTap: () => context.push('/admin/roles'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.group_work_outlined,
-                      title: 'User Groups',
-                      subtitle: 'Manage user group assignments',
-                      onTap: () => context.push('/admin/user-groups'),
-                    ),
-                    Divider(height: 1, indent: 56, color: theme.colorScheme.outlineVariant),
-                    _MenuItem(
-                      icon: Icons.shield_outlined,
-                      title: 'Global Risk Management',
-                      subtitle: 'Configure risk categories for audits',
-                      onTap: () => context.push('/admin/global-risks'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
             ),
           );
         },
@@ -199,7 +239,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 }
-
 
 class _MenuItem extends StatelessWidget {
   final IconData icon;

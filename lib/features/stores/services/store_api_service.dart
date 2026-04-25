@@ -31,11 +31,12 @@ class StoreApiService {
       queryParameters: params,
       options: Options(responseType: ResponseType.plain),
     );
-    
+
     return IsolateParser.parseList<StoreDto>(
       json: response.data,
       parser: StoreDto.fromJson,
-      listKey: 'items', // IsolateParser gracefully falls back to flat list if data is not a Map
+      listKey:
+          'items', // IsolateParser gracefully falls back to flat list if data is not a Map
     );
   }
 

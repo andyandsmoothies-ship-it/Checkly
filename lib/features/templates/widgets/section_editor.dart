@@ -37,6 +37,7 @@ class SectionEditor extends StatelessWidget {
   /// Defaults to false (toggles hidden) when not passed (sub-section recursion).
   final bool globalCcpEnabled;
   final bool globalRiskEnabled;
+
   /// When true, locks the Required toggle ON in all CriterionEditor drawers.
   /// Defaults to false when not passed (sub-section recursion).
   final bool globalConfirmRequired;
@@ -57,7 +58,7 @@ class SectionEditor extends StatelessWidget {
     this.onRemoveSubSection,
     required this.onChanged,
     this.isWizardMode = false,
-    this.scoringMode,             // optional, null → no constraint
+    this.scoringMode, // optional, null → no constraint
     this.globalCcpEnabled = false,
     this.globalRiskEnabled = false,
     this.globalConfirmRequired = false,
@@ -78,7 +79,13 @@ class SectionEditor extends StatelessWidget {
     // In wizard mode at root depth, skip the ExpansionTile header entirely.
     // The wizard manages its own section header (title, progress) above.
     if (isWizardMode && isRoot) {
-      return _buildWizardContent(context, theme, sKey, sectionErrors, hasErrors);
+      return _buildWizardContent(
+        context,
+        theme,
+        sKey,
+        sectionErrors,
+        hasErrors,
+      );
     }
 
     return Card(
@@ -167,8 +174,12 @@ class SectionEditor extends StatelessWidget {
                   child: Text(
                     '${subCount}S • ${critCount}C',
                     style: AppFonts.serifStyle(
-                      fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      fontSize: Theme.of(
+                        context,
+                      ).textTheme.labelSmall?.fontSize,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -227,7 +238,11 @@ class SectionEditor extends StatelessWidget {
             ],
           ),
           trailing: IconButton(
-            icon: Icon(Icons.delete_outline, color: theme.colorScheme.error, size: 20),
+            icon: Icon(
+              Icons.delete_outline,
+              color: theme.colorScheme.error,
+              size: 20,
+            ),
             onPressed: onRemoveSection,
           ),
           children: [
@@ -361,7 +376,11 @@ class SectionEditor extends StatelessWidget {
                     .map(
                       (msg) => Row(
                         children: [
-                          Icon(Icons.error_outline, size: 14, color: theme.colorScheme.error),
+                          Icon(
+                            Icons.error_outline,
+                            size: 14,
+                            color: theme.colorScheme.error,
+                          ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(

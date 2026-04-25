@@ -44,6 +44,10 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "FirebaseAdmin": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[10.0.4, )"
@@ -65,6 +69,10 @@
             "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
               "target": "Package",
               "version": "[10.0.4, )"
+            },
+            "Microsoft.Extensions.Resilience": {
+              "target": "Package",
+              "version": "[9.6.0, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",

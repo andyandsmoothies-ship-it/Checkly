@@ -1277,6 +1277,48 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("template_assignments", (string)null);
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserDeviceToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("FcmToken")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("fcm_token");
+
+                    b.Property<DateTime>("LastUsedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_used_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("platform");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "FcmToken")
+                        .IsUnique();
+
+                    b.ToTable("user_device_tokens", (string)null);
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.UserGroup", b =>
                 {
                     b.Property<Guid>("Id")

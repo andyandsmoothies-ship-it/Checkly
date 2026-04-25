@@ -14,7 +14,9 @@ class RuleBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+        ),
       ),
       child: Text(
         label,

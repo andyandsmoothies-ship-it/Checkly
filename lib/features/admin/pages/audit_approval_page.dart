@@ -81,7 +81,10 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
         title: const Text('Approve Audit'),
         content: Text(
           'Approve audit for ${item.storeName ?? "unknown store"}?\n\n'
-          'Score: ${() { final s = ScoreFormatter.format(scoringMode: item.scoringMode, rawEarned: item.rawEarnedPoints, rawMax: item.rawMaxPoints, totalScore: item.totalScore, isWeighted: item.isWeighted); return s.isEmpty ? "N/A" : s; }()}',
+          'Score: ${() {
+            final s = ScoreFormatter.format(scoringMode: item.scoringMode, rawEarned: item.rawEarnedPoints, rawMax: item.rawMaxPoints, totalScore: item.totalScore, isWeighted: item.isWeighted);
+            return s.isEmpty ? "N/A" : s;
+          }()}',
         ),
         actions: [
           TextButton(
@@ -116,7 +119,12 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An unexpected issue occurred. Please check your connection or restart the app.'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+            content: Text(
+              'An unexpected issue occurred. Please check your connection or restart the app.',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -138,7 +146,9 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
             child: const Text('Reject'),
           ),
         ],
@@ -164,7 +174,12 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An unexpected issue occurred. Please check your connection or restart the app.'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+            content: Text(
+              'An unexpected issue occurred. Please check your connection or restart the app.',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -173,14 +188,25 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
   void _showReviewSheet(SubmissionDto item) {
     final theme = Theme.of(context);
     final dateStr = DateFormat('dd/MM/yyyy – HH:mm').format(item.createdAt);
-    final scoreStr = () { final s = ScoreFormatter.format(scoringMode: item.scoringMode, rawEarned: item.rawEarnedPoints, rawMax: item.rawMaxPoints, totalScore: item.totalScore, isWeighted: item.isWeighted); return s.isEmpty ? '—' : s; }();
+    final scoreStr = () {
+      final s = ScoreFormatter.format(
+        scoringMode: item.scoringMode,
+        rawEarned: item.rawEarnedPoints,
+        rawMax: item.rawMaxPoints,
+        totalScore: item.totalScore,
+        isWeighted: item.isWeighted,
+      );
+      return s.isEmpty ? '—' : s;
+    }();
     final scoreColor = item.totalScore != null
         ? (item.totalScore! >= 80
               ? AppTheme.success
               : item.totalScore! >= 60
               ? AppTheme.warning
               : theme.colorScheme.error)
-        : (item.isVoided ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.onSurfaceVariant);
+        : (item.isVoided
+              ? theme.colorScheme.onSurfaceVariant
+              : theme.colorScheme.onSurfaceVariant);
 
     final isVoided = item.isVoided;
     final isPending = item.reviewStatus == null && !isVoided;
@@ -254,11 +280,7 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
 
               if (isVoided) ...[
                 const SizedBox(height: 12),
-                _metadataRow(
-                  Icons.block_flipped,
-                  'Status',
-                  'VOIDED',
-                ),
+                _metadataRow(Icons.block_flipped, 'Status', 'VOIDED'),
                 if (item.voidReason != null)
                   _metadataRow(Icons.info_outline, 'Reason', item.voidReason!),
                 if (item.voidedAt != null)
@@ -403,7 +425,10 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
-                  Text(_manager.approvalsError!, style: Theme.of(context).textTheme.bodySmall),
+                  Text(
+                    _manager.approvalsError!,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     onPressed: _loadSubmissions,
@@ -507,7 +532,16 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scoreStr = () { final s = ScoreFormatter.format(scoringMode: item.scoringMode, rawEarned: item.rawEarnedPoints, rawMax: item.rawMaxPoints, totalScore: item.totalScore, isWeighted: item.isWeighted); return s.isEmpty ? '—' : s; }();
+    final scoreStr = () {
+      final s = ScoreFormatter.format(
+        scoringMode: item.scoringMode,
+        rawEarned: item.rawEarnedPoints,
+        rawMax: item.rawMaxPoints,
+        totalScore: item.totalScore,
+        isWeighted: item.isWeighted,
+      );
+      return s.isEmpty ? '—' : s;
+    }();
     final scoreColor = item.totalScore != null
         ? (item.totalScore! >= 80
               ? AppTheme.success
@@ -560,7 +594,9 @@ class _ReviewCard extends StatelessWidget {
                         Text(
                           item.storeName ?? 'Unknown Store',
                           style: AppFonts.displayStyle(
-                            fontSize: Theme.of(context).textTheme.titleSmall?.fontSize,
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.titleSmall?.fontSize,
                             fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,

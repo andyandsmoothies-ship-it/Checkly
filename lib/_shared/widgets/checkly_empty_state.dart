@@ -33,13 +33,17 @@ class ChecklyEmptyState extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               title,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
             if (actionButton != null) ...[

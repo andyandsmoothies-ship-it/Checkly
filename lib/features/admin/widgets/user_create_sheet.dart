@@ -19,7 +19,8 @@ class UserCreateSheet extends StatefulWidget {
   final Future<List<Map<String, dynamic>>> Function({
     String? assignableAs,
     String? exceptUser,
-  }) loadStores;
+  })
+  loadStores;
 
   /// Called on form submit with all validated field values.
   /// Should throw a [DioException] on API error so the sheet can route it.
@@ -30,7 +31,8 @@ class UserCreateSheet extends StatefulWidget {
     required String role,
     String? storeId,
     String? areaId,
-  }) onCreate;
+  })
+  onCreate;
 
   const UserCreateSheet({
     super.key,
@@ -71,9 +73,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
   /// Silent empty-list is worse than a visible error — Sentinel observation.
   Future<void> _loadStores() async {
     try {
-      final stores = await widget.loadStores(
-        assignableAs: 'store_manager',
-      );
+      final stores = await widget.loadStores(assignableAs: 'store_manager');
       if (mounted) setState(() => assignableStores = stores);
     } catch (_) {
       if (mounted) {
@@ -246,7 +246,9 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
                 ),
                 obscureText: true,
                 onChanged: (_) {
-                  if (passwordError != null) setState(() => passwordError = null);
+                  if (passwordError != null) {
+                    setState(() => passwordError = null);
+                  }
                 },
               ),
               const SizedBox(height: 12),

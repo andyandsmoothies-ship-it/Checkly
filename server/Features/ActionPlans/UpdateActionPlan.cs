@@ -20,6 +20,7 @@ public static class UpdateActionPlan
         ClaimsPrincipal user,
         AppDbContext db,
         [Microsoft.AspNetCore.Mvc.FromServices] PbacDictionaryCache cache,
+        IFcmDispatchService fcm,
         CancellationToken ct)
     {
         var plan = await db.ActionPlans.FindAsync(id);
@@ -47,22 +48,46 @@ public static class UpdateActionPlan
         // Capture old status BEFORE applying updates (for PBAC gate + S2 notification logic)
         var oldStatus = plan.Status;
 
+        // --- Terminal-State Guard (Offline Conflict Resolution) ---
+        // A 'closed' plan is immutable. If a stale offline sync requests any status other
+        // than 'closed' (idempotent no-op), we reject it with 409 and write an audit log.
+        if (oldStatus == "closed" && request.Status is not null && request.Status != "closed")
+        {
+            AuditLogger.Log(
+                db, user,
+                action: "action_plan_update_rejected",
+                entityType: "ActionPlan",
+                entityId: id,
+                message: $"Stale offline update rejected: plan is already closed. Requested status='{request.Status}'.",
+                userEmail: user.FindFirstValue(ClaimTypes.Email));
+
+            await db.SaveChangesAsync(ct);
+
+            return TypedResults.Conflict(new Microsoft.AspNetCore.Mvc.ProblemDetails
+            {
+                Title = "Action plan already closed",
+                Detail = "This action plan has already been verified and closed. The offline update has been discarded.",
+                Extensions = { ["code"] = "action_plan_already_closed" }
+            });
+        }
+
         // PBAC: Gate status transitions imperatively (one endpoint, two distinct capability gates).
         // Field-only updates (description, evidence URL, etc.) bypass this check by design.
         if (request.Status is not null)
         {
             var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
 
-            bool isWriteTransition  = request.Status == "pending_verify";
+            bool isWriteTransition = request.Status == "pending_verify";
             bool isVerifyTransition =
                 (request.Status == "closed" && oldStatus == "pending_verify") ||
-                (request.Status == "open"   && oldStatus == "pending_verify");
+                (request.Status == "open" && oldStatus == "pending_verify");
 
-            if (isWriteTransition  && !cache.GetCapabilities(role).Contains(AppCapabilities.ActionPlansWrite))
+            if (isWriteTransition && !cache.GetCapabilities(role).Contains(AppCapabilities.ActionPlansWrite))
                 return TypedResults.Forbid();
             if (isVerifyTransition && !cache.GetCapabilities(role).Contains(AppCapabilities.ActionPlansVerify))
                 return TypedResults.Forbid();
         }
+
 
         if (request.PlanDescription is not null) plan.PlanDescription = request.PlanDescription;
         if (request.RootCause is not null) plan.RootCause = request.RootCause;
@@ -175,6 +200,7 @@ public static class UpdateActionPlan
             {
                 db.Notifications.Add(notif);
                 await db.SaveChangesAsync(ct);
+                await fcm.DispatchSyncNeededAsync(notif.UserId);
             }
         }
 

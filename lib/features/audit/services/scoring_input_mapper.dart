@@ -142,5 +142,4 @@ class ScoringInputMapper {
     }
     return false;
   }
-
 }

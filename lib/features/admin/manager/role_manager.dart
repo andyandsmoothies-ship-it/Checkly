@@ -25,7 +25,7 @@ class RoleManager extends ChangeNotifier {
   final AdminApiService _api;
 
   RoleManager({required AdminApiService adminApiService})
-      : _api = adminApiService {
+    : _api = adminApiService {
     grantCommand = RoleCommand(_grant);
     revokeCommand = RoleCommand(_revoke);
   }

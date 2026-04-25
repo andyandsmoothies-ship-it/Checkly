@@ -27,7 +27,9 @@ class SectionHeader extends StatelessWidget {
         style: AppFonts.displayStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.65),
           letterSpacing: 3,
         ),
       ),

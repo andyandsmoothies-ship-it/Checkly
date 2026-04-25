@@ -63,12 +63,20 @@ class _MenuTile extends StatelessWidget {
     final theme = Theme.of(context);
     return ListTile(
       leading: Icon(data.icon, color: theme.colorScheme.primary),
-      title: Text(data.label, style: const TextStyle(fontWeight: FontWeight.w500)),
+      title: Text(
+        data.label,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+      ),
       subtitle: Text(
         data.description,
-        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
       ),
-      trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
       onTap: () {
         HapticFeedback.lightImpact();
         if (data.route != null) {

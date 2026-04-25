@@ -9,7 +9,13 @@ import 'scoring_models.dart';
 // ============================================================
 class ScoringEngine {
   // Widgets that CAN carry scoring points. All others are metadata (transparent to purity).
-  static const _kMeasurableTypes = {'pass_fail', 'numeric', 'scale', 'single_choice', 'multi_choice'};
+  static const _kMeasurableTypes = {
+    'pass_fail',
+    'numeric',
+    'scale',
+    'single_choice',
+    'multi_choice',
+  };
 
   /// Returns true if every measurable criterion in the template has a points weight > 0.
   /// Metadata widgets (text, signature, photo, header, date, image) are transparent — they
@@ -17,16 +23,21 @@ class ScoringEngine {
   static bool _isPureAudit(ScoringInput input) {
     for (final section in input.sections) {
       for (final c in section.criteria) {
-        if (_kMeasurableTypes.contains(c.inputType) && c.pointsWeight <= 0) return false;
+        if (_kMeasurableTypes.contains(c.inputType) && c.pointsWeight <= 0) {
+          return false;
+        }
       }
       for (final sub in section.subsections) {
         for (final c in sub.criteria) {
-          if (_kMeasurableTypes.contains(c.inputType) && c.pointsWeight <= 0) return false;
+          if (_kMeasurableTypes.contains(c.inputType) && c.pointsWeight <= 0) {
+            return false;
+          }
         }
       }
     }
     return true;
   }
+
   /// Calculates the audit score based on the scoring mode.
   static ScoringResult calculate(ScoringInput input) {
     // Survey mode: no scoring at all — return immediately
@@ -37,7 +48,9 @@ class ScoringEngine {
     // Purity gate: if any measurable criterion has no points, suppress score.
     // Mirrors ScoringVerifier.IsPureAudit() on the server — both must agree.
     if (!_isPureAudit(input)) {
-      return const ScoringResult(totalScore: null); // Mixed audit — score suppressed
+      return const ScoringResult(
+        totalScore: null,
+      ); // Mixed audit — score suppressed
     }
 
     // Global Risk short-circuit: if the auditor has flagged at least one global
@@ -133,7 +146,10 @@ class ScoringEngine {
         // subBefore = sum of actual criteria weights — matches server ScoringVerifier.VerifyPenalty().
         // sub.maxPoints is a DEDUCTION CAP only, never the denominator.
         for (final sub in section.subsections) {
-          final subBefore = sub.criteria.fold<double>(0.0, (sum, c) => sum + c.pointsWeight);
+          final subBefore = sub.criteria.fold<double>(
+            0.0,
+            (sum, c) => sum + c.pointsWeight,
+          );
           sectionBefore += subBefore;
           if (subBefore == 0) continue;
 
@@ -172,7 +188,7 @@ class ScoringEngine {
         if (sectionBefore == 0) continue;
 
         // CCP triggered: section score is 0%, but MUST keep its weight in the denominator!
-        // Previously this used `continue` which excluded it from the total entirely, 
+        // Previously this used `continue` which excluded it from the total entirely,
         // causing artificially high scores even when critical failures occurred.
         if (ccpTriggered) {
           sectionScores[section.id] = SectionScore(
@@ -347,7 +363,7 @@ class ScoringEngine {
           sum + _getDeduction(c, answerMap, input.progressiveRepeatPenalty),
     );
     double score = max(0.0, 100.0 - totalDeductions);
-    
+
     if (ccpTriggered) {
       score = 0.0;
     }
@@ -386,7 +402,7 @@ class ScoringEngine {
     final impact = criterion.minusImpact ?? criterion.pointsWeight;
     final faults = answer.numericValue ?? 0;
     final baseDeduction = faults * impact;
-    
+
     double totalDeduction = baseDeduction;
     // progressive repeat penalty (n² × impact)
     if (progressiveRepeatPenalty && answer.repeatedFaults > 0) {
@@ -397,7 +413,7 @@ class ScoringEngine {
       // Linear repeat penalty
       totalDeduction = baseDeduction + (answer.repeatedFaults * impact);
     }
-    
+
     if (criterion.maxDeductionPoints != null) {
       return min(totalDeduction, criterion.maxDeductionPoints!);
     }

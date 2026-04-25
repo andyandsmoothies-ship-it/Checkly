@@ -48,9 +48,7 @@ class WarmChip extends StatelessWidget {
         child: Text(
           text,
           style: theme.textTheme.labelMedium?.copyWith(
-            color: selected
-                ? theme.colorScheme.onPrimary
-                : AppColors.charcoal,
+            color: selected ? theme.colorScheme.onPrimary : AppColors.charcoal,
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -4,6 +4,7 @@ using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
+using Checkly.Api.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -29,6 +30,7 @@ public static class FinalizeSubmission
         AppDbContext db,
         ScoringVerifier scorer,
         IConfiguration config,
+        IFcmDispatchService fcm,
         CancellationToken ct)
     {
         var auditorId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -42,8 +44,8 @@ public static class FinalizeSubmission
         if (submission.Status != "draft")
             return TypedResults.Conflict(new { error = $"Cannot finalize a submission with status '{submission.Status}'. Only draft submissions can be finalized." });
 
-        // Must be the same auditor (or admin — future)
-        if (submission.AuditorId != auditorId)
+        // Must be the same auditor (or admin)
+        if (submission.AuditorId != auditorId && !SubmissionAccessGuard.CanDelegate(user))
             return TypedResults.Forbid();
 
         // 1.5 Load Global Risks for this submission
@@ -167,8 +169,8 @@ public static class FinalizeSubmission
         if (!verification.IsValid && scoreMode == "enforce")
         {
             var logMsg = $"Score verification failed! Client: {request.ClientScore}, Server: {verification.ServerScore}, Reason: {verification.Reason}. First Answer RptFlt: {request.Answers!.FirstOrDefault()?.RepeatedFaults} \n";
-            try { System.IO.File.AppendAllText(".agents/tmp/bad_request.txt", logMsg); } catch {}
-            
+            try { System.IO.File.AppendAllText(".agents/tmp/bad_request.txt", logMsg); } catch { }
+
             return TypedResults.BadRequest(new
             {
                 error = "Score verification failed",
@@ -228,7 +230,7 @@ public static class FinalizeSubmission
             $"/api/submissions/{submission.Id}/finalize");
 
         var strategy = db.Database.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync<IResult>(async () =>
+        var result = await strategy.ExecuteAsync<IResult>(async () =>
         {
             // Start explicit transaction to guarantee all saves complete atomically
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
@@ -276,5 +278,32 @@ public static class FinalizeSubmission
                 submission.TemplateVersion,
                 submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted));
         });
+
+        // 10. Insert domain notification outside the primary transaction, only on success
+        if (result is Microsoft.AspNetCore.Http.HttpResults.Ok<SubmissionDto> && submission.StoreId.HasValue)
+        {
+            var storeManagerId = await (from p in db.Profiles
+                                        join r in db.AppUserRoles on p.Id equals r.UserId
+                                        where p.StoreId == submission.StoreId.Value && r.Role == "store_manager"
+                                        select p.Id).FirstOrDefaultAsync(ct);
+
+            if (storeManagerId != Guid.Empty)
+            {
+                db.Notifications.Add(new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = storeManagerId,
+                    Type = "audit_submitted",
+                    Title = "Audit Submitted",
+                    Message = $"A new audit was submitted for {submission.StoreName ?? "your store"}.",
+                    ActionUrl = $"/submissions/{submission.Id}",
+                    CreatedAt = DateTimeOffset.UtcNow
+                });
+                await db.SaveChangesAsync(ct);
+                await fcm.DispatchSyncNeededAsync(storeManagerId);
+            }
+        }
+
+        return result;
     }
 }

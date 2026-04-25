@@ -11,9 +11,11 @@ class NotificationDao {
 
   /// Read all cached notifications, newest first.
   Future<List<NotificationDto>> getAllNotifications() async {
-    final rows = await (_db.select(_db.cachedNotifications)
-      ..orderBy([(n) => OrderingTerm.desc(n.createdAt)])
-      ..limit(500)).get();
+    final rows =
+        await (_db.select(_db.cachedNotifications)
+              ..orderBy([(n) => OrderingTerm.desc(n.createdAt)])
+              ..limit(500))
+            .get();
     return rows.map(_rowToDto).toList();
   }
 

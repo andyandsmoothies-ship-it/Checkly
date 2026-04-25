@@ -38,7 +38,9 @@ class ActionPlanCard extends StatelessWidget {
                           width: 12,
                           height: 12,
                           decoration: BoxDecoration(
-                            color: isOverdue ? theme.colorScheme.error : statusColor,
+                            color: isOverdue
+                                ? theme.colorScheme.error
+                                : statusColor,
                             shape: BoxShape.circle,
                           ),
                         ),

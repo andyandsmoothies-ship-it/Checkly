@@ -7,6 +7,7 @@ import '_shared/theme/app_theme.dart';
 import '_shared/theme/theme_manager.dart';
 import 'features/auth/manager/auth_manager.dart';
 import 'features/audit/services/draft_service.dart';
+import 'features/notifications/manager/notification_sync_manager.dart';
 import 'locator.dart';
 
 void main() async {
@@ -19,6 +20,12 @@ void main() async {
     await DraftService().cleanExpired();
   } catch (_) {}
 
+  // Initialize Notification Sync Engine
+  // Errors are swallowed — must never crash startup.
+  try {
+    await GetIt.instance<NotificationSyncManager>().init();
+  } catch (_) {}
+
   // Load persisted theme preference
   await GetIt.instance<ThemeManager>().init();
 
@@ -27,7 +34,6 @@ void main() async {
 
   runApp(const ChecklyApp());
 }
-
 
 class ChecklyApp extends StatefulWidget {
   const ChecklyApp({super.key});
@@ -43,7 +49,10 @@ class _ChecklyAppState extends State<ChecklyApp> {
   void initState() {
     super.initState();
     _lifecycleListener = AppLifecycleListener(
-      onResume: () => GetIt.instance<AuthManager>().refreshCapabilities(),
+      onResume: () {
+        GetIt.instance<AuthManager>().refreshCapabilities();
+        GetIt.instance<NotificationSyncManager>().onTickle();
+      },
     );
   }
 

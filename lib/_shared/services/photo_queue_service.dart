@@ -136,7 +136,8 @@ class PhotoQueueService {
       final dynamic headers = response.headers;
       final dynamic retryAfterValues = headers['retry-after'];
       if (retryAfterValues == null) return null;
-      final String? raw = (retryAfterValues as List<dynamic>).firstOrNull?.toString();
+      final String? raw = (retryAfterValues as List<dynamic>).firstOrNull
+          ?.toString();
       return int.tryParse(raw ?? '');
     } catch (_) {
       return null;

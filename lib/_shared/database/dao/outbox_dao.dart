@@ -30,7 +30,8 @@ class OutboxDao {
           ..where(
             (s) =>
                 s.syncStatus.equals('pending') &
-                (s.nextRetryAt.isNull() | s.nextRetryAt.isSmallerOrEqualValue(now)),
+                (s.nextRetryAt.isNull() |
+                    s.nextRetryAt.isSmallerOrEqualValue(now)),
           )
           ..orderBy([(s) => OrderingTerm.asc(s.createdAt)])
           ..limit(100))
@@ -67,7 +68,6 @@ class OutboxDao {
     });
   }
 
-
   /// Update sync status of a submission, with optional backoff fields.
   Future<void> updateSyncStatus(
     String id,
@@ -82,8 +82,12 @@ class OutboxDao {
       PendingSubmissionsCompanion(
         syncStatus: Value(status),
         syncError: Value(error),
-        retryCount: retryCount != null ? Value(retryCount) : const Value.absent(),
-        nextRetryAt: Value(nextRetryAt), // Always write — allows nulling to null
+        retryCount: retryCount != null
+            ? Value(retryCount)
+            : const Value.absent(),
+        nextRetryAt: Value(
+          nextRetryAt,
+        ), // Always write — allows nulling to null
       ),
     );
   }
@@ -120,56 +124,58 @@ class OutboxDao {
   /// photo count). Used to drive the UX Red Badge.
   Stream<int> watchExhaustedCount() {
     final subCount = countAll();
-    final subStream = (_db.selectOnly(_db.pendingSubmissions)
-          ..addColumns([subCount])
-          ..where(_db.pendingSubmissions.syncStatus.equals('exhausted')))
-        .map((row) => row.read(subCount) ?? 0)
-        .watchSingle();
+    final subStream =
+        (_db.selectOnly(_db.pendingSubmissions)
+              ..addColumns([subCount])
+              ..where(_db.pendingSubmissions.syncStatus.equals('exhausted')))
+            .map((row) => row.read(subCount) ?? 0)
+            .watchSingle();
 
     final photoCount = countAll();
-    final photoStream = (_db.selectOnly(_db.pendingPhotos)
-          ..addColumns([photoCount])
-          ..where(_db.pendingPhotos.syncStatus.equals('exhausted')))
-        .map((row) => row.read(photoCount) ?? 0)
-        .watchSingle();
+    final photoStream =
+        (_db.selectOnly(_db.pendingPhotos)
+              ..addColumns([photoCount])
+              ..where(_db.pendingPhotos.syncStatus.equals('exhausted')))
+            .map((row) => row.read(photoCount) ?? 0)
+            .watchSingle();
 
     return Rx.combineLatest2(subStream, photoStream, (int a, int b) => a + b);
   }
 
   /// Permanently deletes exhausted submissions and photos (discard corrupted data).
   Future<void> discardExhausted() async {
-    await (_db.delete(_db.pendingPhotos)
-          ..where((p) => p.syncStatus.equals('exhausted')))
-        .go();
-    await (_db.delete(_db.pendingSubmissions)
-          ..where((s) => s.syncStatus.equals('exhausted')))
-        .go();
+    await (_db.delete(
+      _db.pendingPhotos,
+    )..where((p) => p.syncStatus.equals('exhausted'))).go();
+    await (_db.delete(
+      _db.pendingSubmissions,
+    )..where((s) => s.syncStatus.equals('exhausted'))).go();
   }
 
   /// Reset all exhausted records in both tables back to `pending`.
   /// Clears `retryCount` and `nextRetryAt` — they become eligible immediately.
   Future<void> requeueExhausted() async {
-    await (_db.update(_db.pendingSubmissions)
-          ..where((s) => s.syncStatus.equals('exhausted')))
-        .write(
-          const PendingSubmissionsCompanion(
-            syncStatus: Value('pending'),
-            retryCount: Value(0),
-            nextRetryAt: Value(null),
-            syncError: Value(null),
-          ),
-        );
+    await (_db.update(
+      _db.pendingSubmissions,
+    )..where((s) => s.syncStatus.equals('exhausted'))).write(
+      const PendingSubmissionsCompanion(
+        syncStatus: Value('pending'),
+        retryCount: Value(0),
+        nextRetryAt: Value(null),
+        syncError: Value(null),
+      ),
+    );
 
-    await (_db.update(_db.pendingPhotos)
-          ..where((p) => p.syncStatus.equals('exhausted')))
-        .write(
-          const PendingPhotosCompanion(
-            syncStatus: Value('pending'),
-            retryCount: Value(0),
-            nextRetryAt: Value(null),
-            syncError: Value(null),
-          ),
-        );
+    await (_db.update(
+      _db.pendingPhotos,
+    )..where((p) => p.syncStatus.equals('exhausted'))).write(
+      const PendingPhotosCompanion(
+        syncStatus: Value('pending'),
+        retryCount: Value(0),
+        nextRetryAt: Value(null),
+        syncError: Value(null),
+      ),
+    );
   }
 
   // ============================================================
@@ -203,9 +209,7 @@ class OutboxDao {
 
   /// Get all photos for a pending submission, ordered FIFO by createdAt.
   Future<List<PendingPhoto>> getPhotosForSubmission(String submissionId) async {
-    return (_db.select(
-      _db.pendingPhotos,
-    )
+    return (_db.select(_db.pendingPhotos)
           ..where((p) => p.pendingSubmissionId.equals(submissionId))
           ..orderBy([(p) => OrderingTerm.asc(p.createdAt)]))
         .get();
@@ -223,7 +227,9 @@ class OutboxDao {
       PendingPhotosCompanion(
         syncStatus: Value(status),
         syncError: Value(error),
-        retryCount: retryCount != null ? Value(retryCount) : const Value.absent(),
+        retryCount: retryCount != null
+            ? Value(retryCount)
+            : const Value.absent(),
         nextRetryAt: Value(nextRetryAt),
       ),
     );
@@ -237,7 +243,11 @@ class OutboxDao {
   /// Statuses covered: 'pending', 'submission_synced', 'photos_pending'.
   /// Sign-out MUST be blocked while this count > 0.
   Future<int> syncableCount() async {
-    const recoverableStatuses = ['pending', 'submission_synced', 'photos_pending'];
+    const recoverableStatuses = [
+      'pending',
+      'submission_synced',
+      'photos_pending',
+    ];
     int total = 0;
     for (final status in recoverableStatuses) {
       final countExp = countAll();

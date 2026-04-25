@@ -48,14 +48,15 @@ class EditableCriterion {
       try {
         final meta = json.decode(dto.metadata!) as Map<String, dynamic>;
         isRequired = meta['isRequired'] == true;
-        
+
         if (dto.inputType == 'scale') {
           options =
               (meta['scaleOptions'] as List?)
                   ?.map((e) => Map<String, dynamic>.from(e as Map))
                   .toList() ??
               [];
-        } else if (dto.inputType == 'single_choice' || dto.inputType == 'multi_choice') {
+        } else if (dto.inputType == 'single_choice' ||
+            dto.inputType == 'multi_choice') {
           choices =
               (meta['options'] as List?)?.map((e) {
                 if (e is String) return e;

@@ -69,8 +69,7 @@ class CriterionScaleEditor extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: TextFormField(
-                    initialValue:
-                        (opt['points'] as num?)?.toString() ?? '0',
+                    initialValue: (opt['points'] as num?)?.toString() ?? '0',
                     decoration: const InputDecoration(
                       labelText: 'Pts',
                       isDense: true,
@@ -82,13 +81,11 @@ class CriterionScaleEditor extends StatelessWidget {
                       // Auto-sync pointsWeight to highest
                       final maxPts = criterion.scaleOptions.fold<double>(
                         0,
-                        (m, o) =>
-                            (o['points'] as num? ?? 0).toDouble() > m
+                        (m, o) => (o['points'] as num? ?? 0).toDouble() > m
                             ? (o['points'] as num).toDouble()
                             : m,
                       );
-                      criterion.pointsCtrl.text =
-                          maxPts.toStringAsFixed(0);
+                      criterion.pointsCtrl.text = maxPts.toStringAsFixed(0);
                       onChanged();
                     },
                   ),

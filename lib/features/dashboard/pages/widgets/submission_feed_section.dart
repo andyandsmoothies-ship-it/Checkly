@@ -58,7 +58,10 @@ class SubmissionFeedSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: Padding(
                 // WCAG tap target fix: raised from h:4,v:2 → h:12,v:12 (44px minimum)
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -110,7 +113,11 @@ class SubmissionRow extends StatefulWidget {
   final SubmissionDto submission;
   final BuildContext context;
 
-  const SubmissionRow({required this.submission, required this.context, super.key});
+  const SubmissionRow({
+    required this.submission,
+    required this.context,
+    super.key,
+  });
 
   @override
   State<SubmissionRow> createState() => _SubmissionRowState();
@@ -133,14 +140,18 @@ class _SubmissionRowState extends State<SubmissionRow> {
       await _di<DashboardManager>().loadStats();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Draft discarded')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Draft discarded')));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('We hit a snag removing this item. If it remains stuck on your screen, please restart the app.')),
+          SnackBar(
+            content: Text(
+              'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+            ),
+          ),
         );
       }
     }
@@ -201,14 +212,18 @@ class _SubmissionRowState extends State<SubmissionRow> {
     try {
       await _di<DashboardManager>().voidAudit(sub.id, reason);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Audit voided.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Audit voided.')));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('We hit a snag removing this item. If it remains stuck on your screen, please restart the app.')),
+          SnackBar(
+            content: Text(
+              'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+            ),
+          ),
         );
       }
     }
@@ -240,10 +255,10 @@ class _SubmissionRowState extends State<SubmissionRow> {
     final scoreColor = theme.colorScheme.onSurface;
     final semanticColor = score != null
         ? (score >= 80
-            ? AppColors.success
-            : score >= 60
-                ? AppColors.warning
-                : AppColors.destructive)
+              ? AppColors.success
+              : score >= 60
+              ? AppColors.warning
+              : AppColors.destructive)
         : theme.colorScheme.onSurfaceVariant;
 
     return Card(
@@ -256,7 +271,9 @@ class _SubmissionRowState extends State<SubmissionRow> {
                 if (sub.id.startsWith('local_outbox_')) {
                   ScaffoldMessenger.of(widget.context).showSnackBar(
                     const SnackBar(
-                      content: Text('This audit is syncing. Please wait a moment.'),
+                      content: Text(
+                        'This audit is syncing. Please wait a moment.',
+                      ),
                     ),
                   );
                   return;
@@ -267,7 +284,9 @@ class _SubmissionRowState extends State<SubmissionRow> {
                   useSafeArea: true,
                   useRootNavigator: true,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                   ),
                   builder: (_) => AuditPreviewSheet(submissionId: sub.id),
                 );
@@ -378,7 +397,9 @@ class _SubmissionRowState extends State<SubmissionRow> {
                     Text(
                       scoreText,
                       style: AppFonts.serifStyle(
-                        fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                        fontSize: Theme.of(
+                          context,
+                        ).textTheme.titleLarge?.fontSize,
                         color: scoreColor,
                       ),
                     ),

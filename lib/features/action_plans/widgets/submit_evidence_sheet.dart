@@ -40,8 +40,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
   @override
   void initState() {
     super.initState();
-    _correctionCtrl =
-        TextEditingController(text: widget.plan.correctionPlan);
+    _correctionCtrl = TextEditingController(text: widget.plan.correctionPlan);
   }
 
   @override
@@ -132,10 +131,9 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                 children: [
                   Text(
                     'Submit Evidence',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -143,8 +141,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                       if (_isSubmitting) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content:
-                                Text('Submission running in background'),
+                            content: Text('Submission running in background'),
                           ),
                         );
                       }
@@ -162,20 +159,19 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                 width: double.infinity,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest
-                      .withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color:
-                        Theme.of(context).colorScheme.outlineVariant,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                 ),
                 child: InkWell(
                   onTap: () async {
                     final picker = ImagePicker();
-                    final bool isDesktop = !kIsWeb &&
+                    final bool isDesktop =
+                        !kIsWeb &&
                         (Platform.isWindows ||
                             Platform.isMacOS ||
                             Platform.isLinux);
@@ -226,17 +222,17 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                           children: [
                             Icon(
                               Icons.add_a_photo,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Upload Photo',
                               style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -248,12 +244,11 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                 controller: _correctionCtrl,
                 decoration: InputDecoration(
                   labelText: 'Note (Action Taken)',
-                  border: const OutlineInputBorder(
-                      borderSide: BorderSide.none),
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
                   filled: true,
-                  fillColor: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest,
+                  fillColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
                 ),
                 maxLines: 3,
                 onChanged: (_) => _markDirty(),
@@ -266,8 +261,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   elevation: 2,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: _isSubmitting ? null : _submit,
                 child: _isSubmitting

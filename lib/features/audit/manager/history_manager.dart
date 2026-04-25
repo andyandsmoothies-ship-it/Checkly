@@ -224,9 +224,10 @@ class HistoryManager extends ChangeNotifier {
         continue;
       }
       final prefix = '$tId:$sId:';
-      final matchedKey = draftKeys
-          .cast<String?>()
-          .firstWhere((k) => k!.startsWith(prefix), orElse: () => null);
+      final matchedKey = draftKeys.cast<String?>().firstWhere(
+        (k) => k!.startsWith(prefix),
+        orElse: () => null,
+      );
 
       if (matchedKey != null) {
         result.add(s.withStatus('draft'));
@@ -237,8 +238,9 @@ class HistoryManager extends ChangeNotifier {
     }
 
     // Inject purely local ad-hoc drafts that have no server counterpart
-    final unseenKeys =
-        draftKeys.where((k) => !processedDraftKeys.contains(k)).toList();
+    final unseenKeys = draftKeys
+        .where((k) => !processedDraftKeys.contains(k))
+        .toList();
 
     if (unseenKeys.isNotEmpty) {
       final db = _di<DatabaseService>().db;
@@ -253,22 +255,22 @@ class HistoryManager extends ChangeNotifier {
           DateTime savedAt = DateTime.now();
 
           try {
-            final tRow = await (db.select(db.cachedTemplates)
-                  ..where((t) => t.id.equals(tId)))
-                .getSingleOrNull();
+            final tRow = await (db.select(
+              db.cachedTemplates,
+            )..where((t) => t.id.equals(tId))).getSingleOrNull();
             if (tRow != null) {
               tTitle = tRow.title;
               tType = tRow.type;
             }
 
-            final sRow = await (db.select(db.cachedStores)
-                  ..where((s) => s.id.equals(sId)))
-                .getSingleOrNull();
+            final sRow = await (db.select(
+              db.cachedStores,
+            )..where((s) => s.id.equals(sId))).getSingleOrNull();
             if (sRow != null) sName = sRow.name;
 
-            final dRow = await (db.select(db.draftAnswers)
-                  ..where((d) => d.draftKey.equals(key)))
-                .getSingleOrNull();
+            final dRow = await (db.select(
+              db.draftAnswers,
+            )..where((d) => d.draftKey.equals(key))).getSingleOrNull();
             if (dRow != null) savedAt = dRow.savedAt;
           } catch (_) {}
 
@@ -303,17 +305,17 @@ class HistoryManager extends ChangeNotifier {
         String? tType;
         String? sName;
         try {
-          final tRow = await (db.select(db.cachedTemplates)
-                ..where((t) => t.id.equals(p.templateId)))
-              .getSingleOrNull();
+          final tRow = await (db.select(
+            db.cachedTemplates,
+          )..where((t) => t.id.equals(p.templateId))).getSingleOrNull();
           if (tRow != null) {
             tTitle = tRow.title;
             tType = tRow.type;
           }
 
-          final sRow = await (db.select(db.cachedStores)
-                ..where((s) => s.id.equals(p.storeId)))
-              .getSingleOrNull();
+          final sRow = await (db.select(
+            db.cachedStores,
+          )..where((s) => s.id.equals(p.storeId))).getSingleOrNull();
           if (sRow != null) sName = sRow.name;
         } catch (_) {}
 
@@ -326,7 +328,9 @@ class HistoryManager extends ChangeNotifier {
             templateType: tType,
             storeId: p.storeId,
             storeName: sName ?? 'Unknown Store',
-            status: p.syncStatus == 'pending' ? 'syncing' : (p.syncStatus == 'exhausted' ? 'failed' : 'syncing'),
+            status: p.syncStatus == 'pending'
+                ? 'syncing'
+                : (p.syncStatus == 'exhausted' ? 'failed' : 'syncing'),
             createdAt: p.createdAt,
             totalScore: p.clientScore,
           ),

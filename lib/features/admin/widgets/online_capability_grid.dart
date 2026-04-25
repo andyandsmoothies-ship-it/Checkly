@@ -13,7 +13,8 @@ class OnlineCapabilityGrid extends StatelessWidget {
   final Future<void> Function({
     required String capability,
     required bool currentlyAssigned,
-  }) onToggle;
+  })
+  onToggle;
 
   const OnlineCapabilityGrid({
     super.key,
@@ -42,12 +43,16 @@ class OnlineCapabilityGrid extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    final thisRole = roles?.where((r) => r.role == role).firstOrNull;
+                    final thisRole = roles
+                        ?.where((r) => r.role == role)
+                        .firstOrNull;
                     final assigned = thisRole?.capabilities ?? [];
                     final allCapabilities = catalog ?? assigned;
 
                     if (allCapabilities.isEmpty) {
-                      return const Center(child: Text('No capabilities available.'));
+                      return const Center(
+                        child: Text('No capabilities available.'),
+                      );
                     }
 
                     // Group capabilities
@@ -78,10 +83,13 @@ class OnlineCapabilityGrid extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
                             child: Text(
                               groupName.toUpperCase(),
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                           );
                         }
@@ -93,20 +101,31 @@ class OnlineCapabilityGrid extends StatelessWidget {
                         // Implicit admin:access grant via domain capability intersection.
                         // If this checkbox is for admin:access AND the role has other admin-domain
                         // caps (but not admin:access directly), show it as implicitly granted.
-                        final isImplicitlyGranted = cap == AppCapabilities.adminAccess &&
+                        final isImplicitlyGranted =
+                            cap == AppCapabilities.adminAccess &&
                             !isAssigned &&
-                            assigned.any((c) => AppCapabilities.adminDomainCapabilities.contains(c));
+                            assigned.any(
+                              (c) => AppCapabilities.adminDomainCapabilities
+                                  .contains(c),
+                            );
 
                         // Action lock guard
-                        final isSelfLock = role == 'admin' && cap == AppCapabilities.adminAccess;
-                        final isEnabled = canManage && !isMutating && !isSelfLock && !isImplicitlyGranted;
+                        final isSelfLock =
+                            role == 'admin' &&
+                            cap == AppCapabilities.adminAccess;
+                        final isEnabled =
+                            canManage &&
+                            !isMutating &&
+                            !isSelfLock &&
+                            !isImplicitlyGranted;
 
                         final titleText = meta?.label ?? cap;
                         final subtitleText = isSelfLock
                             ? 'Cannot revoke your own admin access'
                             : isImplicitlyGranted
-                                ? 'Implicitly Granted via assigned capabilities'
-                                : (meta?.description ?? (isAssigned ? 'Assigned' : 'Not assigned'));
+                            ? 'Implicitly Granted via assigned capabilities'
+                            : (meta?.description ??
+                                  (isAssigned ? 'Assigned' : 'Not assigned'));
 
                         return CheckboxListTile(
                           key: ValueKey(cap),
@@ -116,18 +135,20 @@ class OnlineCapabilityGrid extends StatelessWidget {
                           subtitle: Text(
                             subtitleText,
                             style: TextStyle(
-                              color: isSelfLock 
+                              color: isSelfLock
                                   ? Theme.of(context).colorScheme.error
                                   : (isAssigned
-                                      ? Theme.of(context).colorScheme.primary
-                                      : Theme.of(context).colorScheme.onSurfaceVariant),
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant),
                             ),
                           ),
                           onChanged: isEnabled
                               ? (_) => onToggle(
-                                    capability: cap,
-                                    currentlyAssigned: isAssigned,
-                                  )
+                                  capability: cap,
+                                  currentlyAssigned: isAssigned,
+                                )
                               : null,
                         );
                       },

@@ -63,17 +63,25 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
             children: [
               Text(
                 store.name,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.location_on_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       store.address ?? 'Address not available',
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -81,11 +89,17 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.person_outline, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     store.managerName ?? 'Not available offline',
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -219,7 +233,9 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                         title: Text(
                           store.name,
                           style: AppFonts.displayStyle(
-                            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize,
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -230,8 +246,12 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                             if (store.address != null) store.address,
                           ].join(' • '),
                           style: AppFonts.displayStyle(
-                            fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.fontSize,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

@@ -19,7 +19,9 @@ class StatChip extends StatelessWidget {
           label,
           style: AppFonts.displayStyle(
             fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.75),
           ),
         ),
       ],

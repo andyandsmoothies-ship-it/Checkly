@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-
-
 /// API base URL — configurable via `--dart-define=API_BASE_URL=...`.
 /// Defaults to Android emulator localhost mapping for development.
 const String _defaultBaseUrl = String.fromEnvironment(

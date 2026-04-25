@@ -61,5 +61,13 @@ void main() {
         expect(shellIndexFromLocation('/home'), equals(0));
       },
     );
+
+    // TC1.2a: /inbox → index 5
+    test(
+      '_inbox_Route_ExistsInShell — /inbox maps to tab 5',
+      () {
+        expect(shellIndexFromLocation('/inbox'), equals(5));
+      },
+    );
   });
 }

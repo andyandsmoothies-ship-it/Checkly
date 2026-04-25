@@ -34,7 +34,9 @@ class StoreGroup extends StatelessWidget {
                 fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
                 // WCAG: raised from 0.4 → 0.85 for clear section header hierarchy
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.85),
                 letterSpacing: 1.5,
               ),
             ),
@@ -56,9 +58,7 @@ class StoreGroup extends StatelessWidget {
           ],
         ),
         children: plans
-            .map(
-              (plan) => ActionPlanCard(plan: plan, onTap: () => onTap(plan)),
-            )
+            .map((plan) => ActionPlanCard(plan: plan, onTap: () => onTap(plan)))
             .toList(),
       ),
     );

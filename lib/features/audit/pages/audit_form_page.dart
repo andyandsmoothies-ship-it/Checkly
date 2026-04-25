@@ -66,8 +66,11 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
     if (tree != null) {
       final manager = _di<AuditManager>();
-      await manager.startAudit(tree, widget.storeId,
-          targetSubmissionId: widget.targetSubmissionId);
+      await manager.startAudit(
+        tree,
+        widget.storeId,
+        targetSubmissionId: widget.targetSubmissionId,
+      );
       manager.addListener(_onManagerChanged);
 
       // Auto-resume path: skip dialog, restore immediately (from Dashboard action)
@@ -167,10 +170,13 @@ class _AuditFormPageState extends State<AuditFormPage> {
     return true;
   }
 
-  List<CriterionDto> _getMissingRequired(AuditManager manager, TemplateTreeDto template) {
+  List<CriterionDto> _getMissingRequired(
+    AuditManager manager,
+    TemplateTreeDto template,
+  ) {
     final missing = <CriterionDto>[];
     final globalRequired = _isConfirmRequired(template);
-    
+
     void checkGroup(GroupDto group) {
       for (final c in group.criteria) {
         bool isRequired = globalRequired;
@@ -182,7 +188,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
             } catch (_) {}
           }
         }
-        
+
         if (isRequired) {
           final a = manager.answers[c.id];
           if (a == null || (a.value == null && a.numericValue == null)) {
@@ -194,7 +200,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
         checkGroup(child);
       }
     }
-    
+
     for (final group in template.groups) {
       checkGroup(group);
     }
@@ -304,7 +310,9 @@ class _AuditFormPageState extends State<AuditFormPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${missingRequired.length} required criteria still need review'),
+            content: Text(
+              '${missingRequired.length} required criteria still need review',
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

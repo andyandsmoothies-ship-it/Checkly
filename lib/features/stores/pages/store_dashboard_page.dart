@@ -64,16 +64,22 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                             style: AppFonts.displayStyle(
                               fontSize: theme.textTheme.labelSmall?.fontSize,
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             '${(data?.avgScore ?? 0).toStringAsFixed(1)}%',
                             style: AppFonts.serifStyle(
-                              fontSize: theme.textTheme.displaySmall?.fontSize ?? 40,
+                              fontSize:
+                                  theme.textTheme.displaySmall?.fontSize ?? 40,
                               fontWeight: FontWeight.w700,
-                              color: scoreColor(data?.avgScore ?? 0, Theme.of(context)),
+                              color: scoreColor(
+                                data?.avgScore ?? 0,
+                                Theme.of(context),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -105,7 +111,9 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                       style: AppFonts.displayStyle(
                         fontSize: theme.textTheme.labelSmall?.fontSize,
                         fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                         letterSpacing: 3,
                       ),
                     ),
@@ -127,7 +135,9 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                             'No audits found for this store.',
                             style: AppFonts.displayStyle(
                               fontSize: theme.textTheme.bodyMedium?.fontSize,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
                           ),
                         ),
@@ -168,7 +178,9 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                               child: Text(
                                 '${score.toStringAsFixed(0)}%',
                                 style: AppFonts.serifStyle(
-                                  fontSize: theme.textTheme.labelSmall?.fontSize ?? 13,
+                                  fontSize:
+                                      theme.textTheme.labelSmall?.fontSize ??
+                                      13,
                                   fontWeight: FontWeight.w700,
                                   color: scoreColor(score, Theme.of(context)),
                                 ),
@@ -186,7 +198,9 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                               '${s.auditorName ?? 'Unknown'} • ${formatDate(s.createdAt)}',
                               style: AppFonts.displayStyle(
                                 fontSize: theme.textTheme.bodySmall?.fontSize,
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.5),
                               ),
                             ),
                           ),
@@ -233,7 +247,9 @@ class _MetricChip extends StatelessWidget {
           '$value $label',
           style: AppFonts.displayStyle(
             fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
       ],

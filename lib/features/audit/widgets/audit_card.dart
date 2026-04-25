@@ -12,7 +12,7 @@ class AuditCard extends StatelessWidget {
   final SubmissionDto submission;
   final VoidCallback? onStartAudit;
   final VoidCallback? onVoidAudit;
-  final VoidCallback? onPreviewAudit; 
+  final VoidCallback? onPreviewAudit;
 
   const AuditCard({
     super.key,
@@ -35,144 +35,148 @@ class AuditCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell( 
-        borderRadius: BorderRadius.circular(12), 
-        onTap: onPreviewAudit, 
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onPreviewAudit,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Row(
-          children: [
-            // Score circle or status icon
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isVoided
-                    ? theme.colorScheme.surfaceContainerHighest
-                    : isOverdue
-                    ? theme.colorScheme.error.withValues(alpha: 0.1)
-                    : isScheduled
-                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
-                    : isDraft
-                    ? AppTheme.warning.withValues(alpha: 0.1)
-                    : color.withValues(alpha: 0.1),
-              ),
-              child: Center(
-                child: isVoided
-                    ? Icon(
-                        Icons.block_flipped,
-                        size: 22,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      )
-                    : isOverdue
-                    ? Icon(
-                        Icons.warning_amber_rounded,
-                        size: 22,
-                        color: theme.colorScheme.error,
-                      )
-                    : isScheduled
-                    ? Icon(
-                        Icons.schedule,
-                        size: 22,
-                        color: theme.colorScheme.primary,
-                      )
-                    : isDraft
-                    ? Icon(Icons.edit_note, size: 22, color: AppTheme.warning)
-                    : FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          ScoreFormatter.format(
-                            scoringMode: submission.scoringMode,
-                            rawEarned: submission.rawEarnedPoints,
-                            rawMax: submission.rawMaxPoints,
-                            totalScore: submission.totalScore,
-                            isWeighted: submission.isWeighted,
-                          ),
-                          style: AppFonts.serifStyle(
-                              fontSize: Theme.of(context).textTheme.titleMedium?.fontSize ?? 16,
+            children: [
+              // Score circle or status icon
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isVoided
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : isOverdue
+                      ? theme.colorScheme.error.withValues(alpha: 0.1)
+                      : isScheduled
+                      ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                      : isDraft
+                      ? AppTheme.warning.withValues(alpha: 0.1)
+                      : color.withValues(alpha: 0.1),
+                ),
+                child: Center(
+                  child: isVoided
+                      ? Icon(
+                          Icons.block_flipped,
+                          size: 22,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        )
+                      : isOverdue
+                      ? Icon(
+                          Icons.warning_amber_rounded,
+                          size: 22,
+                          color: theme.colorScheme.error,
+                        )
+                      : isScheduled
+                      ? Icon(
+                          Icons.schedule,
+                          size: 22,
+                          color: theme.colorScheme.primary,
+                        )
+                      : isDraft
+                      ? Icon(Icons.edit_note, size: 22, color: AppTheme.warning)
+                      : FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            ScoreFormatter.format(
+                              scoringMode: submission.scoringMode,
+                              rawEarned: submission.rawEarnedPoints,
+                              rawMax: submission.rawMaxPoints,
+                              totalScore: submission.totalScore,
+                              isWeighted: submission.isWeighted,
+                            ),
+                            style: AppFonts.serifStyle(
+                              fontSize:
+                                  Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.fontSize ??
+                                  16,
                               color: color,
                             ),
+                          ),
                         ),
-                      ),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
 
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    submission.templateTitle ?? 'Audit',
-                    style: theme.textTheme.titleSmall?.copyWith(
+              // Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      submission.templateTitle ?? 'Audit',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      isScheduled || isOverdue
+                          ? 'Scheduled at ${_formatDateTime(submission.scheduledAt ?? submission.createdAt)}'
+                          : isDraft
+                          ? 'Started at ${_formatDateTime(submission.createdAt)}'
+                          : 'Completed at ${_formatDateTime(submission.completedAt ?? submission.createdAt)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: isOverdue
+                            ? theme.colorScheme.error
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (submission.templateType != null) ...[
+                      const SizedBox(height: 4),
+                      _categoryBadge(submission.templateType!, theme),
+                    ],
+                  ],
+                ),
+              ),
+
+              // Action: Start / Resume button OR status badge
+              if ((isScheduled || isDraft) && onStartAudit != null) ...[
+                FilledButton(
+                  onPressed: onStartAudit,
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    minimumSize: const Size(64, 44),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    isDraft ? 'Resume' : 'Start',
+                    style: AppFonts.displayStyle(
+                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                       fontWeight: FontWeight.w600,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    isScheduled || isOverdue
-                        ? 'Scheduled at ${_formatDateTime(submission.scheduledAt ?? submission.createdAt)}'
-                        : isDraft
-                            ? 'Started at ${_formatDateTime(submission.createdAt)}'
-                            : 'Completed at ${_formatDateTime(submission.completedAt ?? submission.createdAt)}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: isOverdue
-                          ? theme.colorScheme.error
-                          : theme.colorScheme.onSurfaceVariant,
+                ),
+                // Admin-only void button
+                if (onVoidAudit != null) ...[
+                  const SizedBox(width: 4),
+                  IconButton(
+                    onPressed: onVoidAudit,
+                    tooltip: 'Void Audit',
+                    icon: Icon(
+                      Icons.block,
+                      size: 18,
+                      color: theme.colorScheme.error,
                     ),
                   ),
-                  if (submission.templateType != null) ...[
-                    const SizedBox(height: 4),
-                    _categoryBadge(submission.templateType!, theme),
-                  ],
                 ],
-              ),
-            ),
-
-            // Action: Start / Resume button OR status badge
-            if ((isScheduled || isDraft) && onStartAudit != null) ...[
-              FilledButton(
-                onPressed: onStartAudit,
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  minimumSize: const Size(64, 44),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  isDraft ? 'Resume' : 'Start',
-                  style: AppFonts.displayStyle(
-                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              // Admin-only void button
-              if (onVoidAudit != null) ...[
-                const SizedBox(width: 4),
-                IconButton(
-                  onPressed: onVoidAudit,
-                  tooltip: 'Void Audit',
-                  icon: Icon(
-                    Icons.block,
-                    size: 18,
-                    color: theme.colorScheme.error,
-                  ),
-                ),
+              ] else ...[
+                _statusBadge(theme),
               ],
-            ] else ...[
-              _statusBadge(theme),
             ],
-          ],
+          ),
         ),
-        ), 
-      ), 
+      ),
     );
   }
 
@@ -235,7 +239,8 @@ class AuditCard extends StatelessWidget {
     );
   }
 
-  String _formatDateTime(DateTime date) => DateFormat('dd MMM yyyy HH:mm:ss').format(date.toLocal());
+  String _formatDateTime(DateTime date) =>
+      DateFormat('dd MMM yyyy HH:mm:ss').format(date.toLocal());
 
   Widget _categoryBadge(String type, ThemeData theme) {
     return Container(

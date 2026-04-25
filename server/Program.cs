@@ -21,6 +21,7 @@ using Checkly.Api.Common.Services;
 using Checkly.Api.Common.Exceptions;
 using Checkly.Api.Common.Storage;
 using Checkly.Api.Features.SystemInfo;
+using Checkly.Api.Features.Users;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,6 +31,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
+using Polly.Retry;
 using Serilog;
 
 // Stage 1: Bootstrap logger — captures startup errors before DI.
@@ -239,6 +242,33 @@ try
     builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
     builder.Services.AddHostedService<ReminderService>();
 
+    builder.Services.AddResiliencePipeline("fcm", static pipeline =>
+    {
+        pipeline
+            .AddRetry(new RetryStrategyOptions
+            {
+                MaxRetryAttempts = 3,
+                BackoffType = DelayBackoffType.Exponential,
+                UseJitter = true,
+                Delay = TimeSpan.FromSeconds(2),
+                ShouldHandle = new PredicateBuilder()
+                    .Handle<Exception>(ex =>
+                        ex is not FirebaseAdmin.Messaging.FirebaseMessagingException fme
+                        || fme.MessagingErrorCode != FirebaseAdmin.Messaging.MessagingErrorCode.Unregistered)
+            })
+            .AddTimeout(TimeSpan.FromSeconds(10));
+    });
+
+    builder.Services.AddScoped<IFcmDispatchService, FcmDispatchService>();
+    try
+    {
+        FirebaseAdmin.FirebaseApp.Create();
+    }
+    catch (Exception ex)
+    {
+        Log.Warning(ex, "FirebaseApp.Create() failed. FCM push will be disabled.");
+    }
+
     // --- SignalR ---
     builder.Services.AddSignalR();
 
@@ -352,6 +382,7 @@ try
     app.MapAreaEndpoints();
     app.MapUserGroupEndpoints();
     app.MapSystemEndpoints();
+    app.MapUserEndpoints();
 
     app.Run();
 }

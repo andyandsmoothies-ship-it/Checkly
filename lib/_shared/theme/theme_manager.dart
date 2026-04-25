@@ -11,9 +11,11 @@ class ThemeManager extends ChangeNotifier {
   final FlutterSecureStorage _storage;
 
   ThemeManager({FlutterSecureStorage? storage})
-    : _storage = storage ?? const FlutterSecureStorage(
-        aOptions: AndroidOptions(migrateOnAlgorithmChange: true),
-      );
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(migrateOnAlgorithmChange: true),
+          );
 
   ThemeMode _themeMode = ThemeMode.light;
   ThemeMode get themeMode => _themeMode;

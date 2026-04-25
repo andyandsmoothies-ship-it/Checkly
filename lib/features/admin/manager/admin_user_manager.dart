@@ -110,8 +110,7 @@ class AdminUserManager extends ChangeNotifier {
     // Optimistic in-memory update — avoids _loadData() round-trip.
     final idx = users.indexWhere((u) => u['id'] == userId);
     if (idx != -1) {
-      users[idx] = Map<String, dynamic>.from(users[idx])
-        ..['isLocked'] = ban;
+      users[idx] = Map<String, dynamic>.from(users[idx])..['isLocked'] = ban;
       notifyListeners();
     }
   }

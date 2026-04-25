@@ -10,7 +10,11 @@ class LevelBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final (Color bg, Color fg, IconData icon) = switch (level) {
-      'error' => (theme.colorScheme.errorContainer, theme.colorScheme.error, Icons.error),
+      'error' => (
+        theme.colorScheme.errorContainer,
+        theme.colorScheme.error,
+        Icons.error,
+      ),
       'warn' => (
         AppTheme.warning.withValues(alpha: 0.15),
         AppTheme.warning,

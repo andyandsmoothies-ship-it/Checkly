@@ -37,7 +37,9 @@ class StoreGroup extends StatelessWidget {
               style: AppFonts.displayStyle(
                 fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
                 fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.65),
                 letterSpacing: 3,
               ),
             ),
@@ -62,14 +64,16 @@ class StoreGroup extends StatelessWidget {
             .map(
               (s) => AuditCard(
                 submission: s,
-                onStartAudit: (s.status == 'scheduled' && !s.isOverdue) ||
+                onStartAudit:
+                    (s.status == 'scheduled' && !s.isOverdue) ||
                         s.status == 'draft'
                     ? () => onStartAudit?.call(s)
                     : null,
                 onVoidAudit: (s.status == 'draft' || s.status == 'scheduled')
                     ? () => onVoidAudit?.call(s)
                     : null,
-                onPreviewAudit: (s.status == 'completed' || s.status == 'voided')
+                onPreviewAudit:
+                    (s.status == 'completed' || s.status == 'voided')
                     ? () => onPreviewAudit?.call(s)
                     : null,
               ),

@@ -7,12 +7,12 @@ import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
-import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
+import 'package:checkly/_shared/database/app_database.dart'
+    hide PendingSubmission;
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'connectivity_service.dart';
 import 'sync_state.dart';
 import 'sync_interfaces.dart';
-
 
 // ============================================================
 // SyncEngine — orchestrator
@@ -61,7 +61,9 @@ class SyncEngine {
     required GlobalRiskDao globalRiskDao,
     required SubmissionRiskOutboxDao submissionRiskOutboxDao,
     // ignore: avoid_unused_constructor_parameters
-    @Deprecated('No-op: SyncEngine uses OutboxDao directly. Pass outboxDao instead.')
+    @Deprecated(
+      'No-op: SyncEngine uses OutboxDao directly. Pass outboxDao instead.',
+    )
     Outbox? outbox,
   }) : _connectivity = connectivity,
        _api = api,
@@ -118,14 +120,16 @@ class SyncEngine {
       // --- Pull phase: Global Risks ---
       final globalRisks = await _api.pullGlobalRisks(lastSyncTimestamp);
       for (final json in globalRisks) {
-        await _globalRiskDao.upsertRisk(CachedGlobalRisksCompanion.insert(
-          id: json['id'] as String,
-          label: json['label'] as String,
-          description: Value(json['description'] as String?),
-          isActive: Value(json['isActive'] as bool? ?? true),
-          createdAt: DateTime.parse(json['createdAt'] as String),
-          updatedAt: DateTime.parse(json['updatedAt'] as String),
-        ));
+        await _globalRiskDao.upsertRisk(
+          CachedGlobalRisksCompanion.insert(
+            id: json['id'] as String,
+            label: json['label'] as String,
+            description: Value(json['description'] as String?),
+            isActive: Value(json['isActive'] as bool? ?? true),
+            createdAt: DateTime.parse(json['createdAt'] as String),
+            updatedAt: DateTime.parse(json['updatedAt'] as String),
+          ),
+        );
       }
 
       // --- Push phase: build payload from normalized DAO tables (FIFO) ---
@@ -148,7 +152,9 @@ class SyncEngine {
           // Since risk outbox drains AFTER submission outbox, the risks are not on
           // the server yet. We must signal hasGlobalRisk=true so CreateSubmission.cs
           // uses 0 as the expected serverScore, matching the Flutter-calculated clientScore.
-          final hasGlobalRisk = await _submissionRiskOutboxDao.hasPendingRisks(dbRow.id);
+          final hasGlobalRisk = await _submissionRiskOutboxDao.hasPendingRisks(
+            dbRow.id,
+          );
 
           // Build the JSON payload the API expects
           final payload = jsonEncode({
@@ -179,8 +185,10 @@ class SyncEngine {
           await _outboxDao.removeSubmission(dbRow.id);
         } catch (e) {
           // Hard-exhaust on malformed payload (e.g. 400 Bad Request)
-          final isBadRequest = e.toString().contains('400') || e.toString().contains('ClientFormatError');
-          
+          final isBadRequest =
+              e.toString().contains('400') ||
+              e.toString().contains('ClientFormatError');
+
           if (isBadRequest) {
             await _outboxDao.updateSyncStatus(
               dbRow.id,
@@ -194,7 +202,8 @@ class SyncEngine {
           // A 403 means the user's role has been revoked — retrying will never
           // succeed and causes the battery drain loop (PM Safety Mandate, Slice 5).
           // Use `continue` (not `return`) to keep processing remaining outbox records.
-          final isForbidden = e.toString().contains('403') ||
+          final isForbidden =
+              e.toString().contains('403') ||
               e.toString().toLowerCase().contains('forbidden');
 
           if (isForbidden) {
@@ -253,14 +262,16 @@ class SyncEngine {
             'evidenceNote': entry.evidenceNote,
           });
           await _actionPlanOutboxDao.remove(entry.id);
+        } on ActionPlanAlreadyClosedException {
+          // Terminal-state conflict: the local edit is stale.
+          // Discard the payload safely — do not mark error, do not block the queue.
+          await _actionPlanOutboxDao.markStaleConflict(entry.id);
         } catch (e) {
-          await _actionPlanOutboxDao.markExhausted(
-            entry.id,
-            e.toString(),
-          );
+          await _actionPlanOutboxDao.markExhausted(entry.id, e.toString());
           _state = SyncState.error;
           return;
         }
+
       }
 
       // --- SubmissionRisk outbox drain phase ---
@@ -271,10 +282,12 @@ class SyncEngine {
           return;
         }
         try {
-          await _api.pushSubmissionRisk(PendingSubmissionRisk(
-            submissionId: row.submissionId,
-            globalRiskId: row.globalRiskId,
-          ));
+          await _api.pushSubmissionRisk(
+            PendingSubmissionRisk(
+              submissionId: row.submissionId,
+              globalRiskId: row.globalRiskId,
+            ),
+          );
         } catch (e) {
           // 409 Conflict = already triggered on server. Treat as success → drain.
           if (!e.toString().contains('409')) {
@@ -308,8 +321,10 @@ class SyncEngine {
       'photoUrl': a.photoUrl,
       'isRepeatedError': a.isRepeatedError,
       'repeatedFaults': a.repeatedFaults,
-      'isCcp': a.isCcp,   // Fix: was silently dropped — server override merge requires this
-      'isRisk': a.isRisk, // Fix: was silently dropped — RISK flag triggers total=0 on server
+      'isCcp': a
+          .isCcp, // Fix: was silently dropped — server override merge requires this
+      'isRisk': a
+          .isRisk, // Fix: was silently dropped — RISK flag triggers total=0 on server
     };
   }
 }

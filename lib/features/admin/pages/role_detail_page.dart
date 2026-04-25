@@ -66,7 +66,9 @@ class _RoleDetailPageState extends State<RoleDetailPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('We hit a snag processing your request. Please check your internet connection and try again.'),
+            content: Text(
+              'We hit a snag processing your request. Please check your internet connection and try again.',
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

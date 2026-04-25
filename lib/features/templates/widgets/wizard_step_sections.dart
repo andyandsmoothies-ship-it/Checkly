@@ -12,9 +12,10 @@ class WizardStepSections extends StatefulWidget {
   final List<EditableGroup> sections;
   final String scoringMode;
   final int currentSectionIndex;
-  final bool ccpEnabled;         // gates CCP toggle in criterion drawer
-  final bool riskEnabled;        // gates Risk toggle in criterion drawer
-  final bool confirmRequired;    // when true, locks Required toggle ON in criterion drawer
+  final bool ccpEnabled; // gates CCP toggle in criterion drawer
+  final bool riskEnabled; // gates Risk toggle in criterion drawer
+  final bool
+  confirmRequired; // when true, locks Required toggle ON in criterion drawer
   final VoidCallback onChanged;
   final ValueChanged<int> onSectionChanged;
 
@@ -76,7 +77,10 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.fromLTRB(
-          24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 24,
+          24,
+          24,
+          24,
+          MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -84,9 +88,9 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
           children: [
             Text(
               'Batch Add Criteria',
-              style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                ctx,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
@@ -101,7 +105,8 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
               maxLines: 8,
               autofocus: true,
               decoration: const InputDecoration(
-                hintText: 'Handwashing station available\nFloor cleanliness\nWaste disposal...',
+                hintText:
+                    'Handwashing station available\nFloor cleanliness\nWaste disposal...',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -147,7 +152,9 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
 
   /// Grammar-correct count label: '1 criterion' / 'N criteria' with sub-section variant.
   String _buildCountLabel(EditableGroup section, bool hasSubSections) {
-    final c = hasSubSections ? section.countCriteria() : section.criteria.length;
+    final c = hasSubSections
+        ? section.countCriteria()
+        : section.criteria.length;
     final cLabel = c == 1 ? 'criterion' : 'criteria';
     if (hasSubSections) {
       final s = section.subSections.length;
@@ -162,17 +169,21 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
   /// accumulation) to avoid noise for experienced users.
   Widget _buildModeBanner(BuildContext context) {
     final theme = Theme.of(context);
-    final (IconData icon, String text, Color color) = switch (widget.scoringMode) {
+    final (
+      IconData icon,
+      String text,
+      Color color,
+    ) = switch (widget.scoringMode) {
       'survey' => (
-          Icons.forum_outlined,
-          'Survey Mode — Sub-sections and scoring logic are disabled. Add questions to collect responses.',
-          theme.colorScheme.secondary,
-        ),
+        Icons.forum_outlined,
+        'Survey Mode — Sub-sections and scoring logic are disabled. Add questions to collect responses.',
+        theme.colorScheme.secondary,
+      ),
       'checklist' => (
-          Icons.checklist_rounded,
-          'Checklist Mode — Keep it flat with Pass / Fail or choice inputs. Advanced math is disabled.',
-          theme.colorScheme.primary,
-        ),
+        Icons.checklist_rounded,
+        'Checklist Mode — Keep it flat with Pass / Fail or choice inputs. Advanced math is disabled.',
+        theme.colorScheme.primary,
+      ),
       _ => (Icons.info_outline, '', Colors.transparent),
     };
 
@@ -296,7 +307,6 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
               ),
               const SizedBox(height: 24),
 
-
               // Change 4: Delegate to SectionEditor(depth: 0) with isWizardMode:true
               // so it renders a clean Column body without the duplicate
               // title / badge / delete header (H8, H2, H3 UX fix).
@@ -317,10 +327,12 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 // BL-DEFAULT: override SectionEditor's 'pass_fail' with scoring-mode-aware default
                 onAddCriterion: (_) {
                   setState(() {
-                    section.criteria.add(EditableCriterion(
-                      inputType: _defaultInputType,
-                      points: '10',
-                    ));
+                    section.criteria.add(
+                      EditableCriterion(
+                        inputType: _defaultInputType,
+                        points: '10',
+                      ),
+                    );
                   });
                   widget.onChanged();
                 },
@@ -360,43 +372,56 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 const Divider(height: 32),
                 Text(
                   'Suggested criteria:',
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Builder(
                   builder: (ctx) {
-                    final suggestions = WizardSuggestions.getCriteriaSuggestions(
-                        widget.scoringMode, section.titleCtrl.text);
+                    final suggestions =
+                        WizardSuggestions.getCriteriaSuggestions(
+                          widget.scoringMode,
+                          section.titleCtrl.text,
+                        );
                     return Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: suggestions.map((sc) {
-                        final alreadyAdded = section.criteria
-                            .any((c) => c.labelCtrl.text == sc.label);
+                        final alreadyAdded = section.criteria.any(
+                          (c) => c.labelCtrl.text == sc.label,
+                        );
                         return ActionChip(
                           label: Text(sc.label),
                           avatar: const Icon(Icons.add, size: 16),
-                          onPressed: alreadyAdded ? null : () {
-                            setState(() {
-                              final c = EditableCriterion(
-                                  inputType: sc.inputType, points: sc.points);
-                              c.labelCtrl.text = sc.label;
-                              // Q1: pre-populate two options so the V6 choice guard
-                              // doesn't block save for survey single_choice chips.
-                              if (sc.inputType == 'single_choice' ||
-                                  sc.inputType == 'multi_choice') {
-                                c.choiceOptions = ['Yes', 'No'];
-                              }
-                              section.criteria.add(c);
-                            });
-                            widget.onChanged();
-                          },
+                          onPressed: alreadyAdded
+                              ? null
+                              : () {
+                                  setState(() {
+                                    final c = EditableCriterion(
+                                      inputType: sc.inputType,
+                                      points: sc.points,
+                                    );
+                                    c.labelCtrl.text = sc.label;
+                                    // Q1: pre-populate two options so the V6 choice guard
+                                    // doesn't block save for survey single_choice chips.
+                                    if (sc.inputType == 'single_choice' ||
+                                        sc.inputType == 'multi_choice') {
+                                      c.choiceOptions = ['Yes', 'No'];
+                                    }
+                                    section.criteria.add(c);
+                                  });
+                                  widget.onChanged();
+                                },
                           backgroundColor: alreadyAdded
-                              ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                              ? theme.colorScheme.surfaceContainerHighest
+                                    .withValues(alpha: 0.5)
                               : theme.colorScheme.secondaryContainer,
                           labelStyle: TextStyle(
                             color: alreadyAdded
-                                ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
+                                ? theme.colorScheme.onSurfaceVariant.withValues(
+                                    alpha: 0.5,
+                                  )
                                 : theme.colorScheme.onSecondaryContainer,
                           ),
                         );

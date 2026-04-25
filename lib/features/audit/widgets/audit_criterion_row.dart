@@ -50,7 +50,9 @@ class AuditCriterionRow extends StatelessWidget {
             .length;
         if (count > 0) {
           return AuditStatusBadge(
-              label: '$count selected', color: theme.colorScheme.primary);
+            label: '$count selected',
+            color: theme.colorScheme.primary,
+          );
         }
       }
     } else if (input == 'pass_fail') {
@@ -91,7 +93,9 @@ class AuditCriterionRow extends StatelessWidget {
         answer?.value != null || (answer?.numericValue != null);
 
     bool isRequired = confirmRequired;
-    if (!isRequired && criterion.metadata != null && criterion.metadata!.isNotEmpty) {
+    if (!isRequired &&
+        criterion.metadata != null &&
+        criterion.metadata!.isNotEmpty) {
       try {
         final meta = json.decode(criterion.metadata!) as Map<String, dynamic>;
         isRequired = meta['isRequired'] == true;
@@ -157,14 +161,15 @@ class AuditCriterionRow extends StatelessWidget {
               children: [
                 if (_buildPrimaryBadge(theme, answer) != null)
                   _buildPrimaryBadge(theme, answer)!,
-                  
+
                 if (faults > 0) ...[
                   if (criterion.inputType == 'numeric')
                     AuditStatusBadge(
                       label: 'F:$faults',
                       color: theme.colorScheme.error,
                     ),
-                  if (criterion.inputType == 'scale' && manager.scoringMode == ScoringMode.accumulation)
+                  if (criterion.inputType == 'scale' &&
+                      manager.scoringMode == ScoringMode.accumulation)
                     AuditStatusBadge(
                       label: '+$faults pts',
                       color: AppTheme.success,
@@ -187,7 +192,11 @@ class AuditCriterionRow extends StatelessWidget {
                 ],
 
                 if (hasNote)
-                  Icon(Icons.chat_bubble_outline, size: 16, color: theme.colorScheme.primary),
+                  Icon(
+                    Icons.chat_bubble_outline,
+                    size: 16,
+                    color: theme.colorScheme.primary,
+                  ),
                 if (hasPhoto)
                   Icon(
                     Icons.camera_alt,

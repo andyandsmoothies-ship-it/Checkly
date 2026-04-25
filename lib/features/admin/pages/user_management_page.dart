@@ -212,9 +212,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text(
-                  'Transfer failed. Please try again.',
-                ),
+                content: const Text('Transfer failed. Please try again.'),
                 backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
@@ -324,15 +322,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
       builder: (_) => UserCreateSheet(
         areas: _manager.areas,
         loadStores: _manager.loadStores,
-        onCreate: ({
-          required email,
-          required password,
-          required fullName,
-          required role,
-          storeId,
-          areaId,
-        }) =>
-            _manager.createUser(
+        onCreate:
+            ({
+              required email,
+              required password,
+              required fullName,
+              required role,
+              storeId,
+              areaId,
+            }) => _manager.createUser(
               email: email,
               password: password,
               fullName: fullName,
@@ -392,7 +390,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
               // Role tabs
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 child: Row(
                   children: _roleTabs.map((tab) {
                     final (role, label) = tab;

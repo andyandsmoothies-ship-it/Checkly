@@ -137,7 +137,7 @@ class NotificationManager extends ChangeNotifier {
   // ---------- Delta refresh (app resume) ----------
 
   /// Fetch only notifications since last sync — called on app resume.
-  Future<void> refreshDelta() async {
+  Future<List<NotificationDto>> refreshDelta() async {
     try {
       final fresh = await _api.getNotifications(since: _lastSyncAt);
       if (fresh.isNotEmpty) {
@@ -148,9 +148,11 @@ class NotificationManager extends ChangeNotifier {
         notifications.value = updated;
         _unreadCount = updated.where((n) => !n.isRead).length;
         notifyListeners();
+        return fresh;
       }
+      return [];
     } catch (_) {
-      // Offline — skip
+      rethrow;
     }
   }
 }

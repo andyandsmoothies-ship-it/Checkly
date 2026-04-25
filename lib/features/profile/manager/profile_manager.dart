@@ -13,8 +13,7 @@ final _di = GetIt.instance;
 /// into a proper Manager layer. The UI observes [isLoading], [error],
 /// and [items].
 class ProfileManager extends ChangeNotifier {
-  ProfileManager({DatabaseService? db})
-    : _db = db ?? _di<DatabaseService>();
+  ProfileManager({DatabaseService? db}) : _db = db ?? _di<DatabaseService>();
 
   final DatabaseService _db;
 

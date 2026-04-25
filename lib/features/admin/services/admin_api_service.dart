@@ -185,18 +185,19 @@ class AdminApiService {
   }
 
   /// GET /admin/capabilities/catalog — returns both capabilities and metadata.
-  Future<(List<String>, Map<String, CapabilityMeta>)> getCapabilityCatalogFull() async {
+  Future<(List<String>, Map<String, CapabilityMeta>)>
+  getCapabilityCatalogFull() async {
     final response = await _dio.get('/admin/capabilities/catalog');
     final data = response.data as Map<String, dynamic>;
-    
+
     final list = data['capabilities'] as List<dynamic>;
     final caps = list.map((e) => e as String).toList();
-    
+
     final metaRaw = data['capabilityMetadata'] as Map<String, dynamic>? ?? {};
     final meta = metaRaw.map(
       (k, v) => MapEntry(k, CapabilityMeta.fromJson(v as Map<String, dynamic>)),
     );
-    
+
     return (caps, meta);
   }
 
@@ -225,7 +226,7 @@ class AdminApiService {
     final allRisks = <Map<String, dynamic>>[];
     int page = 1;
     const pageSize = 100;
-    
+
     while (true) {
       final response = await _dio.get(
         '/global-risks',
@@ -234,11 +235,11 @@ class AdminApiService {
       final data = response.data as Map<String, dynamic>;
       final list = data['items'] as List<dynamic>;
       allRisks.addAll(list.cast<Map<String, dynamic>>());
-      
+
       if (list.length < pageSize) break;
       page++;
     }
-    
+
     return allRisks;
   }
 
@@ -248,7 +249,9 @@ class AdminApiService {
     String? description,
   }) async {
     final body = <String, dynamic>{'label': label};
-    if (description != null && description.isNotEmpty) body['description'] = description;
+    if (description != null && description.isNotEmpty) {
+      body['description'] = description;
+    }
     final response = await _dio.post('/global-risks', data: body);
     return response.data as Map<String, dynamic>;
   }

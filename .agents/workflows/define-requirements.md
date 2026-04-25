@@ -27,7 +27,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 > **@@SCAN**: (1) Are Use Cases sliced? (2) Do slices have plain-English Test Cases?
 
 ## Phase 3: The Fit Check
-- [ ] **Apply Shaping**: Propose 1-3 high-level UX/Feature "Shapes" (mechanisms, not code). MANDATORY: To prevent Cognitive Debt, you MUST include a "Dumb Shape" (the absolute simplest flat/procedural solution) alongside any complex patterns.
+- [ ] **Apply Shaping**: Propose 1-3 high-level UX/Feature "Shapes" (mechanisms, not code). MANDATORY: To prevent Cognitive Debt, you MUST include a "Dumb Shape" (the absolute simplest flat/procedural solution) alongside any complex patterns. **MANDATORY Guardrail**: Do not select deep technical architectures (e.g., Database types, specific Push protocols) at this stage. Keep shapes strictly focused on Business Logic, UX, and Process flows.
 - [ ] **Fit Matrix**: Create a Markdown table comparing the proposed Shapes against the Requirements.
 - [ ] **Identify Unknowns**: Flag any unresolved business logic with ⚠️.
 

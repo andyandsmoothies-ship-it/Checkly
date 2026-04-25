@@ -253,7 +253,6 @@ class SubmissionDto {
   );
 }
 
-
 /// Detailed submission with answers — GET /submissions/{id}.
 class SubmissionDetailDto {
   final String id;
