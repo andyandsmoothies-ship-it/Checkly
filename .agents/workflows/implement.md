@@ -70,7 +70,7 @@ Review from 6 angles:
 
 | Step | Execution Contract |
 |---|---|
-| **Test Analytics**| Bypassing terminal limits: output tests to `results.json` and `view_file` them. |
+| **Test Analytics**| Bypassing terminal limits: output tests to `.agents/tmp/results.json` and `view_file` them. |
 | **Diff Check** | `git diff --name-only`. Revert unplanned. |
 | **Handoff Trap** | IF Context Limit Approaching: Create `handoff.md` -> YIELD. |
 

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +8,7 @@ import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
 import 'audit_criterion_sheet.dart';
 import '../../../_shared/services/scoring_models.dart';
+import '../../../_shared/widgets/app_network_image.dart';
 
 // ============================================================
 // Criterion Row — compact list item (Bottom Sheet pattern)
@@ -330,8 +330,8 @@ class AuditPhotoSection extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.file(
-                  File(answer!.photoUrl!),
+                child: AppNetworkImage(
+                  url: answer!.photoUrl!,
                   height: 140,
                   width: double.infinity,
                   fit: BoxFit.cover,

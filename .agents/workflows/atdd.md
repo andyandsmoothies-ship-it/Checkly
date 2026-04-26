@@ -69,7 +69,7 @@ Workflow: /atdd | Track: [B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Pre-Flight** | Run Infrastructure Checklist from `atdd-quality-gates` Gate 1. |
-| **Classification**| Run all tests natively exporting to files (e.g., `.NET`: `scripts\CollectTestResults.ps1`, `Flutter`: `flutter test --machine > out.json`). Read the file and classify failures -> Table `Test Name | Status | Type | Error Summary`. |
+| **Classification**| Run all tests natively exporting to files (e.g., `.NET`: `scripts\CollectTestResults.ps1`, `Flutter`: `flutter test --machine > .agents/tmp/out.json`). Read the file and classify failures -> Table `Test Name | Status | Type | Error Summary`. |
 | **Gate Verdict** | IF (All == Business) -> Proceed to 2d. IF (Any == Infra/Ambiguous) -> Fix -> Re-run. **WARNING:** Watch out for the "False RED" Trap (e.g., test fails with `400 BadRequest` because the test data payload is structurally invalid, rather than failing at the final business assertion). If caught in a False RED, fix the test payload to bypass initial validation and re-run. |
 
 ### 2d/2e. Deferred ACs & Saboteur Protocol

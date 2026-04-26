@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +17,7 @@ import '../widgets/section_header.dart';
 import '../widgets/stale_conflict_banner.dart';
 import '../widgets/submit_evidence_sheet.dart';
 import '../../../_shared/database/app_database.dart';
+import '../../../_shared/widgets/app_network_image.dart';
 
 final _di = GetIt.instance;
 
@@ -441,28 +440,19 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                         const SizedBox(height: 12),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: !plan.evidencePhotoUrl!.startsWith('http')
-                              ? Image.file(
-                                  File(plan.evidencePhotoUrl!),
-                                  height: 200,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.network(
-                                  plan.evidencePhotoUrl!,
-                                  height: 200,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, e, s) => Container(
-                                    height: 100,
-                                    color: theme
-                                        .colorScheme
-                                        .surfaceContainerHighest,
-                                    child: const Center(
-                                      child: Icon(Icons.broken_image),
-                                    ),
-                                  ),
-                                ),
+                          child: AppNetworkImage(
+                            url: plan.evidencePhotoUrl!,
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, e, s) => Container(
+                              height: 100,
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: const Center(
+                                child: Icon(Icons.broken_image),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ],

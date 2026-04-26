@@ -69,8 +69,8 @@ description: The QA Test Generation Workflow (Red Phase). Runs before Builder im
 
 - **Action**: Run tests outputting to machine-readable files to bypass terminal truncation, then `view_file` the result:
   - `.NET`: `powershell -File scripts\CollectTestResults.ps1` (or standard `dotnet test`)
-  - `Flutter`: `flutter test --machine > test_results.json`
-  - `Node`: `npm test -- --json > test_results.json`
+  - `Flutter`: `flutter test --machine > .agents/tmp/test_results.json`
+  - `Node`: `npm test -- --json > .agents/tmp/test_results.json`
 - **Gate Verdict**: Look at the parsed results instead of truncated terminal output.
   - ✅ **Valid Red**: The test fails because `MethodNotFound`, `NotImplementedException`, `Expected 200 but got 404`, or fails exactly at the expected business assertion. -> **Proceed to Phase 4**.
   - ❌ **False RED (Validation Trap)**: The test fails early because the server immediately rejects the request (e.g., `400 BadRequest`, `422 Unprocessable Entity`) due to structurally invalid test data, missing query parameters, or bad setup. -> **Fix the test payload to bypass initial validation and re-run immediately.**

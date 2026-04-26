@@ -16,3 +16,7 @@
 ## SyncEngine (sync_engine.dart)
 
 - **Gotcha 25: `buildAnswerPayload()` MUST include ALL `PendingAnswer` columns.** The method manually projects DB row fields into the JSON map. Any new column added to `PendingAnswers` in `tables.dart` MUST also be added to `buildAnswerPayload()` in the SAME commit — treat this as Step 7 of the 6-step DTO flow. Silent omissions cause server-side overrides to receive `false`/`null` defaults, triggering score mismatches and 400 errors on offline-synced submissions.
+
+## ActionPlanApiAdapter (service_adapters.dart)
+
+- **Gotcha 26: Server photo URLs are relative, not absolute.** `UploadPhoto.cs` returns `/api/photos/{id}/{file}` — a relative path. `ActionPlanApiAdapter.uploadPhoto()` normalizes this to an absolute URL using `_dio.options.baseUrl` before returning. Do NOT add `startsWith('http')` guards in UI widgets for `evidencePhotoUrl`. Always render with `Image.network()` — the adapter contract guarantees the URL is absolute. Exception: the **offline optimistic DTO** sets `evidencePhotoUrl = photoPath` (a local device path). The UI `!startsWith('http')` check is still correct for that case because local paths do not start with `/api/`.
