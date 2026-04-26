@@ -188,6 +188,17 @@ final appRouter = GoRouter(
     GoRoute(path: '/audits', redirect: (_, _) => '/activity'),
     GoRoute(path: '/actions', redirect: (_, _) => '/plans'),
 
+    // Notification Deep Link redirects: backend ActionUrls → flutter routes
+    GoRoute(path: '/action-plans', redirect: (_, _) => '/plans'),
+    GoRoute(
+      path: '/action-plans/:id',
+      redirect: (context, state) => '/plans/${state.pathParameters['id']}',
+    ),
+    GoRoute(
+      path: '/submissions/:id',
+      redirect: (context, state) => '/activity',
+    ),
+
     // ---------- 6C: Analytics + Store Dashboard + Template Builder ----------
     GoRoute(
       path: '/analytics',

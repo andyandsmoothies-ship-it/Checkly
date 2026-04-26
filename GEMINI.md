@@ -181,6 +181,9 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
   - **Fix:** Capture `GoRouter.of(context)`, go to `/shell-root`, then microtask `push('/target')`.
 - **Gotcha 17: Offline-First Distributed Sync Requires Full-Stack Verification**
   - **Fix:** ALWAYS verify the backend API endpoints explicitly support the sequence inversion. Do not assume the backend handles out-of-order data associations automatically. Verify route signatures (segment vs query) and DTO payload mutability before approving an architectural plan.
+- **Gotcha 18: Notification & Deep-Link Route Parity**
+  - **Problem:** The backend generates `ActionUrl` strings (e.g., `/action-plans/{id}`) that drift from the Flutter `app_router.dart` configurations (e.g., `/plans/:id`), causing silent `GoException` crashes when tapped in the inbox.
+  - **Fix:** You are forbidden from hardcoding naked deep-link strings blindly. Whenever generating a cross-boundary URL on the server, you MUST run a `grep_search` on `app_router.dart` to verify the exact route exists, or add a `redirect` mapping to the router immediately.
 
 ---
 
