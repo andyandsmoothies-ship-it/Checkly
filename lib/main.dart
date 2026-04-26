@@ -24,7 +24,9 @@ void main() async {
   // Errors are swallowed — must never crash startup.
   try {
     await GetIt.instance<NotificationSyncManager>().init();
-  } catch (_) {}
+  } catch (e, s) {
+    debugPrint('NotificationSyncManager init failed: $e\n$s');
+  }
 
   // Load persisted theme preference
   await GetIt.instance<ThemeManager>().init();

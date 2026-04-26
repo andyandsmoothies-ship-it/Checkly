@@ -123,7 +123,7 @@ public static class GetAnalytics
         var sixMonthsAgo = DateTimeOffset.UtcNow.AddMonths(-6);
         var trendRaw = await query
             .Where(s => s.CreatedAt >= sixMonthsAgo && s.TotalScore.HasValue)
-            .GroupBy(s => new { Year = s.CreatedAt.Year, Month = s.CreatedAt.Month })
+            .GroupBy(s => new { s.CreatedAt.Year, s.CreatedAt.Month })
             .Select(g => new
             {
                 g.Key.Year,

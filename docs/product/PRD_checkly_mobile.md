@@ -225,7 +225,9 @@ server/
 [Submit Audit] --> [Write to SQLite] --> [Enqueue in Sync Outbox] --> [Sync Engine]
 
 [Sync Engine] --> (Online?)
-                    |--> (Yes) --> [Push to API] --> [Mark Synced Locally]
+                    |--> (Yes) --> [Push to API] --> (Success?)
+                                                       |--> (Yes) --> [Mark Synced Locally / Remove]
+                                                       |--> (409 Conflict) --> [Mark as Stale Conflict for Recovery]
                     |--> (No) ---> [Wait for Connectivity]
 ```
 

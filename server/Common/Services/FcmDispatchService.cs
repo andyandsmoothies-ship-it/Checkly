@@ -18,30 +18,21 @@ public interface IFcmDispatchService
     Task DispatchSyncNeededAsync(Guid userId);
 }
 
-public class FcmDispatchService : IFcmDispatchService
+public class FcmDispatchService(
+    AppDbContext db,
+    ILogger<FcmDispatchService> logger,
+    ResiliencePipelineProvider<string> pipelineProvider) : IFcmDispatchService
 {
-    private readonly AppDbContext _db;
-    private readonly ILogger<FcmDispatchService> _logger;
-    private readonly ResiliencePipeline _pipeline;
-
-    public FcmDispatchService(
-        AppDbContext db,
-        ILogger<FcmDispatchService> logger,
-        ResiliencePipelineProvider<string> pipelineProvider)
-    {
-        _db = db;
-        _logger = logger;
-        _pipeline = pipelineProvider.GetPipeline("fcm");
-    }
+    private readonly ResiliencePipeline _pipeline = pipelineProvider.GetPipeline("fcm");
 
     public async Task DispatchSyncNeededAsync(Guid userId)
     {
         var ct = CancellationToken.None;
-        var tokens = await _db.UserDeviceTokens
+        var tokens = await db.UserDeviceTokens
             .Where(x => x.UserId == userId)
             .ToListAsync(ct);
 
-        if (!tokens.Any())
+        if (tokens.Count == 0)
         {
             return;
         }
@@ -62,7 +53,7 @@ public class FcmDispatchService : IFcmDispatchService
             var messaging = FirebaseMessaging.DefaultInstance;
             if (messaging == null)
             {
-                _logger.LogWarning("FirebaseAdmin is not initialized. Cannot dispatch FCM message.");
+                logger.LogWarning("FirebaseAdmin is not initialized. Cannot dispatch FCM message.");
                 return;
             }
 
@@ -85,21 +76,21 @@ public class FcmDispatchService : IFcmDispatchService
                         }
                         else
                         {
-                            _logger.LogWarning(res.Exception, "FCM send failed for token {Token}", tokens[i].FcmToken);
+                            logger.LogWarning(res.Exception, "FCM send failed for token {Token}", tokens[i].FcmToken);
                         }
                     }
                 }
 
-                if (tokensToRemove.Any())
+                if (tokensToRemove.Count > 0)
                 {
-                    _db.UserDeviceTokens.RemoveRange(tokensToRemove);
-                    await _db.SaveChangesAsync(ct);
+                    db.UserDeviceTokens.RemoveRange(tokensToRemove);
+                    await db.SaveChangesAsync(ct);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to dispatch FCM message for user {UserId}", userId);
+            logger.LogError(ex, "Failed to dispatch FCM message for user {UserId}", userId);
             // We swallow the exception to ensure the parent HTTP request does not fail
         }
     }

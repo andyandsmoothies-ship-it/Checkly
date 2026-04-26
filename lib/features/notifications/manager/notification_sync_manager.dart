@@ -66,22 +66,27 @@ class NotificationSyncManager {
   }
 
   Future<void> _showLocalNotification({required String title, required String body}) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'checkly_notifications',
-      'Checkly Notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    try {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'checkly_notifications',
+        'Checkly Notifications',
+        importance: Importance.max,
+        priority: Priority.high,
+      );
+      const NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await _localNotifications.show(
-      DateTime.now().millisecond,
-      title,
-      body,
-      platformChannelSpecifics,
-    );
+      await _localNotifications.show(
+        DateTime.now().millisecond,
+        title,
+        body,
+        platformChannelSpecifics,
+      );
+    } catch (e) {
+      // Silently swallow. This prevents the app from crashing on platforms 
+      // where local notifications are unsupported or uninitialized (e.g. Windows).
+    }
   }
 
   void dispose() {

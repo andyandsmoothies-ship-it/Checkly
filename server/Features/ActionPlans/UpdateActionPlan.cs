@@ -23,7 +23,7 @@ public static class UpdateActionPlan
         IFcmDispatchService fcm,
         CancellationToken ct)
     {
-        var plan = await db.ActionPlans.FindAsync(id);
+        var plan = await db.ActionPlans.FindAsync([id], ct);
         if (plan is null)
             return TypedResults.NotFound();
 

@@ -232,16 +232,17 @@ The app is designed for field auditors with unreliable connectivity. Users must 
 
 Login, logout, viewing new notifications, uploading evidence photos, accessing data never previously cached.
 
-### Sync Engine (`syncEngine.ts`)
+### Sync Engine (`syncEngine.ts` / `SyncEngine` in Flutter)
 
 When connectivity returns:
 1. **Heartbeat check** — pings server (protects against captive portals / liar-fi)
 2. **FIFO processing** — outbox mutations processed in order
 3. **Same API** — uses same RPCs as online paths (e.g., `finalize_audit`)
 4. **Auth-aware** — pauses if session is expired, resumes after refresh
+5. **Conflict Recovery** — if a terminal state conflict occurs (e.g., `409 Conflict` because an Action Plan is already closed), the SyncEngine marks the local outbox entry as `stale_conflict` instead of deleting it. This allows the user to manually recover their rejected offline work via the UI.
 
 > [!IMPORTANT]
-> **Offline data is never deleted by the app.** Queued submissions survive logout, token expiry, and even 7+ days offline. They sync when the user goes online and logs in.
+> **Offline data is never deleted by the app.** Queued submissions survive logout, token expiry, and even 7+ days offline. Rejected data (due to state conflicts) is preserved as `stale_conflict`.
 
 ---
 
