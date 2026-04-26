@@ -75,6 +75,9 @@ class FakeActionPlanApi implements ActionPlanApi {
   @override
   Future<CommentDto> addComment(String actionPlanId, AddCommentRequest request) =>
       Future.error('not used');
+
+  @override
+  Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
 }
 
 void main() {

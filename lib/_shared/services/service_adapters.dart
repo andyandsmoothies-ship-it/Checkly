@@ -231,6 +231,19 @@ class ActionPlanApiAdapter implements ActionPlanApi {
     );
     return CommentDto.fromJson(response.data as Map<String, dynamic>);
   }
+
+  @override
+  Future<ActionPlanDto?> fetchActionPlan(String id) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/action-plans/$id',
+      );
+      return ActionPlanDto.fromJson(response.data!);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
+    }
+  }
 }
 
 // ============================================================

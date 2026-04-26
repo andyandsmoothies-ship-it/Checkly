@@ -135,7 +135,7 @@ void configureDependencies() {
     () => NotificationApiService(di<Dio>()),
   );
   di.registerLazySingleton<NotificationManager>(() => NotificationManager());
-  
+
   // ---------- Notification V3 Sync Engine ----------
   di.registerLazySingleton<FlutterLocalNotificationsPlugin>(
     () => FlutterLocalNotificationsPlugin(),

@@ -18,14 +18,16 @@ class StaleConflictBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.5),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,8 +60,12 @@ class StaleConflictBanner extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(
-                      text: 'Correction Plan:\n$correctionPlan\n\nEvidence Note:\n${evidenceNote.isEmpty ? '(none)' : evidenceNote}'));
+                  Clipboard.setData(
+                    ClipboardData(
+                      text:
+                          'Correction Plan:\n$correctionPlan\n\nEvidence Note:\n${evidenceNote.isEmpty ? '(none)' : evidenceNote}',
+                    ),
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Copied to clipboard')),
                   );

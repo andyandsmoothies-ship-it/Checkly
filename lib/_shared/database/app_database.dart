@@ -146,7 +146,10 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 21) {
         // Evidence Photo Uploads: local path persistence for offline uploads.
-        await m.addColumn(pendingActionPlanUpdates, pendingActionPlanUpdates.photoPath);
+        await m.addColumn(
+          pendingActionPlanUpdates,
+          pendingActionPlanUpdates.photoPath,
+        );
       }
     },
     beforeOpen: (details) async {

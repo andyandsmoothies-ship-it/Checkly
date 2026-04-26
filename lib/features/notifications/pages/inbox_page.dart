@@ -60,7 +60,10 @@ class _InboxPageState extends State<InboxPage> {
     }
     final actionUrl = notification.actionUrl;
     if (actionUrl != null && actionUrl.isNotEmpty && mounted) {
-      context.push(actionUrl);
+      // context.push(actionUrl) would freeze if actionUrl is a redirect route.
+      // Extract the ID and push the canonical route directly (Gotcha 18 fix).
+      final planId = actionUrl.split('/').last;
+      context.push('/plans/$planId');
     }
   }
 

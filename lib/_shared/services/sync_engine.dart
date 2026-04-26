@@ -256,16 +256,20 @@ class SyncEngine {
           return;
         }
         try {
-          final submissionId = await _actionPlanOutboxDao.getSubmissionIdForPlan(entry.actionPlanId);
+          final submissionId = await _actionPlanOutboxDao
+              .getSubmissionIdForPlan(entry.actionPlanId);
           String? photoUrl;
           if (entry.photoPath != null && submissionId != null) {
-            photoUrl = await _actionPlanApi.uploadPhoto(submissionId, entry.photoPath!);
+            photoUrl = await _actionPlanApi.uploadPhoto(
+              submissionId,
+              entry.photoPath!,
+            );
           }
           await _actionPlanApi.updateActionPlan(entry.actionPlanId, {
             'status': 'pending_verify',
             'correctionPlan': entry.correctionPlan,
             'evidenceNote': entry.evidenceNote,
-            if (photoUrl != null) 'evidencePhotoUrl': photoUrl,
+            'evidencePhotoUrl': ?photoUrl,
           });
           await _actionPlanOutboxDao.remove(entry.id);
         } on ActionPlanAlreadyClosedException {
@@ -277,7 +281,6 @@ class SyncEngine {
           _state = SyncState.error;
           return;
         }
-
       }
 
       // --- SubmissionRisk outbox drain phase ---

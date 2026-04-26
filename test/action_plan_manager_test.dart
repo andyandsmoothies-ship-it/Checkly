@@ -73,6 +73,9 @@ class FakeActionPlanApi implements ActionPlanApi {
       createdAt: DateTime.now(),
     );
   }
+
+  @override
+  Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
 }
 
 /// Minimal user role provider for testing role guards.
@@ -354,6 +357,9 @@ class FakeActionPlanApiWithFetch implements ActionPlanApi {
       createdAt: DateTime.now(),
     );
   }
+
+  @override
+  Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
 }
 
 /// Seeds `cachedActionPlans` with a single open plan row.

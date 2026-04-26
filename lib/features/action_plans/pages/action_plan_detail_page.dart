@@ -42,13 +42,15 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
     super.initState();
     _manager = _di<ActionPlanManager>();
 
-    // Auto-fetch if not found in current cache (e.g. freshly generated on backend)
+    // Auto-fetch if not found in current cache (e.g. freshly generated on backend).
+    // Uses the targeted GET /api/action-plans/{id} endpoint — avoids reloading
+    // the entire plan list just to show one plan (Gotcha fix: partial inbox freeze).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final exists = _manager.actionPlans.value.any(
         (p) => p.id == widget.actionPlanId,
       );
       if (!exists) {
-        _manager.loadActionPlans();
+        _manager.loadSinglePlan(widget.actionPlanId);
       }
     });
 
@@ -439,8 +441,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                         const SizedBox(height: 12),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child:
-                              !plan.evidencePhotoUrl!.startsWith('http')
+                          child: !plan.evidencePhotoUrl!.startsWith('http')
                               ? Image.file(
                                   File(plan.evidencePhotoUrl!),
                                   height: 200,

@@ -14,21 +14,24 @@ class NotificationSyncManager {
   NotificationSyncManager({
     NotificationManager? notificationManager,
     FlutterLocalNotificationsPlugin? localNotifications,
-  })  : _notificationManager = notificationManager ?? _di<NotificationManager>(),
-        _localNotifications = localNotifications ?? _di<FlutterLocalNotificationsPlugin>();
+  }) : _notificationManager = notificationManager ?? _di<NotificationManager>(),
+       _localNotifications =
+           localNotifications ?? _di<FlutterLocalNotificationsPlugin>();
 
   Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
-    );
-    const InitializationSettings initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid,
-        iOS: initializationSettingsDarwin);
+          requestSoundPermission: false,
+          requestBadgePermission: false,
+          requestAlertPermission: false,
+        );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+        );
 
     await _localNotifications.initialize(
       initializationSettings,
@@ -46,9 +49,9 @@ class NotificationSyncManager {
 
   Future<void> _handleTickle() async {
     try {
-      final fresh = await _notificationManager
-          .refreshDelta()
-          .timeout(const Duration(seconds: 15));
+      final fresh = await _notificationManager.refreshDelta().timeout(
+        const Duration(seconds: 15),
+      );
 
       if (fresh.isNotEmpty) {
         final newest = fresh.first;
@@ -65,17 +68,21 @@ class NotificationSyncManager {
     }
   }
 
-  Future<void> _showLocalNotification({required String title, required String body}) async {
+  Future<void> _showLocalNotification({
+    required String title,
+    required String body,
+  }) async {
     try {
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
-        'checkly_notifications',
-        'Checkly Notifications',
-        importance: Importance.max,
-        priority: Priority.high,
+            'checkly_notifications',
+            'Checkly Notifications',
+            importance: Importance.max,
+            priority: Priority.high,
+          );
+      const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
       );
-      const NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics);
 
       await _localNotifications.show(
         DateTime.now().millisecond,
@@ -84,7 +91,7 @@ class NotificationSyncManager {
         platformChannelSpecifics,
       );
     } catch (e) {
-      // Silently swallow. This prevents the app from crashing on platforms 
+      // Silently swallow. This prevents the app from crashing on platforms
       // where local notifications are unsupported or uninitialized (e.g. Windows).
     }
   }

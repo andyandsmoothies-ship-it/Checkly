@@ -62,9 +62,15 @@ class ActionPlanOutboxDao {
   }
 
   /// Get the stale conflict for a specific action plan, if it exists.
-  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(String planId) async {
+  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(
+    String planId,
+  ) async {
     return (_db.select(_db.pendingActionPlanUpdates)
-          ..where((r) => r.actionPlanId.equals(planId) & r.syncStatus.equals('stale_conflict'))
+          ..where(
+            (r) =>
+                r.actionPlanId.equals(planId) &
+                r.syncStatus.equals('stale_conflict'),
+          )
           ..limit(1))
         .getSingleOrNull();
   }

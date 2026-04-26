@@ -67,6 +67,8 @@ class FakeOutbox implements Outbox {
 // No-op stubs for the evidence drain injection points.
 class _FakeActionPlanApi implements ActionPlanApi {
   @override
+  Future<String> uploadPhoto(String submissionId, String filePath) async => 'http://example.com/photo.jpg';
+  @override
   Future<ActionPlanDto> updateActionPlan(
     String id,
     Map<String, dynamic> fields,
@@ -85,9 +87,14 @@ class _FakeActionPlanApi implements ActionPlanApi {
 
   @override
   Future<CommentDto> addComment(String actionPlanId, AddCommentRequest request) => Future.error('not used');
+
+  @override
+  Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
 }
 
 class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
+  @override
+  Future<String?> getSubmissionIdForPlan(String planId) async => 'sub_123';
   _FakeActionPlanOutboxDao();
   @override
   Future<List<PendingActionPlanUpdate>> getEligiblePending() async => [];

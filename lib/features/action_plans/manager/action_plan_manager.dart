@@ -33,8 +33,12 @@ abstract class ActionPlanApi {
   Future<CommentDto> addComment(
     String actionPlanId,
     AddCommentRequest request,
-  ) =>
-      throw UnimplementedError('addComment() not implemented');
+  ) => throw UnimplementedError('addComment() not implemented');
+
+  /// Fetch a single action plan by ID from the server.
+  /// Returns null if the server returns 404 (not found or no access).
+  Future<ActionPlanDto?> fetchActionPlan(String id) =>
+      throw UnimplementedError('fetchActionPlan() not implemented');
 }
 
 /// Provides the current user's role for client-side role guards.
@@ -127,6 +131,37 @@ class ActionPlanManager extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   String? error;
+
+  /// Fetch a single action plan by ID and merge it into [actionPlans].
+  ///
+  /// Used by [ActionPlanDetailPage] when the plan is not already in the
+  /// local cache — avoids reloading the entire list just to show one plan.
+  ///
+  /// Returns `true` if the plan was found and added, `false` if not found
+  /// (server returned 404 or the plan is not accessible to this user).
+  Future<bool> loadSinglePlan(String id) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final plan = await _api.fetchActionPlan(id);
+      if (plan == null) return false;
+      // Merge: replace existing entry if present, otherwise append.
+      final current = List<ActionPlanDto>.from(actionPlans.value);
+      final idx = current.indexWhere((p) => p.id == id);
+      if (idx >= 0) {
+        current[idx] = plan;
+      } else {
+        current.add(plan);
+      }
+      actionPlans.value = current;
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   /// Load action plans — network-first with local cache fallback.
   ///

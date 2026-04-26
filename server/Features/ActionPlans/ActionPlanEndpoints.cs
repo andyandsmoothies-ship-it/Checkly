@@ -17,6 +17,9 @@ public static class ActionPlanEndpoints
         group.MapGet("/", ListActionPlans.HandleAsync)
             .WithName("ListActionPlans");
 
+        group.MapGet("/{id:guid}", GetActionPlan.HandleAsync)
+            .WithName("GetActionPlan");
+
         group.MapPut("/{id}", UpdateActionPlan.HandleAsync)
             .WithName("UpdateActionPlan");
 
