@@ -115,8 +115,14 @@ public static class GetAnalytics
             ? Math.Round((double)completedCount / totalAudits * 100, 1)
             : 0.0;
 
-        var openAPs = await db.ActionPlans.CountAsync(ap => ap.Status == "open", ct);
-        var overdueAPs = await db.ActionPlans.CountAsync(
+        var apBase = db.ActionPlans.AsNoTracking();
+        if (!string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out var apSid))
+            apBase = apBase.Where(ap => ap.StoreId == apSid);
+        else if (storeSubquery is not null)
+            apBase = apBase.Where(ap => ap.StoreId.HasValue && storeSubquery.Contains(ap.StoreId.Value));
+
+        var openAPs = await apBase.CountAsync(ap => ap.Status == "open", ct);
+        var overdueAPs = await apBase.CountAsync(
             ap => ap.Status == "open" && ap.Deadline.HasValue && ap.Deadline < DateTimeOffset.UtcNow, ct);
 
         // ── 6-month trend (GroupBy server-side, project in memory) ──

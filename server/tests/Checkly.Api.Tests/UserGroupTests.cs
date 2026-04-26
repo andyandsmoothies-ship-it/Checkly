@@ -103,7 +103,9 @@ public class UserGroupTests : IClassFixture<TestWebApplicationFactory>
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.Equal(JsonValueKind.Array, body.ValueKind);
+        Assert.Equal(JsonValueKind.Object, body.ValueKind);
+        Assert.True(body.TryGetProperty("items", out var items), "Response must include 'items' array");
+        Assert.Equal(JsonValueKind.Array, items.ValueKind);
     }
 
     // ── AC4: Admin can add members to a UserGroup ───────────

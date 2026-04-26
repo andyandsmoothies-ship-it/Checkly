@@ -23,6 +23,7 @@ public static class AnalyticsEndpoints
             .RequireCapability(AppCapabilities.AnalyticsAdmin);
 
         group.MapGet("/", GetAnalytics.HandleAsync)
-            .WithName("GetAnalytics");
+            .WithName("GetAnalytics")
+            .RequireCapability(AppCapabilities.AnalyticsView);
     }
 }

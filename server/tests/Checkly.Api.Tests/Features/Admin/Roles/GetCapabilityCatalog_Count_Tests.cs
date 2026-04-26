@@ -15,7 +15,7 @@ public class GetCapabilityCatalog_Count_Tests : IClassFixture<TestWebApplication
     }
 
     [Fact]
-    public async Task GetCapabilityCatalog_Returns15Capabilities_IncludingNewPbacOnes()
+    public async Task GetCapabilityCatalog_Returns16Capabilities_IncludingNewPbacOnes()
     {
         // Arrange
         var client = _factory.CreateClient();
@@ -33,6 +33,7 @@ public class GetCapabilityCatalog_Count_Tests : IClassFixture<TestWebApplication
         Assert.NotNull(catalog);
         Assert.Contains("admin:access", catalog.Capabilities);
         Assert.Contains("analytics:area", catalog.Capabilities);
-        Assert.Equal(15, catalog.Capabilities.Length);
+        Assert.Contains("analytics:view", catalog.Capabilities);
+        Assert.Equal(16, catalog.Capabilities.Length);
     }
 }

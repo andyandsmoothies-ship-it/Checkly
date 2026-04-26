@@ -24,6 +24,7 @@ public class AppCapabilitiesTests
         Assert.Equal("areas:write",        AppCapabilities.AreasWrite);
         Assert.Equal("users:manage",       AppCapabilities.UsersManage);
         Assert.Equal("analytics:admin",    AppCapabilities.AnalyticsAdmin);
+        Assert.Equal("analytics:view",     AppCapabilities.AnalyticsView);
         Assert.Equal("analytics:area",     AppCapabilities.AnalyticsArea);
         Assert.Equal("submissions:list",   AppCapabilities.SubmissionsList);
         Assert.Equal("admin:manage_roles", AppCapabilities.AdminManageRoles);

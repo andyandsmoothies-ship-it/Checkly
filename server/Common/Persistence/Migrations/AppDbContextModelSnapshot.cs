@@ -348,6 +348,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UpdatedAt");
+
                     b.ToTable("areas", (string)null);
                 });
 
@@ -1312,6 +1314,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("UserId", "FcmToken")
                         .IsUnique();

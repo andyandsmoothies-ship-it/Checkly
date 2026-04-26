@@ -19,7 +19,7 @@ public static class SubmissionEndpoints
 
         group.MapGet("/", ListSubmissions.HandleAsync)
             .WithName("ListSubmissions")
-            .RequireCapability("submissions:list");
+            .RequireCapability(AppCapabilities.SubmissionsList);
 
 
         group.MapGet("/survey-results", GetSurveyResults.HandleAsync)

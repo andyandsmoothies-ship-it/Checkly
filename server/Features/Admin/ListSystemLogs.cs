@@ -31,10 +31,7 @@ public static class ListSystemLogs
         HttpContext httpContext,
         CancellationToken ct)
     {
-        // Admin guard
-        var callerRole = user.FindFirstValue(ClaimTypes.Role) ?? "";
-        if (callerRole != "admin")
-            return TypedResults.Forbid();
+
 
         var q = httpContext.Request.Query;
         var levelFilter = q["level"].FirstOrDefault();

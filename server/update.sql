@@ -1412,19 +1412,19 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260408112945_AddRoleCapabilities') THEN
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('f6688ca6-9a67-4692-8964-43dc3f6ad7e6', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-23T13:18:19.263772+00:00');
+    VALUES ('3591b3c0-991a-47b2-a932-ece42edc0746', 'admin', 'templates:create', TIMESTAMPTZ '2026-04-26T15:13:07.120239+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('a95e0ab3-b30e-49ba-853a-8ace499ce972', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-23T13:18:19.263773+00:00');
+    VALUES ('a4cb3995-3dff-4ea5-b54f-f50ac2202c97', 'admin', 'templates:update', TIMESTAMPTZ '2026-04-26T15:13:07.12024+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('2745e4b1-cd86-41ba-8f2e-5276d01175e2', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-23T13:18:19.263774+00:00');
+    VALUES ('a731702e-d528-47c4-a4f2-e73ac4b417ee', 'admin', 'templates:delete', TIMESTAMPTZ '2026-04-26T15:13:07.120241+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('3ab0d61b-471b-4e48-93c4-160b717c8bfb', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-23T13:18:19.263774+00:00');
+    VALUES ('fed50e65-97f7-43d9-952c-4b2afd9abea3', 'admin', 'stores:write', TIMESTAMPTZ '2026-04-26T15:13:07.120241+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('1434c911-c7c1-4e80-a06a-fcdded009727', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-23T13:18:19.263775+00:00');
+    VALUES ('8e56bb67-6b7d-4b75-9611-2c25696a8d91', 'admin', 'areas:write', TIMESTAMPTZ '2026-04-26T15:13:07.120241+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('80aea81c-d669-46ab-803b-5543b190669c', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-23T13:18:19.263775+00:00');
+    VALUES ('2b3722e9-e51c-44a5-a248-b64315a5a689', 'admin', 'users:manage', TIMESTAMPTZ '2026-04-26T15:13:07.120241+00:00');
     INSERT INTO role_capabilities (id, role, capability, created_at)
-    VALUES ('e7a9992c-3802-4c7b-8017-b9ab979b3702', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-23T13:18:19.263775+00:00');
+    VALUES ('fe1827a7-3724-4a77-b8bb-99ea8fa214cb', 'admin', 'analytics:admin', TIMESTAMPTZ '2026-04-26T15:13:07.120241+00:00');
     END IF;
 END $EF$;
 
@@ -1871,6 +1871,88 @@ BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260423131757_Phase1A_VisualFolders_MaxDeductionPoints') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
     VALUES ('20260423131757_Phase1A_VisualFolders_MaxDeductionPoints', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260425082005_AddUserDeviceTokens') THEN
+    CREATE TABLE user_device_tokens (
+        id uuid NOT NULL DEFAULT (gen_random_uuid()),
+        user_id uuid NOT NULL,
+        fcm_token text NOT NULL,
+        platform text NOT NULL,
+        last_used_at timestamp with time zone NOT NULL DEFAULT (now()),
+        created_at timestamp with time zone NOT NULL DEFAULT (now()),
+        CONSTRAINT "PK_user_device_tokens" PRIMARY KEY (id)
+    );
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260425082005_AddUserDeviceTokens') THEN
+    CREATE UNIQUE INDEX "IX_user_device_tokens_user_id_fcm_token" ON user_device_tokens (user_id, fcm_token);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260425082005_AddUserDeviceTokens') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260425082005_AddUserDeviceTokens', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260426150423_AddInfraIndexes') THEN
+    CREATE INDEX "IX_user_device_tokens_user_id" ON user_device_tokens (user_id);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260426150423_AddInfraIndexes') THEN
+    CREATE INDEX "IX_areas_updated_at" ON areas (updated_at);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260426150423_AddInfraIndexes') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260426150423_AddInfraIndexes', '10.0.4');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260426151156_SeedAnalyticsViewCapability') THEN
+
+                    INSERT INTO role_capabilities (id, role_name, capability, created_at)
+                    VALUES 
+                        (gen_random_uuid(), 'store_manager', 'analytics:view', now()),
+                        (gen_random_uuid(), 'area_manager', 'analytics:view', now()),
+                        (gen_random_uuid(), 'admin', 'analytics:view',    now());
+                
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260426151156_SeedAnalyticsViewCapability') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260426151156_SeedAnalyticsViewCapability', '10.0.4');
     END IF;
 END $EF$;
 COMMIT;

@@ -117,6 +117,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .WithMany(a => a.Profiles)
                 .HasForeignKey(x => x.AreaId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Performance indexes
+            e.HasIndex(x => x.StoreId);
+            e.HasIndex(x => x.AreaId);
         });
     }
 
@@ -498,6 +502,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
 
+            // Performance indexes
+            e.HasIndex(x => x.UpdatedAt); // For offline delta sync parity
         });
     }
 
@@ -706,6 +712,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
 
             e.HasIndex(x => new { x.UserId, x.FcmToken }).IsUnique();
+            e.HasIndex(x => x.UserId); // For FCM dispatch queries
         });
     }
 }
