@@ -20,6 +20,10 @@ abstract class ActionPlanApi {
     Map<String, dynamic> fields,
   );
 
+  /// Upload a photo for an action plan (via the underlying submission).
+  Future<String> uploadPhoto(String submissionId, String filePath) =>
+      throw UnimplementedError('uploadPhoto() not implemented');
+
   /// Fetch all action plans from the server for the authenticated user.
   /// Concrete adapters override this. Default throws to prevent silent misuse.
   Future<List<ActionPlanDto>> fetchActionPlans() =>
@@ -153,6 +157,7 @@ class ActionPlanManager extends ChangeNotifier {
               remote.map(
                 (plan) => CachedActionPlansCompanion.insert(
                   id: plan.id,
+                  submissionId: Value(plan.submissionId),
                   criteriaLabel: plan.criteriaLabel,
                   groupTitle: plan.groupTitle,
                   status: Value(plan.status),
@@ -195,6 +200,7 @@ class ActionPlanManager extends ChangeNotifier {
           .map(
             (row) => ActionPlanDto(
               id: row.id,
+              submissionId: row.submissionId,
               status: row.status,
               criteriaLabel: row.criteriaLabel,
               groupTitle: row.groupTitle,
@@ -253,6 +259,7 @@ class ActionPlanManager extends ChangeNotifier {
           actionPlanId: Value(plan.id),
           correctionPlan: Value(correctionPlan),
           evidenceNote: Value(evidenceNote ?? ''),
+          photoPath: Value(photoPath),
           createdAt: Value(DateTime.now().toUtc()),
         ),
       );
@@ -294,6 +301,11 @@ class ActionPlanManager extends ChangeNotifier {
     };
     if (evidenceNote != null) {
       updatePayload['evidenceNote'] = evidenceNote;
+    }
+
+    if (photoPath != null && plan.submissionId != null) {
+      final photoUrl = await _api.uploadPhoto(plan.submissionId!, photoPath);
+      updatePayload['evidencePhotoUrl'] = photoUrl;
     }
 
     final result = await _api.updateActionPlan(plan.id, updatePayload);

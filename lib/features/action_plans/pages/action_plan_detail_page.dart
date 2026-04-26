@@ -440,8 +440,7 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child:
-                              plan.evidencePhotoUrl!.startsWith('/') ||
-                                  plan.evidencePhotoUrl!.startsWith('file://')
+                              !plan.evidencePhotoUrl!.startsWith('http')
                               ? Image.file(
                                   File(plan.evidencePhotoUrl!),
                                   height: 200,

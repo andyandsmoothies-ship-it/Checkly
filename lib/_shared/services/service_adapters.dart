@@ -181,6 +181,18 @@ class ActionPlanApiAdapter implements ActionPlanApi {
   }
 
   @override
+  Future<String> uploadPhoto(String submissionId, String filePath) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    final response = await _dio.post(
+      '/photos/upload/$submissionId',
+      data: formData,
+    );
+    return (response.data as Map<String, dynamic>)['url'] as String;
+  }
+
+  @override
   Future<List<ActionPlanDto>> fetchActionPlans() async {
     // Auto-paginate — page size 100, max 5 pages = 500 items (matches local cache limit).
     // Backend returns PagedResult<ActionPlanDto>: { items: [...], total, page, pageSize }.

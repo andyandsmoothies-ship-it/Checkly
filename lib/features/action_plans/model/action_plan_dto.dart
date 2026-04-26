@@ -3,6 +3,7 @@
 /// Mirrors the backend ActionPlanDto from server/Features/ActionPlans/Dtos.cs.
 class ActionPlanDto {
   final String id;
+  final String? submissionId;
   final String status; // 'open', 'pending_verify', 'closed'
   final String criteriaLabel;
   final String groupTitle;
@@ -23,6 +24,7 @@ class ActionPlanDto {
 
   const ActionPlanDto({
     required this.id,
+    this.submissionId,
     required this.status,
     required this.criteriaLabel,
     required this.groupTitle,
@@ -44,6 +46,7 @@ class ActionPlanDto {
 
   factory ActionPlanDto.fromJson(Map<String, dynamic> json) => ActionPlanDto(
     id: json['id'] as String,
+    submissionId: json['submissionId'] as String?,
     status: json['status'] as String,
     criteriaLabel: json['criteriaLabel'] as String? ?? '',
     groupTitle: json['groupTitle'] as String? ?? '',

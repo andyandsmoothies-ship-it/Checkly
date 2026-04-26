@@ -44,7 +44,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 20;
+  int get schemaVersion => 21;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -143,6 +143,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 20) {
         // Phase 1B Visual Folders: criterion-level deduction cap.
         await m.addColumn(cachedCriteria, cachedCriteria.maxDeductionPoints);
+      }
+      if (from < 21) {
+        // Evidence Photo Uploads: local path persistence for offline uploads.
+        await m.addColumn(pendingActionPlanUpdates, pendingActionPlanUpdates.photoPath);
       }
     },
     beforeOpen: (details) async {

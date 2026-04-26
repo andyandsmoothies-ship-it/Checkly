@@ -184,6 +184,9 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`):
 - **Gotcha 18: Notification & Deep-Link Route Parity**
   - **Problem:** The backend generates `ActionUrl` strings (e.g., `/action-plans/{id}`) that drift from the Flutter `app_router.dart` configurations (e.g., `/plans/:id`), causing silent `GoException` crashes when tapped in the inbox.
   - **Fix:** You are forbidden from hardcoding naked deep-link strings blindly. Whenever generating a cross-boundary URL on the server, you MUST run a `grep_search` on `app_router.dart` to verify the exact route exists, or add a `redirect` mapping to the router immediately.
+- **Gotcha 19: PopScope & setState() Timing Trap**
+  - **Problem:** `PopScope(canPop: !isDirty)` reads from the current widget. `setState()` only schedules a rebuild for the next frame. If you call `Navigator.pop()` immediately after `setState()` in the same synchronous block, PopScope sees the old `canPop` value and silently blocks the navigation, causing a silent UI freeze.
+  - **Fix:** Always defer programmatic pop calls to the next frame. Use `WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));` after clearing the dirty state.
 
 ---
 

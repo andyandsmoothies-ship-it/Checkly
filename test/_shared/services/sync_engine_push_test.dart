@@ -64,6 +64,10 @@ class FakeActionPlanApi implements ActionPlanApi {
   Future<ActionPlanDto> updateActionPlan(String id, Map<String, dynamic> f) =>
       Future.error('not used');
 
+  @override
+  Future<String> uploadPhoto(String submissionId, String filePath) async =>
+      'mock_photo_url';
+
   /// Not used by sync engine push tests. Satisfies the ActionPlanApi interface.
   @override
   Future<List<ActionPlanDto>> fetchActionPlans() async => [];

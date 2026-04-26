@@ -40,7 +40,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
   @override
   void initState() {
     super.initState();
-    _correctionCtrl = TextEditingController(text: widget.plan.correctionPlan);
+    _correctionCtrl = TextEditingController(text: widget.plan.evidenceNote);
   }
 
   @override
@@ -50,7 +50,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
   }
 
   bool get _computedDirty =>
-      _correctionCtrl.text != (widget.plan.correctionPlan ?? '');
+      _correctionCtrl.text.isNotEmpty || _photoPath != null;
 
   void _markDirty() {
     if (!_isDirty) setState(() => _isDirty = true);
@@ -62,7 +62,8 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
     try {
       await widget.manager.submitEvidence(
         widget.plan,
-        correctionPlan: _correctionCtrl.text.trim(),
+        correctionPlan: widget.plan.correctionPlan ?? '',
+        evidenceNote: _correctionCtrl.text.trim(),
         currentUserName: widget.currentUserName,
         photoPath: _photoPath,
       );
@@ -73,7 +74,19 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
             content: Text('Evidence submitted — awaiting verification'),
           ),
         );
-        Navigator.pop(context);
+        // Clear dirty state so PopScope.canPop flips to true.
+        // Pop is deferred to the NEXT frame via addPostFrameCallback.
+        // setState() only schedules a rebuild — it does not flush synchronously.
+        // If Navigator.pop fires in the same frame, PopScope still reads the
+        // OLD canPop=false and silently blocks the close.
+        setState(() {
+          _isDirty = false;
+          _photoPath = null;
+          _correctionCtrl.clear();
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) Navigator.pop(context);
+        });
       }
     } on RoleGuardException catch (_) {
       if (mounted) {
@@ -157,7 +170,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
-                height: 100,
+                height: 200,
                 decoration: BoxDecoration(
                   color: Theme.of(
                     context,
@@ -212,9 +225,9 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                           borderRadius: BorderRadius.circular(8),
                           child: Image.file(
                             File(_photoPath!),
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                             width: double.infinity,
-                            height: 100,
+                            height: 200,
                           ),
                         )
                       : Column(

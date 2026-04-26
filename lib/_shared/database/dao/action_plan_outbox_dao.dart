@@ -68,4 +68,13 @@ class ActionPlanOutboxDao {
           ..limit(1))
         .getSingleOrNull();
   }
+
+  /// Get the submission ID for a cached action plan.
+  Future<String?> getSubmissionIdForPlan(String planId) async {
+    final query = _db.select(_db.cachedActionPlans)
+      ..where((r) => r.id.equals(planId))
+      ..limit(1);
+    final plan = await query.getSingleOrNull();
+    return plan?.submissionId;
+  }
 }

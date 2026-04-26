@@ -54,9 +54,12 @@ class FakeActionPlanApi implements ActionPlanApi {
     return lastUpdated!;
   }
 
-  /// Not used by S1–S8 state machine tests. Satisfies the ActionPlanApi interface.
   @override
   Future<List<ActionPlanDto>> fetchActionPlans() async => [];
+
+  @override
+  Future<String> uploadPhoto(String submissionId, String filePath) async =>
+      'mock_photo_url';
 
   @override
   Future<CommentDto> addComment(
@@ -117,6 +120,9 @@ class FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
 
   @override
   Future<PendingActionPlanUpdate?> getStaleConflictForPlan(String planId) async => null;
+
+  @override
+  Future<String?> getSubmissionIdForPlan(String planId) async => null;
 
   @override
   Future<int> pendingCount() async => 0;
@@ -323,6 +329,10 @@ class FakeActionPlanApiWithFetch implements ActionPlanApi {
     if (shouldThrow) throw Exception('Network timeout');
     return _plans;
   }
+
+  @override
+  Future<String> uploadPhoto(String submissionId, String filePath) async =>
+      'mock_photo_url';
 
   @override
   Future<ActionPlanDto> updateActionPlan(
