@@ -93,7 +93,7 @@ class TrendChart extends StatelessWidget {
                     interval: 20,
                     reservedSize: 35,
                     getTitlesWidget: (value, meta) => Text(
-                      '${value.toInt()}%',
+                      '${value.toInt()}',
                       style: theme.textTheme.labelSmall,
                     ),
                   ),
@@ -182,7 +182,7 @@ class TrendChart extends StatelessWidget {
                           ? data[idx]
                           : null;
                       return LineTooltipItem(
-                        '${spot.y.toStringAsFixed(1)}%'
+                        '${spot.y.toStringAsFixed(1)}'
                         '${point != null ? '\n${point.count} audits' : ''}',
                         TextStyle(
                           color: theme.colorScheme.onInverseSurface,

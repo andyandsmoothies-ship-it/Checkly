@@ -146,7 +146,7 @@ class AuditScoreChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: Text(
-        score != null ? '${score!.toStringAsFixed(1)}%' : 'Survey',
+        score != null ? '${score!.toStringAsFixed(1)}' : 'Survey',
         style: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: Theme.of(context).textTheme.labelLarge?.fontSize,

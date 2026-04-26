@@ -346,7 +346,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
             const SizedBox(height: 4),
             Text(
               manager.liveScore != null
-                  ? 'Score: ${manager.liveScore!.toStringAsFixed(1)}%'
+                  ? 'Score: ${manager.liveScore!.toStringAsFixed(1)}'
                   : 'Survey — No Score',
               style: TextStyle(
                 fontWeight: FontWeight.w700,

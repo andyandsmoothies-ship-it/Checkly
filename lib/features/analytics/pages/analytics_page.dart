@@ -464,7 +464,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       _KpiCard(
                         icon: Icons.speed,
                         label: 'Avg Audit Score',
-                        value: '${(data?.avgScore ?? 0).toStringAsFixed(1)}%',
+                        value: (data?.avgScore ?? 0).toStringAsFixed(1),
                         accentColor: AppTheme.success,
                         tooltip: 'Mean score of all scored audits',
                         onTap: () => context.go('/activity?filter=submitted'),
@@ -487,9 +487,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       ),
                       _KpiCard(
                         icon: Icons.check_circle,
-                        label: 'Completion',
-                        value:
-                            '${(data?.completionRate ?? 0).toStringAsFixed(1)}%',
+                        label: 'Completion Rate',
+                        value: '${(data?.completionRate ?? 0).toStringAsFixed(1)}%',
                         accentColor: AppTheme.info,
                         onTap: () => context.go('/activity?filter=submitted'),
                       ),
