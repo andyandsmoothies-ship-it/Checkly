@@ -65,15 +65,15 @@ class StoreGroup extends StatelessWidget {
               (s) => AuditCard(
                 submission: s,
                 onStartAudit:
-                    (s.status == 'scheduled' && !s.isOverdue) ||
-                        s.status == 'draft'
+                    this.onStartAudit != null && ((s.status == 'scheduled' && !s.isOverdue) ||
+                        s.status == 'draft')
                     ? () => onStartAudit?.call(s)
                     : null,
-                onVoidAudit: (s.status == 'draft' || s.status == 'scheduled')
+                onVoidAudit: (this.onVoidAudit != null && (s.status == 'draft' || s.status == 'scheduled'))
                     ? () => onVoidAudit?.call(s)
                     : null,
                 onPreviewAudit:
-                    (s.status == 'completed' || s.status == 'voided')
+                    (this.onPreviewAudit != null && (s.status == 'completed' || s.status == 'voided'))
                     ? () => onPreviewAudit?.call(s)
                     : null,
               ),
