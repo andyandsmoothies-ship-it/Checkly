@@ -142,4 +142,68 @@ class ScoringInputMapper {
     }
     return false;
   }
+
+  // ── Template feature flags ────────────────────────────────────────────────
+
+  /// Returns true if the template requires all criteria to be confirmed before submission.
+  static bool isConfirmRequired(TemplateTreeDto template) {
+    if (template.scoringLogicConfig == null ||
+        template.scoringLogicConfig!.isEmpty) {
+      return false;
+    }
+    try {
+      final config =
+          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
+      // Read from top-level (Flutter) or features map (legacy)
+      if (config['confirmCorrect'] == true) return true;
+      final features = config['features'] as Map<String, dynamic>?;
+      return features?['confirm_required'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Returns true if CCP (Critical Control Point) tracking is enabled for this template.
+  static bool isCcpEnabled(TemplateTreeDto template) {
+    if (template.scoringLogicConfig == null ||
+        template.scoringLogicConfig!.isEmpty) {
+      return true;
+    }
+    try {
+      final config =
+          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
+      if (config.containsKey('ccpOverride')) {
+        return config['ccpOverride'] == true;
+      }
+      final features = config['features'] as Map<String, dynamic>?;
+      if (features != null && features.containsKey('ccp_enabled')) {
+        return features['ccp_enabled'] == true;
+      }
+      return true; // default true if not specified
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// Returns true if global risk tracking is enabled for this template.
+  static bool isRiskEnabled(TemplateTreeDto template) {
+    if (template.scoringLogicConfig == null ||
+        template.scoringLogicConfig!.isEmpty) {
+      return true;
+    }
+    try {
+      final config =
+          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
+      if (config.containsKey('riskOverride')) {
+        return config['riskOverride'] == true;
+      }
+      final features = config['features'] as Map<String, dynamic>?;
+      if (features != null && features.containsKey('risk_enabled')) {
+        return features['risk_enabled'] == true;
+      }
+      return true; // default true if not specified
+    } catch (_) {
+      return true;
+    }
+  }
 }

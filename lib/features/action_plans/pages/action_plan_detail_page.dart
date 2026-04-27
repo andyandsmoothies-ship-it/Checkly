@@ -16,7 +16,7 @@ import '../widgets/info_row.dart';
 import '../widgets/section_header.dart';
 import '../widgets/stale_conflict_banner.dart';
 import '../widgets/submit_evidence_sheet.dart';
-import '../../../_shared/database/app_database.dart';
+import '../model/stale_conflict.dart';
 import '../../../_shared/widgets/app_network_image.dart';
 
 final _di = GetIt.instance;
@@ -34,7 +34,7 @@ class ActionPlanDetailPage extends StatefulWidget {
 class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
   late final ActionPlanManager _manager;
   bool _busy = false;
-  PendingActionPlanUpdate? _staleConflict;
+  StaleConflict? _staleConflict;
 
   @override
   void initState() {

@@ -1,12 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/theme/app_fonts.dart';
-import '../../../_shared/widgets/unsaved_changes_guard.dart';
-import '../services/admin_api_service.dart';
 import '../manager/admin_global_risk_manager.dart';
+import 'widgets/risk_card.dart';
+import 'widgets/risk_form_sheet.dart';
 
 final _di = GetIt.instance;
 
@@ -66,333 +63,6 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
     setState(() => _applyFilter());
   }
 
-  void _showCreateSheet() {
-    final labelCtrl = TextEditingController();
-    final descCtrl = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useRootNavigator: true,
-      isDismissible: false,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        var isDirty = false;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            void markDirty() {
-              if (!isDirty) setSheetState(() => isDirty = true);
-            }
-
-            return UnsavedChangesGuard(
-              isDirty: isDirty,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  24,
-                  16,
-                  MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'New Global Risk',
-                          style: AppFonts.displayStyle(
-                            fontSize: Theme.of(
-                              ctx,
-                            ).textTheme.titleLarge?.fontSize,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.maybePop(ctx),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: labelCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Risk Label *',
-                        hintText: 'e.g. Critical Food Safety Violation',
-                        border: OutlineInputBorder(),
-                      ),
-                      textCapitalization: TextCapitalization.sentences,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: descCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                        hintText: 'When should an auditor trigger this risk?',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 3,
-                      textCapitalization: TextCapitalization.sentences,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: () async {
-                        final label = labelCtrl.text.trim();
-                        final desc = descCtrl.text.trim();
-                        if (label.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Risk label is required'),
-                            ),
-                          );
-                          return;
-                        }
-                        try {
-                          await _di<AdminApiService>().createGlobalRisk(
-                            label: label,
-                            description: desc.isNotEmpty ? desc : null,
-                          );
-                          if (context.mounted) {
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                              SnackBar(
-                                content: const Text('Global risk created'),
-                                backgroundColor: AppTheme.success,
-                              ),
-                            );
-                            _loadData();
-                          }
-                        } on DioException catch (e) {
-                          if (mounted) {
-                            final msg =
-                                e.response?.data?['message'] ??
-                                'Failed to create global risk';
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(msg.toString()),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: const Text('Create Risk'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showEditSheet(Map<String, dynamic> risk) {
-    final labelCtrl = TextEditingController(
-      text: risk['label'] as String? ?? '',
-    );
-    final descCtrl = TextEditingController(
-      text: risk['description'] as String? ?? '',
-    );
-    final isActive = risk['isActive'] as bool? ?? true;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useRootNavigator: true,
-      isDismissible: false,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        var isDirty = false;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            void markDirty() {
-              if (!isDirty) setSheetState(() => isDirty = true);
-            }
-
-            return UnsavedChangesGuard(
-              isDirty: isDirty,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  24,
-                  16,
-                  MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Edit Global Risk',
-                          style: AppFonts.displayStyle(
-                            fontSize: Theme.of(
-                              ctx,
-                            ).textTheme.titleLarge?.fontSize,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.maybePop(ctx),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: labelCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Risk Label *',
-                        border: OutlineInputBorder(),
-                      ),
-                      textCapitalization: TextCapitalization.sentences,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: descCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 3,
-                      textCapitalization: TextCapitalization.sentences,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: () async {
-                        final label = labelCtrl.text.trim();
-                        final desc = descCtrl.text.trim();
-                        if (label.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Label is required')),
-                          );
-                          return;
-                        }
-                        try {
-                          await _di<AdminApiService>().updateGlobalRisk(
-                            risk['id'] as String,
-                            label: label,
-                            description: desc,
-                          );
-                          if (context.mounted) {
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                              SnackBar(
-                                content: const Text('Global risk updated'),
-                                backgroundColor: AppTheme.success,
-                              ),
-                            );
-                            _loadData();
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'An unexpected issue occurred. Please check your connection.',
-                                ),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: const Text('Save Changes'),
-                    ),
-                    if (isActive) ...[
-                      const SizedBox(height: 8),
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Theme.of(ctx).colorScheme.error,
-                          side: BorderSide(
-                            color: Theme.of(ctx).colorScheme.error,
-                          ),
-                        ),
-                        onPressed: () async {
-                          final confirmed = await showDialog<bool>(
-                            context: context,
-                            builder: (dialogCtx) => AlertDialog(
-                              title: const Text('Deactivate Risk?'),
-                              content: const Text(
-                                'This risk will no longer appear during new audits. '
-                                'Historical audit data referencing this risk will not be affected.',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(dialogCtx).pop(false),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(dialogCtx).pop(true),
-                                  child: Text(
-                                    'Deactivate',
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.error,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                          if (confirmed == true && context.mounted) {
-                            try {
-                              await _di<AdminApiService>().deleteGlobalRisk(
-                                risk['id'] as String,
-                              );
-                              if (context.mounted) {
-                                Navigator.pop(ctx);
-                                ScaffoldMessenger.of(ctx).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Risk deactivated'),
-                                  ),
-                                );
-                                _loadData();
-                              }
-                            } catch (e) {
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'An unexpected issue occurred. Please check your connection.',
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        child: const Text('Deactivate Risk'),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -400,7 +70,8 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Global Risk Management')),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateSheet,
+        onPressed: () =>
+            showRiskFormSheet(context: context, onSaved: _loadData),
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
@@ -481,7 +152,8 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
             if (_manager.risks.isEmpty) ...[
               const SizedBox(height: 12),
               FilledButton.tonal(
-                onPressed: _showCreateSheet,
+                onPressed: () =>
+                    showRiskFormSheet(context: context, onSaved: _loadData),
                 child: const Text('Create First Risk'),
               ),
             ],
@@ -497,115 +169,15 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
         itemCount: _filtered.length,
         itemBuilder: (_, index) {
           final risk = _filtered[index];
-          return _RiskCard(risk: risk, onTap: () => _showEditSheet(risk));
+          return RiskCard(
+            risk: risk,
+            onTap: () => showRiskFormSheet(
+              context: context,
+              risk: risk,
+              onSaved: _loadData,
+            ),
+          );
         },
-      ),
-    );
-  }
-}
-
-// ─── Risk Card ───
-
-class _RiskCard extends StatelessWidget {
-  final Map<String, dynamic> risk;
-  final VoidCallback onTap;
-
-  const _RiskCard({required this.risk, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final label = risk['label'] as String? ?? 'Unnamed';
-    final description = risk['description'] as String? ?? '';
-    final isActive = risk['isActive'] as bool? ?? true;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              // Icon
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: isActive
-                      ? AppTheme.warning.withAlpha(25)
-                      : theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.shield_outlined,
-                  color: isActive
-                      ? AppTheme.warning
-                      : theme.colorScheme.onSurfaceVariant,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            label,
-                            style: AppFonts.displayStyle(
-                              fontSize: theme.textTheme.titleSmall?.fontSize,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (!isActive)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'INACTIVE',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onErrorContainer,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    if (description.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        description,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

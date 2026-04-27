@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../_shared/theme/app_theme.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../widgets/advanced_settings_card.dart';
+import '../widgets/review_banners.dart';
+import '../widgets/review_section_breakdown.dart';
 
 /// Wizard Step 3: Review & optional advanced settings before saving.
 class WizardStepReview extends StatefulWidget {
@@ -184,109 +185,15 @@ class _WizardStepReviewState extends State<WizardStepReview> {
         const SizedBox(height: 24),
 
         // V6 validation badge (blocking errors — red)
-        if (!isV6Valid)
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.errorContainer,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: theme.colorScheme.error, width: 1),
-            ),
-            child: ExpansionTile(
-              leading: Icon(
-                Icons.cancel_outlined,
-                color: theme.colorScheme.error,
-                size: 20,
-              ),
-              title: Text(
-                'Needs Attention — ${v6Errors.length} issue${v6Errors.length == 1 ? '' : 's'} to fix',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onErrorContainer,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              initiallyExpanded: true,
-              children: v6Errors
-                  .map(
-                    (e) => ListTile(
-                      dense: true,
-                      leading: Icon(
-                        Icons.error_outline,
-                        size: 16,
-                        color: theme.colorScheme.error,
-                      ),
-                      title: Text(
-                        e,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onErrorContainer,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
+        if (!isV6Valid) ReviewValidationBanner(errors: v6Errors),
 
         // Quality indicator (non-blocking: coverage recommendation)
-        if (isV6Valid && _isProductionReady)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppTheme.successContainer,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: AppTheme.success.withValues(alpha: 0.4),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  color: AppTheme.success,
-                  size: 18,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    '${widget.sections.length} sections, $_totalCriteria criteria — Production ready',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppTheme.success,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        else
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppTheme.warningContainer,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: AppTheme.warning.withValues(alpha: 0.4),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.warning_amber_outlined,
-                  color: AppTheme.warning,
-                  size: 18,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Consider adding more — aim for 3+ sections with 5+ criteria for a thorough audit.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppTheme.warning,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        ReviewQualityBanner(
+          isV6Valid: isV6Valid,
+          isProductionReady: _isProductionReady,
+          sectionCount: widget.sections.length,
+          totalCriteria: _totalCriteria,
+        ),
         const SizedBox(height: 16),
 
         // Summary card
@@ -332,173 +239,19 @@ class _WizardStepReviewState extends State<WizardStepReview> {
         const SizedBox(height: 16),
 
         // Tappable section breakdown
-        if (widget.sections.isNotEmpty) ...[
-          Text(
-            'Sections',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ...widget.sections.asMap().entries.map((entry) {
-            final i = entry.key;
-            final s = entry.value;
-            final isExpanded = _expandedSections.contains(i);
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: InkWell(
-                onTap: () => setState(() {
-                  if (isExpanded) {
-                    _expandedSections.remove(i);
-                  } else {
-                    _expandedSections.add(i);
-                  }
-                }),
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              s.titleCtrl.text.isEmpty
-                                  ? 'Section ${i + 1}'
-                                  : s.titleCtrl.text,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          // BL-BADGE: dual-stat when sub-sections exist
-                          Text(
-                            s.subSections.isEmpty
-                                ? '${s.countCriteria()} criteria'
-                                : '${s.countCriteria()} criteria \u2022 ${s.subSections.length} sub-sections',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            isExpanded ? Icons.expand_less : Icons.expand_more,
-                            size: 18,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                      // BL-NO-REGRESSION: root-only sections unchanged.
-                      // BL-INDENT: sub-section titles at left:8, their criteria at left:24.
-                      if (isExpanded &&
-                          (s.criteria.isNotEmpty ||
-                              s.subSections.isNotEmpty)) ...[
-                        const SizedBox(height: 8),
-                        // Root criteria
-                        ...s.criteria.map(
-                          (c) => Padding(
-                            padding: const EdgeInsets.only(bottom: 4, left: 8),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.circle,
-                                  size: 5,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    c.labelCtrl.text,
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Sub-sections with indented criteria
-                        ...s.subSections.asMap().entries.map((subEntry) {
-                          final si = subEntry.key;
-                          final sub = subEntry.value;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Sub-section title row
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 4,
-                                  bottom: 2,
-                                  left: 8,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.subdirectory_arrow_right,
-                                      size: 14,
-                                      color: theme.colorScheme.primary
-                                          .withValues(alpha: 0.7),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      sub.titleCtrl.text.isEmpty
-                                          ? 'Sub-section ${si + 1}'
-                                          : sub.titleCtrl.text,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    Text(
-                                      ' (${sub.criteria.length})',
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: theme
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // Sub-section criteria (double-indented)
-                              ...sub.criteria.map(
-                                (c) => Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 4,
-                                    left: 24,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.circle,
-                                        size: 4,
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          c.labelCtrl.text,
-                                          style: theme.textTheme.bodySmall,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
-          const SizedBox(height: 16),
-        ],
+        ReviewSectionBreakdown(
+          sections: widget.sections,
+          expandedSections: _expandedSections,
+          onToggle: (i) {
+            setState(() {
+              if (_expandedSections.contains(i)) {
+                _expandedSections.remove(i);
+              } else {
+                _expandedSections.add(i);
+              }
+            });
+          },
+        ),
 
         // Optional advanced settings
         OutlinedButton.icon(

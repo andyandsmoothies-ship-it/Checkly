@@ -14,7 +14,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute weekly or on-demand. (Use `/audit-infra` for DB/architecture health). |
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Skill Load** | Extract 2-3 keywords (e.g., "health", "refactoring") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
 ## Phase 2: Code Quality Scan
@@ -34,7 +34,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 
 | Smell Vector | Execution Contract & Thresholds |
 |---|---|
-| **File Sizing** | `>500 lines` -> `🟡 Warning`. `>1000 lines` -> `🔴 Critical` (Mandatory Split). |
+| **File Sizing** | `>250 lines` -> `🟡 Warning` (Suggest splitting). `>400 lines` -> `🔴 Critical` (Mandatory Split). |
 | **Class Density** | `>3 Classes/Widgets per file` -> `🟡 Warning` (SRP Violation). |
 | **Private Isolation**| IF file == entirely private components THEN `🟡 Warning` (untestable). |
 | **Method Size** | `>150 lines` -> `🔴 Critical`. |
@@ -49,13 +49,13 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | **Stale Markers**| Scan `TODO`/`FIXME`. IF (older than 30 days OR lacks owner) THEN Flag. |
 | **Duplication** | Detect copy-pasted validation/API logic. Flag for shared extraction. |
 
-> **@@SCAN**: (1) Files breaking 500/1000 thresholds? (2) Coverage gaps found? (3) Stale markers count?
+> **@@SCAN**: (1) Files breaking 250/400 thresholds? (2) Coverage gaps found? (3) Stale markers count?
 
 ## Phase 5: Assessment Payload
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_code_report_[YYYYMMDD]_[ConversationID]_[topic].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[YYYYMMDD]_[ConversationID]_[topic].md`. |
+| **Artifact Gen** | Create `audit_code_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
 | **Severity Matrix**| `🔴 Critical` (Breaks build/Untestable) | `🟡 Warning` (Convention fail/Stale TODO) | `🟢 Optimization` (Dead code/Redundant). |
 | **Actionable Fix & Trade-offs** | MANDATORY: Provide exact fix command or refactor snippet for EVERY finding.<br><br>**CRITICAL:** When proposing a refactor or fix, you MUST present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation. |
 

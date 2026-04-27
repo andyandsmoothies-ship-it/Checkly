@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
@@ -11,6 +10,8 @@ import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../manager/analytics_manager.dart';
 import '../widgets/trend_chart.dart';
 import '../widgets/category_heatmap.dart';
+import '../widgets/analytics_filter_sheet.dart';
+import '../widgets/analytics_kpi_card.dart';
 
 final _di = GetIt.instance;
 
@@ -42,197 +43,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) {
-        return ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Filters',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  DropdownButtonFormField<String>(
-                    initialValue: _manager.selectedArea,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Area',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Areas'),
-                      ),
-                      ...(_manager.data?.areaNames ?? []).map(
-                        (a) => DropdownMenuItem(
-                          value: a,
-                          child: Text(a, overflow: TextOverflow.ellipsis),
-                        ),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      _manager.selectedArea = v;
-                      _manager.selectedStore = null; // cascade reset
-                      Navigator.pop(context);
-                      _manager.load();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  DropdownButtonFormField<String>(
-                    initialValue: _manager.selectedStore,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Store',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Stores'),
-                      ),
-                      ...(_manager.data?.storeNames ?? []).map(
-                        (s) => DropdownMenuItem(
-                          value: s,
-                          child: Text(s, overflow: TextOverflow.ellipsis),
-                        ),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      _manager.selectedStore = v;
-                      Navigator.pop(context);
-                      _manager.load();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  DropdownButtonFormField<String>(
-                    initialValue: _manager.selectedType,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Audit Type',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Types'),
-                      ),
-                      ...(_manager.data?.templateTypes ?? []).map(
-                        (t) => DropdownMenuItem(
-                          value: t,
-                          child: Text(t, overflow: TextOverflow.ellipsis),
-                        ),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      _manager.selectedType = v;
-                      Navigator.pop(context);
-                      _manager.load();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  DropdownButtonFormField<String>(
-                    initialValue: _manager.selectedAuditor,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Auditor',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('All Auditors'),
-                      ),
-                      ...(_manager.data?.auditorNames ?? []).map(
-                        (a) => DropdownMenuItem(
-                          value: a,
-                          child: Text(a, overflow: TextOverflow.ellipsis),
-                        ),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      _manager.selectedAuditor = v;
-                      Navigator.pop(context);
-                      _manager.load();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  DropdownButtonFormField<String>(
-                    initialValue: _manager.selectedStatus,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Status',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: null,
-                        child: Text('All Statuses'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'completed',
-                        child: Text('Completed'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'in_progress',
-                        child: Text('In Progress'),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      _manager.selectedStatus = v;
-                      Navigator.pop(context);
-                      _manager.load();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  DropdownButtonFormField<String>(
-                    initialValue: _manager.selectedReviewStatus,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Review Status',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: null,
-                        child: Text('All Review Statuses'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'pending',
-                        child: Text('Pending'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'approved',
-                        child: Text('Approved'),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      _manager.selectedReviewStatus = v;
-                      Navigator.pop(context);
-                      _manager.load();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+      builder: (_) => AnalyticsFilterSheet(manager: _manager),
     );
   }
 
@@ -453,7 +264,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      _KpiCard(
+                      AnalyticsKpiCard(
                         icon: Icons.assignment,
                         label: 'Total Audits',
                         value: '$totalAudits',
@@ -461,7 +272,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         tooltip: 'Total non-rejected audits',
                         onTap: () => context.go('/activity'),
                       ),
-                      _KpiCard(
+                      AnalyticsKpiCard(
                         icon: Icons.speed,
                         label: 'Avg Audit Score',
                         value: (data?.avgScore ?? 0).toStringAsFixed(1),
@@ -469,7 +280,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         tooltip: 'Mean score of all scored audits',
                         onTap: () => context.go('/activity?filter=submitted'),
                       ),
-                      _KpiCard(
+                      AnalyticsKpiCard(
                         icon: Icons.pending_actions,
                         label: 'Action Plans',
                         value: '${data?.openAPs ?? 0}',
@@ -477,7 +288,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         tooltip: 'Action plans awaiting resolution',
                         onTap: () => context.go('/plans?filter=open'),
                       ),
-                      _KpiCard(
+                      AnalyticsKpiCard(
                         icon: Icons.warning_amber,
                         label: 'Overdue',
                         value: '${data?.overdueAPs ?? 0}',
@@ -485,7 +296,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         tooltip: 'Action plans past their deadline',
                         onTap: () => context.go('/plans?sort=urgent'),
                       ),
-                      _KpiCard(
+                      AnalyticsKpiCard(
                         icon: Icons.check_circle,
                         label: 'Completion Rate',
                         value:
@@ -513,85 +324,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _KpiCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color accentColor;
-  final String? tooltip;
-  final VoidCallback? onTap;
-
-  const _KpiCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.accentColor,
-    this.tooltip,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: (MediaQuery.sizeOf(context).width - 40) / 2,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(icon, color: accentColor, size: 18),
-                    const Spacer(),
-                    if (tooltip != null)
-                      Tooltip(
-                        message: tooltip!,
-                        triggerMode: TooltipTriggerMode.tap,
-                        child: Icon(
-                          Icons.info_outline,
-                          size: 14,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.3),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  value,
-                  style: AppFonts.serifStyle(
-                    fontSize: Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.fontSize,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

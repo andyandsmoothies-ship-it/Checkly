@@ -15,7 +15,7 @@ description: SRE Hostile Architecture Review — Hunts for distributed systems f
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute when a new feature implies concurrency, sync, caching, background workers, or complex state across microservices/clients. |
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **System Boundary** | Extract the target system (e.g., "Offline Sync", "Auth Cache", "Message Queue"). Identify exactly what fails if the network drops by 50% or latency spikes to 5000ms. |
 
 ## Phase 2: The Brutal Interrogation (The 4 Critics)
@@ -47,7 +47,7 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_arch_report_[YYYYMMDD]_[ConversationID]_[topic].md` in `brain/` folder. Format as a stark, unappeasing teardown. |
+| **Artifact Gen** | Create `audit_arch_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `brain/` folder. Format as a stark, unappeasing teardown. |
 | **Severity Matrix**| `🔴 Fatal` (Bricks the system / Data Corruption / DDoS) | `🟡 Brittle` (Fake-Smart. Will scale poorly or fail silently) | `🟢 Resilient` (Actually viable). |
 | **Actionable Fix & Trade-offs** | MANDATORY: Do not just complain. Provide the exact system design fix (e.g., "Implement Exponential Backoff Retry").<br><br>**CRITICAL:** When proposing a fix, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., "Pro: Solves OOM. Con: Adds 200ms latency."). Yield for the user to make the final executive decision before writing code. |
 

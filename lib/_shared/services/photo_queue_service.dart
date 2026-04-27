@@ -119,6 +119,7 @@ class PhotoQueueService {
 
     return const DrainSuccess();
   }
+
   /// Extracts the [Retry-After] seconds value from a [DioException] response header.
   /// Returns null if the error is not a 429 or the header is absent/unparseable.
   int? _extractRetryAfter(Exception e) {

@@ -14,7 +14,7 @@ description: The Core Builder Implementation Workflow
 |---|---|
 | **Context Load** | `view_file(implement.md)` -> load `@@SCAN` into active context. |
 | **Governance** | Run Pre-Flight check (`governance-rules.md`). |
-| **Task Tracker**| MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` BEFORE coding. |
+| **Task Tracker**| MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` BEFORE coding. |
 
 ```markdown
 # Task: [Name]
@@ -72,9 +72,10 @@ Review from 6 angles:
 |---|---|
 | **Test Analytics**| Bypassing terminal limits: output tests to `.agents/tmp/results.json` and `view_file` them. |
 | **Diff Check** | `git diff --name-only`. Revert unplanned. |
+| **Anti-Collapse Gate**| IF any modified file >400 lines: STRICTLY PROHIBITED from handoff. You MUST halt and extract components. |
 | **Handoff Trap** | IF Context Limit Approaching: Create `handoff.md` -> YIELD. |
 
-> **@@SCAN**: (1) 4 angles reviewed? (2) State tests exist? (3) `git diff` clean?
+> **@@SCAN**: (1) 4 angles reviewed? (2) State tests exist? (3) `git diff` clean? (4) File lines <400?
 
 ## Phase 3: Handoff
 | State | Condition | Result Action |
@@ -102,9 +103,9 @@ Review from 6 angles:
 > **HOW TO CONTINUE THE SLICING LOOP:**
 >
 > **Scenario A: MORE slices left in the Implementation Plan.**
-> 1. Open a **NEW QA Session**.
-> 2. `@[/atdd] Execute the NEXT slice from this plan: {Path_to_implementation_plan.md}`
-> 3. Open a **NEW Builder Session** and run `@[/implement]` on those RED tests.
+> 1. Check the Implementation Plan to see the routing for the NEXT slice.
+> 2. If it requires tests first (Track B2/C): Run `@[/tdd]` or `@[/atdd]`.
+> 3. If it is direct implementation (Track B1/UI): Open a **NEW Builder Session** and run `@[/implement] Execute the NEXT slice from this plan: {Path}`.
 >
 > **Scenario B: FINAL slice (or only 1 slice).**
 > 1. Open a **NEW QA Session**.

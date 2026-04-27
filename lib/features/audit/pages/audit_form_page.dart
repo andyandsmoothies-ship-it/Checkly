@@ -1,18 +1,17 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/services/gps_service.dart';
 import '../../../_shared/utils/date_format_utils.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
-import '../../stores/manager/store_manager.dart';
 import '../../templates/manager/template_manager.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
 
+import '../utils/audit_progress_utils.dart';
+import '../services/scoring_input_mapper.dart';
+import '../widgets/audit_form_dialogs.dart';
 import '../widgets/audit_quick_jump_sheet.dart';
 import '../widgets/audit_score_hud.dart';
 import '../widgets/audit_section_card.dart';
@@ -81,41 +80,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
         final draftAge = manager.pendingDraft?.savedAt != null
             ? timeAgo(manager.pendingDraft!.savedAt)
             : 'recently';
-        final resume = await showDialog<bool>(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => AlertDialog(
-            title: const Text('Resume draft?'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'You have an unsaved draft for this audit (saved $draftAge). '
-                  'Would you like to resume where you left off?',
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'This draft is saved only on this device. It will expire in 14 days.',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Discard'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Resume'),
-              ),
-            ],
-          ),
-        );
+        final resume = await showResumeDraftDialog(context, draftAge);
         if (resume == true) {
           manager.restoreDraft();
         } else {
@@ -139,90 +104,6 @@ class _AuditFormPageState extends State<AuditFormPage> {
     super.dispose();
   }
 
-  // ── Progress helpers ──
-
-  int _groupAnsweredCount(AuditManager manager, GroupDto group) {
-    int count = 0;
-    for (final c in group.criteria) {
-      final a = manager.answers[c.id];
-      if (a != null && (a.value != null || a.numericValue != null)) count++;
-    }
-    for (final child in group.children) {
-      count += _groupAnsweredCount(manager, child);
-    }
-    return count;
-  }
-
-  int _groupTotalCount(GroupDto group) {
-    int count = group.criteria.length;
-    for (final child in group.children) {
-      count += _groupTotalCount(child);
-    }
-    return count;
-  }
-
-  bool _allCriteriaAnswered(AuditManager manager, TemplateTreeDto template) {
-    for (final group in template.groups) {
-      if (_groupAnsweredCount(manager, group) < _groupTotalCount(group)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  List<CriterionDto> _getMissingRequired(
-    AuditManager manager,
-    TemplateTreeDto template,
-  ) {
-    final missing = <CriterionDto>[];
-    final globalRequired = _isConfirmRequired(template);
-
-    void checkGroup(GroupDto group) {
-      for (final c in group.criteria) {
-        bool isRequired = globalRequired;
-        if (!isRequired) {
-          if (c.metadata != null && c.metadata!.isNotEmpty) {
-            try {
-              final meta = json.decode(c.metadata!) as Map<String, dynamic>;
-              isRequired = meta['isRequired'] == true;
-            } catch (_) {}
-          }
-        }
-
-        if (isRequired) {
-          final a = manager.answers[c.id];
-          if (a == null || (a.value == null && a.numericValue == null)) {
-            missing.add(c);
-          }
-        }
-      }
-      for (final child in group.children) {
-        checkGroup(child);
-      }
-    }
-
-    for (final group in template.groups) {
-      checkGroup(group);
-    }
-    return missing;
-  }
-
-  int _totalAnswered(AuditManager manager, TemplateTreeDto template) {
-    int count = 0;
-    for (final group in template.groups) {
-      count += _groupAnsweredCount(manager, group);
-    }
-    return count;
-  }
-
-  int _totalCriteria(TemplateTreeDto template) {
-    int count = 0;
-    for (final group in template.groups) {
-      count += _groupTotalCount(group);
-    }
-    return count;
-  }
-
   // ── Quick Jump ──
 
   void _showQuickJump(AuditManager manager, TemplateTreeDto template) {
@@ -240,72 +121,17 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
   // ── Submit ──
 
-  bool _isConfirmRequired(TemplateTreeDto template) {
-    if (template.scoringLogicConfig == null ||
-        template.scoringLogicConfig!.isEmpty) {
-      return false;
-    }
-    try {
-      final config =
-          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
-      // Read from top-level (Flutter) or features map (legacy)
-      if (config['confirmCorrect'] == true) return true;
-      final features = config['features'] as Map<String, dynamic>?;
-      return features?['confirm_required'] == true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  bool _isCcpEnabled(TemplateTreeDto template) {
-    if (template.scoringLogicConfig == null ||
-        template.scoringLogicConfig!.isEmpty) {
-      return true;
-    }
-    try {
-      final config =
-          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
-      if (config.containsKey('ccpOverride')) {
-        return config['ccpOverride'] == true;
-      }
-      final features = config['features'] as Map<String, dynamic>?;
-      if (features != null && features.containsKey('ccp_enabled')) {
-        return features['ccp_enabled'] == true;
-      }
-      return true; // default true if not specified
-    } catch (_) {
-      return true;
-    }
-  }
-
-  bool _isRiskEnabled(TemplateTreeDto template) {
-    if (template.scoringLogicConfig == null ||
-        template.scoringLogicConfig!.isEmpty) {
-      return true;
-    }
-    try {
-      final config =
-          json.decode(template.scoringLogicConfig!) as Map<String, dynamic>;
-      if (config.containsKey('riskOverride')) {
-        return config['riskOverride'] == true;
-      }
-      final features = config['features'] as Map<String, dynamic>?;
-      if (features != null && features.containsKey('risk_enabled')) {
-        return features['risk_enabled'] == true;
-      }
-      return true; // default true if not specified
-    } catch (_) {
-      return true;
-    }
-  }
-
   Future<void> _onSubmit(AuditManager manager) async {
     final template = manager.template!;
-    final answered = _totalAnswered(manager, template);
-    final total = _totalCriteria(template);
+    final answered = totalAnswered(manager, template);
+    final total = totalCriteria(template);
 
     // Gap 3: Confirm Required gate (now logically ORs global and individual flags)
-    final missingRequired = _getMissingRequired(manager, template);
+    final missingRequired = getMissingRequired(
+      manager,
+      template,
+      ScoringInputMapper.isConfirmRequired(template),
+    );
     if (missingRequired.isNotEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -322,114 +148,22 @@ class _AuditFormPageState extends State<AuditFormPage> {
 
     // ── STEP 1: Confirm dialog FIRST (instant, no GPS wait) ──────────────
     if (!mounted) return;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Submit Audit?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Progress bar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: total > 0 ? answered / total : 0,
-                minHeight: 6,
-                backgroundColor: Theme.of(
-                  ctx,
-                ).colorScheme.surfaceContainerHighest,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text('Criteria answered: $answered / $total'),
-            const SizedBox(height: 4),
-            Text(
-              manager.liveScore != null
-                  ? 'Score: ${manager.liveScore!.toStringAsFixed(1)}'
-                  : 'Survey — No Score',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: manager.liveScore != null && manager.liveScore! >= 80
-                    ? AppTheme.success
-                    : manager.liveScore != null && manager.liveScore! >= 50
-                    ? AppTheme.warning
-                    : Theme.of(ctx).colorScheme.error,
-              ),
-            ),
-            if (answered < total) ...[
-              const SizedBox(height: 12),
-              Text(
-                '⚠ ${total - answered} criteria unanswered',
-                style: TextStyle(
-                  color: Theme.of(ctx).colorScheme.error,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Submit Action'),
-          ),
-        ],
-      ),
+    final confirm = await showSubmitConfirmDialog(
+      context,
+      answered: answered,
+      total: total,
+      liveScore: manager.liveScore,
     );
 
     if (confirm != true) return;
+
+    if (!mounted) return;
 
     // ── STEP 2: Lock UI, run GPS, then submit ────────────────────────────
     setState(() => _isSubmitting = true);
     try {
       // Gap 5: GPS proximity warning (non-blocking) — deferred post-confirm
-      try {
-        final gps = _di<GpsService>();
-        final pos = await gps.getCurrentPosition();
-        if (pos != null) {
-          manager.setGps(pos.latitude, pos.longitude);
-
-          final storeManager = _di<StoreManager>();
-          final stores = storeManager.stores.value;
-          final store = stores
-              .where((s) => s.id == manager.storeId)
-              .firstOrNull;
-          if (store != null && store.gpsLat != null && store.gpsLng != null) {
-            final result = gps.checkProximity(
-              userLat: pos.latitude,
-              userLng: pos.longitude,
-              storeLat: store.gpsLat!,
-              storeLng: store.gpsLng!,
-            );
-            // Show proximity warning BEFORE navigation to prevent SnackBar clipping
-            if (!result.inRange && mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Unverified location — ${result.distance}m from store '
-                    '(max ${GpsService.maxDistanceMeters}m)',
-                  ),
-                  backgroundColor: AppTheme.warning,
-                  duration: const Duration(seconds: 4),
-                ),
-              );
-            }
-          }
-        }
-      } catch (_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('📍 Location unavailable — submitting without GPS'),
-            ),
-          );
-        }
-      }
+      await checkAndSetGps(context, manager);
 
       await manager.submitAudit();
 
@@ -490,10 +224,10 @@ class _AuditFormPageState extends State<AuditFormPage> {
           );
         }
 
-        final allAnswered = _allCriteriaAnswered(manager, template);
-        final confirmRequired = _isConfirmRequired(template);
-        final ccpEnabled = _isCcpEnabled(template);
-        final riskEnabled = _isRiskEnabled(template);
+        final allAnswered = allCriteriaAnswered(manager, template);
+        final confirmRequired = ScoringInputMapper.isConfirmRequired(template);
+        final ccpEnabled = ScoringInputMapper.isCcpEnabled(template);
+        final riskEnabled = ScoringInputMapper.isRiskEnabled(template);
 
         return PopScope(
           canPop: !_hasChanges,

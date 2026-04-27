@@ -17,7 +17,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Vector | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the strict schema BEFORE proceeding. List ONLY the research artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema BEFORE proceeding. List ONLY the research artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
 | **Status Quo Audit** | MANDATORY: Before proposing any new architecture, you MUST `grep_search` to find existing native implementations (e.g., existing auth guards, parsers). Your artifact MUST document the "Current Codebase Reality" to prevent generic textbook hallucinations. |
 | **Discovery** | IF (tech is very new/rare) THEN query Context7 MCP to save hallucination. ELSE rely on model baseline to save API credits. |
@@ -39,11 +39,11 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the research directly to the chat UI. |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the research directly to the chat UI. |
 | **Workspace Copy**| MANDATORY: Because the `brain/` folder is invisible to the user's IDE, you MUST copy the generated research artifact to `.agents/tmp/research/` so the user can review it. Output the absolute path to this visible file in your final message. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `research_[YYYYMMDD]_[ConversationID]_[topic].md` MUST INCLUDE: 
+> **Payload Schema:** Your generated `research_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST INCLUDE: 
 > 1. `[ORIGIN_IDEA]`: A strictly preserved, 1:1 summary of the user's original business goal/idea from the prompt. This anchors all future workflows.
 > 2. `<latent_space_scratchpad>`: Before writing your final plan, use this block to explicitly state your internal reasoning, debate architectural tradeoffs, and explore edge cases to artificially expand your test-time compute.
 > 3. `E2E Workflow Map`

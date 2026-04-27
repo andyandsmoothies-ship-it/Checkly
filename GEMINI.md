@@ -51,6 +51,13 @@ After any significant implementation, debug, or refactor, assess whether a new l
 
 
 
+### The Anti-Attention-Collapse Mandate (STRICT)
+<SYSTEM_GUARD type="STRICT" name="AntiAttentionCollapse">
+- **Rule**: Keep files small to prevent AI attention collapse and hallucination.
+- **Enforcement**: Files MUST NOT exceed 400 lines. If a file crosses 250 lines, it triggers a 🟡 Warning to begin extracting components (e.g. Flutter widgets to separate files). If it crosses 400 lines, it is a 🔴 Critical violation and MUST be split before new features are added.
+- **Anti-Golfing Clause**: You must reduce size by extracting logical components to new files. You are STRICTLY PROHIBITED from deleting comments, removing whitespace, or compressing code to meet this limit.
+</SYSTEM_GUARD>
+
 ### Artifact Density & Formatting
 <SYSTEM_GUARD type="STRICT" name="ArtifactDensityFormatting">
 - **Rule**: Keep artifacts organized and easy to read.

@@ -766,7 +766,7 @@ create table orders (
 -- Alternative: time-prefixed IDs for sortable, distributed IDs (no extension needed)
 create table events (
   id text default concat(
-    to_char(now() at time zone 'utc', 'YYYYMMDDHH24MISSMS'),
+    to_char(now() at time zone 'utc', 'YYYYMMDD_HHMMSSHH24MISSMS'),
     gen_random_uuid()::text
   ) primary key
 );

@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../manager/template_manager.dart';
-import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../widgets/wizard_step_name.dart';
 import '../widgets/wizard_step_structure.dart';
@@ -13,6 +11,8 @@ import '../widgets/wizard_step_review.dart';
 import '../widgets/wizard_step_success.dart';
 import '../widgets/blueprint_selection_modal.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
+import 'wizard_payload_builder.dart';
+import 'wizard_validators.dart';
 
 final _di = GetIt.instance;
 
@@ -128,7 +128,14 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
   // ── Navigation ──
 
   void _nextStep() {
-    if (!_validateCurrentStep()) return;
+    if (!validateWizardStep(
+      context,
+      _currentStep,
+      title: _titleCtrl.text,
+      sections: _sections,
+    )) {
+      return;
+    }
 
     if (_currentStep == 1) {
       // Transitioning from Structure → Build: reset section cursor
@@ -154,191 +161,9 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
     }
   }
 
-  bool _validateCurrentStep() {
-    switch (_currentStep) {
-      case 0: // Name
-        if (_titleCtrl.text.trim().isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please enter a template title')),
-          );
-          return false;
-        }
-        return true;
+  // ── Validators extracted to wizard_validators.dart ──
 
-      case 1: // Structure
-        if (_sections.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please add at least one section.')),
-          );
-          return false;
-        }
-        for (int i = 0; i < _sections.length; i++) {
-          if (_sections[i].titleCtrl.text.trim().isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Please name Section ${i + 1}')),
-            );
-            return false;
-          }
-        }
-        return true;
-
-      case 2: // Build Criteria
-        for (int i = 0; i < _sections.length; i++) {
-          final sec = _sections[i];
-          final secName = sec.titleCtrl.text.isEmpty
-              ? 'Section ${i + 1}'
-              : '"${sec.titleCtrl.text}"';
-          // BL-3: section is valid if it has criteria OR sub-sections.
-          if (sec.criteria.isEmpty && sec.subSections.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('$secName needs at least one criterion')),
-            );
-            return false;
-          }
-          // Validate root criteria
-          final rootError = _validateCriteriaList(sec.criteria, secName);
-          if (rootError != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(rootError),
-                duration: const Duration(seconds: 4),
-              ),
-            );
-            return false;
-          }
-          // BL-3: every sub-section must have >= 1 criterion
-          for (int si = 0; si < sec.subSections.length; si++) {
-            final sub = sec.subSections[si];
-            final subName = sub.titleCtrl.text.isEmpty
-                ? 'Sub-section ${si + 1} in $secName'
-                : '"${sub.titleCtrl.text}"';
-            if (sub.criteria.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$subName has no criteria')),
-              );
-              return false;
-            }
-            final subError = _validateCriteriaList(sub.criteria, subName);
-            if (subError != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(subError),
-                  duration: const Duration(seconds: 4),
-                ),
-              );
-              return false;
-            }
-          }
-        }
-        return true;
-
-      case 3: // Review — trigger save
-        return true;
-
-      default:
-        return true;
-    }
-  }
-
-  // ── Validation helpers ──
-
-  /// Validates [criteria] labels and V6 choice-option rules.
-  /// Returns the first error message or null if all pass.
-  String? _validateCriteriaList(
-    List<EditableCriterion> criteria,
-    String parentName,
-  ) {
-    for (int ci = 0; ci < criteria.length; ci++) {
-      final c = criteria[ci];
-      if (c.labelCtrl.text.trim().isEmpty) {
-        return 'Criterion ${ci + 1} in $parentName needs a label';
-      }
-      if ((c.inputType == 'single_choice' || c.inputType == 'multi_choice') &&
-          c.choiceOptions.length < 2) {
-        final label = c.labelCtrl.text.trim().isNotEmpty
-            ? '"${c.labelCtrl.text.trim()}"'
-            : 'Criterion ${ci + 1}';
-        return '$label needs at least 2 choices. Tap it to add options.';
-      }
-    }
-    return null;
-  }
-
-  // ── Payload builders ──
-
-  /// Serialises [EditableCriterion] to the server's expected shape.
-  /// BL-2 / Gotcha #11: excludes pointsWeight for text/choice types at ALL depths.
-  Map<String, dynamic> _buildCriterion(EditableCriterion c, int ci) {
-    final bool isChoiceType =
-        c.inputType == 'single_choice' || c.inputType == 'multi_choice';
-    final bool isScaleType = c.inputType == 'scale';
-    return <String, dynamic>{
-      'label': c.labelCtrl.text,
-      if (c.descCtrl.text.isNotEmpty) 'description': c.descCtrl.text,
-      'inputType': c.inputType,
-      if (!isChoiceType && c.inputType != 'text')
-        'pointsWeight': double.tryParse(c.pointsCtrl.text),
-      if (!isChoiceType &&
-          c.inputType != 'text' &&
-          c.minusImpactCtrl.text.isNotEmpty)
-        'minusImpact': double.tryParse(c.minusImpactCtrl.text),
-      if (!isChoiceType &&
-          c.inputType != 'text' &&
-          c.maxDeductionCtrl.text.isNotEmpty)
-        'maxDeductionPoints': double.tryParse(c.maxDeductionCtrl.text),
-      'isCcp': c.isCcp,
-      'isRisk': c.isRisk,
-      'orderIndex': ci,
-      if (c.isRequired || _confirmCorrect) 'isRequired': true,
-      if (isChoiceType && c.choiceOptions.isNotEmpty)
-        'metadata': json.encode({'options': c.choiceOptions}),
-      if (isScaleType && c.scaleOptions.isNotEmpty)
-        'metadata': json.encode({'scaleOptions': c.scaleOptions}),
-    };
-  }
-
-  /// Recursively serialises a [List<EditableGroup>] into the server's group shape.
-  /// BL-1: matches `template_builder_page.dart` shape — {title, orderIndex, children, criteria}.
-  List<Map<String, dynamic>> _buildGroupsRecursive(List<EditableGroup> groups) {
-    return groups.asMap().entries.map((e) {
-      final i = e.key;
-      final s = e.value;
-      // P2: Mutual-exclusivity invariant — a group must NOT contain both flat
-      // criteria AND nested sub-sections. The UI enforces this; this assert
-      // guards against corrupted payloads that bypass the UI guard.
-      assert(
-        s.criteria.isEmpty || s.subSections.isEmpty,
-        'Group "${s.titleCtrl.text}" violates mutual-exclusivity: '
-        'has ${s.criteria.length} criteria AND ${s.subSections.length} sub-sections.',
-      );
-      return <String, dynamic>{
-        'title': s.titleCtrl.text,
-        if (s.descCtrl.text.isNotEmpty) 'description': s.descCtrl.text,
-        'orderIndex': i,
-        'children': _buildGroupsRecursive(s.subSections),
-        'criteria': s.criteria
-            .asMap()
-            .entries
-            .map((ce) => _buildCriterion(ce.value, ce.key))
-            .toList(),
-      };
-    }).toList();
-  }
-
-  List<Map<String, dynamic>> _buildGroups() => _buildGroupsRecursive(_sections);
-
-  String _buildScoringLogicConfig() {
-    return json.encode({
-      'scoringMode': _scoringMode,
-      'ccpOverride': _ccpOverride,
-      'riskOverride': _riskOverride,
-      'weightedDensity': _weightedDensity,
-      'progressiveRepeat': _progressiveRepeat,
-      'confirmCorrect': _confirmCorrect,
-      'deadlineDays': int.tryParse(_deadlineCtrl.text) ?? 7,
-      'reminderDays': int.tryParse(_reminderCtrl.text) ?? 2,
-    });
-  }
+  // ── Payload builders extracted to wizard_payload_builder.dart ──
 
   Future<void> _save() async {
     setState(() => _saving = true);
@@ -351,9 +176,18 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
         description: _descCtrl.text.trim().isNotEmpty
             ? _descCtrl.text.trim()
             : null,
-        scoringLogicConfig: _buildScoringLogicConfig(),
+        scoringLogicConfig: buildScoringLogicConfig(
+          scoringMode: _scoringMode,
+          ccpOverride: _ccpOverride,
+          riskOverride: _riskOverride,
+          weightedDensity: _weightedDensity,
+          progressiveRepeat: _progressiveRepeat,
+          confirmCorrect: _confirmCorrect,
+          deadlineDays: _deadlineCtrl.text,
+          reminderDays: _reminderCtrl.text,
+        ),
         version: 0,
-        groups: _buildGroups(),
+        groups: buildGroups(_sections, _confirmCorrect),
       );
 
       if (mounted) {

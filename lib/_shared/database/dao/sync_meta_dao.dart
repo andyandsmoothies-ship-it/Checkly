@@ -10,19 +10,21 @@ class SyncMetaDao {
 
   /// Get the last sync timestamp for a specific entity type (e.g., 'global').
   Future<DateTime?> get(String entityType) async {
-    final meta = await (_db.select(_db.syncMeta)
-          ..where((t) => t.entityType.equals(entityType)))
-        .getSingleOrNull();
+    final meta = await (_db.select(
+      _db.syncMeta,
+    )..where((t) => t.entityType.equals(entityType))).getSingleOrNull();
     return meta?.lastSyncAt;
   }
 
   /// Update the last sync timestamp for an entity type.
   Future<void> set(String entityType, DateTime lastSyncAt) async {
-    await _db.into(_db.syncMeta).insertOnConflictUpdate(
-      SyncMetaCompanion(
-        entityType: Value(entityType),
-        lastSyncAt: Value(lastSyncAt),
-      ),
-    );
+    await _db
+        .into(_db.syncMeta)
+        .insertOnConflictUpdate(
+          SyncMetaCompanion(
+            entityType: Value(entityType),
+            lastSyncAt: Value(lastSyncAt),
+          ),
+        );
   }
 }

@@ -6,6 +6,7 @@ import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/dao/action_plan_outbox_dao.dart';
 import '../../../_shared/services/connectivity_service.dart';
 import '../model/action_plan_dto.dart';
+import '../model/stale_conflict.dart';
 import '../models/add_comment_request.dart';
 import '../models/comment_dto.dart';
 // ============================================================
@@ -117,8 +118,15 @@ class ActionPlanManager extends ChangeNotifier {
 
   // ---------- Offline Conflict Recovery ----------
   /// Get the stale offline conflict for this plan, if it exists.
-  Future<PendingActionPlanUpdate?> getStaleConflict(String planId) {
-    return _outboxDao.getStaleConflictForPlan(planId);
+  /// Returns a [StaleConflict] DTO so callers do not need a DB import.
+  Future<StaleConflict?> getStaleConflict(String planId) async {
+    final result = await _outboxDao.getStaleConflictForPlan(planId);
+    if (result == null) return null;
+    return StaleConflict(
+      id: result.id,
+      correctionPlan: result.correctionPlan,
+      evidenceNote: result.evidenceNote,
+    );
   }
 
   /// Dismiss the stale conflict by removing it from the outbox.
