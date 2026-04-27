@@ -14,7 +14,7 @@ description: The Core Builder Implementation Workflow
 |---|---|
 | **Context Load** | `view_file(implement.md)` -> load `@@SCAN` into active context. |
 | **Governance** | Run Pre-Flight check (`governance-rules.md`). |
-| **Task Tracker**| MANDATORY: Create `task_[ConversationID].md` BEFORE coding. |
+| **Task Tracker**| MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` BEFORE coding. |
 
 ```markdown
 # Task: [Name]

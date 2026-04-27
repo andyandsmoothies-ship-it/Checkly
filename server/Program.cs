@@ -266,7 +266,7 @@ try
     }
     catch (Exception ex)
     {
-        Log.Warning(ex, "FirebaseApp.Create() failed. FCM push will be disabled.");
+        Log.Warning("FirebaseApp.Create() failed: {Message}. FCM push will be disabled.", ex.Message);
     }
 
     // --- SignalR ---

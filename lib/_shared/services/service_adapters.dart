@@ -81,8 +81,9 @@ class SyncApiAdapter implements SyncApi {
     final allRisks = <dynamic>[];
     int page = 1;
     const pageSize = 100;
+    const maxPages = 10; // Safety cap: 10 pages × 100 = 1000 risks max
 
-    while (true) {
+    while (page <= maxPages) {
       final params = <String, dynamic>{'page': page, 'pageSize': pageSize};
       if (since != null) {
         params['since'] = since.toIso8601String();

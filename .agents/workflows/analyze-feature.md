@@ -13,7 +13,7 @@ description: Lightweight, Tactical Analysis for Standard Features and Bugs (Trac
 
 | Step | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the implementation plan artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the implementation plan artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Contract Ingestion** | MANDATORY: If this feature is part of an Epic, you MUST read the parent Epic's API Contracts and Dispatch Map. Your sole purpose is to translate ONE specific Epic Slice into an exact execution plan. You are required to generate the specific Database Schemas, File Paths, and exact Diffs required to fulfill the Epic Contract without changing the contract itself. |
 
 ```markdown
@@ -26,7 +26,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 - [ ] Phase 4: Route Implementation
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../implementation_plan_[topic]_[ConversationID].md | Plan |
+| [NEW]  | brain/.../implementation_plan_[YYYYMMDD]_[ConversationID]_[topic].md | Plan |
 ```
 
 ## Phase 1: Discovery & Deconstruction
@@ -59,7 +59,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 |---|---|
 | **QA Test Contracts (TDD)** | MANDATORY for Track B2/C: Generate raw data for QA. Your plan MUST include a Test Contract section (Format: ID, Exact Text, State Matrix, Why RED) that the SDET can easily ingest into their test suite. |
 | **JIT Harness & Verification** | Declare [ACTIVE_SKILLS] needed for the Builder. Declare terminal validation commands (e.g. lutter test or dotnet test) upfront. |
-| **High-Level Design Document** | MANDATORY: Use `write_to_file` to generate `implementation_plan_[topic]_[ConversationID].md` into the `brain/` directory. NEVER dump the tactical plan directly into the chat UI. Keep the document highly readable for human review before execution. |
+| **High-Level Design Document** | MANDATORY: Use `write_to_file` to generate `implementation_plan_[YYYYMMDD]_[ConversationID]_[topic].md` into the `brain/` directory. NEVER dump the tactical plan directly into the chat UI. Keep the document highly readable for human review before execution. |
 | **Artifact Generation** | The final plan MUST contain explicit *Verifiable Goals* (e.g., 'Write X test -> Verify Red -> Implement Y -> Verify Green') rather than just vague developer instructions. |
 ## Phase 4: Route Implementation (The ATDD Gate)
 
@@ -93,7 +93,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `implementation_plan_[topic]_[ConversationID].md` MUST INCLUDE the following EXACT headers and sections. Keep it dense and brief.
+> **Payload Schema:** Your generated `implementation_plan_[YYYYMMDD]_[ConversationID]_[topic].md` MUST INCLUDE the following EXACT headers and sections. Keep it dense and brief.
 > - `<latent_space_scratchpad>`: Computational thinking on edge cases prior to outputting the plan.
 > - `## Executive Summary & YAGNI`
 > - `## 4-State Matrix` (Success, Error, Empty, Loading)
@@ -105,7 +105,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `<forensic_evidence>`: Tags containing a list of terminal commands run.
 > - `## Handoff Block`: An AI Agent Mission Brief (TL;DR for the next AI agent). **MANDATORY:** You MUST include the exact `@[/...]` routing commands (e.g., `@[/tdd]` or `@[/implement]`) for EVERY Execution Slice here, mapping them to their absolute file paths.
 >
-> **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update task_[YYYYMMDD]_[ConversationID]_[topic].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.

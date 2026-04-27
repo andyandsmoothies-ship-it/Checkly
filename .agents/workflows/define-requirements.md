@@ -10,7 +10,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 > Used to bridge the gap between a raw idea and technical implementation. Establishes the "Who, What, and Rules" using the shaping methodology.
 
 ## Phase 1: Intake & Context Alignment
-- [ ] **Task Tracking**: Create `task_[ConversationID].md` using the standard schema.
+- [ ] **Task Tracking**: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the standard schema.
 - [ ] **Skill Load**: Load the `shaping` skill from `.agents/skills/`.
 - [ ] **Intake Gate**:
   - If the user provides a raw idea: Extract the `[ORIGIN_IDEA]`.
@@ -32,7 +32,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Identify Unknowns**: Flag any unresolved business logic with ⚠️.
 
 ## Phase 4: Deliverable Generation
-- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[topic]_[ConversationID].md` to the `brain/` directory.
+- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD]_[ConversationID]_[topic].md` to the `brain/` directory.
 - [ ] **Payload Schema**:
     1. `[ORIGIN_IDEA]` or `[ADR_REFERENCE]`.
     2. Defined Actors & RBAC Rules.

@@ -122,7 +122,7 @@ class _HeatCell extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${score.avgScore.toStringAsFixed(0)}',
+            score.avgScore.toStringAsFixed(0),
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w800,
               color: color,

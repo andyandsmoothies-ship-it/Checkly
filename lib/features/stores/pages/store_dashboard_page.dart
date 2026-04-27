@@ -71,7 +71,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '${(data?.avgScore ?? 0).toStringAsFixed(1)}',
+                            (data?.avgScore ?? 0).toStringAsFixed(1),
                             style: AppFonts.serifStyle(
                               fontSize:
                                   theme.textTheme.displaySmall?.fontSize ?? 40,
@@ -176,7 +176,7 @@ class _StoreDashboardPageState extends State<StoreDashboardPage> {
                               ),
                               alignment: Alignment.center,
                               child: Text(
-                                '${score.toStringAsFixed(0)}',
+                                score.toStringAsFixed(0),
                                 style: AppFonts.serifStyle(
                                   fontSize:
                                       theme.textTheme.labelSmall?.fontSize ??

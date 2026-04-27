@@ -18,7 +18,7 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 | Step | Execution Contract |
 |---|---|
 | **Governance** | IF `.agents/rules/governance-rules.md` NOT in memory THEN `view_file` it immediately. |
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the final reporting artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the final reporting artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 
 ```markdown
 # Task: [Epic Name]
@@ -30,7 +30,7 @@ Workflow: /analyze-epic | Track: C
 - [ ] Phase 4: Slicing Dispatch
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../analysis_epic_[topic]_[ConversationID].md | Epic Plan |
+| [NEW]  | brain/.../analysis_epic_[YYYYMMDD]_[ConversationID]_[topic].md | Epic Plan |
 ```
 
 ## Phase 1: Technical Discovery & Feasibility
@@ -67,7 +67,7 @@ Workflow: /analyze-epic | Track: C
 
 | Process | Execution Contract |
 |---|---|
-| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `analysis_epic_[topic]_[ConversationID].md` to the `brain/` directory. NEVER output the Epic plan directly to the chat UI. |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `analysis_epic_[YYYYMMDD]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the Epic plan directly to the chat UI. |
 > **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
 
 ## Phase 4: Slicing & Dispatch Loop
@@ -77,7 +77,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Execution Contract |
 |---|---|
-| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices (Unless Backend-Only Infrastructure, then slice by technical milestones). Append slices to `analysis_epic_[topic]_[ConversationID].md`. |
+| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices (Unless Backend-Only Infrastructure, then slice by technical milestones). Append slices to `analysis_epic_[YYYYMMDD]_[ConversationID]_[topic].md`. |
 | **Dispatch Map** | Generate Routing Table. `Slice N | Track A/B | Route Path`. |
 
 ### Dispatch Map Schema
@@ -92,7 +92,7 @@ The Epic must be sliced and routed to the downstream feature agents:
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `analysis_epic_[topic]_[ConversationID].md` MUST INCLUDE the following EXACT sections:
+> **Payload Schema:** Your generated `analysis_epic_[YYYYMMDD]_[ConversationID]_[topic].md` MUST INCLUDE the following EXACT sections:
 > 1. `<latent_space_scratchpad>`: To artificially expand test-time compute by thinking through tradeoffs.
 > 2. `## Executive Summary`
 > 3. `## Decision Matrix`
@@ -114,7 +114,7 @@ The Epic must be sliced and routed to the downstream feature agents:
 > 3. **AI Agent Mission Brief**: 1-2 sentence TL;DR for the next agent.
 > 4. Exact next workflow command using the `{Absolute_Path}`.
 >
-> **Update task_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update task_[YYYYMMDD]_[ConversationID]_[topic].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.

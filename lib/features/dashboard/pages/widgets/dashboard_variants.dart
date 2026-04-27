@@ -96,7 +96,7 @@ class AuditorDashboardVariant extends StatelessWidget {
               StatRowData(
                 icon: Icons.speed,
                 label: 'My Avg Audit Score',
-                value: '$avgFormatted',
+                value: avgFormatted,
                 iconColor: AppTheme.success,
                 onTap: () => context.push('/analytics'),
               ),
@@ -189,7 +189,7 @@ class ManagerDashboardVariant extends StatelessWidget {
               StatRowData(
                 icon: Icons.speed,
                 label: isArea ? 'Area Avg Score' : 'Store Avg Score',
-                value: '$avgFormatted',
+                value: avgFormatted,
                 iconColor: AppTheme.success,
                 onTap: () => context.push('/analytics'),
               ),
@@ -309,7 +309,7 @@ class AdminDashboardVariant extends StatelessWidget {
               StatRowData(
                 icon: Icons.speed,
                 label: 'Global Avg Audit Score',
-                value: '$avgFormatted',
+                value: avgFormatted,
                 iconColor: AppTheme.success,
                 onTap: () => context.push('/analytics'),
               ),

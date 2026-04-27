@@ -14,7 +14,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute weekly or on-demand. (Use `/audit-infra` for DB/architecture health). |
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Skill Load** | Extract 2-3 keywords (e.g., "health", "refactoring") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
 ## Phase 2: Code Quality Scan
@@ -55,7 +55,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_code_report_[date-time]_[ConversationID].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[date]_[ConversationID].md`. |
+| **Artifact Gen** | Create `audit_code_report_[YYYYMMDD]_[ConversationID]_[topic].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[YYYYMMDD]_[ConversationID]_[topic].md`. |
 | **Severity Matrix**| `🔴 Critical` (Breaks build/Untestable) | `🟡 Warning` (Convention fail/Stale TODO) | `🟢 Optimization` (Dead code/Redundant). |
 | **Actionable Fix & Trade-offs** | MANDATORY: Provide exact fix command or refactor snippet for EVERY finding.<br><br>**CRITICAL:** When proposing a refactor or fix, you MUST present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation. |
 

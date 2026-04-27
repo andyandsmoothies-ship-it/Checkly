@@ -12,7 +12,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 | Audit Vector | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task_[ConversationID].md` using the strict schema BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD]_[ConversationID]_[topic].md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills. |
 | **Side Effects** | MANDATORY: Assess code changes for framework state loss, missing locks, or illegal ghost imports based on `.agents/rules/`. |
 | **Verification**| MANDATORY: Semi-Formal Reasoning. Trace code path line-by-line. PROHIBITED: Assuming behavior based on function names. |
@@ -49,7 +49,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | Step | Execution Contract |
 |---|---|
 | **Coverage & Metrics Gen** | MANDATORY: Execute available tooling to calculate Test Coverage, Cyclomatic Complexity, File Sizing, and Mutation scores (e.g., `dotnet test /p:CollectCoverage=true`). The human relies on these metrics to govern the factory; do not skip them. |
-| **Artifact Form** | MANDATORY: Use `write_to_file` to save `verification_[topic]_[ConversationID].md` into the `brain/` directory. MUST INCLUDE: (1) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (2) Terminal log proof of the green test suite. |
+| **Artifact Form** | MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD]_[ConversationID]_[topic].md` into the `brain/` directory. MUST INCLUDE: (1) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (2) Terminal log proof of the green test suite. |
 | **Yield & Handoff** | Yield to the user with the exact Next Command explicitly referencing `{Absolute_Path_to_verification_artifact.md}`. |
 
 > [!IMPORTANT]
