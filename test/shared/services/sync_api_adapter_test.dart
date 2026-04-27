@@ -20,148 +20,232 @@ void main() {
     adapter = SyncApiAdapter(mockDio);
   });
 
-  test('AC1: LocalPhotoPath_StrippedBeforePost - Local path inside payload is nulled', () async {
-    when(() => mockDio.post(any(), data: any(named: 'data'), options: any(named: 'options')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'success': true},
-            ));
+  test(
+    'AC1: LocalPhotoPath_StrippedBeforePost - Local path inside payload is nulled',
+    () async {
+      when(
+        () => mockDio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'success': true},
+        ),
+      );
 
-    final payload = {
-      'answers': [
-        {'photoUrl': '/data/user/0/photo.jpg'},
-        {'photoUrl': 'file:///app/flutter/photo2.jpg'},
-      ],
-    };
+      final payload = {
+        'answers': [
+          {'photoUrl': '/data/user/0/photo.jpg'},
+          {'photoUrl': 'file:///app/flutter/photo2.jpg'},
+        ],
+      };
 
-    final submission = PendingSubmission(
-      idempotencyKey: 'key',
-      createdAt: DateTime.now(),
-      payload: jsonEncode(payload),
-    );
+      final submission = PendingSubmission(
+        idempotencyKey: 'key',
+        createdAt: DateTime.now(),
+        payload: jsonEncode(payload),
+      );
 
-    await adapter.pushSubmission(submission);
+      await adapter.pushSubmission(submission);
 
-    final captured = verify(() => mockDio.post(any(), data: captureAny(named: 'data'), options: any(named: 'options'))).captured;
-    final capturedData = captured.first as Map<String, dynamic>;
+      final captured = verify(
+        () => mockDio.post(
+          any(),
+          data: captureAny(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).captured;
+      final capturedData = captured.first as Map<String, dynamic>;
 
-    final answers = capturedData['answers'] as List;
-    expect(answers[0]['photoUrl'], isNull);
-    expect(answers[1]['photoUrl'], isNull);
-  });
+      final answers = capturedData['answers'] as List;
+      expect(answers[0]['photoUrl'], isNull);
+      expect(answers[1]['photoUrl'], isNull);
+    },
+  );
 
-  test('AC2: CdnPhotoUrl_PreservedBeforePost - Remote CDN URL is not stripped', () async {
-    when(() => mockDio.post(any(), data: any(named: 'data'), options: any(named: 'options')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'success': true},
-            ));
+  test(
+    'AC2: CdnPhotoUrl_PreservedBeforePost - Remote CDN URL is not stripped',
+    () async {
+      when(
+        () => mockDio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'success': true},
+        ),
+      );
 
-    final payload = {
-      'answers': [
-        {'photoUrl': 'https://cdn.example.com/photo.jpg'},
-      ],
-    };
+      final payload = {
+        'answers': [
+          {'photoUrl': 'https://cdn.example.com/photo.jpg'},
+        ],
+      };
 
-    final submission = PendingSubmission(
-      idempotencyKey: 'key',
-      createdAt: DateTime.now(),
-      payload: jsonEncode(payload),
-    );
+      final submission = PendingSubmission(
+        idempotencyKey: 'key',
+        createdAt: DateTime.now(),
+        payload: jsonEncode(payload),
+      );
 
-    await adapter.pushSubmission(submission);
+      await adapter.pushSubmission(submission);
 
-    final captured = verify(() => mockDio.post(any(), data: captureAny(named: 'data'), options: any(named: 'options'))).captured;
-    final capturedData = captured.first as Map<String, dynamic>;
+      final captured = verify(
+        () => mockDio.post(
+          any(),
+          data: captureAny(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).captured;
+      final capturedData = captured.first as Map<String, dynamic>;
 
-    final answers = capturedData['answers'] as List;
-    expect(answers[0]['photoUrl'], 'https://cdn.example.com/photo.jpg');
-  });
+      final answers = capturedData['answers'] as List;
+      expect(answers[0]['photoUrl'], 'https://cdn.example.com/photo.jpg');
+    },
+  );
 
-  test('AC10: NullPhotoUrl_NotMangled - Null photoUrl passes through safely', () async {
-    when(() => mockDio.post(any(), data: any(named: 'data'), options: any(named: 'options')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'success': true},
-            ));
+  test(
+    'AC10: NullPhotoUrl_NotMangled - Null photoUrl passes through safely',
+    () async {
+      when(
+        () => mockDio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'success': true},
+        ),
+      );
 
-    final payload = {
-      'answers': [
-        {'photoUrl': null},
-      ],
-    };
+      final payload = {
+        'answers': [
+          {'photoUrl': null},
+        ],
+      };
 
-    final submission = PendingSubmission(
-      idempotencyKey: 'key',
-      createdAt: DateTime.now(),
-      payload: jsonEncode(payload),
-    );
+      final submission = PendingSubmission(
+        idempotencyKey: 'key',
+        createdAt: DateTime.now(),
+        payload: jsonEncode(payload),
+      );
 
-    await adapter.pushSubmission(submission);
+      await adapter.pushSubmission(submission);
 
-    final captured = verify(() => mockDio.post(any(), data: captureAny(named: 'data'), options: any(named: 'options'))).captured;
-    final capturedData = captured.first as Map<String, dynamic>;
+      final captured = verify(
+        () => mockDio.post(
+          any(),
+          data: captureAny(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).captured;
+      final capturedData = captured.first as Map<String, dynamic>;
 
-    final answers = capturedData['answers'] as List;
-    expect(answers[0]['photoUrl'], isNull);
-  });
+      final answers = capturedData['answers'] as List;
+      expect(answers[0]['photoUrl'], isNull);
+    },
+  );
 
-  test('AC11: SyncAdapter_PushSubmission_WithTargetId_CallsPutFinalize', () async {
-    when(() => mockDio.put(any(), data: any(named: 'data'), options: any(named: 'options')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'success': true},
-            ));
-    when(() => mockDio.post(any(), data: any(named: 'data'), options: any(named: 'options')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'success': true},
-            ));
+  test(
+    'AC11: SyncAdapter_PushSubmission_WithTargetId_CallsPutFinalize',
+    () async {
+      when(
+        () => mockDio.put(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'success': true},
+        ),
+      );
+      when(
+        () => mockDio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'success': true},
+        ),
+      );
 
-    final payload = {
-      'targetSubmissionId': 'sub-123',
-      'answers': [],
-    };
+      final payload = {'targetSubmissionId': 'sub-123', 'answers': []};
 
-    final submission = PendingSubmission(
-      idempotencyKey: 'key',
-      createdAt: DateTime.now(),
-      payload: jsonEncode(payload),
-    );
+      final submission = PendingSubmission(
+        idempotencyKey: 'key',
+        createdAt: DateTime.now(),
+        payload: jsonEncode(payload),
+      );
 
-    // Act
-    await adapter.pushSubmission(submission);
+      // Act
+      await adapter.pushSubmission(submission);
 
-    // Assert: PUT was called on /submissions/sub-123/finalize
-    final captured = verify(() => mockDio.put('/submissions/sub-123/finalize', data: captureAny(named: 'data'), options: any(named: 'options'))).captured;
-    final capturedData = captured.first as Map<String, dynamic>;
-    
-    // The targetSubmissionId should be stripped before sending the payload
-    expect(capturedData.containsKey('targetSubmissionId'), isFalse);
-  });
+      // Assert: PUT was called on /submissions/sub-123/finalize
+      final captured = verify(
+        () => mockDio.put(
+          '/submissions/sub-123/finalize',
+          data: captureAny(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).captured;
+      final capturedData = captured.first as Map<String, dynamic>;
 
-  test('AC12: SyncAdapter_PushSubmission_WithNullTargetId_CallsPostSubmissions', () async {
-    when(() => mockDio.post(any(), data: any(named: 'data'), options: any(named: 'options')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'success': true},
-            ));
+      // The targetSubmissionId should be stripped before sending the payload
+      expect(capturedData.containsKey('targetSubmissionId'), isFalse);
+    },
+  );
 
-    final payload = {
-      'targetSubmissionId': null, // or omitted
-      'answers': [],
-    };
+  test(
+    'AC12: SyncAdapter_PushSubmission_WithNullTargetId_CallsPostSubmissions',
+    () async {
+      when(
+        () => mockDio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'success': true},
+        ),
+      );
 
-    final submission = PendingSubmission(
-      idempotencyKey: 'key',
-      createdAt: DateTime.now(),
-      payload: jsonEncode(payload),
-    );
+      final payload = {
+        'targetSubmissionId': null, // or omitted
+        'answers': [],
+      };
 
-    // Act
-    await adapter.pushSubmission(submission);
+      final submission = PendingSubmission(
+        idempotencyKey: 'key',
+        createdAt: DateTime.now(),
+        payload: jsonEncode(payload),
+      );
 
-    // Assert: POST was called on /submissions
-    verify(() => mockDio.post('/submissions', data: any(named: 'data'), options: any(named: 'options'))).called(1);
-  });
+      // Act
+      await adapter.pushSubmission(submission);
+
+      // Assert: POST was called on /submissions
+      verify(
+        () => mockDio.post(
+          '/submissions',
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+    },
+  );
 }

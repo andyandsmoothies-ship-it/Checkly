@@ -30,32 +30,41 @@ void main() {
   });
 
   test('AC3: SubmissionApiService_UploadPhoto_UsesPathSegmentRoute', () async {
-    when(() => mockDio.post(any(), data: any(named: 'data')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'url': 'https://cdn.example.com/photo.jpg'},
-            ));
+    when(() => mockDio.post(any(), data: any(named: 'data'))).thenAnswer(
+      (_) async => Response(
+        requestOptions: RequestOptions(path: ''),
+        data: {'url': 'https://cdn.example.com/photo.jpg'},
+      ),
+    );
 
     await service.uploadPhoto('sub-123', dummyFile);
 
-    final captured = verify(() => mockDio.post(captureAny(), data: any(named: 'data'))).captured;
+    final captured = verify(
+      () => mockDio.post(captureAny(), data: any(named: 'data')),
+    ).captured;
     final path = captured.first as String;
 
     expect(path, '/photos/upload/sub-123'); // MUST not contain ?submissionId=
   });
 
-  test('AC4: SubmissionApiService_UploadPhoto_IncludesAnswerIdWhenProvided', () async {
-    when(() => mockDio.post(any(), data: any(named: 'data')))
-        .thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: ''),
-              data: {'url': 'https://cdn.example.com/photo.jpg'},
-            ));
+  test(
+    'AC4: SubmissionApiService_UploadPhoto_IncludesAnswerIdWhenProvided',
+    () async {
+      when(() => mockDio.post(any(), data: any(named: 'data'))).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'url': 'https://cdn.example.com/photo.jpg'},
+        ),
+      );
 
-    await service.uploadPhoto('sub-123', dummyFile, answerId: 'ans-456');
+      await service.uploadPhoto('sub-123', dummyFile, answerId: 'ans-456');
 
-    final captured = verify(() => mockDio.post(captureAny(), data: any(named: 'data'))).captured;
-    final path = captured.first as String;
+      final captured = verify(
+        () => mockDio.post(captureAny(), data: any(named: 'data')),
+      ).captured;
+      final path = captured.first as String;
 
-    expect(path, '/photos/upload/sub-123?answerId=ans-456');
-  });
+      expect(path, '/photos/upload/sub-123?answerId=ans-456');
+    },
+  );
 }

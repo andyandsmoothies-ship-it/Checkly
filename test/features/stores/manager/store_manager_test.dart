@@ -7,6 +7,7 @@ import 'package:checkly/features/stores/services/store_api_service.dart';
 import 'package:checkly/_shared/database/dao/store_dao.dart';
 
 class MockStoreApiService extends Mock implements StoreApiService {}
+
 class MockStoreDao extends Mock implements StoreDao {}
 
 void main() {
@@ -46,6 +47,5 @@ void main() {
       verify(() => api.getStores()).called(1);
       verify(() => dao.upsertStores([mockStore])).called(1);
     });
-
   });
 }

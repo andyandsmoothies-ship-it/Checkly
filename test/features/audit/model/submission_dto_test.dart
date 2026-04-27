@@ -9,13 +9,13 @@ void main() {
         'status': 'voided',
         'createdAt': '2026-04-01T10:00:00.000Z',
         'voidReason': 'Duplicate audit',
-        'voidedAt': '2026-04-01T11:00:00.000Z'
+        'voidedAt': '2026-04-01T11:00:00.000Z',
       };
-      
+
       final dto = SubmissionDto.fromJson(json);
-      
+
       expect(dto.status, 'voided');
-      
+
       // The following lines will cause compile-time errors in the RED state ATDD phase.
       // The Builder must add `isVoided`, `voidReason`, and `voidedAt` to SubmissionDto.
       expect(dto.isVoided, isTrue);

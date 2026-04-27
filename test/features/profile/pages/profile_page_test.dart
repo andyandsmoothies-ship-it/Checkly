@@ -39,12 +39,13 @@ import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:drift/native.dart';
 
-
 // ── Mock Declarations ─────────────────────────────────────────────────────────
 // mocktail auto-generates correct overrides matching all interface signatures.
 
 class _MockAuthManager extends Mock implements AuthManager {}
+
 class _MockThemeManager extends Mock implements ThemeManager {}
+
 class _MockDatabaseService extends Mock implements DatabaseService {}
 
 // ── Test Fixtures ─────────────────────────────────────────────────────────────
@@ -141,7 +142,8 @@ void main() {
         expect(
           find.text('Avg Audit Score'),
           findsNothing,
-          reason: '_StatsRow label "Avg Audit Score" must be gone post-refactor.',
+          reason:
+              '_StatsRow label "Avg Audit Score" must be gone post-refactor.',
         );
         expect(
           find.text('This Month'),
@@ -171,7 +173,8 @@ void main() {
         expect(
           rowAroundAvatar,
           findsAtLeastNWidgets(1),
-          reason: 'CircleAvatar must be inside a Row for horizontal header layout.',
+          reason:
+              'CircleAvatar must be inside a Row for horizontal header layout.',
         );
 
         // That same Row must also contain the email text as a descendant
@@ -181,7 +184,8 @@ void main() {
             matching: find.text('admin@test.com'),
           ),
           findsOneWidget,
-          reason: 'Email text must be a sibling/descendant of CircleAvatar within the Row.',
+          reason:
+              'Email text must be a sibling/descendant of CircleAvatar within the Row.',
         );
       },
     );
@@ -267,7 +271,8 @@ void main() {
         expect(
           find.byType(Card),
           findsAtLeastNWidgets(2),
-          reason: 'At least 2 Card widgets (Management + General sections) must exist.',
+          reason:
+              'At least 2 Card widgets (Management + General sections) must exist.',
         );
       },
     );
@@ -308,7 +313,8 @@ void main() {
         expect(
           color,
           isNot(AppTheme.charcoal),
-          reason: 'Email text color should not be hardcoded to charcoal in dark mode.',
+          reason:
+              'Email text color should not be hardcoded to charcoal in dark mode.',
         );
 
         expect(
@@ -353,7 +359,6 @@ void main() {
       },
     );
 
-
     testWidgets(
       'ProfilePage_DisplayName_FallsBackToEmail — header must show email when fullName is null',
       (tester) async {
@@ -377,22 +382,25 @@ void main() {
       },
     );
 
-    test('ProfilePage_Initials_FromFullName — getInitials must handle name-to-initials logic', () {
-      // Contract 2: Full coverage
-      const page = ProfilePage();
+    test(
+      'ProfilePage_Initials_FromFullName — getInitials must handle name-to-initials logic',
+      () {
+        // Contract 2: Full coverage
+        const page = ProfilePage();
 
-      // Case 1: Full name (First Last)
-      expect(page.getInitials('John Doe'), 'JD');
-      expect(page.getInitials('Anh Tuan'), 'AT');
+        // Case 1: Full name (First Last)
+        expect(page.getInitials('John Doe'), 'JD');
+        expect(page.getInitials('Anh Tuan'), 'AT');
 
-      // Case 2: Single name
-      expect(page.getInitials('Alice'), 'AL');
+        // Case 2: Single name
+        expect(page.getInitials('Alice'), 'AL');
 
-      // Case 3: Multiple names
-      expect(page.getInitials('John Doe Smith'), 'JS');
+        // Case 3: Multiple names
+        expect(page.getInitials('John Doe Smith'), 'JS');
 
-      // Case 4: Fallback (Email)
-      expect(page.getInitials('john@doe.com'), 'JO');
-    });
+        // Case 4: Fallback (Email)
+        expect(page.getInitials('john@doe.com'), 'JO');
+      },
+    );
   });
 }

@@ -15,30 +15,34 @@ void main() {
   });
 
   group('RoleManager — PBAC Slice 2: Catalog Metadata', () {
-    test('loadCatalog populates both catalog and catalogMeta from getCapabilityCatalogFull', () async {
-      // Arrange
-      final mockedCaps = ['templates:create'];
-      final mockedMeta = {
-        'templates:create': const CapabilityMeta(
-          label: 'Create Templates',
-          group: 'Templates',
-          description: 'Desc',
-        ),
-      };
+    test(
+      'loadCatalog populates both catalog and catalogMeta from getCapabilityCatalogFull',
+      () async {
+        // Arrange
+        final mockedCaps = ['templates:create'];
+        final mockedMeta = {
+          'templates:create': const CapabilityMeta(
+            label: 'Create Templates',
+            group: 'Templates',
+            description: 'Desc',
+          ),
+        };
 
-      when(() => api.getCapabilityCatalogFull())
-          .thenAnswer((_) async => (mockedCaps, mockedMeta));
+        when(
+          () => api.getCapabilityCatalogFull(),
+        ).thenAnswer((_) async => (mockedCaps, mockedMeta));
 
-      // Initially null
-      expect(manager.catalogMeta.value, isNull);
+        // Initially null
+        expect(manager.catalogMeta.value, isNull);
 
-      // Act
-      await manager.loadCatalog();
+        // Act
+        await manager.loadCatalog();
 
-      // Assert
-      expect(manager.catalog.value, equals(mockedCaps));
-      expect(manager.catalogMeta.value, equals(mockedMeta));
-      verify(() => api.getCapabilityCatalogFull()).called(1);
-    });
+        // Assert
+        expect(manager.catalog.value, equals(mockedCaps));
+        expect(manager.catalogMeta.value, equals(mockedMeta));
+        verify(() => api.getCapabilityCatalogFull()).called(1);
+      },
+    );
   });
 }

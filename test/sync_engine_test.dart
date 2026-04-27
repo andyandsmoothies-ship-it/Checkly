@@ -16,11 +16,13 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // --- IMPORTS (will fail until implemented) ---
-import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
+import 'package:checkly/_shared/database/app_database.dart'
+    hide PendingSubmission;
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/sync_interfaces.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
@@ -63,6 +65,7 @@ class FakeConnectivityService implements ConnectivityService {
 class FakeSyncApi implements SyncApi {
   final List<String> pushLog = [];
   final List<String> pullLog = [];
+
   /// If set, push for this submission ID will throw a generic network error.
   String? failOnPushId;
 
@@ -79,7 +82,9 @@ class FakeSyncApi implements SyncApi {
     pushLog.add(submission.idempotencyKey);
     pushCallCount++;
     if (submission.idempotencyKey == throw403OnId) {
-      throw Exception('DioException 403 Forbidden: Permission denied for ${submission.idempotencyKey}');
+      throw Exception(
+        'DioException 403 Forbidden: Permission denied for ${submission.idempotencyKey}',
+      );
     }
     if (submission.idempotencyKey == failOnPushId) {
       throw Exception('Network error on ${submission.idempotencyKey}');
@@ -131,7 +136,8 @@ PendingSubmission _makePending(String key, DateTime createdAt) =>
 // No-op stubs for the new SyncEngine injection points.
 class _FakeActionPlanApi implements ActionPlanApi {
   @override
-  Future<String> uploadPhoto(String submissionId, String filePath) async => 'http://example.com/photo.jpg';
+  Future<String> uploadPhoto(String submissionId, String filePath) async =>
+      'http://example.com/photo.jpg';
   @override
   Future<ActionPlanDto> updateActionPlan(
     String id,
@@ -150,7 +156,10 @@ class _FakeActionPlanApi implements ActionPlanApi {
   Future<List<ActionPlanDto>> fetchActionPlans() async => [];
 
   @override
-  Future<CommentDto> addComment(String actionPlanId, AddCommentRequest request) => Future.error('not used');
+  Future<CommentDto> addComment(
+    String actionPlanId,
+    AddCommentRequest request,
+  ) => Future.error('not used');
 
   @override
   Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
@@ -171,7 +180,9 @@ class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
   @override
   Future<void> markStaleConflict(String id) async {}
   @override
-  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(String planId) async => null;
+  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(
+    String planId,
+  ) async => null;
   @override
   Future<int> pendingCount() async => 0;
 }
@@ -203,6 +214,7 @@ void main() {
       actionPlanOutboxDao: _FakeActionPlanOutboxDao(),
       globalRiskDao: GlobalRiskDao(testDb),
       submissionRiskOutboxDao: SubmissionRiskOutboxDao(testDb),
+      syncMetaDao: SyncMetaDao(testDb),
     );
   });
 
@@ -375,24 +387,27 @@ void main() {
   // Source: PBAC Slice 5 -- Fatal 403 Resilience
   // PM Safety Mandate: demoted users trigger battery drain loop without this guard.
   // ================================================================
-  test('S9: 403 Forbidden immediately exhausts record without retrying', () async {
-    await seedData([_makePending('A', DateTime.utc(2026, 3, 11, 1))]);
-    api.throw403OnId = 'A';
+  test(
+    'S9: 403 Forbidden immediately exhausts record without retrying',
+    () async {
+      await seedData([_makePending('A', DateTime.utc(2026, 3, 11, 1))]);
+      api.throw403OnId = 'A';
 
-    await engine.requestSync();
+      await engine.requestSync();
 
-    // The record must be exhausted
-    final rows = await testDb.select(testDb.pendingSubmissions).get();
-    expect(rows.length, 1);
-    expect(rows.first.syncStatus, 'exhausted');
-    expect(rows.first.syncError, contains('FATAL 403'));
+      // The record must be exhausted
+      final rows = await testDb.select(testDb.pendingSubmissions).get();
+      expect(rows.length, 1);
+      expect(rows.first.syncStatus, 'exhausted');
+      expect(rows.first.syncError, contains('FATAL 403'));
 
-    // retryCount must still be 0 -- no backoff was attempted before exhaustion
-    expect(rows.first.retryCount, 0);
+      // retryCount must still be 0 -- no backoff was attempted before exhaustion
+      expect(rows.first.retryCount, 0);
 
-    // Push was called exactly ONCE (no retry)
-    expect(api.pushCallCount, 1);
-  });
+      // Push was called exactly ONCE (no retry)
+      expect(api.pushCallCount, 1);
+    },
+  );
 
   // ================================================================
   // Scenario 10: 403 on first record does NOT abort remaining batch
@@ -419,7 +434,11 @@ void main() {
     final rowB = (await testDb.select(testDb.pendingSubmissions).get())
         .where((r) => r.id == 'B')
         .toList();
-    expect(rowB, isEmpty, reason: 'B should be removed from outbox after success');
+    expect(
+      rowB,
+      isEmpty,
+      reason: 'B should be removed from outbox after success',
+    );
 
     // Both push calls were made (A attempted once, B succeeded)
     expect(api.pushLog, ['A', 'B']);

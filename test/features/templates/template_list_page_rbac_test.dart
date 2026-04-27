@@ -19,24 +19,33 @@ class _StubAuthManager extends ChangeNotifier implements AuthManager {
   final String? role;
   final Set<String> _caps;
   _StubAuthManager({this.role, Set<String>? capabilities})
-      : _caps = capabilities ?? {};
+    : _caps = capabilities ?? {};
 
   @override
   ValueListenable<AuthState> get authState => ValueNotifier(
-    role != null ? AuthState.authenticated : AuthState.unauthenticated
+    role != null ? AuthState.authenticated : AuthState.unauthenticated,
   );
 
   @override
   UserSession? get currentUser => role != null
-    ? UserSession(userId: '1', fullName: 'Test', email: 'test@x.com', role: role!, token: 'tok')
-    : null;
+      ? UserSession(
+          userId: '1',
+          fullName: 'Test',
+          email: 'test@x.com',
+          role: role!,
+          token: 'tok',
+        )
+      : null;
 
   @override
   ValueListenable<Set<String>> get capabilities => ValueNotifier(_caps);
 
-  @override Future<void> login(String e, String p) async {}
-  @override Future<void> logout() async {}
-  @override Future<void> tryAutoLogin() async {}
+  @override
+  Future<void> login(String e, String p) async {}
+  @override
+  Future<void> logout() async {}
+  @override
+  Future<void> tryAutoLogin() async {}
 }
 
 class MockTemplateManager extends Mock implements TemplateManager {}
@@ -60,7 +69,7 @@ void main() {
         isActive: true,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
-      )
+      ),
     ]);
     when(() => mockManager.templates).thenReturn(templatesNotifier);
     when(() => mockManager.isLoading).thenReturn(ValueNotifier<bool>(false));
@@ -79,16 +88,16 @@ void main() {
   void arrangeAuthRole(String role) {
     // Admin gets templates:create capability so PermissionGuard shows FAB.
     // All other roles get empty capabilities (fail-safe deny).
-    final caps = role == 'admin' ? {'templates:create', 'admin:access'} : <String>{};
+    final caps = role == 'admin'
+        ? {'templates:create', 'admin:access'}
+        : <String>{};
     final auth = _StubAuthManager(role: role, capabilities: caps);
     GetIt.I.registerSingleton<AuthManager>(auth);
     GetIt.I.registerSingleton<PolicyManager>(PolicyManager(auth: auth));
   }
 
   Widget createSubject() {
-    return const MaterialApp(
-      home: TemplateListPage(),
-    );
+    return const MaterialApp(home: TemplateListPage());
   }
 
   group('TemplateListPage RBAC Tests', () {
@@ -131,7 +140,9 @@ void main() {
       expect(find.text('Delete'), findsOneWidget);
     });
 
-    testWidgets('TC-08: Context menu auditor sees only Quick Start', (tester) async {
+    testWidgets('TC-08: Context menu auditor sees only Quick Start', (
+      tester,
+    ) async {
       arrangeAuthRole('auditor');
       await tester.pumpWidget(createSubject());
       await tester.pumpAndSettle();

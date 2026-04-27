@@ -27,9 +27,12 @@ bool allowSubSections(String? scoringMode) =>
 void main() {
   group('allowSubSections business logic rule (Slice 2 / BL-1)', () {
     // ── EDD-A: null → allowed (backward compat) ──────────────────────────────
-    test('null scoringMode → allowed (backward compat for Builder default)', () {
-      expect(allowSubSections(null), isTrue);
-    });
+    test(
+      'null scoringMode → allowed (backward compat for Builder default)',
+      () {
+        expect(allowSubSections(null), isTrue);
+      },
+    );
 
     // ── EDD-B: penalty → allowed ──────────────────────────────────────────────
     test("scoringMode 'penalty' → sub-sections allowed", () {
@@ -52,41 +55,61 @@ void main() {
     });
 
     // ── EDD-F: unknown value → allowed (safe default) ─────────────────────────
-    test("unknown non-empty scoringMode 'qc' → NOT allowed (allowlist model)", () {
-      // The getter is an explicit ALLOWLIST: only null/penalty/accumulation pass.
-      // Any other string, including 'qc', returns false.
-      expect(allowSubSections('qc'), isFalse);
-    });
+    test(
+      "unknown non-empty scoringMode 'qc' → NOT allowed (allowlist model)",
+      () {
+        // The getter is an explicit ALLOWLIST: only null/penalty/accumulation pass.
+        // Any other string, including 'qc', returns false.
+        expect(allowSubSections('qc'), isFalse);
+      },
+    );
 
-    test("empty string scoringMode → NOT allowed (not null, not in allowlist)", () {
-      expect(allowSubSections(''), isFalse);
-    });
+    test(
+      "empty string scoringMode → NOT allowed (not null, not in allowlist)",
+      () {
+        expect(allowSubSections(''), isFalse);
+      },
+    );
   });
 
-  group('allowSubSections: condition logic for button visibility (Slice 2 / BL-2)', () {
-    // GhostAddButton condition: section.criteria.isEmpty || !allowSubSections(mode)
-    // Validates that in restricted modes the button is ALWAYS visible (EDD-6 in plan)
-    bool buttonVisible({required bool criteriaEmpty, required String? mode}) =>
-        criteriaEmpty || !allowSubSections(mode);
+  group(
+    'allowSubSections: condition logic for button visibility (Slice 2 / BL-2)',
+    () {
+      // GhostAddButton condition: section.criteria.isEmpty || !allowSubSections(mode)
+      // Validates that in restricted modes the button is ALWAYS visible (EDD-6 in plan)
+      bool buttonVisible({
+        required bool criteriaEmpty,
+        required String? mode,
+      }) => criteriaEmpty || !allowSubSections(mode);
 
-    test('survey + no criteria → button visible (restricted mode + no criteria)', () {
-      expect(buttonVisible(criteriaEmpty: true, mode: 'survey'), isTrue);
-    });
+      test(
+        'survey + no criteria → button visible (restricted mode + no criteria)',
+        () {
+          expect(buttonVisible(criteriaEmpty: true, mode: 'survey'), isTrue);
+        },
+      );
 
-    test('survey + has criteria → button STILL visible (restricted mode overrides)', () {
-      expect(buttonVisible(criteriaEmpty: false, mode: 'survey'), isTrue);
-    });
+      test(
+        'survey + has criteria → button STILL visible (restricted mode overrides)',
+        () {
+          expect(buttonVisible(criteriaEmpty: false, mode: 'survey'), isTrue);
+        },
+      );
 
-    test('penalty + no criteria → button visible (allowed mode + empty)', () {
-      expect(buttonVisible(criteriaEmpty: true, mode: 'penalty'), isTrue);
-    });
+      test('penalty + no criteria → button visible (allowed mode + empty)', () {
+        expect(buttonVisible(criteriaEmpty: true, mode: 'penalty'), isTrue);
+      });
 
-    test('penalty + has criteria → button HIDDEN (original behaviour preserved)', () {
-      expect(buttonVisible(criteriaEmpty: false, mode: 'penalty'), isFalse);
-    });
+      test(
+        'penalty + has criteria → button HIDDEN (original behaviour preserved)',
+        () {
+          expect(buttonVisible(criteriaEmpty: false, mode: 'penalty'), isFalse);
+        },
+      );
 
-    test('null mode + has criteria → button HIDDEN (backward compat)', () {
-      expect(buttonVisible(criteriaEmpty: false, mode: null), isFalse);
-    });
-  });
+      test('null mode + has criteria → button HIDDEN (backward compat)', () {
+        expect(buttonVisible(criteriaEmpty: false, mode: null), isFalse);
+      });
+    },
+  );
 }

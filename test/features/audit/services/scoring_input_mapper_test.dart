@@ -148,9 +148,7 @@ void main() {
         groups: [
           _group(
             'g1',
-            criteria: [
-              _criterion('c1', weight: 5, maxDeductionPoints: 3.5),
-            ],
+            criteria: [_criterion('c1', weight: 5, maxDeductionPoints: 3.5)],
             weight: 1,
           ),
         ],

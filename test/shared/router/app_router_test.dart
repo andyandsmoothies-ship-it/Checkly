@@ -54,20 +54,14 @@ void main() {
       },
     );
 
-    test(
-      '_indexFromLocation_HomeRoute_ReturnsZero — /home maps to tab 0',
-      () {
-        // HAPPY PATH: Already passes in production code.
-        expect(shellIndexFromLocation('/home'), equals(0));
-      },
-    );
+    test('_indexFromLocation_HomeRoute_ReturnsZero — /home maps to tab 0', () {
+      // HAPPY PATH: Already passes in production code.
+      expect(shellIndexFromLocation('/home'), equals(0));
+    });
 
     // TC1.2a: /inbox → index 5
-    test(
-      '_inbox_Route_ExistsInShell — /inbox maps to tab 5',
-      () {
-        expect(shellIndexFromLocation('/inbox'), equals(5));
-      },
-    );
+    test('_inbox_Route_ExistsInShell — /inbox maps to tab 5', () {
+      expect(shellIndexFromLocation('/inbox'), equals(5));
+    });
   });
 }

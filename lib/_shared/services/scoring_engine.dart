@@ -333,10 +333,11 @@ class ScoringEngine {
     );
   }
 
-  // ── Checklist Mode (Pass/Fail Ratio) ─────────────────────
+  // ── Checklist Mode (Raw Deduction From 100) ──────────────
   // Algorithm: max(0, 100 - Σ(all deductions))
   // No weights, no sections — just raw deductions from 100.
-  // NOTE: Server VerifyChecklist uses a different ratio formula — see GEMINI.override.md Gotcha.
+  // Server formula: IDENTICAL — see server/Common/Scoring/ScoringVerifier.cs VerifyChecklist().
+  // Server GEMINI.override.md locks this formula. Do NOT change to a ratio/division formula.
   static ScoringResult _calculateChecklist(
     ScoringInput input,
     Map<String, AnswerInput> answerMap,

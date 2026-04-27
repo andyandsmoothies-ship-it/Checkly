@@ -24,8 +24,8 @@ bool isDisabledForMode(String inputType, String? scoringMode) {
   return switch (scoringMode) {
     'survey' =>
       inputType == 'pass_fail' ||
-      inputType == 'numeric' ||
-      inputType == 'scale',
+          inputType == 'numeric' ||
+          inputType == 'scale',
     'checklist' => inputType == 'numeric' || inputType == 'scale',
     _ => false,
   };
@@ -33,9 +33,9 @@ bool isDisabledForMode(String inputType, String? scoringMode) {
 
 // ── Pure helper mirroring InputTypeBottomSheet._modeLabel ─────────────────────
 String modeLabel(String? scoringMode) => switch (scoringMode) {
-  'survey'    => 'Survey',
+  'survey' => 'Survey',
   'checklist' => 'Checklist',
-  _           => '',
+  _ => '',
 };
 
 // All 6 input types as a constant list

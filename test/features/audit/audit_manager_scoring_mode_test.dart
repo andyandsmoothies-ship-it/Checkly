@@ -14,47 +14,56 @@ import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/features/audit/services/draft_service.dart';
 
 class MockSubmissionApiService extends Mock implements SubmissionApiService {}
+
 class MockOutboxDao extends Mock implements OutboxDao {}
+
 class MockDraftService extends Mock implements DraftService {}
 
 void main() {
   setUpAll(() async {
     await GetIt.instance.reset();
     final db = AppDatabase.forTesting(NativeDatabase.memory());
-    GetIt.instance.registerSingleton<DatabaseService>(DatabaseService.forTesting(db));
+    GetIt.instance.registerSingleton<DatabaseService>(
+      DatabaseService.forTesting(db),
+    );
   });
 
   group('AuditManager.scoringMode', () {
-    test('returns accumulation when template is configured for maturity assessment', () async {
-      final template = TemplateTreeDto(
-        id: 'tpl-acc',
-        title: 'Maturity Template',
-        type: 'audit',
-        version: 1,
-        isActive: true,
-        scoringLogicConfig: '{"scoringMode": "accumulation"}',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        groups: [],
-      );
+    test(
+      'returns accumulation when template is configured for maturity assessment',
+      () async {
+        final template = TemplateTreeDto(
+          id: 'tpl-acc',
+          title: 'Maturity Template',
+          type: 'audit',
+          version: 1,
+          isActive: true,
+          scoringLogicConfig: '{"scoringMode": "accumulation"}',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          groups: [],
+        );
 
-      final draftService = MockDraftService();
-      when(() => draftService.loadDraft(any())).thenAnswer((_) async => null);
-      when(() => draftService.scheduleSave(
-        draftKey: any(named: 'draftKey'),
-        answersMap: any(named: 'answersMap'),
-        notes: any(named: 'notes'),
-      )).thenReturn(null);
+        final draftService = MockDraftService();
+        when(() => draftService.loadDraft(any())).thenAnswer((_) async => null);
+        when(
+          () => draftService.scheduleSave(
+            draftKey: any(named: 'draftKey'),
+            answersMap: any(named: 'answersMap'),
+            notes: any(named: 'notes'),
+          ),
+        ).thenReturn(null);
 
-      final manager = AuditManager(
-        api: MockSubmissionApiService(),
-        outbox: MockOutboxDao(),
-        draftService: draftService,
-      ); 
-      await manager.startAudit(template, 'store-1');
+        final manager = AuditManager(
+          api: MockSubmissionApiService(),
+          outbox: MockOutboxDao(),
+          draftService: draftService,
+        );
+        await manager.startAudit(template, 'store-1');
 
-      expect(manager.scoringMode, ScoringMode.accumulation);
-    });
+        expect(manager.scoringMode, ScoringMode.accumulation);
+      },
+    );
 
     test('defaults to penalty when no template is loaded', () {
       final manager = AuditManager(

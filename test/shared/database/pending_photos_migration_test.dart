@@ -14,35 +14,45 @@ void main() {
     await database.close();
   });
 
-  test('AC7: PendingPhotos_Schema_AnswerIdColumnIsNullable - Optional answerId saves correctly', () async {
-    final photo = PendingPhotosCompanion.insert(
-      id: 'p1',
-      pendingSubmissionId: 'sub-1',
-      localPath: '/tmp/1.jpg',
-      createdAt: DateTime.now(),
-      syncStatus: const Value('pending'),
-      answerId: const Value('ans-123'),
-    );
+  test(
+    'AC7: PendingPhotos_Schema_AnswerIdColumnIsNullable - Optional answerId saves correctly',
+    () async {
+      final photo = PendingPhotosCompanion.insert(
+        id: 'p1',
+        pendingSubmissionId: 'sub-1',
+        localPath: '/tmp/1.jpg',
+        createdAt: DateTime.now(),
+        syncStatus: const Value('pending'),
+        answerId: const Value('ans-123'),
+      );
 
-    await database.into(database.pendingPhotos).insert(photo);
+      await database.into(database.pendingPhotos).insert(photo);
 
-    final retrieved = await database.select(database.pendingPhotos).getSingle();
-    expect(retrieved.answerId, 'ans-123');
-  });
+      final retrieved = await database
+          .select(database.pendingPhotos)
+          .getSingle();
+      expect(retrieved.answerId, 'ans-123');
+    },
+  );
 
-  test('AC8: PendingPhotos_Migration_ExistingRowsPreserved - AnswerId preserves backwards compatibility returning null', () async {
-    final photo = PendingPhotosCompanion.insert(
-      id: 'p2',
-      pendingSubmissionId: 'sub-1',
-      localPath: '/tmp/2.jpg',
-      createdAt: DateTime.now(),
-      syncStatus: const Value('pending'),
-      // not providing answerId
-    );
+  test(
+    'AC8: PendingPhotos_Migration_ExistingRowsPreserved - AnswerId preserves backwards compatibility returning null',
+    () async {
+      final photo = PendingPhotosCompanion.insert(
+        id: 'p2',
+        pendingSubmissionId: 'sub-1',
+        localPath: '/tmp/2.jpg',
+        createdAt: DateTime.now(),
+        syncStatus: const Value('pending'),
+        // not providing answerId
+      );
 
-    await database.into(database.pendingPhotos).insert(photo);
+      await database.into(database.pendingPhotos).insert(photo);
 
-    final retrieved = await database.select(database.pendingPhotos).getSingle();
-    expect(retrieved.answerId, null);
-  });
+      final retrieved = await database
+          .select(database.pendingPhotos)
+          .getSingle();
+      expect(retrieved.answerId, null);
+    },
+  );
 }

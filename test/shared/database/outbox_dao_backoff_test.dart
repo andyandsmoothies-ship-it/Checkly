@@ -6,7 +6,8 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 
-import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
+import 'package:checkly/_shared/database/app_database.dart'
+    hide PendingSubmission;
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 
 void main() {
@@ -91,15 +92,17 @@ void main() {
     await insertSub('sub-exhausted', status: 'exhausted');
 
     // Insert an exhausted photo
-    await db.into(db.pendingPhotos).insert(
-      PendingPhotosCompanion.insert(
-        id: 'photo-exhausted',
-        pendingSubmissionId: 'sub-exhausted',
-        localPath: '/tmp/x.jpg',
-        createdAt: DateTime.now().toUtc(),
-        syncStatus: const Value('exhausted'),
-      ),
-    );
+    await db
+        .into(db.pendingPhotos)
+        .insert(
+          PendingPhotosCompanion.insert(
+            id: 'photo-exhausted',
+            pendingSubmissionId: 'sub-exhausted',
+            localPath: '/tmp/x.jpg',
+            createdAt: DateTime.now().toUtc(),
+            syncStatus: const Value('exhausted'),
+          ),
+        );
 
     final count = await dao.watchExhaustedCount().first;
     expect(count, 2); // 1 submission + 1 photo

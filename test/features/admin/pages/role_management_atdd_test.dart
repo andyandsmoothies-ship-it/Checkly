@@ -67,22 +67,26 @@ void main() {
       mockAuth = MockAuthManager();
 
       // Default capability stub: has admin:manage_roles
-      when(() => mockAuth.capabilities)
-          .thenReturn(ValueNotifier({'admin:manage_roles', 'admin:access'}));
+      when(
+        () => mockAuth.capabilities,
+      ).thenReturn(ValueNotifier({'admin:manage_roles', 'admin:access'}));
 
       policy = PolicyManager(auth: mockAuth);
       manager = RoleManager(adminApiService: mockApi);
 
       // Default API stubs
       when(() => mockApi.getRoles()).thenAnswer((_) async => _mockRoles);
-      when(() => mockApi.getCapabilityCatalogFull())
-          .thenAnswer((_) async => (_catalog, <String, CapabilityMeta>{}));
+      when(
+        () => mockApi.getCapabilityCatalogFull(),
+      ).thenAnswer((_) async => (_catalog, <String, CapabilityMeta>{}));
 
-      _di.pushNewScope(init: (g) {
-        g.registerSingleton<ConnectivityService>(connectivity);
-        g.registerSingleton<RoleManager>(manager);
-        g.registerSingleton<PolicyManager>(policy);
-      });
+      _di.pushNewScope(
+        init: (g) {
+          g.registerSingleton<ConnectivityService>(connectivity);
+          g.registerSingleton<RoleManager>(manager);
+          g.registerSingleton<PolicyManager>(policy);
+        },
+      );
     });
 
     tearDown(() async {
@@ -92,162 +96,181 @@ void main() {
     });
 
     // ── AT-01 ───────────────────────────────────────────────────────────────
-    testWidgets(
-      'AT-01: RoleListPage_WhenOffline_ShowsOfflineLock',
-      (tester) async {
-        // Arrange: rebuild scope with offline connectivity
-        await _di.popScope();
-        connectivity.dispose();
-        connectivity = _FakeConnectivity(online: false);
-        _di.pushNewScope(init: (g) {
+    testWidgets('AT-01: RoleListPage_WhenOffline_ShowsOfflineLock', (
+      tester,
+    ) async {
+      // Arrange: rebuild scope with offline connectivity
+      await _di.popScope();
+      connectivity.dispose();
+      connectivity = _FakeConnectivity(online: false);
+      _di.pushNewScope(
+        init: (g) {
           g.registerSingleton<ConnectivityService>(connectivity);
           g.registerSingleton<RoleManager>(manager);
           g.registerSingleton<PolicyManager>(policy);
-        });
+        },
+      );
 
-        // Act
-        await tester.pumpWidget(_pump(const RoleListPage()));
-        await tester.pump();
+      // Act
+      await tester.pumpWidget(_pump(const RoleListPage()));
+      await tester.pump();
 
-        // Assert
-        expect(find.byIcon(Icons.wifi_off), findsOneWidget);
-        expect(find.textContaining('Stable Internet Connection'), findsOneWidget);
-        expect(find.byType(ListView), findsNothing);
-        verifyNever(() => mockApi.getRoles());
-      },
-    );
+      // Assert
+      expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+      expect(find.textContaining('Stable Internet Connection'), findsOneWidget);
+      expect(find.byType(ListView), findsNothing);
+      verifyNever(() => mockApi.getRoles());
+    });
 
     // ── AT-02 ───────────────────────────────────────────────────────────────
-    testWidgets(
-      'AT-02: RoleDetailPage_WhenConnectionDrops_HidesCheckboxes',
-      (tester) async {
-        // Arrange: online, roles and catalog loaded
-        await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
-        await manager.loadRoles();
-        await manager.loadCatalog();
-        await tester.pumpAndSettle();
+    testWidgets('AT-02: RoleDetailPage_WhenConnectionDrops_HidesCheckboxes', (
+      tester,
+    ) async {
+      // Arrange: online, roles and catalog loaded
+      await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
+      await manager.loadRoles();
+      await manager.loadCatalog();
+      await tester.pumpAndSettle();
 
-        // Verify checkboxes visible while online
-        expect(find.byType(CheckboxListTile), findsWidgets);
-        expect(find.byIcon(Icons.wifi_off), findsNothing);
+      // Verify checkboxes visible while online
+      expect(find.byType(CheckboxListTile), findsWidgets);
+      expect(find.byIcon(Icons.wifi_off), findsNothing);
 
-        // Act: drop connection
-        connectivity.goOffline();
-        await tester.pumpAndSettle();
+      // Act: drop connection
+      connectivity.goOffline();
+      await tester.pumpAndSettle();
 
-        // Assert: lock screen replaces checkboxes
-        expect(find.byType(CheckboxListTile), findsNothing);
-        expect(find.byIcon(Icons.wifi_off), findsOneWidget);
-      },
-    );
+      // Assert: lock screen replaces checkboxes
+      expect(find.byType(CheckboxListTile), findsNothing);
+      expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    });
 
     // ── AT-03 ───────────────────────────────────────────────────────────────
-    testWidgets(
-      'AT-03: RoleDetailPage_WhenNoCapability_CheckboxesDisabled',
-      (tester) async {
-        // Arrange: user lacks admin:manage_roles
-        when(() => mockAuth.capabilities)
-            .thenReturn(ValueNotifier({'admin:access'})); // no manage_roles
+    testWidgets('AT-03: RoleDetailPage_WhenNoCapability_CheckboxesDisabled', (
+      tester,
+    ) async {
+      // Arrange: user lacks admin:manage_roles
+      when(
+        () => mockAuth.capabilities,
+      ).thenReturn(ValueNotifier({'admin:access'})); // no manage_roles
 
-        await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
-        await manager.loadRoles();
-        await manager.loadCatalog();
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
+      await manager.loadRoles();
+      await manager.loadCatalog();
+      await tester.pumpAndSettle();
 
-        // Assert: checkboxes rendered but all disabled
-        final checkboxes = tester
-            .widgetList<CheckboxListTile>(find.byType(CheckboxListTile))
-            .toList();
-        expect(checkboxes, isNotEmpty);
-        for (final cb in checkboxes) {
-          expect(cb.enabled, isFalse,
-              reason: 'Checkbox for ${cb.title} must be disabled without manage_roles');
-        }
-      },
-    );
+      // Assert: checkboxes rendered but all disabled
+      final checkboxes = tester
+          .widgetList<CheckboxListTile>(find.byType(CheckboxListTile))
+          .toList();
+      expect(checkboxes, isNotEmpty);
+      for (final cb in checkboxes) {
+        expect(
+          cb.enabled,
+          isFalse,
+          reason:
+              'Checkbox for ${cb.title} must be disabled without manage_roles',
+        );
+      }
+    });
 
     // ── AT-04 ───────────────────────────────────────────────────────────────
-    testWidgets(
-      'AT-04: RoleDetailPage_GrantRevoke_FiresServiceAndReloads',
-      (tester) async {
-        // Arrange: auditor starts without templates:create
-        // grantCapability succeeds
-        when(() => mockApi.grantCapability(
+    testWidgets('AT-04: RoleDetailPage_GrantRevoke_FiresServiceAndReloads', (
+      tester,
+    ) async {
+      // Arrange: auditor starts without templates:create
+      // grantCapability succeeds
+      when(
+        () => mockApi.grantCapability(
+          role: 'auditor',
+          capability: 'templates:create',
+        ),
+      ).thenAnswer((_) async {});
+
+      // getRoles: first call returns base list, subsequent returns updated list
+      // Use a flag controlled by grantCapability being called
+      var granted = false;
+      when(
+        () => mockApi.grantCapability(
+          role: any(named: 'role'),
+          capability: any(named: 'capability'),
+        ),
+      ).thenAnswer((_) async {
+        granted = true;
+      });
+      when(() => mockApi.getRoles()).thenAnswer((_) async {
+        if (granted) {
+          return [
+            RoleDto(
               role: 'auditor',
-              capability: 'templates:create',
-            )).thenAnswer((_) async {});
+              capabilities: ['submissions:list', 'templates:create'],
+            ),
+          ];
+        }
+        return _mockRoles; // submissions:list only
+      });
 
-        // getRoles: first call returns base list, subsequent returns updated list
-        // Use a flag controlled by grantCapability being called
-        var granted = false;
-        when(() => mockApi.grantCapability(
-              role: any(named: 'role'),
-              capability: any(named: 'capability'),
-            )).thenAnswer((_) async { granted = true; });
-        when(() => mockApi.getRoles()).thenAnswer((_) async {
-          if (granted) {
-            return [
-              RoleDto(role: 'auditor',
-                  capabilities: ['submissions:list', 'templates:create']),
-            ];
-          }
-          return _mockRoles; // submissions:list only
-        });
+      await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
+      await manager.loadRoles();
+      await manager.loadCatalog();
+      await tester.pumpAndSettle();
 
-        await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
-        await manager.loadRoles();
-        await manager.loadCatalog();
-        await tester.pumpAndSettle();
+      // Verify templates:create appears as unchecked
+      final uncheckedTile = find.widgetWithText(
+        CheckboxListTile,
+        'templates:create',
+      );
+      expect(uncheckedTile, findsOneWidget);
+      final tileBefore = tester.widget<CheckboxListTile>(uncheckedTile);
+      expect(
+        tileBefore.value,
+        isFalse,
+        reason: 'templates:create should start unchecked',
+      );
 
-        // Verify templates:create appears as unchecked
-        final uncheckedTile = find.widgetWithText(CheckboxListTile, 'templates:create');
-        expect(uncheckedTile, findsOneWidget);
-        final tileBefore = tester.widget<CheckboxListTile>(uncheckedTile);
-        expect(tileBefore.value, isFalse, reason: 'templates:create should start unchecked');
+      // Act: tap the unchecked capability
+      await tester.tap(uncheckedTile);
+      await tester.pumpAndSettle();
 
-        // Act: tap the unchecked capability
-        await tester.tap(uncheckedTile);
-        await tester.pumpAndSettle();
-
-        // Assert: grantCapability fired, roles reloaded with updated list
-        expect(granted, isTrue);
-        verify(() => mockApi.getRoles()).called(greaterThanOrEqualTo(2));
-        expect(
-          manager.roles.value!.first.capabilities,
-          contains('templates:create'),
-        );
-      },
-    );
+      // Assert: grantCapability fired, roles reloaded with updated list
+      expect(granted, isTrue);
+      verify(() => mockApi.getRoles()).called(greaterThanOrEqualTo(2));
+      expect(
+        manager.roles.value!.first.capabilities,
+        contains('templates:create'),
+      );
+    });
 
     // ── AT-05 ───────────────────────────────────────────────────────────────
-    testWidgets(
-      'AT-05: RoleDetailPage_AtomicFailure_SnackBar',
-      (tester) async {
-        // Arrange: grant throws 403
-        when(() => mockApi.grantCapability(
-              role: 'auditor',
-              capability: any(named: 'capability'),
-            )).thenThrow(Exception('403 Forbidden'));
+    testWidgets('AT-05: RoleDetailPage_AtomicFailure_SnackBar', (tester) async {
+      // Arrange: grant throws 403
+      when(
+        () => mockApi.grantCapability(
+          role: 'auditor',
+          capability: any(named: 'capability'),
+        ),
+      ).thenThrow(Exception('403 Forbidden'));
 
-        await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
-        await manager.loadRoles();
-        await manager.loadCatalog();
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_pump(const RoleDetailPage(role: 'auditor')));
+      await manager.loadRoles();
+      await manager.loadCatalog();
+      await tester.pumpAndSettle();
 
-        // Capture roles before tap
-        final rolesBefore = List.from(manager.roles.value!.first.capabilities);
+      // Capture roles before tap
+      final rolesBefore = List.from(manager.roles.value!.first.capabilities);
 
-        // Act: tap an unassigned capability
-        final uncheckedTile =
-            find.widgetWithText(CheckboxListTile, 'templates:create');
-        await tester.tap(uncheckedTile);
-        await tester.pumpAndSettle();
+      // Act: tap an unassigned capability
+      final uncheckedTile = find.widgetWithText(
+        CheckboxListTile,
+        'templates:create',
+      );
+      await tester.tap(uncheckedTile);
+      await tester.pumpAndSettle();
 
-        // Assert: SnackBar shown
-        expect(find.byType(SnackBar), findsOneWidget);
-        // Local state unchanged — truth is remote
-        expect(manager.roles.value!.first.capabilities, equals(rolesBefore));
-      },
-    );
+      // Assert: SnackBar shown
+      expect(find.byType(SnackBar), findsOneWidget);
+      // Local state unchanged — truth is remote
+      expect(manager.roles.value!.first.capabilities, equals(rolesBefore));
+    });
   });
 }

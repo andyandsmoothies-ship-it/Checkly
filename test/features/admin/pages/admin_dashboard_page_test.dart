@@ -32,8 +32,11 @@ import 'package:checkly/features/templates/models/template_dto.dart';
 // ── Mock declarations ─────────────────────────────────────────────────────────
 // mocktail generates the correct override matching ANY method signature.
 class _MockDashboardManager extends Mock implements DashboardManager {}
+
 class _MockAdminApiService extends Mock implements AdminApiService {}
+
 class _MockStoreApiService extends Mock implements StoreApiService {}
+
 class _MockTemplateApiService extends Mock implements TemplateApiService {}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -83,7 +86,9 @@ void _registerDi({bool apiShouldThrow = false}) {
   di.registerSingleton<StoreApiService>(storeSvc);
 
   final templateSvc = _MockTemplateApiService();
-  when(() => templateSvc.getTemplates()).thenAnswer((_) async => <TemplateDto>[]);
+  when(
+    () => templateSvc.getTemplates(),
+  ).thenAnswer((_) async => <TemplateDto>[]);
   di.registerSingleton<TemplateApiService>(templateSvc);
 }
 
@@ -150,7 +155,9 @@ void main() {
         _registerDi();
         await pumpAdminDashboard(tester);
 
-        final boxes = tester.widgetList<ConstrainedBox>(find.byType(ConstrainedBox));
+        final boxes = tester.widgetList<ConstrainedBox>(
+          find.byType(ConstrainedBox),
+        );
         final hasMaxWidth600 = boxes.any(
           (b) => b.constraints.maxWidth == 600.0,
         );
@@ -158,7 +165,8 @@ void main() {
         expect(
           hasMaxWidth600,
           isTrue,
-          reason: 'A ConstrainedBox(maxWidth:600) must exist for wide-screen layouts.',
+          reason:
+              'A ConstrainedBox(maxWidth:600) must exist for wide-screen layouts.',
         );
       },
     );

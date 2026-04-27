@@ -11,11 +11,13 @@ import 'package:drift/native.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:checkly/_shared/database/app_database.dart' hide PendingSubmission;
+import 'package:checkly/_shared/database/app_database.dart'
+    hide PendingSubmission;
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/sync_interfaces.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
@@ -28,46 +30,61 @@ import 'package:checkly/features/action_plans/models/add_comment_request.dart';
 // ─── Fakes ────────────────────────────────────────────────────────────────
 
 class AlwaysOnlineConnectivity implements ConnectivityService {
-  @override bool get isOnline => true;
-  @override Stream<bool> get onConnectivityChanged => const Stream.empty();
+  @override
+  bool get isOnline => true;
+  @override
+  Stream<bool> get onConnectivityChanged => const Stream.empty();
 }
 
 class AlwaysAuthCheck implements AuthCheck {
-  @override bool get isLoggedIn => true;
+  @override
+  bool get isLoggedIn => true;
 }
 
 class FailingApi implements SyncApi {
-  @override Future<void> pushSubmission(PendingSubmission s) async {
+  @override
+  Future<void> pushSubmission(PendingSubmission s) async {
     throw Exception('Simulated network error');
   }
-  @override Future<DeltaPullResult> pullDeltas(DateTime? since) async {
+
+  @override
+  Future<DeltaPullResult> pullDeltas(DateTime? since) async {
     return DeltaPullResult(serverTimestamp: DateTime.now().toUtc());
   }
-  @override Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
-  @override Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {}
+
+  @override
+  Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
+  @override
+  Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {}
 }
 
 class FakeOutbox implements Outbox {
   final List<PendingSubmission> _entries = [];
 
-  @override List<PendingSubmission> get pending => List.unmodifiable(_entries);
-  @override Future<void> add(PendingSubmission e) async => _entries.add(e);
-  @override Future<void> remove(String key) async =>
+  @override
+  List<PendingSubmission> get pending => List.unmodifiable(_entries);
+  @override
+  Future<void> add(PendingSubmission e) async => _entries.add(e);
+  @override
+  Future<void> remove(String key) async =>
       _entries.removeWhere((e) => e.idempotencyKey == key);
 
   void seed(String key) {
-    _entries.add(PendingSubmission(
-      idempotencyKey: key,
-      createdAt: DateTime.now().toUtc(),
-      payload: '{}',
-    ));
+    _entries.add(
+      PendingSubmission(
+        idempotencyKey: key,
+        createdAt: DateTime.now().toUtc(),
+        payload: '{}',
+      ),
+    );
   }
 }
 
 // No-op stubs for the evidence drain injection points.
 class _FakeActionPlanApi implements ActionPlanApi {
   @override
-  Future<String> uploadPhoto(String submissionId, String filePath) async => 'http://example.com/photo.jpg';
+  Future<String> uploadPhoto(String submissionId, String filePath) async =>
+      'http://example.com/photo.jpg';
   @override
   Future<ActionPlanDto> updateActionPlan(
     String id,
@@ -86,7 +103,10 @@ class _FakeActionPlanApi implements ActionPlanApi {
   Future<List<ActionPlanDto>> fetchActionPlans() async => [];
 
   @override
-  Future<CommentDto> addComment(String actionPlanId, AddCommentRequest request) => Future.error('not used');
+  Future<CommentDto> addComment(
+    String actionPlanId,
+    AddCommentRequest request,
+  ) => Future.error('not used');
 
   @override
   Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
@@ -107,7 +127,9 @@ class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
   @override
   Future<void> markStaleConflict(String id) async {}
   @override
-  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(String planId) async => null;
+  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(
+    String planId,
+  ) async => null;
   @override
   Future<int> pendingCount() async => 0;
 }
@@ -151,6 +173,7 @@ void main() {
       actionPlanOutboxDao: _FakeActionPlanOutboxDao(),
       globalRiskDao: GlobalRiskDao(db),
       submissionRiskOutboxDao: SubmissionRiskOutboxDao(db),
+      syncMetaDao: SyncMetaDao(db),
     );
   });
 
@@ -160,29 +183,32 @@ void main() {
   });
 
   // ─── AC4: 1st failure → retryCount=1, nextRetryAt ≈ +2s ──────────────
-  test('AC4: SyncEngine_FirstFailure_SetsRetryCountOneAndNextRetryAt2s', () async {
-    await seedEligibleSub(retryCount: 0);
-    final now = DateTime.now().toUtc();
+  test(
+    'AC4: SyncEngine_FirstFailure_SetsRetryCountOneAndNextRetryAt2s',
+    () async {
+      await seedEligibleSub(retryCount: 0);
+      final now = DateTime.now().toUtc();
 
-    await engine.requestSync();
+      await engine.requestSync();
 
-    final rows = await db.select(db.pendingSubmissions).get();
-    final row = rows.first;
+      final rows = await db.select(db.pendingSubmissions).get();
+      final row = rows.first;
 
-    expect(row.retryCount, 1);
-    expect(row.syncStatus, 'pending');
-    expect(row.nextRetryAt, isNotNull);
-    expect(
-      row.nextRetryAt!.isAfter(now.add(const Duration(seconds: 1))),
-      isTrue,
-      reason: 'nextRetryAt must be at least 1s in the future',
-    );
-    expect(
-      row.nextRetryAt!.isBefore(now.add(const Duration(seconds: 3))),
-      isTrue,
-      reason: 'nextRetryAt must be within 3s tolerance window',
-    );
-  });
+      expect(row.retryCount, 1);
+      expect(row.syncStatus, 'pending');
+      expect(row.nextRetryAt, isNotNull);
+      expect(
+        row.nextRetryAt!.isAfter(now.add(const Duration(seconds: 1))),
+        isTrue,
+        reason: 'nextRetryAt must be at least 1s in the future',
+      );
+      expect(
+        row.nextRetryAt!.isBefore(now.add(const Duration(seconds: 3))),
+        isTrue,
+        reason: 'nextRetryAt must be within 3s tolerance window',
+      );
+    },
+  );
 
   // ─── AC5: 3rd failure (retryCount==3) → nextRetryAt ≈ +60s ──────────
   test('AC5: SyncEngine_ThirdFailure_SetsNextRetryAt60s', () async {

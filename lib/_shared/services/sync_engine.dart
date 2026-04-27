@@ -7,6 +7,7 @@ import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
 import 'package:checkly/_shared/database/app_database.dart'
     hide PendingSubmission;
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
@@ -42,6 +43,7 @@ class SyncEngine {
   final ActionPlanOutboxDao _actionPlanOutboxDao;
   final GlobalRiskDao _globalRiskDao;
   final SubmissionRiskOutboxDao _submissionRiskOutboxDao;
+  final SyncMetaDao _syncMetaDao;
 
   StreamSubscription<bool>? _connectivitySub;
 
@@ -60,6 +62,7 @@ class SyncEngine {
     required ActionPlanOutboxDao actionPlanOutboxDao,
     required GlobalRiskDao globalRiskDao,
     required SubmissionRiskOutboxDao submissionRiskOutboxDao,
+    required SyncMetaDao syncMetaDao,
     // ignore: avoid_unused_constructor_parameters
     @Deprecated(
       'No-op: SyncEngine uses OutboxDao directly. Pass outboxDao instead.',
@@ -72,7 +75,8 @@ class SyncEngine {
        _actionPlanApi = actionPlanApi,
        _actionPlanOutboxDao = actionPlanOutboxDao,
        _globalRiskDao = globalRiskDao,
-       _submissionRiskOutboxDao = submissionRiskOutboxDao {
+       _submissionRiskOutboxDao = submissionRiskOutboxDao,
+       _syncMetaDao = syncMetaDao {
     // Initialize state based on current connectivity
     if (!_connectivity.isOnline) {
       _state = SyncState.offline;
@@ -113,9 +117,14 @@ class SyncEngine {
     _state = SyncState.syncing;
 
     try {
+      lastSyncTimestamp ??= await _syncMetaDao.get('global');
+
       // --- Pull phase ---
       final pullResult = await _api.pullDeltas(lastSyncTimestamp);
       lastSyncTimestamp = pullResult.serverTimestamp;
+      if (lastSyncTimestamp != null) {
+        await _syncMetaDao.set('global', lastSyncTimestamp!);
+      }
 
       // --- Pull phase: Global Risks ---
       final globalRisks = await _api.pullGlobalRisks(lastSyncTimestamp);

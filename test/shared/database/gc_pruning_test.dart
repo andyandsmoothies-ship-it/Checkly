@@ -1,4 +1,4 @@
-﻿import 'package:drift/drift.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -6,7 +6,7 @@ import 'package:checkly/_shared/database/app_database.dart';
 
 // ============================================================
 // Test Plan: 90-Day SQLite Garbage Collector (Pillar A)
-//  
+//
 // AC1 â€” Happy Path: completed/voided records > 90 days are pruned (submissions + action plans)
 // AC2 â€” Preservation: records < 90 days are NOT pruned
 // AC3 â€” NULL Safety: records with NULL completedAt/voidedAt are NOT pruned
@@ -31,25 +31,29 @@ void main() {
     DateTime? completedAt,
     DateTime? voidedAt,
   }) async {
-    await db.into(db.cachedSubmissions).insert(
-      CachedSubmissionsCompanion.insert(
-        id: id,
-        status: status,
-        createdAt: DateTime.now().subtract(const Duration(days: 200)),
-        completedAt: Value(completedAt),
-        voidedAt: Value(voidedAt),
-      ),
-    );
-    await db.into(db.cachedActionPlans).insert(
-      CachedActionPlansCompanion.insert(
-        id: 'ap-$id',
-        criteriaLabel: 'Criteria',
-        groupTitle: 'Group',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        submissionId: Value(id),
-      ),
-    );
+    await db
+        .into(db.cachedSubmissions)
+        .insert(
+          CachedSubmissionsCompanion.insert(
+            id: id,
+            status: status,
+            createdAt: DateTime.now().subtract(const Duration(days: 200)),
+            completedAt: Value(completedAt),
+            voidedAt: Value(voidedAt),
+          ),
+        );
+    await db
+        .into(db.cachedActionPlans)
+        .insert(
+          CachedActionPlansCompanion.insert(
+            id: 'ap-$id',
+            criteriaLabel: 'Criteria',
+            groupTitle: 'Group',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            submissionId: Value(id),
+          ),
+        );
   }
 
   // â”€â”€ AC1: Happy Path (GC prunes stale completed + voided) â”€â”€
@@ -58,21 +62,31 @@ void main() {
     'AC1a â€” GC_PruneStaleCompletedAudits: completed record > 90 days is deleted on db open',
     () async {
       final staleDate = DateTime.now().subtract(const Duration(days: 91));
-      await seedSubmissionWithPlan('sub-stale-completed',
-          status: 'completed', completedAt: staleDate);
+      await seedSubmissionWithPlan(
+        'sub-stale-completed',
+        status: 'completed',
+        completedAt: staleDate,
+      );
 
-      // Act: Trigger pruning logic directly. 
+      // Act: Trigger pruning logic directly.
       // Do NOT re-assign `db` or call `db.close()` here, as it breaks isolation for subsequent tests
       // in the same suite. The NativeDatabase.memory() is torn down correctly in `tearDown`.
-      await db.pruneStaleAuditsForTesting(); // Builder must expose this @visibleForTesting
+      await db
+          .pruneStaleAuditsForTesting(); // Builder must expose this @visibleForTesting
 
       final subs = await db.select(db.cachedSubmissions).get();
       final plans = await db.select(db.cachedActionPlans).get();
 
-      expect(subs.where((s) => s.id == 'sub-stale-completed'), isEmpty,
-          reason: 'Stale completed submission must be pruned');
-      expect(plans.where((p) => p.submissionId == 'sub-stale-completed'), isEmpty,
-          reason: 'Orphaned action plan must be cascade-pruned');
+      expect(
+        subs.where((s) => s.id == 'sub-stale-completed'),
+        isEmpty,
+        reason: 'Stale completed submission must be pruned',
+      );
+      expect(
+        plans.where((p) => p.submissionId == 'sub-stale-completed'),
+        isEmpty,
+        reason: 'Orphaned action plan must be cascade-pruned',
+      );
     },
   );
 
@@ -80,18 +94,28 @@ void main() {
     'AC1b â€” GC_PruneStaleVoidedAudits: voided record > 90 days is deleted on db open',
     () async {
       final staleDate = DateTime.now().subtract(const Duration(days: 91));
-      await seedSubmissionWithPlan('sub-stale-voided',
-          status: 'voided', voidedAt: staleDate);
+      await seedSubmissionWithPlan(
+        'sub-stale-voided',
+        status: 'voided',
+        voidedAt: staleDate,
+      );
 
       await db.pruneStaleAuditsForTesting();
 
       final subs = await db.select(db.cachedSubmissions).get();
       final plans = await db.select(db.cachedActionPlans).get();
 
-      expect(subs.where((s) => s.id == 'sub-stale-voided'), isEmpty,
-          reason: 'Stale voided submission must be pruned');
-      expect(plans.where((p) => p.submissionId == 'sub-stale-voided'), isEmpty,
-          reason: 'Orphaned action plan for voided submission must be cascade-pruned');
+      expect(
+        subs.where((s) => s.id == 'sub-stale-voided'),
+        isEmpty,
+        reason: 'Stale voided submission must be pruned',
+      );
+      expect(
+        plans.where((p) => p.submissionId == 'sub-stale-voided'),
+        isEmpty,
+        reason:
+            'Orphaned action plan for voided submission must be cascade-pruned',
+      );
     },
   );
 
@@ -101,14 +125,20 @@ void main() {
     'AC2 â€” GC_PreservesRecentAudits: completed record < 90 days is NOT deleted',
     () async {
       final recentDate = DateTime.now().subtract(const Duration(days: 30));
-      await seedSubmissionWithPlan('sub-recent',
-          status: 'completed', completedAt: recentDate);
+      await seedSubmissionWithPlan(
+        'sub-recent',
+        status: 'completed',
+        completedAt: recentDate,
+      );
 
       await db.pruneStaleAuditsForTesting();
 
       final subs = await db.select(db.cachedSubmissions).get();
-      expect(subs.any((s) => s.id == 'sub-recent'), isTrue,
-          reason: 'Recent completed submission must NOT be pruned');
+      expect(
+        subs.any((s) => s.id == 'sub-recent'),
+        isTrue,
+        reason: 'Recent completed submission must NOT be pruned',
+      );
     },
   );
 
@@ -117,20 +147,26 @@ void main() {
   test(
     'AC3 â€” GC_NullCompletedAt_NoDelete: completed record with NULL completedAt is NOT pruned',
     () async {
-      await db.into(db.cachedSubmissions).insert(
-        CachedSubmissionsCompanion.insert(
-          id: 'sub-null-completed',
-          status: 'completed',
-          createdAt: DateTime.now().subtract(const Duration(days: 200)),
-          completedAt: const Value(null), // explicitly null
-        ),
-      );
+      await db
+          .into(db.cachedSubmissions)
+          .insert(
+            CachedSubmissionsCompanion.insert(
+              id: 'sub-null-completed',
+              status: 'completed',
+              createdAt: DateTime.now().subtract(const Duration(days: 200)),
+              completedAt: const Value(null), // explicitly null
+            ),
+          );
 
       await db.pruneStaleAuditsForTesting();
 
       final subs = await db.select(db.cachedSubmissions).get();
-      expect(subs.any((s) => s.id == 'sub-null-completed'), isTrue,
-          reason: 'NULL completedAt must be SQLite-safe â€” row must survive pruning');
+      expect(
+        subs.any((s) => s.id == 'sub-null-completed'),
+        isTrue,
+        reason:
+            'NULL completedAt must be SQLite-safe â€” row must survive pruning',
+      );
     },
   );
 
@@ -141,28 +177,38 @@ void main() {
     () async {
       // Seed very old draft and scheduled records
       final ancientDate = DateTime.now().subtract(const Duration(days: 365));
-      await db.into(db.cachedSubmissions).insert(
-        CachedSubmissionsCompanion.insert(
-          id: 'sub-old-draft',
-          status: 'draft',
-          createdAt: ancientDate,
-        ),
-      );
-      await db.into(db.cachedSubmissions).insert(
-        CachedSubmissionsCompanion.insert(
-          id: 'sub-old-scheduled',
-          status: 'scheduled',
-          createdAt: ancientDate,
-        ),
-      );
+      await db
+          .into(db.cachedSubmissions)
+          .insert(
+            CachedSubmissionsCompanion.insert(
+              id: 'sub-old-draft',
+              status: 'draft',
+              createdAt: ancientDate,
+            ),
+          );
+      await db
+          .into(db.cachedSubmissions)
+          .insert(
+            CachedSubmissionsCompanion.insert(
+              id: 'sub-old-scheduled',
+              status: 'scheduled',
+              createdAt: ancientDate,
+            ),
+          );
 
       await db.pruneStaleAuditsForTesting();
 
       final subs = await db.select(db.cachedSubmissions).get();
-      expect(subs.any((s) => s.id == 'sub-old-draft'), isTrue,
-          reason: 'Draft records are NEVER subject to GC pruning');
-      expect(subs.any((s) => s.id == 'sub-old-scheduled'), isTrue,
-          reason: 'Scheduled records are NEVER subject to GC pruning');
+      expect(
+        subs.any((s) => s.id == 'sub-old-draft'),
+        isTrue,
+        reason: 'Draft records are NEVER subject to GC pruning',
+      );
+      expect(
+        subs.any((s) => s.id == 'sub-old-scheduled'),
+        isTrue,
+        reason: 'Scheduled records are NEVER subject to GC pruning',
+      );
     },
   );
 }

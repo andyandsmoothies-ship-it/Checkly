@@ -74,8 +74,12 @@ void main() {
       final result = ScoringEngine.calculate(input);
 
       // Both criteria are conform → 0 deductions → 100%
-      expect(result.totalScore, closeTo(100.00, 0.01),
-          reason: 'conform with stale numericValue should produce 0 deduction (guard missing)');
+      expect(
+        result.totalScore,
+        closeTo(100.00, 0.01),
+        reason:
+            'conform with stale numericValue should produce 0 deduction (guard missing)',
+      );
     },
   );
 
@@ -88,43 +92,44 @@ void main() {
   //
   // Why RED: _getDeduction has no 'na' check; GetDeduction() on server does (L316).
   // ================================================================
-  test(
-    'ScoringEngine_NaWithStaleNumericValue_NoPhantomDeduction_PenaltyMode',
-    () {
-      final input = ScoringInput(
-        sections: [
-          SectionInput(
-            id: 's1',
-            weight: 100,
-            criteria: [
-              CriterionInput(
-                id: 'c1',
-                groupId: 's1',
-                pointsWeight: 5,
-                isCcp: false,
-                isRisk: false,
-                inputType: 'numeric',
-              ),
-            ],
-          ),
-        ],
-        answers: [
-          // na with stale numericValue=2.
-          // Without guard: 2 × 5 = 10 phantom deduction → score = max(0, 100-10) in checklist,
-          // or in weighted: after = 5-10 → clamped to 0 → ratio=0 → score=0%.
-          // With guard: returns 0 → score = 100%.
-          AnswerInput(criteriaId: 'c1', value: 'na', numericValue: 2),
-        ],
-        scoringMode: ScoringMode.penalty,
-      );
+  test('ScoringEngine_NaWithStaleNumericValue_NoPhantomDeduction_PenaltyMode', () {
+    final input = ScoringInput(
+      sections: [
+        SectionInput(
+          id: 's1',
+          weight: 100,
+          criteria: [
+            CriterionInput(
+              id: 'c1',
+              groupId: 's1',
+              pointsWeight: 5,
+              isCcp: false,
+              isRisk: false,
+              inputType: 'numeric',
+            ),
+          ],
+        ),
+      ],
+      answers: [
+        // na with stale numericValue=2.
+        // Without guard: 2 × 5 = 10 phantom deduction → score = max(0, 100-10) in checklist,
+        // or in weighted: after = 5-10 → clamped to 0 → ratio=0 → score=0%.
+        // With guard: returns 0 → score = 100%.
+        AnswerInput(criteriaId: 'c1', value: 'na', numericValue: 2),
+      ],
+      scoringMode: ScoringMode.penalty,
+    );
 
-      final result = ScoringEngine.calculate(input);
+    final result = ScoringEngine.calculate(input);
 
-      // 'na' answer = not applicable = 0 deduction
-      expect(result.totalScore, closeTo(100.00, 0.01),
-          reason: 'na answer must return 0 deduction regardless of stale numericValue');
-    },
-  );
+    // 'na' answer = not applicable = 0 deduction
+    expect(
+      result.totalScore,
+      closeTo(100.00, 0.01),
+      reason:
+          'na answer must return 0 deduction regardless of stale numericValue',
+    );
+  });
 
   // ================================================================
   // CG3: conform with stale numericValue → NO phantom deduction (checklist mode)
@@ -184,8 +189,12 @@ void main() {
 
       final result = ScoringEngine.calculate(input);
 
-      expect(result.totalScore, closeTo(100.00, 0.01),
-          reason: 'conform with stale numericValue must not cause phantom deduction in checklist mode');
+      expect(
+        result.totalScore,
+        closeTo(100.00, 0.01),
+        reason:
+            'conform with stale numericValue must not cause phantom deduction in checklist mode',
+      );
     },
   );
 
@@ -246,8 +255,12 @@ void main() {
       final result = ScoringEngine.calculate(input);
 
       // c1: 1 fault × 10pts = 10 deduction. sectionAfter = 20-10 = 10. ratio = 0.5. score = 50%.
-      expect(result.totalScore, closeTo(50.00, 0.01),
-          reason: 'real non_conform fault must still be deducted after the guard is applied');
+      expect(
+        result.totalScore,
+        closeTo(50.00, 0.01),
+        reason:
+            'real non_conform fault must still be deducted after the guard is applied',
+      );
     },
   );
 
@@ -283,9 +296,7 @@ void main() {
       ];
 
       final input = ScoringInput(
-        sections: [
-          SectionInput(id: 's1', weight: 100, criteria: criteria),
-        ],
+        sections: [SectionInput(id: 's1', weight: 100, criteria: criteria)],
         answers: [
           // 2 REAL non_conform faults → 20 pts deducted
           AnswerInput(criteriaId: 'c1', value: 'non_conform', numericValue: 1),
@@ -307,10 +318,13 @@ void main() {
 
       // Must match server: (90-20)/90 = 77.78%
       // Current broken code produces: (90-50)/90 = 44.44%
-      expect(result.totalScore, closeTo(77.78, 0.01),
-          reason:
-              'Flutter score must match server score. '
-              'Phantom deductions from stale numericValue on conform answers must be zero.');
+      expect(
+        result.totalScore,
+        closeTo(77.78, 0.01),
+        reason:
+            'Flutter score must match server score. '
+            'Phantom deductions from stale numericValue on conform answers must be zero.',
+      );
     },
   );
 }

@@ -7,6 +7,7 @@ import 'package:checkly/features/stores/services/store_api_service.dart';
 import 'package:checkly/_shared/database/dao/store_dao.dart';
 
 class MockStoreApiService extends Mock implements StoreApiService {}
+
 class MockStoreDao extends Mock implements StoreDao {}
 
 void main() {
@@ -53,7 +54,9 @@ void main() {
     test('T3: loadStores() -> result is sorted alphabetically A->Z', () async {
       // Arrange
       // DAO returns unsorted: Z, A, M
-      when(() => dao.getAllStores()).thenAnswer((_) async => [storeZ, storeA, storeM]);
+      when(
+        () => dao.getAllStores(),
+      ).thenAnswer((_) async => [storeZ, storeA, storeM]);
       // API fails (offline)
       when(() => api.getStores()).thenThrow(Exception('Offline'));
 
@@ -61,53 +64,77 @@ void main() {
       await manager.loadStores();
 
       // Assert: List should be A, M, Z
-      expect(manager.stores.value.map((s) => s.name).toList(), ['Alpha Store', 'Mega Store', 'Zeta Store']);
+      expect(manager.stores.value.map((s) => s.name).toList(), [
+        'Alpha Store',
+        'Mega Store',
+        'Zeta Store',
+      ]);
     });
 
-    test('T1: searchStores("mega") while offline -> stores list filters from cache in-memory', () async {
-      // Arrange: Load stores first so cache is populated
-      when(() => dao.getAllStores()).thenAnswer((_) async => [storeZ, storeA, storeM]);
-      when(() => api.getStores()).thenThrow(Exception('Offline'));
-      await manager.loadStores();
-      
-      // Clear interactions from loadStores so verifyNever is accurate
-      clearInteractions(api);
-      clearInteractions(dao);
+    test(
+      'T1: searchStores("mega") while offline -> stores list filters from cache in-memory',
+      () async {
+        // Arrange: Load stores first so cache is populated
+        when(
+          () => dao.getAllStores(),
+        ).thenAnswer((_) async => [storeZ, storeA, storeM]);
+        when(() => api.getStores()).thenThrow(Exception('Offline'));
+        await manager.loadStores();
 
-      // Ensure API search throws if called
-      when(() => api.getStores(search: any(named: 'search'))).thenThrow(Exception('Offline Search Failed'));
+        // Clear interactions from loadStores so verifyNever is accurate
+        clearInteractions(api);
+        clearInteractions(dao);
 
-      // Act
-      await manager.searchStores('mega');
+        // Ensure API search throws if called
+        when(
+          () => api.getStores(search: any(named: 'search')),
+        ).thenThrow(Exception('Offline Search Failed'));
 
-      // Assert: Only Mega Store is found
-      expect(manager.stores.value.map((s) => s.name).toList(), ['Mega Store']);
-      // Should NOT call API for search
-      verifyNever(() => api.getStores(search: any(named: 'search')));
-    });
+        // Act
+        await manager.searchStores('mega');
 
-    test('T2: searchStores("") -> restores full store list without API/DAO call', () async {
-      // Arrange: Load stores first
-      when(() => dao.getAllStores()).thenAnswer((_) async => [storeZ, storeA, storeM]);
-      when(() => api.getStores()).thenThrow(Exception('Offline'));
-      await manager.loadStores();
-      
-      // Clear interactions from loadStores
-      clearInteractions(api);
-      clearInteractions(dao);
-      
-      // Act 1: Search something to filter it
-      when(() => api.getStores(search: any(named: 'search'))).thenThrow(Exception('Offline Search Failed'));
-      await manager.searchStores('alpha');
+        // Assert: Only Mega Store is found
+        expect(manager.stores.value.map((s) => s.name).toList(), [
+          'Mega Store',
+        ]);
+        // Should NOT call API for search
+        verifyNever(() => api.getStores(search: any(named: 'search')));
+      },
+    );
 
-      // Act 2: Empty search
-      await manager.searchStores('');
+    test(
+      'T2: searchStores("") -> restores full store list without API/DAO call',
+      () async {
+        // Arrange: Load stores first
+        when(
+          () => dao.getAllStores(),
+        ).thenAnswer((_) async => [storeZ, storeA, storeM]);
+        when(() => api.getStores()).thenThrow(Exception('Offline'));
+        await manager.loadStores();
 
-      // Assert: Full list restored (sorted)
-      expect(manager.stores.value.map((s) => s.name).toList(), ['Alpha Store', 'Mega Store', 'Zeta Store']);
-      // Should NOT call DAO again for the empty search
-      verifyNever(() => dao.getAllStores()); 
-      verifyNever(() => api.getStores(search: any(named: 'search')));
-    });
+        // Clear interactions from loadStores
+        clearInteractions(api);
+        clearInteractions(dao);
+
+        // Act 1: Search something to filter it
+        when(
+          () => api.getStores(search: any(named: 'search')),
+        ).thenThrow(Exception('Offline Search Failed'));
+        await manager.searchStores('alpha');
+
+        // Act 2: Empty search
+        await manager.searchStores('');
+
+        // Assert: Full list restored (sorted)
+        expect(manager.stores.value.map((s) => s.name).toList(), [
+          'Alpha Store',
+          'Mega Store',
+          'Zeta Store',
+        ]);
+        // Should NOT call DAO again for the empty search
+        verifyNever(() => dao.getAllStores());
+        verifyNever(() => api.getStores(search: any(named: 'search')));
+      },
+    );
   });
 }

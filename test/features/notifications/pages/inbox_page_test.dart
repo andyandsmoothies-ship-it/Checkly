@@ -44,8 +44,8 @@ class _StubNotificationManager extends ChangeNotifier
   String? get error => null;
 
   _StubNotificationManager(List<NotificationDto> seed)
-      : notifications = ValueNotifier(seed),
-        _unreadCount = seed.where((n) => !n.isRead).length;
+    : notifications = ValueNotifier(seed),
+      _unreadCount = seed.where((n) => !n.isRead).length;
 
   @override
   Future<void> loadNotifications() async {
@@ -109,10 +109,7 @@ class _StubNotificationManager extends ChangeNotifier
 
 final _now = DateTime.now();
 
-NotificationDto _makeNotif({
-  required String id,
-  required bool isRead,
-}) =>
+NotificationDto _makeNotif({required String id, required bool isRead}) =>
     NotificationDto(
       id: id,
       userId: 'u1',
@@ -130,10 +127,7 @@ Widget _buildHarness() {
     routerConfig: GoRouter(
       initialLocation: '/inbox',
       routes: [
-        GoRoute(
-          path: '/inbox',
-          builder: (context, state) => const InboxPage(),
-        ),
+        GoRoute(path: '/inbox', builder: (context, state) => const InboxPage()),
       ],
     ),
   );
@@ -152,78 +146,75 @@ void main() {
   });
 
   group('InboxPage — Tab Filtering', () {
-    testWidgets(
-      'TC1.2b: All tab shows all notifications (read + unread)',
-      (tester) async {
-        GetIt.I.registerSingleton<NotificationManager>(
-          _StubNotificationManager([
-            _makeNotif(id: 'n1', isRead: true),
-            _makeNotif(id: 'n2', isRead: false),
-            _makeNotif(id: 'n3', isRead: false),
-          ]),
-        );
+    testWidgets('TC1.2b: All tab shows all notifications (read + unread)', (
+      tester,
+    ) async {
+      GetIt.I.registerSingleton<NotificationManager>(
+        _StubNotificationManager([
+          _makeNotif(id: 'n1', isRead: true),
+          _makeNotif(id: 'n2', isRead: false),
+          _makeNotif(id: 'n3', isRead: false),
+        ]),
+      );
 
-        await tester.pumpWidget(_buildHarness());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_buildHarness());
+      await tester.pumpAndSettle();
 
-        // Default tab is "All" — all 3 messages should be visible
-        expect(find.text('Message n1'), findsOneWidget);
-        expect(find.text('Message n2'), findsOneWidget);
-        expect(find.text('Message n3'), findsOneWidget);
-      },
-    );
+      // Default tab is "All" — all 3 messages should be visible
+      expect(find.text('Message n1'), findsOneWidget);
+      expect(find.text('Message n2'), findsOneWidget);
+      expect(find.text('Message n3'), findsOneWidget);
+    });
 
-    testWidgets(
-      'TC1.2c: Unread tab shows only unread notifications',
-      (tester) async {
-        GetIt.I.registerSingleton<NotificationManager>(
-          _StubNotificationManager([
-            _makeNotif(id: 'n1', isRead: true),
-            _makeNotif(id: 'n2', isRead: false),
-            _makeNotif(id: 'n3', isRead: false),
-          ]),
-        );
+    testWidgets('TC1.2c: Unread tab shows only unread notifications', (
+      tester,
+    ) async {
+      GetIt.I.registerSingleton<NotificationManager>(
+        _StubNotificationManager([
+          _makeNotif(id: 'n1', isRead: true),
+          _makeNotif(id: 'n2', isRead: false),
+          _makeNotif(id: 'n3', isRead: false),
+        ]),
+      );
 
-        await tester.pumpWidget(_buildHarness());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_buildHarness());
+      await tester.pumpAndSettle();
 
-        // Tap the "Unread" tab
-        await tester.tap(find.text('Unread'));
-        await tester.pumpAndSettle();
+      // Tap the "Unread" tab
+      await tester.tap(find.text('Unread'));
+      await tester.pumpAndSettle();
 
-        // Only unread items (n2, n3) should be visible
-        expect(find.text('Message n1'), findsNothing);
-        expect(find.text('Message n2'), findsOneWidget);
-        expect(find.text('Message n3'), findsOneWidget);
-      },
-    );
+      // Only unread items (n2, n3) should be visible
+      expect(find.text('Message n1'), findsNothing);
+      expect(find.text('Message n2'), findsOneWidget);
+      expect(find.text('Message n3'), findsOneWidget);
+    });
 
-    testWidgets(
-      'TC1.3b: After markAllRead(), Unread tab becomes empty',
-      (tester) async {
-        GetIt.I.registerSingleton<NotificationManager>(
-          _StubNotificationManager([
-            _makeNotif(id: 'n1', isRead: false),
-            _makeNotif(id: 'n2', isRead: false),
-          ]),
-        );
+    testWidgets('TC1.3b: After markAllRead(), Unread tab becomes empty', (
+      tester,
+    ) async {
+      GetIt.I.registerSingleton<NotificationManager>(
+        _StubNotificationManager([
+          _makeNotif(id: 'n1', isRead: false),
+          _makeNotif(id: 'n2', isRead: false),
+        ]),
+      );
 
-        await tester.pumpWidget(_buildHarness());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(_buildHarness());
+      await tester.pumpAndSettle();
 
-        // Tap "Mark all read" button in the AppBar
-        await tester.tap(find.text('Mark all read'));
-        await tester.pumpAndSettle();
+      // Tap "Mark all read" button in the AppBar
+      await tester.tap(find.text('Mark all read'));
+      await tester.pumpAndSettle();
 
-        // Switch to Unread tab
-        await tester.tap(find.text('Unread'));
-        await tester.pumpAndSettle();
+      // Switch to Unread tab
+      await tester.tap(find.text('Unread'));
+      await tester.pumpAndSettle();
 
-        // Unread tab should show the empty state message
-        expect(find.text('No unread notifications'), findsOneWidget);
-        expect(find.text('Message n1'), findsNothing);
-        expect(find.text('Message n2'), findsNothing);
-      },
-    );
+      // Unread tab should show the empty state message
+      expect(find.text('No unread notifications'), findsOneWidget);
+      expect(find.text('Message n1'), findsNothing);
+      expect(find.text('Message n2'), findsNothing);
+    });
   });
 }

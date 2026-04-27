@@ -7,7 +7,7 @@ import '../services/api_client.dart';
 
 /// A universal image widget that intelligently routes image rendering based on
 /// the URL scheme. It resolves relative server paths (e.g. `/api/photos/123.jpg`)
-/// using the injected `ApiClient` base URL, ensuring the app does not crash 
+/// using the injected `ApiClient` base URL, ensuring the app does not crash
 /// when attempting to load server photos from the local file system.
 class AppNetworkImage extends StatelessWidget {
   final String url;

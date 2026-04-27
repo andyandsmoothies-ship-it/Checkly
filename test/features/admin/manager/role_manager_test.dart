@@ -27,7 +27,7 @@ void main() {
 
       // Initially null
       expect(manager.roles.value, isNull);
-      
+
       // Loading flag should trigger
       final loadingStates = <bool>[];
       manager.isLoading.addListener(() {
@@ -51,7 +51,9 @@ void main() {
     });
 
     test('loadCatalog updates catalog quietly', () async {
-      when(() => api.getCapabilityCatalogFull()).thenAnswer((_) async => (mockCatalog, <String, CapabilityMeta>{}));
+      when(
+        () => api.getCapabilityCatalogFull(),
+      ).thenAnswer((_) async => (mockCatalog, <String, CapabilityMeta>{}));
 
       await manager.loadCatalog();
 
@@ -59,9 +61,15 @@ void main() {
     });
 
     test('grantCommand executes grant and reloads roles', () async {
-      when(() => api.grantCapability(role: any(named: 'role'), capability: any(named: 'capability')))
-          .thenAnswer((_) async {});
-      when(() => api.getRoles()).thenAnswer((_) async => [mockRole]); // reload mock
+      when(
+        () => api.grantCapability(
+          role: any(named: 'role'),
+          capability: any(named: 'capability'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => api.getRoles(),
+      ).thenAnswer((_) async => [mockRole]); // reload mock
 
       await manager.grantCommand.execute({'role': 'r1', 'capability': 'c1'});
 
@@ -70,13 +78,19 @@ void main() {
     });
 
     test('revokeCommand executes revoke and reloads roles', () async {
-      when(() => api.revokeCapability(role: any(named: 'role'), capability: any(named: 'capability')))
-          .thenAnswer((_) async {});
+      when(
+        () => api.revokeCapability(
+          role: any(named: 'role'),
+          capability: any(named: 'capability'),
+        ),
+      ).thenAnswer((_) async {});
       when(() => api.getRoles()).thenAnswer((_) async => []); // reload mock
 
       await manager.revokeCommand.execute({'role': 'r1', 'capability': 'c1'});
 
-      verify(() => api.revokeCapability(role: 'r1', capability: 'c1')).called(1);
+      verify(
+        () => api.revokeCapability(role: 'r1', capability: 'c1'),
+      ).called(1);
       verify(() => api.getRoles()).called(1);
     });
   });

@@ -122,7 +122,9 @@ class FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
   Future<void> markStaleConflict(String id) async {}
 
   @override
-  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(String planId) async => null;
+  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(
+    String planId,
+  ) async => null;
 
   @override
   Future<String?> getSubmissionIdForPlan(String planId) async => null;
@@ -153,7 +155,9 @@ void main() {
   setUp(() {
     api = FakeActionPlanApi();
     userRole = FakeUserRole('store_manager');
-    connectivity = FakeConnectivityService(online: true); // online path by default
+    connectivity = FakeConnectivityService(
+      online: true,
+    ); // online path by default
     outboxDao = FakeActionPlanOutboxDao();
     manager = ActionPlanManager(
       api: api,
@@ -364,16 +368,18 @@ class FakeActionPlanApiWithFetch implements ActionPlanApi {
 
 /// Seeds `cachedActionPlans` with a single open plan row.
 Future<void> _seedOneCachedPlan(AppDatabase db) async {
-  await db.into(db.cachedActionPlans).insert(
-    CachedActionPlansCompanion.insert(
-      id: 'cached-ap-001',
-      criteriaLabel: 'Criteria A',
-      groupTitle: 'Section 1',
-      status: const Value('open'),
-      createdAt: DateTime.utc(2026, 3, 1),
-      updatedAt: DateTime.utc(2026, 3, 1),
-    ),
-  );
+  await db
+      .into(db.cachedActionPlans)
+      .insert(
+        CachedActionPlansCompanion.insert(
+          id: 'cached-ap-001',
+          criteriaLabel: 'Criteria A',
+          groupTitle: 'Section 1',
+          status: const Value('open'),
+          createdAt: DateTime.utc(2026, 3, 1),
+          updatedAt: DateTime.utc(2026, 3, 1),
+        ),
+      );
 }
 
 /// Returns two dummy [ActionPlanDto] instances for pull engine tests.
@@ -510,4 +516,3 @@ void pullEngineTests() {
     },
   );
 }
-

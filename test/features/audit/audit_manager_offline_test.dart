@@ -99,7 +99,9 @@ void main() {
     await GetIt.instance.reset();
     testDb = _createTestDb();
     outboxDao = OutboxDao(testDb);
-    GetIt.instance.registerSingleton<DatabaseService>(DatabaseService.forTesting(testDb));
+    GetIt.instance.registerSingleton<DatabaseService>(
+      DatabaseService.forTesting(testDb),
+    );
   });
 
   tearDown(() async => testDb.close());
@@ -295,7 +297,11 @@ void main() {
     // Arrange
     final manager = makeManager();
     // targetSubmissionId does not exist yet; compiler will throw Valid Red.
-    await manager.startAudit(_makeTemplate(criteriaCount: 1), 'store-sync-1', targetSubmissionId: 'sub-123');
+    await manager.startAudit(
+      _makeTemplate(criteriaCount: 1),
+      'store-sync-1',
+      targetSubmissionId: 'sub-123',
+    );
 
     // Act
     await manager.submitAudit();
@@ -310,7 +316,10 @@ void main() {
   test('AuditManager_Submit_WithoutTargetId_StoresNullInOutboxRow', () async {
     // Arrange
     final manager = makeManager();
-    await manager.startAudit(_makeTemplate(criteriaCount: 1), 'store-sync-2'); // No target submission id
+    await manager.startAudit(
+      _makeTemplate(criteriaCount: 1),
+      'store-sync-2',
+    ); // No target submission id
 
     // Act
     await manager.submitAudit();

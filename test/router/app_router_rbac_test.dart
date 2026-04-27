@@ -15,22 +15,31 @@ class _StubAuthManager extends ChangeNotifier implements AuthManager {
   Future<void> refreshCapabilities() async {}
 
   final Set<String> _caps;
-  
-  _StubAuthManager({required Set<String> capabilities}) 
-      : _caps = capabilities;
+
+  _StubAuthManager({required Set<String> capabilities}) : _caps = capabilities;
 
   @override
-  ValueListenable<AuthState> get authState => ValueNotifier(AuthState.authenticated);
+  ValueListenable<AuthState> get authState =>
+      ValueNotifier(AuthState.authenticated);
 
   @override
-  UserSession? get currentUser => const UserSession(userId: '1', fullName: 'Test', email: 'test@x.com', role: 'any', token: 'tok');
+  UserSession? get currentUser => const UserSession(
+    userId: '1',
+    fullName: 'Test',
+    email: 'test@x.com',
+    role: 'any',
+    token: 'tok',
+  );
 
   @override
   ValueListenable<Set<String>> get capabilities => ValueNotifier(_caps);
 
-  @override Future<void> login(String e, String p) async {}
-  @override Future<void> logout() async {}
-  @override Future<void> tryAutoLogin() async {}
+  @override
+  Future<void> login(String e, String p) async {}
+  @override
+  Future<void> logout() async {}
+  @override
+  Future<void> tryAutoLogin() async {}
 }
 
 class MockBuildContext extends Fake implements BuildContext {}
@@ -63,37 +72,60 @@ void main() {
   }
 
   group('GoRouter PBAC Capability Guard', () {
-    test('AR-01: Blocks /admin/dashboard when adminDomain capabilities are missing', () {
-      arrangeCapabilities({'submissions:create'}); // Has other non-admin capability
-      expect(runRedirect('/admin/dashboard'), '/home');
-    });
+    test(
+      'AR-01: Blocks /admin/dashboard when adminDomain capabilities are missing',
+      () {
+        arrangeCapabilities({
+          'submissions:create',
+        }); // Has other non-admin capability
+        expect(runRedirect('/admin/dashboard'), '/home');
+      },
+    );
 
-    test('AR-02: Allows /admin/dashboard when admin:access capability exists', () {
-      arrangeCapabilities({'admin:access'});
-      expect(runRedirect('/admin/dashboard'), isNull);
-    });
+    test(
+      'AR-02: Allows /admin/dashboard when admin:access capability exists',
+      () {
+        arrangeCapabilities({'admin:access'});
+        expect(runRedirect('/admin/dashboard'), isNull);
+      },
+    );
 
-    test('AR-03: Blocks /templates/new when templates:create capability is missing', () {
-      arrangeCapabilities({'admin:access'});
-      expect(runRedirect('/templates/new'), '/home');
-    });
+    test(
+      'AR-03: Blocks /templates/new when templates:create capability is missing',
+      () {
+        arrangeCapabilities({'admin:access'});
+        expect(runRedirect('/templates/new'), '/home');
+      },
+    );
 
-    test('AR-04: Allows /templates/new when templates:create capability exists', () {
-      arrangeCapabilities({'templates:create'});
-      expect(runRedirect('/templates/new'), isNull);
-      
-      expect(runRedirect('/templates/wizard'), isNull);
-    });
+    test(
+      'AR-04: Allows /templates/new when templates:create capability exists',
+      () {
+        arrangeCapabilities({'templates:create'});
+        expect(runRedirect('/templates/new'), isNull);
 
-    test('AR-05: Allows /templates/:id read-only for users without templates:create capability', () {
-      arrangeCapabilities({}); // Empty capabilities
-      expect(runRedirect('/templates/abc-def-123'), isNull); // explicitly allowed read-only
-    });
+        expect(runRedirect('/templates/wizard'), isNull);
+      },
+    );
 
-    test('AR-06: (Gap AC) Blocks deeply nested mutation route (/templates/123/edit) when capability missing', () {
-      arrangeCapabilities({}); 
-      // Length of split('/') is 4 for '/templates/123/edit'. Must fail length==3 check.
-      expect(runRedirect('/templates/abc-123/edit'), '/home');
-    });
+    test(
+      'AR-05: Allows /templates/:id read-only for users without templates:create capability',
+      () {
+        arrangeCapabilities({}); // Empty capabilities
+        expect(
+          runRedirect('/templates/abc-def-123'),
+          isNull,
+        ); // explicitly allowed read-only
+      },
+    );
+
+    test(
+      'AR-06: (Gap AC) Blocks deeply nested mutation route (/templates/123/edit) when capability missing',
+      () {
+        arrangeCapabilities({});
+        // Length of split('/') is 4 for '/templates/123/edit'. Must fail length==3 check.
+        expect(runRedirect('/templates/abc-123/edit'), '/home');
+      },
+    );
   });
 }

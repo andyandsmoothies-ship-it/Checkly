@@ -13,9 +13,13 @@ import 'package:checkly/features/stores/manager/store_manager.dart';
 import 'package:checkly/_shared/services/gps_service.dart';
 
 class MockAuditManager extends Mock implements AuditManager {}
+
 class MockTemplateManager extends Mock implements TemplateManager {}
+
 class MockDashboardManager extends Mock implements DashboardManager {}
+
 class MockStoreManager extends Mock implements StoreManager {}
+
 class MockGpsService extends Mock implements GpsService {}
 
 class FakeTemplateTreeDto extends Fake implements TemplateTreeDto {}
@@ -46,8 +50,13 @@ void main() {
     di.registerSingleton<StoreManager>(mockStoreManager);
     di.registerSingleton<GpsService>(mockGpsService);
 
-    when(() => mockAuditManager.startAudit(any(), any(), targetSubmissionId: any(named: 'targetSubmissionId')))
-        .thenAnswer((_) async {});
+    when(
+      () => mockAuditManager.startAudit(
+        any(),
+        any(),
+        targetSubmissionId: any(named: 'targetSubmissionId'),
+      ),
+    ).thenAnswer((_) async {});
     when(() => mockAuditManager.addListener(any())).thenAnswer((_) {});
     when(() => mockAuditManager.removeListener(any())).thenAnswer((_) {});
     when(() => mockAuditManager.hasDraft).thenReturn(false);
@@ -62,64 +71,79 @@ void main() {
     when(() => mockAuditManager.draftSavedAt).thenReturn(null);
     when(() => mockAuditManager.submitAudit()).thenAnswer((_) async {});
 
-    when(() => mockGpsService.getCurrentPosition()).thenAnswer((_) async => null);
+    when(
+      () => mockGpsService.getCurrentPosition(),
+    ).thenAnswer((_) async => null);
   });
 
-  testWidgets('AuditFormPage._onSubmit calculates missingRequired based on individual and global config', (tester) async {
-    // 1. Arrange: Global confirm is OFF, but one criterion is individually required.
-    final template = TemplateTreeDto(
-      id: 't-1',
-      title: 'Test Template',
-      type: 'qc',
-      version: 1,
-      isActive: true,
-      createdAt: DateTime(2025),
-      updatedAt: DateTime(2025),
-      groups: [
-        GroupDto(
-          id: 'g-1',
-          title: 'Group 1',
-          orderIndex: 0,
-          criteria: [
-            CriterionDto(
-              id: 'c-1',
-              label: 'Required Criterion',
-              inputType: 'text',
-              orderIndex: 0,
-              isCcp: false,
-              isRisk: false,
-              metadata: jsonEncode({'isRequired': true}), // Individually required
-            ),
-          ],
-          children: [],
-        )
-      ],
-      scoringLogicConfig: jsonEncode({'confirmCorrect': false}), // Global confirm OFF
-    );
+  testWidgets(
+    'AuditFormPage._onSubmit calculates missingRequired based on individual and global config',
+    (tester) async {
+      // 1. Arrange: Global confirm is OFF, but one criterion is individually required.
+      final template = TemplateTreeDto(
+        id: 't-1',
+        title: 'Test Template',
+        type: 'qc',
+        version: 1,
+        isActive: true,
+        createdAt: DateTime(2025),
+        updatedAt: DateTime(2025),
+        groups: [
+          GroupDto(
+            id: 'g-1',
+            title: 'Group 1',
+            orderIndex: 0,
+            criteria: [
+              CriterionDto(
+                id: 'c-1',
+                label: 'Required Criterion',
+                inputType: 'text',
+                orderIndex: 0,
+                isCcp: false,
+                isRisk: false,
+                metadata: jsonEncode({
+                  'isRequired': true,
+                }), // Individually required
+              ),
+            ],
+            children: [],
+          ),
+        ],
+        scoringLogicConfig: jsonEncode({
+          'confirmCorrect': false,
+        }), // Global confirm OFF
+      );
 
-    when(() => mockTemplateManager.loadTemplateTree(any())).thenAnswer((_) async {});
-    when(() => mockTemplateManager.selectedTemplate).thenReturn(ValueNotifier(template));
-    when(() => mockAuditManager.template).thenReturn(template);
+      when(
+        () => mockTemplateManager.loadTemplateTree(any()),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockTemplateManager.selectedTemplate,
+      ).thenReturn(ValueNotifier(template));
+      when(() => mockAuditManager.template).thenReturn(template);
 
-    await tester.pumpWidget(MaterialApp(
-      home: const AuditFormPage(templateId: 't-1', storeId: 'store-1'),
-    ));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: const AuditFormPage(templateId: 't-1', storeId: 'store-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    // 2. Act: Tap submit button
-    final submitButton = find.text('Submit');
-    expect(submitButton, findsOneWidget);
-    await tester.tap(submitButton);
-    await tester.pumpAndSettle();
+      // 2. Act: Tap submit button
+      final submitButton = find.text('Submit');
+      expect(submitButton, findsOneWidget);
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
 
-    // 3. Assert: 
-    // The submission should be blocked because c-1 is required but unanswered.
-    // Expected behavior: submitAudit() is NEVER called.
-    // Expected behavior: A snackbar shows "1 required criteria still need review".
-    verifyNever(() => mockAuditManager.submitAudit());
-    
-    // We also expect the confirmation dialog ("Submit Audit?") NOT to appear.
-    // If it appears, that means the gate was bypassed.
-    expect(find.text('Submit Audit?'), findsNothing);
-  });
+      // 3. Assert:
+      // The submission should be blocked because c-1 is required but unanswered.
+      // Expected behavior: submitAudit() is NEVER called.
+      // Expected behavior: A snackbar shows "1 required criteria still need review".
+      verifyNever(() => mockAuditManager.submitAudit());
+
+      // We also expect the confirmation dialog ("Submit Audit?") NOT to appear.
+      // If it appears, that means the gate was bypassed.
+      expect(find.text('Submit Audit?'), findsNothing);
+    },
+  );
 }

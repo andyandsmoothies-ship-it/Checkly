@@ -7,6 +7,7 @@ import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockAuthManager extends Mock implements AuthManager {}
+
 class MockPolicyManager extends Mock implements PolicyManager {}
 
 void main() {
@@ -18,13 +19,15 @@ void main() {
     GetIt.I.reset();
   });
 
-  testWidgets('PermissionGuard rebuilds reactively when capabilities change', (tester) async {
+  testWidgets('PermissionGuard rebuilds reactively when capabilities change', (
+    tester,
+  ) async {
     // Arrange
     final authManager = MockAuthManager();
     final policyManager = MockPolicyManager();
-    
+
     when(() => policyManager.can(any())).thenReturn(false);
-    
+
     GetIt.I.registerSingleton<AuthManager>(authManager);
     GetIt.I.registerSingleton<PolicyManager>(policyManager);
 

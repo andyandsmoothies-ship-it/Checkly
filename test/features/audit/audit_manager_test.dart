@@ -88,7 +88,6 @@ TemplateTreeDto _template({List<GroupDto>? groups}) => TemplateTreeDto(
       ],
 );
 
-
 /// Creates an [AuditManager] with all dependencies injected.
 /// DraftService stubs are applied by default.
 AuditManager _manager({
@@ -327,7 +326,9 @@ void main() {
       final mockApi = MockSubmissionApiService();
       final mockConnectivity = MockConnectivityService();
 
-      when(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).thenAnswer((_) async {});
+      when(
+        () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
+      ).thenAnswer((_) async {});
       when(() => mockConnectivity.isOnline).thenReturn(false);
 
       final m = _manager(
@@ -338,27 +339,33 @@ void main() {
       await m.startAudit(_template(), 'store-1');
       await m.submitAudit();
 
-      verify(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).called(1);
+      verify(
+        () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
+      ).called(1);
       verifyNever(() => mockApi.createSubmission(any()));
       expect(m.wasQueuedOffline, isTrue);
     });
 
-    test('inserts to outbox and marks wasQueuedOffline=false when online', () async {
-      final mockOutbox = MockOutboxDao();
-      final mockConnectivity = MockConnectivityService();
+    test(
+      'inserts to outbox and marks wasQueuedOffline=false when online',
+      () async {
+        final mockOutbox = MockOutboxDao();
+        final mockConnectivity = MockConnectivityService();
 
-      when(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).thenAnswer((_) async {});
-      when(() => mockConnectivity.isOnline).thenReturn(true);
+        when(
+          () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
+        ).thenAnswer((_) async {});
+        when(() => mockConnectivity.isOnline).thenReturn(true);
 
-      final m = _manager(
-        outbox: mockOutbox,
-        connectivity: mockConnectivity,
-      );
-      await m.startAudit(_template(), 'store-1');
-      await m.submitAudit();
+        final m = _manager(outbox: mockOutbox, connectivity: mockConnectivity);
+        await m.startAudit(_template(), 'store-1');
+        await m.submitAudit();
 
-      verify(() => mockOutbox.insertSubmissionWithAnswers(any(), any())).called(1);
-      expect(m.wasQueuedOffline, isFalse);
-    });
+        verify(
+          () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
+        ).called(1);
+        expect(m.wasQueuedOffline, isFalse);
+      },
+    );
   });
 }

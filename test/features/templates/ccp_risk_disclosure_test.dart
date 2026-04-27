@@ -53,10 +53,7 @@ bool showRisk({
     (globalRiskEnabled || criterionIsRisk);
 
 /// Divider visibility — only if at least one toggle is shown.
-bool showDivider({
-  required bool ccpVisible,
-  required bool riskVisible,
-}) =>
+bool showDivider({required bool ccpVisible, required bool riskVisible}) =>
     ccpVisible || riskVisible;
 
 void main() {
@@ -143,17 +140,20 @@ void main() {
     });
 
     // EDD-C: DATA PRESERVATION — Gotcha #6
-    test('EDD-C: criterion.isCcp=true + globalOff → shown (data preservation)', () {
-      expect(
-        showCcp(
-          inputType: 'pass_fail',
-          scoringMode: 'penalty',
-          globalCcpEnabled: false,
-          criterionIsCcp: true,
-        ),
-        isTrue,
-      );
-    });
+    test(
+      'EDD-C: criterion.isCcp=true + globalOff → shown (data preservation)',
+      () {
+        expect(
+          showCcp(
+            inputType: 'pass_fail',
+            scoringMode: 'penalty',
+            globalCcpEnabled: false,
+            criterionIsCcp: true,
+          ),
+          isTrue,
+        );
+      },
+    );
 
     // EDD-D: BLOCKLIST — survey blocks regardless of global flag
     test('EDD-D: survey + globalCcpEnabled=true → hidden', () {
@@ -195,17 +195,20 @@ void main() {
     });
 
     // EDD-G: non-scored inputType blocks regardless
-    test('EDD-G: penalty + globalOn + inputType=text → hidden (Gotcha #11)', () {
-      expect(
-        showCcp(
-          inputType: 'text',
-          scoringMode: 'penalty',
-          globalCcpEnabled: true,
-          criterionIsCcp: false,
-        ),
-        isFalse,
-      );
-    });
+    test(
+      'EDD-G: penalty + globalOn + inputType=text → hidden (Gotcha #11)',
+      () {
+        expect(
+          showCcp(
+            inputType: 'text',
+            scoringMode: 'penalty',
+            globalCcpEnabled: true,
+            criterionIsCcp: false,
+          ),
+          isFalse,
+        );
+      },
+    );
 
     test('EDD-G: penalty + globalOn + inputType=single_choice → hidden', () {
       expect(

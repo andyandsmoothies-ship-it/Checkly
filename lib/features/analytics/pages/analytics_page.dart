@@ -488,7 +488,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                       _KpiCard(
                         icon: Icons.check_circle,
                         label: 'Completion Rate',
-                        value: '${(data?.completionRate ?? 0).toStringAsFixed(1)}%',
+                        value:
+                            '${(data?.completionRate ?? 0).toStringAsFixed(1)}%',
                         accentColor: AppTheme.info,
                         onTap: () => context.go('/activity?filter=submitted'),
                       ),

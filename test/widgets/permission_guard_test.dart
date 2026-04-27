@@ -13,14 +13,22 @@ class _FakeAuthManager extends ChangeNotifier implements AuthManager {
   Future<void> refreshCapabilities() async {}
 
   final ValueNotifier<Set<String>> _caps;
-  _FakeAuthManager(Set<String> capabilities) : _caps = ValueNotifier(capabilities);
+  _FakeAuthManager(Set<String> capabilities)
+    : _caps = ValueNotifier(capabilities);
 
-  @override ValueListenable<Set<String>> get capabilities => _caps;
-  @override ValueListenable<AuthState> get authState => ValueNotifier(AuthState.authenticated);
-  @override UserSession? get currentUser => null;
-  @override Future<void> login(String e, String p) async {}
-  @override Future<void> logout() async {}
-  @override Future<void> tryAutoLogin() async {}
+  @override
+  ValueListenable<Set<String>> get capabilities => _caps;
+  @override
+  ValueListenable<AuthState> get authState =>
+      ValueNotifier(AuthState.authenticated);
+  @override
+  UserSession? get currentUser => null;
+  @override
+  Future<void> login(String e, String p) async {}
+  @override
+  Future<void> logout() async {}
+  @override
+  Future<void> tryAutoLogin() async {}
 }
 
 // Since PolicyManager isn't an interface, we can just instantiate it with our FakeAuthManager
@@ -35,7 +43,11 @@ void main() {
     GetIt.I.reset();
   });
 
-  Widget buildTestWidget(String capability, Set<String> currentCapabilities, {Widget? fallback}) {
+  Widget buildTestWidget(
+    String capability,
+    Set<String> currentCapabilities, {
+    Widget? fallback,
+  }) {
     final auth = _FakeAuthManager(currentCapabilities);
     GetIt.I.registerSingleton<AuthManager>(auth);
     GetIt.I.registerSingleton<PolicyManager>(PolicyManager(auth: auth));
@@ -51,27 +63,38 @@ void main() {
     );
   }
 
-  testWidgets('PG-01: Renders child when can() evaluates to true', (WidgetTester tester) async {
-    await tester.pumpWidget(buildTestWidget('templates:create', {'templates:create'}));
-    
+  testWidgets('PG-01: Renders child when can() evaluates to true', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget('templates:create', {'templates:create'}),
+    );
+
     expect(find.text('Child Widget'), findsOneWidget);
   });
 
-  testWidgets('PG-02: Renders fallback widget when can() evaluates to false', (WidgetTester tester) async {
-    await tester.pumpWidget(buildTestWidget(
-      'templates:create', 
-      {'admin:access'},
-      fallback: const Text('Fallback Widget'),
-    ));
-    
+  testWidgets('PG-02: Renders fallback widget when can() evaluates to false', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget('templates:create', {
+        'admin:access',
+      }, fallback: const Text('Fallback Widget')),
+    );
+
     expect(find.text('Child Widget'), findsNothing);
     expect(find.text('Fallback Widget'), findsOneWidget);
   });
 
-  testWidgets('PG-03: (Gap AC) Renders SizedBox.shrink when fallback is null and can() is false', (WidgetTester tester) async {
-    await tester.pumpWidget(buildTestWidget('templates:create', {'other:capability'}));
-    
-    expect(find.text('Child Widget'), findsNothing);
-    expect(find.byType(SizedBox), findsOneWidget); 
-  });
+  testWidgets(
+    'PG-03: (Gap AC) Renders SizedBox.shrink when fallback is null and can() is false',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildTestWidget('templates:create', {'other:capability'}),
+      );
+
+      expect(find.text('Child Widget'), findsNothing);
+      expect(find.byType(SizedBox), findsOneWidget);
+    },
+  );
 }

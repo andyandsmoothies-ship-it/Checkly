@@ -9,17 +9,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/services/photo_queue_service.dart';
+import 'package:checkly/_shared/services/sync_interfaces.dart';
 import 'package:checkly/features/audit/services/submission_api_service.dart';
 
 // ─── Fakes ────────────────────────────────────────────────────────────────
 
 class FailingPhotoApi implements SubmissionApiService {
   @override
-  Future<String> uploadPhoto(String sId, String path, {String? answerId}) async {
+  Future<String> uploadPhoto(
+    String sId,
+    String path, {
+    String? answerId,
+  }) async {
     throw Exception('Simulated network error during photo upload');
   }
 
-  @override dynamic noSuchMethod(Invocation inv) => super.noSuchMethod(inv);
+  @override
+  dynamic noSuchMethod(Invocation inv) => super.noSuchMethod(inv);
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────
@@ -29,7 +35,10 @@ void main() {
   late OutboxDao dao;
   late PhotoQueueService queueService;
 
-  Future<String> seedPhoto({bool isFileMissing = false, int retryCount = 0}) async {
+  Future<String> seedPhoto({
+    bool isFileMissing = false,
+    int retryCount = 0,
+  }) async {
     const pId = 'photo-1';
     await dao.insertPhoto(
       PendingPhotosCompanion.insert(
@@ -47,14 +56,16 @@ void main() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     dao = OutboxDao(db);
     // Add dummy submission first (foreign key constraint)
-    dao.insertSubmission(PendingSubmissionsCompanion.insert(
-      id: 'sub-1', // Must match FK constraint in seedPhoto
-      templateId: 't1',
-      storeId: 's1',
-      clientScore: 100.0,
-      idempotencyKey: 'sub-1',
-      createdAt: DateTime.now().toUtc(),
-    ));
+    dao.insertSubmission(
+      PendingSubmissionsCompanion.insert(
+        id: 'sub-1', // Must match FK constraint in seedPhoto
+        templateId: 't1',
+        storeId: 's1',
+        clientScore: 100.0,
+        idempotencyKey: 'sub-1',
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
 
     queueService = PhotoQueueService(
       dao,
@@ -72,7 +83,7 @@ void main() {
     final success = await queueService.drainQueue('sub-1');
 
     // Continues the batch (returns true if all processed, even if dropped)
-    expect(success, isTrue);
+    expect(success, isA<DrainSuccess>());
 
     final rows = await db.select(db.pendingPhotos).get();
     expect(rows.first.syncStatus, 'error');
@@ -87,7 +98,7 @@ void main() {
 
     final success = await queueService.drainQueue('sub-1');
 
-    expect(success, isFalse); // Pauses batch
+    expect(success, isA<DrainFailure>()); // Pauses batch
 
     final rows = await db.select(db.pendingPhotos).get();
     expect(rows.first.syncStatus, 'pending');
@@ -102,7 +113,7 @@ void main() {
 
     final success = await queueService.drainQueue('sub-1');
 
-    expect(success, isFalse); // Blocks further uploads in this batch
+    expect(success, isA<DrainFailure>()); // Blocks further uploads in this batch
 
     final rows = await db.select(db.pendingPhotos).get();
     expect(rows.first.syncStatus, 'exhausted');

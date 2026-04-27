@@ -17,9 +17,13 @@ import 'package:checkly/_shared/services/connectivity_service.dart';
 // ──────────────────────────────────────────────────────────────────────────────
 
 class MockSubmissionApiService extends Mock implements SubmissionApiService {}
+
 class MockSubmissionDao extends Mock implements SubmissionDao {}
+
 class MockOutboxDao extends Mock implements OutboxDao {}
+
 class MockDraftService extends Mock implements DraftService {}
+
 class MockConnectivityService extends Mock implements ConnectivityService {}
 
 SubmissionDto _makeDto(String id) => SubmissionDto(
@@ -41,7 +45,9 @@ void main() {
     final conn = MockConnectivityService();
     when(() => draft.getAllDraftKeys()).thenAnswer((_) async => <String>{});
     when(() => conn.isOnline).thenReturn(true);
-    when(() => conn.onConnectivityChanged).thenAnswer((_) => const Stream.empty());
+    when(
+      () => conn.onConnectivityChanged,
+    ).thenAnswer((_) => const Stream.empty());
 
     GetIt.I.registerSingleton<OutboxDao>(outbox);
     GetIt.I.registerSingleton<DraftService>(draft);
@@ -51,12 +57,21 @@ void main() {
     mockDao = MockSubmissionDao();
 
     // Stub getSubmissions used in loadHistory
-    when(() => mockApi.getSubmissions(page: any(named: 'page'), pageSize: any(named: 'pageSize')))
-        .thenAnswer((_) async => []);
+    when(
+      () => mockApi.getSubmissions(
+        page: any(named: 'page'),
+        pageSize: any(named: 'pageSize'),
+      ),
+    ).thenAnswer((_) async => []);
     when(() => mockDao.getAllSubmissions()).thenAnswer((_) async => []);
     when(() => mockDao.upsertSubmissions(any())).thenAnswer((_) async {});
 
-    manager = HistoryManager(api: mockApi, dao: mockDao, draftService: draft, outboxDao: outbox);
+    manager = HistoryManager(
+      api: mockApi,
+      dao: mockDao,
+      draftService: draft,
+      outboxDao: outbox,
+    );
   });
 
   tearDown(() async {
@@ -70,59 +85,73 @@ void main() {
       () async {
         // Arrange: The archive search returns 2 old audits
         final archiveResults = [_makeDto('arch-1'), _makeDto('arch-2')];
-        when(() => mockApi.searchArchive(
-              before: any(named: 'before'),
-              page: any(named: 'page'),
-              pageSize: any(named: 'pageSize'),
-            )).thenAnswer((_) async => archiveResults);
+        when(
+          () => mockApi.searchArchive(
+            before: any(named: 'before'),
+            page: any(named: 'page'),
+            pageSize: any(named: 'pageSize'),
+          ),
+        ).thenAnswer((_) async => archiveResults);
 
         // Act: Builder must expose `searchCloudArchive()` on HistoryManager
         await manager.searchCloudArchive();
 
         // Assert: observable state updated
-        expect(manager.hasArchivedRecords.value, isTrue,
-            reason: 'When archive API returns results, hasArchivedRecords must be true');
-        expect(manager.archivedSubmissions.value, hasLength(2),
-            reason: 'Archived results must be stored on the manager');
+        expect(
+          manager.hasArchivedRecords.value,
+          isTrue,
+          reason:
+              'When archive API returns results, hasArchivedRecords must be true',
+        );
+        expect(
+          manager.archivedSubmissions.value,
+          hasLength(2),
+          reason: 'Archived results must be stored on the manager',
+        );
       },
     );
 
-    test(
-      'AC5b — SearchCloudArchive_ReturnsEmpty_SetsHasArchivedRecordsFalse: '
-      'API returns empty list → hasArchivedRecords is false',
-      () async {
-        when(() => mockApi.searchArchive(
-              before: any(named: 'before'),
-              page: any(named: 'page'),
-              pageSize: any(named: 'pageSize'),
-            )).thenAnswer((_) async => []);
+    test('AC5b — SearchCloudArchive_ReturnsEmpty_SetsHasArchivedRecordsFalse: '
+        'API returns empty list → hasArchivedRecords is false', () async {
+      when(
+        () => mockApi.searchArchive(
+          before: any(named: 'before'),
+          page: any(named: 'page'),
+          pageSize: any(named: 'pageSize'),
+        ),
+      ).thenAnswer((_) async => []);
 
-        await manager.searchCloudArchive();
+      await manager.searchCloudArchive();
 
-        expect(manager.hasArchivedRecords.value, isFalse,
-            reason: 'Empty archive API response must not show the banner');
-      },
-    );
+      expect(
+        manager.hasArchivedRecords.value,
+        isFalse,
+        reason: 'Empty archive API response must not show the banner',
+      );
+    });
 
-    test(
-      'AC5c — SearchCloudArchive_NetworkFailure_SetsErrorButBannerPersists: '
-      'API throws → error state is set, hasArchivedRecords unchanged',
-      () async {
-        // Pre-set to true (as if a prior search succeeded)
-        // Builder must allow initial value to be injected or tested via the notifier
-        when(() => mockApi.searchArchive(
-              before: any(named: 'before'),
-              page: any(named: 'page'),
-              pageSize: any(named: 'pageSize'),
-            )).thenThrow(Exception('No network'));
+    test('AC5c — SearchCloudArchive_NetworkFailure_SetsErrorButBannerPersists: '
+        'API throws → error state is set, hasArchivedRecords unchanged', () async {
+      // Pre-set to true (as if a prior search succeeded)
+      // Builder must allow initial value to be injected or tested via the notifier
+      when(
+        () => mockApi.searchArchive(
+          before: any(named: 'before'),
+          page: any(named: 'page'),
+          pageSize: any(named: 'pageSize'),
+        ),
+      ).thenThrow(Exception('No network'));
 
-        await manager.searchCloudArchive();
+      await manager.searchCloudArchive();
 
-        expect(manager.archiveError, isNotNull,
-            reason: 'Network failure during archive search must surface an error state');
-        // Banner must remain visible (not reset to false) on network failure
-        // If this was previously true, it should remain true — see spec EDD section
-      },
-    );
+      expect(
+        manager.archiveError,
+        isNotNull,
+        reason:
+            'Network failure during archive search must surface an error state',
+      );
+      // Banner must remain visible (not reset to false) on network failure
+      // If this was previously true, it should remain true — see spec EDD section
+    });
   });
 }

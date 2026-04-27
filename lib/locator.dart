@@ -7,6 +7,7 @@ import '_shared/database/dao/outbox_dao.dart';
 import '_shared/database/dao/action_plan_outbox_dao.dart';
 import '_shared/database/dao/global_risk_dao.dart';
 import '_shared/database/dao/submission_risk_outbox_dao.dart';
+import '_shared/database/dao/sync_meta_dao.dart';
 import '_shared/services/connectivity_service.dart';
 import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
@@ -70,6 +71,9 @@ void configureDependencies() {
   di.registerLazySingleton<SubmissionRiskOutboxDao>(
     () => SubmissionRiskOutboxDao(di<DatabaseService>().db),
   );
+  di.registerLazySingleton<SyncMetaDao>(
+    () => SyncMetaDao(di<DatabaseService>().db),
+  );
   di.registerLazySingleton<GpsService>(() => GpsService());
 
   // ---------- Auth (Slice 2 + PBAC Slice 4) ----------
@@ -79,7 +83,16 @@ void configureDependencies() {
   di.registerLazySingleton<PolicyDao>(
     () => PolicyDao(di<DatabaseService>().db),
   );
-  di.registerLazySingleton<AuthManager>(() => AuthManager());
+  di.registerLazySingleton<AuthManager>(
+    () => AuthManager(
+      authApi: di<AuthApiService>(),
+      storage: di<SecureStorageService>(),
+      apiClient: di<ApiClient>(),
+      policyApi: di<PolicyApiService>(),
+      policyDao: di<PolicyDao>(),
+      dbService: di<DatabaseService>(),
+    ),
+  );
   di.registerLazySingleton<PolicyManager>(
     () => PolicyManager(auth: di<AuthManager>()),
   );
@@ -116,6 +129,7 @@ void configureDependencies() {
       actionPlanOutboxDao: di<ActionPlanOutboxDao>(),
       globalRiskDao: di<GlobalRiskDao>(),
       submissionRiskOutboxDao: di<SubmissionRiskOutboxDao>(),
+      syncMetaDao: di<SyncMetaDao>(),
     ),
   );
 

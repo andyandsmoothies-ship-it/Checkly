@@ -32,7 +32,9 @@ class SpySubmissionApiService extends SubmissionApiService {
   bool createSubmissionCalled = false;
 
   @override
-  Future<SubmissionDto> createSubmission(CreateSubmissionRequest request) async {
+  Future<SubmissionDto> createSubmission(
+    CreateSubmissionRequest request,
+  ) async {
     createSubmissionCalled = true;
     throw StateError('Should not reach HTTP layer on online submit path');
   }
@@ -78,7 +80,9 @@ void main() {
     await GetIt.instance.reset();
     testDb = AppDatabase.forTesting(NativeDatabase.memory());
     outboxDao = OutboxDao(testDb);
-    GetIt.instance.registerSingleton<DatabaseService>(DatabaseService.forTesting(testDb));
+    GetIt.instance.registerSingleton<DatabaseService>(
+      DatabaseService.forTesting(testDb),
+    );
   });
 
   tearDown(() async => testDb.close());
@@ -87,27 +91,41 @@ void main() {
   // AC-1: Online path goes Outbox-first, does NOT hit _api.createSubmission()
   // Source: Contract 1
   // ----------------------------------------------------------------
-  test('AuditManager_Submit_OnlinePath_DoesNotCallHttpApi_WritesOutboxInstead', () async {
-    // Arrange
-    final spy = SpySubmissionApiService();
-    final manager = AuditManager(
-      api: spy,
-      outbox: outboxDao,
-      connectivity: FakeConnectivity(isOnline: true),
-      draftService: DraftService.forTesting(testDb),
-    );
-    final template = _makeTemplate(criteriaCount: 2);
-    await manager.startAudit(template, 'store-online-001');
+  test(
+    'AuditManager_Submit_OnlinePath_DoesNotCallHttpApi_WritesOutboxInstead',
+    () async {
+      // Arrange
+      final spy = SpySubmissionApiService();
+      final manager = AuditManager(
+        api: spy,
+        outbox: outboxDao,
+        connectivity: FakeConnectivity(isOnline: true),
+        draftService: DraftService.forTesting(testDb),
+      );
+      final template = _makeTemplate(criteriaCount: 2);
+      await manager.startAudit(template, 'store-online-001');
 
-    // Act
-    await manager.submitAudit();
+      // Act
+      await manager.submitAudit();
 
-    // Assert
-    expect(spy.createSubmissionCalled, isFalse,
-        reason: 'Online path must NOT call HTTP API directly. Outbox-first only.');
-    expect((await outboxDao.getAllPending()).length, equals(1),
-        reason: '1 outbox row must exist — SyncEngine drains it asynchronously.');
-    expect(manager.error, isNull,
-        reason: 'No error must be set after successful outbox write.');
-  });
+      // Assert
+      expect(
+        spy.createSubmissionCalled,
+        isFalse,
+        reason:
+            'Online path must NOT call HTTP API directly. Outbox-first only.',
+      );
+      expect(
+        (await outboxDao.getAllPending()).length,
+        equals(1),
+        reason:
+            '1 outbox row must exist — SyncEngine drains it asynchronously.',
+      );
+      expect(
+        manager.error,
+        isNull,
+        reason: 'No error must be set after successful outbox write.',
+      );
+    },
+  );
 }

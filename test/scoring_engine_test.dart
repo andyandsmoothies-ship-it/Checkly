@@ -25,8 +25,11 @@ void main() {
   ScoringInput parseVector(Map<String, dynamic> vector) {
     final scoringModeStr = vector['scoringMode'] as String? ?? 'penalty';
     final scoringMode = ScoringMode.values.firstWhere(
-      (m) => m.name == scoringModeStr, orElse: () => ScoringMode.penalty);
-    final progressiveRepeat = vector['progressiveRepeatPenalty'] as bool? ?? false;
+      (m) => m.name == scoringModeStr,
+      orElse: () => ScoringMode.penalty,
+    );
+    final progressiveRepeat =
+        vector['progressiveRepeatPenalty'] as bool? ?? false;
 
     final sections = (vector['sections'] as List).map((s) {
       final criteria =
@@ -34,14 +37,21 @@ void main() {
             return CriterionInput(
               id: c['id'] as String,
               groupId: c['groupId'] as String,
-              pointsWeight: c['pointsWeight'] != null ? (c['pointsWeight'] as num).toDouble() : 0.0,
+              pointsWeight: c['pointsWeight'] != null
+                  ? (c['pointsWeight'] as num).toDouble()
+                  : 0.0,
               isCcp: c['isCcp'] as bool,
               isRisk: c['isRisk'] as bool,
-              minusImpact: c['minusImpact'] != null ? (c['minusImpact'] as num).toDouble() : null,
-              maxDeductionPoints: c['maxDeductionPoints'] != null ? (c['maxDeductionPoints'] as num).toDouble() : null,
+              minusImpact: c['minusImpact'] != null
+                  ? (c['minusImpact'] as num).toDouble()
+                  : null,
+              maxDeductionPoints: c['maxDeductionPoints'] != null
+                  ? (c['maxDeductionPoints'] as num).toDouble()
+                  : null,
               inputType: c['inputType'] as String? ?? 'numeric',
             );
-          }).toList() ?? [];
+          }).toList() ??
+          [];
 
       final subsections =
           (s['subsections'] as List?)?.map((sub) {
@@ -49,11 +59,17 @@ void main() {
               return CriterionInput(
                 id: c['id'] as String,
                 groupId: c['groupId'] as String,
-                pointsWeight: c['pointsWeight'] != null ? (c['pointsWeight'] as num).toDouble() : 0.0,
+                pointsWeight: c['pointsWeight'] != null
+                    ? (c['pointsWeight'] as num).toDouble()
+                    : 0.0,
                 isCcp: c['isCcp'] as bool,
                 isRisk: c['isRisk'] as bool,
-                minusImpact: c['minusImpact'] != null ? (c['minusImpact'] as num).toDouble() : null,
-                maxDeductionPoints: c['maxDeductionPoints'] != null ? (c['maxDeductionPoints'] as num).toDouble() : null,
+                minusImpact: c['minusImpact'] != null
+                    ? (c['minusImpact'] as num).toDouble()
+                    : null,
+                maxDeductionPoints: c['maxDeductionPoints'] != null
+                    ? (c['maxDeductionPoints'] as num).toDouble()
+                    : null,
                 inputType: c['inputType'] as String? ?? 'numeric',
               );
             }).toList();
@@ -61,10 +77,13 @@ void main() {
             return SubsectionInput(
               id: sub['id'] as String,
               title: sub['title'] as String,
-              maxPoints: sub['maxPoints'] != null ? (sub['maxPoints'] as num).toDouble() : 0.0,
+              maxPoints: sub['maxPoints'] != null
+                  ? (sub['maxPoints'] as num).toDouble()
+                  : 0.0,
               criteria: subCriteria,
             );
-          }).toList() ?? [];
+          }).toList() ??
+          [];
 
       return SectionInput(
         id: s['id'] as String,
@@ -89,7 +108,12 @@ void main() {
       );
     }).toList();
 
-    return ScoringInput(sections: sections, answers: answers, scoringMode: scoringMode, progressiveRepeatPenalty: progressiveRepeat);
+    return ScoringInput(
+      sections: sections,
+      answers: answers,
+      scoringMode: scoringMode,
+      progressiveRepeatPenalty: progressiveRepeat,
+    );
   }
 
   test('Run all vectors from JSON', () {
@@ -99,15 +123,27 @@ void main() {
       final id = v['id'];
 
       if (expectedError != null) {
-        expect(() => ScoringEngine.calculate(parseVector(v)), throwsA(anything), reason: '$id should throw $expectedError');
+        expect(
+          () => ScoringEngine.calculate(parseVector(v)),
+          throwsA(anything),
+          reason: '$id should throw $expectedError',
+        );
         continue;
       }
 
       final result = ScoringEngine.calculate(parseVector(v));
       if (isPurityGate) {
-        expect(result.totalScore, isNull, reason: '$id: purity gate should suppress score');
+        expect(
+          result.totalScore,
+          isNull,
+          reason: '$id: purity gate should suppress score',
+        );
       } else {
-        expect(result.totalScore, closeTo((v['expectedScore'] as num).toDouble(), 0.01), reason: '$id failed score check');
+        expect(
+          result.totalScore,
+          closeTo((v['expectedScore'] as num).toDouble(), 0.01),
+          reason: '$id failed score check',
+        );
       }
     }
   });

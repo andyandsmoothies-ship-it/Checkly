@@ -15,36 +15,45 @@ void main() {
   });
 
   group('AdminApiService — PBAC Slice 2: Capability Metadata', () {
-    test('getCapabilityCatalogFull returns both capabilities and metadata map', () async {
-      // Arrange
-      final responsePayload = {
-        'capabilities': ['templates:create'],
-        'capabilityMetadata': {
-          'templates:create': {
-            'label': 'Create Templates',
-            'group': 'Templates',
-            'description': '...'
-          }
-        }
-      };
+    test(
+      'getCapabilityCatalogFull returns both capabilities and metadata map',
+      () async {
+        // Arrange
+        final responsePayload = {
+          'capabilities': ['templates:create'],
+          'capabilityMetadata': {
+            'templates:create': {
+              'label': 'Create Templates',
+              'group': 'Templates',
+              'description': '...',
+            },
+          },
+        };
 
-      when(() => dio.get('/admin/capabilities/catalog', queryParameters: any(named: 'queryParameters')))
-          .thenAnswer((_) async => Response(
-                requestOptions: RequestOptions(path: ''),
-                data: responsePayload,
-                statusCode: 200,
-              ));
+        when(
+          () => dio.get(
+            '/admin/capabilities/catalog',
+            queryParameters: any(named: 'queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: ''),
+            data: responsePayload,
+            statusCode: 200,
+          ),
+        );
 
-      // Act
-      final (caps, meta) = await apiService.getCapabilityCatalogFull();
+        // Act
+        final (caps, meta) = await apiService.getCapabilityCatalogFull();
 
-      // Assert
-      expect(caps, equals(['templates:create']));
-      expect(meta.containsKey('templates:create'), isTrue);
-      
-      final templateCreateMeta = meta['templates:create']!;
-      expect(templateCreateMeta.label, equals('Create Templates'));
-      expect(templateCreateMeta.group, equals('Templates'));
-    });
+        // Assert
+        expect(caps, equals(['templates:create']));
+        expect(meta.containsKey('templates:create'), isTrue);
+
+        final templateCreateMeta = meta['templates:create']!;
+        expect(templateCreateMeta.label, equals('Create Templates'));
+        expect(templateCreateMeta.group, equals('Templates'));
+      },
+    );
   });
 }

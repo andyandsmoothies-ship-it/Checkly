@@ -11,12 +11,19 @@ import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 
 class MockAuthApiService extends Mock implements AuthApiService {}
+
 class MockSecureStorageService extends Mock implements SecureStorageService {}
+
 class MockApiClient extends Mock implements ApiClient {}
+
 class MockPolicyApiService extends Mock implements PolicyApiService {}
+
 class MockPolicyDao extends Mock implements PolicyDao {}
+
 class MockDatabaseService extends Mock implements DatabaseService {}
+
 class MockAppDatabase extends Mock implements AppDatabase {}
+
 class FakeUserSession extends Fake implements UserSession {}
 
 void main() {
@@ -55,51 +62,82 @@ void main() {
   });
 
   group('AuthManager — PBAC Slice 1: Capability Refresh —', () {
-    test('refreshCapabilities fetches fresh caps and updates cache when authenticated', () async {
-      // Arrange - simulate authenticated state
-      final mockSession = UserSession(token: 't', userId: 'u1', fullName: 'F', email: 'e', role: 'admin');
-      when(() => authApi.login(any(), any())).thenAnswer((_) async => mockSession);
-      when(() => storage.saveToken(any())).thenAnswer((_) async {});
-      when(() => storage.saveSession(any())).thenAnswer((_) async {});
-      when(() => apiClient.setAuthToken(any())).thenReturn(null);
-      when(() => policyApi.fetchCapabilities()).thenAnswer((_) async => ['initial_cap']);
-      when(() => policyDao.upsertCapabilities(any())).thenAnswer((_) async {});
-      
-      await manager.login('user', 'pass');
-      expect(manager.capabilities.value, {'initial_cap'});
+    test(
+      'refreshCapabilities fetches fresh caps and updates cache when authenticated',
+      () async {
+        // Arrange - simulate authenticated state
+        final mockSession = UserSession(
+          token: 't',
+          userId: 'u1',
+          fullName: 'F',
+          email: 'e',
+          role: 'admin',
+        );
+        when(
+          () => authApi.login(any(), any()),
+        ).thenAnswer((_) async => mockSession);
+        when(() => storage.saveToken(any())).thenAnswer((_) async {});
+        when(() => storage.saveSession(any())).thenAnswer((_) async {});
+        when(() => apiClient.setAuthToken(any())).thenReturn(null);
+        when(
+          () => policyApi.fetchCapabilities(),
+        ).thenAnswer((_) async => ['initial_cap']);
+        when(
+          () => policyDao.upsertCapabilities(any()),
+        ).thenAnswer((_) async {});
 
-      // Mock fresh capabilities for refresh
-      when(() => policyApi.fetchCapabilities()).thenAnswer((_) async => ['fresh_cap']);
+        await manager.login('user', 'pass');
+        expect(manager.capabilities.value, {'initial_cap'});
 
-      // Act
-      await manager.refreshCapabilities();
+        // Mock fresh capabilities for refresh
+        when(
+          () => policyApi.fetchCapabilities(),
+        ).thenAnswer((_) async => ['fresh_cap']);
 
-      // Assert
-      expect(manager.capabilities.value, {'fresh_cap'});
-      verify(() => policyDao.upsertCapabilities(['fresh_cap'])).called(1);
-    });
+        // Act
+        await manager.refreshCapabilities();
+
+        // Assert
+        expect(manager.capabilities.value, {'fresh_cap'});
+        verify(() => policyDao.upsertCapabilities(['fresh_cap'])).called(1);
+      },
+    );
 
     test('refreshCapabilities is blocked by 5-minute cooldown guard', () async {
       // Arrange
-      final mockSession = UserSession(token: 't', userId: 'u1', fullName: 'F', email: 'e', role: 'admin');
-      when(() => authApi.login(any(), any())).thenAnswer((_) async => mockSession);
+      final mockSession = UserSession(
+        token: 't',
+        userId: 'u1',
+        fullName: 'F',
+        email: 'e',
+        role: 'admin',
+      );
+      when(
+        () => authApi.login(any(), any()),
+      ).thenAnswer((_) async => mockSession);
       when(() => storage.saveToken(any())).thenAnswer((_) async {});
       when(() => storage.saveSession(any())).thenAnswer((_) async {});
       when(() => apiClient.setAuthToken(any())).thenReturn(null);
-      when(() => policyApi.fetchCapabilities()).thenAnswer((_) async => ['cap']);
+      when(
+        () => policyApi.fetchCapabilities(),
+      ).thenAnswer((_) async => ['cap']);
       when(() => policyDao.upsertCapabilities(any())).thenAnswer((_) async {});
-      
+
       await manager.login('user', 'pass');
 
       // The login already called fetchCapabilities once.
       clearInteractions(policyApi);
 
       // Act (First refresh - should succeed)
-      when(() => policyApi.fetchCapabilities()).thenAnswer((_) async => ['cap_1']);
+      when(
+        () => policyApi.fetchCapabilities(),
+      ).thenAnswer((_) async => ['cap_1']);
       await manager.refreshCapabilities();
 
       // Second refresh immediately - should be blocked by cooldown
-      when(() => policyApi.fetchCapabilities()).thenAnswer((_) async => ['cap_2']);
+      when(
+        () => policyApi.fetchCapabilities(),
+      ).thenAnswer((_) async => ['cap_2']);
       await manager.refreshCapabilities();
 
       // Assert
@@ -107,11 +145,11 @@ void main() {
       verify(() => policyApi.fetchCapabilities()).called(1);
       expect(manager.capabilities.value, {'cap_1'});
     });
-    
+
     test('refreshCapabilities ignores call if unauthenticated', () async {
       // Act
       await manager.refreshCapabilities();
-      
+
       // Assert
       verifyNever(() => policyApi.fetchCapabilities());
     });

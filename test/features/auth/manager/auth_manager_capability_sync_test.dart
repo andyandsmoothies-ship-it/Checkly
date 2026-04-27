@@ -15,10 +15,15 @@ import 'package:checkly/_shared/database/database_service.dart';
 
 // ── Mocktail stubs ────────────────────────────────────────────────────────────
 class _MockAuthApiService extends Mock implements AuthApiService {}
+
 class _MockPolicyApiService extends Mock implements PolicyApiService {}
+
 class _MockSecureStorageService extends Mock implements SecureStorageService {}
+
 class _MockApiClient extends Mock implements ApiClient {}
+
 class _MockDatabaseService extends Mock implements DatabaseService {}
+
 class _MockAppDatabase extends Mock implements AppDatabase {}
 
 // ── Shared test fixture ───────────────────────────────────────────────────────
@@ -44,12 +49,7 @@ void main() {
   // Mocktail requires fallback values for custom types used with any() matcher.
   setUpAll(() {
     registerFallbackValue(
-      const UserSession(
-        userId: '',
-        email: '',
-        role: '',
-        token: '',
-      ),
+      const UserSession(userId: '', email: '', role: '', token: ''),
     );
   });
 
@@ -66,7 +66,9 @@ void main() {
     // Default no-op stubs for storage and apiClient (used by login / tryAutoLogin)
     when(() => mockStorage.saveToken(any())).thenAnswer((_) async {});
     when(() => mockStorage.saveSession(any())).thenAnswer((_) async {});
-    when(() => mockStorage.getToken()).thenAnswer((_) async => _testSession.token);
+    when(
+      () => mockStorage.getToken(),
+    ).thenAnswer((_) async => _testSession.token);
     when(() => mockStorage.getSession()).thenAnswer((_) async => _testSession);
     when(() => mockStorage.clearAll()).thenAnswer((_) async {});
     when(() => mockApiClient.setAuthToken(any())).thenReturn(null);
@@ -90,10 +92,12 @@ void main() {
     // AT-01: Happy Path —————————————————————————————————————————————————————
     test('AT-01: login() populates capabilities from API', () async {
       // Arrange
-      when(() => mockAuth.login(any(), any()))
-          .thenAnswer((_) async => _testSession);
-      when(() => mockPolicyApi.fetchCapabilities())
-          .thenAnswer((_) async => ['submissions:list', 'templates:create']);
+      when(
+        () => mockAuth.login(any(), any()),
+      ).thenAnswer((_) async => _testSession);
+      when(
+        () => mockPolicyApi.fetchCapabilities(),
+      ).thenAnswer((_) async => ['submissions:list', 'templates:create']);
 
       // Act
       await authManager.login('admin@test.com', 'password');
@@ -111,27 +115,39 @@ void main() {
     });
 
     // AT-02: Offline / Boundary ——————————————————————————————————————————————
-    test('AT-02: tryAutoLogin() restores capabilities from Drift — no API call',
-        () async {
-      // Pre-seed the Drift table (simulates a previous active login session)
-      await policyDao.upsertCapabilities(['submissions:list']);
+    test(
+      'AT-02: tryAutoLogin() restores capabilities from Drift and triggers background refresh',
+      () async {
+        // Pre-seed the Drift table (simulates a previous active login session)
+        await policyDao.upsertCapabilities(['submissions:list']);
+        
+        // Mock the background API call
+        when(() => mockPolicyApi.fetchCapabilities())
+            .thenAnswer((_) async => ['submissions:list', 'templates:create']);
 
-      // Act — simulate cold restart (tryAutoLogin reads only from Drift)
-      await authManager.tryAutoLogin();
+        // Act — simulate cold restart (tryAutoLogin reads from Drift, then background refreshes)
+        await authManager.tryAutoLogin();
 
-      // Assert — capabilities restored from cache
-      expect(authManager.capabilities.value, contains('submissions:list'));
-      // Assert — fetchCapabilities NEVER called (no network hit)
-      verifyNever(() => mockPolicyApi.fetchCapabilities());
-    });
+        // Let the unawaited background task complete
+        await Future.delayed(Duration.zero);
+
+        // Assert — capabilities updated with fresh data from background refresh
+        expect(authManager.capabilities.value, containsAll(['submissions:list', 'templates:create']));
+        
+        // Assert — fetchCapabilities WAS called
+        verify(() => mockPolicyApi.fetchCapabilities()).called(1);
+      },
+    );
 
     // AT-03: Security / Cleanup ——————————————————————————————————————————————
     test('AT-03: logout() clears capabilities from Drift and memory', () async {
       // Arrange — login first to populate both memory and Drift
-      when(() => mockAuth.login(any(), any()))
-          .thenAnswer((_) async => _testSession);
-      when(() => mockPolicyApi.fetchCapabilities())
-          .thenAnswer((_) async => ['submissions:list']);
+      when(
+        () => mockAuth.login(any(), any()),
+      ).thenAnswer((_) async => _testSession);
+      when(
+        () => mockPolicyApi.fetchCapabilities(),
+      ).thenAnswer((_) async => ['submissions:list']);
       await authManager.login('admin@test.com', 'password');
 
       // Act
@@ -144,23 +160,27 @@ void main() {
     });
 
     // AT-04: Fail-Open Resilience ————————————————————————————————————————————
-    test('AT-04: login() succeeds even if capability fetch fails (fail-open)',
-        () async {
-      // Arrange — auth succeeds, capability API throws
-      when(() => mockAuth.login(any(), any()))
-          .thenAnswer((_) async => _testSession);
-      when(() => mockPolicyApi.fetchCapabilities())
-          .thenThrow(Exception('Server down'));
+    test(
+      'AT-04: login() succeeds even if capability fetch fails (fail-open)',
+      () async {
+        // Arrange — auth succeeds, capability API throws
+        when(
+          () => mockAuth.login(any(), any()),
+        ).thenAnswer((_) async => _testSession);
+        when(
+          () => mockPolicyApi.fetchCapabilities(),
+        ).thenThrow(Exception('Server down'));
 
-      // Act & Assert — no exception thrown from login()
-      await expectLater(
-        authManager.login('admin@test.com', 'password'),
-        completes,
-      );
-      // Assert — auth still succeeded despite capability sync failure
-      expect(authManager.authState.value, AuthState.authenticated);
-      // Assert — capabilities default to empty (not crashed)
-      expect(authManager.capabilities.value, isEmpty);
-    });
+        // Act & Assert — no exception thrown from login()
+        await expectLater(
+          authManager.login('admin@test.com', 'password'),
+          completes,
+        );
+        // Assert — auth still succeeded despite capability sync failure
+        expect(authManager.authState.value, AuthState.authenticated);
+        // Assert — capabilities default to empty (not crashed)
+        expect(authManager.capabilities.value, isEmpty);
+      },
+    );
   });
 }

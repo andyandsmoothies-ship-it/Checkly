@@ -27,9 +27,7 @@ class ActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = _statusColor(context);
-    final scoreStr = item.score != null
-        ? item.score!.toStringAsFixed(1)
-        : '';
+    final scoreStr = item.score != null ? item.score!.toStringAsFixed(1) : '';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),

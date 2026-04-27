@@ -13,15 +13,18 @@ void main() {
       expect(result, '10 / 15 pts');
     });
 
-    test('TC-S2-02: ScoreFormatter_Accumulation_NullRawFields_FallsBackToPercent', () {
-      final result = ScoreFormatter.format(
-        scoringMode: 'accumulation',
-        rawEarned: null,
-        rawMax: null,
-        totalScore: 66.7,
-      );
-      expect(result, '66.7');
-    });
+    test(
+      'TC-S2-02: ScoreFormatter_Accumulation_NullRawFields_FallsBackToPercent',
+      () {
+        final result = ScoreFormatter.format(
+          scoringMode: 'accumulation',
+          rawEarned: null,
+          rawMax: null,
+          totalScore: 66.7,
+        );
+        expect(result, '66.7');
+      },
+    );
 
     test('TC-S2-03: ScoreFormatter_Checklist_ShowsOutOf100', () {
       final result = ScoreFormatter.format(
@@ -51,10 +54,7 @@ void main() {
     });
 
     test('TC-S2-06: ScoreFormatter_NullMode_FallsBackToPercent', () {
-      final result = ScoreFormatter.format(
-        scoringMode: null,
-        totalScore: 66.7,
-      );
+      final result = ScoreFormatter.format(scoringMode: null, totalScore: 66.7);
       expect(result, '66.7');
     });
 

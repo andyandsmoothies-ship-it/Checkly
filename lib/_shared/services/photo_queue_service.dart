@@ -3,6 +3,7 @@ import 'dart:math';
 
 import '../database/dao/outbox_dao.dart';
 import 'sync_interfaces.dart';
+import 'package:dio/dio.dart';
 
 /// Backoff delay sequence in seconds: 1st, 2nd, 3rd, 4th failure.
 const List<int> _defaultBackoffDelays = [2, 4, 8, 60];
@@ -44,13 +45,13 @@ class PhotoQueueService {
        _random = random ?? Random();
 
   /// Uploads all pending photos for [submissionId] in FIFO order.
-  Future<bool> drainQueue(String submissionId) async {
+  Future<DrainResult> drainQueue(String submissionId) async {
     final photos = await _outbox.getPhotosForSubmission(submissionId);
 
     // Filter to only 'pending' photos — skip already uploaded/errored/exhausted.
     final pending = photos.where((p) => p.syncStatus == 'pending').toList();
 
-    if (pending.isEmpty) return true;
+    if (pending.isEmpty) return const DrainSuccess();
 
     // Rule 1.1 & 1.2: Jitter delay occurs ONCE before the loop — NOT per-photo.
     // Breaks up synchronized reconnect stampedes (e.g. 10 auditors returning to office Wi-Fi).
@@ -87,8 +88,7 @@ class PhotoQueueService {
         // The SyncEngine will re-trigger drainQueue after the connection recovers.
         final retryAfterSecs = _extractRetryAfter(e);
         if (retryAfterSecs != null) {
-          await Future<void>.delayed(Duration(seconds: retryAfterSecs));
-          return false;
+          return DrainRetryScheduled(Duration(seconds: retryAfterSecs));
         }
 
         // Apply SQLite-backed exponential backoff (Pillar D).
@@ -113,34 +113,23 @@ class PhotoQueueService {
           );
         }
         // BLOCK — network failure is retriable; pause remaining batch.
-        return false;
+        return const DrainFailure();
       }
     }
 
-    return true;
+    return const DrainSuccess();
   }
-
   /// Extracts the [Retry-After] seconds value from a [DioException] response header.
   /// Returns null if the error is not a 429 or the header is absent/unparseable.
   int? _extractRetryAfter(Exception e) {
-    // Avoid importing Dio here directly — use duck-typing via runtimeType string
-    // so this class stays testable without a real HTTP stack.
-    // For Dio v5: DioException.response?.headers['retry-after']
-    // We use dynamic dispatch to avoid a hard Dio import at the service layer.
-    try {
-      final dynamic dioEx = e;
-      final dynamic response = dioEx.response;
-      if (response == null) return null;
-      final int? statusCode = response.statusCode as int?;
-      if (statusCode != 429) return null;
-      final dynamic headers = response.headers;
-      final dynamic retryAfterValues = headers['retry-after'];
-      if (retryAfterValues == null) return null;
-      final String? raw = (retryAfterValues as List<dynamic>).firstOrNull
-          ?.toString();
-      return int.tryParse(raw ?? '');
-    } catch (_) {
-      return null;
+    if (e is DioException) {
+      if (e.response?.statusCode == 429) {
+        final raw = e.response?.headers.value('retry-after');
+        if (raw != null) {
+          return int.tryParse(raw);
+        }
+      }
     }
+    return null;
   }
 }

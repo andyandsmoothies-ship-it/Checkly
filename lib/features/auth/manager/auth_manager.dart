@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../../_shared/services/api_client.dart';
 import '../../../_shared/database/dao/policy_dao.dart';
@@ -9,8 +9,6 @@ import '../services/auth_api_service.dart';
 import '../services/policy_api_service.dart';
 import '../services/secure_storage_service.dart';
 import '../../../_shared/database/database_service.dart';
-
-final _di = GetIt.instance;
 
 /// PFA Manager for authentication.
 ///
@@ -29,18 +27,18 @@ class AuthManager extends ChangeNotifier {
   final DatabaseService _dbService;
 
   AuthManager({
-    AuthApiService? authApi,
-    SecureStorageService? storage,
-    ApiClient? apiClient,
-    PolicyApiService? policyApi,
-    PolicyDao? policyDao,
-    DatabaseService? dbService,
-  }) : _authApi = authApi ?? _di<AuthApiService>(),
-       _storage = storage ?? _di<SecureStorageService>(),
-       _apiClient = apiClient ?? _di<ApiClient>(),
-       _policyApi = policyApi ?? _di<PolicyApiService>(),
-       _policyDao = policyDao ?? _di<PolicyDao>(),
-       _dbService = dbService ?? _di<DatabaseService>();
+    required AuthApiService authApi,
+    required SecureStorageService storage,
+    required ApiClient apiClient,
+    required PolicyApiService policyApi,
+    required PolicyDao policyDao,
+    required DatabaseService dbService,
+  }) : _authApi = authApi,
+       _storage = storage,
+       _apiClient = apiClient,
+       _policyApi = policyApi,
+       _policyDao = policyDao,
+       _dbService = dbService;
 
   // ---------- State ----------
   final _authState = ValueNotifier<AuthState>(AuthState.loading);
@@ -114,6 +112,9 @@ class AuthManager extends ChangeNotifier {
         _capabilities.value = await _policyDao.getCapabilities();
 
         _authState.value = AuthState.authenticated;
+
+        // [PBAC Slice 4] Trigger fire-and-forget background refresh to close revocation lag.
+        unawaited(refreshCapabilities());
       } else {
         _authState.value = AuthState.unauthenticated;
       }
