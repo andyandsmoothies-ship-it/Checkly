@@ -11,12 +11,12 @@ import '../manager/audit_manager.dart';
 
 import '../utils/audit_progress_utils.dart';
 import '../services/scoring_input_mapper.dart';
+import '../widgets/audit_form_app_bar.dart';
 import '../widgets/audit_form_dialogs.dart';
 import '../widgets/audit_quick_jump_sheet.dart';
 import '../widgets/audit_score_hud.dart';
 import '../widgets/audit_section_card.dart';
 import '../widgets/audit_section_nav_bar.dart';
-import '../widgets/risks_panel.dart';
 
 final _di = GetIt.instance;
 
@@ -262,48 +262,10 @@ class _AuditFormPageState extends State<AuditFormPage> {
             }
           },
           child: Scaffold(
-            appBar: AppBar(
-              title: Text(template.title, overflow: TextOverflow.ellipsis),
-              actions: [
-                // Global risks trigger
-                if (riskEnabled)
-                  IconButton(
-                    icon: Icon(
-                      manager.triggeredRiskIds.isNotEmpty
-                          ? Icons.shield
-                          : Icons.shield_outlined,
-                      color: manager.triggeredRiskIds.isNotEmpty
-                          ? Theme.of(context).colorScheme.error
-                          : null,
-                    ),
-                    onPressed: () => showRisksPanel(context, manager),
-                    tooltip: 'Critical Risks',
-                  ),
-                // Draft saved indicator
-                if (manager.draftSavedAt != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Chip(
-                      avatar: Icon(
-                        Icons.check_circle,
-                        size: 16,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      label: Text(
-                        'Saved',
-                        style: TextStyle(
-                          fontSize: Theme.of(
-                            context,
-                          ).textTheme.labelSmall?.fontSize,
-                        ),
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
-                AuditScoreChip(score: manager.liveScore),
-                const SizedBox(width: 8),
-              ],
+            appBar: AuditFormAppBar(
+              templateTitle: template.title,
+              riskEnabled: riskEnabled,
+              manager: manager,
             ),
             body: AbsorbPointer(
               absorbing: _isSubmitting,

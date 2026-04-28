@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 
 import '../../../_shared/utils/isolate_parser.dart';
 import '../model/submission_dto.dart';
+import '../model/create_submission_request.dart';
+import '../model/submission_detail_dto.dart';
 import '../model/survey_result_dto.dart';
 
-import '../../../_shared/services/sync_interfaces.dart';
+import 'package:checkly/_shared/services/photo_api.dart';
 
 /// API service for submission endpoints.
 class SubmissionApiService implements PhotoApi {

@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/database/dao/outbox_dao.dart';
-import '../../../_shared/database/database_service.dart';
+import '../../../_shared/services/sync_engine.dart';
 import '../../auth/manager/auth_manager.dart';
 
 final _di = GetIt.instance;
 
 /// Sign-out tile with 3-case outbox-aware confirmation dialog.
 ///
-/// Outbox status is fetched here (not in AuthManager) to avoid
-/// expanding the AuthManager public interface — which would require
-/// updating all test stub classes that use `implements AuthManager`.
+/// Outbox status is fetched via SyncEngine to avoid UI coupling to DAOs.
 class SignOutTile extends StatefulWidget {
   const SignOutTile({super.key});
 
@@ -37,15 +34,9 @@ class _SignOutTileState extends State<SignOutTile> {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
-    final outbox = OutboxDao(_di<DatabaseService>().db);
-
-    // Check both counts in parallel
-    final results = await Future.wait([
-      outbox.syncableCount(),
-      outbox.exhaustedCount(),
-    ]);
-    final syncable = results[0];
-    final exhausted = results[1];
+    final counts = await _di<SyncEngine>().getPendingCount();
+    final syncable = counts.$1;
+    final exhausted = counts.$2;
 
     if (!context.mounted) return;
 

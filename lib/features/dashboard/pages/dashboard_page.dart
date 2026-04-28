@@ -10,7 +10,10 @@ import '../../auth/manager/auth_manager.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
 import '../manager/dashboard_manager.dart';
-import 'widgets/dashboard_variants.dart';
+import 'widgets/admin_dashboard_variant.dart';
+import 'widgets/auditor_dashboard_variant.dart';
+import 'widgets/dashboard_loading_view.dart';
+import 'widgets/manager_dashboard_variant.dart';
 
 final _di = GetIt.instance;
 

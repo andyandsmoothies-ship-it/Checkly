@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
-import 'audit_criterion_row.dart';
+
 import 'audit_inputs.dart';
+import 'audit_shared_widgets.dart';
 
 // ============================================================
 // Criterion Bottom Sheet — full editing controls

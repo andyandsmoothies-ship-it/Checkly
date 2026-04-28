@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/services/photo_queue_service.dart';
-import 'package:checkly/_shared/services/sync_interfaces.dart';
+import 'package:checkly/_shared/services/drain_result.dart';
 import 'package:checkly/features/audit/services/submission_api_service.dart';
 
 class MockOutboxDao extends Mock implements OutboxDao {}
@@ -219,7 +219,10 @@ void main() {
       );
       final result = await service.drainQueue('sub-1');
 
-      expect(result, isA<DrainFailure>()); // Network fail correctly returns false
+      expect(
+        result,
+        isA<DrainFailure>(),
+      ); // Network fail correctly returns false
 
       // Status updated wrapper to pending with backoff
       verify(
@@ -253,19 +256,30 @@ void main() {
       retryCount: 0,
     );
 
-    when(() => mockOutboxDao.getPhotosForSubmission('sub-1'))
-        .thenAnswer((_) async => [photo]);
+    when(
+      () => mockOutboxDao.getPhotosForSubmission('sub-1'),
+    ).thenAnswer((_) async => [photo]);
 
-    when(() => mockApi.uploadPhoto(any(), any(), answerId: any(named: 'answerId')))
-        .thenThrow(DioException(
-            requestOptions: RequestOptions(path: ''),
-            response: Response(
-              requestOptions: RequestOptions(path: ''),
-              statusCode: 429,
-              headers: Headers.fromMap({'retry-after': ['30']}),
-            )));
+    when(
+      () => mockApi.uploadPhoto(any(), any(), answerId: any(named: 'answerId')),
+    ).thenThrow(
+      DioException(
+        requestOptions: RequestOptions(path: ''),
+        response: Response(
+          requestOptions: RequestOptions(path: ''),
+          statusCode: 429,
+          headers: Headers.fromMap({
+            'retry-after': ['30'],
+          }),
+        ),
+      ),
+    );
 
-    final service = PhotoQueueService(mockOutboxDao, mockApi, fileExists: (_) => true);
+    final service = PhotoQueueService(
+      mockOutboxDao,
+      mockApi,
+      fileExists: (_) => true,
+    );
     final result = await service.drainQueue('sub-1');
 
     expect(result, isA<DrainRetryScheduled>());

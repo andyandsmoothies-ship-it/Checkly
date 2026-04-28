@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../model/submission_dto.dart';
+import '../model/submission_detail_dto.dart';
 import '../utils/score_formatter.dart';
 import '../../../_shared/theme/app_theme.dart';
 

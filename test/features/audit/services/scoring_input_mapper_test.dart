@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/features/audit/manager/audit_manager.dart';
 import 'package:checkly/features/audit/services/scoring_input_mapper.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
-import 'package:checkly/_shared/services/scoring_models.dart';
+import 'package:checkly/_shared/services/scoring_mode.dart';
 
 // ── Test helpers ─────────────────────────────────────────────────────────────
 

@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 
 import '../services/admin_api_service.dart';
 import '../../audit/model/submission_dto.dart';
@@ -7,8 +6,6 @@ import '../../audit/services/submission_api_service.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../templates/services/template_api_service.dart';
 import '../../auth/manager/auth_manager.dart';
-
-final _di = GetIt.instance;
 
 /// Schedule form data returned by [AdminAuditManager.loadScheduleData].
 class ScheduleFormData {
@@ -39,16 +36,16 @@ class AdminAuditManager extends ChangeNotifier {
   final AuthManager _auth;
 
   AdminAuditManager({
-    AdminApiService? adminApi,
-    StoreApiService? storeApi,
-    TemplateApiService? templateApi,
-    SubmissionApiService? submissionApi,
-    AuthManager? auth,
-  }) : _adminApi = adminApi ?? _di<AdminApiService>(),
-       _storeApi = storeApi ?? _di<StoreApiService>(),
-       _templateApi = templateApi ?? _di<TemplateApiService>(),
-       _submissionApi = submissionApi ?? _di<SubmissionApiService>(),
-       _auth = auth ?? _di<AuthManager>();
+    required AdminApiService adminApi,
+    required StoreApiService storeApi,
+    required TemplateApiService templateApi,
+    required SubmissionApiService submissionApi,
+    required AuthManager auth,
+  })  : _adminApi = adminApi,
+        _storeApi = storeApi,
+        _templateApi = templateApi,
+        _submissionApi = submissionApi,
+        _auth = auth;
 
   // ---------- Schedule Form State ----------
   bool isScheduleLoading = false;

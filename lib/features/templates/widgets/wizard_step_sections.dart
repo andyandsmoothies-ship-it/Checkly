@@ -5,6 +5,8 @@ import '../models/editable_group.dart';
 import '../models/wizard_starter_packs.dart';
 import 'section_editor.dart';
 
+part 'wizard_step_sections_parts.dart';
+
 /// Wizard Step 3: Build criteria per section.
 /// Shows ONE section at a time with pill navigation at the top.
 /// Delegates criteria editing and sub-section management to [SectionEditor].
@@ -164,58 +166,6 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     return '$c $cLabel';
   }
 
-  /// Returns a contextual guidance banner for modes that restrict wizard
-  /// capabilities. Returns [SizedBox.shrink] for unrestricted modes (penalty,
-  /// accumulation) to avoid noise for experienced users.
-  Widget _buildModeBanner(BuildContext context) {
-    final theme = Theme.of(context);
-    final (
-      IconData icon,
-      String text,
-      Color color,
-    ) = switch (widget.scoringMode) {
-      'survey' => (
-        Icons.forum_outlined,
-        'Survey Mode — Sub-sections and scoring logic are disabled. Add questions to collect responses.',
-        theme.colorScheme.secondary,
-      ),
-      'checklist' => (
-        Icons.checklist_rounded,
-        'Checklist Mode — Keep it flat with Pass / Fail or choice inputs. Advanced math is disabled.',
-        theme.colorScheme.primary,
-      ),
-      _ => (Icons.info_outline, '', Colors.transparent),
-    };
-
-    // No banner for penalty / accumulation modes (or unknown modes)
-    if (text.isEmpty) return const SizedBox.shrink();
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: color,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -233,28 +183,10 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
       children: [
         // Section pill navigation
         if (sectionCount > 1)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Row(
-              children: [
-                for (int i = 0; i < sectionCount; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(
-                        widget.sections[i].titleCtrl.text.isEmpty
-                            ? 'Section ${i + 1}'
-                            : widget.sections[i].titleCtrl.text,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      selected: i == currentIdx,
-                      onSelected: (_) => widget.onSectionChanged(i),
-                    ),
-                  ),
-              ],
-            ),
+          _WizardSectionPillNav(
+            sections: widget.sections,
+            currentIdx: currentIdx,
+            onSectionChanged: widget.onSectionChanged,
           ),
 
         // Section content area
@@ -262,39 +194,13 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
             children: [
-              _buildModeBanner(context),
+              _WizardModeBanner(scoringMode: widget.scoringMode),
               // Section progress header with recursive count (Change 3)
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Section ${currentIdx + 1} of $sectionCount',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        Text(
-                          section.titleCtrl.text.isEmpty
-                              ? 'Section ${currentIdx + 1}'
-                              : section.titleCtrl.text,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        // Grammar fix: singular-aware count
-                        Text(
-                          _buildCountLabel(section, hasSubSections),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              _WizardSectionProgressHeader(
+                sectionTitle: section.titleCtrl.text,
+                currentIdx: currentIdx,
+                sectionCount: sectionCount,
+                countLabel: _buildCountLabel(section, hasSubSections),
               ),
               const SizedBox(height: 12),
 
@@ -368,68 +274,29 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 ),
 
               // Suggested criteria chips — visible when using root criteria path
-              if (!hasSubSections) ...[
-                const Divider(height: 32),
-                Text(
-                  'Suggested criteria:',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Builder(
-                  builder: (ctx) {
-                    final suggestions =
-                        WizardSuggestions.getCriteriaSuggestions(
-                          widget.scoringMode,
-                          section.titleCtrl.text,
-                        );
-                    return Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: suggestions.map((sc) {
-                        final alreadyAdded = section.criteria.any(
-                          (c) => c.labelCtrl.text == sc.label,
-                        );
-                        return ActionChip(
-                          label: Text(sc.label),
-                          avatar: const Icon(Icons.add, size: 16),
-                          onPressed: alreadyAdded
-                              ? null
-                              : () {
-                                  setState(() {
-                                    final c = EditableCriterion(
-                                      inputType: sc.inputType,
-                                      points: sc.points,
-                                    );
-                                    c.labelCtrl.text = sc.label;
-                                    // Q1: pre-populate two options so the V6 choice guard
-                                    // doesn't block save for survey single_choice chips.
-                                    if (sc.inputType == 'single_choice' ||
-                                        sc.inputType == 'multi_choice') {
-                                      c.choiceOptions = ['Yes', 'No'];
-                                    }
-                                    section.criteria.add(c);
-                                  });
-                                  widget.onChanged();
-                                },
-                          backgroundColor: alreadyAdded
-                              ? theme.colorScheme.surfaceContainerHighest
-                                    .withValues(alpha: 0.5)
-                              : theme.colorScheme.secondaryContainer,
-                          labelStyle: TextStyle(
-                            color: alreadyAdded
-                                ? theme.colorScheme.onSurfaceVariant.withValues(
-                                    alpha: 0.5,
-                                  )
-                                : theme.colorScheme.onSecondaryContainer,
-                          ),
-                        );
-                      }).toList(),
-                    );
+              if (!hasSubSections)
+                _WizardSuggestedCriteria(
+                  scoringMode: widget.scoringMode,
+                  sectionTitle: section.titleCtrl.text,
+                  section: section,
+                  onCriterionSelected: (sc) {
+                    setState(() {
+                      final c = EditableCriterion(
+                        inputType: sc.inputType,
+                        points: sc.points,
+                      );
+                      c.labelCtrl.text = sc.label;
+                      // Q1: pre-populate two options so the V6 choice guard
+                      // doesn't block save for survey single_choice chips.
+                      if (sc.inputType == 'single_choice' ||
+                          sc.inputType == 'multi_choice') {
+                        c.choiceOptions = ['Yes', 'No'];
+                      }
+                      section.criteria.add(c);
+                    });
+                    widget.onChanged();
                   },
                 ),
-              ],
             ],
           ),
         ),

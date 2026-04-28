@@ -17,7 +17,11 @@ import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/models/add_comment_request.dart';
-import 'package:checkly/_shared/services/sync_interfaces.dart';
+import 'package:checkly/_shared/services/pending_submission.dart';
+import 'package:checkly/_shared/services/delta_pull_result.dart';
+import 'package:checkly/_shared/services/pending_submission_risk.dart';
+import 'package:checkly/_shared/services/sync_api.dart';
+import 'package:checkly/_shared/services/auth_check.dart';
 import 'package:checkly/_shared/services/service_adapters.dart';
 
 // =================================================================

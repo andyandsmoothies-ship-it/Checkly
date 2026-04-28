@@ -120,10 +120,11 @@ void main() {
       () async {
         // Pre-seed the Drift table (simulates a previous active login session)
         await policyDao.upsertCapabilities(['submissions:list']);
-        
+
         // Mock the background API call
-        when(() => mockPolicyApi.fetchCapabilities())
-            .thenAnswer((_) async => ['submissions:list', 'templates:create']);
+        when(
+          () => mockPolicyApi.fetchCapabilities(),
+        ).thenAnswer((_) async => ['submissions:list', 'templates:create']);
 
         // Act — simulate cold restart (tryAutoLogin reads from Drift, then background refreshes)
         await authManager.tryAutoLogin();
@@ -132,8 +133,11 @@ void main() {
         await Future.delayed(Duration.zero);
 
         // Assert — capabilities updated with fresh data from background refresh
-        expect(authManager.capabilities.value, containsAll(['submissions:list', 'templates:create']));
-        
+        expect(
+          authManager.capabilities.value,
+          containsAll(['submissions:list', 'templates:create']),
+        );
+
         // Assert — fetchCapabilities WAS called
         verify(() => mockPolicyApi.fetchCapabilities()).called(1);
       },

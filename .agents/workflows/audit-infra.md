@@ -65,7 +65,7 @@ description: Infrastructure & architecture audit — database health, security p
 |---|---|
 | **Artifact Gen** | Create `audit_infra_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `brain/` folder. IF zero issues -> create `audit_infra_pass_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
 | **Severity Matrix**| `🔴 Critical` (Data loss/Security breach/Unbounded rows) | `🟡 Warning` (Performance drag/Leakage) | `🟢 Optimization` (Cleanups). |
-| **Actionable Fix & Trade-offs** | MANDATORY: Provide exact fix snippet or EF migration plan for EVERY finding.<br><br>**CRITICAL:** When proposing a fix, you MUST explicitly present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation. |
+| **Actionable Fix & Trade-offs** | MANDATORY: Provide exact fix snippet or EF migration plan for EVERY finding.<br><br>**CRITICAL:** For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.<br><br>**CRITICAL:** When proposing a fix, you MUST explicitly present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation. |
 
 ## Phase 6: Deliverable Handoff
 

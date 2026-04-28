@@ -25,9 +25,11 @@ import 'features/templates/manager/template_manager.dart';
 import 'features/stores/services/store_api_service.dart';
 import 'features/stores/manager/store_manager.dart';
 import 'features/audit/services/submission_api_service.dart';
+import 'features/audit/services/draft_service.dart';
 import 'features/audit/manager/audit_manager.dart';
 import 'features/audit/manager/history_manager.dart';
 import 'features/audit/manager/survey_results_manager.dart';
+import '_shared/database/dao/submission_dao.dart';
 import 'features/notifications/services/notification_api_service.dart';
 import 'features/notifications/manager/notification_manager.dart';
 import 'features/notifications/manager/notification_sync_manager.dart';
@@ -111,8 +113,24 @@ void configureDependencies() {
   di.registerLazySingleton<SubmissionApiService>(
     () => SubmissionApiService(di<Dio>()),
   );
-  di.registerLazySingleton<AuditManager>(() => AuditManager());
-  di.registerLazySingleton<HistoryManager>(() => HistoryManager());
+  di.registerLazySingleton<AuditManager>(
+    () => AuditManager(
+      api: di<SubmissionApiService>(),
+      outbox: di<OutboxDao>(),
+      globalRiskDao: di<GlobalRiskDao>(),
+      riskOutboxDao: di<SubmissionRiskOutboxDao>(),
+      draftService: DraftService(),
+      connectivity: di<ConnectivityService>(),
+    ),
+  );
+  di.registerLazySingleton<HistoryManager>(
+    () => HistoryManager(
+      api: di<SubmissionApiService>(),
+      dao: SubmissionDao(di<DatabaseService>().db),
+      draftService: DraftService(),
+      outboxDao: di<OutboxDao>(),
+    ),
+  );
   di.registerLazySingleton<SurveyResultsManager>(() => SurveyResultsManager());
 
   // ---------- Sync Engine (Phase 3 — C1, C2) ----------
@@ -178,7 +196,15 @@ void configureDependencies() {
   di.registerLazySingleton<AdminDashboardManager>(
     () => AdminDashboardManager(),
   );
-  di.registerLazySingleton<AdminAuditManager>(() => AdminAuditManager());
+  di.registerLazySingleton<AdminAuditManager>(
+    () => AdminAuditManager(
+      adminApi: di<AdminApiService>(),
+      storeApi: di<StoreApiService>(),
+      templateApi: di<TemplateApiService>(),
+      submissionApi: di<SubmissionApiService>(),
+      auth: di<AuthManager>(),
+    ),
+  );
   di.registerLazySingleton<AdminGlobalRiskManager>(
     () => AdminGlobalRiskManager(),
   );

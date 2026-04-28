@@ -4,7 +4,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:checkly/features/audit/widgets/audit_criterion_row.dart';
 import 'package:checkly/features/audit/manager/audit_manager.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
-import 'package:checkly/_shared/services/scoring_models.dart';
+import 'package:checkly/_shared/services/scoring_mode.dart';
+import 'package:checkly/features/audit/widgets/audit_status_badge.dart';
 
 class MockAuditManager extends Mock implements AuditManager {}
 

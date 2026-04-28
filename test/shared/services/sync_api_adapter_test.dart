@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 import 'package:checkly/_shared/services/service_adapters.dart';
-import 'package:checkly/_shared/services/sync_interfaces.dart';
+import 'package:checkly/_shared/services/pending_submission.dart';
 
 class MockDio extends Mock implements Dio {}
 

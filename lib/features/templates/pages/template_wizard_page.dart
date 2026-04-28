@@ -11,6 +11,7 @@ import '../widgets/wizard_step_review.dart';
 import '../widgets/wizard_step_success.dart';
 import '../widgets/blueprint_selection_modal.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
+import '../widgets/wizard_navigation_bar.dart';
 import 'wizard_payload_builder.dart';
 import 'wizard_validators.dart';
 
@@ -361,44 +362,13 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
           ),
           bottomNavigationBar: isSavingOrDone
               ? null
-              : SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-                    child: Row(
-                      children: [
-                        if (_currentStep > 0)
-                          OutlinedButton(
-                            onPressed: _saving ? null : _prevStep,
-                            child: const Text('Back'),
-                          ),
-                        const Spacer(),
-                        FilledButton(
-                          onPressed:
-                              (_saving ||
-                                  (_currentStep == 3 && !_templateIsValid))
-                              ? null
-                              : () {
-                                  if (_currentStep == 3) {
-                                    _save();
-                                  } else {
-                                    _nextStep();
-                                  }
-                                },
-                          child: _saving
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(
-                                  _currentStep == 3 ? 'Save Template' : 'Next',
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
+              : WizardNavigationBar(
+                  currentStep: _currentStep,
+                  isSaving: _saving,
+                  templateIsValid: _templateIsValid,
+                  onPrev: _prevStep,
+                  onNext: _nextStep,
+                  onSave: _save,
                 ),
         ),
       ),

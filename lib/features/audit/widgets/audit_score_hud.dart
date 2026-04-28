@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../_shared/utils/score_utils.dart';
-import '../../../_shared/services/scoring_models.dart';
+import '../../../_shared/services/section_score.dart';
 
 // ============================================================
 // Live Score HUD

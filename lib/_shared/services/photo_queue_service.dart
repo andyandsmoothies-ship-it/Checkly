@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:math';
 
 import '../database/dao/outbox_dao.dart';
-import 'sync_interfaces.dart';
+import 'drain_result.dart';
+import 'photo_api.dart';
 import 'package:dio/dio.dart';
 
 /// Backoff delay sequence in seconds: 1st, 2nd, 3rd, 4th failure.

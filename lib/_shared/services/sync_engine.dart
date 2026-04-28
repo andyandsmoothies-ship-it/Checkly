@@ -13,7 +13,11 @@ import 'package:checkly/_shared/database/app_database.dart'
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'connectivity_service.dart';
 import 'sync_state.dart';
-import 'sync_interfaces.dart';
+import 'pending_submission.dart';
+import 'pending_submission_risk.dart';
+import 'sync_api.dart';
+import 'outbox.dart';
+import 'auth_check.dart';
 
 // ============================================================
 // SyncEngine — orchestrator
@@ -95,6 +99,13 @@ class SyncEngine {
     });
 
     // Initial sync is driven by the App widget or explicit calls, not the constructor.
+  }
+
+  /// Returns the counts of syncable and exhausted submissions in the outbox.
+  Future<(int syncable, int exhausted)> getPendingCount() async {
+    final syncable = await _outboxDao.syncableCount();
+    final exhausted = await _outboxDao.exhaustedCount();
+    return (syncable, exhausted);
   }
 
   /// Request a sync cycle. If already syncing, the request is ignored.

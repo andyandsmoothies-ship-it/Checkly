@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
-import '../../audit/model/submission_dto.dart';
+import '../../audit/model/create_submission_request.dart';
 import '../../audit/services/submission_api_service.dart';
 import '../manager/admin_audit_manager.dart';
 import '../widgets/dropdown_card.dart';

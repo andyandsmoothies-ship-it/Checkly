@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/services/photo_queue_service.dart';
-import 'package:checkly/_shared/services/sync_interfaces.dart';
+import 'package:checkly/_shared/services/drain_result.dart';
 import 'package:checkly/features/audit/services/submission_api_service.dart';
 
 // ─── Fakes ────────────────────────────────────────────────────────────────
@@ -113,7 +113,10 @@ void main() {
 
     final success = await queueService.drainQueue('sub-1');
 
-    expect(success, isA<DrainFailure>()); // Blocks further uploads in this batch
+    expect(
+      success,
+      isA<DrainFailure>(),
+    ); // Blocks further uploads in this batch
 
     final rows = await db.select(db.pendingPhotos).get();
     expect(rows.first.syncStatus, 'exhausted');

@@ -1,0 +1,351 @@
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../_shared/theme/app_colors.dart';
+import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/utils/date_format_utils.dart';
+import '../../../audit/model/submission_dto.dart';
+import '../../../audit/pages/audit_preview_sheet.dart';
+import '../../../audit/services/draft_service.dart';
+import '../../../auth/manager/auth_manager.dart';
+import '../../manager/dashboard_manager.dart';
+import '../../../audit/utils/score_formatter.dart';
+
+/// Single submission row in the feed.
+@visibleForTesting
+class SubmissionRow extends StatefulWidget {
+  final SubmissionDto submission;
+  final BuildContext context;
+
+  const SubmissionRow({
+    required this.submission,
+    required this.context,
+    super.key,
+  });
+
+  @override
+  State<SubmissionRow> createState() => _SubmissionRowState();
+}
+
+class _SubmissionRowState extends State<SubmissionRow> {
+  final _di = GetIt.instance;
+
+  Future<void> _discardDraft() async {
+    final sub = widget.submission;
+    final tId = sub.templateId;
+    final sId = sub.storeId;
+    if (tId == null || sId == null) return;
+
+    final userId = _di<AuthManager>().currentUser?.userId ?? 'anon';
+    final draftKey = '$tId:$sId:$userId';
+
+    try {
+      await _di<DraftService>().deleteDraft(draftKey);
+      await _di<DashboardManager>().loadStats();
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Draft discarded')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _voidAudit() async {
+    final sub = widget.submission;
+    final ctx = widget.context;
+
+    // Show reason dialog
+    final reasonController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: ctx,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Void Audit'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'This will permanently void "${sub.templateTitle ?? 'this audit'}". The auditor will no longer see it as an active task.',
+              style: Theme.of(dialogCtx).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: reasonController,
+              decoration: const InputDecoration(
+                labelText: 'Reason for voiding',
+                hintText: 'e.g. Store was closed, task reassigned...',
+              ),
+              maxLines: 2,
+              autofocus: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: const Text('Void Audit'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+    final reason = reasonController.text.trim();
+    if (reason.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A void reason is required.')),
+      );
+      return;
+    }
+
+    try {
+      await _di<DashboardManager>().voidAudit(sub.id, reason);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Audit voided.')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void _resumeDraft() {
+    final sub = widget.submission;
+    final tId = sub.templateId;
+    final sId = sub.storeId;
+    if (tId == null || sId == null) return;
+    widget.context.push(
+      '/audit?templateId=$tId&storeId=$sId&autoResume=true&submissionId=${sub.id}',
+    );
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    final theme = Theme.of(ctx);
+    final sub = widget.submission;
+    final score = sub.totalScore;
+    final isDraft = sub.status == 'draft';
+    final scoreText = ScoreFormatter.format(
+      scoringMode: sub.scoringMode,
+      rawEarned: sub.rawEarnedPoints,
+      rawMax: sub.rawMaxPoints,
+      totalScore: sub.totalScore,
+      isWeighted: sub.isWeighted,
+    );
+    final scoreColor = theme.colorScheme.onSurface;
+    final semanticColor = score != null
+        ? (score >= 80
+              ? AppColors.success
+              : score >= 60
+              ? AppColors.warning
+              : AppColors.destructive)
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: isDraft
+            ? _resumeDraft
+            : () {
+                if (sub.id.startsWith('local_outbox_')) {
+                  ScaffoldMessenger.of(widget.context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'This audit is syncing. Please wait a moment.',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                showModalBottomSheet(
+                  context: widget.context,
+                  isScrollControlled: true,
+                  useSafeArea: true,
+                  useRootNavigator: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  builder: (_) => AuditPreviewSheet(submissionId: sub.id),
+                );
+              },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      sub.templateTitle ?? 'Audit',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      () {
+                        final isOverdue = sub.isOverdue;
+                        final isScheduled =
+                            sub.status == 'scheduled' && !isOverdue;
+                        if (isScheduled || isOverdue) {
+                          return '${sub.storeName ?? 'Unknown'} · Scheduled ${formatDate(sub.scheduledAt ?? sub.createdAt)}';
+                        }
+                        if (sub.status == 'draft') {
+                          return '${sub.storeName ?? 'Unknown'} · Started ${formatDate(sub.createdAt)}';
+                        }
+                        return '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.completedAt ?? sub.createdAt)}';
+                      }(),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              // Right side: for drafts show actions menu; otherwise score badge
+              if (isDraft)
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    size: 20,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onSelected: (value) {
+                    if (value == 'resume') Future.microtask(_resumeDraft);
+                    if (value == 'discard') Future.microtask(_discardDraft);
+                    if (value == 'void') Future.microtask(_voidAudit);
+                  },
+                  itemBuilder: (_) {
+                    final isAdmin =
+                        _di<AuthManager>().currentUser?.role == 'admin';
+                    return [
+                      const PopupMenuItem(
+                        value: 'resume',
+                        child: Row(
+                          children: [
+                            Icon(Icons.play_circle_outline, size: 18),
+                            SizedBox(width: 8),
+                            Text('Resume Audit'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'discard',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, size: 18),
+                            SizedBox(width: 8),
+                            Text('Discard Draft'),
+                          ],
+                        ),
+                      ),
+                      if (isAdmin)
+                        const PopupMenuItem(
+                          value: 'void',
+                          child: Row(
+                            children: [
+                              Icon(Icons.block, size: 18),
+                              SizedBox(width: 8),
+                              Text('Void Audit'),
+                            ],
+                          ),
+                        ),
+                    ];
+                  },
+                )
+              else if (scoreText.isNotEmpty)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: semanticColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      scoreText,
+                      style: AppFonts.serifStyle(
+                        fontSize: Theme.of(
+                          context,
+                        ).textTheme.titleLarge?.fontSize,
+                        color: scoreColor,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Builder(
+                  builder: (_) {
+                    final isOverdue = sub.isOverdue;
+                    final label = isOverdue
+                        ? 'EXPIRED'
+                        : sub.status.toUpperCase();
+                    final bgColor = isOverdue
+                        ? theme.colorScheme.errorContainer
+                        : theme.colorScheme.tertiary.withValues(alpha: 0.1);
+                    final textColor = isOverdue
+                        ? theme.colorScheme.onErrorContainer
+                        : theme.colorScheme.tertiary;
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        label,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

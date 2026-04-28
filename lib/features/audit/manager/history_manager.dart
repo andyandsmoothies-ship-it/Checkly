@@ -4,11 +4,12 @@ import 'package:get_it/get_it.dart';
 import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/dao/submission_dao.dart';
 import '../model/submission_dto.dart';
+import '../model/submission_detail_dto.dart';
 import '../services/draft_service.dart';
 import '../services/submission_api_service.dart';
 import '../../../_shared/database/dao/outbox_dao.dart';
 
-final _di = GetIt.instance;
+final _di = GetIt.instance; // used only in _applyLocalOverrides (method body)
 
 /// PFA Manager for audit history — cache-first read path with pagination.
 ///
@@ -16,24 +17,19 @@ final _di = GetIt.instance;
 /// `loadMore()`: loads next page and appends results
 class HistoryManager extends ChangeNotifier {
   final SubmissionApiService _api;
-  late final SubmissionDao _dao;
-  late final DraftService _draftService;
-  late final OutboxDao _outboxDao;
+  final SubmissionDao _dao;
+  final DraftService _draftService;
+  final OutboxDao _outboxDao;
 
   HistoryManager({
-    SubmissionApiService? api,
-    SubmissionDao? dao,
-    DraftService? draftService,
-    OutboxDao? outboxDao,
-  }) : _api = api ?? _di<SubmissionApiService>() {
-    if (dao != null) {
-      _dao = dao;
-    } else {
-      _dao = SubmissionDao(_di<DatabaseService>().db);
-    }
-    _draftService = draftService ?? DraftService();
-    _outboxDao = outboxDao ?? OutboxDao(_di<DatabaseService>().db);
-  }
+    required SubmissionApiService api,
+    required SubmissionDao dao,
+    required DraftService draftService,
+    required OutboxDao outboxDao,
+  })  : _api = api,
+        _dao = dao,
+        _draftService = draftService,
+        _outboxDao = outboxDao;
 
   // ---------- State ----------
   final submissions = ValueNotifier<List<SubmissionDto>>([]);

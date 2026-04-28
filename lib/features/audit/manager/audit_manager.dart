@@ -6,87 +6,29 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/dao/global_risk_dao.dart';
 import '../../../_shared/database/dao/submission_risk_outbox_dao.dart';
 import '../../../_shared/database/dao/outbox_dao.dart'; // Kept as it's used
 import '../../../_shared/services/connectivity_service.dart'; // Kept as it's used
 import '../../../_shared/services/scoring_engine.dart'; // Kept as it's used
-import '../../../_shared/services/scoring_models.dart';
+import '../../../_shared/services/scoring_mode.dart';
+import '../../../_shared/services/section_score.dart';
 import '../../../_shared/services/sync_engine.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../templates/models/template_dto.dart';
+import '../model/audit_answer.dart';
+export '../model/audit_answer.dart';
 import '../model/submission_dto.dart';
 import '../services/draft_service.dart'; // Added
 import '../services/scoring_input_mapper.dart';
 import '../services/submission_api_service.dart';
 
+part 'audit_manager_draft.dart';
+part 'audit_manager_submit.dart';
+
 final _di = GetIt.instance;
 const _uuid = Uuid();
-
-/// In-progress answer entry for the audit form.
-class AuditAnswer {
-  final String criteriaId;
-  String? value; // 'conform', 'non_conform', 'na'
-  double? numericValue; // fault count
-  String? note;
-  String? photoUrl;
-  int repeatedFaultCount;
-  bool isCcp;
-  bool isRisk;
-
-  /// Derived from repeatedFaultCount for backward compatibility.
-  bool get isRepeatedError => repeatedFaultCount > 0;
-
-  AuditAnswer({
-    required this.criteriaId,
-    this.value,
-    this.numericValue,
-    this.note,
-    this.photoUrl,
-    this.repeatedFaultCount = 0,
-    this.isCcp = false,
-    this.isRisk = false,
-  });
-
-  /// Serializes to JSON-compatible map for draft storage.
-  Map<String, dynamic> toJson() => {
-    'criteriaId': criteriaId,
-    'value': value,
-    'numericValue': numericValue,
-    'note': note,
-    'photoUrl': photoUrl,
-    'repeatedFaultCount': repeatedFaultCount,
-    'isCcp': isCcp,
-    'isRisk': isRisk,
-  };
-
-  /// Restores from a JSON map (from draft storage).
-  factory AuditAnswer.fromJson(Map<String, dynamic> json) => AuditAnswer(
-    criteriaId: json['criteriaId'] as String,
-    value: json['value'] as String?,
-    numericValue: (json['numericValue'] as num?)?.toDouble(),
-    note: json['note'] as String?,
-    photoUrl: json['photoUrl'] as String?,
-    repeatedFaultCount: (json['repeatedFaultCount'] as int?) ?? 0,
-    isCcp: (json['isCcp'] as bool?) ?? false,
-    isRisk: (json['isRisk'] as bool?) ?? false,
-  );
-
-  /// Converts to submission API payload.
-  SubmissionAnswerInput toInput() => SubmissionAnswerInput(
-    criteriaId: criteriaId,
-    value: value,
-    numericValue: numericValue,
-    note: note,
-    photoUrl: photoUrl,
-    isRepeatedError: isRepeatedError,
-    repeatedFaults: repeatedFaultCount,
-    isCcp: isCcp,
-    isRisk: isRisk,
-  );
-}
 
 /// PFA Manager for the audit form — offline-first write path.
 ///
@@ -97,29 +39,24 @@ class AuditAnswer {
 class AuditManager extends ChangeNotifier {
   // ignore: unused_field — kept as injectable test seam; SpySubmissionApiService verifies HTTP path is never reached.
   final SubmissionApiService _api;
-  late final OutboxDao _outbox;
-  late final GlobalRiskDao _globalRiskDao;
-  late final SubmissionRiskOutboxDao _riskOutboxDao;
-  late final ConnectivityService? _connectivity;
+  final OutboxDao _outbox;
+  final GlobalRiskDao _globalRiskDao;
+  final SubmissionRiskOutboxDao _riskOutboxDao;
+  final ConnectivityService? _connectivity;
 
   AuditManager({
-    SubmissionApiService? api,
-    OutboxDao? outbox,
-    GlobalRiskDao? globalRiskDao,
-    SubmissionRiskOutboxDao? riskOutboxDao,
+    required SubmissionApiService api,
+    required OutboxDao outbox,
+    required GlobalRiskDao globalRiskDao,
+    required SubmissionRiskOutboxDao riskOutboxDao,
+    required DraftService draftService,
     ConnectivityService? connectivity,
-    DraftService? draftService,
-  }) : _api = api ?? _di<SubmissionApiService>() {
-    final db = _di<DatabaseService>().db;
-    _outbox = outbox ?? OutboxDao(db);
-    _globalRiskDao = globalRiskDao ?? GlobalRiskDao(db);
-    _riskOutboxDao = riskOutboxDao ?? SubmissionRiskOutboxDao(db);
-    _draftService = draftService ?? DraftService();
-    try {
-      _connectivity = connectivity ?? _di<ConnectivityService>();
-    } catch (_) {
-      _connectivity = null;
-    }
+  })  : _api = api,
+        _outbox = outbox,
+        _globalRiskDao = globalRiskDao,
+        _riskOutboxDao = riskOutboxDao,
+        _connectivity = connectivity {
+    _draftService = draftService;
   }
 
   // ---------- State ----------
@@ -365,162 +302,6 @@ class AuditManager extends ChangeNotifier {
     return jsonEncode(sections);
   }
 
-  // ---------- Draft helpers ----------
-
-  /// Schedules a debounced draft save.
-  void _scheduleDraftSave() {
-    if (_draftKey == null) return;
-    final answersMap = _answers.map((k, v) => MapEntry(k, v.toJson()));
-    _draftService.scheduleSave(
-      draftKey: _draftKey!,
-      answersMap: answersMap,
-      notes: _notes,
-    );
-    _draftSavedAt = DateTime.now();
-  }
-
-  /// Restores answers from a loaded draft.
-  void restoreDraft() {
-    final draft = _pendingDraft;
-    if (draft == null) return;
-
-    for (final entry in draft.answersMap.entries) {
-      try {
-        final restored = AuditAnswer.fromJson(entry.value);
-        final existing = _answers[entry.key];
-        if (existing != null) {
-          existing.value = restored.value;
-          existing.numericValue = restored.numericValue;
-          existing.note = restored.note;
-          existing.photoUrl = restored.photoUrl;
-          existing.repeatedFaultCount = restored.repeatedFaultCount;
-          existing.isCcp = restored.isCcp;
-          existing.isRisk = restored.isRisk;
-        }
-      } catch (_) {
-        // Skip corrupted answers
-      }
-    }
-
-    if (draft.notes != null) _notes = draft.notes;
-    _pendingDraft = null;
-    _recalculateScore();
-    notifyListeners();
-  }
-
-  /// Discards the pending draft without restoring.
-  void discardDraft() {
-    if (_draftKey != null) {
-      _draftService.deleteDraft(_draftKey!);
-    }
-    _pendingDraft = null;
-    _scheduleDraftSave();
-    notifyListeners();
-  }
-
-  /// Forces an immediate synchronous lock to the local database,
-  /// bypassing the 3-second debounce. Use this before teardown.
-  Future<void> forceSave() async {
-    if (_draftKey == null) return;
-    final answersMap = _answers.map((k, v) => MapEntry(k, v.toJson()));
-    await _draftService.flushSave(
-      draftKey: _draftKey!,
-      answersMap: answersMap,
-      notes: _notes,
-    );
-    _draftSavedAt = DateTime.now();
-  }
-
-  // ---------- Submit (offline-first) ----------
-  Future<void> submitAudit() async {
-    if (_template == null || _storeId == null) return;
-
-    // Mutex guard — drop second concurrent call silently (AC-4)
-    if (_isSubmitting) return;
-
-    _isSubmitting = true;
-    _error = null;
-    _wasQueuedOffline = false;
-    // Cancel any pending draft save before submit
-    _draftService.dispose();
-    notifyListeners();
-
-    try {
-      _recalculateScore();
-
-      final idempotencyKey = _uuid.v4();
-      final now = DateTime.now();
-      final submissionId = _pendingSubmissionId ?? _uuid.v4();
-
-      if (_answers.isEmpty) {
-        throw Exception(
-          'Cannot submit an audit with zero answers. Please complete the audit first.',
-        );
-      }
-
-      // 1. Build answer companions
-      final answerCompanions = _answers.values.map((a) {
-        return PendingAnswersCompanion.insert(
-          id: _uuid.v4(),
-          pendingSubmissionId: submissionId,
-          criteriaId: a.criteriaId,
-          value: Value(a.value),
-          numericValue: Value(a.numericValue),
-          note: Value(a.note),
-          photoUrl: Value(a.photoUrl),
-          isRepeatedError: Value(a.isRepeatedError),
-          repeatedFaults: Value(a.repeatedFaultCount),
-          isCcp: Value(a.isCcp),
-          isRisk: Value(a.isRisk),
-        );
-      }).toList();
-
-      // 2. Atomically persist submission + answers to outbox
-      await _outbox.insertSubmissionWithAnswers(
-        PendingSubmissionsCompanion.insert(
-          id: submissionId,
-          idempotencyKey: idempotencyKey,
-          templateId: _template!.id,
-          storeId: _storeId!,
-          clientScore: _liveScore ?? 0.0,
-          sectionScores: Value(_buildSectionScoresJson()),
-          notes: Value(_notes),
-          gpsLat: Value(_gpsLat),
-          gpsLng: Value(_gpsLng),
-          createdAt: now,
-          syncStatus: Value('pending'),
-          targetSubmissionId: Value(_targetSubmissionId),
-        ),
-        answerCompanions,
-      );
-
-      // 2.5. Delete draft now that submission is safely in outbox (atomic)
-
-      if (_draftKey != null) {
-        await _draftService.deleteDraft(_draftKey!);
-        _draftKey =
-            null; // Prevent PopScope from resurrecting the draft on navigation teardown
-        _draftSavedAt = null;
-      }
-
-      // 3. Notify SyncEngine — it drains the outbox in the background (non-blocking).
-      //    Connectivity state is used only to set the correct UX flag.
-      final isOnline = _connectivity?.isOnline ?? true;
-      _wasQueuedOffline = !isOnline;
-      // Guard: SyncEngine may not be registered in test environments.
-      try {
-        unawaited(_di<SyncEngine>().requestSync());
-      } catch (_) {
-        // SyncEngine not registered (test/isolated environment) — outbox will drain on next connectivity event.
-      }
-    } catch (e) {
-      _error = 'Submission failed. Please try again.';
-    } finally {
-      _isSubmitting = false;
-      notifyListeners();
-    }
-  }
-
   // ---------- Global Risk Actions ----------
 
   Future<void> triggerGlobalRisk(String globalRiskId) async {
@@ -545,6 +326,15 @@ class AuditManager extends ChangeNotifier {
 
   // ---------- Pending count (syncable-only — excludes exhausted) ----------
   Future<int> get pendingCount => _outbox.syncableCount();
+
+  // ---------- Submit API ----------
+  Future<void> submitAudit() => _submitAuditLogic(this);
+
+  // ---------- Draft API ----------
+  void _scheduleDraftSave() => _scheduleDraftSaveLogic(this);
+  Future<void> forceSave() => _forceSaveLogic(this);
+  void restoreDraft() => _restoreDraftLogic(this);
+  void discardDraft() => _discardDraftLogic(this);
 
   // ---------- Reset ----------
   void reset() {

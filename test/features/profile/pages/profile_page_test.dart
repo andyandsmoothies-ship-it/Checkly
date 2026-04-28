@@ -37,6 +37,7 @@ import 'package:checkly/_shared/theme/theme_manager.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
+import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:drift/native.dart';
 
 // ── Mock Declarations ─────────────────────────────────────────────────────────
@@ -47,6 +48,8 @@ class _MockAuthManager extends Mock implements AuthManager {}
 class _MockThemeManager extends Mock implements ThemeManager {}
 
 class _MockDatabaseService extends Mock implements DatabaseService {}
+
+class _MockSyncEngine extends Mock implements SyncEngine {}
 
 // ── Test Fixtures ─────────────────────────────────────────────────────────────
 
@@ -90,6 +93,10 @@ _MockAuthManager _registerDi({UserSession? user}) {
   final testDb = AppDatabase.forTesting(NativeDatabase.memory());
   when(() => mockDbService.db).thenReturn(testDb);
   di.registerSingleton<DatabaseService>(mockDbService);
+
+  final mockSyncEngine = _MockSyncEngine();
+  when(() => mockSyncEngine.getPendingCount()).thenAnswer((_) async => (0, 0));
+  di.registerSingleton<SyncEngine>(mockSyncEngine);
 
   return mockAuth;
 }

@@ -1,13 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/theme/app_fonts.dart';
-import '../../../_shared/widgets/unsaved_changes_guard.dart';
-import '../services/admin_api_service.dart';
 import '../manager/admin_area_manager.dart';
+import '../widgets/area_card.dart';
+import '../widgets/area_sheets.dart';
 
 final _di = GetIt.instance;
 
@@ -63,9 +59,6 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
   }
 
   void _showCreateSheet() {
-    final nameCtrl = TextEditingController();
-    final descCtrl = TextEditingController();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -74,130 +67,11 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) {
-        var isDirty = false;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            void markDirty() {
-              if (!isDirty) setSheetState(() => isDirty = true);
-            }
-
-            return UnsavedChangesGuard(
-              isDirty: isDirty,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  24,
-                  16,
-                  MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'New Area',
-                          style: AppFonts.displayStyle(
-                            fontSize: Theme.of(
-                              ctx,
-                            ).textTheme.titleLarge?.fontSize,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.maybePop(ctx),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: nameCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Area Name *',
-                        hintText: 'e.g. Mekong Delta',
-                        border: OutlineInputBorder(),
-                      ),
-                      textCapitalization: TextCapitalization.words,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: descCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                        hintText: 'Optional description of this area',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 2,
-                      textCapitalization: TextCapitalization.sentences,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: () async {
-                        final name = nameCtrl.text.trim();
-                        final desc = descCtrl.text.trim();
-                        if (name.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Area name is required'),
-                            ),
-                          );
-                          return;
-                        }
-                        try {
-                          await _di<AdminApiService>().createArea(
-                            name: name,
-                            description: desc.isNotEmpty ? desc : null,
-                          );
-                          if (context.mounted) {
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                              SnackBar(
-                                content: const Text('Area created'),
-                                backgroundColor: AppTheme.success,
-                              ),
-                            );
-                            _loadData();
-                          }
-                        } on DioException catch (e) {
-                          if (mounted) {
-                            final msg =
-                                e.response?.data?['error'] ??
-                                'Failed to create area';
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(msg.toString()),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: const Text('Create Area'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+      builder: (ctx) => AreaCreateSheet(onSuccess: _loadData),
     );
   }
 
   void _showEditSheet(Map<String, dynamic> area) {
-    final nameCtrl = TextEditingController(text: area['name'] as String? ?? '');
-    final descCtrl = TextEditingController(
-      text: area['description'] as String? ?? '',
-    );
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -206,117 +80,7 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) {
-        var isDirty = false;
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            void markDirty() {
-              if (!isDirty) setSheetState(() => isDirty = true);
-            }
-
-            return UnsavedChangesGuard(
-              isDirty: isDirty,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  24,
-                  16,
-                  MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Edit Area',
-                          style: AppFonts.displayStyle(
-                            fontSize: Theme.of(
-                              ctx,
-                            ).textTheme.titleLarge?.fontSize,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.maybePop(ctx),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: nameCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Area Name *',
-                        border: OutlineInputBorder(),
-                      ),
-                      textCapitalization: TextCapitalization.words,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: descCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 2,
-                      textCapitalization: TextCapitalization.sentences,
-                      onChanged: (_) => markDirty(),
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: () async {
-                        final name = nameCtrl.text.trim();
-                        final desc = descCtrl.text.trim();
-                        if (name.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Name is required')),
-                          );
-                          return;
-                        }
-                        try {
-                          await _di<AdminApiService>().updateArea(
-                            area['id'] as String,
-                            name: name,
-                            description: desc,
-                          );
-                          if (context.mounted) {
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                              SnackBar(
-                                content: const Text('Area updated'),
-                                backgroundColor: AppTheme.success,
-                              ),
-                            );
-                            _loadData();
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'An unexpected issue occurred. Please check your connection or restart the app.',
-                                ),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: const Text('Save Changes'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+      builder: (ctx) => AreaEditSheet(area: area, onSuccess: _loadData),
     );
   }
 
@@ -423,126 +187,9 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
         itemCount: _filtered.length,
         itemBuilder: (_, index) {
           final area = _filtered[index];
-          return _AreaCard(area: area, onTap: () => _showEditSheet(area));
+          return AreaCard(area: area, onTap: () => _showEditSheet(area));
         },
       ),
-    );
-  }
-}
-
-// ─── Area Card ───
-
-class _AreaCard extends StatelessWidget {
-  final Map<String, dynamic> area;
-  final VoidCallback onTap;
-
-  const _AreaCard({required this.area, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final name = area['name'] as String? ?? 'Unnamed';
-    final description = area['description'] as String? ?? '';
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              // Icon
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppTheme.sageGray.withAlpha(25),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.map_outlined,
-                  color: theme.colorScheme.primary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: AppFonts.displayStyle(
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.titleSmall?.fontSize,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (description.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        description,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    const SizedBox(height: 4),
-                    // Store & user count badges
-                    _buildBadges(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBadges(BuildContext context) {
-    final storeCount = area['storeCount'] as int? ?? 0;
-    final managerName = area['managerName'] as String?;
-    final areaId = area['id'] as String? ?? '';
-
-    if (storeCount == 0 && managerName == null) {
-      return Text(
-        'No stores yet',
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      );
-    }
-
-    return Wrap(
-      spacing: 8,
-      children: [
-        if (storeCount > 0)
-          ActionChip(
-            avatar: const Icon(Icons.store, size: 14),
-            label: Text('$storeCount Stores'),
-            visualDensity: VisualDensity.compact,
-            onPressed: () => context.push('/admin/stores?areaId=$areaId'),
-          ),
-        ActionChip(
-          avatar: const Icon(Icons.person, size: 14),
-          label: Text(
-            managerName != null ? 'AM: $managerName' : 'AM: Unassigned',
-          ),
-          visualDensity: VisualDensity.compact,
-          onPressed: managerName != null
-              ? () => context.push('/admin/users?search=$managerName')
-              : null,
-        ),
-      ],
     );
   }
 }

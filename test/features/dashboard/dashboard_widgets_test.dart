@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:get_it/get_it.dart';
 import 'package:checkly/features/dashboard/pages/dashboard_page.dart';
 import 'package:checkly/features/dashboard/manager/dashboard_manager.dart';
-import 'package:checkly/features/dashboard/pages/widgets/dashboard_variants.dart';
+import 'package:checkly/features/dashboard/pages/widgets/deadline_banner.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/notifications/manager/notification_manager.dart';
 import 'package:checkly/features/auth/model/user_session.dart';

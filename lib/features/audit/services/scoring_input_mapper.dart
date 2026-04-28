@@ -2,7 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../_shared/services/scoring_models.dart';
+import '../../../_shared/services/answer_input.dart';
+import '../../../_shared/services/criterion_input.dart';
+import '../../../_shared/services/scoring_input.dart';
+import '../../../_shared/services/scoring_mode.dart';
+import '../../../_shared/services/section_input.dart';
+import '../../../_shared/services/subsection_input.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
 

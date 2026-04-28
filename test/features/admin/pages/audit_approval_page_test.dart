@@ -54,20 +54,19 @@ SubmissionDto _makeSubmission({
   String storeName = 'Store Alpha',
   String? reviewStatus,
   String status = 'completed',
-}) =>
-    SubmissionDto(
-      id: id,
-      storeName: storeName,
-      templateTitle: 'Template A',
-      auditorName: 'Alice',
-      status: status,
-      createdAt: DateTime(2026, 1, 1),
-      reviewStatus: reviewStatus,
-      scoringMode: 'penalty',
-      totalScore: 85.0,
-      rawEarnedPoints: 85,
-      rawMaxPoints: 100,
-    );
+}) => SubmissionDto(
+  id: id,
+  storeName: storeName,
+  templateTitle: 'Template A',
+  auditorName: 'Alice',
+  status: status,
+  createdAt: DateTime(2026, 1, 1),
+  reviewStatus: reviewStatus,
+  scoringMode: 'penalty',
+  totalScore: 85.0,
+  rawEarnedPoints: 85,
+  rawMaxPoints: 100,
+);
 
 // ── Test helpers ───────────────────────────────────────────────────────────────
 
@@ -104,119 +103,112 @@ void main() {
   tearDown(() => GetIt.instance.reset());
 
   group('AuditApprovalPage — Loading State', () {
-    testWidgets(
-      'AuditApproval_Loading_ShowsProgressIndicator — '
-      'CircularProgressIndicator visible while manager is loading',
-      (tester) async {
-        final svc = _MockSubmissionApiService();
-        // Use a Completer that never completes to freeze the loading state.
-        // This avoids the "pending Timer" assertion from Future.delayed.
-        final completer = Completer<List<SubmissionDto>>();
-        when(
-          () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
-        ).thenAnswer((_) => completer.future);
+    testWidgets('AuditApproval_Loading_ShowsProgressIndicator — '
+        'CircularProgressIndicator visible while manager is loading', (
+      tester,
+    ) async {
+      final svc = _MockSubmissionApiService();
+      // Use a Completer that never completes to freeze the loading state.
+      // This avoids the "pending Timer" assertion from Future.delayed.
+      final completer = Completer<List<SubmissionDto>>();
+      when(
+        () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
+      ).thenAnswer((_) => completer.future);
 
-        final manager = _makeManager(svc);
-        GetIt.instance.registerSingleton<AdminAuditManager>(manager);
-        GetIt.instance.registerSingleton<SubmissionApiService>(svc);
+      final manager = _makeManager(svc);
+      GetIt.instance.registerSingleton<AdminAuditManager>(manager);
+      GetIt.instance.registerSingleton<SubmissionApiService>(svc);
 
-        await tester.pumpWidget(const MaterialApp(home: AuditApprovalPage()));
-        await tester.pump(); // initState — kicks off loadApprovals, still pending
+      await tester.pumpWidget(const MaterialApp(home: AuditApprovalPage()));
+      await tester.pump(); // initState — kicks off loadApprovals, still pending
 
-        expect(
-          find.byType(CircularProgressIndicator),
-          findsOneWidget,
-          reason: 'A loading indicator must be visible while loadApprovals runs.',
-        );
+      expect(
+        find.byType(CircularProgressIndicator),
+        findsOneWidget,
+        reason: 'A loading indicator must be visible while loadApprovals runs.',
+      );
 
-        // Resolve the completer so the widget disposes cleanly.
-        completer.complete([]);
-        await tester.pumpAndSettle();
-      },
-    );
+      // Resolve the completer so the widget disposes cleanly.
+      completer.complete([]);
+      await tester.pumpAndSettle();
+    });
   });
 
   group('AuditApprovalPage — Error State', () {
-    testWidgets(
-      'AuditApproval_Error_ShowsRetryButton — '
-      'Error text and Retry button visible when API throws',
-      (tester) async {
-        final svc = _MockSubmissionApiService();
-        when(
-          () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
-        ).thenThrow(Exception('Network error'));
+    testWidgets('AuditApproval_Error_ShowsRetryButton — '
+        'Error text and Retry button visible when API throws', (tester) async {
+      final svc = _MockSubmissionApiService();
+      when(
+        () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
+      ).thenThrow(Exception('Network error'));
 
-        await _pump(tester, submissionSvc: svc);
+      await _pump(tester, submissionSvc: svc);
 
-        expect(
-          find.text('Error loading audits'),
-          findsOneWidget,
-          reason: 'Error heading must be shown on API failure.',
-        );
-        expect(
-          find.text('Retry'),
-          findsOneWidget,
-          reason: 'A Retry button must be visible so the admin can recover.',
-        );
-      },
-    );
+      expect(
+        find.text('Error loading audits'),
+        findsOneWidget,
+        reason: 'Error heading must be shown on API failure.',
+      );
+      expect(
+        find.text('Retry'),
+        findsOneWidget,
+        reason: 'A Retry button must be visible so the admin can recover.',
+      );
+    });
   });
 
   group('AuditApprovalPage — Happy Path', () {
-    testWidgets(
-      'AuditApproval_HappyPath_PendingTabShowsCard — '
-      'Pending submission appears as a ReviewCard in the default tab',
-      (tester) async {
-        final svc = _MockSubmissionApiService();
-        when(
-          () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
-        ).thenAnswer((_) async => [_makeSubmission()]);
+    testWidgets('AuditApproval_HappyPath_PendingTabShowsCard — '
+        'Pending submission appears as a ReviewCard in the default tab', (
+      tester,
+    ) async {
+      final svc = _MockSubmissionApiService();
+      when(
+        () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
+      ).thenAnswer((_) async => [_makeSubmission()]);
 
-        await _pump(tester, submissionSvc: svc);
+      await _pump(tester, submissionSvc: svc);
 
-        expect(
-          find.text('Store Alpha'),
-          findsOneWidget,
-          reason: 'The pending submission store name must appear in the Pending tab.',
-        );
-      },
-    );
+      expect(
+        find.text('Store Alpha'),
+        findsOneWidget,
+        reason:
+            'The pending submission store name must appear in the Pending tab.',
+      );
+    });
 
-    testWidgets(
-      'AuditApproval_HappyPath_SearchFiltersResults — '
-      'Typing a search query filters the visible list',
-      (tester) async {
-        final svc = _MockSubmissionApiService();
-        when(
-          () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
-        ).thenAnswer(
-          (_) async => [
-            _makeSubmission(id: 'sub-1', storeName: 'Store Alpha'),
-            _makeSubmission(id: 'sub-2', storeName: 'Store Beta'),
-          ],
-        );
+    testWidgets('AuditApproval_HappyPath_SearchFiltersResults — '
+        'Typing a search query filters the visible list', (tester) async {
+      final svc = _MockSubmissionApiService();
+      when(
+        () => svc.getSubmissions(pageSize: any(named: 'pageSize')),
+      ).thenAnswer(
+        (_) async => [
+          _makeSubmission(id: 'sub-1', storeName: 'Store Alpha'),
+          _makeSubmission(id: 'sub-2', storeName: 'Store Beta'),
+        ],
+      );
 
-        await _pump(tester, submissionSvc: svc);
+      await _pump(tester, submissionSvc: svc);
 
-        // Both items start visible.
-        expect(find.text('Store Alpha'), findsOneWidget);
-        expect(find.text('Store Beta'), findsOneWidget);
+      // Both items start visible.
+      expect(find.text('Store Alpha'), findsOneWidget);
+      expect(find.text('Store Beta'), findsOneWidget);
 
-        // Type a query that only matches "Beta".
-        await tester.enterText(find.byType(TextField), 'beta');
-        await tester.pump();
+      // Type a query that only matches "Beta".
+      await tester.enterText(find.byType(TextField), 'beta');
+      await tester.pump();
 
-        expect(
-          find.text('Store Alpha'),
-          findsNothing,
-          reason: '"Store Alpha" must be hidden when query is "beta".',
-        );
-        expect(
-          find.text('Store Beta'),
-          findsOneWidget,
-          reason: '"Store Beta" must remain visible when query is "beta".',
-        );
-      },
-    );
+      expect(
+        find.text('Store Alpha'),
+        findsNothing,
+        reason: '"Store Alpha" must be hidden when query is "beta".',
+      );
+      expect(
+        find.text('Store Beta'),
+        findsOneWidget,
+        reason: '"Store Beta" must remain visible when query is "beta".',
+      );
+    });
   });
 }

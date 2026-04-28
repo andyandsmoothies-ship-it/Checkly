@@ -6,16 +6,22 @@ import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/features/audit/manager/audit_manager.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
-import 'package:checkly/_shared/services/scoring_models.dart';
+import 'package:checkly/_shared/services/scoring_mode.dart';
 
 import 'package:checkly/features/audit/services/submission_api_service.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
-
+import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/features/audit/services/draft_service.dart';
 
 class MockSubmissionApiService extends Mock implements SubmissionApiService {}
 
 class MockOutboxDao extends Mock implements OutboxDao {}
+
+class MockGlobalRiskDao extends Mock implements GlobalRiskDao {}
+
+class MockSubmissionRiskOutboxDao extends Mock
+    implements SubmissionRiskOutboxDao {}
 
 class MockDraftService extends Mock implements DraftService {}
 
@@ -54,9 +60,14 @@ void main() {
           ),
         ).thenReturn(null);
 
+        final mockGlobalRisk = MockGlobalRiskDao();
+        when(() => mockGlobalRisk.getActiveRisks()).thenAnswer((_) async => []);
+
         final manager = AuditManager(
           api: MockSubmissionApiService(),
           outbox: MockOutboxDao(),
+          globalRiskDao: mockGlobalRisk,
+          riskOutboxDao: MockSubmissionRiskOutboxDao(),
           draftService: draftService,
         );
         await manager.startAudit(template, 'store-1');
@@ -69,6 +80,8 @@ void main() {
       final manager = AuditManager(
         api: MockSubmissionApiService(),
         outbox: MockOutboxDao(),
+        globalRiskDao: MockGlobalRiskDao(),
+        riskOutboxDao: MockSubmissionRiskOutboxDao(),
         draftService: MockDraftService(),
       );
       expect(manager.scoringMode, ScoringMode.penalty);

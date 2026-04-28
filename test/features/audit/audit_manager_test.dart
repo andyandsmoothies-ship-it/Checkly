@@ -5,12 +5,14 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
 import 'package:checkly/features/audit/manager/audit_manager.dart';
-import 'package:checkly/features/audit/model/submission_dto.dart';
+import 'package:checkly/features/audit/model/create_submission_request.dart';
 import 'package:checkly/features/audit/services/draft_service.dart';
 import 'package:checkly/features/audit/services/submission_api_service.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
+import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 
@@ -19,6 +21,11 @@ import 'package:checkly/_shared/services/connectivity_service.dart';
 class MockSubmissionApiService extends Mock implements SubmissionApiService {}
 
 class MockOutboxDao extends Mock implements OutboxDao {}
+
+class MockGlobalRiskDao extends Mock implements GlobalRiskDao {}
+
+class MockSubmissionRiskOutboxDao extends Mock
+    implements SubmissionRiskOutboxDao {}
 
 class MockConnectivityService extends Mock implements ConnectivityService {}
 
@@ -116,9 +123,17 @@ AuditManager _manager({
     when(() => mockDraft.deleteDraft(any())).thenAnswer((_) async {});
   }
 
+  final mockGlobalRisk = MockGlobalRiskDao();
+  final mockRiskOutbox = MockSubmissionRiskOutboxDao();
+
+  // Default stubs — tests that need different behaviour can override _manager().
+  when(() => mockGlobalRisk.getActiveRisks()).thenAnswer((_) async => []);
+
   return AuditManager(
     api: api ?? MockSubmissionApiService(),
     outbox: outbox ?? MockOutboxDao(),
+    globalRiskDao: mockGlobalRisk,
+    riskOutboxDao: mockRiskOutbox,
     connectivity: connectivity,
     draftService: mockDraft,
   );

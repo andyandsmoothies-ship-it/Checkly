@@ -4,20 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
-import '../../../_shared/theme/app_theme.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
-import '../widgets/action_plan_action_bar.dart';
-import '../widgets/action_timeline.dart';
-import '../widgets/flat_block.dart';
-import '../widgets/info_card.dart';
-import '../widgets/info_row.dart';
-import '../widgets/section_header.dart';
-import '../widgets/stale_conflict_banner.dart';
-import '../widgets/submit_evidence_sheet.dart';
 import '../model/stale_conflict.dart';
-import '../../../_shared/widgets/app_network_image.dart';
+import '../widgets/action_plan_action_bar.dart';
+import '../widgets/action_plan_detail_list.dart';
+import '../widgets/submit_evidence_sheet.dart';
 
 final _di = GetIt.instance;
 
@@ -214,8 +207,6 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return ListenableBuilder(
       listenable: _manager,
       builder: (context, _) {
@@ -296,190 +287,14 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
                 : null,
           ),
           bottomNavigationBar: _buildActionBar(plan),
-          body: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (_staleConflict != null) ...[
-                StaleConflictBanner(
-                  correctionPlan: _staleConflict!.correctionPlan,
-                  evidenceNote: _staleConflict!.evidenceNote,
-                  onDismiss: () async {
-                    await _manager.dismissStaleConflict(_staleConflict!.id);
-                    _loadStaleConflict();
-                  },
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // ── Status Timeline ──
-              ActionTimeline.fromPlan(plan),
-              const SizedBox(height: 16),
-
-              if (plan.rootCause == 'SYSTEM_VOID')
-                Container(
-                  margin: const EdgeInsets.only(bottom: 24),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer.withValues(
-                      alpha: 0.3,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: theme.colorScheme.error.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: theme.colorScheme.error,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'This action plan was automatically closed because the parent audit was voided.',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onErrorContainer,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              const SizedBox(height: 8),
-
-              // ── Info Section ──
-              InfoCard(
-                children: [
-                  InfoRow(
-                    icon: Icons.label,
-                    label: 'Criteria',
-                    value: plan.criteriaLabel,
-                  ),
-                  InfoRow(
-                    icon: Icons.folder,
-                    label: 'Section',
-                    value: plan.groupTitle,
-                  ),
-                  if (plan.storeName != null)
-                    InfoRow(
-                      icon: Icons.store,
-                      label: 'Store',
-                      value: plan.storeName!,
-                    ),
-                  if (plan.storeManagerName != null)
-                    InfoRow(
-                      icon: Icons.person,
-                      label: 'Manager',
-                      value: plan.storeManagerName!,
-                    ),
-                  if (plan.deadline != null)
-                    InfoRow(
-                      icon: Icons.schedule,
-                      label: 'Deadline',
-                      value:
-                          '${plan.deadline!.day}/${plan.deadline!.month}/${plan.deadline!.year}',
-                      valueColor: isOverdue ? theme.colorScheme.error : null,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // ── Root Cause ──
-              if (plan.rootCause != null &&
-                  plan.rootCause!.isNotEmpty &&
-                  plan.rootCause != 'SYSTEM_VOID') ...[
-                SectionHeader(title: 'Root Cause'),
-                FlatBlock(
-                  child: Text(
-                    plan.rootCause!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // ── Correction Plan ──
-              if (plan.correctionPlan != null &&
-                  plan.correctionPlan!.isNotEmpty) ...[
-                SectionHeader(title: 'Correction Plan'),
-                FlatBlock(
-                  child: Text(
-                    plan.correctionPlan!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // ── Evidence ──
-              if (plan.evidenceNote != null ||
-                  plan.evidencePhotoUrl != null) ...[
-                SectionHeader(title: 'Evidence'),
-                FlatBlock(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (plan.evidenceNote != null)
-                        Text(
-                          plan.evidenceNote!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.8,
-                            ),
-                          ),
-                        ),
-                      if (plan.evidencePhotoUrl != null) ...[
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: AppNetworkImage(
-                            url: plan.evidencePhotoUrl!,
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, e, s) => Container(
-                              height: 100,
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              child: const Center(
-                                child: Icon(Icons.broken_image),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // ── Verifier ──
-              if (plan.verifierName != null) ...[
-                SectionHeader(title: 'Verified By'),
-                FlatBlock(
-                  child: Row(
-                    children: [
-                      Icon(Icons.verified, color: AppTheme.success, size: 18),
-                      const SizedBox(width: 8),
-                      Text(
-                        plan.verifierName!,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-
-              const SizedBox(height: 32),
-            ],
+          body: ActionPlanDetailList(
+            plan: plan,
+            staleConflict: _staleConflict,
+            isOverdue: isOverdue,
+            onDismissConflict: () async {
+              await _manager.dismissStaleConflict(_staleConflict!.id);
+              _loadStaleConflict();
+            },
           ),
         );
       },
