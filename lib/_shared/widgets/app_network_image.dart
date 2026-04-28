@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../features/auth/manager/auth_manager.dart';
 import '../../locator.dart';
 import '../services/api_client.dart';
 
@@ -34,9 +35,12 @@ class AppNetworkImage extends StatelessWidget {
           ? baseUrl.substring(0, baseUrl.length - 1)
           : baseUrl;
       final absoluteUrl = '$base$url';
+      
+      final token = di<AuthManager>().currentUser?.token;
 
       return Image.network(
         absoluteUrl,
+        headers: token != null ? {'Authorization': 'Bearer $token'} : null,
         height: height,
         width: width,
         fit: fit,

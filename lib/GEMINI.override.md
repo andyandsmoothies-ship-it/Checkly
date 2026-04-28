@@ -1,26 +1,22 @@
-# Global Flutter/Dart Gotchas
+# Frontend Baseline Rules (Flutter)
 
-- **Gotcha 17: GlobalKey Inline in `build()` Destroys Focus and BuildContext**
-  - **Problem:** `?? GlobalKey()` inline creates a new key on every rebuild, causing Flutter to unmount/remount the element — breaks TextField focus and crashes `MediaQuery`.
-  - **Fix:** Use `ObjectKey(model)` tied to the stable data object. Never inline `GlobalKey()` in `build()`.
+## Architecture
 
-- **Gotcha 22: Dart Lint: No Leading Underscores on Local Variables**
-  - **Problem:** `no_leading_underscores_for_local_identifiers` lint fires on `_` prefixed local variables — `_` is class-private only.
-  - **Fix:** Use unprefixed local names (`final showCcp`, not `final _showCcp`).
+### Patterns
+- **PFA Pattern**: Services (API calls), Managers (State/Logic), Pages (UI).
+- **DTO Pattern**: DTOs are plain Dart classes. Server JSON uses `camelCase`. Add new fields as nullable.
 
-- **Gotcha 23: Mocktail `any()` on Custom Types Requires `registerFallbackValue`**
-  - **Problem:** `when(() => mock.saveSession(any()))` throws `Bad state: A test tried to use any() on a parameter of type UserSession` in sound null safety mode.
-  - **Fix:** Add `setUpAll(() { registerFallbackValue(const UserSession(userId: '', email: '', role: '', token: '')); });` to any test file using `any()` with `UserSession` or other custom non-nullable types.
+### Offline-First Sync
+- **Delta Sync**: Sync changes via `GET /api/sync/templates?since={timestamp}`.
+- **Gotcha 17**: Offline-First Sync Requires Full-Stack Checks. Backend endpoints must support receiving out-of-order offline data.
 
-- **Gotcha 24: `AuthManager` Interface Changes Break All `implements AuthManager` Test Stubs**
-  - **Problem:** Adding a new getter/method causes compile errors in EVERY test file with `class _StubX extends ChangeNotifier implements AuthManager`.
-  - **Fix:** After ANY `AuthManager` modification, run `grep_search` for `implements AuthManager` in the `test/` tree and add the missing no-op implementations. Return `ValueNotifier({})` for new `ValueListenable` getters.
+## UI & Navigation Gotchas
 
-- **Gotcha 25: Test `arrange*` Helpers Must Register `PolicyManager` Alongside `AuthManager`**
-  - **Problem:** Any widget test that renders a component using `PermissionGuard` or `authRedirect` will throw `StateError: PolicyManager not found in GetIt` if `PolicyManager` is not registered — even if the test's `_StubAuthManager` correctly implements `capabilities`.
-  - **Fix:** In every `arrange*` helper that registers `AuthManager`, also register `PolicyManager(auth: stubAuth)`:
-    ```dart
-    final auth = _StubAuthManager(role: role, capabilities: caps);
-    GetIt.I.registerSingleton<AuthManager>(auth);
-    GetIt.I.registerSingleton<PolicyManager>(PolicyManager(auth: auth));
-    ```
+### Routing
+- **Gotcha 15: Navigation Outside ShellRoute**: `context.go('/route')` outside a ShellRoute drops the bottom menu. 
+  - **Fix:** Grab `GoRouter.of(context)`, go to `/shell-root`, wait a microtask, then `push('/target')`.
+- **Gotcha 18: Notification Deep-Links**: Do not hardcode deep-link strings blindly. Use `grep_search` on `app_router.dart` to verify the route actually exists.
+
+### Rendering
+- **Gotcha 19: PopScope Trap**: Calling `Navigator.pop()` right after `setState()` freezes the UI.
+  - **Fix:** Wait for the frame using `WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));`.

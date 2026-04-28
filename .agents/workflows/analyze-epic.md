@@ -1,5 +1,5 @@
 ---
-description: Architect's Strategic Research Workflow for Massive Epic Systems (Track C).
+description: Easy-to-read analysis workflow for large features and epics.
 ---
 
 @[.agents/rules/orchestration-standards.md]
@@ -7,118 +7,118 @@ description: Architect's Strategic Research Workflow for Massive Epic Systems (T
 # Workflow: /analyze-epic
 
 > [!NOTE]
-> Deep Architecture Pipeline. Target: Massive, multi-layer epics (Track C). Requires Red Team adversarial review and formal slicing.
-> **Use when:** Unknown requirements, new state machines, new user personas, or spans >1 new DB table.
+> Use this workflow for large, complex features (Epics). Use it when the task has unknown rules, new complex states, or needs more than 1 new database table. It helps you review risks and break the work into smaller slices.
 
 > [!CAUTION]
-> **ANTI-HALLUCINATION GUARDRAIL:** PROHIBITED: Generating exact implementation code, literal SQL table schemas, Dart class definitions, or C# line-by-line diffs. The Epic Analysis MUST remain at the Macro-level. Limit output to Component Architecture Flow, System API Contracts, Risk Mapping, and Use-Case Vertical Slicing. Leave code definitions for the Feature agents.
+> **No Exact Code:** Do not generate exact code, SQL schemas, or line-by-line diffs here. Keep the plan high-level (Architecture Flow, APIs, Risks, and Slices). Leave the exact code for the Builder workflow.
 
-## Phase 0: Initialization
+## Phase 0: Start
 
-| Step | Execution Contract |
+| Step | Instructions |
 |---|---|
-| **Governance** | IF `.agents/rules/governance-rules.md` NOT in memory THEN `view_file` it immediately. |
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the final reporting artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Check Rules** | If `.agents/rules/governance-rules.md` is not in memory, view it first. |
+| **Task Tracking** | Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the template below before doing anything else. List only the Epic Plan in the Artifact Inventory. |
 
 ```markdown
 # Task: [Epic Name]
 Workflow: /analyze-epic | Track: C
 ## Phases
-- [ ] Phase 1: Technical Discovery
-- [ ] Phase 2: Red Team Adversarial Review
-- [ ] Phase 3: Deliverable
-- [ ] Phase 4: Slicing Dispatch
+- [ ] Phase 1: Discover & Plan
+- [ ] Phase 2: Review Risks
+- [ ] Phase 3: Create Plan
+- [ ] Phase 4: Break Down Work
 ## Artifact Inventory
 | Status | File Path | Type |
 | [NEW]  | brain/.../analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Epic Plan |
 ```
 
-## Phase 1: Technical Discovery & Feasibility
+## Phase 1: Discover & Plan
 
-| Vector | Execution Contract |
+| Step | Instructions |
 |---|---|
-| **Origin Idea Alignment** | MANDATORY: Extract the `[ORIGIN_IDEA]` tag from upstream artifacts. Before proposing a technical Epic, explicitly counter-check: Does this exact architecture genuinely solve the human's original idea? If the scope drifted into severe over-engineering and abandoned the human's actual goal, halt and realign the plan immediately. |
-| **Hostile Artifact Validation** | MANDATORY: If an input artifact (e.g., ADR or Research) is provided, you MUST physically validate its assumptions against the real codebase. Check 1) Does the idea violate Clean Architecture boundaries? 2) Does it trigger severe unintended consequences (e.g., Router eviction)? If the input artifact contains physically dangerous or impossible ideas, you MUST override and reject them. Be a gatekeeper, not a blind translator. |
-| **Skill Load** | Load abstract architectural skills (e.g., `clean-architecture`). |
-| **Build vs Buy** | MANDATORY: `grep_search` codebase to verify if requirement can be met via existing component reuse. |
-| **The Deep Module Mandate** | MANDATORY: Ensure all core APIs are "Deep Modules" (simple interfaces hiding deep complexity). Explicitly reject "Shallow Modules" (wrappers that just pass data around). |
-| **Core vs. Leaf Map** | MANDATORY: Explicitly declare which components are **Core Nodes** (needs robust design) and which are **Leaf Nodes** (needs simple, WET code). |
-| **Cognitive Debt Budget**| MANDATORY: If proposing a complex Design Pattern (e.g. Factory, EventBus), you MUST justify why a simple flat structure or static function would fail. |
-| **Infrastructure Check**| MANDATORY: Identify if the Epic is "Backend-Only Infrastructure" (e.g., cron jobs, DB locks). If true, exempt the Epic from UI and Cross-Platform API generation. |
-| **Dependency Root Tracing**| MANDATORY: Before proposing an architecture, you MUST execute `grep_search` using exact entity names across the entire project. You must mathematically prove the 3-Tier Boundary: Database roots, DI Container registrations, and Cross-Platform API contracts. |
-| **Trade-Off Matrix**| MANDATORY: For each alternative, explicitly document Pros, Cons, and Blast Radius. Justify the chosen option over the ideal enterprise option. |
-| **Risk Assessment** | Formally assess the technical and operational risks of each decision/alternative, and document mitigation strategies. |
-| **NFR Constraints** | MANDATORY: Explicitly define System-wide limits for Performance, Security, and Observability before proceeding. |
+| **Check the Goal** | Before proposing a technical plan, ask: Does this actually solve the user's original problem? If the plan is too complex and forgets the main goal, stop and fix it. |
+| **Check Ideas** | If the user provides a document or idea, check if it works with the current code. Check if it breaks Clean Architecture or causes bad side effects. Reject impossible or dangerous ideas. |
+| **Load Skills** | Load architecture skills (like `clean-architecture`) to help you plan. |
+| **Build vs Buy** | Search the code to see if you can reuse existing components instead of building new ones. |
+| **Deep Modules** | Make sure core APIs hide complexity (Deep Modules). Do not create empty wrappers just to pass data (Shallow Modules). |
+| **Core vs Leaf** | Clearly list which parts are Core (needs strong design) and which are Leaf (can be simple, repetitive code). |
+| **Keep It Simple**| If you suggest a complex design (like a Factory or EventBus), you must explain why a simple flat structure or basic function would not work. |
+| **Backend Only?** | Check if this is a "Backend-Only" task (like a background job). If yes, skip the UI and Frontend API steps. |
+| **Find Connections**| Before proposing changes, use `grep_search` to find exact names across the project. Map out the Database, Dependency Injection, and APIs. |
+| **Compare Options**| For each choice, write the Pros, Cons, and Impacts. Explain why your choice is the best. |
+| **Assess Risks** | Write down the technical and operational risks for each choice, and explain how to fix or avoid them. |
+| **Set Limits** | Define limits for Performance, Security, and Logging before you start. |
 
-> **@@SCAN**: (1) Origin Idea explicitly counter-checked? (2) Dependency Roots mathematically traced via grep_search? (3) >=2 Alternatives mapped? (4) NFR Constraints defined?
+> **@@SCAN**: (1) Did you check the main goal? (2) Did you search for connections? (3) Did you compare at least 2 options? (4) Are limits defined?
 
-## Phase 2: Red Team Adversarial Review
+## Phase 2: Review Risks
 
-| Vector | Execution Contract |
+| Step | Instructions |
 |---|---|
-| **Skill Swap** | Load `dotnet-resilience` / concurrency skills. |
-| **Virtual Readers**| MANDATORY: Execute **Virtual Reader Scoring**. Roast the architectural plan via 3 Personas: 1) DB Architect, 2) Security Auditor, 3) Junior Dev (maintenance burden). Score each out of 10. IF any score < 7 -> FAIL. |
-| **Constraint Paradox** | MANDATORY: Cross-check the proposed "System Architecture Flow" against the "Strict Implementation Constraints". IF a constraint makes a proposed flow impossible, resolve the paradox before finalizing the Epic. |
-| **Resolution** | Define mitigations for every low score/flaw OR reject the Epic entirely. |
+| **Swap Skills** | Load `dotnet-resilience` or concurrency skills to help review risks. |
+| **Review Personas**| Review your plan from 3 points of view: 1) DB Architect, 2) Security Auditor, 3) Junior Dev (maintenance). Score each out of 10. If any score is under 7, the plan fails. |
+| **Check Rules** | Check your proposed architecture against the project's strict rules. If a rule makes your plan impossible, fix the plan before finishing. |
+| **Fix Flaws** | Create solutions for every low score or risk, or reject the plan completely. |
 
-> **@@SCAN**: (1) Hostile Interrogation run? (2) 3 Failure Scenarios? (3) Mitigations concrete? (4) Constraint paradoxes resolved?
+> **@@SCAN**: (1) Did you review the plan from 3 points of view? (2) Are solutions clear? (3) Does the plan follow all rules?
 
-## Phase 3: Production-Grade Deliverable
+## Phase 3: Create Plan
 
-| Process | Execution Contract |
+| Step | Instructions |
 |---|---|
-| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the Epic plan directly to the chat UI. |
-> **@@SCAN**: Does artifact include ALL 10 sections? (List skipped).
+| **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` folder. Do not print the whole plan in the chat. |
 
-## Phase 4: Slicing & Dispatch Loop
+> **@@SCAN**: Does the document have all 14 required sections?
+
+## Phase 4: Break Down Work
 
 > [!CAUTION]
-> **[DISPATCH_LOCK]**: PROHIBITED: Handoff of Track C Epic directly to `/implement`. MUST slice to Track A/B.
+> **Too Big:** Do not send an Epic directly to `/implement`. You must break it into smaller slices first.
 
-| Step | Execution Contract |
+| Step | Instructions |
 |---|---|
-| **Slicer Lock** | Load `use-case-slicing` skill. Break Epic into 3-5 vertical UI-to-DB slices (Unless Backend-Only Infrastructure, then slice by technical milestones). Append slices to `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
-| **Dispatch Map** | Generate Routing Table. `Slice N | Track A/B | Route Path`. |
+| **Slice Work** | Load the `use-case-slicing` skill. Break the Epic into 3-5 smaller slices (like UI to Database). If it is Backend-Only, slice by technical steps. Add these slices to the end of your Epic Plan. |
+| **Plan Routes** | Create a list of routes for each slice (e.g., `Slice N | Track A/B | Route Path`). |
 
-### Dispatch Map Schema
-The Epic must be sliced and routed to the downstream feature agents:
-- **Track B1 (Cosmetic/Static UI):** Route to -> `[/analyze-feature]` -> `[/implement]`
-- **Track B2 (Logic/State/API):** Route to -> `[/analyze-feature]` -> `[/tdd]` -> `[/implement]`
+### Routing Guide
+Send each slice to the right workflow:
+- **Visuals/Simple UI:** Route to -> `[/analyze-feature]` -> `[/implement]`
+- **Logic/State/API:** Route to -> `[/analyze-feature]` -> `[/tdd]` -> `[/implement]`
 
-- **Concurrency & Gating Strategy**: For every slice, explicitly declare its execution dependency:
-    - `[BLOCKING]`: Must be analyzed/implemented FIRST and ALONE (subsequent slices depend on it).
-    - `[PARALLEL]`: Independent slice. Explicitly state which other slices it can be executed concurrently with (to save waiting time via multiple AI sessions).
-    - `[SEQUENTIAL]`: Must be executed in strict order after a specific Slice N.
+- **Order of Work**: For each slice, explain when it should run:
+    - `[BLOCKING]`: Must run FIRST and ALONE (other slices need it).
+    - `[PARALLEL]`: Can run at the same time as other slices to save time.
+    - `[SEQUENTIAL]`: Must run strictly after a specific slice.
 
-### Final Generation Mandate (Suffix)
+### Final Output Rules
 > [!IMPORTANT]
-> **Payload Schema:** Your generated `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST INCLUDE the following EXACT sections:
-> 1. `<latent_space_scratchpad>`: To artificially expand test-time compute by thinking through tradeoffs.
+> **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST have these exact sections. Keep it short and simple.
+> 1. `<latent_space_scratchpad>`: Your hidden thoughts and tradeoffs.
 > 2. `## Executive Summary`
 > 3. `## Decision Matrix`
 > 4. `## Risk Assessment`
-> 5. `## System Architecture Flow`: (Clear text-based summary of how data/control moves)
-> 6. `## Concept Diagrams`: Short, concise text-based flowcharts (e.g., `[Actor] --> [Action] --> [System]`) for each major architectural component to simplify understanding.
+> 5. `## Architecture Flow`: (Clear text summary of how data moves)
+> 6. `## Concept Diagrams`: Simple text flowcharts (like `[Actor] --> [Action] --> [System]`) for main parts.
 > 7. `## Database Migrations`
 > 8. `## API Contracts`
-> 9. `## Blast Radius & Rollback Plan`
-> 10. `## Red Team Adversarial Log`
-> 11. `## Security & RLS`
-> 12. `## Observability & Audit Trails`
-> 13. `## EDD Expectations`
-> 14. `<forensic_evidence>`: Tags with terminal log proof.
+> 9. `## Impacts & Rollback Plan`
+> 10. `## Risk Review Log`
+> 11. `## Security`
+> 12. `## Logs & Audits`
+> 13. `## Testing Expectations`
+> 14. `<command_logs>`: A list of terminal commands you ran.
 > 
-> **Handoff Block Suffix:** Append `## Handoff Block` at EOF containing:
-> 1. Final Epic Verdict & persistent path.
-> 2. Routing table of Slices (Track A/B) and dependencies.
-> 3. **AI Agent Mission Brief**: 1-2 sentence TL;DR for the next agent.
+> **Handoff Block:** Add `## Handoff Block` at the end containing:
+> 1. Final Epic decision and file path.
+> 2. List of Slices and when they run.
+> 3. **Next Steps**: A 1-2 sentence summary for the next agent.
 > 4. Exact next workflow command using the `{Absolute_Path}`.
 >
-> **Update task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
 > 
-> **Script Verification Gate (MANDATORY)**:
-> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> **Script Verification (Required)**:
+> Use the `run_command` tool to run this script before finishing.
 > // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
 > - `Code 0`: *"Handoff complete."*
-> - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+> - `Code 1`: Fix errors and try again.
