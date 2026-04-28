@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../model/activity_item.dart';
 
@@ -10,10 +9,10 @@ class ActivityCard extends StatelessWidget {
   const ActivityCard({super.key, required this.item});
 
   Color _statusColor(BuildContext context) => switch (item.status) {
-    'completed' => AppTheme.success,
+    'completed' => Theme.of(context).colorScheme.primary,
     'draft' => Theme.of(context).colorScheme.onSurfaceVariant,
-    'in_progress' => AppTheme.info,
-    _ => AppTheme.warning,
+    'in_progress' => Theme.of(context).colorScheme.secondary,
+    _ => Theme.of(context).colorScheme.error,
   };
 
   IconData _statusIcon() => switch (item.status) {

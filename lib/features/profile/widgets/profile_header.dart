@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_fonts.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -76,10 +75,10 @@ class ProfileHeader extends StatelessWidget {
   }
 
   Color _roleColor(String role, ThemeData theme) => switch (role) {
-    'admin' => AppColors.destructive,
+    'admin' => theme.colorScheme.error,
     'auditor' => theme.colorScheme.primary,
-    'store_manager' => AppColors.success,
-    'area_manager' => AppColors.warning,
+    'store_manager' => theme.colorScheme.secondary,
+    'area_manager' => theme.colorScheme.tertiary,
     _ => theme.colorScheme.primary,
   };
 
