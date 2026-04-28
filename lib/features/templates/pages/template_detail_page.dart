@@ -63,6 +63,13 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
           }
 
           final tree = manager.selectedTemplate.value;
+
+          // Prevent UI flicker by explicitly ensuring the loaded tree matches the route ID.
+          // If they don't match, the manager hasn't updated its state yet from the previous template.
+          if (tree != null && tree.id != widget.templateId) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           if (tree == null) {
             return Center(
               child: Text(
@@ -91,6 +98,7 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
 
           // Main layout: NestedScrollView allows header to scroll out of view while pinning tabs
           return DefaultTabController(
+            key: ValueKey(tree.id),
             length: tree.groups.length,
             child: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -163,6 +171,6 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
-    return false;
+    return oldDelegate._tabBar != _tabBar;
   }
 }

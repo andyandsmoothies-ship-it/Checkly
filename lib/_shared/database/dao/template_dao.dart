@@ -53,33 +53,42 @@ class TemplateDao {
     String? parentId,
   ) async {
     await _db.batch((b) {
-      for (final g in groups) {
-        b.insertAllOnConflictUpdate(_db.cachedGroups, [
-          CachedGroupsCompanion.insert(
-            id: g.id,
-            templateId: templateId,
-            title: g.title,
-            description: Value(g.description),
-            weight: Value(g.weight),
-            maxDeductionPoints: Value(g.maxDeductionPoints),
-            minusPerFault: Value(g.minusPerFault),
-            orderIndex: Value(g.orderIndex),
-            parentId: Value(parentId),
-            metadata: Value(g.metadata),
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-          ),
-        ]);
-        // Recurse for children
-        if (g.children.isNotEmpty) {
-          upsertGroups(templateId, g.children, g.id);
-        }
-        // Upsert criteria for this group
-        if (g.criteria.isNotEmpty) {
-          upsertCriteria(g.id, g.criteria);
-        }
-      }
+      _upsertGroupsRecursive(b, templateId, groups, parentId);
     });
+  }
+
+  void _upsertGroupsRecursive(
+    Batch b,
+    String templateId,
+    List<GroupDto> groups,
+    String? parentId,
+  ) {
+    for (final g in groups) {
+      b.insertAllOnConflictUpdate(_db.cachedGroups, [
+        CachedGroupsCompanion.insert(
+          id: g.id,
+          templateId: templateId,
+          title: g.title,
+          description: Value(g.description),
+          weight: Value(g.weight),
+          maxDeductionPoints: Value(g.maxDeductionPoints),
+          minusPerFault: Value(g.minusPerFault),
+          orderIndex: Value(g.orderIndex),
+          parentId: Value(parentId),
+          metadata: Value(g.metadata),
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ]);
+      // Recurse for children
+      if (g.children.isNotEmpty) {
+        _upsertGroupsRecursive(b, templateId, g.children, g.id);
+      }
+      // Upsert criteria for this group
+      if (g.criteria.isNotEmpty) {
+        _upsertCriteriaInBatch(b, g.id, g.criteria);
+      }
+    }
   }
 
   // ---------- Criteria ----------
@@ -99,30 +108,38 @@ class TemplateDao {
     List<CriterionDto> criteria,
   ) async {
     await _db.batch((b) {
-      b.insertAllOnConflictUpdate(
-        _db.cachedCriteria,
-        criteria
-            .map(
-              (c) => CachedCriteriaCompanion.insert(
-                id: c.id,
-                groupId: groupId,
-                label: c.label,
-                description: Value(c.description),
-                inputType: c.inputType,
-                pointsWeight: Value(c.pointsWeight),
-                minusImpact: Value(c.minusImpact),
-                maxDeductionPoints: Value(c.maxDeductionPoints),
-                isCcp: Value(c.isCcp),
-                isRisk: Value(c.isRisk),
-                orderIndex: Value(c.orderIndex),
-                metadata: Value(c.metadata),
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-              ),
-            )
-            .toList(),
-      );
+      _upsertCriteriaInBatch(b, groupId, criteria);
     });
+  }
+
+  void _upsertCriteriaInBatch(
+    Batch b,
+    String groupId,
+    List<CriterionDto> criteria,
+  ) {
+    b.insertAllOnConflictUpdate(
+      _db.cachedCriteria,
+      criteria
+          .map(
+            (c) => CachedCriteriaCompanion.insert(
+              id: c.id,
+              groupId: groupId,
+              label: c.label,
+              description: Value(c.description),
+              inputType: c.inputType,
+              pointsWeight: Value(c.pointsWeight),
+              minusImpact: Value(c.minusImpact),
+              maxDeductionPoints: Value(c.maxDeductionPoints),
+              isCcp: Value(c.isCcp),
+              isRisk: Value(c.isRisk),
+              orderIndex: Value(c.orderIndex),
+              metadata: Value(c.metadata),
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ),
+          )
+          .toList(),
+    );
   }
 
   /// Build a full TemplateTreeDto from cached groups + criteria.

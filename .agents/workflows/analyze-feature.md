@@ -97,6 +97,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > **Payload Schema:** Your generated `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST INCLUDE the following EXACT headers and sections. Keep it dense and brief.
 > - `<latent_space_scratchpad>`: Computational thinking on edge cases prior to outputting the plan.
 > - `## Executive Summary & YAGNI`
+> - `## Observability & Audit Plan`: Define required logging events, Correlation IDs, and DB audit trails.
 > - `## 4-State Matrix` (Success, Error, Empty, Loading)
 > - `## Test Contracts` (ID, Exact Text, State Matrix, Why RED)
 > - `## JIT Harness & Verification` (Active skills and terminal validation commands)

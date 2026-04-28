@@ -104,7 +104,7 @@ The Epic must be sliced and routed to the downstream feature agents:
 > 9. `## Blast Radius & Rollback Plan`
 > 10. `## Red Team Adversarial Log`
 > 11. `## Security & RLS`
-> 12. `## Observability Hooks`
+> 12. `## Observability & Audit Trails`
 > 13. `## EDD Expectations`
 > 14. `<forensic_evidence>`: Tags with terminal log proof.
 > 

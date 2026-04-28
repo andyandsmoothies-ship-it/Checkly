@@ -55,8 +55,9 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
 | **State Invariants**| Explicitly verify Entry Preconditions and Exit Postconditions. |
 | **Blast Radius** | IF modifying shared code -> Execute upstream regression tests. |
+| **Observability & Audit**| MANDATORY: All new endpoints/actions MUST log start/finish with Correlation IDs. All manual SQL scripts or DB inserts MUST include a transaction that writes to the audit/system_logs table. |
 
-> **@@SCAN**: (1) Red/Green respected? (2) Verify gate run?
+> **@@SCAN**: (1) Red/Green respected? (2) Verify gate run? (3) Logging & Audit trails implemented?
 
 ## Phase 2: Self-Review
 Review from 6 angles:

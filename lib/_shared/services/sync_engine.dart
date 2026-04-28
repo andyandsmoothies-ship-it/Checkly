@@ -109,10 +109,24 @@ class SyncEngine {
     return (syncable, exhausted);
   }
 
-  /// Request a sync cycle. If already syncing, the request is ignored.
-  Future<void> requestSync() async {
+  Future<void>? _activeSync;
+
+  /// Request a sync cycle. If already syncing, returns the active sync future.
+  Future<void> requestSync() {
     _retryTimer?.cancel(); // Cancel any pending retry
 
+    if (_activeSync != null) {
+      return _activeSync!;
+    }
+
+    _activeSync = _requestSyncInternal().whenComplete(() {
+      _activeSync = null;
+    });
+
+    return _activeSync!;
+  }
+
+  Future<void> _requestSyncInternal() async {
     // Guard: no concurrent sync
     if (_state == SyncState.syncing) return;
 
