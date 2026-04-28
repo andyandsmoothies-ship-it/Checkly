@@ -44,7 +44,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 21;
+  int get schemaVersion => 22;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -150,6 +150,12 @@ class AppDatabase extends _$AppDatabase {
           pendingActionPlanUpdates,
           pendingActionPlanUpdates.photoPath,
         );
+      }
+      if (from < 22) {
+        // SyncEngine Queue Hardening: Add backoff columns to Risk Outbox Table
+        await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.syncError);
+        await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.retryCount);
+        await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.nextRetryAt);
       }
     },
     beforeOpen: (details) async {

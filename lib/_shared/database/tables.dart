@@ -310,6 +310,9 @@ class SubmissionRiskOutboxEntries extends Table {
   TextColumn get submissionId => text()(); // server-side submission UUID
   TextColumn get globalRiskId => text()(); // server-side global risk UUID
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  TextColumn get syncError => text().nullable()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get nextRetryAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 
   @override

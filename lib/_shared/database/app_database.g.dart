@@ -9060,6 +9060,40 @@ class $SubmissionRiskOutboxEntriesTable extends SubmissionRiskOutboxEntries
     requiredDuringInsert: false,
     defaultValue: const Constant('pending'),
   );
+  static const VerificationMeta _syncErrorMeta = const VerificationMeta(
+    'syncError',
+  );
+  @override
+  late final GeneratedColumn<String> syncError = GeneratedColumn<String>(
+    'sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _retryCountMeta = const VerificationMeta(
+    'retryCount',
+  );
+  @override
+  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
+    'retry_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta(
+    'nextRetryAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextRetryAt = GeneratedColumn<DateTime>(
+    'next_retry_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -9077,6 +9111,9 @@ class $SubmissionRiskOutboxEntriesTable extends SubmissionRiskOutboxEntries
     submissionId,
     globalRiskId,
     syncStatus,
+    syncError,
+    retryCount,
+    nextRetryAt,
     createdAt,
   ];
   @override
@@ -9124,6 +9161,27 @@ class $SubmissionRiskOutboxEntriesTable extends SubmissionRiskOutboxEntries
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('sync_error')) {
+      context.handle(
+        _syncErrorMeta,
+        syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
+      );
+    }
+    if (data.containsKey('retry_count')) {
+      context.handle(
+        _retryCountMeta,
+        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
+      );
+    }
+    if (data.containsKey('next_retry_at')) {
+      context.handle(
+        _nextRetryAtMeta,
+        nextRetryAt.isAcceptableOrUnknown(
+          data['next_retry_at']!,
+          _nextRetryAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -9160,6 +9218,18 @@ class $SubmissionRiskOutboxEntriesTable extends SubmissionRiskOutboxEntries
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      syncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_error'],
+      ),
+      retryCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_count'],
+      )!,
+      nextRetryAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_retry_at'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -9179,12 +9249,18 @@ class SubmissionRiskOutboxEntry extends DataClass
   final String submissionId;
   final String globalRiskId;
   final String syncStatus;
+  final String? syncError;
+  final int retryCount;
+  final DateTime? nextRetryAt;
   final DateTime createdAt;
   const SubmissionRiskOutboxEntry({
     required this.id,
     required this.submissionId,
     required this.globalRiskId,
     required this.syncStatus,
+    this.syncError,
+    required this.retryCount,
+    this.nextRetryAt,
     required this.createdAt,
   });
   @override
@@ -9194,6 +9270,13 @@ class SubmissionRiskOutboxEntry extends DataClass
     map['submission_id'] = Variable<String>(submissionId);
     map['global_risk_id'] = Variable<String>(globalRiskId);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || syncError != null) {
+      map['sync_error'] = Variable<String>(syncError);
+    }
+    map['retry_count'] = Variable<int>(retryCount);
+    if (!nullToAbsent || nextRetryAt != null) {
+      map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -9204,6 +9287,13 @@ class SubmissionRiskOutboxEntry extends DataClass
       submissionId: Value(submissionId),
       globalRiskId: Value(globalRiskId),
       syncStatus: Value(syncStatus),
+      syncError: syncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncError),
+      retryCount: Value(retryCount),
+      nextRetryAt: nextRetryAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextRetryAt),
       createdAt: Value(createdAt),
     );
   }
@@ -9218,6 +9308,9 @@ class SubmissionRiskOutboxEntry extends DataClass
       submissionId: serializer.fromJson<String>(json['submissionId']),
       globalRiskId: serializer.fromJson<String>(json['globalRiskId']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      syncError: serializer.fromJson<String?>(json['syncError']),
+      retryCount: serializer.fromJson<int>(json['retryCount']),
+      nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -9229,6 +9322,9 @@ class SubmissionRiskOutboxEntry extends DataClass
       'submissionId': serializer.toJson<String>(submissionId),
       'globalRiskId': serializer.toJson<String>(globalRiskId),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'syncError': serializer.toJson<String?>(syncError),
+      'retryCount': serializer.toJson<int>(retryCount),
+      'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -9238,12 +9334,18 @@ class SubmissionRiskOutboxEntry extends DataClass
     String? submissionId,
     String? globalRiskId,
     String? syncStatus,
+    Value<String?> syncError = const Value.absent(),
+    int? retryCount,
+    Value<DateTime?> nextRetryAt = const Value.absent(),
     DateTime? createdAt,
   }) => SubmissionRiskOutboxEntry(
     id: id ?? this.id,
     submissionId: submissionId ?? this.submissionId,
     globalRiskId: globalRiskId ?? this.globalRiskId,
     syncStatus: syncStatus ?? this.syncStatus,
+    syncError: syncError.present ? syncError.value : this.syncError,
+    retryCount: retryCount ?? this.retryCount,
+    nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
     createdAt: createdAt ?? this.createdAt,
   );
   SubmissionRiskOutboxEntry copyWithCompanion(
@@ -9260,6 +9362,13 @@ class SubmissionRiskOutboxEntry extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      syncError: data.syncError.present ? data.syncError.value : this.syncError,
+      retryCount: data.retryCount.present
+          ? data.retryCount.value
+          : this.retryCount,
+      nextRetryAt: data.nextRetryAt.present
+          ? data.nextRetryAt.value
+          : this.nextRetryAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -9271,14 +9380,25 @@ class SubmissionRiskOutboxEntry extends DataClass
           ..write('submissionId: $submissionId, ')
           ..write('globalRiskId: $globalRiskId, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('syncError: $syncError, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, submissionId, globalRiskId, syncStatus, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    submissionId,
+    globalRiskId,
+    syncStatus,
+    syncError,
+    retryCount,
+    nextRetryAt,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -9287,6 +9407,9 @@ class SubmissionRiskOutboxEntry extends DataClass
           other.submissionId == this.submissionId &&
           other.globalRiskId == this.globalRiskId &&
           other.syncStatus == this.syncStatus &&
+          other.syncError == this.syncError &&
+          other.retryCount == this.retryCount &&
+          other.nextRetryAt == this.nextRetryAt &&
           other.createdAt == this.createdAt);
 }
 
@@ -9296,6 +9419,9 @@ class SubmissionRiskOutboxEntriesCompanion
   final Value<String> submissionId;
   final Value<String> globalRiskId;
   final Value<String> syncStatus;
+  final Value<String?> syncError;
+  final Value<int> retryCount;
+  final Value<DateTime?> nextRetryAt;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const SubmissionRiskOutboxEntriesCompanion({
@@ -9303,6 +9429,9 @@ class SubmissionRiskOutboxEntriesCompanion
     this.submissionId = const Value.absent(),
     this.globalRiskId = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.syncError = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -9311,6 +9440,9 @@ class SubmissionRiskOutboxEntriesCompanion
     required String submissionId,
     required String globalRiskId,
     this.syncStatus = const Value.absent(),
+    this.syncError = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -9322,6 +9454,9 @@ class SubmissionRiskOutboxEntriesCompanion
     Expression<String>? submissionId,
     Expression<String>? globalRiskId,
     Expression<String>? syncStatus,
+    Expression<String>? syncError,
+    Expression<int>? retryCount,
+    Expression<DateTime>? nextRetryAt,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -9330,6 +9465,9 @@ class SubmissionRiskOutboxEntriesCompanion
       if (submissionId != null) 'submission_id': submissionId,
       if (globalRiskId != null) 'global_risk_id': globalRiskId,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (syncError != null) 'sync_error': syncError,
+      if (retryCount != null) 'retry_count': retryCount,
+      if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -9340,6 +9478,9 @@ class SubmissionRiskOutboxEntriesCompanion
     Value<String>? submissionId,
     Value<String>? globalRiskId,
     Value<String>? syncStatus,
+    Value<String?>? syncError,
+    Value<int>? retryCount,
+    Value<DateTime?>? nextRetryAt,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -9348,6 +9489,9 @@ class SubmissionRiskOutboxEntriesCompanion
       submissionId: submissionId ?? this.submissionId,
       globalRiskId: globalRiskId ?? this.globalRiskId,
       syncStatus: syncStatus ?? this.syncStatus,
+      syncError: syncError ?? this.syncError,
+      retryCount: retryCount ?? this.retryCount,
+      nextRetryAt: nextRetryAt ?? this.nextRetryAt,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -9368,6 +9512,15 @@ class SubmissionRiskOutboxEntriesCompanion
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (syncError.present) {
+      map['sync_error'] = Variable<String>(syncError.value);
+    }
+    if (retryCount.present) {
+      map['retry_count'] = Variable<int>(retryCount.value);
+    }
+    if (nextRetryAt.present) {
+      map['next_retry_at'] = Variable<DateTime>(nextRetryAt.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -9384,6 +9537,9 @@ class SubmissionRiskOutboxEntriesCompanion
           ..write('submissionId: $submissionId, ')
           ..write('globalRiskId: $globalRiskId, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('syncError: $syncError, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -15258,6 +15414,9 @@ typedef $$SubmissionRiskOutboxEntriesTableCreateCompanionBuilder =
       required String submissionId,
       required String globalRiskId,
       Value<String> syncStatus,
+      Value<String?> syncError,
+      Value<int> retryCount,
+      Value<DateTime?> nextRetryAt,
       required DateTime createdAt,
       Value<int> rowid,
     });
@@ -15267,6 +15426,9 @@ typedef $$SubmissionRiskOutboxEntriesTableUpdateCompanionBuilder =
       Value<String> submissionId,
       Value<String> globalRiskId,
       Value<String> syncStatus,
+      Value<String?> syncError,
+      Value<int> retryCount,
+      Value<DateTime?> nextRetryAt,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -15297,6 +15459,21 @@ class $$SubmissionRiskOutboxEntriesTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15335,6 +15512,21 @@ class $$SubmissionRiskOutboxEntriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -15365,6 +15557,19 @@ class $$SubmissionRiskOutboxEntriesTableAnnotationComposer
 
   GeneratedColumn<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncError =>
+      $composableBuilder(column: $table.syncError, builder: (column) => column);
+
+  GeneratedColumn<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
     builder: (column) => column,
   );
 
@@ -15422,6 +15627,9 @@ class $$SubmissionRiskOutboxEntriesTableTableManager
                 Value<String> submissionId = const Value.absent(),
                 Value<String> globalRiskId = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<DateTime?> nextRetryAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SubmissionRiskOutboxEntriesCompanion(
@@ -15429,6 +15637,9 @@ class $$SubmissionRiskOutboxEntriesTableTableManager
                 submissionId: submissionId,
                 globalRiskId: globalRiskId,
                 syncStatus: syncStatus,
+                syncError: syncError,
+                retryCount: retryCount,
+                nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -15438,6 +15649,9 @@ class $$SubmissionRiskOutboxEntriesTableTableManager
                 required String submissionId,
                 required String globalRiskId,
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<DateTime?> nextRetryAt = const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => SubmissionRiskOutboxEntriesCompanion.insert(
@@ -15445,6 +15659,9 @@ class $$SubmissionRiskOutboxEntriesTableTableManager
                 submissionId: submissionId,
                 globalRiskId: globalRiskId,
                 syncStatus: syncStatus,
+                syncError: syncError,
+                retryCount: retryCount,
+                nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
                 rowid: rowid,
               ),

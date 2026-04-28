@@ -55,6 +55,7 @@ class SyncEngine {
   SyncState get state => _state;
 
   DateTime? lastSyncTimestamp;
+  Timer? _retryTimer;
 
   SyncEngine({
     required ConnectivityService connectivity,
@@ -110,6 +111,8 @@ class SyncEngine {
 
   /// Request a sync cycle. If already syncing, the request is ignored.
   Future<void> requestSync() async {
+    _retryTimer?.cancel(); // Cancel any pending retry
+
     // Guard: no concurrent sync
     if (_state == SyncState.syncing) return;
 
@@ -128,216 +131,248 @@ class SyncEngine {
     _state = SyncState.syncing;
 
     try {
-      lastSyncTimestamp ??= await _syncMetaDao.get('global');
-
-      // --- Pull phase ---
-      final pullResult = await _api.pullDeltas(lastSyncTimestamp);
-      lastSyncTimestamp = pullResult.serverTimestamp;
-      if (lastSyncTimestamp != null) {
-        await _syncMetaDao.set('global', lastSyncTimestamp!);
-      }
-
-      // --- Pull phase: Global Risks ---
-      final globalRisks = await _api.pullGlobalRisks(lastSyncTimestamp);
-      for (final json in globalRisks) {
-        await _globalRiskDao.upsertRisk(
-          CachedGlobalRisksCompanion.insert(
-            id: json['id'] as String,
-            label: json['label'] as String,
-            description: Value(json['description'] as String?),
-            isActive: Value(json['isActive'] as bool? ?? true),
-            createdAt: DateTime.parse(json['createdAt'] as String),
-            updatedAt: DateTime.parse(json['updatedAt'] as String),
-          ),
-        );
-      }
-
-      // --- Push phase: build payload from normalized DAO tables (FIFO) ---
-      // Fetch backoff-eligible entries directly from DAO — ordered by createdAt ASC.
-      // _outbox.pending is bypassed because it is synchronous and cannot
-      // load rows from SQLite — DAO query is the source of truth.
-      final eligibleRows = await _outboxDao.getEligiblePending();
-      for (final dbRow in eligibleRows) {
-        // Check connectivity before each push
-        if (!_connectivity.isOnline) {
-          _state = SyncState.offline;
-          return;
-        }
-
-        try {
-          // Fetch answers for this submission from the normalized table
-          final answers = await _outboxDao.getAnswersForSubmission(dbRow.id);
-
-          // Check if this submission has pending global risk triggers.
-          // Since risk outbox drains AFTER submission outbox, the risks are not on
-          // the server yet. We must signal hasGlobalRisk=true so CreateSubmission.cs
-          // uses 0 as the expected serverScore, matching the Flutter-calculated clientScore.
-          final hasGlobalRisk = await _submissionRiskOutboxDao.hasPendingRisks(
-            dbRow.id,
-          );
-
-          // Build the JSON payload the API expects
-          final payload = jsonEncode({
-            'id': dbRow.id,
-            'templateId': dbRow.templateId,
-            'storeId': dbRow.storeId,
-            'clientScore': dbRow.clientScore,
-            'sectionScores': dbRow.sectionScores,
-            'notes': dbRow.notes,
-            'gpsLat': dbRow.gpsLat,
-            'gpsLng': dbRow.gpsLng,
-            'status': 'completed',
-            'idempotencyKey': dbRow.idempotencyKey,
-            // Non-null → SyncApiAdapter routes to PUT /submissions/{id}/finalize.
-            // Null    → SyncApiAdapter uses POST /submissions (fresh audit path).
-            'targetSubmissionId': dbRow.targetSubmissionId,
-            'hasGlobalRisk': hasGlobalRisk,
-            'answers': answers.map(buildAnswerPayload).toList(),
-          });
-
-          final entry = PendingSubmission(
-            idempotencyKey: dbRow.idempotencyKey,
-            createdAt: dbRow.createdAt,
-            payload: payload,
-          );
-
-          await _api.pushSubmission(entry);
-          await _outboxDao.removeSubmission(dbRow.id);
-        } catch (e) {
-          // Hard-exhaust on malformed payload (e.g. 400 Bad Request)
-          final isBadRequest =
-              e.toString().contains('400') ||
-              e.toString().contains('ClientFormatError');
-
-          if (isBadRequest) {
-            await _outboxDao.updateSyncStatus(
-              dbRow.id,
-              'exhausted',
-              error: 'FATAL 400: ${e.toString()}',
-            );
-            continue;
-          }
-
-          // Hard-exhaust on permission denied (403 Forbidden).
-          // A 403 means the user's role has been revoked — retrying will never
-          // succeed and causes the battery drain loop (PM Safety Mandate, Slice 5).
-          // Use `continue` (not `return`) to keep processing remaining outbox records.
-          final isForbidden =
-              e.toString().contains('403') ||
-              e.toString().toLowerCase().contains('forbidden');
-
-          if (isForbidden) {
-            await _outboxDao.updateSyncStatus(
-              dbRow.id,
-              'exhausted',
-              error: 'FATAL 403: Permission denied. Role may have changed.',
-            );
-            continue;
-          }
-
-          // Apply SQLite-backed exponential backoff (Pillar D).
-          final currentRetries = dbRow.retryCount;
-          if (currentRetries < _backoffDelays.length) {
-            final delaySecs = _backoffDelays[currentRetries];
-            final nextRetry = DateTime.now().toUtc().add(
-              Duration(seconds: delaySecs),
-            );
-            await _outboxDao.updateSyncStatus(
-              dbRow.id,
-              'pending',
-              retryCount: currentRetries + 1,
-              nextRetryAt: nextRetry,
-              error: e.toString(),
-            );
-          } else {
-            await _outboxDao.updateSyncStatus(
-              dbRow.id,
-              'exhausted',
-              error: 'Max retries exceeded',
-            );
-          }
-          _state = SyncState.error;
-          return; // Stop batch on generic network failure (Pillar D)
-        }
-      }
-
-      // All done — check connectivity one last time
+      await _pullDeltas();
       if (!_connectivity.isOnline) {
         _state = SyncState.offline;
         return;
       }
 
-      // --- Action Plan Evidence Drain phase ---
-      // Drain any queued offline evidence submissions (P1 UX Fix).
-      final pendingEvidence = await _actionPlanOutboxDao.getEligiblePending();
-      for (final entry in pendingEvidence) {
-        if (!_connectivity.isOnline) {
-          _state = SyncState.offline;
-          return;
-        }
-        try {
-          final submissionId = await _actionPlanOutboxDao
-              .getSubmissionIdForPlan(entry.actionPlanId);
-          String? photoUrl;
-          if (entry.photoPath != null && submissionId != null) {
-            photoUrl = await _actionPlanApi.uploadPhoto(
-              submissionId,
-              entry.photoPath!,
-            );
-          }
-          await _actionPlanApi.updateActionPlan(entry.actionPlanId, {
-            'status': 'pending_verify',
-            'correctionPlan': entry.correctionPlan,
-            'evidenceNote': entry.evidenceNote,
-            'evidencePhotoUrl': ?photoUrl,
-          });
-          await _actionPlanOutboxDao.remove(entry.id);
-        } on ActionPlanAlreadyClosedException {
-          // Terminal-state conflict: the local edit is stale.
-          // Discard the payload safely — do not mark error, do not block the queue.
-          await _actionPlanOutboxDao.markStaleConflict(entry.id);
-        } catch (e) {
-          await _actionPlanOutboxDao.markExhausted(entry.id, e.toString());
-          _state = SyncState.error;
-          return;
-        }
+      await _drainSubmissions();
+      if (!_connectivity.isOnline) {
+        _state = SyncState.offline;
+        return;
       }
 
-      // --- SubmissionRisk outbox drain phase ---
-      final pendingRisks = await _submissionRiskOutboxDao.getEligiblePending();
-      for (final row in pendingRisks) {
-        if (!_connectivity.isOnline) {
-          _state = SyncState.offline;
-          return;
-        }
-        try {
-          await _api.pushSubmissionRisk(
-            PendingSubmissionRisk(
-              submissionId: row.submissionId,
-              globalRiskId: row.globalRiskId,
-            ),
-          );
-        } catch (e) {
-          // 409 Conflict = already triggered on server. Treat as success → drain.
-          if (!e.toString().contains('409')) {
-            _state = SyncState.error;
-            return;
-          }
-        }
-        // Always remove — success OR idempotent 409.
-        await _submissionRiskOutboxDao.remove(row.id);
+      await _drainActionPlans();
+      if (!_connectivity.isOnline) {
+        _state = SyncState.offline;
+        return;
       }
 
-      _state = SyncState.idle;
+      await _drainRisks();
+
+      if (_state == SyncState.syncing) {
+        _state = SyncState.idle;
+      }
     } catch (_) {
       _state = SyncState.error;
     }
   }
 
+  Future<void> _pullDeltas() async {
+    lastSyncTimestamp ??= await _syncMetaDao.get('global');
+
+    // --- Pull phase ---
+    final pullResult = await _api.pullDeltas(lastSyncTimestamp);
+    lastSyncTimestamp = pullResult.serverTimestamp;
+    if (lastSyncTimestamp != null) {
+      await _syncMetaDao.set('global', lastSyncTimestamp!);
+    }
+
+    // --- Pull phase: Global Risks ---
+    final globalRisks = await _api.pullGlobalRisks(lastSyncTimestamp);
+    for (final json in globalRisks) {
+      await _globalRiskDao.upsertRisk(
+        CachedGlobalRisksCompanion.insert(
+          id: json['id'] as String,
+          label: json['label'] as String,
+          description: Value(json['description'] as String?),
+          isActive: Value(json['isActive'] as bool? ?? true),
+          createdAt: DateTime.parse(json['createdAt'] as String),
+          updatedAt: DateTime.parse(json['updatedAt'] as String),
+        ),
+      );
+    }
+  }
+
+  Future<void> _drainSubmissions() async {
+    // --- Push phase: build payload from normalized DAO tables (FIFO) ---
+    final eligibleRows = await _outboxDao.getEligiblePending();
+    for (final dbRow in eligibleRows) {
+      if (!_connectivity.isOnline) {
+        _state = SyncState.offline;
+        return;
+      }
+
+      try {
+        final answers = await _outboxDao.getAnswersForSubmission(dbRow.id);
+        final hasGlobalRisk = await _submissionRiskOutboxDao.hasPendingRisks(
+          dbRow.id,
+        );
+
+        final payload = jsonEncode({
+          'id': dbRow.id,
+          'templateId': dbRow.templateId,
+          'storeId': dbRow.storeId,
+          'clientScore': dbRow.clientScore,
+          'sectionScores': dbRow.sectionScores,
+          'notes': dbRow.notes,
+          'gpsLat': dbRow.gpsLat,
+          'gpsLng': dbRow.gpsLng,
+          'status': 'completed',
+          'idempotencyKey': dbRow.idempotencyKey,
+          'targetSubmissionId': dbRow.targetSubmissionId,
+          'hasGlobalRisk': hasGlobalRisk,
+          'answers': answers.map(buildAnswerPayload).toList(),
+        });
+
+        final entry = PendingSubmission(
+          idempotencyKey: dbRow.idempotencyKey,
+          createdAt: dbRow.createdAt,
+          payload: payload,
+        );
+
+        await _api.pushSubmission(entry);
+        await _outboxDao.removeSubmission(dbRow.id);
+      } catch (e) {
+        final isBadRequest =
+            e.toString().contains('400') ||
+            e.toString().contains('ClientFormatError');
+
+        if (isBadRequest) {
+          await _outboxDao.updateSyncStatus(
+            dbRow.id,
+            'exhausted',
+            error: 'FATAL 400: ${e.toString()}',
+          );
+          continue;
+        }
+
+        final isForbidden =
+            e.toString().contains('403') ||
+            e.toString().toLowerCase().contains('forbidden');
+
+        if (isForbidden) {
+          await _outboxDao.updateSyncStatus(
+            dbRow.id,
+            'exhausted',
+            error: 'FATAL 403: Permission denied. Role may have changed.',
+          );
+          continue;
+        }
+
+        final currentRetries = dbRow.retryCount;
+        if (currentRetries < _backoffDelays.length) {
+          final delaySecs = _backoffDelays[currentRetries];
+          final nextRetry = DateTime.now().toUtc().add(
+            Duration(seconds: delaySecs),
+          );
+          await _outboxDao.updateSyncStatus(
+            dbRow.id,
+            'pending',
+            retryCount: currentRetries + 1,
+            nextRetryAt: nextRetry,
+            error: e.toString(),
+          );
+          _scheduleRetry(delaySecs);
+        } else {
+          await _outboxDao.updateSyncStatus(
+            dbRow.id,
+            'exhausted',
+            error: 'Max retries exceeded',
+          );
+        }
+        _state = SyncState.error;
+        break; // Stop batch on generic network failure, but allow other phases to run
+      }
+    }
+  }
+
+  Future<void> _drainActionPlans() async {
+    // --- Action Plan Evidence Drain phase ---
+    final pendingEvidence = await _actionPlanOutboxDao.getEligiblePending();
+    for (final entry in pendingEvidence) {
+      if (!_connectivity.isOnline) {
+        _state = SyncState.offline;
+        return;
+      }
+      try {
+        final submissionId = await _actionPlanOutboxDao
+            .getSubmissionIdForPlan(entry.actionPlanId);
+        String? photoUrl;
+        if (entry.photoPath != null && submissionId != null) {
+          photoUrl = await _actionPlanApi.uploadPhoto(
+            submissionId,
+            entry.photoPath!,
+          );
+        }
+        await _actionPlanApi.updateActionPlan(entry.actionPlanId, {
+          'status': 'pending_verify',
+          'correctionPlan': entry.correctionPlan,
+          'evidenceNote': entry.evidenceNote,
+          'evidencePhotoUrl': photoUrl, // Fixed missing ?
+        });
+        await _actionPlanOutboxDao.remove(entry.id);
+      } on ActionPlanAlreadyClosedException {
+        await _actionPlanOutboxDao.markStaleConflict(entry.id);
+      } catch (e) {
+        await _actionPlanOutboxDao.markExhausted(entry.id, e.toString());
+        _state = SyncState.error;
+        break; // Fixed from return; to break;
+      }
+    }
+  }
+
+  Future<void> _drainRisks() async {
+    // --- SubmissionRisk outbox drain phase ---
+    final pendingRisks = await _submissionRiskOutboxDao.getEligiblePending();
+    for (final row in pendingRisks) {
+      if (!_connectivity.isOnline) {
+        _state = SyncState.offline;
+        return;
+      }
+      try {
+        await _api.pushSubmissionRisk(
+          PendingSubmissionRisk(
+            submissionId: row.submissionId,
+            globalRiskId: row.globalRiskId,
+          ),
+        );
+        await _submissionRiskOutboxDao.remove(row.id);
+      } catch (e) {
+        if (!e.toString().contains('409')) {
+          _state = SyncState.error;
+          // Apply Backoff logic from Slice 2
+          final currentRetries = row.retryCount;
+          if (currentRetries < _backoffDelays.length) {
+            final delaySecs = _backoffDelays[currentRetries];
+            final nextRetry = DateTime.now().toUtc().add(
+              Duration(seconds: delaySecs),
+            );
+            await _submissionRiskOutboxDao.updateRetry(
+              row.id,
+              currentRetries + 1,
+              nextRetry,
+              e.toString(),
+            );
+            _scheduleRetry(delaySecs);
+          } else {
+            await _submissionRiskOutboxDao.markExhausted(
+              row.id,
+              'Max retries exceeded',
+            );
+          }
+          break; // Stop batch on generic network failure
+        } else {
+          // 409 Conflict = already triggered on server. Treat as success → drain.
+          await _submissionRiskOutboxDao.remove(row.id);
+        }
+      }
+    }
+  }
+
   /// Dispose the connectivity listener.
   void dispose() {
+    _retryTimer?.cancel();
     _connectivitySub?.cancel();
     _connectivitySub = null;
+  }
+
+  void _scheduleRetry(int delaySecs) {
+    if (_retryTimer?.isActive == true) return; // Keep existing sooner timer
+    _retryTimer = Timer(Duration(seconds: delaySecs), () {
+      requestSync();
+    });
   }
 
   @visibleForTesting
