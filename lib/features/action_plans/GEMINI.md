@@ -1,4 +1,4 @@
-# GEMINI.override.md — Action Plans Feature
+# GEMINI.md — Action Plans Feature
 
 ## Gotcha: Never call Navigator.pop() immediately after setState() when PopScope is present
 

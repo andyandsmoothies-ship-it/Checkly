@@ -1,4 +1,4 @@
-# GEMINI.override.md — `lib/features/dashboard/manager/`
+# GEMINI.md — `lib/features/dashboard/manager/`
 
 ## [CONFIRMED] DashboardManager Reload Method Name
 

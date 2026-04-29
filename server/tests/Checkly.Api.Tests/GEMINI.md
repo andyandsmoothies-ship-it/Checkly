@@ -1,4 +1,4 @@
-# GEMINI.override.md — Checkly.Api.Tests
+# GEMINI.md — Checkly.Api.Tests
 
 ## Gotcha: FK_submissions_templates_template_id (CONFIRMED)
 

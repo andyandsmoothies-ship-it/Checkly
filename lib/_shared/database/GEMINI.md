@@ -1,4 +1,4 @@
-# GEMINI.override.md — lib/_shared/database/
+# GEMINI.md — lib/_shared/database/
 
 ## Gotcha: Math in SQL WHERE Clauses Suppresses Indexes (OOM Risk)
 

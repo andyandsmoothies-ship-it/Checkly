@@ -91,7 +91,7 @@ Review from 6 angles:
 > 2. `## Verification Handoff`: Steps for QA.
 > 3. `<test_trace>`: Raw terminal execution output from a GLOBAL test run (`dotnet test` or `flutter test`). PROHIBITED: Isolated test runs (`flutter test path/...`). You MUST prove you didn't break existing tests.
 > 4. `<forensic_evidence>`: General validation commands run.
-> 5. `## Gotcha Protocol`: Propose edits to the local sub-folder's `GEMINI.override.md` (e.g., `server/GEMINI.override.md` or `lib/GEMINI.override.md`) if new quirks found.
+> 5. `## Gotcha Protocol`: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if new quirks found.
 >
 > **Script Verification Gate (MANDATORY)**: Execute via `run_command`
 > // turbo

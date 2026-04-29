@@ -1,4 +1,4 @@
-# GEMINI.override.md — lib/features/admin/
+# GEMINI.md — lib/features/admin/
 
 ## Gotcha A: Mocktail Stub Isolation in Sequential Widget Tests
 **Context:** `role_management_atdd_test.dart` — multiple `testWidgets` sharing one `MockAdminApiService`.  

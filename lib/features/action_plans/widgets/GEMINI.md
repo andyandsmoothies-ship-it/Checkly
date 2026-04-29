@@ -1,4 +1,4 @@
-# GEMINI.override.md — Action Plans Widgets
+# GEMINI.md — Action Plans Widgets
 
 ## Gotcha: `image_picker` params must always include resize constraints
 

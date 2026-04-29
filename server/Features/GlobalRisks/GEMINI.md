@@ -1,4 +1,4 @@
-# GEMINI.override.md — GlobalRisks Feature
+# GEMINI.md — GlobalRisks Feature
 
 ## 1. Two Parallel Risk Systems — DO NOT MERGE
 

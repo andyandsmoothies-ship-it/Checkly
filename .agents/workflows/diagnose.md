@@ -63,7 +63,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 | Step | Execution Contract |
 |---|---|
-| **Gotcha Protocol**| MANDATORY: Propose edits to the local sub-folder's `GEMINI.override.md` (e.g., `server/GEMINI.override.md` or `lib/GEMINI.override.md`) if a project-specific rule caused the bug. ELSE: State "No new gotcha". |
+| **Gotcha Protocol**| MANDATORY: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if a project-specific rule caused the bug. ELSE: State "No new gotcha". |
 | **Routing** | MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] @[/implement] brain/.../failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD. |
 
 ### Final Generation Mandate (Suffix)

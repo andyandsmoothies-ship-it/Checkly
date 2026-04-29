@@ -1,9 +1,23 @@
-# 🛡️ Structural Boundary: The Shared Layer
+# Shared Flutter Rules & Gotchas
 
-> [!CAUTION]
-> You are currently operating inside `lib/_shared/`. This is the shared component library of the Flutter app.
+# Shared Flutter Rules & Gotchas
 
-## The "No Business Logic" Mandate
-- **STRICT RULE**: You are absolutely FORBIDDEN from adding any feature-specific UI, domain-specific state managers, or template routing logic to this folder.
-- **Purpose**: Everything in `_shared/` MUST be generic (e.g., standard buttons, `AuditSectionCard`, database adapters, networking services).
-- **If you are building a specific app screen or feature**, you are in the wrong directory. Go up and build it inside `lib/features/{your_feature}/`.
+> [!IMPORTANT]
+> **Drift OOM — Every DAO Query Must Be Bounded**
+> **Problem:** Unbounded `.select().get()` loads entire tables, causing Out-Of-Memory.
+> **Fix:** DAO queries MUST use `selectOnly + count()/avg()`, `..limit(n)`, or `customSelect` raw SQL.
+
+> [!WARNING]
+> **Nested Scaffold FAB Renders Behind Bottom Nav**
+> **Problem:** `extendBody: true` in `_MainShell` causes inner Scaffold FABs to hide behind the 96px nav bar.
+> **Fix:** Wrap the inner FAB with `Padding(padding: EdgeInsets.only(bottom: 80))`.
+
+> [!WARNING]
+> **FAB Inside PopupMenuButton Absorbs Taps**
+> **Problem:** An `InkResponse` in a FAB inside a `PopupMenuButton` absorbs the tap, breaking the menu toggle.
+> **Fix:** Call `showMenu()` programmatically from `FAB.onPressed`.
+
+> [!WARNING]
+> **Bottom Nav Label Context Scope**
+> **Problem:** Context-sensitive labels like "AUDIT" are wrong when outside that specific loop.
+> **Fix:** Use generic template-agnostic labels like `'ACTIVITY'`.

@@ -1,4 +1,4 @@
-# GEMINI.override.md — ActionPlans Feature
+# GEMINI.md — ActionPlans Feature
 
 > [!WARNING]
 > **`[FromServices]` Required for DI Singletons in PUT/POST Handlers**

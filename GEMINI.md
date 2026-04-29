@@ -4,7 +4,7 @@
 
 ### Rule: Read Before You Write
 - **Rule**: Research the code before editing. Never change code you haven't read.
-- **Enforcement**: Use `grep_search` and `view_file`. Always check `GEMINI.override.md` in subfolders for local rules before editing files there.
+- **Enforcement**: Use `grep_search` and `view_file`. Always check `GEMINI.md` in subfolders for local rules before editing files there.
 
 ### Rule: Do Not Fix Unrelated Code
 - **Rule**: Only touch what you have to. Do not clean up unrelated code or "improve" adjacent logic.
@@ -34,8 +34,8 @@
 - **Enforcement**: Stop and run `de-sloppify` first. Ignore warnings you didn't create.
 
 ## 2. Platform Architecture
-- **Frontend**: Flutter (Dart) — Offline-first with SQLite. Core UI rules are in `lib/GEMINI.override.md`.
-- **Backend**: ASP.NET Core (.NET 10) Minimal API. Database and endpoint rules are in `server/GEMINI.override.md`.
+- **Frontend**: Flutter (Dart) — Offline-first with SQLite. Core UI rules are in `lib/GEMINI.md`.
+- **Backend**: ASP.NET Core (.NET 10) Minimal API. Database and endpoint rules are in `server/GEMINI.md`.
 - **Database**: PostgreSQL via EF Core.
 - **Impact Map**: 
   - 🔴 High Impact (`AppDbContext`, Entities, Sync). 

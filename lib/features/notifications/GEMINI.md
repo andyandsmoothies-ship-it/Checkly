@@ -1,4 +1,4 @@
-# GEMINI.override.md — Notifications Feature
+# GEMINI.md — Notifications Feature
 
 ## Gotcha 21: Never trigger synchronous global broadcasts inside `initState`
 

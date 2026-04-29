@@ -1,9 +1,65 @@
-# 🛡️ Structural Boundary: The Common Layer
+# Server Common Gotchas
 
-> [!CAUTION]
-> You are currently operating inside `server/Common/`. This is the shared architectural backbone of the backend.
+> [!WARNING]
+> **Route Registration Order — Specific Before Catch-All**
+> **Problem:** Catch-all routes (e.g., `/{id}`) registered before specific routes swallow the request.
+> **Fix:** Always register specific named routes BEFORE parameterized/catch-all routes in `*Endpoints.cs`.
 
-## The "No Business Logic" Mandate
-- **STRICT RULE**: You are absolutely FORBIDDEN from adding any template-specific, store-specific, or single-feature business logic to this folder.
-- **Purpose**: Everything in `Common/` MUST be highly generic, reusable infrastructure (e.g., `SubmissionAccessGuard`, `AuditLogger`, `PagedResult`).
-- **If you are building a specific feature handler**, you are in the wrong directory. Go up and build it inside `server/Features/{YourFeature}/`.
+> [!WARNING]
+> **EF Core Mapping: Explicit `HasColumnName` Required**
+> **Problem:** EF will NOT auto-map `ScoringMode` → `scoring_mode`. Missing `HasColumnName` causes silent crashes.
+> **Fix:** Add `HasColumnName("snake_case_name")` in `AppDbContext` for every new property before migrating.
+
+> [!WARNING]
+> **EF Core LINQ translation fails on JSONB keys**
+> **Problem:** EF cannot translate `GroupBy` on dynamic jsonb keys.
+> **Fix:** Load jsonb strings into memory and parse in C#, OR use raw SQL with a GIN index (`jsonb_path_ops`).
+
+> [!WARNING]
+> **Test Factory Crash: Serilog Bootstrap Logger Freezes**
+> **Problem:** `CreateBootstrapLogger()` freezes `Log.Logger`. Re-executing `Program.cs` in xUnit throws `InvalidOperationException`.
+> **Fix:** Guard the assignment: `if (Log.Logger.GetType().Name == "SilentLogger")`.
+
+> [!WARNING]
+> **Answer.CriteriaId Postgres FK Violation in Tests**
+> **Problem:** Seeding an `Answer` with a random GUID `CriteriaId` throws `23503`.
+> **Fix:** Seed a valid `Criterion` row first, or test the naturally occurring `null` behavior.
+
+> [!IMPORTANT]
+> **Pagination Int32 Overflow → 500 Error (Arithmetic)**
+> **Problem:** `?page=2147483647` overflows 32-bit int causing EF Core negative OFFSET. 
+> **Fix:** Must append overflow guard after `CountAsync`:
+> ```csharp
+> if ((long)(page - 1) * pageSize >= total) return TypedResults.Ok(new PagedResult<T>(...));
+> ```
+
+> [!WARNING]
+> **IFormFile.OpenReadStream() is Non-Seekable**
+> **Problem:** Calling `stream.Position = 0` after reading throws `NotSupportedException`.
+> **Fix:** Issue separate `file.OpenReadStream()` calls per read attempt.
+
+> [!WARNING]
+> **Strict TDD Legacy: Guard Reordering Cascades**
+> **Problem:** Reordering security guards (e.g., magic bytes vs extension) changes the returned HTTP status code, failing legacy tests.
+> **Fix:** Update legacy test assertions to assert the new correct status code.
+
+> [!WARNING]
+> **Drift DAO Test Fakes Must Use `implements`, Not `extends`**
+> **Problem:** Subclassing via `extends` and passing `null` to `super()` crash-loops the test suite before body execution due to `AppDatabase` NPEs.
+> **Fix:** Always use `class FakeDao implements ActionPlanOutboxDao`.
+
+> [!WARNING]
+> **CS0420: `volatile` Keyword + `Volatile.Write(ref field, ...)` Are Mutually Exclusive**
+> **Problem:** `private volatile T _field; Volatile.Write(ref _field, value)` triggers CS0420. Passing `ref` to a `volatile` field inside a method strips the volatile semantics — the compiler warns you the call is semantically broken.
+> **Fix:** Remove the `volatile` keyword. Use `Volatile.Write(ref _field, value)` in writers and `Volatile.Read(ref _field)` in readers. Provides identical memory ordering guarantees with zero warnings. Applies to any lock-free single-writer/multi-reader singleton cache pattern.
+
+> [!WARNING]
+> **Serilog + MEL `ILogger` Ambiguity (CS0104)**
+> **Problem:** Using `using Serilog;` in a class that lives in the same project as `Microsoft.Extensions.Logging` creates an ambiguous `ILogger` reference, causing CS0104 build failure.
+> **Fix:** Do NOT add `using Serilog;`. Instead, fully qualify inline: `private static readonly Serilog.ILogger Logger = Serilog.Log.ForContext<MyClass>();`. Applies to every new class in `Common/` that needs structured logging.
+
+> [!WARNING]
+> **ExecuteAsync Lambda + `catch` Return Block Requires Explicit Generic Type (CS8031)**
+> **Problem:** Adding a `return` statement inside a `catch` block within `strategy.ExecuteAsync(async () => {...})` causes CS8031. The compiler cannot infer the lambda's return type when the lambda has multiple return points (inside catch + happy path).
+> **Fix:** Specify the type parameter explicitly: `strategy.ExecuteAsync<IResult>(async () => { ... })`. This forces the compiler to treat the lambda as `Func<Task<IResult>>`.
+

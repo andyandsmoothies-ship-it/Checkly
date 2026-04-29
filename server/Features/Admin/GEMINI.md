@@ -1,4 +1,4 @@
-# GEMINI.override.md — Admin Feature
+# GEMINI.md — Admin Feature
 
 ## Gotcha: EF Migration Discovery Requires Designer.cs
 

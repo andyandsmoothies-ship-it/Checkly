@@ -25,5 +25,5 @@ trigger: manual
 - `[PRE-EDIT]`: IF (targeting file) THEN `view_file(path)` -> DO NOT guess signatures/imports.
 - `[DEPENDENCIES]`: IF (invoking shared service) THEN `view_file(service)` -> Verify method signature before call.
 - `[VERIFICATION]`: IF (coding completed) THEN execute local build -> MUST confirm compilation before QA handoff. File writes alone != Success.
-- `[CONTEXT_CASCADE]`: MANDATORY: Traverse `GEMINI.md` -> `GEMINI.override.md` for domain gotchas.
+- `[CONTEXT_CASCADE]`: MANDATORY: Traverse root `GEMINI.md` -> local `GEMINI.md` for domain gotchas.
 - `[EDIT_INTEGRITY]`: IF (editing file > 10 mins since read) THEN `view_file` to capture fresh line numbers. PROHIBITED: Editing blindly against stale context.

@@ -1,4 +1,4 @@
-# GEMINI.override.md — `lib/features/audit/services/`
+# GEMINI.md — `lib/features/audit/services/`
 
 ## [CONFIRMED] DraftService is NOT registered in GetIt
 

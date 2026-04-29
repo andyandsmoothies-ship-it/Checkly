@@ -1,4 +1,4 @@
-# GEMINI.override.md — lib/features/audit/manager
+# GEMINI.md — lib/features/audit/manager
 
 ## [CONFIRMED] Scheduled Audit Resume Gap: No Local Draft on First Start
 
