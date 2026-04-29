@@ -1,83 +1,88 @@
 # Checkly
 
-![Flutter](https://img.shields.io/badge/Flutter-3.11+-02569B?logo=flutter)
+![Flutter](https://img.shields.io/badge/Flutter-3.41+-02569B?logo=flutter)
 ![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Self_Hosted-336791?logo=postgresql)
 ![AI Governed](https://img.shields.io/badge/AI_Governed-Strict_SDLC-8A2BE2)
+![Status](https://img.shields.io/badge/Status-UAT-success)
 
-**Mobile-first audit & inspection platform** — build dynamic templates, run audits offline, score automatically, and track corrective actions. Built with Flutter and a self-hosted ASP.NET Core API backed by PostgreSQL.
+**Mobile-first audit & inspection platform** — build dynamic templates, run audits offline, score automatically, and track corrective actions. Built with Flutter and a self-hosted ASP.NET Core API backed by PostgreSQL. 
 
 ---
 
 ## Key Features
 
 - **Dynamic Template Engine** — 4 scoring modes (Penalty, Accumulation, Checklist, Survey), 5 input types, nested sections, CCP/RISK overrides, and weighted density. One engine powering food safety audits, mystery shops, training quizzes, daily checklists, and employee surveys.
-- **Offline-First** — Complete audits without internet. Data is persisted to a local SQLite database (Drift) and synced to the server when connectivity returns.
+- **Offline-First** — Complete audits without internet. Data is persisted to a local SQLite database (Drift) and synced via a robust background Sync Engine when connectivity returns.
 - **Real-Time Scoring** — Live score HUD during audits with section breakdowns, progressive repeat penalties, and confirm-correct mode.
-- **Role-Based Analytics** — Dedicated dashboards for Admins (global KPIs), Area Managers (store leaderboard), Store Managers (store snapshot), and Auditors (personal calibration stats).
-- **Action Plan Workflow** — Create corrective actions from failed criteria with deadlines, reminders, and status tracking.
-- **Server-Side Score Verification** — The backend independently recalculates scores and rejects submissions with suspicious deltas (>5%).
+- **Enterprise Analytics Dashboard** — Role-aware command center with contextual stat cards, hierarchical drilldowns, and SQLite aggregations for Auditors, Managers, and Admins.
+- **Action Plan Workflow** — Auto-generated corrective actions from failed criteria with deadlines, reminders, and status tracking.
+- **Server-Side Score Verification** — The backend independently recalculates scores and rejects submissions with suspicious mathematical deltas.
 - **Notification Engine** — Real-time SignalR notifications and in-app inbox for audit submissions and action plan deadlines.
-- **Internal Distribution** — Deployed natively via internal APK sideloading and iOS TestFlight (zero app store dependency).
-- **AI-Agent Governed** — Codebase uses double-loop ATDD workflows with deterministic Python script gates to guarantee architecture rules before merging.
+- **AI-Agent Governed** — Architecture is rigidly maintained by autonomous AI agents using context-cascading `GEMINI.md` rule files, double-loop ATDD workflows, and Python script quality gates.
 
 ---
 
 ## Architecture
 
-![Checkly Architecture Diagram](https://www.plantuml.com/plantuml/svg/dLPBRzim3BxxLt0v9HZQt7CecjfDLw2FjCxQmrOCYiscGcp9a-IjmT3_Faf-n4tax9537kH7yZD9VSgfDaoPCi-23-O5SuGYOrm4Uir5mHJB8P5v8GKA4vjDXg0mCKoiCkn0MXly2e1UPonPhvGiHHhAJ2fuVE46AuzKAQhA6Z6rlb1i4xnrKXKKobR_dIWmt12DGVY2oJhRGBpH1dEOgiH69gPKEFagPiZijwCuumcc4A7cAm73MHoDu2Cye38yOHauzxjO63x4qz4W21gQWp3Zr1guOXjK4vXbfJ6eA9MlmcXGFrRRKXZ4BqmH89GsUSQNus_QMGZBDDJUAig-ljpBaWeyRGtJebZOkNLDyqkeUGqZBaULYvfZFrhcDKLTbNskVxKSVTW9B32d_J0swlCbzUhiIeRZQoO8fIhACmVf976KchYpacSqjpdXd_o8EbcFTrhm6DKFQkeMyDP-Eq1yMgRSz9Ekt3kadN4cLUwXwtn-hixLJxHwTsyfCsp9DF6yVNxEk42OezASLbOaw8XTILh4wAox0Sv4Er-73YDyvJYExwveITjHjoMydOVZuvFzZiC4xf6bUloeA9KEF3se0jyzkoygy4uKZevEsWUQGFF88QFp9LR1Vbl_8k109T_EK9Pu8nAG1Ifck1Iwh-pU57j2Wxxrh5lbFOhxoNl0T6QJJ9Of33uj5lCORj3yb6fDwaUIoDJ6xKXjx8YIJKigL8lIyStveXAOQovuJijZ2mqFo5mh0dsAeLs1yUoWQ3HDWGPMIPfN7q9566mZpaLQI2xCpicwGBCLe1vCcoDQtEg_4ucuNEPSQvhf3bLox19rM5F9HJ_BJiOUK0VX8_hcQRyzyZ1D4jJR2OGopwKOTsIZ4hIEeQiTT5b4or0AWw-qO-SpjnQZpjKHoPnkVo9DzoX7lIydUplgJakpbnEtMlVulKHjN43ZSMUgRyfMG-ozjX_XdtW_tZkUT_3WuBxLPz_V9ifZ-yr4Mij63xi_vBWhKV56N_s4_uL5S6YobR3iJfLINBD2Wv5MORQtq5ngir98TmaCux9mrcgVGgj2xXwYWDvYbdQ39BcaD6DOX7FwloC4AGijUt2A8hL_Ddy3)
-
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
 | **Mobile App** | Flutter (Dart 3.11+) | Cross-platform iOS & Android |
-| **Backend API** | ASP.NET Core (.NET 10) | Vertical Slice Minimal API |
-| **Database** | PostgreSQL (Self-Hosted) | Primary data store |
-| **ORM** | Entity Framework Core | Server-side data access |
-| **Auth** | ASP.NET Core Identity (JWT) | Authentication + PBAC |
-| **Local DB** | Drift (SQLite) | Offline cache & sync |
-| **DI** | get_it / watch_it | Flutter service locator |
+| **Backend API** | ASP.NET Core (.NET 10) | Vertical Slice Architecture |
+| **Database** | PostgreSQL 18+ (Self-Hosted) | Primary data store |
+| **ORM** | Entity Framework Core 10 | Server-side data access |
+| **Auth & Security** | ASP.NET Core Identity (JWT) | Authentication + PBAC |
+| **Local DB** | Drift (SQLite) | Offline cache & sync outbox |
+| **State & DI** | PFA (get_it / watch_it) | Pragmatic Flutter Architecture |
 
-### Roles
+### Roles & Access Control
+
+Checkly relies entirely on **Permission-Based Access Control (PBAC)**. Roles are mapped to capabilities (e.g., `templates:create`) via a cached `role_capabilities` system. The UI and API evaluate granular capabilities rather than hardcoded role strings.
 
 | Role | Scope | Capabilities |
 |------|-------|-------------|
-| **Admin** | Global | Manage templates, users, stores, analytics, survey results |
-| **Area Manager** | Regional (assigned area) | View store leaderboard, area-level compliance |
-| **Store Manager** | Single store | View store dashboard, manage action plans |
+| **Admin** | Global | Manage templates, users, stores, areas, analytics, survey results |
+| **Area Manager** | Regional (assigned area) | View store leaderboard, area-level compliance, verify action plans |
+| **Store Manager** | Single store | View store dashboard, manage/submit action plan evidence |
 | **Auditor** | Self | Conduct audits, view personal stats |
-
-> **Security Note (PBAC)**: The above roles serve as semantic defaults. Under the hood, Checkly relies entirely on **Permission-Based Access Control (PBAC)**. Roles are mapped to capabilities (e.g., `templates:create`) via a `role_capabilities` cache powered by PostgreSQL `LISTEN/NOTIFY`. The Flutter and ASP.NET Core clients evaluate these granular capabilities rather than hardcoded role strings.
 
 ---
 
 ## Project Structure
 
-```
+```text
 Checkly/
 ├── lib/                          ← Flutter app (Feature-Sliced Design)
 │   ├── features/
-│   │   ├── admin/                ← Users, Stores, Areas, System Logs
 │   │   ├── action_plans/         ← Corrective workflow, status boards
+│   │   ├── admin/                ← Users, Stores, Areas, System Logs
 │   │   ├── analytics/            ← Analytics dashboards & charts
 │   │   ├── audit/                ← Audit form, scoring engine, offline manager
 │   │   ├── auth/                 ← Login, cached offline sessions
-│   │   ├── dashboard/            ← Role-aware landing views
+│   │   ├── dashboard/            ← Enterprise command center
 │   │   ├── notifications/        ← SignalR inbox
 │   │   ├── profile/              ← User profile & settings
-│   │   └── templates/            ← Template builder, detail, list
+│   │   ├── stores/               ← Store directory & management
+│   │   ├── templates/            ← Template builder, detail, list
+│   │   └── user_groups/          ← RBAC management
 │   └── _shared/                  ← Router, widgets, services, Drift DB
-├── server/                       ← ASP.NET Core Web API
-│   ├── Features/                 ← Vertical Slice handlers
+├── server/                       ← ASP.NET Core Web API (Vertical Slice)
+│   ├── Features/
 │   │   ├── ActionPlans/          ← Corrective plan CRUD
-│   │   ├── Admin/                ← User & role management
+│   │   ├── Admin/                ← System logs & admin tools
 │   │   ├── Analytics/            ← KPI & reporting endpoints
-│   │   ├── Auth/                 ← JWT issuance
+│   │   ├── Areas/                ← Area hierarchy management
+│   │   ├── Auth/                 ← JWT issuance & PBAC
+│   │   ├── GlobalRisks/          ← Template-agnostic critical flags
 │   │   ├── Notifications/        ← SignalR hub & alerts
+│   │   ├── Photos/               ← Offline sync & media storage
 │   │   ├── Stores/               ← Store management
 │   │   ├── Submissions/          ← Audit submissions & score verification
-│   │   └── Templates/            ← Template CRUD
-│   └── Common/
-│       └── Persistence/          ← EF Core DbContext, Entities, Migrations
+│   │   ├── System/               ← Health checks & background workers
+│   │   ├── Templates/            ← Template CRUD
+│   │   ├── UserGroups/           ← Role & permission mapping
+│   │   └── Users/                ← Profile & assignment management
+│   └── Common/                   ← Shared Infrastructure (Persistence, Scoring)
 ├── test/                         ← Flutter unit & integration tests
 ├── server/tests/                 ← .NET integration tests
 └── docs/                         ← Reference documentation
@@ -131,15 +136,14 @@ dotnet ef database update
 
 ### 4. Start the Application
 
+**1. Backend**
 ```bash
 # Terminal 1 — API server
 dotnet run --project server/Checkly.Api.csproj
-
-dotnet run --urls "http://0.0.0.0:5288"
 ```
 *(Leave this terminal open to keep the backend ALIVE).*
 
-**2. Build & Deploy the Flutter App**
+**2. Frontend**
 Find your PC's LAN IP (`ipconfig`) and your connected Android Device ID (`adb devices`).
 ```powershell
 flutter run -d <DEVICE_ID> --dart-define=API_BASE_URL=http://<YOUR_LAN_IP>:5288/api
@@ -151,7 +155,9 @@ flutter run -d <DEVICE_ID> --dart-define=API_BASE_URL=http://<YOUR_LAN_IP>:5288/
 ## 📚 Documentation
 - [Product Requirements (PRD)](docs/product/PRD_checkly_mobile.md)
 - [Database Schema (PBAC)](docs/architecture/DATABASE_SCHEMA.md)
+- [Supported Use Cases (Scoring Modes)](docs/reference/SUPPORTED_USE_CASES.md)
 - [Core Workflows & State Machines](docs/reference/CORE_WORKFLOWS.md)
+- [Scoring Logic Architecture](docs/reference/SCORING_LOGIC.md)
 
 ---
 
