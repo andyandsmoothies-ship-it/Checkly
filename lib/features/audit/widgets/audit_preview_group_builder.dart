@@ -56,22 +56,18 @@ class AuditPreviewGroupBuilder extends StatelessWidget {
           if (topLevelCriteria.isNotEmpty)
             Card(
               margin: const EdgeInsets.only(bottom: 16),
-              elevation: 0,
+              elevation: 1,
+              color: theme.colorScheme.surface,
+              shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.1),
               shape: RoundedRectangleBorder(
-                side: BorderSide(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.5,
-                  ),
-                ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var i = 0; i < topLevelCriteria.length; i++) ...[
-                    if (i > 0) const Divider(height: 1),
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: ReadOnlyCriterionRow(
                         answer: answersMap[topLevelCriteria[i].id]!,
                         criterion: topLevelCriteria[i],
@@ -104,12 +100,11 @@ class AuditPreviewGroupBuilder extends StatelessWidget {
 
       return Card(
         margin: const EdgeInsets.only(bottom: 16),
-        elevation: 0,
+        elevation: 1,
+        color: theme.colorScheme.surface,
+        shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -122,7 +117,7 @@ class AuditPreviewGroupBuilder extends StatelessWidget {
                   alpha: 0.3,
                 ),
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(12),
+                  top: Radius.circular(16),
                 ),
               ),
               child: Text(
@@ -132,12 +127,10 @@ class AuditPreviewGroupBuilder extends StatelessWidget {
                 ),
               ),
             ),
-            if (matchingCriteria.isNotEmpty) const Divider(height: 1),
             // Criteria Rows
             for (var i = 0; i < matchingCriteria.length; i++) ...[
-              if (i > 0) const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ReadOnlyCriterionRow(
                   answer: answersMap[matchingCriteria[i].id]!,
                   criterion: matchingCriteria[i],
@@ -149,7 +142,6 @@ class AuditPreviewGroupBuilder extends StatelessWidget {
             if (group.children.any(
               (child) => _groupHasAnswers(child, answersMap),
             )) ...[
-              const Divider(height: 1),
               ...group.children
                   .where((child) => _groupHasAnswers(child, answersMap))
                   .map(

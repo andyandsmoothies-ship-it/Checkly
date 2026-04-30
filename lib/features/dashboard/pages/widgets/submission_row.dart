@@ -197,11 +197,13 @@ class _SubmissionRowState extends State<SubmissionRow> {
                 );
               },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -287,28 +289,16 @@ class _SubmissionRowState extends State<SubmissionRow> {
                   },
                 )
               else if (scoreText.isNotEmpty)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: semanticColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      scoreText,
-                      style: AppFonts.serifStyle(
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.titleLarge?.fontSize,
-                        color: scoreColor,
-                      ),
-                    ),
-                  ],
+                Text(
+                  scoreText == '—' ? 'Survey' : scoreText,
+                  style: scoreText == '—'
+                      ? theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        )
+                      : theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: semanticColor,
+                        ),
                 )
               else
                 Builder(

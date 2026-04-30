@@ -42,17 +42,19 @@ class ReadOnlyCriterionRow extends StatelessWidget {
       }
     } else if (criterion?.inputType == 'pass_fail' || criterion == null) {
       if (answer.value == 'conform') {
-        return AuditStatusBadge(label: 'PASS', color: AppTheme.success);
+        return AuditStatusBadge(label: 'PASS', color: AppTheme.success, icon: Icons.check_circle_outline);
       } else if (answer.value == 'non_conform') {
-        return AuditStatusBadge(label: 'FAIL', color: theme.colorScheme.error);
+        return AuditStatusBadge(label: 'FAIL', color: theme.colorScheme.error, icon: Icons.cancel_outlined);
       } else if (answer.value == 'na') {
-        return AuditStatusBadge(label: 'N/A', color: theme.colorScheme.outline);
+        return AuditStatusBadge(label: 'N/A', color: theme.colorScheme.outline, icon: Icons.remove_circle_outline);
       }
     }
 
     // Fallback if no specific format is matched (e.g., text, scale)
     if (answer.value != null && criterion?.inputType != 'multi_choice') {
-      return _ValueChip(value: answer.value!, theme: theme);
+      if (answer.value!.trim().isNotEmpty) {
+        return _ValueChip(value: answer.value!, theme: theme);
+      }
     }
     return null;
   }
@@ -62,7 +64,8 @@ class ReadOnlyCriterionRow extends StatelessWidget {
       return null;
     }
     final String? input = criterion?.inputType;
-    if (input == 'single_choice' || input == 'scale' || input == 'text') {
+    // Don't show subtitle if it's just repeating the primary badge value
+    if (input == 'text') {
       return answer.value;
     }
     return null;
@@ -99,7 +102,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
         !photoUrl.startsWith('file://');
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -128,7 +131,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 6),
+          const SizedBox(height: 16),
 
           // Value chip row
           Wrap(
@@ -141,13 +144,13 @@ class ReadOnlyCriterionRow extends StatelessWidget {
               if (faults > 0) ...[
                 if (criterion?.inputType == 'numeric' || criterion == null)
                   AuditStatusBadge(
-                    label: 'F:$faults',
+                    label: '-$faults pt${faults > 1 ? 's' : ''}',
                     color: theme.colorScheme.error,
                   ),
                 if (criterion?.inputType == 'scale' &&
                     scoringMode == 'accumulation')
                   AuditStatusBadge(
-                    label: '+$faults pts',
+                    label: '+$faults pt${faults > 1 ? 's' : ''}',
                     color: AppTheme.success,
                   ),
               ],
@@ -175,11 +178,9 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                 Icon(
                   Icons.chat_bubble_outline,
                   size: 16,
-                  color: theme.colorScheme.onSurfaceVariant.withValues(
-                    alpha: 0.7,
-                  ),
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     note,
@@ -218,21 +219,29 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                   );
                 },
                 errorBuilder: (context, error, stackTrace) => Container(
-                  height: 80,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: theme.colorScheme.outlineVariant,
-                      width: 1,
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.3,
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Center(
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      color: theme.colorScheme.onSurfaceVariant.withValues(
-                        alpha: 0.5,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.broken_image_outlined,
+                        size: 20,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Image unavailable',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -243,22 +252,18 @@ class ReadOnlyCriterionRow extends StatelessWidget {
           if (answer.actionPlanId != null &&
               answer.actionPlanId!.isNotEmpty) ...[
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.tonalIcon(
+            Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
                 onPressed: () => context.push('/plans/${answer.actionPlanId}'),
                 icon: const Icon(Icons.arrow_forward, size: 16),
                 label: const Text('View Action Plan'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                ),
               ),
             ),
           ],
-
-          // Divider
-          const SizedBox(height: 10),
-          Divider(
-            height: 1,
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
         ],
       ),
     );

@@ -8,6 +8,7 @@ import '../manager/history_manager.dart';
 import '../widgets/audit_preview_group_builder.dart';
 import '../widgets/read_only_criterion_row.dart';
 import '../widgets/header_card.dart';
+import '../widgets/dynamic_section_summary.dart';
 import '../../templates/models/template_dto.dart';
 
 /// Read-only slide-up sheet showing the full detail of a completed or voided audit.
@@ -162,6 +163,17 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
         // Header card
         HeaderCard(detail: detail, scoringMode: scoringMode),
         const SizedBox(height: 16),
+
+        // Dynamic Section Summary
+        if (rootGroups != null && detail.answers.isNotEmpty)
+          DynamicSectionSummary(
+            rootGroups: rootGroups,
+            answersMap: {
+              for (var a in detail.answers)
+                if (a.criteriaId != null) a.criteriaId!: a,
+            },
+            scoringMode: scoringMode,
+          ),
 
         // Legacy guard
         if (detail.templateSnapshot == null)

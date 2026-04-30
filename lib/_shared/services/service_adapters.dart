@@ -197,13 +197,7 @@ class ActionPlanApiAdapter implements ActionPlanApi {
     );
     final raw = (response.data as Map<String, dynamic>)['url'] as String;
     // Server returns a relative URL (e.g. /api/photos/{id}/{file}).
-    // Normalize to absolute so Image.network() can render it without crashing.
-    if (raw.startsWith('/')) {
-      final base = _dio.options.baseUrl.endsWith('/')
-          ? _dio.options.baseUrl.substring(0, _dio.options.baseUrl.length - 1)
-          : _dio.options.baseUrl;
-      return '$base$raw';
-    }
+    // Return raw so AppNetworkImage handles absolute conversion safely at runtime without hardcoding base URLs in the database.
     return raw;
   }
 

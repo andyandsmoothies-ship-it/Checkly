@@ -35,10 +35,11 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 |---|---|
 | **Log Extraction** | **Script-First**: Check if `.agents/scripts/collect_logs.py` exists. If so, execute it first to aggregate trace logs physically into `brain/` before making hypotheses. |
 | **Context Trace** | IF (stack_trace == missing) THEN MANDATORY: Request trace from user. PROHIBITED: Debugging blind from static code. |
+| **Origin Trace** | MANDATORY: Trace data flows to their origin (the Write-Path). PROHIBITED: Stopping the investigation at the symptom layer (the Read-Path) if the data is persisted/mutated elsewhere. |
 | **Targeting** | MANDATORY: Narrow `view_file` or `grep_search`. PROHIBITED: full files reading. |
-| **Formal Reasoning**| MANDATORY: 1. `Premises` and `Execution Trace`. 2. Generate 3-5 explicit Hypotheses (with Evidence For/Against). 3. You MUST log these hypotheses strictly to `.agents/tmp/DEBUG.md` to prevent context sliding. |
+| **Formal Reasoning**| MANDATORY: 1. `Premises` and `Execution Trace`. 2. Generate 3-5 explicit Hypotheses (with Evidence For/Against). 3. You MUST log these hypotheses strictly to the `task_` tracking file to prevent context sliding. |
 
-> **@@SCAN**: (1) Exact file/line identified? (2) Client & server both searched? (3) Are 3-5 hypotheses explicit in `.agents/tmp/DEBUG.md`?
+> **@@SCAN**: (1) Exact file/line identified? (2) Client & server both searched? (3) Did you trace back to the Write-Path origin? (4) Are 3-5 hypotheses explicitly written in the `task_` file?
 
 ## Phase 2: Skill & Rule Discovery
 
@@ -55,7 +56,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 |---|---|
 | **Skill Refresh** | IF (Root cause domain != Symptom domain) THEN Re-scan and load new Domain `SKILL.md`. |
 | **Artifact Gen** | Export `failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
-| **Constraint (Micro-Experiments)** | PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in `.agents/tmp/DEBUG.md` and pivot. |
+| **Constraint (Micro-Experiments)** | PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in the `task_` file and pivot. |
 
 > **@@SCAN**: (1) If code was changed, was it strictly under 5 lines? (2) If a test failed twice, did you officially pivot to a new hypothesis?
 

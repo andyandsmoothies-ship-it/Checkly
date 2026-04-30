@@ -43,7 +43,7 @@
   - 🟢 Safe Scope (Features).
 
 ## 3. Global Gotchas
-- **Gotcha 6: New Fields Must Flow Through All 6 Sync Steps**
+- **Gotcha: The 6 Sync Steps**
   - **Fix:** Update in order: (1) Entity, (2) DbContext, (3) Server DTO, (4) Endpoint projections, (5) Sync endpoint, (6) Flutter DTO.
 
 ## 4. Environment Rules

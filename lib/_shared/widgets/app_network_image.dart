@@ -34,7 +34,14 @@ class AppNetworkImage extends StatelessWidget {
       final base = baseUrl.endsWith('/')
           ? baseUrl.substring(0, baseUrl.length - 1)
           : baseUrl;
-      final absoluteUrl = '$base$url';
+      
+      String absoluteUrl;
+      if (base.endsWith('/api') && url.startsWith('/api')) {
+        // Strip the trailing /api from base before appending the url
+        absoluteUrl = '${base.substring(0, base.length - 4)}$url';
+      } else {
+        absoluteUrl = '$base$url';
+      }
       
       final token = di<AuthManager>().currentUser?.token;
 
