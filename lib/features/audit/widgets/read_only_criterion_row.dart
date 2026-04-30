@@ -6,6 +6,7 @@ import '../../../_shared/theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'audit_shared_widgets.dart';
 import '../../../_shared/widgets/app_network_image.dart';
+import '../../../_shared/widgets/read_more_text.dart';
 
 bool _isScored(String? inputType) =>
     inputType != 'text' &&
@@ -103,25 +104,24 @@ class ReadOnlyCriterionRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Criterion label
-          Text.rich(
-            TextSpan(
-              text: label,
-              children: [
-                if (isRequired)
-                  TextSpan(
-                    text: ' *',
-                    style: TextStyle(color: theme.colorScheme.error),
-                  ),
-              ],
-            ),
+          ReadMoreText(
+            label,
+            trimLines: 3,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
+            extraSpan: isRequired
+                ? TextSpan(
+                    text: ' *',
+                    style: TextStyle(color: theme.colorScheme.error),
+                  )
+                : null,
           ),
           if (_buildSubtitleText() != null) ...[
             const SizedBox(height: 4),
-            Text(
+            ReadMoreText(
               _buildSubtitleText()!,
+              trimLines: 2,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -178,8 +178,9 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(
+                  child: ReadMoreText(
                     note,
+                    trimLines: 3,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

@@ -8,12 +8,16 @@ class _SectionStats {
   final double totalPoints;
   final int conformCount;
   final int nonConformCount;
+  final int totalAnswered;
+  final int totalCriteria;
 
   _SectionStats({
     required this.group,
     required this.totalPoints,
     required this.conformCount,
     required this.nonConformCount,
+    required this.totalAnswered,
+    required this.totalCriteria,
   });
 
   int get totalPassFail => conformCount + nonConformCount;
@@ -36,11 +40,17 @@ class DynamicSectionSummary extends StatelessWidget {
     double totalPoints = 0;
     int conformCount = 0;
     int nonConformCount = 0;
+    int totalAnswered = 0;
+    int totalCriteria = 0;
 
     void traverse(GroupDto g) {
+      totalCriteria += g.criteria.length;
       for (final c in g.criteria) {
         final answer = answersMap[c.id];
         if (answer != null) {
+          if (answer.value != null) {
+            totalAnswered++;
+          }
           totalPoints += answer.numericValue ?? 0;
           if (answer.value == 'conform') {
             conformCount++;
@@ -60,6 +70,8 @@ class DynamicSectionSummary extends StatelessWidget {
       totalPoints: totalPoints,
       conformCount: conformCount,
       nonConformCount: nonConformCount,
+      totalAnswered: totalAnswered,
+      totalCriteria: totalCriteria,
     );
   }
 
@@ -67,31 +79,82 @@ class DynamicSectionSummary extends StatelessWidget {
     final theme = Theme.of(context);
     
     Widget valueWidget;
+    Color? pillColor;
+    Color? textColor;
+    BoxBorder? pillBorder;
+
     if (scoringMode == 'pass_fail') {
       final rate = (stat.passRate * 100).round();
+      if (rate == 100) {
+        pillColor = AppTheme.success.withValues(alpha: 0.15);
+        textColor = AppTheme.success;
+      } else if (rate > 50) {
+        pillColor = AppTheme.warning.withValues(alpha: 0.15);
+        textColor = AppTheme.warning;
+      } else {
+        pillColor = theme.colorScheme.error.withValues(alpha: 0.15);
+        textColor = theme.colorScheme.error;
+      }
       valueWidget = Text(
         '$rate% Pass (${stat.conformCount}/${stat.totalPassFail})',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: isWorst ? theme.colorScheme.error : null,
-          fontWeight: isWorst ? FontWeight.bold : FontWeight.w600,
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.bold,
         ),
       );
-    } else if (scoringMode == 'penalty') {
+    } else if (scoringMode == 'accumulation') {
       final pts = stat.totalPoints.toInt();
+      pillColor = AppTheme.success.withValues(alpha: 0.15);
+      textColor = AppTheme.success;
       valueWidget = Text(
-        '-$pts pt${pts != 1 ? 's' : ''}',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: isWorst ? theme.colorScheme.error : null,
-          fontWeight: isWorst ? FontWeight.bold : FontWeight.w600,
+        '+$pts pt${pts != 1 ? 's' : ''}',
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    } else if (scoringMode == 'survey') {
+      pillColor = theme.colorScheme.surfaceContainerHighest;
+      textColor = theme.colorScheme.onSurfaceVariant;
+      valueWidget = Text(
+        '${stat.totalAnswered}/${stat.totalCriteria} Answered',
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    } else if (scoringMode == 'checklist') {
+      final faults = stat.totalPoints.toInt();
+      if (faults > 0) {
+        pillColor = theme.colorScheme.error.withValues(alpha: 0.15);
+        textColor = theme.colorScheme.error;
+        pillBorder = Border.all(color: theme.colorScheme.error.withValues(alpha: 0.5));
+      } else {
+        pillColor = AppTheme.success.withValues(alpha: 0.15);
+        textColor = AppTheme.success;
+      }
+      valueWidget = Text(
+        '$faults Fault${faults != 1 ? 's' : ''}',
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.bold,
         ),
       );
     } else {
+      // Penalty mode
       final pts = stat.totalPoints.toInt();
+      if (pts > 0) {
+        pillColor = theme.colorScheme.error.withValues(alpha: 0.15);
+        textColor = theme.colorScheme.error;
+      } else {
+        pillColor = AppTheme.success.withValues(alpha: 0.15);
+        textColor = AppTheme.success;
+      }
       valueWidget = Text(
-        '+$pts pt${pts != 1 ? 's' : ''}',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: isWorst ? AppTheme.warning : null,
-          fontWeight: isWorst ? FontWeight.bold : FontWeight.w600,
+        '-$pts pt${pts != 1 ? 's' : ''}',
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.bold,
         ),
       );
     }
@@ -126,7 +189,15 @@ class DynamicSectionSummary extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          valueWidget,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: pillColor,
+              border: pillBorder,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: valueWidget,
+          ),
         ],
       ),
     );
@@ -138,21 +209,22 @@ class DynamicSectionSummary extends StatelessWidget {
 
     final stats = rootGroups.map((g) => _calculateStats(g)).where((s) {
       if (scoringMode == 'pass_fail') return s.totalPassFail > 0;
-      return s.totalPoints > 0 || s.conformCount > 0 || s.nonConformCount > 0;
+      if (scoringMode == 'survey') return s.totalCriteria > 0;
+      return s.totalPoints > 0 || s.conformCount > 0 || s.nonConformCount > 0 || s.totalCriteria > 0;
     }).toList();
 
     if (stats.isEmpty) return const SizedBox.shrink();
 
-    _SectionStats? worstSection;
-    if (scoringMode == 'penalty') {
-      worstSection = stats.reduce((curr, next) => curr.totalPoints > next.totalPoints ? curr : next);
-      if (worstSection.totalPoints == 0) worstSection = null;
-    } else if (scoringMode == 'pass_fail') {
-      worstSection = stats.reduce((curr, next) => curr.passRate < next.passRate ? curr : next);
-      if (worstSection.nonConformCount == 0) worstSection = null;
+    bool Function(_SectionStats) isWorst = (s) => false;
+    if (scoringMode == 'pass_fail') {
+      final worstRate = stats.map((s) => s.passRate).reduce((a, b) => a < b ? a : b);
+      isWorst = (s) => s.passRate == worstRate && s.nonConformCount > 0;
     } else if (scoringMode == 'accumulation') {
-      worstSection = stats.reduce((curr, next) => curr.totalPoints < next.totalPoints ? curr : next);
-      if (worstSection.totalPoints == 0) worstSection = null;
+      final worstPts = stats.map((s) => s.totalPoints).reduce((a, b) => a < b ? a : b);
+      isWorst = (s) => s.totalPoints == worstPts && s.totalPoints > 0;
+    } else if (scoringMode != 'survey') {
+      final worstPts = stats.map((s) => s.totalPoints).reduce((a, b) => a > b ? a : b);
+      isWorst = (s) => s.totalPoints == worstPts && s.totalPoints > 0;
     }
 
     return Card(
@@ -172,7 +244,7 @@ class DynamicSectionSummary extends StatelessWidget {
               style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
-            ...stats.map((s) => _buildSummaryRow(context, s, s == worstSection)),
+            ...stats.map((s) => _buildSummaryRow(context, s, isWorst(s))),
           ],
         ),
       ),

@@ -2,7 +2,7 @@
 description: Execute a screenshot-based visual and aesthetic audit using AI vision models. Use when evaluating UI components, spacing, proportion, and "taste."
 ---
 
-# Workflow: /evaluate-visuals
+# Workflow: /check-visuals
 
 > [!NOTE]
 > This workflow evaluates the deployed visual rendering of a screen. It uses screenshot parsing rather than text/code inspection to judge proportion, whitespace harmony, and accessibility rendering.
