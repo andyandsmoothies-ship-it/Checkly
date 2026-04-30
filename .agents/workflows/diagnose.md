@@ -19,6 +19,10 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 ```markdown
 # Task: [Bug / Error Topic Name]
 Workflow: /diagnose | Track: [A / B1 / B2 / C]
+
+## Input Lineage
+- **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
+
 ## Phases
 - [ ] Phase 1: Symptom Isolation
 - [ ] Phase 2: Skill & Rule Discovery
@@ -70,7 +74,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
-> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST INCLUDE: `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
+> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
 > 
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Diagnostic Verdict & Persistent path.

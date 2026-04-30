@@ -19,6 +19,10 @@ description: Easy-to-read analysis workflow for standard features and bugs.
 ```markdown
 # Task: [Feature / Bug / Topic Name]
 Workflow: /analyze-feature | Track: [A / B1 / B2]
+
+## Input Lineage
+- **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
+
 ## Phases
 - [ ] Phase 1: Search & Understand
 - [ ] Phase 2: Check Impacts & States
@@ -58,7 +62,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Step | Instructions |
 |---|---|
-| **Acceptance Criteria** | You must write clear Acceptance Criteria for all tasks. Your plan must include a Test Contract section (ID, Exact Text, Boundary Constraints, Error States). Clearly explain what happens for Auth, Network errors, and Empty states. |
+| **Acceptance Criteria** | You must write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
 | **Tools Needed** | Write down which skills the Builder will need. Write down the commands to test the code (like `flutter test` or `dotnet test`). |
 | **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Do not print the whole plan in the chat. Make it easy for a human to read. |
 | **Clear Goals** | The plan must have clear steps (like 'Write X test -> Check it fails -> Write Y code -> Check it passes'). |
@@ -97,10 +101,12 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > [!IMPORTANT]
 > **File Format:** Your `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST have these exact sections. Keep it short and simple.
 > - `<latent_space_scratchpad>`: Your hidden thoughts about edge cases.
+> - `## Input Lineage`: Absolute path of the source Epic Plan, Bug Report, or idea document.
 > - `## Executive Summary & Out of Scope`
 > - `## Logs & Audits`: What logs or database trails are needed.
 > - `## 4-State Matrix` (Success, Error, Empty, Loading)
-> - `## Test Contracts` (ID, Exact Text, State Matrix, Why it fails first)
+> - `## Test Contracts` (ID, Exact Text, State Matrix, Why it fails first). **CRITICAL:** Every boundary constraint MUST be an explicit row.
+> - `## Test Fixture & Payloads` (Explicit setup requirements like "Seeded Admin" and raw JSON Request/Response examples for API slices).
 > - `## Tools & Commands` (Skills and test commands)
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
 > - `## Concept Diagram`: A simple text flowchart (like `[User] --> [Click] --> [Save]`) to explain the idea.

@@ -18,6 +18,10 @@ description: Acceptance Test-Driven Development — defines acceptance tests BEF
 ```markdown
 # Task: [Feature / Acceptance Test Topic]
 Workflow: /atdd | Track: [B2 / C]
+
+## Input Lineage
+- **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
+
 ## Phases
 - [ ] Phase 1: Spec Discovery & Persona
 - [ ] Phase 2: SDET Execution
@@ -83,7 +87,7 @@ Workflow: /atdd | Track: [B2 / C]
 ## Phase 3: Deliverable (Handoff)
 | Step | Execution Contract |
 |---|---|
-| **Artifact Form** | Create `specs_[feature].md` & `test_cases_[feature].md` (Markdown table of approved ACs in strict Given/When/Then format). |
+| **Artifact Form** | Create `specs_[feature].md` & `test_cases_[feature].md` (Markdown table of approved ACs in strict Given/When/Then format). MANDATORY: Both files MUST include an `## Input Lineage` block at the top containing the absolute path of the upstream plan. |
 | **Metadata** | Append `Test Infrastructure Map` to Specs. |
 | **Workflow Merge**| Update `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` with test names. |
 | **Clean Handoff** | Complete block below -> YIELD. |

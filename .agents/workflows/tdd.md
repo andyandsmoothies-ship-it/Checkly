@@ -14,6 +14,10 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
   ```markdown
   # Task: [Test Generation Topic]
   Workflow: /tdd | Track: [A / B1 / B2 / C]
+
+  ## Input Lineage
+  - **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
+
   ## Phases
   - [ ] Phase 1: Read the Plan
   - [ ] Phase 2: Write Tests (Red Phase)
@@ -79,7 +83,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 ## Phase 4: Handoff
 - **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Do not print long logs in the chat.
-- **Write Summary**: Use `write_to_file` to create `walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them.
+- **Write Summary**: Use `write_to_file` to create `walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
 - **Give Command**: Print the exact block below for the user:
 
 ## 🚦 User Handoff & Next Steps

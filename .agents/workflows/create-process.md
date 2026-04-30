@@ -1,9 +1,8 @@
 ---
-name: Process-bility Diagram Design
 description: Trigger this workflow when the user asks to design a BPMN diagram, document a business process, simplify a complex workflow, or map agile user stories to processes using the Kevin Tan Process-bility framework.
 ---
 
-# Workflow: /design-process
+# Workflow: /create-process
 
 > [!NOTE]
 > This workflow guides the AI in designing a 10/10 business process diagram. It strictly enforces the "Process-bility" mindset (Less is More, Visual Balance, Storytelling) while correctly applying formal BPMN elements (Events, Activities, Gateways, Swimlanes, and Artifacts). 

@@ -68,6 +68,14 @@ A test method must not contain more than **5 sequential HTTP calls** (or DB oper
 
 **Why 5?** It maps to realistic integration tests: register user + login + create prerequisite + perform action + verify result. Beyond 5, you're testing a workflow, not a criterion.
 
+### Rule: One Scenario File Per Slice (Anti-Collision)
+
+When writing ATDD tests, **DO NOT** append to an existing mega-file. You must scaffold a **new, dedicated test file** for the current feature slice.
+
+**Why:**
+1. **Parallel Execution:** Prevents unrecoverable file corruption and Git merge conflicts when multiple AI agents or human developers work simultaneously.
+2. **Blast Radius:** Keeps test failures isolated to a single, readable file.
+
 ---
 
 ## Gate 3: Structured Smoke Gate Report

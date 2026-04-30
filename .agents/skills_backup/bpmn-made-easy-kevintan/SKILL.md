@@ -20,7 +20,7 @@ You don't need 100 symbols. Rely on these five to represent 90% of business logi
 ## 2. The Gateway Rule (The Toilet Signage Analogy)
 **Gateways do not make decisions; they only route flow.** The decision was made in a preceding task.
 - Use Exclusive (XOR), Parallel (AND), Inclusive (OR), and Event-Based gateways.
-- **Avoid "Exclusive Merging" diamonds**: If multiple lines naturally converge at a task, an extra merging diamond is visual noise. Just point the flows directly to the task.
+- **Prohibit "Exclusive Merging" Gateways**: If multiple lines naturally converge at a task, an extra merging diamond is visual noise and implies a false decision point. Just point the flows directly to the task using a **T-junction** merge.
 
 ## 3. Visual Balance ("Reading Without Reading")
 Models must be read effortlessly.
@@ -49,4 +49,4 @@ Bridge the gap between Business and IT:
 - **Unstructured Work:** Use the **Ad Hoc Sub-process (~)** for creative/flexible tasks that cannot be mapped linearly, providing a "white spot" for human flexibility.
 
 ## Output Formatting
-When outputting process models (e.g., in text explanations, Markdown, Mermaid, or PlantUML), ensure you apply the "Verb + Object" rule, clearly delineate the "Happy Path" horizontally, and narrate the process as a cohesive story before diving into the technical nodes.
+When outputting process models, **strictly use the `mcp_drawio_open_drawio_xml` tool to generate Draw.io XML**. Never use Mermaid or PlantUML, as their auto-layout engines often tangle paths and violate the Linear Flow Rule. Ensure you apply the "Verb + Object" rule, clearly delineate the "Happy Path" horizontally, drop exceptions vertically using T-junctions, and narrate the process as a cohesive story before diving into the technical nodes.

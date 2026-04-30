@@ -10,7 +10,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 > Used to compare multiple competing research artifacts from isolated `/research` sessions and force a mathematically backed, rigorously red-teamed decision.
 
 ## Phase 1: Ingestion & Task Setup
-- [ ] **Task Tracking**: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the standard schema. List ONLY the final decision artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase.
+- [ ] **Task Tracking**: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the standard schema. Include an `## Input Lineage` section tracking the input links/directories. List ONLY the final decision artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase.
 - [ ] **Load Research**: Execute `list_dir` on `.agents/tmp/research/` to find all competing research options.
 - [ ] **Read Artifacts**: Use `view_file` to thoroughly read the contents of each competing option.
 - [ ] **Normalize**: Extract the core "Hypothesis", "Blast Radius", and the `[ORIGIN_IDEA]` from each option.
@@ -31,7 +31,8 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 ## Phase 4: Architectural Decision Record (ADR) Generation
 - [ ] **Generate ADR**: MANDATORY: Use `write_to_file` to save `decision_record_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the ADR directly to the chat UI.
 - [ ] **Payload Schema**: The output MUST include:
-    1. `[ORIGIN_IDEA]`: The immutable core business goal, preserved at the top.
+    1. `## Input Lineage`: Absolute paths to the compared research artifacts.
+    2. `[ORIGIN_IDEA]`: The immutable core business goal, preserved at the top.
     2. `<latent_space_scratchpad>` for internal debate.
     3. The normalized summary of options.
     4. The Red Team attack vectors.

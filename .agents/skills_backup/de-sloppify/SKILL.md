@@ -14,7 +14,9 @@ description: >
 
 ## Core Principles
 
-1. **Systematic over random** — Follow the cleanup pipeline in order. Formatting first (because it touches every file), dead code last (because earlier steps might reveal it). Random cleanup misses things and creates merge conflicts.
+1. **The Broken Window Protocol (Pre-Flight)** — A single messy file gives AI permission to write messy code. If you open a legacy file and detect unused imports, warnings, or commented-out code, you MUST halt feature work and run this skill to repair the "broken windows" first.
+
+2. **Systematic over random** — Follow the cleanup pipeline in order. Formatting first (because it touches every file), dead code last (because earlier steps might reveal it). Random cleanup misses things and creates merge conflicts.
 
 2. **Verify after each step** — Run `dotnet build` and `dotnet test` after every step. A cleanup that breaks something is worse than the mess it was fixing. Never batch multiple cleanup types into one untested change.
 

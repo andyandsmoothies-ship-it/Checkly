@@ -62,4 +62,4 @@ When orchestrating work or handing off an analysis plan (e.g., in `analysis_[top
 - **Entry State Required**: [What MUST be true before this slice can begin?]
 - **Exit State Guaranteed**: [What invariant MUST hold true after this slice completes?]
 - **Architectural Scope**: [Explicitly mention the UI, Backend, and DB components this slice will touch]
-- **Acceptance Criteria**: [How will we reliably test that this end-to-end slice is complete?]
+- **Acceptance Criteria**: [Provide a strict Test Contract Matrix. **CRITICAL:** Every boundary constraint and edge case MUST be an explicit row in the matrix. Include raw JSON Request/Response payloads for APIs, and explicitly state required test fixture setup (e.g., 'Requires Seeded Admin').]

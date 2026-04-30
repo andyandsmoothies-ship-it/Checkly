@@ -20,6 +20,9 @@ description: The Core Builder Implementation Workflow
 # Task: [Name]
 Workflow: /implement | Track: [A / B1 / B2 / C]
 
+## Input Lineage
+- **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
+
 ## Upfront
 - [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
 - [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
@@ -87,8 +90,9 @@ Review from 6 angles:
 ### Walkthrough Schema
 > [!IMPORTANT]
 > Your `walkthrough_[topic].md` MUST INCLUDE the following EXACT sections:
-> 1. `## Decision Log`: Proposed vs Implemented.
-> 2. `## Verification Handoff`: Steps for QA.
+> 1. `## Input Lineage`: Absolute path of the implementation plan or input file.
+> 2. `## Decision Log`: Proposed vs Implemented.
+> 3. `## Verification Handoff`: Steps for QA.
 > 3. `<test_trace>`: Raw terminal execution output from a GLOBAL test run (`dotnet test` or `flutter test`). PROHIBITED: Isolated test runs (`flutter test path/...`). You MUST prove you didn't break existing tests.
 > 4. `<forensic_evidence>`: General validation commands run.
 > 5. `## Gotcha Protocol`: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if new quirks found.

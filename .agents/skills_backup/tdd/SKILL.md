@@ -58,6 +58,14 @@ These are two different things that often happen at the same time. Don't confuse
 > [!IMPORTANT]
 > When specs arrive from the `/atdd` workflow, they ARE the RED starting point. Do not re-specify what ATDD already defined — go straight to GREEN. BDD (ATDD) defines the *edges of the box* at the macro level; TDD *fills it in* at the micro level. They are nested: a high-level BDD scenario fails first, prompting the developer into the granular TDD Red-Green-Refactor cycle to implement the underlying logic.
 
+## Anti-Pattern: The Mirror Function Trap
+
+**DO NOT copy-paste private production methods into your test file.**
+
+When testing private logic during the RED phase, never declare a clone of the production function inside the test file just to make it compile. Testing a clone decouples the test from reality—it will pass even if the real system breaks.
+
+**Correct approach:** Test observable behavior through the public API. If you must test a private internal method directly, expose the real production logic using your language's standard testing access modifier. Never write business logic inside a test namespace.
+
 ## Anti-Pattern: Horizontal Slices
 
 **DO NOT write all tests first, then all implementation.** This is "horizontal slicing" — treating RED as "write all tests" and GREEN as "write all code."
@@ -173,6 +181,7 @@ When you encounter existing code that lacks tests, do NOT attempt a full rewrite
 These apply regardless of language, framework, or platform:
 
 - **Avoid Raw Selectors** — Do not assert against implementation-specific identifiers (e.g., CSS class names, widget keys, internal method names). Assert against *observable behavior* (status codes, returned values, visible state).
+- **The Mirror Function Trap** — NEVER copy-paste production logic into a test file to bypass access modifiers. Testing cloned functions completely decouples the test from production reality. If a private method must be unit-tested directly, import `package:meta/meta.dart` (or `.NET` `InternalsVisibleTo`) and annotate the real production method with `@visibleForTesting` to expose it.
 - **Abstraction Layer** — If your project has a shared test helper, driver, or factory (e.g., `WebApplicationFactory`, `WidgetTester`, `AppDriver`, `render()`), always use it. Never bypass your project's established test scaffolding.
 - **Naming Convention** — Test names must read as specifications: `Entity_Action_ExpectedOutcome` (e.g., `Auditor_SubmitWithMissingField_Returns400`, `Cart_Checkout_DecreasesStock`). Never use `Test1`, `MyTest`, or `It_Works`.
 - **One Assertion Per Concept** — Each test should prove exactly one behavioral claim. Multiple assertions are acceptable only if they all verify the same logical outcome.

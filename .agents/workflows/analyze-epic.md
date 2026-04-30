@@ -22,6 +22,10 @@ description: Easy-to-read analysis workflow for large features and epics.
 ```markdown
 # Task: [Epic Name]
 Workflow: /analyze-epic | Track: C
+
+## Input Lineage
+- **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
+
 ## Phases
 - [ ] Phase 1: Discover & Plan
 - [ ] Phase 2: Review Risks
@@ -38,14 +42,15 @@ Workflow: /analyze-epic | Track: C
 |---|---|
 | **Check the Goal** | Before proposing a technical plan, ask: Does this actually solve the user's original problem? If the plan is too complex and forgets the main goal, stop and fix it. |
 | **Check Ideas** | If the user provides a document or idea, check if it works with the current code. Check if it breaks Clean Architecture or causes bad side effects. Reject impossible or dangerous ideas. |
-| **Load Skills** | Load architecture skills (like `clean-architecture`) to help you plan. |
+| **Load Skills & Shaping** | Load the `shaping` skill and architecture skills (like `clean-architecture`). Use the Fit Check matrix from the shaping skill to map requirements against possible shapes (options) before committing to a plan. |
+| **State Constraints** | Explicitly list the user's constraints (e.g., must work offline, zero-bloat, performance limits) and ensure all proposed options optimize for them. |
 | **Build vs Buy** | Search the code to see if you can reuse existing components instead of building new ones. |
 | **Deep Modules** | Make sure core APIs hide complexity (Deep Modules). Do not create empty wrappers just to pass data (Shallow Modules). |
 | **Core vs Leaf** | Clearly list which parts are Core (needs strong design) and which are Leaf (can be simple, repetitive code). |
 | **Keep It Simple**| If you suggest a complex design (like a Factory or EventBus), you must explain why a simple flat structure or basic function would not work. |
 | **Backend Only?** | Check if this is a "Backend-Only" task (like a background job). If yes, skip the UI and Frontend API steps. |
 | **Find Connections**| Before proposing changes, use `grep_search` to find exact names across the project. Map out the Database, Dependency Injection, and APIs. |
-| **Compare Options**| For each choice, write the Pros, Cons, and Impacts. Explain why your choice is the best. |
+| **Demand Options**| You MUST generate at least 2 distinct architectural options (Shapes) in the Decision Matrix. For each choice, write the Pros, Cons, and Impacts. Vigorously defend why your final choice is the best. |
 | **Assess Risks** | Write down the technical and operational risks for each choice, and explain how to fix or avoid them. |
 | **Set Limits** | Define limits for Performance, Security, and Logging before you start. |
 
@@ -68,7 +73,7 @@ Workflow: /analyze-epic | Track: C
 |---|---|
 | **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` folder. Do not print the whole plan in the chat. |
 
-> **@@SCAN**: Does the document have all 14 required sections?
+> **@@SCAN**: Does the document have all required sections?
 
 ## Phase 4: Break Down Work
 
@@ -77,7 +82,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Instructions |
 |---|---|
-| **Slice Work** | Load the `use-case-slicing` skill. Break the Epic into 3-5 smaller slices (like UI to Database). If it is Backend-Only, slice by technical steps. Add these slices to the end of your Epic Plan. |
+| **Slice Work** | Load the `use-case-slicing` skill. Break the Epic into smaller slices (like UI to Database). If it is Backend-Only, slice by technical steps. Add these slices to the end of your Epic Plan. |
 | **Plan Routes** | Create a list of routes for each slice (e.g., `Slice N | Track A/B | Route Path`). |
 
 ### Routing Guide
@@ -94,7 +99,8 @@ Send each slice to the right workflow:
 > [!IMPORTANT]
 > **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST have these exact sections. Keep it short and simple.
 > 1. `<latent_space_scratchpad>`: Your hidden thoughts and tradeoffs.
-> 2. `## Executive Summary`
+> 2. `## Input Lineage`: Absolute path to the original requirements document or idea.
+> 3. `## Executive Summary`
 > 3. `## Decision Matrix`
 > 4. `## Risk Assessment`
 > 5. `## Architecture Flow`: (Clear text summary of how data moves)
