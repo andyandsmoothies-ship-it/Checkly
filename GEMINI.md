@@ -18,6 +18,9 @@
 - **Rule**: Prove you are using the project's existing tools before building your own custom logic.
 - **Enforcement**: Search `server/Common/` or `lib/_shared/` before building utilities, routing logic, or UI components.
 
+### Rule: Trust Shared Tools
+- **Rule**: When using a shared utility, delete any surrounding guard clauses or boilerplate it already handles internally. Don't write manual checks around it.
+
 ### Rule: Tests Must Come First
 - **Rule**: If a test fails, fix the code, not the test.
 - **Enforcement**: Never write tests and main code in the exact same prompt cycle.

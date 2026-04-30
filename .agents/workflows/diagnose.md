@@ -55,10 +55,11 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Skill Refresh** | IF (Root cause domain != Symptom domain) THEN Re-scan and load new Domain `SKILL.md`. |
+| **Redundancy Check** | MANDATORY: Before proposing a fix that swaps in a shared utility/widget, verify if it makes surrounding `if` guards or boilerplate redundant. Delete the redundant code. |
 | **Artifact Gen** | Export `failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
 | **Constraint (Micro-Experiments)** | PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in the `task_` file and pivot. |
 
-> **@@SCAN**: (1) If code was changed, was it strictly under 5 lines? (2) If a test failed twice, did you officially pivot to a new hypothesis?
+> **@@SCAN**: (1) If code was changed, was it strictly under 5 lines? (2) Did you delete redundant guards when applying shared tools? (3) If a test failed twice, did you officially pivot to a new hypothesis?
 
 ## Phase 4: Deliverable Handoff
 
@@ -82,6 +83,6 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

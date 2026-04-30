@@ -93,9 +93,10 @@ Review from 6 angles:
 > 4. `<forensic_evidence>`: General validation commands run.
 > 5. `## Gotcha Protocol`: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if new quirks found.
 >
-> **Script Verification Gate (MANDATORY)**: Execute via `run_command`
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 
 ## 🚦 User Handoff & Next Steps
 > [!IMPORTANT]

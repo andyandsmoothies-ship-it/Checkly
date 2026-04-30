@@ -22,6 +22,9 @@ import sys
 import os
 import re
 
+TARGET_TASK_FILE = None
+
+
 # Force UTF-8 encoding for standard output to prevent crash on emojis in Windows CMD
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
@@ -83,9 +86,19 @@ def find_files_by_prefix(directory: str, prefix: str) -> list[str]:
         return []
 
 
+def get_latest_task_file(session_dir: str) -> str | None:
+    if TARGET_TASK_FILE:
+        return TARGET_TASK_FILE
+        
+    task_files = [f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()]
+    if not task_files:
+        return None
+    # Sort alphabetically (which works for YYYYMMDD_HHMMSS) to get the newest file
+    return sorted(task_files)[-1]
+
 def get_active_artifacts(session_dir: str) -> list[str]:
     """Extracts explicit, scoped artifact paths from the active task.md Inventory."""
-    task_path = next((f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()), None)
+    task_path = get_latest_task_file(session_dir)
     if not task_path:
         return []
     
@@ -141,7 +154,7 @@ def warn(msg: str) -> None:
 
 def check_task_md(session_dir: str) -> None:
     print("\n[CHECK 1] Scanning task.md for incomplete phases...")
-    task_path = next((f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()), None)
+    task_path = get_latest_task_file(session_dir)
 
     if task_path is None:
         fail(
@@ -175,7 +188,7 @@ def check_task_md(session_dir: str) -> None:
 
 def check_artifact_inventory(session_dir: str) -> None:
     print("\n[CHECK 2] Scanning Artifact Inventory for missing files on disk...")
-    task_path = next((f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()), None)
+    task_path = get_latest_task_file(session_dir)
     if task_path is None:
         warn("Cannot run artifact physicality check — task.md not found.")
         return
@@ -331,7 +344,8 @@ def check_forensic_evidence(session_dir: str) -> None:
         
     for file_path in artifacts_to_check:
         name = os.path.basename(file_path)
-        if any(k in name.lower() for k in ["research", "analysis", "audit", "diagnose", "failure_report", "walkthrough"]):
+        lower_name = name.lower()
+        if lower_name.startswith("research") or lower_name.startswith("analysis") or lower_name.startswith("audit") or lower_name.startswith("diagnose") or lower_name.startswith("failure_report") or lower_name.startswith("walkthrough") or lower_name.startswith("executed_tests"):
             with open(file_path, encoding="utf-8") as f:
                 content = f.read().lower()
                 
@@ -340,7 +354,8 @@ def check_forensic_evidence(session_dir: str) -> None:
             test_trace_match = re.search(r"<test_trace>(.*?)</test_trace>", content, re.DOTALL)
             
             # 1. Enforce Latent Space Scratchpad on generative AI tasks (Discovery/Analysis)
-            if any(k in name.lower() for k in ["research", "analysis", "audit", "diagnose"]):
+            is_analysis = lower_name.startswith("research") or lower_name.startswith("analysis") or lower_name.startswith("audit") or lower_name.startswith("diagnose")
+            if is_analysis:
                 if not latent_match:
                     fail(
                         f"'{name}' is missing the '<latent_space_scratchpad>' block.\n"
@@ -350,7 +365,8 @@ def check_forensic_evidence(session_dir: str) -> None:
                     fail(f"'{name}' Latent Scratchpad is too shallow. Expand your computational thinking before concluding.")
 
             # 2. Enforce Test Trace feedback loop on Execution/QA Tasks
-            if any(k in name.lower() for k in ["walkthrough", "executed_tests", "test_contracts"]):
+            is_execution = lower_name.startswith("walkthrough") or lower_name.startswith("executed_tests") or lower_name.startswith("test_contracts")
+            if is_execution:
                 if not test_trace_match:
                     fail(
                         f"'{name}' is missing the '<test_trace>' block.\n"
@@ -374,7 +390,7 @@ def check_forensic_evidence(session_dir: str) -> None:
                     f"           Fix: Provide explicit terminal/tool output to prove you did the work."
                 )
             else:
-                if any(k in name.lower() for k in ["research", "analysis", "audit", "diagnose"]):
+                if is_analysis:
                     if "grep_search" not in evidence_text.lower() and "view_file" not in evidence_text.lower():
                         fail(
                             f"'{name}' Forensic Evidence lacks Proof of Search.\n"
@@ -438,20 +454,27 @@ def check_workspace_visibility(session_dir: str) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    global TARGET_TASK_FILE
     if len(sys.argv) < 2:
         print(
             "Usage: python .agents/scripts/verify_workflow.py \"<session-brain-dir>\"\n"
+            "   OR: python .agents/scripts/verify_workflow.py \"<absolute-path-to-specific-task.md>\"\n"
             "Example: python .agents/scripts/verify_workflow.py "
             "\"C:\\Users\\HP\\.gemini\\antigravity\\brain\\7d2416ce-...\""
         )
         sys.exit(1)
 
-    session_dir = sys.argv[1].strip().strip('"')
+    input_path = sys.argv[1].strip().strip('"')
 
-    if not os.path.isdir(session_dir):
+    if os.path.isfile(input_path) and input_path.endswith('.md'):
+        TARGET_TASK_FILE = input_path
+        session_dir = os.path.dirname(input_path)
+    elif os.path.isdir(input_path):
+        session_dir = input_path
+    else:
         print(
-            f"FATAL: Session directory not found: {session_dir}\n"
-            f"Fix: Pass the correct absolute path to the brain/<conversation-id>/ folder."
+            f"FATAL: Input path not found or invalid: {input_path}\n"
+            f"Fix: Pass the correct absolute path to the brain/<conversation-id>/ folder OR the specific task.md file."
         )
         sys.exit(1)
 

@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../locator.dart';
+import '../../features/auth/manager/auth_manager.dart';
+
 /// API base URL — configurable via `--dart-define=API_BASE_URL=...`.
 /// Defaults to Android emulator localhost mapping for development.
 const String _defaultBaseUrl = String.fromEnvironment(
@@ -18,6 +21,25 @@ Dio createDio({String? baseUrl}) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+      },
+    ),
+  );
+
+  // Global 401 interceptor for token expiration/revocation
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onError: (error, handler) {
+        if (error.response?.statusCode == 401) {
+          final path = error.requestOptions.path;
+          if (!path.contains('/auth/login') && !path.contains('/auth/register')) {
+            try {
+              di<AuthManager>().logout();
+            } catch (e) {
+              debugPrint('[API] Failed to auto-logout on 401: $e');
+            }
+          }
+        }
+        handler.next(error);
       },
     ),
   );

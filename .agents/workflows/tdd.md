@@ -99,7 +99,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 Run this exact command using the `run_command` tool:
 // turbo
-`cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+`cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 
 - Code 0 (PASS): Workflow complete. Share summary and stop.
 - Code 1 (FAIL): Fix reported errors and try again.

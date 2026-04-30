@@ -5,6 +5,7 @@ import '../../templates/models/template_dto.dart';
 import '../../../_shared/theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'audit_shared_widgets.dart';
+import '../../../_shared/widgets/app_network_image.dart';
 
 bool _isScored(String? inputType) =>
     inputType != 'text' &&
@@ -94,12 +95,7 @@ class ReadOnlyCriterionRow extends StatelessWidget {
       } catch (_) {}
     }
 
-    // Local paths (from offline draft) are never on server history — skip them.
-    final hasPhoto =
-        photoUrl != null &&
-        photoUrl.isNotEmpty &&
-        !photoUrl.startsWith('/') &&
-        !photoUrl.startsWith('file://');
+    final hasPhoto = photoUrl != null && photoUrl.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -198,26 +194,11 @@ class ReadOnlyCriterionRow extends StatelessWidget {
             const SizedBox(height: 8),
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                photoUrl,
+              child: AppNetworkImage(
+                url: photoUrl,
                 height: 160,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return SizedBox(
-                    height: 160,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: progress.expectedTotalBytes != null
-                            ? progress.cumulativeBytesLoaded /
-                                  progress.expectedTotalBytes!
-                            : null,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  );
-                },
                 errorBuilder: (context, error, stackTrace) => Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(

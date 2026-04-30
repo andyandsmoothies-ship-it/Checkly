@@ -80,6 +80,6 @@ description: Infrastructure & architecture audit — database health, security p
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}rain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).

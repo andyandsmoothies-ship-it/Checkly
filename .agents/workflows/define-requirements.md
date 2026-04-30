@@ -44,5 +44,6 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Workspace Copy**: Copy the artifact to `.agents/tmp/research/` so the user can review it.
 
 > **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`

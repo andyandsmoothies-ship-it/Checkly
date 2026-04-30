@@ -113,6 +113,6 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > **Script Verification (Required)**:
 > Use the `run_command` tool to run this script before finishing.
 > // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{App Data Directory}\brain\{Conversation ID}"`
+> `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and try again.
