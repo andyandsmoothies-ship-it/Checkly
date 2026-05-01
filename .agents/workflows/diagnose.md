@@ -33,17 +33,16 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | [NEW]  | brain/.../failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Report |
 ```
 
-## Phase 1: Symptom Isolation
+## Phase 1: The Feedback Loop & Isolation
 
 | Vector | Execution Contract |
 |---|---|
-| **Log Extraction** | **Script-First**: Check if `.agents/scripts/collect_logs.py` exists. If so, execute it first to aggregate trace logs physically into `brain/` before making hypotheses. |
-| **Context Trace** | IF (stack_trace == missing) THEN MANDATORY: Request trace from user. PROHIBITED: Debugging blind from static code. |
-| **Origin Trace** | MANDATORY: Trace data flows to their origin (the Write-Path). PROHIBITED: Stopping the investigation at the symptom layer (the Read-Path) if the data is persisted/mutated elsewhere. |
-| **Targeting** | MANDATORY: Narrow `view_file` or `grep_search`. PROHIBITED: full files reading. |
-| **Formal Reasoning**| MANDATORY: 1. `Premises` and `Execution Trace`. 2. Generate 3-5 explicit Hypotheses (with Evidence For/Against). 3. You MUST log these hypotheses strictly to the `task_` tracking file to prevent context sliding. |
+| **The Feedback Loop**| **MANDATORY**: Before guessing, construct a fast, deterministic pass/fail signal. Use a failing test, a `curl` script, or a throwaway harness. PROHIBITED: Hypothesizing without a reproducible loop. |
+| **Log Extraction** | **Script-First**: Check if `.agents/scripts/collect_logs.py` exists. Execute it to aggregate trace logs into `brain/`. |
+| **Origin Trace** | MANDATORY: Trace data flows to their origin (the Write-Path). PROHIBITED: Stopping at the Read-Path symptom. |
+| **Formal Reasoning**| MANDATORY: 1. Generate 3-5 *falsifiable* Hypotheses ("If X is the cause, then changing Y will prove it"). 2. Log them strictly to the `task_` file. |
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Exact file/line identified? (2) Client & server both searched? (3) Did you trace back to the Write-Path origin? (4) Are 3-5 hypotheses explicitly written in the `task_` file?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you build a fast, deterministic feedback loop (curl/test)? (2) Did you trace back to the Write-Path origin? (3) Are 3-5 falsifiable hypotheses explicitly written in the `task_` file?
 
 ## Phase 2: Skill & Rule Discovery
 

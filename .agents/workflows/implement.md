@@ -55,6 +55,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Immutable Mock Guard**| PROHIBITED: Changing existing ATDD Tests to make code pass. Adapt code to existing contract. |
 | **Red/Green Loop**| Turn RED test GREEN -> Refactor. Do NOT modify test files. |
 | **Refactor Safety**| `grep_search` 4 ways: 1) Direct calls, 2) Types, 3) Strings, 4) Test Mocks. |
+| **Zero Trust Code**| MANDATORY: Treat all inputs as hostile. Re-validate inputs at every layer. Do not implicitly trust upstream data cleansing. |
 | **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
 | **State Invariants**| Explicitly verify Entry Preconditions and Exit Postconditions. |
 | **Blast Radius** | IF modifying shared code -> Execute upstream regression tests. |

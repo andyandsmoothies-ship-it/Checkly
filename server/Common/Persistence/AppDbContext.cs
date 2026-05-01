@@ -798,6 +798,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             // Performance indexes: core query patterns
             e.HasIndex(x => new { x.ProgramId, x.Status });
             e.HasIndex(x => new { x.StoreId, x.Status });
+            e.HasIndex(x => new { x.ProgramId, x.CreatedAt }).IsDescending(false, true);
             e.HasIndex(x => x.AssignedById);
         });
     }

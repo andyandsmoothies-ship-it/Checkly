@@ -10,6 +10,11 @@ Before any implementation or analysis, include this checklist in your response:
 - **Rules Compliance**: [Confirm project governance adherence]
 - **Context Inventory**: [List rules, docs, or MCP schemas referenced]
 
+## Zero Trust AI Governance (The "Untrusted Actor" Mandate)
+**AI agents (including yourself) are treated as untrusted actors.**
+- **Rule**: Never implicitly trust that an upstream AI's plan or code is secure, optimized, or correct.
+- **Action**: Apply "Never Trust, Always Verify" to all AI outputs. Mandate Human-in-the-Loop (HITL) approval for architectural or security-boundary changes.
+
 ## Pre-Flight Check (CANONICAL)
 Before ANY workflow response involving analysis, design, or implementation:
 - [ ] > 1-minute task? → Create `task_boundary`

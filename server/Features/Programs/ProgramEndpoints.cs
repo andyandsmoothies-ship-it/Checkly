@@ -28,11 +28,10 @@ public static class ProgramEndpoints
             .WithName("GetMyAssignments")
             .RequireCapability(AppCapabilities.ProgramsAssignmentsMy);
 
-        // POST /api/programs/assignments/{id}/submit — role-guarded to store_manager ONLY
-        // Admin → 403 by design (TC4). No PBAC capability: execution is role-exclusive.
+        // POST /api/programs/assignments/{id}/submit — PBAC-gated program execution
         group.MapPost("/assignments/{id}/submit", SubmitProgramEvidence.HandleAsync)
             .WithName("SubmitProgramEvidence")
-            .RequireAuthorization(policy => policy.RequireRole("store_manager"));
+            .RequireCapability(AppCapabilities.ProgramsExecute);
 
         // ── Slice 3: HQ Review ────────────────────────────────────────────────
 
@@ -54,10 +53,29 @@ public static class ProgramEndpoints
             .RequireCapability(AppCapabilities.ProgramsReview);
 
         // ── Slice 5: Analytics & Aggregation ──────────────────────────────────
-        
+
         // GET /api/programs/{programId}/summary — HQ gets completion summary
         group.MapGet("/{programId}/summary", GetProgramSummary.Handle)
             .WithName("GetProgramSummary")
             .RequireCapability(AppCapabilities.ProgramsAssignmentsList);
+
+        // ── Slice 6: CRUD Parity ───────────────────────────────────────────────
+
+        // PUT /api/programs/{id} — Admin updates mutable fields on an active program
+        group.MapPut("/{id}", UpdateProgram.HandleAsync)
+            .WithName("UpdateProgram")
+            .RequireCapability(AppCapabilities.ProgramsManage);
+
+        // DELETE /api/programs/{id} — Admin soft-archives a program
+        group.MapDelete("/{id}", ArchiveProgram.HandleAsync)
+            .WithName("ArchiveProgram")
+            .RequireCapability(AppCapabilities.ProgramsManage);
+
+        // GET /api/programs/{id} — Retrieve a single program by ID
+        // NOTE: Must be declared AFTER all more-specific sub-path routes (e.g. /{id}/assignments)
+        // to prevent the catch-all parameter from intercepting them.
+        group.MapGet("/{id}", GetProgram.HandleAsync)
+            .WithName("GetProgram")
+            .RequireCapability(AppCapabilities.ProgramsList);
     }
 }

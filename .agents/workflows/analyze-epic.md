@@ -40,6 +40,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Instructions |
 |---|---|
+| **Interrogation Gate**| **MANDATORY**: Before writing a plan, cross-reference the user's request against the codebase. If terminology is sloppy or contradicts existing code, **STOP** and ask the user to clarify. |
 | **Check the Goal** | Before proposing a technical plan, ask: Does this actually solve the user's original problem? If the plan is too complex and forgets the main goal, stop and fix it. |
 | **Check Ideas** | If the user provides a document or idea, check if it works with the current code. Check if it breaks Clean Architecture or causes bad side effects. Reject impossible or dangerous ideas. |
 | **Load Skills & Shaping** | Load the `shaping` skill and architecture skills (like `clean-architecture`). Use the Fit Check matrix from the shaping skill to map requirements against possible shapes (options) before committing to a plan. |
@@ -116,7 +117,7 @@ Send each slice to the right workflow:
 > 
 > **Handoff Block:** Add `## Handoff Block` at the end containing:
 > 1. Final Epic decision and file path.
-> 2. List of Slices and when they run.
+> 2. List of Slices and when they run. (If there is only 1 phase, do not name it "Slice 1").
 > 3. **Next Steps**: A 1-2 sentence summary for the next agent.
 > 4. Exact next workflow command using the `{Absolute_Path}`.
 >

@@ -40,8 +40,10 @@ public static class AppCapabilities
     public const string ProgramsCreate = "programs:create";
     public const string ProgramsList = "programs:list";
     public const string ProgramsAssignmentsMy = "programs:assignments_my"; // SM: view own store's assignments
+    public const string ProgramsExecute = "programs:execute"; // submit evidence for assigned program work
     public const string ProgramsAssignmentsList = "programs:assignments_list"; // HQ/admin: view all assignments for a program
     public const string ProgramsReview = "programs:review"; // HQ/admin: reject or verify a submitted assignment
+    public const string ProgramsManage = "programs:manage"; // HQ/admin: update mutable fields or archive a program
 
     // ── Action Plan Transitions ───────────────────────────────────────────────
     // Imperative checks inside UpdateActionPlan.HandleAsync — not route-level guards.

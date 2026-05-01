@@ -15,11 +15,13 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Intake Gate**:
   - If the user provides a raw idea: Extract the `[ORIGIN_IDEA]`.
   - If the user provides an ADR (`decision_record.md`): Read the file, extract the chosen architecture, and use it as a strict constraint.
+- [ ] **Interrogation Gate (Grilling)**: **MANDATORY.** Before writing any plan, cross-reference the user's idea against the codebase and `GEMINI.md`. If terminology is sloppy (e.g., mixing "Account" and "User"), or if the idea contradicts existing code logic, **STOP**. Ask the user to clarify. Do not proceed until terminology is precise.
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Shaping skill loaded? (2) Input source identified (Raw vs ADR)?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Shaping skill loaded? (2) Input source identified (Raw vs ADR)? (3) Did you cross-reference terminology with the code and push back on vague terms?
 
 ## Phase 2: Use Cases & Slicing (The "What" and "Who")
 - [ ] **Actors & RBAC**: Explicitly list every user role (e.g., Admin, Auditor) and their strict permissions.
+- [ ] **Zero Trust Boundary**: Define the minimum privilege required. Explicitly document authorization boundaries and data classification (e.g., PII).
 - [ ] **Use Case Narrative**: Write the Main Success Scenario and all Alternate Flows (extensions/error states) strictly using the formal structure defined in the `use-case-creator` skill.
 - [ ] **Post-Execution Lifecycle**: Explicitly define what happens *after* the main scenario. (e.g., Can submissions be rejected/resubmitted? How is data aggregated? What are the reporting/dashboarding requirements?).
 - [ ] **Use-Case Slicing**: Apply Use-Case 3.0 slicing. Break the large use case into smaller, logical, deliverable slices.

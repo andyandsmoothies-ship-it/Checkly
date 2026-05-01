@@ -54,8 +54,6 @@ lock (Program.LoggerLock)
 
 try
 {
-
-
     Log.Information("Starting Checkly API");
 
     var builder = WebApplication.CreateBuilder(args);
@@ -347,17 +345,16 @@ try
         // Reload cache so new programs:* rows are immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
 
-        // Programs Module Slice 2A: Seed programs:assignments_my for store_manager (idempotent)
+        // Programs Module Slice 2A / PBAC execution: Seed store_manager assignment access + execution (idempotent)
         await db.Database.ExecuteSqlRawAsync("""
             INSERT INTO role_capabilities (id, role, capability, created_at)
             VALUES
-                (gen_random_uuid(), 'store_manager', 'programs:assignments_my', now())
+                (gen_random_uuid(), 'store_manager', 'programs:assignments_my', now()),
+                (gen_random_uuid(), 'store_manager', 'programs:execute', now())
             ON CONFLICT (role, capability) DO NOTHING;
             """);
 
-        // Reload cache so store_manager programs:assignments_my row is immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
-
         // Programs Module Slice 3: Seed programs:assignments_list for admin (HQ review) (idempotent)
         await db.Database.ExecuteSqlRawAsync("""
             INSERT INTO role_capabilities (id, role, capability, created_at)
@@ -378,6 +375,17 @@ try
             """);
 
         // Reload cache so admin programs:review row is immediately visible in-memory
+        await pbacCache.InitializeAsync(app.Services);
+
+        // Programs Module Slice 6: Seed programs:manage for admin (update + archive) (idempotent)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'admin', 'programs:manage', now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so admin programs:manage row is immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
     }
 

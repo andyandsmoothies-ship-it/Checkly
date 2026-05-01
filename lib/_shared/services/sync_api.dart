@@ -16,7 +16,8 @@ abstract class SyncApi {
   Future<void> pushSubmissionRisk(PendingSubmissionRisk risk);
 
   /// Pull all active program assignments for the calling SM.
-  /// Returns a raw JSON list matching AssignmentSummaryDto.
+  /// The backend is paginated, but this method aggregates all pages internally
+  /// and returns a full, raw JSON list matching AssignmentSummaryDto.
   Future<List<dynamic>> pullProgramAssignments();
 
   /// Push evidence items for a specific program assignment.

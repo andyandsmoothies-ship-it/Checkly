@@ -17,55 +17,30 @@ public static class GetProgramSummary
             return Results.NotFound(new { message = "Program not found." });
         }
 
-        // 2. Fetch all assignments for this program
-        // We only need the statuses to aggregate. We project it to avoid loading full entities.
-        var statuses = await db.ProgramAssignments
+        // 2. Fetch aggregated status counts from the database
+        var statusCounts = await db.ProgramAssignments
             .AsNoTracking()
             .Where(a => a.ProgramId == programId)
-            .Select(a => a.Status)
-            .ToListAsync();
+            .GroupBy(a => a.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Status, x => x.Count);
 
-        var total = statuses.Count;
+        var total = statusCounts.Values.Sum();
         if (total == 0)
         {
             return Results.Ok(new ProgramSummaryResponse(0, 0, 0, 0, 0, 0, 0));
         }
 
-        // 3. Aggregate counts
+        // 3. Extract counts
         var now = DateTimeOffset.UtcNow;
         var isProgramDeadlinePassed = program.Deadline < now;
 
-        int pendingCount = 0;
-        int overdueCount = 0;
-        int submittedCount = 0;
-        int needsRevisionCount = 0;
-        int verifiedCount = 0;
-
-        foreach (var status in statuses)
-        {
-            switch (status)
-            {
-                case "pending":
-                    if (isProgramDeadlinePassed)
-                    {
-                        overdueCount++;
-                    }
-                    else
-                    {
-                        pendingCount++;
-                    }
-                    break;
-                case "submitted":
-                    submittedCount++;
-                    break;
-                case "needs_revision":
-                    needsRevisionCount++;
-                    break;
-                case "verified":
-                    verifiedCount++;
-                    break;
-            }
-        }
+        var rawPending = statusCounts.GetValueOrDefault("pending");
+        int pendingCount = isProgramDeadlinePassed ? 0 : rawPending;
+        int overdueCount = isProgramDeadlinePassed ? rawPending : 0;
+        int submittedCount = statusCounts.GetValueOrDefault("submitted");
+        int needsRevisionCount = statusCounts.GetValueOrDefault("needs_revision");
+        int verifiedCount = statusCounts.GetValueOrDefault("verified");
 
         // 4. Calculate Completion Rate
         // Definition: (Submitted + NeedsRevision + Verified) / Total

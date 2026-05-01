@@ -190,6 +190,11 @@ AI agents suffer from the "Expert Witness Trap" — they will politely agree wit
 - **Look For**: Missing Polly timeout policies, lack of circuit breakers, synchronous blocking calls in background tasks, or missing jitter on retries.
 - **Action**: Output how the cascading failure will manifest to the end user and specify the required timeout/resilience bounds.
 
+### 4. Trust Assumption Audit (Zero Trust)
+- **Question**: "What happens if the caller (user, external API, or internal service) is compromised or malicious?"
+- **Look For**: Implicit trust, lack of strict Policy-Based Access Control (PBAC), relying purely on client-side state for security, or missing signature/token validation.
+- **Action**: Output where explicit verification is missing and enforce the principle of least privilege.
+
 ### Resolution Protocol
 
 After answering the three questions:

@@ -252,7 +252,7 @@ Before handoff, Sentinel must verify **every test** against these 5 checks:
 | 1 | **Behavior, Not Shape** | Does this test verify a *business rule* or *user-visible behavior*? | Test only checks property names, data types, or response structure |
 | 2 | **Survives Refactor** | Would this test pass if internals changed but behavior stayed the same? | Test asserts on DB column values, internal class names, or private state |
 | 3 | **Meaningful Assertion** | Does the assertion prove something *non-trivial* about the system? | `Assert.NotNull()`, `Assert.True(response.IsSuccessStatusCode)` without checking what was returned |
-| 4 | **Negative Cases Exist** | For each happy-path scenario, is there at least one negative or boundary case? | All tests are happy-path only — no 403, 404, or validation-error scenarios |
+| 4 | **Zero Trust Hostile Testing** | For each happy-path scenario, is there at least one negative, boundary, or malicious case? Have you tested permission bypasses (e.g., IDOR)? | All tests are happy-path only — no 403, 404, authorization boundaries, or hostile input scenarios |
 | 5 | **Spec-Readable Name** | Does the test name read like a specification a non-engineer could understand? | `Test1`, `CreateStore_Works`, `ShouldReturnOk` |
 
 ### Examples

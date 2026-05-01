@@ -10,7 +10,7 @@ namespace Checkly.Api.Features.Admin.Roles;
 public static class GetCapabilityCatalog
 {
     /// <summary>
-    /// All 15 valid capability strings. Hardcoded (YAGNI — stable V2 set).
+    /// All valid capability strings. Hardcoded (YAGNI — stable V2 set).
     /// Adding a new capability here requires a coordinated deploy.
     /// </summary>
     public static readonly string[] Catalog =
@@ -29,6 +29,7 @@ public static class GetCapabilityCatalog
         "submissions:review",
         "action_plans:write",
         "action_plans:verify",
+        "programs:execute",
         "admin:manage_roles",
         "admin:access",
     ];
@@ -49,6 +50,7 @@ public static class GetCapabilityCatalog
         { "submissions:review", new("Review Submissions", "Submissions", "Review and grade audits") },
         { "action_plans:write", new("Write Action Plans", "Action Plans", "Create and submit action plans") },
         { "action_plans:verify", new("Verify Action Plans", "Action Plans", "Approve or reject action plans") },
+        { "programs:execute", new("Execute Programs", "Programs", "Submit program evidence for assigned store work") },
         { "admin:manage_roles", new("Manage Roles", "Admin", "Assign capabilities to roles") },
         { "admin:access", new("Admin Console Access", "Admin", "Access the web admin panel") }
     };

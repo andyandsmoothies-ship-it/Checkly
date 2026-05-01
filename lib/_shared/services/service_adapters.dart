@@ -117,12 +117,31 @@ class SyncApiAdapter implements SyncApi {
 
   @override
   Future<List<dynamic>> pullProgramAssignments() async {
-    // GET /api/programs/assignments/my — returns full list (no pagination needed
-    // as each SM typically has <50 active assignments at a time).
-    final response = await _dio.get<Map<String, dynamic>>(
-      '/programs/assignments/my',
-    );
-    return response.data?['items'] as List<dynamic>? ?? [];
+    final allAssignments = <dynamic>[];
+    int page = 1;
+    const pageSize = 50;
+
+    while (true) {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/programs/assignments/my',
+        queryParameters: {'page': page, 'pageSize': pageSize},
+      );
+
+      final data = response.data;
+      if (data == null) break;
+
+      final list = data['items'] as List<dynamic>? ?? [];
+      allAssignments.addAll(list);
+
+      final total = data['total'] as int? ?? 0;
+      if (allAssignments.length >= total || list.isEmpty) {
+        break;
+      }
+
+      page++;
+    }
+
+    return allAssignments;
   }
 
   @override

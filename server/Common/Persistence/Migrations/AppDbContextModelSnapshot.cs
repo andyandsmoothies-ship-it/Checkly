@@ -805,6 +805,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("AssignedById");
 
+                    b.HasIndex("ProgramId", "CreatedAt")
+                        .IsDescending(false, true);
+
                     b.HasIndex("ProgramId", "Status");
 
                     b.HasIndex("StoreId", "Status");

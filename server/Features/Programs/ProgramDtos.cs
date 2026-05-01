@@ -107,5 +107,20 @@ public record ProgramSummaryResponse(
     int Verified,
     int CompletionRate);
 
+// ── Slice 6: CRUD Parity DTOs ────────────────────────────────────────────────
+
+
+/// <summary>
+/// Request body for PUT /api/programs/{id}.
+/// Only mutable fields: Title, Deadline, Category.
+/// TemplateId and StoreIds are immutable after creation.
+/// deadline: must be in the future (validated in handler).
+/// title: cannot be empty (validated in handler).
+/// </summary>
+public record UpdateProgramRequest(
+    string Title,
+    DateTimeOffset Deadline,
+    string Category);
+
 
 

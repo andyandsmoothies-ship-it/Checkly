@@ -37,6 +37,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Step | Instructions |
 |---|---|
+| **Interrogation Gate**| **MANDATORY**: Before writing a plan, cross-reference the user's request against the codebase. If terminology is sloppy or contradicts existing code, **STOP** and ask the user to clarify. |
 | **Search First** | Always use `grep_search` to find the exact line numbers needed, then use `view_file` to read only those specific chunks. Do not read full files blindly to save memory. |
 | **Check Setup** | Read config files (like `.csproj` or `pubspec.yaml`) to understand the project setup. |
 | **Learn the Code** | Search the current code to learn how it works before you start planning. |
@@ -87,13 +88,13 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > **Step-by-Step Rule:** Tell the user to run these commands **ONE AT A TIME**. Do not run them all at once.
 >
 > **Route 1: Logic/Standard (Unit Tests First)**
-> @[/tdd] Execute tests for Slice [N]: {Absolute_Path_to_plan}
+> @[/tdd] Execute tests for [Slice N / The Feature]: {Absolute_Path_to_plan}
 >
 > **Route 2: Visuals/Simple (Direct Build)**
-> @[/implement] Execute build for Slice [N]: {Absolute_Path_to_plan}
+> @[/implement] Execute build for [Slice N / The Feature]: {Absolute_Path_to_plan}
 >
 > **Route 3: Network/Auth/DB (Acceptance Tests First)**
-> @[/atdd] Execute specs for Slice [N]: {Absolute_Path_to_plan}
+> @[/atdd] Execute specs for [Slice N / The Feature]: {Absolute_Path_to_plan}
 >
 > **Concurrency:** State which slices must wait for others to finish.
 
@@ -110,7 +111,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Tools & Commands` (Skills and test commands)
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
 > - `## Concept Diagram`: A simple text flowchart (like `[User] --> [Click] --> [Save]`) to explain the idea.
-> - `## Execution Slices`: Group the work into small, safe technical phases. **CRITICAL:** To prevent AI context overflow, if a plan spans both backend APIs and new frontend UI, YOU MUST split it (e.g., `Phase A: Backend API`, `Phase B: Frontend UI`). Never assign an AI to build DB migrations, APIs, and UI in a single phase. Keep the blast radius under 400 lines per phase. Explain the plan but **DO NOT write exact code**.<br><br>For each slice, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code.
+> - `## Execution Slices`: Group the work into small, safe technical phases. **CRITICAL:** To prevent AI context overflow, if a plan spans both backend APIs and new frontend UI, YOU MUST split it (e.g., `Phase A: Backend API`, `Phase B: Frontend UI`). Never assign an AI to build DB migrations, APIs, and UI in a single phase. Keep the blast radius under 400 lines per phase. Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
 > - `<command_logs>`: A list of terminal commands you ran.
 > - `## Handoff Block`: A short summary for the next AI agent. You MUST include the exact `@[/...]` routing command (like `@[/tdd]`) for EVERY step, with the absolute file path.
 >
