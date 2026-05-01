@@ -60,7 +60,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Blast Radius** | IF modifying shared code -> Execute upstream regression tests. |
 | **Observability & Audit**| MANDATORY: All new endpoints/actions MUST log start/finish with Correlation IDs. All manual SQL scripts or DB inserts MUST include a transaction that writes to the audit/system_logs table. |
 
-> **@@SCAN**: (1) Red/Green respected? (2) Verify gate run? (3) Logging & Audit trails implemented?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Red/Green respected? (2) Verify gate run? (3) Logging & Audit trails implemented?
 
 ## Phase 2: Self-Review
 Review from 6 angles:
@@ -76,10 +76,11 @@ Review from 6 angles:
 |---|---|
 | **Test Analytics**| Bypassing terminal limits: output tests to `.agents/tmp/results.json` and `view_file` them. |
 | **Diff Check** | `git diff --name-only`. Revert unplanned. |
+| **Orphaned Stub Check** | MANDATORY: Execute `grep_search` to ensure absolutely NO `fail('Implement...')` or placeholder stubs remain from QA in the active slice. |
 | **Anti-Collapse Gate**| IF any modified file >400 lines: STRICTLY PROHIBITED from handoff. You MUST halt and extract components. |
 | **Handoff Trap** | IF Context Limit Approaching: Create `handoff.md` -> YIELD. |
 
-> **@@SCAN**: (1) 4 angles reviewed? (2) State tests exist? (3) `git diff` clean? (4) File lines <400?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) 4 angles reviewed? (2) State tests exist AND NO orphaned stubs remain? (3) `git diff` clean? (4) File lines <400?
 
 ## Phase 3: Handoff
 | State | Condition | Result Action |

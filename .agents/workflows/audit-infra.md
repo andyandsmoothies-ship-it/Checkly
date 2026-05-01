@@ -26,7 +26,7 @@ description: Infrastructure & architecture audit — database health, security p
 | **Delete Rules (`🔴`)**| Verify `OnDelete` matches delete strategy. Flag dangerous DB Cascades or hard-deletes on reference entities. |
 | **N+1 Loops (`🔴`)**| Scan for query execution blocks nested inside iteration arrays. |
 
-> **@@SCAN**: (1) Unbounded queries count? (2) Missing indexes on high-frequency arrays? (3) Delete strategy aligned?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Unbounded queries count? (2) Missing indexes on high-frequency arrays? (3) Delete strategy aligned?
 
 ## Phase 3: Security & Data Integrity 
 
@@ -37,7 +37,7 @@ description: Infrastructure & architecture audit — database health, security p
 | **Soft-Delete (`🟡`)**| Verify read queries filter by `IsActive == true`. Flag deactivated loads. |
 | **Validations (`🟡`)**| Verify `POST`/`PUT` endpoints do NOT blindly trust client inputs. |
 
-> **@@SCAN**: (1) Endpoints missing auth guards? (2) Deactivated entities loaded? (3) Data leakage risks detected?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Endpoints missing auth guards? (2) Deactivated entities loaded? (3) Data leakage risks detected?
 
 ## Phase 4: API Completeness
 
@@ -48,7 +48,7 @@ description: Infrastructure & architecture audit — database health, security p
 | **Wiring** | Flutter Pages MUST call API Services (no mock dead-ends). |
 | **PRD Parity**| Endpoints MUST map to PRD definitions. Flag omissisons. |
 
-> **@@SCAN**: (1) Missing DB operations? (2) Missing Flutter API methods? (3) Features lacking endpoints?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Missing DB operations? (2) Missing Flutter API methods? (3) Features lacking endpoints?
 
 ## Phase 4.5: Telemetry & NFR Check
 
@@ -57,7 +57,7 @@ description: Infrastructure & architecture audit — database health, security p
 | **Logging (`🔴`)** | Scan mutation endpoints (`POST/PUT/DELETE`). IF endpoint modifies data blindly WITHOUT `_logger.LogInformation` or `AuditLogger` THEN Flag. |
 | **Circuit Breakers (`🟡`)** | Verify external API calls use resilience handlers. |
 
-> **@@SCAN**: (1) Missing logs on mutations? (2) Missing resilience handlers?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Missing logs on mutations? (2) Missing resilience handlers?
 
 ## Phase 5: Assessment Payload
 

@@ -54,7 +54,7 @@ Workflow: /analyze-epic | Track: C
 | **Assess Risks** | Write down the technical and operational risks for each choice, and explain how to fix or avoid them. |
 | **Set Limits** | Define limits for Performance, Security, and Logging before you start. |
 
-> **@@SCAN**: (1) Did you check the main goal? (2) Did you search for connections? (3) Did you compare at least 2 options? (4) Are limits defined?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you check the main goal? (2) Did you search for connections? (3) Did you compare at least 2 options? (4) Are limits defined?
 
 ## Phase 2: Review Risks
 
@@ -65,7 +65,7 @@ Workflow: /analyze-epic | Track: C
 | **Check Rules** | Check your proposed architecture against the project's strict rules. If a rule makes your plan impossible, fix the plan before finishing. |
 | **Fix Flaws** | Create solutions for every low score or risk, or reject the plan completely. |
 
-> **@@SCAN**: (1) Did you review the plan from 3 points of view? (2) Are solutions clear? (3) Does the plan follow all rules?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you review the plan from 3 points of view? (2) Are solutions clear? (3) Does the plan follow all rules?
 
 ## Phase 3: Create Plan
 
@@ -73,7 +73,7 @@ Workflow: /analyze-epic | Track: C
 |---|---|
 | **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` folder. Do not print the whole plan in the chat. |
 
-> **@@SCAN**: Does the document have all required sections?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Does the document have all required sections?
 
 ## Phase 4: Break Down Work
 

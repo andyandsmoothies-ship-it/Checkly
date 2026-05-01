@@ -18,7 +18,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 | **Auto-Chunking**| Ask the user for the main sitemap or `router.dart`. Divide the app into logical "Chunks" (e.g. Login Flow). Present the chunks and ask the user to confirm starting with Chunk 1. |
 | **Scope Extract**| Document the Target Screen(s) for the current chunk, User Group (e.g. Admin), and Device Type. |
 
-> **@@SCAN**: (1) App chunked? (2) User/Device targeted? (3) Skill loaded?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) App chunked? (2) User/Device targeted? (3) Skill loaded?
 
 ## Phase 2: Source Code Walkthrough
 
@@ -28,7 +28,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 | **State Mapping**| MANDATORY: Define page behavior under 4 extremes: `Loading`, `Empty`, `Error`, `Offline`. |
 | **Visual Bias** | PROHIBITED: Relying solely on screenshots. Code logic dictates UX. |
 
-> **@@SCAN**: (1) Loading/Empty/Error/Offline modeled? (2) Actions/Feedback traced?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Loading/Empty/Error/Offline modeled? (2) Actions/Feedback traced?
 
 ## Phase 3: Heuristic Double-Pass
 
@@ -38,7 +38,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 | **Pass 2: Audit**| Evaluate flow against 10 Heuristics. |
 | **Exceptions** | Mark deliberate design tradeoffs as "Justified Exceptions" (NOT violations). |
 
-> **@@SCAN**: (1) Double Pass executed? (2) Violations mapped to heuristics? (3) Tradeoffs documented?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Double Pass executed? (2) Violations mapped to heuristics? (3) Tradeoffs documented?
 
 ## Phase 4: Delivery Payload
 

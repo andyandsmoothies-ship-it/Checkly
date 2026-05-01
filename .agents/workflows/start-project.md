@@ -18,7 +18,7 @@ description: Guided workflow to initialize a brand new project, pick a tech stac
 | **Selection** | Output the recommended Tech Stack (Frontend, Backend, DB, Infra) along with Tradeoffs and Risks. |
 | **Approval** | Yield to the user. Do they accept this stack, or want to pivot? |
 
-> **@@SCAN**: (1) Were all 6 questions answered? (2) Is the Stack explicitly agreed upon?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Were all 6 questions answered? (2) Is the Stack explicitly agreed upon?
 
 ## Phase 2: Project Shaping (Scope Lockdown)
 
@@ -29,7 +29,7 @@ description: Guided workflow to initialize a brand new project, pick a tech stac
 | **Boundaries** | Discuss what the MVP *is* and explicitly what it *is not* (No-Gos). Cut features aggressively to fit the appetite constraint. |
 | **Approval** | Yield to the user to confirm the final MVP boundary. |
 
-> **@@SCAN**: (1) Is the MVP boundary strictly defined? (2) Are No-Go features explicitly documented?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Is the MVP boundary strictly defined? (2) Are No-Go features explicitly documented?
 
 ## Phase 3: The Charter
 

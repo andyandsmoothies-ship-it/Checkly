@@ -43,7 +43,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | **Targeting** | MANDATORY: Narrow `view_file` or `grep_search`. PROHIBITED: full files reading. |
 | **Formal Reasoning**| MANDATORY: 1. `Premises` and `Execution Trace`. 2. Generate 3-5 explicit Hypotheses (with Evidence For/Against). 3. You MUST log these hypotheses strictly to the `task_` tracking file to prevent context sliding. |
 
-> **@@SCAN**: (1) Exact file/line identified? (2) Client & server both searched? (3) Did you trace back to the Write-Path origin? (4) Are 3-5 hypotheses explicitly written in the `task_` file?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Exact file/line identified? (2) Client & server both searched? (3) Did you trace back to the Write-Path origin? (4) Are 3-5 hypotheses explicitly written in the `task_` file?
 
 ## Phase 2: Skill & Rule Discovery
 
@@ -52,7 +52,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | **Skill Load** | Extract 2-3 keywords (e.g., "ground-truth"). `grep_search` `.agents/skills/`. Load Top 2 Error/Debug skills. |
 | **Rule Bounds**| Consult `.agents/rules/` for known locking/state gotchas that explain failure. |
 
-> **@@SCAN**: (1) Debug skills loaded? (2) Any `.agents/rules/` explain failure?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Debug skills loaded? (2) Any `.agents/rules/` explain failure?
 
 ## Phase 3: Resolution Plan
 
@@ -63,7 +63,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | **Artifact Gen** | Export `failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
 | **Constraint (Micro-Experiments)** | PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in the `task_` file and pivot. |
 
-> **@@SCAN**: (1) If code was changed, was it strictly under 5 lines? (2) Did you delete redundant guards when applying shared tools? (3) If a test failed twice, did you officially pivot to a new hypothesis?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) If code was changed, was it strictly under 5 lines? (2) Did you delete redundant guards when applying shared tools? (3) If a test failed twice, did you officially pivot to a new hypothesis?
 
 ## Phase 4: Deliverable Handoff
 

@@ -35,6 +35,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<GlobalRisk> GlobalRisks => Set<GlobalRisk>();
     public DbSet<SubmissionRisk> SubmissionRisks => Set<SubmissionRisk>();
     public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
+    public DbSet<ChecklyProgram> Programs => Set<ChecklyProgram>();
+    public DbSet<ProgramAssignment> ProgramAssignments => Set<ProgramAssignment>();
+    public DbSet<ProgramEvidence> ProgramEvidence => Set<ProgramEvidence>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -62,6 +65,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         ConfigureGlobalRisk(modelBuilder);
         ConfigureSubmissionRisk(modelBuilder);
         ConfigureUserDeviceToken(modelBuilder);
+        ConfigureProgram(modelBuilder);
+        ConfigureProgramAssignment(modelBuilder);
+        ConfigureProgramEvidence(modelBuilder);
     }
 
     private static void ConfigureStore(ModelBuilder mb)
@@ -713,6 +719,111 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
             e.HasIndex(x => new { x.UserId, x.FcmToken }).IsUnique();
             e.HasIndex(x => x.UserId); // For FCM dispatch queries
+        });
+    }
+
+    private static void ConfigureProgram(ModelBuilder mb)
+    {
+        mb.Entity<ChecklyProgram>(e =>
+        {
+            e.ToTable("programs");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.TemplateId).HasColumnName("template_id").IsRequired();
+            e.Property(x => x.Title).HasColumnName("title").IsRequired().HasMaxLength(200);
+            e.Property(x => x.Category).HasColumnName("category").IsRequired().HasMaxLength(100);
+            e.Property(x => x.Deadline).HasColumnName("deadline").IsRequired();
+            e.Property(x => x.Status).HasColumnName("status").HasDefaultValue("active");
+            e.Property(x => x.CreatedBy).HasColumnName("created_by").IsRequired();
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+
+            // Optimistic concurrency via PostgreSQL system column xmin
+            e.Property(x => x.RowVersion)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
+
+            // FK: Program → Template (restrict: cannot delete a template that has programs)
+            e.HasOne(x => x.Template)
+                .WithMany()
+                .HasForeignKey(x => x.TemplateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Performance indexes
+            e.HasIndex(x => x.Status);
+            e.HasIndex(x => x.Deadline);
+            e.HasIndex(x => x.CreatedBy);
+            e.HasIndex(x => x.CreatedAt).IsDescending();
+        });
+    }
+
+    private static void ConfigureProgramAssignment(ModelBuilder mb)
+    {
+        mb.Entity<ProgramAssignment>(e =>
+        {
+            e.ToTable("program_assignments");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.ProgramId).HasColumnName("program_id").IsRequired();
+            e.Property(x => x.StoreId).HasColumnName("store_id").IsRequired();
+            e.Property(x => x.AssignedById).HasColumnName("assigned_by_id").IsRequired();
+            e.Property(x => x.Status).HasColumnName("status").HasDefaultValue("pending");
+            e.Property(x => x.CompletedAt).HasColumnName("completed_at");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+            e.Property(x => x.RejectionComment).HasColumnName("rejection_comment");
+            e.Property(x => x.VerifiedAt).HasColumnName("verified_at");
+
+            // Optimistic concurrency via PostgreSQL system column xmin
+            e.Property(x => x.RowVersion)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
+
+            // FK: ProgramAssignment → Program (cascade: deleting a program deletes its assignments)
+            e.HasOne(x => x.Program)
+                .WithMany(p => p.Assignments)
+                .HasForeignKey(x => x.ProgramId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // FK: ProgramAssignment → Store (restrict: cannot delete a store that has assignments)
+            e.HasOne(x => x.Store)
+                .WithMany()
+                .HasForeignKey(x => x.StoreId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Performance indexes: core query patterns
+            e.HasIndex(x => new { x.ProgramId, x.Status });
+            e.HasIndex(x => new { x.StoreId, x.Status });
+            e.HasIndex(x => x.AssignedById);
+        });
+    }
+
+
+    private static void ConfigureProgramEvidence(ModelBuilder mb)
+    {
+        mb.Entity<ProgramEvidence>(e =>
+        {
+            e.ToTable("program_evidence");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.AssignmentId).HasColumnName("assignment_id").IsRequired();
+            e.Property(x => x.CriteriaId).HasColumnName("criteria_id");
+            e.Property(x => x.CriteriaLabel).HasColumnName("criteria_label").HasMaxLength(500);
+            e.Property(x => x.Value).HasColumnName("value").IsRequired();
+            e.Property(x => x.PhotoLocalKey).HasColumnName("photo_local_key");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+            // FK: ProgramEvidence → ProgramAssignment (cascade: deleting an assignment deletes its evidence)
+            e.HasOne(x => x.Assignment)
+                .WithMany()
+                .HasForeignKey(x => x.AssignmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasIndex(x => x.AssignmentId);
         });
     }
 }

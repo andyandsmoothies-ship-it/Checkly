@@ -23,7 +23,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 | **Discovery** | IF (tech is very new/rare) THEN query Context7 MCP to save hallucination. ELSE rely on model baseline to save API credits. |
 | **E2E Map** | MANDATORY: Map Upstream Triggers + Downstream Effects. Identify Status Quo friction. Map exact system Context Handoff points. If touching API/DTO/DB, `grep_search` BOTH `lib/` and `server/` — never treat either side as a black box. |
 
-> **@@SCAN**: (1) Skills loaded? (2) Status Quo explicitly audited? (3) Full E2E Scope mapped across lib/ and server/?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Skills loaded? (2) Status Quo explicitly audited? (3) Full E2E Scope mapped across lib/ and server/?
 
 ## Phase 2: Strategy Assessment
 
@@ -33,7 +33,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 | **Blind Spots**| MANDATORY: Identify EXACTLY 3 blind spots regarding NFRs (payload size, memory). |
 | **Conflicts** | MANDATORY: Identify >= 1 Conflict with existing `.agents/rules/` or `GEMINI.md` gotchas. |
 
-> **@@SCAN**: (1) Alternatives evaluated? (2) 3 Blind spots cited? (3) >1 Rules Conflict cited?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Alternatives evaluated? (2) 3 Blind spots cited? (3) >1 Rules Conflict cited?
 
 ## Phase 3: Deliverable & Sizing
 

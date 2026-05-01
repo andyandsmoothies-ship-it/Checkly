@@ -10,6 +10,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
+import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
@@ -22,7 +23,8 @@ import 'package:checkly/_shared/services/delta_pull_result.dart';
 import 'package:checkly/_shared/services/pending_submission_risk.dart';
 import 'package:checkly/_shared/services/sync_api.dart';
 import 'package:checkly/_shared/services/auth_check.dart';
-import 'package:checkly/_shared/services/service_adapters.dart';
+
+import 'package:checkly/features/action_plans/adapters/action_plan_api_adapter.dart';
 
 // =================================================================
 // FAKES
@@ -48,6 +50,18 @@ class FakeSyncApi implements SyncApi {
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
   @override
   Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {}
+
+  @override
+  Future<List<dynamic>> pullProgramAssignments() async => [];
+
+  @override
+  Future<void> pushProgramEvidence(
+    String assignmentId,
+    List<Map<String, dynamic>> evidenceItems,
+  ) async {}
+
+  @override
+  Future<void> pushProgramPhoto(String photoLocalKey, String filePath) async {}
 }
 
 class FakeAuthCheck implements AuthCheck {
@@ -157,6 +171,7 @@ void main() {
         globalRiskDao: GlobalRiskDao(db),
         submissionRiskOutboxDao: SubmissionRiskOutboxDao(db),
         syncMetaDao: SyncMetaDao(db),
+        programOutboxDao: ProgramOutboxDao(db),
       );
     });
 

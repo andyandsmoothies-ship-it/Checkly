@@ -35,6 +35,9 @@ import '../../features/notifications/pages/inbox_page.dart';
 import '../../features/audit/pages/survey_results_page.dart';
 import '../../features/user_groups/pages/user_group_list_page.dart';
 import '../../features/admin/pages/global_risk_management_page.dart';
+import '../../features/programs/pages/program_execution_page.dart';
+import '../../features/programs/pages/program_list_page.dart';
+import '../../features/programs/pages/program_dashboard_page.dart';
 
 final _di = GetIt.instance;
 
@@ -125,6 +128,24 @@ final appRouter = GoRouter(
       path: '/plans/:id',
       builder: (context, state) =>
           ActionPlanDetailPage(actionPlanId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/programs/:assignmentId',
+      builder: (context, state) => ProgramExecutionPage(
+        assignmentId: state.pathParameters['assignmentId']!,
+      ),
+    ),
+
+    // ── Slice 3: HQ Review routes (online-only) ──
+    GoRoute(
+      path: '/programs',
+      builder: (context, state) => const ProgramListPage(),
+    ),
+    GoRoute(
+      path: '/programs/review/:programId',
+      builder: (context, state) => ProgramDashboardPage(
+        programId: state.pathParameters['programId']!,
+      ),
     ),
 
     // ---------- Admin routes ----------

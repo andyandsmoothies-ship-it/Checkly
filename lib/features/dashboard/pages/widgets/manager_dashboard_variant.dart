@@ -11,6 +11,7 @@ import '../../manager/dashboard_manager.dart';
 import 'hero_card.dart';
 import 'submission_feed_section.dart';
 import 'deadline_banner.dart';
+import 'action_required_widget.dart';
 
 /// Command Center for Store Managers and Area Managers.
 /// Both use [ManagerDashboardState]; role string controls the title.
@@ -41,6 +42,9 @@ class ManagerDashboardVariant extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
         children: [
           const SizedBox(height: 24),
+
+          // ── Programs: Action Required Banner ──
+          const ActionRequiredWidget(),
 
           // ── Hero: Action Required Banner ──
           if (state.overdueActionPlans > 0)

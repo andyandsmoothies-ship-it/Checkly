@@ -44,7 +44,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
   - [ ] **Private Method Access** stated? (e.g., `@visibleForTesting`)
   - [ ] **Why it fails** includes a line number?
 
-> **@@SCAN** (1) Did you read the plan? (2) Did you load the correct testing skill? (3) Did you check the test contracts?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you read the plan? (2) Did you load the correct testing skill? (3) Did you check the test contracts?
 
 ## Phase 2: Write Tests (Red Phase)
 - **Goal**: Write the test files (like `_test.dart` or `*Tests.cs`).
@@ -62,7 +62,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
   2. **Error State** (Validation errors, 404s, exceptions).
   3. **Empty State** (Null inputs, empty lists).
 
-> **@@SCAN** (1) Did you cover Happy, Error, and Empty states? (2) Did you avoid writing main app code?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you cover Happy, Error, and Empty states? (2) Did you avoid writing main app code?
 
 ## Phase 3: Check Failures
 > [!IMPORTANT]
@@ -79,7 +79,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
   - ❌ **Bad Setup**: The test crashes during the `// Arrange` setup phase (before it even tests the logic). -> **Fix the setup and re-run.**
 - Keep fixing and running until 100% of the tests fail ONLY because the feature logic is missing.
 
-> **@@SCAN**: (1) Did you run the tests? (2) Are they failing ONLY because the feature is missing?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you run the tests? (2) Are they failing ONLY because the feature is missing?
 
 ## Phase 4: Handoff
 - **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Do not print long logs in the chat.

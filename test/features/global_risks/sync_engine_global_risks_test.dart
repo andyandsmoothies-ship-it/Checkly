@@ -12,6 +12,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
+import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/pending_submission.dart';
 import 'package:checkly/_shared/services/delta_pull_result.dart';
@@ -124,6 +125,18 @@ class FakeSyncApi implements SyncApi {
       throw Exception('DioException [409 Conflict]');
     }
   }
+
+  @override
+  Future<List<dynamic>> pullProgramAssignments() async => [];
+
+  @override
+  Future<void> pushProgramEvidence(
+    String assignmentId,
+    List<Map<String, dynamic>> evidenceItems,
+  ) async {}
+
+  @override
+  Future<void> pushProgramPhoto(String photoLocalKey, String filePath) async {}
 }
 
 void main() {
@@ -150,6 +163,7 @@ void main() {
       globalRiskDao: globalRiskDao,
       submissionRiskOutboxDao: riskOutboxDao,
       syncMetaDao: SyncMetaDao(testDb),
+      programOutboxDao: ProgramOutboxDao(testDb),
     );
   });
 

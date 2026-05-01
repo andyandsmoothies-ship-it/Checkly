@@ -44,7 +44,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **Out of Scope (YAGNI)**| Write down what you will NOT build. If a step breaks a main rule, stop and ask the user. Do not silently skip it. |
 | **Spot Check**| Search the code to double-check at least one main idea in your plan before finishing. |
 
-> **@@SCAN**: (1) Do you know the main goal? (2) Did you write down what is out of scope? (3) Did you double-check the code?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Do you know the main goal? (2) Did you write down what is out of scope? (3) Did you double-check the code?
 
 ## Phase 2: Check Impacts & States
 
@@ -56,7 +56,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **File Size Limit** | If the file you want to edit has more than 250 lines, your plan must include a step to split the file before adding new features. |
 | **State Matrix** | Define how the UI looks in 4 situations: `Loading`, `Empty`, `Error`, and `Success`. |
 
-> **@@SCAN**: (1) Did you search everywhere for connections? (2) Did you map both backend and frontend? (3) Is the 4-State Matrix defined?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you search everywhere for connections? (2) Did you map both backend and frontend? (3) Is the 4-State Matrix defined?
 
 ## Phase 3: Create Plan
 
@@ -110,7 +110,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Tools & Commands` (Skills and test commands)
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
 > - `## Concept Diagram`: A simple text flowchart (like `[User] --> [Click] --> [Save]`) to explain the idea.
-> - `## Execution Slices`: Group the work into small, safe steps. If a plan changes more than 3 files, break it into smaller Phase A, Phase B, etc. Explain the plan (like 'Add field', 'Add Try/Catch') but **DO NOT write exact code**. The Builder will write the code.<br><br>For each slice, rate the **Complexity** (Low, Medium, or High) with a short, simple reason why.<br><br>For each major choice, write the **Pros & Cons** of your approach versus other options. Ask the user to decide before starting to code.
+> - `## Execution Slices`: Group the work into small, safe technical phases. **CRITICAL:** To prevent AI context overflow, if a plan spans both backend APIs and new frontend UI, YOU MUST split it (e.g., `Phase A: Backend API`, `Phase B: Frontend UI`). Never assign an AI to build DB migrations, APIs, and UI in a single phase. Keep the blast radius under 400 lines per phase. Explain the plan but **DO NOT write exact code**.<br><br>For each slice, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code.
 > - `<command_logs>`: A list of terminal commands you ran.
 > - `## Handoff Block`: A short summary for the next AI agent. You MUST include the exact `@[/...]` routing command (like `@[/tdd]`) for EVERY step, with the absolute file path.
 >

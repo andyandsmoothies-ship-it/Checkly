@@ -14,4 +14,20 @@ abstract class SyncApi {
 
   /// Push a pending submission risk trigger to the server.
   Future<void> pushSubmissionRisk(PendingSubmissionRisk risk);
+
+  /// Pull all active program assignments for the calling SM.
+  /// Returns a raw JSON list matching AssignmentSummaryDto.
+  Future<List<dynamic>> pullProgramAssignments();
+
+  /// Push evidence items for a specific program assignment.
+  /// [assignmentId]: server UUID of the ProgramAssignment.
+  /// [evidenceItems]: list of {criteriaId, value, photoUrl?} maps.
+  Future<void> pushProgramEvidence(
+    String assignmentId,
+    List<Map<String, dynamic>> evidenceItems,
+  );
+
+  /// Push a program evidence photo via multipart/form-data.
+  Future<void> pushProgramPhoto(String photoLocalKey, String filePath);
 }
+

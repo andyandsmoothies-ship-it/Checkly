@@ -15,6 +15,12 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 | **Other Modifiers** | Progressive Repeat Penalty, Per-Criterion "Is Required", Weighted Density |
 | **Analytics** | Survey Results — aggregated option distribution per question (admin-only) |
 
+## High-Level Workflows
+Checkly supports three primary operational flows:
+1. **Ad-hoc Audits** (Store Manager or HQ initiated)
+2. **Action Plan Remediation** (Finding issues, assigning tasks, and resolving them)
+3. **Programs Module** (HQ-issued, self-reported campaigns requiring Store Manager execution and HQ verification)
+
 ---
 
 ## 🔴 PENALTY MODE (Top-Down Compliance)
@@ -33,6 +39,46 @@ This document is the **Expert Administrator's Guide** to setting up templates in
 5. **Scoring Rules:**
    * Enable `Progressive Repeat Penalty` — escalates deductions if the same store fails the same criteria again.
    * Enable `Weighted Density` — kitchen sections weigh more than dining area.
+
+### HQ Submits an Offline Ad-Hoc Audit
+**Use Case:** A District Manager performs an audit on an airplane or in a store freezer with no internet.
+1. The app detects it is offline.
+2. The user selects a locally cached template and begins an ad-hoc audit.
+3. The submission is tracked in the `PendingSubmissions` Drift outbox table.
+4. The user completes the audit and taps "Submit".
+5. The local `status` becomes `pending_sync`.
+6. Upon reconnecting to Wi-Fi, the AppLifecycleObserver triggers the Background Sync Engine.
+7. The sync engine pushes the submission (and its action plans) via `POST /api/submissions/sync`.
+8. The server processes the payload transactionally and returns the remote UUIDs.
+9. The local database updates the records, marking them `synced` and replacing local UUIDs with remote ones.
+
+---
+
+## 3. Programs Workflow (Self-Reporting)
+
+### HQ Issues a Program Campaign
+**Use Case:** HQ needs all stores to upload a photo of the new Marketing Display.
+1. HQ User navigates to the Programs page and clicks "New Program".
+2. HQ selects the "Q3 Marketing Display" template, sets a deadline, and selects target stores.
+3. `POST /api/programs` creates a `ProgramAssignment` (status: `pending`) for each selected store.
+4. The assignment relies on the same shared templates as regular audits, avoiding data duplication.
+
+### Store Manager Executes Program Offline
+**Use Case:** A Store Manager needs to complete the assigned program without Wi-Fi.
+1. SM sees the pending program in their inbox. The initial data was pulled during the morning sync.
+2. SM clicks the program. The system injects `ExecutionMode.Program` into the existing `AuditForm` widget.
+3. SM fills out the criteria and takes photos.
+4. The execution data is saved locally to the `PendingProgramSubmissions` outbox table.
+5. When online, the sync engine pushes the result. The assignment status on the server updates to `submitted`.
+
+### HQ Verifies or Rejects Program Evidence
+**Use Case:** HQ reviews the submitted photos for compliance.
+1. HQ User (with `programs:review` capability) opens the Program Dashboard.
+2. The dashboard shows an aggregated Analytics Chart (Pending vs Submitted vs Needs Revision vs Verified).
+3. HQ clicks a `submitted` store and reviews the `ProgramEvidence`.
+4. If correct, HQ clicks "Verify" (`POST /api/programs/{id}/verify`). Status becomes `verified`.
+5. If incorrect, HQ clicks "Reject", types a comment ("Photo too blurry"), and calls `POST /api/programs/{id}/reject`. Status becomes `needs_revision`.
+6. The store manager receives the rejection comment and must re-submit evidence. Optimistic concurrency (`xmin`) prevents race conditions during this back-and-forth flow.
 
 ### 2. Store Condition Audit (Retail)
 **Goal:** Evaluate appearance, stock levels, and cleanliness of a retail location.

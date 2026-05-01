@@ -353,6 +353,79 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("areas", (string)null);
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("category");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset>("Deadline")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deadline");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("active")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("template_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .IsDescending();
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("Deadline");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("programs", (string)null);
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Criterion", b =>
                 {
                     b.Property<Guid>("Id")
@@ -669,6 +742,118 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("StoreId");
 
                     b.ToTable("profiles", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("AssignedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assigned_by_id");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("ProgramId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("program_id");
+
+                    b.Property<string>("RejectionComment")
+                        .HasColumnType("text")
+                        .HasColumnName("rejection_comment");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("pending")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateTimeOffset?>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("verified_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedById");
+
+                    b.HasIndex("ProgramId", "Status");
+
+                    b.HasIndex("StoreId", "Status");
+
+                    b.ToTable("program_assignments", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramEvidence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("AssignmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assignment_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid?>("CriteriaId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("criteria_id");
+
+                    b.Property<string>("CriteriaLabel")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("criteria_label");
+
+                    b.Property<string>("PhotoLocalKey")
+                        .HasColumnType("text")
+                        .HasColumnName("photo_local_key");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.ToTable("program_evidence", (string)null);
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.RoleCapability", b =>
@@ -1590,6 +1775,17 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Submission");
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Criterion", b =>
                 {
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Group", "Group")
@@ -1634,6 +1830,36 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Area");
 
                     b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", "Program")
+                        .WithMany("Assignments")
+                        .HasForeignKey("ProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Program");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramEvidence", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", "Assignment")
+                        .WithMany()
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assignment");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Store", b =>
@@ -1812,6 +2038,11 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Profiles");
 
                     b.Navigation("Stores");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>
+                {
+                    b.Navigation("Assignments");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Criterion", b =>

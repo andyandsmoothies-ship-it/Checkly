@@ -15,6 +15,7 @@ using Checkly.Api.Features.Analytics;
 using Checkly.Api.Features.Areas;
 using Checkly.Api.Features.UserGroups;
 using Checkly.Api.Features.Templates;
+using Checkly.Api.Features.Programs;
 using Checkly.Api.Features.GlobalRisks;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
@@ -333,6 +334,51 @@ try
 
         // Reload cache so new global_risks:manage row is immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
+
+        // Programs Module Slice 1: Seed programs:create and programs:list for admin only (idempotent)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'admin', 'programs:create', now()),
+                (gen_random_uuid(), 'admin', 'programs:list',   now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so new programs:* rows are immediately visible in-memory
+        await pbacCache.InitializeAsync(app.Services);
+
+        // Programs Module Slice 2A: Seed programs:assignments_my for store_manager (idempotent)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'store_manager', 'programs:assignments_my', now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so store_manager programs:assignments_my row is immediately visible in-memory
+        await pbacCache.InitializeAsync(app.Services);
+
+        // Programs Module Slice 3: Seed programs:assignments_list for admin (HQ review) (idempotent)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'admin', 'programs:assignments_list', now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so admin programs:assignments_list row is immediately visible in-memory
+        await pbacCache.InitializeAsync(app.Services);
+
+        // Programs Module Slice 4: Seed programs:review for admin (reject/verify) (idempotent)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'admin', 'programs:review', now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so admin programs:review row is immediately visible in-memory
+        await pbacCache.InitializeAsync(app.Services);
     }
 
     // Diagnostic endpoint — only available in Development/Test environments,
@@ -381,6 +427,7 @@ try
     app.MapAnalyticsEndpoints();
     app.MapAreaEndpoints();
     app.MapUserGroupEndpoints();
+    app.MapProgramEndpoints();
     app.MapSystemEndpoints();
     app.MapUserEndpoints();
 

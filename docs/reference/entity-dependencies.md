@@ -106,6 +106,25 @@
 
 ---
 
+## ProgramAssignment
+
+| Consumer | File | Relationship |
+|----------|------|-------------|
+| CreateProgram | `Features/Programs/CreateProgram.cs` | Bulk creates assignments for selected stores |
+| SubmitProgramEvidence | `Features/Programs/SubmitProgramEvidence.cs` | SM transition `pending` → `submitted`, adds `ProgramEvidence` records |
+| RejectProgramAssignment | `Features/Programs/RejectProgramAssignment.cs` | HQ transition `submitted` → `needs_revision`, adds `RejectionComment` |
+| VerifyProgramAssignment | `Features/Programs/VerifyProgramAssignment.cs` | HQ transition `submitted` → `verified`, sets `VerifiedAt` |
+| GetMyAssignments | `Features/Programs/GetMyAssignments.cs` | Filtered by `StoreId` for Store Managers |
+| GetProgramAssignments | `Features/Programs/GetProgramAssignments.cs` | Grouped view for HQ Dashboard |
+| GetProgramSummary | `Features/Programs/GetProgramSummary.cs` | Aggregates assignments by status for a `ProgramId` |
+
+### Deletion Policy
+- **Never deleted** — program assignments are compliance records
+- Status transitions: `pending` → `submitted` → `needs_revision` ↔ `submitted` → `verified`
+- Optimistic Concurrency Control via `xmin` (RowVersion) prevents race conditions during status transitions.
+
+---
+
 ## GlobalRisk
 
 | Consumer | File | Relationship |

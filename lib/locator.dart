@@ -8,11 +8,13 @@ import '_shared/database/dao/action_plan_outbox_dao.dart';
 import '_shared/database/dao/global_risk_dao.dart';
 import '_shared/database/dao/submission_risk_outbox_dao.dart';
 import '_shared/database/dao/sync_meta_dao.dart';
+import '_shared/database/dao/program_outbox_dao.dart';
 import '_shared/services/connectivity_service.dart';
 import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
 import '_shared/services/sync_engine.dart';
 import '_shared/services/service_adapters.dart';
+import 'features/action_plans/adapters/action_plan_api_adapter.dart';
 import '_shared/theme/theme_manager.dart';
 import 'features/auth/services/auth_api_service.dart';
 import 'features/auth/services/secure_storage_service.dart';
@@ -35,6 +37,8 @@ import 'features/notifications/manager/notification_manager.dart';
 import 'features/notifications/manager/notification_sync_manager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'features/action_plans/manager/action_plan_manager.dart';
+import 'features/programs/manager/program_manager.dart';
+import 'features/programs/services/program_api_service.dart';
 import 'features/dashboard/manager/dashboard_manager.dart';
 import 'features/admin/services/admin_api_service.dart';
 import 'features/admin/manager/role_manager.dart';
@@ -75,6 +79,9 @@ void configureDependencies() {
   );
   di.registerLazySingleton<SyncMetaDao>(
     () => SyncMetaDao(di<DatabaseService>().db),
+  );
+  di.registerLazySingleton<ProgramOutboxDao>(
+    () => ProgramOutboxDao(di<DatabaseService>().db),
   );
   di.registerLazySingleton<GpsService>(() => GpsService());
 
@@ -148,6 +155,7 @@ void configureDependencies() {
       globalRiskDao: di<GlobalRiskDao>(),
       submissionRiskOutboxDao: di<SubmissionRiskOutboxDao>(),
       syncMetaDao: di<SyncMetaDao>(),
+      programOutboxDao: di<ProgramOutboxDao>(),
     ),
   );
 
@@ -160,6 +168,16 @@ void configureDependencies() {
       outboxDao: di<ActionPlanOutboxDao>(),
       db: di<DatabaseService>().db,
     ),
+  );
+
+  // ---------- Programs (Slice 2C) ----------
+  di.registerLazySingleton<ProgramManager>(
+    () => ProgramManager(outboxDao: di<ProgramOutboxDao>()),
+  );
+
+  // ---------- Programs API (Slice 3 — HQ Review) ----------
+  di.registerLazySingleton<ProgramApiService>(
+    () => ProgramApiService(di<Dio>()),
   );
 
   // ---------- Notifications (Slice 6) ----------

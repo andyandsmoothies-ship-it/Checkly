@@ -10,19 +10,19 @@
 
 ## Table Overview
 
-The Checkly database contains **27 tables** organized into 3 categories:
+The Checkly database contains **29 tables** organized into 3 categories:
 
-> **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`, `global_risks`, `submission_risks`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
+> **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`, `global_risks`, `submission_risks`, `program_assignments`, `program_evidence`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| **Business Domain** | 19 tables | Core audit workflow data |
+| **Business Domain** | 21 tables | Core audit & programs workflow data |
 | **ASP.NET Identity** | 7 tables | Authentication & identity infrastructure |
 | **EF Core Internal** | 1 table | Migration tracking |
 
 ---
 
-## Business Domain Tables (19)
+## Business Domain Tables (21)
 
 ### `profiles`
 **Rows**: 7 | **Soft Delete**: No (ban via `AspNetUsers.LockoutEnd`)
@@ -262,6 +262,47 @@ Legacy: `pass_fail` criteria with `non_conform` answer. Max 10 per submission.
 | `updated_at` | timestamptz | Last update |
 
 > **Constraints**: Unique index on `(submission_id, answer_id)` to prevent duplicate action plans from double-clicks or offline sync race conditions.
+
+---
+
+### `program_assignments`
+**Rows**: dynamic | **Never deleted**
+
+HQ-issued, self-reported program assignments directed at specific stores. Uses the same Templates as Submissions but a separate execution lifecycle.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique assignment ID |
+| `program_id` | UUID | Logical grouping ID for identical assignments across multiple stores |
+| `store_id` | UUID (FK → stores) | Assigned store |
+| `template_id` | UUID (FK → templates) | The checklist template to follow |
+| `assigned_by_id` | UUID (FK → AspNetUsers) | HQ admin/owner who created the assignment |
+| `title` | text | Program title |
+| `category` | text | Program category (e.g. 'Safety', 'Marketing') |
+| `deadline` | timestamptz | When the program is due |
+| `status` | text | `pending`, `submitted`, `needs_revision`, `verified` |
+| `rejection_comment` | text? | HQ feedback if `status == needs_revision` |
+| `verified_at` | timestamptz? | When the program was marked `verified` |
+| `created_at` | timestamptz | Record creation |
+| `updated_at` | timestamptz | Last update |
+| `row_version` | uint (xmin) | Optimistic concurrency token for status mutations |
+
+---
+
+### `program_evidence`
+**Rows**: dynamic | **Never deleted**
+
+Individual evidence items (photos/text) submitted by the Store Manager for a specific criteria in a program assignment.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique evidence ID |
+| `program_assignment_id` | UUID (FK → program_assignments) | Parent assignment |
+| `criteria_id` | UUID (FK → criteria) | The criteria being answered |
+| `value` | text | Text response or label |
+| `photo_url` | text? | Evidence photo URL |
+| `created_at` | timestamptz | Record creation |
+| `updated_at` | timestamptz | Last update |
 
 ---
 

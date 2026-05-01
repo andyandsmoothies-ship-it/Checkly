@@ -318,3 +318,65 @@ class SubmissionRiskOutboxEntries extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+// ============================================================
+// Programs Module Tables (Slice 2B)
+// ============================================================
+
+/// Cached program assignments for the calling Store Manager.
+/// Full-replace on sync: all rows deleted and reinserted each cycle.
+/// Mirrors AssignmentSummaryDto from GET /api/programs/assignments/my.
+class CachedProgramAssignments extends Table {
+  TextColumn get id => text()(); // server UUID
+  TextColumn get programId => text()();
+  TextColumn get programTitle => text()();
+  TextColumn get category => text()();
+  DateTimeColumn get deadline => dateTime()();
+  /// Values: 'pending' | 'overdue' | 'submitted' | 'needs_revision'
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  TextColumn get rejectionComment => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Outbox for offline program evidence submissions.
+/// Written immediately when SM submits evidence offline.
+/// Drained by SyncEngine to POST /api/programs/assignments/{id}/submit.
+/// syncStatus: 'pending' | 'exhausted'
+class PendingProgramSubmissions extends Table {
+  TextColumn get id => text()(); // client-generated UUID
+  TextColumn get assignmentId => text()(); // links CachedProgramAssignments.id
+  /// JSON-encoded List<{criteriaId, value, photoLocalKey?}>.
+  TextColumn get evidenceItemsJson => text()();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  TextColumn get syncError => text().nullable()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get nextRetryAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Photo upload queue linked to a PendingProgramSubmissions row.
+/// Uploaded AFTER the evidence submit is confirmed by the server.
+/// Drain logic is in Slice C (requires UI photo path structure).
+/// syncStatus: 'pending' | 'uploaded' | 'exhausted'
+class PendingProgramPhotos extends Table {
+  TextColumn get id => text()(); // client-generated UUID
+  TextColumn get pendingProgramSubmissionId =>
+      text().references(PendingProgramSubmissions, #id)();
+  TextColumn get criteriaId => text()();
+  TextColumn get localPath => text()();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  TextColumn get syncError => text().nullable()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get nextRetryAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+

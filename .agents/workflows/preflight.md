@@ -36,7 +36,7 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 | **Test Matrix** | **Detect Stack:** Identify test runner. **Execute:** Run the native test suite (e.g., `dotnet test`, `jest`, `go test`). BLOCK on fail. |
 | **Contract Sync** | IF the repo contains a Split-Stack (e.g., Backend + Frontend): MANDATORY check that any altered DTOs/DB Models in the backend were also updated in the frontend API calls. |
 
-> **@@SCAN**: (1) Stack detected? (2) Compile/Tests passing? (3) Any exposed secrets leaked? (4) If Split-Stack, are DTOs synchronized?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Stack detected? (2) Compile/Tests passing? (3) Any exposed secrets leaked? (4) If Split-Stack, are DTOs synchronized?
 
 ## Phase 4: Vertical-Slice Completeness
 

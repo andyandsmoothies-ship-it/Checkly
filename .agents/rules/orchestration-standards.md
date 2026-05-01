@@ -29,6 +29,14 @@ Before ANY workflow response involving analysis, design, or implementation:
 - Output: "Implementation complete. Commit when ready: `git add -A ; git commit -m '...'`"
 - Ignore any legacy "commit" instructions in workflows.
 
+## Universal Handoff Integrity (The Wrap-Up Mandate)
+**To prevent abandoned tasks and missing artifacts across ALL workflows:**
+- **Rule**: Before terminating any workflow session (e.g., `/implement`, `/analyze-feature`, `/tdd`), you MUST explicitly perform a wrap-up scan.
+- **Action**: Answer these two questions internally before generating your final response:
+  1. Are ALL checkboxes in the active task tracker marked `[x]`?
+  2. Are all required output artifacts (e.g., walkthroughs, test logs, plans) physically written to disk?
+- **Enforcement**: You are STRICTLY PROHIBITED from yielding final handoff to the user until both conditions are met.
+
 ## The "Anti-Black-Box" Execution Rule (Transparency Mandate)
 **Do not write automated loop scripts (like Python `os.listdir` or PowerShell `foreach`) for mass file manipulation.**
 - **Problem**: Giant script loops are "black boxes" that strip the user of granular control.

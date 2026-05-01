@@ -110,7 +110,12 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             var dbCache = scopeCache.ServiceProvider.GetRequiredService<AppDbContext>();
             dbCache.Database.ExecuteSqlRaw("""
                 INSERT INTO role_capabilities (id, role, capability, created_at)
-                VALUES (gen_random_uuid(), 'admin', 'global_risks:manage', now())
+                VALUES (gen_random_uuid(), 'admin',         'global_risks:manage',        now()),
+                       (gen_random_uuid(), 'admin',         'programs:create',             now()),
+                       (gen_random_uuid(), 'admin',         'programs:list',               now()),
+                       (gen_random_uuid(), 'admin',         'programs:assignments_list',   now()),
+                       (gen_random_uuid(), 'admin',         'programs:review',             now()),
+                       (gen_random_uuid(), 'store_manager', 'programs:assignments_my',    now())
                 ON CONFLICT (role, capability) DO NOTHING;
                 """);
 

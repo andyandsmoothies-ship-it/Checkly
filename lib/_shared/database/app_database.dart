@@ -25,12 +25,15 @@ part 'app_database.g.dart';
     CachedNotifications,
     CachedPolicies,
     CachedGlobalRisks,
+    CachedProgramAssignments,
     // Outbox tables
     PendingSubmissions,
     PendingAnswers,
     PendingPhotos,
     PendingActionPlanUpdates,
     SubmissionRiskOutboxEntries,
+    PendingProgramSubmissions,
+    PendingProgramPhotos,
     // Metadata
     SyncMeta,
     // Drafts
@@ -44,7 +47,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 22;
+  int get schemaVersion => 23;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -156,6 +159,12 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.syncError);
         await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.retryCount);
         await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.nextRetryAt);
+      }
+      if (from < 23) {
+        // Programs Module Slice 2B: offline cache + outbox tables.
+        await m.createTable(cachedProgramAssignments);
+        await m.createTable(pendingProgramSubmissions);
+        await m.createTable(pendingProgramPhotos);
       }
     },
     beforeOpen: (details) async {

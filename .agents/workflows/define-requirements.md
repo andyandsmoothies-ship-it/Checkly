@@ -16,7 +16,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
   - If the user provides a raw idea: Extract the `[ORIGIN_IDEA]`.
   - If the user provides an ADR (`decision_record.md`): Read the file, extract the chosen architecture, and use it as a strict constraint.
 
-> **@@SCAN**: (1) Shaping skill loaded? (2) Input source identified (Raw vs ADR)?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Shaping skill loaded? (2) Input source identified (Raw vs ADR)?
 
 ## Phase 2: Use Cases & Slicing (The "What" and "Who")
 - [ ] **Actors & RBAC**: Explicitly list every user role (e.g., Admin, Auditor) and their strict permissions.
@@ -25,7 +25,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Use-Case Slicing**: Apply Use-Case 3.0 slicing. Break the large use case into smaller, logical, deliverable slices.
 - [ ] **Testability Check (Binary Truth)**: For each slice, define plain-English Test Cases (Rules). MANDATORY: Acceptance criteria must be strictly binary (e.g. "Score returns 0", not "Score works well"). If a requirement is vague, push back and force a binary test contract.
 
-> **@@SCAN**: (1) Are Use Cases sliced? (2) Do slices have plain-English Test Cases?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Are Use Cases sliced? (2) Do slices have plain-English Test Cases?
 
 ## Phase 3: The Fit Check
 - [ ] **Apply Shaping**: Propose 1-3 high-level UX/Feature "Shapes" (mechanisms, not code). MANDATORY: To prevent Cognitive Debt, you MUST include a "Dumb Shape" (the absolute simplest flat/procedural solution) alongside any complex patterns. **MANDATORY Guardrail**: Do not select deep technical architectures (e.g., Database types, specific Push protocols) at this stage. Keep shapes strictly focused on Business Logic, UX, and Process flows.

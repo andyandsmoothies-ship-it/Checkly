@@ -20,7 +20,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | **Boundary Sync Check**| MANDATORY: Does this feature combine data across architectural boundaries (e.g., Remote API + Local Store)? If yes, explicitly verify and document the merging logic. Unverified trust across boundaries fails the pipeline. |
 | **EDD Proof** | MANDATORY: Demand **Executed Evidence** (logs, API responses). PROHIBITED: Accepting "Generative Evidence" (Builder claiming it works). |
 
-> **@@SCAN**: (1) Code path traced line-by-line? (2) All ACs verified against real code on both stacks?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Code path traced line-by-line? (2) All ACs verified against real code on both stacks?
 
 ## Phase 1.5: Adversarial Interrogation (Red Team)
 
@@ -32,7 +32,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | **Efficiency Eval** | MANDATORY: Evaluate N+1 queries, memory leaks, Big-O complexity. PROHIBITED: Declaring SUCCESS simply because tests pass if UX degrades. |
 | **Supportability (Crickett's Rule)** | MANDATORY: Reject code that is non-idiomatic. Demand explicit documentation answering: What does this do? Why is this done this way? What are the tradeoffs? |
 
-> **@@SCAN**: (1) Hostile Interrogation run? (2) Drift OOM Scan executed (if applicable)? (3) Supportability tradeoffs documented?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Hostile Interrogation run? (2) Drift OOM Scan executed (if applicable)? (3) Supportability tradeoffs documented?
 
 ## Phase 2: Continuous Integration (CI) Gate
 
@@ -42,7 +42,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | **Execution** | Stop Dev Servers -> Run ALL tests globally (`flutter test`, `dotnet test`). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions broke. |
 | **Pass/Fail Logic**| IF (Tests Green AND Zero Warnings) -> Proceed Phase 3. IF (Any Fail/Warning) -> **MANDATORY TRANSITION**: `/diagnose`. Do NOT ask permission. |
 
-> **@@SCAN**: (1) Build passed with zero warnings? (2) IF failed -> transitioned to `/diagnose`?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Build passed with zero warnings? (2) IF failed -> transitioned to `/diagnose`?
 
 ## Phase 3: Deliverable (The Metrics Snapshot)
 

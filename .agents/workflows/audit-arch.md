@@ -41,7 +41,7 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 ### Critic 5: Cognitive Debt (The Easy Button)
 - [ ] **Hasty Abstractions**: Did the AI generate an overly complex Design Pattern (e.g., massive AbstractFactories, Repositories) when a simple JSON dictionary, flat struct, or static function would suffice? Flag and demand deletion of fake-smart architectural bloat.
 
-> **@@SCAN**: Execute the interrogation. Record exact failure scenarios for each critic.
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Execute the interrogation. Record exact failure scenarios for each critic.
 
 ## Phase 3: The Verdict Payload
 

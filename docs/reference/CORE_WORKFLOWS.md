@@ -224,8 +224,9 @@ The app is designed for field auditors with unreliable connectivity. Users must 
 | App loads | Native Flutter app initialization |
 | Start a new audit | Templates + stores cached via Drift sync |
 | Fill in answers | Draft saved locally via `AuditManager` |
-| Submit audit | Queued to Drift outbox table |
+| Submit audit | Queued to `PendingSubmissions` Drift outbox |
 | Submit evidence | Queued to `PendingActionPlanUpdates` outbox |
+| Execute programs | Queued to `PendingProgramSubmissions` outbox |
 | Take photos | Saved to local filesystem + DB outbox references |
 
 ### What Requires Internet
@@ -269,6 +270,8 @@ React Query manages server state with an **offline-first** approach (`networkMod
 | `audit-metrics` | 10 min | default | Mutation-driven invalidation covers own writes |
 | `submissions` | 10 min | default | Mutation-driven invalidation covers own writes |
 | `action-plans` | 10 min | default | Mutation-driven invalidation covers own writes |
+| `programs` | 5 min | default | HQ-issued assignments need relatively fresh views |
+| `program-assignments` | 5 min | default | Individual store assignments cache |
 
 ### Technical References
 - **Query client config**: [queryClient.ts](file:///c:/Users/HP/Documents/GitHub/checkly-smart/src/lib/queryClient.ts)

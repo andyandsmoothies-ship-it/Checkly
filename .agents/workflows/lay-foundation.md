@@ -12,7 +12,7 @@
 - [ ] **Collaborative Interrogation**: Guide the user using the "5 Whys" technique to drill past symptoms. If they are stuck, suggest potential root causes based on industry standards.
 - [ ] **Format Problem**: Draft an initial Problem Statement: `[Situation]`, `[Problem]`, `[Implication]`, `[Benefit]`, `[Vision]`.
 
-> **@@SCAN**: Did we collaboratively reach the root business problem? If uncertain, propose a hypothesis and ask for feedback before proceeding.
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Did we collaboratively reach the root business problem? If uncertain, propose a hypothesis and ask for feedback before proceeding.
 
 ## Phase 2: Success Metrics & Vision
 - [ ] **Quantify Value**: Help the user define 1-3 quantitative, measurable Success Metrics. Provide examples if they give vague goals (e.g., convert "better UX" into "reduce cart drop-off by 15%").

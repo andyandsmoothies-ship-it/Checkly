@@ -15,18 +15,18 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 - [ ] **Read Artifacts**: Use `view_file` to thoroughly read the contents of each competing option.
 - [ ] **Normalize**: Extract the core "Hypothesis", "Blast Radius", and the `[ORIGIN_IDEA]` from each option.
 - [ ] **Traceability Lock**: You MUST explicitly declare the original `[ORIGIN_IDEA]` at the top of your assessment.
-> **@@SCAN**: (1) All competing artifacts loaded? (2) Hypothesis/Blast Radius distinctly gathered? (3) Origin Idea explicitly declared?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) All competing artifacts loaded? (2) Hypothesis/Blast Radius distinctly gathered? (3) Origin Idea explicitly declared?
 
 ## Phase 2: Hostile Interrogation (Red Teaming)
 - [ ] **MANDATORY**: For *every single option*, you MUST invent a catastrophic production failure scenario (e.g., memory leak, offline sync conflict, build failure, security bypass). 
 - [ ] **Constraint Enforcement**: You are explicitly forbidden from being polite or making appeasing statements like "both are good." You must be highly skeptical.
-> **@@SCAN**: (1) Hostile attack invented for EVERY option? (2) Safety mitigations analyzed without bias (No appeasement)?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Hostile attack invented for EVERY option? (2) Safety mitigations analyzed without bias (No appeasement)?
 
 ## Phase 3: The Pugh Decision Matrix
 - [ ] **Evaluate NFRs**: Create a Markdown table scoring each option against the project's strict Non-Functional Requirements (e.g., Offline Sync Capability, Main Thread Performance, Database Load, Blast Radius).
 - [ ] **Origin Idea Alignment Gate**: You MUST include "Origin Idea Alignment" as the highest-weight row in the matrix. If a technically brilliant option does not solve the user's actual starting idea, it must be heavily penalized.
 - [ ] **Scoring System**: Choose one option as the Baseline (`0`). Score competing options as Better (`+1`) or Worse (`-1`) relative to the baseline. Tabulate the final score.
-> **@@SCAN**: (1) Matrix strictly tabulated? (2) Baseline declared? (3) Final mathematical winner identified?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Matrix strictly tabulated? (2) Baseline declared? (3) Final mathematical winner identified?
 
 ## Phase 4: Architectural Decision Record (ADR) Generation
 - [ ] **Generate ADR**: MANDATORY: Use `write_to_file` to save `decision_record_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the ADR directly to the chat UI.
@@ -46,4 +46,4 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
-> **@@SCAN**: (1) ADR Schema respected (Latent Debate, Pugh Matrix)? (2) python verifier script executed and passed?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) ADR Schema respected (Latent Debate, Pugh Matrix)? (2) python verifier script executed and passed?

@@ -28,7 +28,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | **Exposed Secrets (`🔴`)**| MANDATORY: Scan codebase for hardcoded `sk_live`, `Bearer`, `password=`, or `.env` files. Flag for immediate secret rotation. |
 | **Docs & Formats (`🟡`)**| Compare docs vs actual code. Detect naming convention violations. |
 
-> **@@SCAN**: (1) Dead code found? (2) Architectural drift detected? (3) Secrets leaked? (4) Docs updated?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Dead code found? (2) Architectural drift detected? (3) Secrets leaked? (4) Docs updated?
 
 ## Phase 3: Structural Health 
 
@@ -49,7 +49,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | **Stale Markers**| Scan `TODO`/`FIXME`. IF (older than 30 days OR lacks owner) THEN Flag. |
 | **Duplication** | Detect copy-pasted validation/API logic. Flag for shared extraction. |
 
-> **@@SCAN**: (1) Files breaking 250/400 thresholds? (2) Coverage gaps found? (3) Stale markers count?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Files breaking 250/400 thresholds? (2) Coverage gaps found? (3) Stale markers count?
 
 ## Phase 5: Assessment Payload
 

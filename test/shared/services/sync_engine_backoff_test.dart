@@ -18,6 +18,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
+import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/pending_submission.dart';
 import 'package:checkly/_shared/services/delta_pull_result.dart';
@@ -61,6 +62,18 @@ class FailingApi implements SyncApi {
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
   @override
   Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {}
+
+  @override
+  Future<List<dynamic>> pullProgramAssignments() async => [];
+
+  @override
+  Future<void> pushProgramEvidence(
+    String assignmentId,
+    List<Map<String, dynamic>> evidenceItems,
+  ) async {}
+
+  @override
+  Future<void> pushProgramPhoto(String photoLocalKey, String filePath) async {}
 }
 
 class FakeOutbox implements Outbox {
@@ -179,6 +192,7 @@ void main() {
       globalRiskDao: GlobalRiskDao(db),
       submissionRiskOutboxDao: SubmissionRiskOutboxDao(db),
       syncMetaDao: SyncMetaDao(db),
+      programOutboxDao: ProgramOutboxDao(db),
     );
   });
 

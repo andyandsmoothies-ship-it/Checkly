@@ -91,6 +91,13 @@ class AdminDashboardVariant extends StatelessWidget {
                 iconColor: AppTheme.success,
                 onTap: () => context.push('/analytics'),
               ),
+              StatRowData(
+                icon: Icons.campaign_outlined,
+                label: 'Active Programs',
+                value: 'View',
+                iconColor: theme.colorScheme.tertiary,
+                onTap: () => context.push('/programs'),
+              ),
             ],
           ),
 

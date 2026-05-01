@@ -3,7 +3,6 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/theme/app_colors.dart';
-import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../../../audit/model/submission_dto.dart';
 import '../../../audit/pages/audit_preview_sheet.dart';
@@ -157,7 +156,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
       totalScore: sub.totalScore,
       isWeighted: sub.isWeighted,
     );
-    final scoreColor = theme.colorScheme.onSurface;
+
     final semanticColor = score != null
         ? (score >= 80
               ? AppColors.success

@@ -37,6 +37,11 @@ public static class AppCapabilities
     public const string SubmissionsReview = "submissions:review";
     public const string AdminManageRoles = "admin:manage_roles";
     public const string GlobalRisksManage = "global_risks:manage";
+    public const string ProgramsCreate = "programs:create";
+    public const string ProgramsList = "programs:list";
+    public const string ProgramsAssignmentsMy = "programs:assignments_my"; // SM: view own store's assignments
+    public const string ProgramsAssignmentsList = "programs:assignments_list"; // HQ/admin: view all assignments for a program
+    public const string ProgramsReview = "programs:review"; // HQ/admin: reject or verify a submitted assignment
 
     // ── Action Plan Transitions ───────────────────────────────────────────────
     // Imperative checks inside UpdateActionPlan.HandleAsync — not route-level guards.
