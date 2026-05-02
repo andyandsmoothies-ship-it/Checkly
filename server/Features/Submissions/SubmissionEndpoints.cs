@@ -27,7 +27,8 @@ public static class SubmissionEndpoints
             .RequireCapability(AppCapabilities.AnalyticsAdmin);
 
         group.MapGet("/{id}", GetSubmission.HandleAsync)
-            .WithName("GetSubmission");
+            .WithName("GetSubmission")
+            .RequireCapability(AppCapabilities.SubmissionsList);
 
         group.MapPut("/{id}", UpdateSubmission.HandleAsync)
             .WithName("UpdateSubmission");
@@ -37,10 +38,12 @@ public static class SubmissionEndpoints
             .RequireCapability(AppCapabilities.SubmissionsReview);
 
         group.MapPut("/{id}/finalize", FinalizeSubmission.HandleAsync)
-            .WithName("FinalizeSubmission");
+            .WithName("FinalizeSubmission")
+            .RequireCapability(AppCapabilities.SubmissionsCreate);
 
         group.MapPost("/{id}/void", VoidSubmission.HandleAsync)
-            .WithName("VoidSubmission");
+            .WithName("VoidSubmission")
+            .RequireAuthorization("AdminOnly"); // Admin ONLY — user confirmed
 
         return group;
     }

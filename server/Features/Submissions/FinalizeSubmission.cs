@@ -6,6 +6,7 @@ using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
 using Checkly.Api.Common;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Checkly.Api.Features.Submissions;
 
@@ -52,6 +53,7 @@ public static class FinalizeSubmission
         var globalRisks = await db.SubmissionRisks
             .Include(r => r.GlobalRisk)
             .Where(r => r.SubmissionId == submission.Id)
+            .Take(500) // Safety cap — a submission will never legitimately have 500 global risks
             .ToListAsync(ct);
         bool hasGlobalRisk = globalRisks.Count > 0;
 
@@ -168,8 +170,8 @@ public static class FinalizeSubmission
         var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid && scoreMode == "enforce")
         {
-            var logMsg = $"Score verification failed! Client: {request.ClientScore}, Server: {verification.ServerScore}, Reason: {verification.Reason}. First Answer RptFlt: {request.Answers!.FirstOrDefault()?.RepeatedFaults} \n";
-            try { System.IO.File.AppendAllText(".agents/tmp/bad_request.txt", logMsg); } catch { }
+            Log.Warning("FinalizeSubmission 400: Score mismatch. Client: {Client}, Server: {Server}, Reason: {Reason}",
+                request.ClientScore, verification.ServerScore, verification.Reason);
 
             return TypedResults.BadRequest(new
             {

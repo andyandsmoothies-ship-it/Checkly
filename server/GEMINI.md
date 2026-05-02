@@ -35,3 +35,4 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query pa
 
 ## Business Logic Gotchas
 - **Gotcha 5: Survey Mode**: Submissions have `TotalScore = null`. Filter `WHERE scoring_mode != 'survey'` before averaging scores.
+- **Gotcha 13: PBAC Route Authorization**: Minimal APIs in this project require using `.RequireAuthorization("PolicyName")` (e.g., `"AdminOnly"`) rather than chainable role methods. Always prefer `.RequireCapability(AppCapabilities.X)` where possible.

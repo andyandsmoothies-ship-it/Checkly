@@ -47,8 +47,9 @@ public static class ResourceAccessGuard
 
         if (areaId.HasValue) return areaId.Value == profile.AreaId;
 
-        var store = await db.Stores.AsNoTracking().FirstOrDefaultAsync(s => s.Id == storeId, ct);
-        return store?.AreaId == profile.AreaId;
+        // Single query instead of two separate round-trips
+        return await db.Stores.AsNoTracking()
+            .AnyAsync(s => s.Id == storeId && s.AreaId == profile.AreaId, ct);
     }
 
     /// <summary>

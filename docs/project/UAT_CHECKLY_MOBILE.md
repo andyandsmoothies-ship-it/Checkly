@@ -168,6 +168,7 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 10.3 | Large Payload Sync | Sync an audit with 20 high-res photos | Uploads chunked. Memory usage stable. Does not timeout. | [ ] |
 | 10.4 | Dead Letter Queue | Simulate API 400 error during background sync | Payload moved to DLQ (Review Required), queue continues. | [ ] |
 | 10.5 | Drift App Upgrade | Install v1 APK → create draft → Install v2 APK | SQLite schema updates cleanly. Draft is preserved. | [ ] |
+| 10.6 | Exponential Backoff | Simulate API 500/Network error during sync | Engine schedules retry with exponentially increasing delays. | [ ] |
 
 ## Module 11: Action Plans (Corrective Actions)
 **Focus**: AP lifecycle, auto-generation, and workflow gates.

@@ -21,6 +21,7 @@ import 'package:checkly/features/action_plans/models/add_comment_request.dart';
 import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
+import 'package:checkly/_shared/services/user_role_provider.dart';
 import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 

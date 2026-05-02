@@ -84,12 +84,15 @@ public static class ReviewSubmission
             });
         }
 
-        await db.SaveChangesAsync(ct);
+        // Stage audit log BEFORE saving — makes the entire review action atomic
         AuditLogger.Log(db, user, "submission_reviewed", "Submission", submission.Id,
             message: $"Submission '{submission.Id}' reviewed as '{request.Status}' by admin",
             userEmail: user.FindFirstValue(ClaimTypes.Email));
+
+        // Single atomic flush: submission fields + notification + audit log
         await db.SaveChangesAsync(ct);
 
+        // FCM dispatch AFTER successful save (outside DB transaction, acceptable)
         if (submission.AuditorId.HasValue)
         {
             await fcm.DispatchSyncNeededAsync(submission.AuditorId.Value);

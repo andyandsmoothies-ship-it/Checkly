@@ -222,14 +222,18 @@ server/
 ### 5.4 Offline Architecture
 
 ```text
-[Submit Audit] --> [Write to SQLite] --> [Enqueue in Sync Outbox] --> [Sync Engine]
+[Submit Audit] --> [Write to SQLite] --> [Enqueue in Sync Outbox] --> [Sync Engine (Plugin Core)]
 
 [Sync Engine] --> (Online?)
-                    |--> (Yes) --> [Push to API] --> (Success?)
-                                                       |--> (Yes) --> [Mark Synced Locally / Remove]
-                                                       |--> (409 Conflict) --> [Mark as Stale Conflict for Recovery]
+                    |--> (Yes) --> [Execute Plugin Modules by Priority] 
+                                     |--> [Push Phase] --> (Success?)
+                                                             |--> (Yes) --> [Mark Synced Locally / Remove]
+                                                             |--> (409) --> [Mark as Stale Conflict for Recovery]
+                                                             |--> (5xx/Network) --> [Exponential Backoff Retry]
                     |--> (No) ---> [Wait for Connectivity]
 ```
+
+> **Sync Engine Enhancements**: The Sync Engine utilizes a Plugin Architecture, delegating sync logic to specific domain modules (e.g., `CoreAuditSyncModule`, `ActionPlanSyncModule`). It also enforces **Exponential Backoff** to prevent overwhelming the server during degraded network states or transient 5xx errors.
 
 ---
 
