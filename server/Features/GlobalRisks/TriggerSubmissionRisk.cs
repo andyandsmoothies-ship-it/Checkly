@@ -34,8 +34,8 @@ public static class TriggerSubmissionRisk
             return TypedResults.NotFound(new { message = "Submission not found." });
 
         // 2. IDOR guard
-        if (!await SubmissionAccessGuard.CanAccessAsync(
-                user, submission.StoreId, areaId: null, submission.AuditorId, db, ct))
+        if (!await ResourceAccessGuard.CanAccessAsync(
+                user, new ResourceScope(StoreId: submission.StoreId, OwnerId: submission.AuditorId), db, ct))
             return TypedResults.Forbid();
 
         // 3. Draft-only guard

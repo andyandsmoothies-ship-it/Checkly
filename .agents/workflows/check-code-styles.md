@@ -38,3 +38,8 @@ description: Execute a deterministic Python sweep on the Flutter UI codebase to 
 2. **Verify** → After the fix, run: `python .agents\scripts\scrape_a11y.py --dir [CHUNK_DIR] --out .agents\tmp\a11y_v2.json` → expect `Found 0 violations`.
 3. **Visual check** → Screenshot changed screens → run `/check-visuals`.
 4. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.
+
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

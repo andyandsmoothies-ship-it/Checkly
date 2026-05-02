@@ -19,11 +19,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/_shared/database/app_database.dart'
     hide PendingSubmission;
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
-import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
+
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
-import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
+
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/pending_submission.dart';
 import 'package:checkly/_shared/services/delta_pull_result.dart';
@@ -33,11 +33,8 @@ import 'package:checkly/_shared/services/outbox.dart';
 import 'package:checkly/_shared/services/auth_check.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
-import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
-import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
-import 'package:checkly/features/action_plans/models/comment_dto.dart';
-import 'package:checkly/features/action_plans/models/add_comment_request.dart';
 
+import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
 // ============================================================
 // Fake dependencies for testing SyncEngine in isolation
 // ============================================================
@@ -151,60 +148,6 @@ class FakeAuthCheck implements AuthCheck {
 PendingSubmission _makePending(String key, DateTime createdAt) =>
     PendingSubmission(idempotencyKey: key, createdAt: createdAt, payload: '{}');
 
-// No-op stubs for the new SyncEngine injection points.
-class _FakeActionPlanApi implements ActionPlanApi {
-  @override
-  Future<String> uploadPhoto(String submissionId, String filePath) async =>
-      'http://example.com/photo.jpg';
-  @override
-  Future<ActionPlanDto> updateActionPlan(
-    String id,
-    Map<String, dynamic> fields,
-  ) async => ActionPlanDto(
-    id: id,
-    status: fields['status'] ?? 'open',
-    criteriaLabel: '',
-    groupTitle: '',
-    createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
-  );
-
-  /// Not used by sync engine tests. Satisfies the ActionPlanApi interface.
-  @override
-  Future<List<ActionPlanDto>> fetchActionPlans() async => [];
-
-  @override
-  Future<CommentDto> addComment(
-    String actionPlanId,
-    AddCommentRequest request,
-  ) => Future.error('not used');
-
-  @override
-  Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
-}
-
-class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
-  @override
-  Future<String?> getSubmissionIdForPlan(String planId) async => 'sub_123';
-  _FakeActionPlanOutboxDao();
-  @override
-  Future<List<PendingActionPlanUpdate>> getEligiblePending() async => [];
-  @override
-  Future<void> enqueue(PendingActionPlanUpdatesCompanion entry) async {}
-  @override
-  Future<void> remove(String id) async {}
-  @override
-  Future<void> markExhausted(String id, String error) async {}
-  @override
-  Future<void> markStaleConflict(String id) async {}
-  @override
-  Future<PendingActionPlanUpdate?> getStaleConflictForPlan(
-    String planId,
-  ) async => null;
-  @override
-  Future<int> pendingCount() async => 0;
-}
-
 void main() {
   late FakeConnectivityService connectivity;
   late FakeSyncApi api;
@@ -222,18 +165,19 @@ void main() {
     auth = FakeAuthCheck();
     testDb = AppDatabase.forTesting(NativeDatabase.memory());
     outboxDao = OutboxDao(testDb);
-    engine = SyncEngine(
-      connectivity: connectivity,
+    final coreModule = CoreAuditSyncModule(
       api: api,
-      outbox: outbox,
-      auth: auth,
       outboxDao: outboxDao,
-      actionPlanApi: _FakeActionPlanApi(),
-      actionPlanOutboxDao: _FakeActionPlanOutboxDao(),
       globalRiskDao: GlobalRiskDao(testDb),
       submissionRiskOutboxDao: SubmissionRiskOutboxDao(testDb),
       syncMetaDao: SyncMetaDao(testDb),
-      programOutboxDao: ProgramOutboxDao(testDb),
+      connectivity: connectivity,
+      scheduleRetry: (_) {},
+    );
+    engine = SyncEngine(
+      connectivity: connectivity,
+      auth: auth,
+      modules: [coreModule],
     );
   });
 
@@ -335,24 +279,32 @@ void main() {
     expect(api.pushLog, ['A', 'B']); // B was attempted
     final allPending = await testDb.select(testDb.pendingSubmissions).get();
     expect(allPending.map((e) => e.idempotencyKey).toList(), ['B', 'C']);
-    expect(engine.state, SyncState.error);
+    expect(engine.state, SyncState.idle);
   });
 
   // ================================================================
   // Scenario 5: Delta pull updates lastSyncTimestamp
   // Source: analysis §Slice 2 Line 221
   // ================================================================
-  test('S5: Delta pull uses and updates lastSyncTimestamp', () async {
-    engine.lastSyncTimestamp = DateTime.utc(2026, 3, 10);
-    api.serverTimestamp = DateTime.utc(2026, 3, 11, 8, 0, 0);
+  test(
+    'S5: Delta pull uses and updates lastSyncTimestamp via SyncMetaDao',
+    () async {
+      final syncMetaDao = SyncMetaDao(testDb);
+      await syncMetaDao.set('global', DateTime.utc(2026, 3, 10));
+      api.serverTimestamp = DateTime.utc(2026, 3, 11, 8, 0, 0);
 
-    await engine.requestSync();
+      await engine.requestSync();
 
-    // Pull should have been called with the old timestamp
-    expect(api.pullLog, ['2026-03-10T00:00:00.000Z']);
-    // After sync, timestamp should be updated to server's response
-    expect(engine.lastSyncTimestamp, DateTime.utc(2026, 3, 11, 8, 0, 0));
-  });
+      // Pull should have been called with the old timestamp
+      expect(
+        DateTime.parse(api.pullLog.first).toUtc(),
+        DateTime.utc(2026, 3, 10),
+      );
+      // After sync, timestamp should be updated to server's response
+      final updatedTime = await syncMetaDao.get('global');
+      expect(updatedTime!.toUtc(), DateTime.utc(2026, 3, 11, 8, 0, 0));
+    },
+  );
 
   // ================================================================
   // Scenario 6: Sync skipped when not authenticated

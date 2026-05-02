@@ -44,8 +44,8 @@ public static class FinalizeSubmission
         if (submission.Status != "draft")
             return TypedResults.Conflict(new { error = $"Cannot finalize a submission with status '{submission.Status}'. Only draft submissions can be finalized." });
 
-        // Must be the same auditor (or admin)
-        if (submission.AuditorId != auditorId && !SubmissionAccessGuard.CanDelegate(user))
+        // Must be the same auditor (or admin/area_manager scoped to this store's area)
+        if (submission.AuditorId != auditorId && !await ResourceAccessGuard.CanDelegateAsync(user, new ResourceScope(StoreId: submission.StoreId), db, ct))
             return TypedResults.Forbid();
 
         // 1.5 Load Global Risks for this submission

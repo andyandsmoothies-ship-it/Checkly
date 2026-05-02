@@ -35,7 +35,7 @@ public static class CreateSubmission
         // Tactical 9/10 Fix: Prevent IDOR assignment if not an admin/manager
         if (request.AssignToAuditorId.HasValue && request.AssignToAuditorId.Value != callerId)
         {
-            if (!SubmissionAccessGuard.CanDelegate(user))
+            if (!await ResourceAccessGuard.CanDelegateAsync(user, new ResourceScope(StoreId: request.StoreId), db, ct))
             {
                 return TypedResults.Forbid();
             }

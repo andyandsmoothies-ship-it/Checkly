@@ -59,8 +59,8 @@ public static class SyncSubmissions
         {
             // For store-scoped requests, run the access guard with a representative submission-like tuple.
             // We pass the storeId directly (auditorId=null is safe — guard checks role-level).
-            var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-                user, storeId, areaId, auditorId: null, db, ct);
+            var hasAccess = await ResourceAccessGuard.CanAccessAsync(
+                user, new ResourceScope(StoreId: storeId, AreaId: areaId), db, ct);
 
             if (!hasAccess)
                 return TypedResults.Forbid();

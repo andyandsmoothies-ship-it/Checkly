@@ -1,15 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 
-import '../../../_shared/database/database_service.dart';
 import '../../../_shared/database/dao/submission_dao.dart';
 import '../model/submission_dto.dart';
 import '../model/submission_detail_dto.dart';
 import '../services/draft_service.dart';
 import '../services/submission_api_service.dart';
 import '../../../_shared/database/dao/outbox_dao.dart';
-
-final _di = GetIt.instance; // used only in _applyLocalOverrides (method body)
 
 /// PFA Manager for audit history — cache-first read path with pagination.
 ///
@@ -26,10 +22,10 @@ class HistoryManager extends ChangeNotifier {
     required SubmissionDao dao,
     required DraftService draftService,
     required OutboxDao outboxDao,
-  })  : _api = api,
-        _dao = dao,
-        _draftService = draftService,
-        _outboxDao = outboxDao;
+  }) : _api = api,
+       _dao = dao,
+       _draftService = draftService,
+       _outboxDao = outboxDao;
 
   // ---------- State ----------
   final submissions = ValueNotifier<List<SubmissionDto>>([]);
@@ -239,35 +235,26 @@ class HistoryManager extends ChangeNotifier {
         .toList();
 
     if (unseenKeys.isNotEmpty) {
-      final db = _di<DatabaseService>().db;
       for (final key in unseenKeys) {
         final parts = key.split(':');
         if (parts.length >= 2) {
           final tId = parts[0];
           final sId = parts[1];
+          DateTime savedAt = DateTime.now();
           String? tTitle;
           String? tType;
           String? sName;
-          DateTime savedAt = DateTime.now();
 
           try {
-            final tRow = await (db.select(
-              db.cachedTemplates,
-            )..where((t) => t.id.equals(tId))).getSingleOrNull();
-            if (tRow != null) {
-              tTitle = tRow.title;
-              tType = tRow.type;
+            final metadata = await _dao.getLocalOverrideMetadata(tId, sId);
+            tTitle = metadata.templateTitle;
+            tType = metadata.templateType;
+            sName = metadata.storeName;
+
+            final draftSavedAt = await _dao.getDraftSavedAt(key);
+            if (draftSavedAt != null) {
+              savedAt = draftSavedAt;
             }
-
-            final sRow = await (db.select(
-              db.cachedStores,
-            )..where((s) => s.id.equals(sId))).getSingleOrNull();
-            if (sRow != null) sName = sRow.name;
-
-            final dRow = await (db.select(
-              db.draftAnswers,
-            )..where((d) => d.draftKey.equals(key))).getSingleOrNull();
-            if (dRow != null) savedAt = dRow.savedAt;
           } catch (_) {}
 
           result.insert(
@@ -290,7 +277,6 @@ class HistoryManager extends ChangeNotifier {
     // Inject outbox pending submissions
     final pendingRows = await _outboxDao.getAllPending();
     if (pendingRows.isNotEmpty) {
-      final db = _di<DatabaseService>().db;
       for (final p in pendingRows) {
         // Remove the original row if this pending outbox is finalizing it
         if (p.targetSubmissionId != null) {
@@ -301,18 +287,13 @@ class HistoryManager extends ChangeNotifier {
         String? tType;
         String? sName;
         try {
-          final tRow = await (db.select(
-            db.cachedTemplates,
-          )..where((t) => t.id.equals(p.templateId))).getSingleOrNull();
-          if (tRow != null) {
-            tTitle = tRow.title;
-            tType = tRow.type;
-          }
-
-          final sRow = await (db.select(
-            db.cachedStores,
-          )..where((s) => s.id.equals(p.storeId))).getSingleOrNull();
-          if (sRow != null) sName = sRow.name;
+          final metadata = await _dao.getLocalOverrideMetadata(
+            p.templateId,
+            p.storeId,
+          );
+          tTitle = metadata.templateTitle;
+          tType = metadata.templateType;
+          sName = metadata.storeName;
         } catch (_) {}
 
         result.insert(

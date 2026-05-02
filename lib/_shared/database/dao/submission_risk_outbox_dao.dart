@@ -29,7 +29,12 @@ class SubmissionRiskOutboxDao {
   Future<List<SubmissionRiskOutboxEntry>> getEligiblePending() async {
     final now = DateTime.now();
     return (_db.select(_db.submissionRiskOutboxEntries)
-          ..where((r) => r.syncStatus.equals('pending') & (r.nextRetryAt.isNull() | r.nextRetryAt.isSmallerOrEqualValue(now)))
+          ..where(
+            (r) =>
+                r.syncStatus.equals('pending') &
+                (r.nextRetryAt.isNull() |
+                    r.nextRetryAt.isSmallerOrEqualValue(now)),
+          )
           ..orderBy([(r) => OrderingTerm.asc(r.createdAt)])
           ..limit(50))
         .get();
@@ -72,8 +77,15 @@ class SubmissionRiskOutboxDao {
   }
 
   /// Updates the retry count, next retry time, and the latest error message for a risk outbox entry.
-  Future<void> updateRetry(String id, int retryCount, DateTime nextRetryAt, String error) async {
-    await (_db.update(_db.submissionRiskOutboxEntries)..where((r) => r.id.equals(id))).write(
+  Future<void> updateRetry(
+    String id,
+    int retryCount,
+    DateTime nextRetryAt,
+    String error,
+  ) async {
+    await (_db.update(
+      _db.submissionRiskOutboxEntries,
+    )..where((r) => r.id.equals(id))).write(
       SubmissionRiskOutboxEntriesCompanion(
         retryCount: Value(retryCount),
         nextRetryAt: Value(nextRetryAt),
@@ -84,7 +96,9 @@ class SubmissionRiskOutboxDao {
 
   /// Marks a risk outbox entry as permanently exhausted (failed) after too many retries.
   Future<void> markExhausted(String id, String error) async {
-    await (_db.update(_db.submissionRiskOutboxEntries)..where((r) => r.id.equals(id))).write(
+    await (_db.update(
+      _db.submissionRiskOutboxEntries,
+    )..where((r) => r.id.equals(id))).write(
       SubmissionRiskOutboxEntriesCompanion(
         syncStatus: const Value('exhausted'),
         syncError: Value(error),

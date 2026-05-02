@@ -35,8 +35,8 @@ public static class GetProgramPhoto
         if (assignment is null)
             return TypedResults.NotFound();
 
-        var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-            user, assignment.StoreId, areaId: null, auditorId: null, db, ct);
+        var hasAccess = await ResourceAccessGuard.CanAccessAsync(
+            user, new ResourceScope(StoreId: assignment.StoreId), db, ct);
         if (!hasAccess)
             return TypedResults.Forbid();
 

@@ -37,8 +37,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 ## Artifacts
 | Status | File Path | Type |
 |---|---|---|
-| [NEW] | brain/.../walkthrough_[topic].md | Result |
-| [NEW] | brain/.../executed_tests_[topic].md | Test Log |
+| [NEW] | .agents/active_tasks/walkthrough_[topic].md | Result |
+| [NEW] | docs/qa/gates/executed_tests_[topic].md | Test Log |
 ```
 
 ## Phase 1: Coding (The Builder Phase)
@@ -106,6 +106,7 @@ Review from 6 angles:
 
 ## 🚦 User Handoff & Next Steps
 > [!IMPORTANT]
+<output_schema>
 > **Outputs Created:** Implemented code (GREEN) + `walkthrough_[topic].md` (or `handoff.md` if more slices remain).
 >
 > **HOW TO CONTINUE THE SLICING LOOP:**
@@ -119,3 +120,9 @@ Review from 6 angles:
 > 1. Open a **NEW QA Session**.
 > 2. `@[/verify] {Path_to_walkthrough.md}`
 > 3. If verified, manually commit via GitHub Desktop.
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
+
+</output_schema>

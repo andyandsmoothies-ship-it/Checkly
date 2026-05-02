@@ -22,7 +22,6 @@ export '../model/audit_answer.dart';
 import '../model/submission_dto.dart';
 import '../services/draft_service.dart'; // Added
 import '../services/scoring_input_mapper.dart';
-import '../services/submission_api_service.dart';
 
 part 'audit_manager_draft.dart';
 part 'audit_manager_submit.dart';
@@ -37,25 +36,21 @@ const _uuid = Uuid();
 /// 2. Save to Drift outbox (pending_submissions + pending_answers)
 /// 3. If online: trigger sync. If offline: queued for later.
 class AuditManager extends ChangeNotifier {
-  // ignore: unused_field — kept as injectable test seam; SpySubmissionApiService verifies HTTP path is never reached.
-  final SubmissionApiService _api;
   final OutboxDao _outbox;
   final GlobalRiskDao _globalRiskDao;
   final SubmissionRiskOutboxDao _riskOutboxDao;
   final ConnectivityService? _connectivity;
 
   AuditManager({
-    required SubmissionApiService api,
     required OutboxDao outbox,
     required GlobalRiskDao globalRiskDao,
     required SubmissionRiskOutboxDao riskOutboxDao,
     required DraftService draftService,
     ConnectivityService? connectivity,
-  })  : _api = api,
-        _outbox = outbox,
-        _globalRiskDao = globalRiskDao,
-        _riskOutboxDao = riskOutboxDao,
-        _connectivity = connectivity {
+  }) : _outbox = outbox,
+       _globalRiskDao = globalRiskDao,
+       _riskOutboxDao = riskOutboxDao,
+       _connectivity = connectivity {
     _draftService = draftService;
   }
 

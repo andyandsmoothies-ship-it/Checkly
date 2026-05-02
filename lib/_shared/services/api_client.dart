@@ -31,7 +31,8 @@ Dio createDio({String? baseUrl}) {
       onError: (error, handler) {
         if (error.response?.statusCode == 401) {
           final path = error.requestOptions.path;
-          if (!path.contains('/auth/login') && !path.contains('/auth/register')) {
+          if (!path.contains('/auth/login') &&
+              !path.contains('/auth/register')) {
             try {
               di<AuthManager>().logout();
             } catch (e) {

@@ -1,5 +1,3 @@
-
-
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,7 +8,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
-import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
+
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/pending_submission.dart';
@@ -23,6 +21,8 @@ import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/models/add_comment_request.dart';
+import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
+import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
 
 // Fakes
 class FakeConnectivity implements ConnectivityService {
@@ -74,19 +74,33 @@ class FakeActionPlanApiSpy implements ActionPlanApi {
   int updateCallCount = 0;
 
   @override
-  Future<ActionPlanDto> updateActionPlan(String id, Map<String, dynamic> f) async {
+  Future<ActionPlanDto> updateActionPlan(
+    String id,
+    Map<String, dynamic> f,
+  ) async {
     updateCallCount++;
-    return ActionPlanDto(id: id, status: '', criteriaLabel: '', groupTitle: '', createdAt: DateTime.now(), updatedAt: DateTime.now());
+    return ActionPlanDto(
+      id: id,
+      status: '',
+      criteriaLabel: '',
+      groupTitle: '',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
   }
 
   @override
-  Future<String> uploadPhoto(String submissionId, String filePath) async => 'url';
+  Future<String> uploadPhoto(String submissionId, String filePath) async =>
+      'url';
 
   @override
   Future<List<ActionPlanDto>> fetchActionPlans() async => [];
 
   @override
-  Future<CommentDto> addComment(String actionPlanId, AddCommentRequest request) => Future.error('not used');
+  Future<CommentDto> addComment(
+    String actionPlanId,
+    AddCommentRequest request,
+  ) => Future.error('not used');
 
   @override
   Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
@@ -107,69 +121,96 @@ void main() {
 
   tearDown(() async => testDb.close());
 
-  test('TC-03: SyncEngine_SubmissionFailure_DoesNotBlock_ActionPlanDrain', () async {
-    // Arrange
-    final api = FakeSyncApiFailingSubmissions();
-    final apApi = FakeActionPlanApiSpy();
-    final engine = SyncEngine(
-      connectivity: FakeConnectivity(),
-      api: api,
-      auth: FakeAuthCheck(),
-      outboxDao: outboxDao,
-      actionPlanApi: apApi,
-      actionPlanOutboxDao: actionPlanOutboxDao,
-      globalRiskDao: GlobalRiskDao(testDb),
-      submissionRiskOutboxDao: riskOutboxDao,
-      syncMetaDao: SyncMetaDao(testDb),
-      programOutboxDao: ProgramOutboxDao(testDb),
-    );
+  test(
+    'TC-03: SyncEngine_SubmissionFailure_DoesNotBlock_ActionPlanDrain',
+    () async {
+      // Arrange
+      final api = FakeSyncApiFailingSubmissions();
+      final apApi = FakeActionPlanApiSpy();
+      final connectivity = FakeConnectivity();
+      final engine = SyncEngine(
+        connectivity: connectivity,
+        auth: FakeAuthCheck(),
+        modules: [
+          CoreAuditSyncModule(
+            api: api,
+            outboxDao: outboxDao,
+            globalRiskDao: GlobalRiskDao(testDb),
+            submissionRiskOutboxDao: riskOutboxDao,
+            syncMetaDao: SyncMetaDao(testDb),
+            connectivity: connectivity,
+            scheduleRetry: (_) {},
+          ),
+          ActionPlanSyncModule(
+            api: apApi,
+            outboxDao: actionPlanOutboxDao,
+            connectivity: connectivity,
+            scheduleRetry: (_) {},
+          ),
+        ],
+      );
 
-    // Enqueue a submission that will fail
-    await outboxDao.insertSubmissionWithAnswers(
-      PendingSubmissionsCompanion.insert(
-        id: 'sub-fail',
-        idempotencyKey: 'idem',
-        templateId: 'tpl',
-        storeId: 'str',
-        clientScore: 0.0,
-        createdAt: DateTime.now(),
-      ),
-      [],
-    );
+      // Enqueue a submission that will fail
+      await outboxDao.insertSubmissionWithAnswers(
+        PendingSubmissionsCompanion.insert(
+          id: 'sub-fail',
+          idempotencyKey: 'idem',
+          templateId: 'tpl',
+          storeId: 'str',
+          clientScore: 0.0,
+          createdAt: DateTime.now(),
+        ),
+        [],
+      );
 
-    // Enqueue an action plan evidence
-    await actionPlanOutboxDao.enqueue(
-      PendingActionPlanUpdatesCompanion.insert(
-        id: 'ap-out-1',
-        actionPlanId: 'ap-1',
-        correctionPlan: 'correction',
-        evidenceNote: 'note',
-        createdAt: DateTime.now(),
-      ),
-    );
+      // Enqueue an action plan evidence
+      await actionPlanOutboxDao.enqueue(
+        PendingActionPlanUpdatesCompanion.insert(
+          id: 'ap-out-1',
+          actionPlanId: 'ap-1',
+          correctionPlan: 'correction',
+          evidenceNote: 'note',
+          createdAt: DateTime.now(),
+        ),
+      );
 
-    // Act
-    await engine.requestSync();
+      // Act
+      await engine.requestSync();
 
-    // Assert
-    expect(apApi.updateCallCount, 1, reason: 'Action Plan drain should run even if submission fails');
-  });
+      // Assert
+      expect(
+        apApi.updateCallCount,
+        1,
+        reason: 'Action Plan drain should run even if submission fails',
+      );
+    },
+  );
 
   test('TC-04: SyncEngine_SubmissionFailure_DoesNotBlock_RiskDrain', () async {
     // Arrange
     final api = FakeSyncApiFailingSubmissions();
     final apApi = FakeActionPlanApiSpy();
+    final connectivity = FakeConnectivity();
     final engine = SyncEngine(
-      connectivity: FakeConnectivity(),
-      api: api,
+      connectivity: connectivity,
       auth: FakeAuthCheck(),
-      outboxDao: outboxDao,
-      actionPlanApi: apApi,
-      actionPlanOutboxDao: actionPlanOutboxDao,
-      globalRiskDao: GlobalRiskDao(testDb),
-      submissionRiskOutboxDao: riskOutboxDao,
-      syncMetaDao: SyncMetaDao(testDb),
-      programOutboxDao: ProgramOutboxDao(testDb),
+      modules: [
+        CoreAuditSyncModule(
+          api: api,
+          outboxDao: outboxDao,
+          globalRiskDao: GlobalRiskDao(testDb),
+          submissionRiskOutboxDao: riskOutboxDao,
+          syncMetaDao: SyncMetaDao(testDb),
+          connectivity: connectivity,
+          scheduleRetry: (_) {},
+        ),
+        ActionPlanSyncModule(
+          api: apApi,
+          outboxDao: actionPlanOutboxDao,
+          connectivity: connectivity,
+          scheduleRetry: (_) {},
+        ),
+      ],
     );
 
     // Enqueue a submission that will fail
@@ -192,6 +233,10 @@ void main() {
     await engine.requestSync();
 
     // Assert
-    expect(api.pushRiskCallCount, 1, reason: 'Risk drain should run even if submission fails');
+    expect(
+      api.pushRiskCallCount,
+      1,
+      reason: 'Risk drain should run even if submission fails',
+    );
   });
 }

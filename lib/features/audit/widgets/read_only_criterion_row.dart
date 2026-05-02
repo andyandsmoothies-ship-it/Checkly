@@ -44,11 +44,23 @@ class ReadOnlyCriterionRow extends StatelessWidget {
       }
     } else if (criterion?.inputType == 'pass_fail' || criterion == null) {
       if (answer.value == 'conform') {
-        return AuditStatusBadge(label: 'PASS', color: AppTheme.success, icon: Icons.check_circle_outline);
+        return AuditStatusBadge(
+          label: 'PASS',
+          color: AppTheme.success,
+          icon: Icons.check_circle_outline,
+        );
       } else if (answer.value == 'non_conform') {
-        return AuditStatusBadge(label: 'FAIL', color: theme.colorScheme.error, icon: Icons.cancel_outlined);
+        return AuditStatusBadge(
+          label: 'FAIL',
+          color: theme.colorScheme.error,
+          icon: Icons.cancel_outlined,
+        );
       } else if (answer.value == 'na') {
-        return AuditStatusBadge(label: 'N/A', color: theme.colorScheme.outline, icon: Icons.remove_circle_outline);
+        return AuditStatusBadge(
+          label: 'N/A',
+          color: theme.colorScheme.outline,
+          icon: Icons.remove_circle_outline,
+        );
       }
     }
 
@@ -241,7 +253,10 @@ class ReadOnlyCriterionRow extends StatelessWidget {
                 icon: const Icon(Icons.arrow_forward, size: 16),
                 label: const Text('View Action Plan'),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                 ),
               ),
             ),

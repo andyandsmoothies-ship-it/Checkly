@@ -57,8 +57,8 @@ public static class UploadProgramPhoto
             return TypedResults.NotFound(new { error = "Evidence not found" });
 
         // IDOR: Verify the caller can access this assignment's store
-        var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-            user, evidence.Assignment.StoreId, areaId: null, auditorId: null, db, ct);
+        var hasAccess = await ResourceAccessGuard.CanAccessAsync(
+            user, new ResourceScope(StoreId: evidence.Assignment.StoreId), db, ct);
         if (!hasAccess)
             return TypedResults.Forbid();
 

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:checkly/_shared/services/sync_engine.dart';
+import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
 
 /// A simple stub representing a database row (e.g. PendingAnswer)
 /// Since `buildAnswerPayload` uses `dynamic`, we can pass any object
@@ -19,12 +19,12 @@ class _StubAnswer {
 }
 
 void main() {
-  group('SyncEngine Answer Payload Builder', () {
+  group('CoreAuditSyncModule Answer Payload Builder', () {
     test(
       'SE1: buildAnswerPayload with isCcp=true includes isCcp key mapping',
       () {
         final stub = _StubAnswer(isCcp: true, isRisk: false);
-        final jsonMap = SyncEngine.buildAnswerPayload(stub);
+        final jsonMap = CoreAuditSyncModule.buildAnswerPayload(stub);
 
         expect(
           jsonMap.containsKey('isCcp'),
@@ -43,7 +43,7 @@ void main() {
       'SE2: buildAnswerPayload with isRisk=true includes isRisk key mapping',
       () {
         final stub = _StubAnswer(isCcp: false, isRisk: true);
-        final jsonMap = SyncEngine.buildAnswerPayload(stub);
+        final jsonMap = CoreAuditSyncModule.buildAnswerPayload(stub);
 
         expect(
           jsonMap.containsKey('isRisk'),
@@ -62,7 +62,7 @@ void main() {
       'SE3: buildAnswerPayload with false values serializes them explicitly',
       () {
         final stub = _StubAnswer(isCcp: false, isRisk: false);
-        final jsonMap = SyncEngine.buildAnswerPayload(stub);
+        final jsonMap = CoreAuditSyncModule.buildAnswerPayload(stub);
 
         expect(
           jsonMap.containsKey('isCcp'),

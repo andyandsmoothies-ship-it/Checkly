@@ -40,7 +40,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Identify Unknowns**: Flag any unresolved business logic with ⚠️.
 
 ## Phase 4: Deliverable Generation
-- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` directory.
+- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `docs/product/` directory.
 - [ ] **Payload Schema**:
     1. `## Input Lineage`: Absolute path to the original request or idea document.
     2. `[ORIGIN_IDEA]` or `[ADR_REFERENCE]`.
@@ -56,3 +56,8 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
+
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

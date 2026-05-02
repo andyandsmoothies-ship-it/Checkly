@@ -41,11 +41,11 @@ class AdminAuditManager extends ChangeNotifier {
     required TemplateApiService templateApi,
     required SubmissionApiService submissionApi,
     required AuthManager auth,
-  })  : _adminApi = adminApi,
-        _storeApi = storeApi,
-        _templateApi = templateApi,
-        _submissionApi = submissionApi,
-        _auth = auth;
+  }) : _adminApi = adminApi,
+       _storeApi = storeApi,
+       _templateApi = templateApi,
+       _submissionApi = submissionApi,
+       _auth = auth;
 
   // ---------- Schedule Form State ----------
   bool isScheduleLoading = false;

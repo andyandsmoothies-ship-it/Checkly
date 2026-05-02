@@ -33,3 +33,7 @@ description: Trigger this workflow when the user asks to design a BPMN diagram, 
 - [ ] **Grid Alignment**: Mentally ensure all elements are visually balanced and aligned to a rigid grid to maintain the "Reading Without Reading" principle.
 - [ ] **Generate Diagram**: Use the MCP Draw.io tool (`mcp_drawio_open_drawio_xml`) to generate the XML diagram. **Never use Mermaid or PlantUML.**
 - [ ] **Deliver & Request Feedback**: Present the `process_design_plan.md` and the rendered diagram to the user.
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

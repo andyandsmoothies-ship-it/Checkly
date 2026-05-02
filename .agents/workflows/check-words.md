@@ -14,11 +14,11 @@ This workflow executes a deterministic, zero-hallucination UX audit on the Flutt
 
 ## Phase 2: Deterministic Extraction
 // turbo
-1. **Script-First**: Run `python .agents/scripts/scrape_strings.py --dir [target_dir] --out brain/[ConversationID]/strings.json` from the project root.
-2. Verify the output file exists in your `brain/` directory before proceeding.
+1. **Script-First**: Run `python .agents/scripts/scrape_strings.py --dir [target_dir] --out .agents/tmp/strings.json` from the project root.
+2. Verify the output file exists in your `.agents/tmp/` directory before proceeding.
 
 ## Phase 3: AI Semantic Audit
-1. Read the extracted output: `view_file` on `brain/[ConversationID]/strings.json`.
+1. Read the extracted output: `view_file` on `.agents/tmp/strings.json`.
 2. Evaluate the extracted strings against the 3 rules in the `UX Copywriting` skill.
 3. Identify instances of Blaming, Developer Jargon, and weak CTAs.
 
@@ -34,3 +34,8 @@ This workflow executes a deterministic, zero-hallucination UX audit on the Flutt
 **✅ Chunk [N] tone audit done. Next steps:**
 1. **Fix** → Send `ux_copywriting_report.md` to the Builder Agent (`/implement`).
 2. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.
+
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

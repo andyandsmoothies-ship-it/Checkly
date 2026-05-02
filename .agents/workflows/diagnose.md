@@ -30,7 +30,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 - [ ] Phase 4: Deliverable Handoff
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Report |
+| [NEW]  | docs/diagnostics/failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Report |
 ```
 
 ## Phase 1: The Feedback Loop & Isolation
@@ -38,7 +38,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Vector | Execution Contract |
 |---|---|
 | **The Feedback Loop**| **MANDATORY**: Before guessing, construct a fast, deterministic pass/fail signal. Use a failing test, a `curl` script, or a throwaway harness. PROHIBITED: Hypothesizing without a reproducible loop. |
-| **Log Extraction** | **Script-First**: Check if `.agents/scripts/collect_logs.py` exists. Execute it to aggregate trace logs into `brain/`. |
+| **Log Extraction** | **Script-First**: Check if `.agents/scripts/collect_logs.py` exists. Execute it to aggregate trace logs into `docs/diagnostics/`. |
 | **Origin Trace** | MANDATORY: Trace data flows to their origin (the Write-Path). PROHIBITED: Stopping at the Read-Path symptom. |
 | **Formal Reasoning**| MANDATORY: 1. Generate 3-5 *falsifiable* Hypotheses ("If X is the cause, then changing Y will prove it"). 2. Log them strictly to the `task_` file. |
 
@@ -69,17 +69,18 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Gotcha Protocol**| MANDATORY: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if a project-specific rule caused the bug. ELSE: State "No new gotcha". |
-| **Routing** | MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] @[/implement] brain/.../failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD. |
+| **Routing** | MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] @[/implement] docs/diagnostics/failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD. |
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
+<output_schema>
 > **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
 > 
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Final Diagnostic Verdict & Persistent path.
 > 2. The required fix and its blast radius.
 > 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
-> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] @[/implement] brain/.../failure_report.md`).
+> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] @[/implement] docs/diagnostics/failure_report.md`).
 >
 > **Update task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
@@ -89,3 +90,9 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
+
+</output_schema>

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Checkly.Api.Tests.Submissions;
+namespace Checkly.Api.Tests;
 
 /// <summary>
 /// ATDD specs for Tactical Gate IDOR Fix (Submission Delegation Authorization).
@@ -99,7 +99,7 @@ public class SubmissionDelegationAuthTests : IClassFixture<TestWebApplicationFac
     {
         // Arrange
         var adminToken = await _fixture.LoginBootstrapAdminAsync(_fixture.CreateClient());
-        var (areaManagerToken, _) = await _fixture.RegisterUserAsync(
+        var (areaManagerToken, areaManagerId) = await _fixture.RegisterUserAsync(
             _fixture.CreateClient(),
             $"area_mgr_ac02_{Guid.NewGuid():N}@test.com",
             "Aa1234567@", "Area Manager AC02", "area_manager", adminToken);
@@ -109,6 +109,21 @@ public class SubmissionDelegationAuthTests : IClassFixture<TestWebApplicationFac
             "Aa1234567@", "Target Auditor AC02", "auditor", adminToken);
 
         var (templateId, storeId) = await SeedTemplateAndStoreAsync();
+
+        // Assign the area manager to the store's area
+        using (var localScope = _fixture.Services.CreateScope())
+        {
+            var localDb = localScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            var newAreaId = Guid.NewGuid();
+            localDb.Areas.Add(new Common.Persistence.Entities.Area { Id = newAreaId, Name = "Test Area", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            
+            var store = await localDb.Stores.FindAsync(storeId);
+            store!.AreaId = newAreaId;
+            var profile = await localDb.Profiles.FindAsync(areaManagerId);
+            profile!.AreaId = newAreaId;
+            await localDb.SaveChangesAsync();
+        }
+
         var client = _fixture.CreateAuthenticatedClient(areaManagerToken);
 
         // Act
@@ -132,6 +147,63 @@ public class SubmissionDelegationAuthTests : IClassFixture<TestWebApplicationFac
         var submission = await db.Submissions.FirstOrDefaultAsync(s => s.Id == submissionId);
         Assert.NotNull(submission);
         Assert.Equal(targetId, submission.AuditorId);
+    }
+
+    // ─── GAP: AreaManager_CannotDelegate_OutsideArea ──────────────────────────
+    // This is the core IDOR test. Currently RED (returns 201 instead of 403).
+
+    [Fact]
+    public async Task AreaManager_CannotDelegate_OutsideArea_Returns403()
+    {
+        // Arrange
+        var adminToken = await _fixture.LoginBootstrapAdminAsync(_fixture.CreateClient());
+        var (areaManagerToken, areaManagerId) = await _fixture.RegisterUserAsync(
+            _fixture.CreateClient(),
+            $"area_mgr_gap_{Guid.NewGuid():N}@test.com",
+            "Aa1234567@", "Area Manager GAP", "area_manager", adminToken);
+        var (_, targetId) = await _fixture.RegisterUserAsync(
+            _fixture.CreateClient(),
+            $"target_gap_{Guid.NewGuid():N}@test.com",
+            "Aa1234567@", "Target Auditor GAP", "auditor", adminToken);
+
+        var (templateId, storeId) = await SeedTemplateAndStoreAsync();
+
+        // Assign the area manager to a DIFFERENT area than the store
+        using (var localScope = _fixture.Services.CreateScope())
+        {
+            var localDb = localScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            
+            var areaA = Guid.NewGuid();
+            var areaB = Guid.NewGuid();
+            localDb.Areas.Add(new Common.Persistence.Entities.Area { Id = areaA, Name = "Area A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            localDb.Areas.Add(new Common.Persistence.Entities.Area { Id = areaB, Name = "Area B", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            var store = await localDb.Stores.FindAsync(storeId);
+            store!.AreaId = areaA; // Store is in Area A
+            var profile = await localDb.Profiles.FindAsync(areaManagerId);
+            profile!.AreaId = areaB; // Manager is in Area B
+            await localDb.SaveChangesAsync();
+        }
+
+        var client = _fixture.CreateAuthenticatedClient(areaManagerToken);
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/submissions", new
+        {
+            TemplateId = templateId,
+            StoreId = storeId,
+            Status = "scheduled",
+            AssignToAuditorId = targetId,
+            ScheduledAt = DateTimeOffset.UtcNow.AddDays(1)
+        });
+
+        // Assert — RED: Currently vulnerable to IDOR, so it returns 201.
+        // If it returns 201, the assert will fail, proving the vulnerability exists.
+        if (response.IsSuccessStatusCode)
+        {
+            Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+        }
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
     // ─── AC-03: Auditor_CannotDelegateToOtherUser ────────────────────────────

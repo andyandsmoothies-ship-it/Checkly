@@ -185,7 +185,8 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    _assignment!.rejectionComment ?? 'Please review and resubmit.',
+                                    _assignment!.rejectionComment ??
+                                        'Please review and resubmit.',
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.onErrorContainer,
                                     ),

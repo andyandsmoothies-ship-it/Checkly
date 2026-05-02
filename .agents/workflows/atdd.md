@@ -28,7 +28,7 @@ Workflow: /atdd | Track: [B2 / C]
 - [ ] Phase 3: Deliverable
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../test_contracts_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Contracts |
+| [NEW]  | docs/qa/contracts/test_contracts_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Contracts |
 ```
 
 ## Phase 1: Spec Discovery
@@ -93,6 +93,7 @@ Workflow: /atdd | Track: [B2 / C]
 ## 🚦 User Handoff & Next Steps
 
 > [!IMPORTANT]
+<output_schema>
 > **Outputs Created:** Physical test files (RED) + `test_contracts_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`.
 >
 > **YOUR NEXT COMMAND:** (Do not send test logs to Builder)
@@ -107,3 +108,9 @@ Workflow: /atdd | Track: [B2 / C]
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Workflow complete. Tell user to pass test artifacts to Builder."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
+
+</output_schema>

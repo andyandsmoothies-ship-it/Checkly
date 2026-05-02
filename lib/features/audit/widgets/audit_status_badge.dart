@@ -6,7 +6,12 @@ class AuditStatusBadge extends StatelessWidget {
   final Color color;
   final IconData? icon;
 
-  const AuditStatusBadge({super.key, required this.label, required this.color, this.icon});
+  const AuditStatusBadge({
+    super.key,
+    required this.label,
+    required this.color,
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,11 @@ class AuditStatusBadge extends StatelessWidget {
           : Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: (textStyle.fontSize ?? 12) + 2, color: Colors.white),
+                Icon(
+                  icon,
+                  size: (textStyle.fontSize ?? 12) + 2,
+                  color: Colors.white,
+                ),
                 const SizedBox(width: 4),
                 Text(label, style: textStyle),
               ],

@@ -10,7 +10,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
-import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
+
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
@@ -25,6 +25,8 @@ import 'package:checkly/_shared/services/sync_api.dart';
 import 'package:checkly/_shared/services/auth_check.dart';
 
 import 'package:checkly/features/action_plans/adapters/action_plan_api_adapter.dart';
+import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
+import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
 
 // =================================================================
 // FAKES
@@ -163,15 +165,24 @@ void main() {
 
       engine = SyncEngine(
         connectivity: connectivity,
-        api: FakeSyncApi(),
         auth: FakeAuthCheck(),
-        outboxDao: OutboxDao(db),
-        actionPlanApi: actionPlanApi,
-        actionPlanOutboxDao: actionPlanOutboxDao,
-        globalRiskDao: GlobalRiskDao(db),
-        submissionRiskOutboxDao: SubmissionRiskOutboxDao(db),
-        syncMetaDao: SyncMetaDao(db),
-        programOutboxDao: ProgramOutboxDao(db),
+        modules: [
+          CoreAuditSyncModule(
+            api: FakeSyncApi(),
+            outboxDao: OutboxDao(db),
+            globalRiskDao: GlobalRiskDao(db),
+            submissionRiskOutboxDao: SubmissionRiskOutboxDao(db),
+            syncMetaDao: SyncMetaDao(db),
+            connectivity: connectivity,
+            scheduleRetry: (delay) {},
+          ),
+          ActionPlanSyncModule(
+            api: actionPlanApi,
+            outboxDao: actionPlanOutboxDao,
+            connectivity: connectivity,
+            scheduleRetry: (delay) {},
+          ),
+        ],
       );
     });
 

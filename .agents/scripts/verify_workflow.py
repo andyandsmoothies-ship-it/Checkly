@@ -129,8 +129,7 @@ def get_active_artifacts(session_dir: str) -> list[str]:
             continue
             
         norm_file = os.path.normcase(os.path.abspath(file_path))
-        # Ensure it is a valid brain artifact inside this specific session folder
-        if norm_session in norm_file and os.path.isfile(file_path):
+        if os.path.isfile(file_path):
             active_files.append(file_path)
             
     return active_files
@@ -406,46 +405,32 @@ def check_forensic_evidence(session_dir: str) -> None:
 # CHECK 5 — Workspace Visibility Mandate
 # ─────────────────────────────────────────────────────────────────────────────
 def check_workspace_visibility(session_dir: str) -> None:
-    print("\n[CHECK 5] Scanning for Workspace Visibility (Research Copy Mandate)...")
+    print("\n[CHECK 5] Scanning for Enterprise Artifact Storage Compliance...")
     
     active_artifacts = get_active_artifacts(session_dir)
     
-    deliverables = [
-        f for f in active_artifacts
-        if os.path.basename(f).lower().startswith("research")
-    ]
-
-    if not deliverables:
-        print("       ✅ No research deliverables found needing workspace visibility.")
+    if not active_artifacts:
+        print("       ✅ No artifacts found to check storage compliance.")
         return
 
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    
-    all_visible = True
-    for file_path in deliverables:
+    all_compliant = True
+    for file_path in active_artifacts:
         name = os.path.basename(file_path)
+        norm_path = os.path.normcase(os.path.abspath(file_path))
         
-        def find_in_dir(directory, filename):
-            if not os.path.exists(directory): return False
-            for root, _, files in os.walk(directory):
-                if filename in files:
-                    return True
-            return False
-            
-        found_docs_research = find_in_dir(os.path.join(repo_root, "docs", "research"), name)
-        found_tmp_research = find_in_dir(os.path.join(repo_root, ".agents", "tmp", "research"), name)
-        
-        if not (found_docs_research or found_tmp_research):
+        # Check if the file is in the default Antigravity brain/ directory
+        if "\\brain\\" in norm_path or "/brain/" in norm_path:
             fail(
-                f"Research deliverable '{name}' is trapped in the invisible brain/ folder.\n"
-                f"           Fix: You MUST copy this artifact to 'docs/research/' or '.agents/tmp/research/' so the human can read it."
+                f"Artifact '{name}' is trapped in the invisible brain/ folder.\n"
+                f"           Path: {file_path}\n"
+                f"           Fix: You MUST generate artifacts directly in 'docs/' or '.agents/active_tasks/'. Move it."
             )
-            all_visible = False
+            all_compliant = False
         else:
-            print(f"       ✅ {name} is visible in the research folder.")
+            print(f"       ✅ {name} complies with Enterprise Storage (outside brain/).")
             
-    if all_visible:
-        print("       ✅ Workspace Visibility check passed.")
+    if all_compliant:
+        print("       ✅ Enterprise Artifact Storage compliance passed.")
 
 
 

@@ -42,8 +42,8 @@ public static class ReviewSubmission
 
         // IDOR Guard: ensure caller has ownership/area access to THIS specific submission.
         // Admins bypass; area_managers are scoped to their area; auditors to their own.
-        if (!await SubmissionAccessGuard.CanAccessAsync(
-                user, submission.StoreId, areaId: null, submission.AuditorId, db, ct))
+        if (!await ResourceAccessGuard.CanAccessAsync(
+                user, new ResourceScope(StoreId: submission.StoreId, OwnerId: submission.AuditorId), db, ct))
         {
             return TypedResults.Forbid();
         }

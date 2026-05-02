@@ -10,7 +10,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
-import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
+
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/pending_submission.dart';
@@ -23,6 +23,8 @@ import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/models/add_comment_request.dart';
+import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
+import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
 
 // ============================================================
 // Fakes & Spies
@@ -128,19 +130,28 @@ void main() {
     () async {
       // Arrange
       final fakeSyncApi = FakeSyncApi();
-      final fakeOutbox = FakeOutbox(); // pending always []
+
+      final connectivity = FakeConnectivity(isOnline: true);
       final engine = SyncEngine(
-        connectivity: FakeConnectivity(isOnline: true),
-        api: fakeSyncApi,
-        outbox: fakeOutbox,
+        connectivity: connectivity,
         auth: FakeAuthCheck(),
-        outboxDao: outboxDao,
-        actionPlanApi: FakeActionPlanApi(),
-        actionPlanOutboxDao: actionPlanOutboxDao,
-        globalRiskDao: GlobalRiskDao(testDb),
-        submissionRiskOutboxDao: SubmissionRiskOutboxDao(testDb),
-        syncMetaDao: SyncMetaDao(testDb),
-        programOutboxDao: ProgramOutboxDao(testDb),
+        modules: [
+          CoreAuditSyncModule(
+            api: fakeSyncApi,
+            outboxDao: outboxDao,
+            globalRiskDao: GlobalRiskDao(testDb),
+            submissionRiskOutboxDao: SubmissionRiskOutboxDao(testDb),
+            syncMetaDao: SyncMetaDao(testDb),
+            connectivity: connectivity,
+            scheduleRetry: (_) {},
+          ),
+          ActionPlanSyncModule(
+            api: FakeActionPlanApi(),
+            outboxDao: actionPlanOutboxDao,
+            connectivity: connectivity,
+            scheduleRetry: (_) {},
+          ),
+        ],
       );
 
       // Pre-seed — 1 pending submission, 2 answers directly into DAO

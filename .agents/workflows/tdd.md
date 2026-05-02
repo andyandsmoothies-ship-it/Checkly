@@ -25,8 +25,8 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
   - [ ] Phase 4: Handoff
   ## Artifact Inventory
   | Status | File Path | Type |
-  | [NEW]  | brain/.../executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Red Tests |
-  | [NEW]  | brain/.../walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Summary |
+  | [NEW]  | docs/qa/gates/executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Red Tests |
+  | [NEW]  | .agents/active_tasks/walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Summary |
   ```
 
 ## Phase 1: Read the Plan
@@ -82,13 +82,14 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you run the tests? (2) Are they failing ONLY because the feature is missing?
 
 ## Phase 4: Handoff
-- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Do not print long logs in the chat.
-- **Write Summary**: Use `write_to_file` to create `walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
+- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `docs/qa/gates/` folder. Do not print long logs in the chat.
+- **Write Summary**: Use `write_to_file` to create `walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `.agents/active_tasks/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
 - **Give Command**: Print the exact block below for the user:
 
 ## 🚦 User Handoff & Next Steps
 
 > [!IMPORTANT]
+<output_schema>
 > **Outputs Created:** Failing Unit Tests + `executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`.
 >
 > **YOUR NEXT COMMAND:** 
@@ -108,3 +109,9 @@ Run this exact command using the `run_command` tool:
 - Code 0 (PASS): Workflow complete. Share summary and stop.
 - Code 1 (FAIL): Fix reported errors and try again.
 - Note: If the same error happens twice, STOP and tell the user you are blocked.
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
+
+</output_schema>

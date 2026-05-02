@@ -56,3 +56,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Workflow complete. Share summary with absolute paths."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

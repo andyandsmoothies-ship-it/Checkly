@@ -37,3 +37,7 @@ description: Execute a screenshot-based visual and aesthetic audit using AI visi
 `{Absolute_Path_to_visual_qa_report.md}`
 2. **Re-check** → After the fix, hot-reload the emulator, screenshot the same screens, and run `/check-visuals` again.
 3. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

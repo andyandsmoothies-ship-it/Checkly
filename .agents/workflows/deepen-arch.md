@@ -24,12 +24,12 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute when user asks to improve architecture, refactor tight coupling, or `/deepen-arch`. |
-| **Exploration** | Use `grep_search` and `view_file` to find friction. Look for: (1) Shallow modules. (2) Untestable coupling. (3) Wasted abstractions (deletion test: if you delete it, does complexity just move?). |
-| **Candidate List**| Output a numbered list of 3 deepening opportunities. For each provide:<br>- **Files**: Affected modules.<br>- **Problem**: Why it causes friction.<br>- **Solution**: What would change.<br>- **Benefits**: Explained via Leverage and Locality. |
+| **Exploration** | Find friction: (1) Shallow modules. (2) Untestable coupling. (3) Wasted abstractions. <br><br>**MANDATORY Blast Radius Check**: Before finalizing the list, you MUST use `grep_search`, `view_file`, or ANY other available tools and strategies to cross-reference upstream callers (how many files use this?), DB schemas (does this change a table?), and existing tests. Your trade-off/cost estimate must be exhaustively verified against codebase reality, not blind guessing. |
+| **Candidate List**| Output a numbered list of 3 deepening opportunities. For each provide:<br>- **Files**: Affected modules.<br>- **Problem**: Why it causes friction.<br>- **Solution**: What would change.<br>- **Benefits**: Explained via Leverage and Locality.<br>- **Trade-offs / Cost**: The effort, risk, or blast radius required (e.g., requires database schema changes, massive refactoring). This ensures the user can weigh the ROI before selecting one to analyze. |
 
 > **MANDATORY @@SCAN**: You MUST print the candidate list and then explicitly YIELD to the user: *"Which of these would you like to explore?"*
 
-## Phase 2: Design It Thrice
+## Phase 2: Design It Thrice & Synthesize
 
 | Step | Execution Contract |
 |---|---|
@@ -39,8 +39,10 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 | **Design 2 (Flexible)** | Maximize flexibility, extension, and adaptability. |
 | **Design 3 (Ergonomic)** | Optimize for the most common caller. Make the default case trivial. |
 | **Output Format** | For each design provide: (1) Interface Signature, (2) Caller Usage Example, (3) What is hidden, (4) Dependency Strategy (In-process, Local-substitutable, or Remote/Port&Adapter), (5) Trade-offs. |
+| **Pugh Matrix** | Create a Markdown table scoring each option (including the current baseline) against non-functional requirements (e.g., Locality, Leverage, Open-Closed Principle, Blast Radius). Score as Baseline (`0`), Better (`+1`), or Worse (`-1`). |
+| **Conclusion** | State clearly and concisely which option is the absolute best fit for the whole context. The wording must be short and decisive. |
 
-> **MANDATORY @@SCAN**: After presenting all 3 designs, state your personal recommendation as Principal Architect and YIELD: *"Which design approach should we lock in?"*
+> **MANDATORY @@SCAN**: After presenting all 3 designs, the matrix, and the short conclusion, state your recommendation as Principal Architect and YIELD: *"Which design approach should we lock in?"*
 
 ## Phase 3: The Verdict Payload
 
@@ -48,7 +50,7 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 |---|---|
 | **Refinement** | Work with the user to finalize the chosen interface. |
 | **Documentation** | If the new deep module introduces new domain concepts not present in the project, recommend adding them to `GEMINI.md`. |
-| **Artifact Gen** | Create an implementation plan (e.g., `implementation_plan_[timestamp]_[id]_deepen_[topic].md`) detailing the exact file modifications required to build the new seam and adapter. |
+| **Architectural Decision Record (ADR)** | Do NOT generate an implementation plan. Instead, create an ADR artifact (e.g., `adr_[timestamp]_[id]_deepen_[topic].md`) summarizing the context, the 3 explored options, the Pugh Matrix, the locked-in interface, and any identified domain/schema gaps. This ADR must act as the primary input for the `analyze-feature` or `analyze-epic` workflow so that rigorous vertical slice impact analysis occurs before writing code. |
 
 ## Phase 4: Deliverable Handoff
 
@@ -56,11 +58,16 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 > [!IMPORTANT]
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Summary of the chosen interface and seams.
-> 2. **AI Agent Mission Brief** (A short TL;DR so the Builder agent knows exactly what to do).
-> 3. The exact next workflow command the user should run: e.g., `@[/implement] {Absolute_Path_to_Implementation_Plan}`.
+> 2. **AI Agent Mission Brief** (A short TL;DR so the next agent knows exactly what to analyze).
+> 3. The exact next workflow command the user should run to perform a holistic vertical slice analysis: e.g., `@[/analyze-feature] {Absolute_Path_to_ADR}`.
 
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
+
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

@@ -37,8 +37,8 @@ public static class GetPhoto
         if (submission is null)
             return TypedResults.NotFound(); // Submission deleted — orphaned file, deny access
 
-        var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-            user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
+        var hasAccess = await ResourceAccessGuard.CanAccessAsync(
+            user, new ResourceScope(StoreId: submission.StoreId, OwnerId: submission.AuditorId), db, ct);
         if (!hasAccess)
             return TypedResults.Forbid();
 

@@ -9083,6 +9083,29 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _retryCountMeta = const VerificationMeta(
+    'retryCount',
+  );
+  @override
+  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
+    'retry_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta(
+    'nextRetryAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextRetryAt = GeneratedColumn<DateTime>(
+    'next_retry_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -9103,6 +9126,8 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
     photoPath,
     syncStatus,
     syncError,
+    retryCount,
+    nextRetryAt,
     createdAt,
   ];
   @override
@@ -9173,6 +9198,21 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
         syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
       );
     }
+    if (data.containsKey('retry_count')) {
+      context.handle(
+        _retryCountMeta,
+        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
+      );
+    }
+    if (data.containsKey('next_retry_at')) {
+      context.handle(
+        _nextRetryAtMeta,
+        nextRetryAt.isAcceptableOrUnknown(
+          data['next_retry_at']!,
+          _nextRetryAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -9221,6 +9261,14 @@ class $PendingActionPlanUpdatesTable extends PendingActionPlanUpdates
         DriftSqlType.string,
         data['${effectivePrefix}sync_error'],
       ),
+      retryCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_count'],
+      )!,
+      nextRetryAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_retry_at'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -9243,6 +9291,8 @@ class PendingActionPlanUpdate extends DataClass
   final String? photoPath;
   final String syncStatus;
   final String? syncError;
+  final int retryCount;
+  final DateTime? nextRetryAt;
   final DateTime createdAt;
   const PendingActionPlanUpdate({
     required this.id,
@@ -9252,6 +9302,8 @@ class PendingActionPlanUpdate extends DataClass
     this.photoPath,
     required this.syncStatus,
     this.syncError,
+    required this.retryCount,
+    this.nextRetryAt,
     required this.createdAt,
   });
   @override
@@ -9267,6 +9319,10 @@ class PendingActionPlanUpdate extends DataClass
     map['sync_status'] = Variable<String>(syncStatus);
     if (!nullToAbsent || syncError != null) {
       map['sync_error'] = Variable<String>(syncError);
+    }
+    map['retry_count'] = Variable<int>(retryCount);
+    if (!nullToAbsent || nextRetryAt != null) {
+      map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -9285,6 +9341,10 @@ class PendingActionPlanUpdate extends DataClass
       syncError: syncError == null && nullToAbsent
           ? const Value.absent()
           : Value(syncError),
+      retryCount: Value(retryCount),
+      nextRetryAt: nextRetryAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextRetryAt),
       createdAt: Value(createdAt),
     );
   }
@@ -9302,6 +9362,8 @@ class PendingActionPlanUpdate extends DataClass
       photoPath: serializer.fromJson<String?>(json['photoPath']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       syncError: serializer.fromJson<String?>(json['syncError']),
+      retryCount: serializer.fromJson<int>(json['retryCount']),
+      nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -9316,6 +9378,8 @@ class PendingActionPlanUpdate extends DataClass
       'photoPath': serializer.toJson<String?>(photoPath),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'syncError': serializer.toJson<String?>(syncError),
+      'retryCount': serializer.toJson<int>(retryCount),
+      'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -9328,6 +9392,8 @@ class PendingActionPlanUpdate extends DataClass
     Value<String?> photoPath = const Value.absent(),
     String? syncStatus,
     Value<String?> syncError = const Value.absent(),
+    int? retryCount,
+    Value<DateTime?> nextRetryAt = const Value.absent(),
     DateTime? createdAt,
   }) => PendingActionPlanUpdate(
     id: id ?? this.id,
@@ -9337,6 +9403,8 @@ class PendingActionPlanUpdate extends DataClass
     photoPath: photoPath.present ? photoPath.value : this.photoPath,
     syncStatus: syncStatus ?? this.syncStatus,
     syncError: syncError.present ? syncError.value : this.syncError,
+    retryCount: retryCount ?? this.retryCount,
+    nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
     createdAt: createdAt ?? this.createdAt,
   );
   PendingActionPlanUpdate copyWithCompanion(
@@ -9358,6 +9426,12 @@ class PendingActionPlanUpdate extends DataClass
           ? data.syncStatus.value
           : this.syncStatus,
       syncError: data.syncError.present ? data.syncError.value : this.syncError,
+      retryCount: data.retryCount.present
+          ? data.retryCount.value
+          : this.retryCount,
+      nextRetryAt: data.nextRetryAt.present
+          ? data.nextRetryAt.value
+          : this.nextRetryAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -9372,6 +9446,8 @@ class PendingActionPlanUpdate extends DataClass
           ..write('photoPath: $photoPath, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('syncError: $syncError, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -9386,6 +9462,8 @@ class PendingActionPlanUpdate extends DataClass
     photoPath,
     syncStatus,
     syncError,
+    retryCount,
+    nextRetryAt,
     createdAt,
   );
   @override
@@ -9399,6 +9477,8 @@ class PendingActionPlanUpdate extends DataClass
           other.photoPath == this.photoPath &&
           other.syncStatus == this.syncStatus &&
           other.syncError == this.syncError &&
+          other.retryCount == this.retryCount &&
+          other.nextRetryAt == this.nextRetryAt &&
           other.createdAt == this.createdAt);
 }
 
@@ -9411,6 +9491,8 @@ class PendingActionPlanUpdatesCompanion
   final Value<String?> photoPath;
   final Value<String> syncStatus;
   final Value<String?> syncError;
+  final Value<int> retryCount;
+  final Value<DateTime?> nextRetryAt;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const PendingActionPlanUpdatesCompanion({
@@ -9421,6 +9503,8 @@ class PendingActionPlanUpdatesCompanion
     this.photoPath = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.syncError = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -9432,6 +9516,8 @@ class PendingActionPlanUpdatesCompanion
     this.photoPath = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.syncError = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -9447,6 +9533,8 @@ class PendingActionPlanUpdatesCompanion
     Expression<String>? photoPath,
     Expression<String>? syncStatus,
     Expression<String>? syncError,
+    Expression<int>? retryCount,
+    Expression<DateTime>? nextRetryAt,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -9458,6 +9546,8 @@ class PendingActionPlanUpdatesCompanion
       if (photoPath != null) 'photo_path': photoPath,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (syncError != null) 'sync_error': syncError,
+      if (retryCount != null) 'retry_count': retryCount,
+      if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -9471,6 +9561,8 @@ class PendingActionPlanUpdatesCompanion
     Value<String?>? photoPath,
     Value<String>? syncStatus,
     Value<String?>? syncError,
+    Value<int>? retryCount,
+    Value<DateTime?>? nextRetryAt,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -9482,6 +9574,8 @@ class PendingActionPlanUpdatesCompanion
       photoPath: photoPath ?? this.photoPath,
       syncStatus: syncStatus ?? this.syncStatus,
       syncError: syncError ?? this.syncError,
+      retryCount: retryCount ?? this.retryCount,
+      nextRetryAt: nextRetryAt ?? this.nextRetryAt,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -9511,6 +9605,12 @@ class PendingActionPlanUpdatesCompanion
     if (syncError.present) {
       map['sync_error'] = Variable<String>(syncError.value);
     }
+    if (retryCount.present) {
+      map['retry_count'] = Variable<int>(retryCount.value);
+    }
+    if (nextRetryAt.present) {
+      map['next_retry_at'] = Variable<DateTime>(nextRetryAt.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -9530,6 +9630,8 @@ class PendingActionPlanUpdatesCompanion
           ..write('photoPath: $photoPath, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('syncError: $syncError, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -17081,6 +17183,8 @@ typedef $$PendingActionPlanUpdatesTableCreateCompanionBuilder =
       Value<String?> photoPath,
       Value<String> syncStatus,
       Value<String?> syncError,
+      Value<int> retryCount,
+      Value<DateTime?> nextRetryAt,
       required DateTime createdAt,
       Value<int> rowid,
     });
@@ -17093,6 +17197,8 @@ typedef $$PendingActionPlanUpdatesTableUpdateCompanionBuilder =
       Value<String?> photoPath,
       Value<String> syncStatus,
       Value<String?> syncError,
+      Value<int> retryCount,
+      Value<DateTime?> nextRetryAt,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -17138,6 +17244,16 @@ class $$PendingActionPlanUpdatesTableFilterComposer
 
   ColumnFilters<String> get syncError => $composableBuilder(
     column: $table.syncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17191,6 +17307,16 @@ class $$PendingActionPlanUpdatesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -17234,6 +17360,16 @@ class $$PendingActionPlanUpdatesTableAnnotationComposer
 
   GeneratedColumn<String> get syncError =>
       $composableBuilder(column: $table.syncError, builder: (column) => column);
+
+  GeneratedColumn<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -17292,6 +17428,8 @@ class $$PendingActionPlanUpdatesTableTableManager
                 Value<String?> photoPath = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<DateTime?> nextRetryAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingActionPlanUpdatesCompanion(
@@ -17302,6 +17440,8 @@ class $$PendingActionPlanUpdatesTableTableManager
                 photoPath: photoPath,
                 syncStatus: syncStatus,
                 syncError: syncError,
+                retryCount: retryCount,
+                nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -17314,6 +17454,8 @@ class $$PendingActionPlanUpdatesTableTableManager
                 Value<String?> photoPath = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<DateTime?> nextRetryAt = const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => PendingActionPlanUpdatesCompanion.insert(
@@ -17324,6 +17466,8 @@ class $$PendingActionPlanUpdatesTableTableManager
                 photoPath: photoPath,
                 syncStatus: syncStatus,
                 syncError: syncError,
+                retryCount: retryCount,
+                nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
                 rowid: rowid,
               ),

@@ -34,12 +34,6 @@ abstract class ActionPlanApi {
   Future<ActionPlanDto?> fetchActionPlan(String id) =>
       throw UnimplementedError('fetchActionPlan() not implemented');
 }
-
-/// Provides the current user's role for client-side role guards.
-abstract class UserRoleProvider {
-  String get role;
-}
-
 // ============================================================
 // Exceptions
 // ============================================================

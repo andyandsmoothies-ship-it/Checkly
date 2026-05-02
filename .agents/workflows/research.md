@@ -39,10 +39,11 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the research directly to the chat UI. |
-| **Workspace Copy**| MANDATORY: Because the `brain/` folder is invisible to the user's IDE, you MUST copy the generated research artifact to `.agents/tmp/research/` so the user can review it. Output the absolute path to this visible file in your final message. |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `docs/product/` directory. NEVER output the research directly to the chat UI. |
+| **Workspace Copy**| MANDATORY: Because the AI session folder is invisible to the user's IDE, you MUST copy the generated research artifact to `.agents/tmp/research/` so the user can review it. Output the absolute path to this visible file in your final message. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
+<output_schema>
 > **Payload Schema:** Your generated `research_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST INCLUDE: 
 > 1. `[ORIGIN_IDEA]`: A strictly preserved, 1:1 summary of the user's original business goal/idea from the prompt. This anchors all future workflows.
 > 2. `<latent_space_scratchpad>`: Before writing your final plan, use this block to explicitly state your internal reasoning, debate architectural tradeoffs, and explore edge cases to artificially expand your test-time compute.
@@ -62,3 +63,9 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Workflow complete. Tell user to pass artifact to next agent."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
+
+</output_schema>

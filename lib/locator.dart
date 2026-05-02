@@ -14,6 +14,9 @@ import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
 import '_shared/services/sync_engine.dart';
 import '_shared/services/service_adapters.dart';
+import 'features/audit/services/core_audit_sync_module.dart';
+import 'features/action_plans/services/action_plan_sync_module.dart';
+import 'features/programs/services/program_sync_module.dart';
 import 'features/action_plans/adapters/action_plan_api_adapter.dart';
 import '_shared/theme/theme_manager.dart';
 import 'features/auth/services/auth_api_service.dart';
@@ -122,7 +125,6 @@ void configureDependencies() {
   );
   di.registerLazySingleton<AuditManager>(
     () => AuditManager(
-      api: di<SubmissionApiService>(),
       outbox: di<OutboxDao>(),
       globalRiskDao: di<GlobalRiskDao>(),
       riskOutboxDao: di<SubmissionRiskOutboxDao>(),
@@ -144,18 +146,45 @@ void configureDependencies() {
   di.registerLazySingleton<ConnectivityService>(
     () => ConnectivityServiceImpl(),
   );
-  di.registerLazySingleton<SyncEngine>(
-    () => SyncEngine(
-      connectivity: di<ConnectivityService>(),
+  // ---------- Sync Modules (Phase 3) ----------
+  di.registerLazySingleton<CoreAuditSyncModule>(
+    () => CoreAuditSyncModule(
       api: SyncApiAdapter(di<Dio>()),
-      auth: AuthCheckAdapter(di<AuthManager>()),
       outboxDao: di<OutboxDao>(),
-      actionPlanApi: ActionPlanApiAdapter(di<Dio>()),
-      actionPlanOutboxDao: di<ActionPlanOutboxDao>(),
       globalRiskDao: di<GlobalRiskDao>(),
       submissionRiskOutboxDao: di<SubmissionRiskOutboxDao>(),
       syncMetaDao: di<SyncMetaDao>(),
-      programOutboxDao: di<ProgramOutboxDao>(),
+      connectivity: di<ConnectivityService>(),
+      scheduleRetry: (delay) => di<SyncEngine>().requestSync(),
+    ),
+  );
+  di.registerLazySingleton<ActionPlanSyncModule>(
+    () => ActionPlanSyncModule(
+      api: ActionPlanApiAdapter(di<Dio>()),
+      outboxDao: di<ActionPlanOutboxDao>(),
+      connectivity: di<ConnectivityService>(),
+      scheduleRetry: (delay) => di<SyncEngine>().requestSync(),
+    ),
+  );
+  di.registerLazySingleton<ProgramSyncModule>(
+    () => ProgramSyncModule(
+      api: SyncApiAdapter(di<Dio>()),
+      outboxDao: di<ProgramOutboxDao>(),
+      syncMetaDao: di<SyncMetaDao>(),
+      connectivity: di<ConnectivityService>(),
+      scheduleRetry: (delay) => di<SyncEngine>().requestSync(),
+    ),
+  );
+
+  di.registerLazySingleton<SyncEngine>(
+    () => SyncEngine(
+      connectivity: di<ConnectivityService>(),
+      auth: AuthCheckAdapter(di<AuthManager>()),
+      modules: [
+        di<CoreAuditSyncModule>(),
+        di<ActionPlanSyncModule>(),
+        di<ProgramSyncModule>(),
+      ],
     ),
   );
 

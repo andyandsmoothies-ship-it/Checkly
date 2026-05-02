@@ -30,7 +30,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 - [ ] Phase 4: Pick Next Route
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Plan |
+| [NEW]  | docs/architecture/implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Plan |
 ```
 
 ## Phase 1: Search & Understand
@@ -51,13 +51,14 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Step | Instructions |
 |---|---|
+| **Risk & ROI Evaluation** | **MANDATORY**: Evaluate if the proposed change is worth the architectural cost. If the blast radius is high, it introduces tech debt, or the ROI is negative, **do not stop**, but you MUST include a prominent **Risk Warning** at the top of your implementation plan and in your chat response so the user understands the current situation and tradeoffs. |
 | **Find Connections** | Before changing any class or API, use `grep_search` to find it everywhere in the project (`/server` and `/lib`). Check 6 areas: 1) UI, 2) Routes, 3) Database, 4) Mocks, 5) Events, 6) Dependency Injection. |
 | **Impact Check** | Do not change existing tests or mocks just to make your new code pass. Make your code fit the current rules. If you change a database or API, make sure you update both the backend and frontend. |
 | **Trust the Source** | Do not trust UI state alone. If your plan depends on a status (like `if status == 'x'`), search the database or API to prove it can actually send that status. |
 | **File Size Limit** | If the file you want to edit has more than 250 lines, your plan must include a step to split the file before adding new features. |
 | **State Matrix** | Define how the UI looks in 4 situations: `Loading`, `Empty`, `Error`, and `Success`. |
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you search everywhere for connections? (2) Did you map both backend and frontend? (3) Is the 4-State Matrix defined?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Is the Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Is the 4-State Matrix defined?
 
 ## Phase 3: Create Plan
 
@@ -65,7 +66,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 |---|---|
 | **Acceptance Criteria** | You must write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
 | **Tools Needed** | Write down which skills the Builder will need. Write down the commands to test the code (like `flutter test` or `dotnet test`). |
-| **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `brain/` folder. Do not print the whole plan in the chat. Make it easy for a human to read. |
+| **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `docs/architecture/` folder. Do not print the whole plan in the chat. Make it easy for a human to read. |
 | **Clear Goals** | The plan must have clear steps (like 'Write X test -> Check it fails -> Write Y code -> Check it passes'). |
 
 ## Phase 4: Pick Next Route
@@ -100,6 +101,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 ### Final Output Rules
 > [!IMPORTANT]
+<output_schema>
 > **File Format:** Your `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST have these exact sections. Keep it short and simple.
 > - `<latent_space_scratchpad>`: Your hidden thoughts about edge cases.
 > - `## Input Lineage`: Absolute path of the source Epic Plan, Bug Report, or idea document.
@@ -123,3 +125,9 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and try again.
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
+
+</output_schema>

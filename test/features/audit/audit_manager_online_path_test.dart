@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:checkly/_shared/database/app_database.dart';
@@ -11,15 +10,12 @@ import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/features/audit/manager/audit_manager.dart';
-import 'package:checkly/features/audit/services/submission_api_service.dart';
-import 'package:checkly/features/audit/model/submission_dto.dart';
-import 'package:checkly/features/audit/model/create_submission_request.dart';
 import 'package:checkly/features/audit/services/draft_service.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
 
 // ============================================================
-// Fakes & Spies
+// Fakes
 // ============================================================
 
 class FakeConnectivity implements ConnectivityService {
@@ -28,19 +24,6 @@ class FakeConnectivity implements ConnectivityService {
   FakeConnectivity({this.isOnline = false});
   @override
   Stream<bool> get onConnectivityChanged => const Stream.empty();
-}
-
-class SpySubmissionApiService extends SubmissionApiService {
-  SpySubmissionApiService() : super(Dio());
-  bool createSubmissionCalled = false;
-
-  @override
-  Future<SubmissionDto> createSubmission(
-    CreateSubmissionRequest request,
-  ) async {
-    createSubmissionCalled = true;
-    throw StateError('Should not reach HTTP layer on online submit path');
-  }
 }
 
 TemplateTreeDto _makeTemplate({int criteriaCount = 2}) {
@@ -91,46 +74,34 @@ void main() {
   tearDown(() async => testDb.close());
 
   // ----------------------------------------------------------------
-  // AC-1: Online path goes Outbox-first, does NOT hit _api.createSubmission()
+  // AC-1: Online path goes Outbox-first
   // Source: Contract 1
   // ----------------------------------------------------------------
-  test(
-    'AuditManager_Submit_OnlinePath_DoesNotCallHttpApi_WritesOutboxInstead',
-    () async {
-      // Arrange
-      final spy = SpySubmissionApiService();
-      final manager = AuditManager(
-        api: spy,
-        outbox: outboxDao,
-        globalRiskDao: GlobalRiskDao(testDb),
-        riskOutboxDao: SubmissionRiskOutboxDao(testDb),
-        connectivity: FakeConnectivity(isOnline: true),
-        draftService: DraftService.forTesting(testDb),
-      );
-      final template = _makeTemplate(criteriaCount: 2);
-      await manager.startAudit(template, 'store-online-001');
+  test('AuditManager_Submit_OnlinePath_WritesOutboxInstead', () async {
+    // Arrange
+    final manager = AuditManager(
+      outbox: outboxDao,
+      globalRiskDao: GlobalRiskDao(testDb),
+      riskOutboxDao: SubmissionRiskOutboxDao(testDb),
+      connectivity: FakeConnectivity(isOnline: true),
+      draftService: DraftService.forTesting(testDb),
+    );
+    final template = _makeTemplate(criteriaCount: 2);
+    await manager.startAudit(template, 'store-online-001');
 
-      // Act
-      await manager.submitAudit();
+    // Act
+    await manager.submitAudit();
 
-      // Assert
-      expect(
-        spy.createSubmissionCalled,
-        isFalse,
-        reason:
-            'Online path must NOT call HTTP API directly. Outbox-first only.',
-      );
-      expect(
-        (await outboxDao.getAllPending()).length,
-        equals(1),
-        reason:
-            '1 outbox row must exist — SyncEngine drains it asynchronously.',
-      );
-      expect(
-        manager.error,
-        isNull,
-        reason: 'No error must be set after successful outbox write.',
-      );
-    },
-  );
+    // Assert
+    expect(
+      (await outboxDao.getAllPending()).length,
+      equals(1),
+      reason: '1 outbox row must exist — SyncEngine drains it asynchronously.',
+    );
+    expect(
+      manager.error,
+      isNull,
+      reason: 'No error must be set after successful outbox write.',
+    );
+  });
 }

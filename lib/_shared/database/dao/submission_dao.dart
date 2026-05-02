@@ -29,6 +29,31 @@ class SubmissionDao {
     });
   }
 
+  /// Reads cached template/store metadata for locally-hydrated history rows.
+  Future<({String? templateTitle, String? templateType, String? storeName})>
+  getLocalOverrideMetadata(String templateId, String storeId) async {
+    final template = await (_db.select(
+      _db.cachedTemplates,
+    )..where((t) => t.id.equals(templateId))).getSingleOrNull();
+    final store = await (_db.select(
+      _db.cachedStores,
+    )..where((s) => s.id.equals(storeId))).getSingleOrNull();
+
+    return (
+      templateTitle: template?.title,
+      templateType: template?.type,
+      storeName: store?.name,
+    );
+  }
+
+  /// Reads the saved-at timestamp for a local draft key, if present.
+  Future<DateTime?> getDraftSavedAt(String draftKey) async {
+    final draft = await (_db.select(
+      _db.draftAnswers,
+    )..where((d) => d.draftKey.equals(draftKey))).getSingleOrNull();
+    return draft?.savedAt;
+  }
+
   // ---------- Mappers ----------
 
   static SubmissionDto rowToDto(CachedSubmission row) => SubmissionDto(

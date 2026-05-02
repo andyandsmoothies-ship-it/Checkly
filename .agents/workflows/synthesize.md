@@ -29,7 +29,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Matrix strictly tabulated? (2) Baseline declared? (3) Final mathematical winner identified?
 
 ## Phase 4: Architectural Decision Record (ADR) Generation
-- [ ] **Generate ADR**: MANDATORY: Use `write_to_file` to save `decision_record_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` directory. NEVER output the ADR directly to the chat UI.
+- [ ] **Generate ADR**: MANDATORY: Use `write_to_file` to save `decision_record_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `docs/architecture/` directory. NEVER output the ADR directly to the chat UI.
 - [ ] **Payload Schema**: The output MUST include:
     1. `## Input Lineage`: Absolute paths to the compared research artifacts.
     2. `[ORIGIN_IDEA]`: The immutable core business goal, preserved at the top.
@@ -47,3 +47,8 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 > // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) ADR Schema respected (Latent Debate, Pugh Matrix)? (2) python verifier script executed and passed?
+
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

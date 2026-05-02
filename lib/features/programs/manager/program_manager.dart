@@ -125,8 +125,9 @@ class ProgramManager extends ChangeNotifier {
     );
 
     // 4. Remove from in-memory list so UI refreshes immediately.
-    assignments.value =
-        assignments.value.where((a) => a.id != assignmentId).toList();
+    assignments.value = assignments.value
+        .where((a) => a.id != assignmentId)
+        .toList();
 
     debugPrint(
       '[ProgramManager] submitEvidence: assignment=$assignmentId '

@@ -131,6 +131,14 @@ class FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
 
   @override
   Future<int> pendingCount() async => 0;
+
+  @override
+  Future<void> updateRetry(
+    String id,
+    int newRetryCount,
+    DateTime nextRetry,
+    String error,
+  ) async {}
 }
 
 // Helper to create an ActionPlanDto with a given status and deadline.

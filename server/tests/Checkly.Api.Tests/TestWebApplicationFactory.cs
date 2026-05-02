@@ -66,10 +66,15 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         {
             if (!_dbInitialized)
             {
+                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+                optionsBuilder.UseNpgsql(TestConnectionString);
+                using (var dbDrop = new AppDbContext(optionsBuilder.Options))
+                {
+                    dbDrop.Database.EnsureDeleted();
+                }
+
                 using var scopeInit = Services.CreateScope();
                 var dbInit = scopeInit.ServiceProvider.GetRequiredService<AppDbContext>();
-                dbInit.Database.EnsureDeleted();
-                dbInit.Database.Migrate();
 
                 // Seed a bootstrap admin so tests can create admin users via the API
                 var userManagerInit = scopeInit.ServiceProvider.GetRequiredService<UserManager<AppUser>>();

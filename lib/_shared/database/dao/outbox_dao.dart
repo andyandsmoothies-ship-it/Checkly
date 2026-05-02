@@ -92,6 +92,11 @@ class OutboxDao {
     );
   }
 
+  /// Marks a submission as confirmed by the server but not yet deleted locally.
+  Future<void> markSynced(String id) async {
+    await updateSyncStatus(id, 'submission_synced');
+  }
+
   /// Remove a fully synced submission and its answers + photos.
   Future<void> removeSubmission(String id) async {
     await (_db.delete(
@@ -112,6 +117,20 @@ class OutboxDao {
     )..where((s) => s.idempotencyKey.equals(key))).getSingleOrNull();
     if (row != null) {
       await removeSubmission(row.id);
+    }
+  }
+
+  /// Deletes orphaned rows that were server-confirmed before a local crash.
+  Future<void> sweepSyncedSubmissions() async {
+    while (true) {
+      final rows = await getPendingByStatus('submission_synced');
+      if (rows.isEmpty) {
+        return;
+      }
+
+      for (final row in rows) {
+        await removeSubmission(row.id);
+      }
     }
   }
 

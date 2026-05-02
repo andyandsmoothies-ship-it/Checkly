@@ -47,7 +47,7 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_arch_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `brain/` folder. Format as a stark, unappeasing teardown. |
+| **Artifact Gen** | Create `audit_arch_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `docs/diagnostics/` folder. Format as a stark, unappeasing teardown. |
 | **Severity Matrix**| `🔴 Fatal` (Bricks the system / Data Corruption / DDoS) | `🟡 Brittle` (Fake-Smart. Will scale poorly or fail silently) | `🟢 Resilient` (Actually viable). |
 | **Actionable Fix & Trade-offs** | MANDATORY: Do not just complain. Provide the exact system design fix (e.g., "Implement Exponential Backoff Retry").<br><br>**CRITICAL:** For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.<br><br>**CRITICAL:** When proposing a fix, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., "Pro: Solves OOM. Con: Adds 200ms latency."). Yield for the user to make the final executive decision before writing code. |
 
@@ -73,3 +73,8 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

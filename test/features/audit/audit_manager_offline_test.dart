@@ -14,7 +14,6 @@ import 'dart:async';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:checkly/_shared/database/app_database.dart';
@@ -23,9 +22,6 @@ import 'package:checkly/_shared/database/dao/outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/features/audit/manager/audit_manager.dart';
-import 'package:checkly/features/audit/services/submission_api_service.dart';
-import 'package:checkly/features/audit/model/submission_dto.dart';
-import 'package:checkly/features/audit/model/create_submission_request.dart';
 import 'package:checkly/features/audit/services/draft_service.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
@@ -44,16 +40,6 @@ class FakeConnectivity implements ConnectivityService {
 }
 
 /// Fake SubmissionApiService — never called in offline tests.
-class FakeSubmissionApiService extends SubmissionApiService {
-  FakeSubmissionApiService() : super(Dio());
-
-  @override
-  Future<SubmissionDto> createSubmission(
-    CreateSubmissionRequest request,
-  ) async {
-    throw StateError('Should not be called on offline path');
-  }
-}
 
 /// Minimal TemplateTreeDto factory.
 TemplateTreeDto _makeTemplate({int criteriaCount = 3}) {
@@ -111,7 +97,6 @@ void main() {
 
   AuditManager makeManager({OutboxDao? overrideOutbox}) {
     return AuditManager(
-      api: FakeSubmissionApiService(),
       outbox: overrideOutbox ?? outboxDao,
       globalRiskDao: GlobalRiskDao(testDb),
       riskOutboxDao: SubmissionRiskOutboxDao(testDb),

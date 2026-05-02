@@ -5,9 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
 import 'package:checkly/features/audit/manager/audit_manager.dart';
-import 'package:checkly/features/audit/model/create_submission_request.dart';
 import 'package:checkly/features/audit/services/draft_service.dart';
-import 'package:checkly/features/audit/services/submission_api_service.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
@@ -17,8 +15,6 @@ import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
-
-class MockSubmissionApiService extends Mock implements SubmissionApiService {}
 
 class MockOutboxDao extends Mock implements OutboxDao {}
 
@@ -34,7 +30,6 @@ class MockDraftService extends Mock implements DraftService {}
 // ── Fallback registrations (required by mocktail for non-nullable args) ───────
 
 void _registerFallbacks() {
-  registerFallbackValue(CreateSubmissionRequest(templateId: '', storeId: ''));
   registerFallbackValue(
     PendingSubmissionsCompanion(
       id: const Value(''),
@@ -98,7 +93,6 @@ TemplateTreeDto _template({List<GroupDto>? groups}) => TemplateTreeDto(
 /// Creates an [AuditManager] with all dependencies injected.
 /// DraftService stubs are applied by default.
 AuditManager _manager({
-  MockSubmissionApiService? api,
   MockOutboxDao? outbox,
   MockConnectivityService? connectivity,
   MockDraftService? draft,
@@ -130,7 +124,6 @@ AuditManager _manager({
   when(() => mockGlobalRisk.getActiveRisks()).thenAnswer((_) async => []);
 
   return AuditManager(
-    api: api ?? MockSubmissionApiService(),
     outbox: outbox ?? MockOutboxDao(),
     globalRiskDao: mockGlobalRisk,
     riskOutboxDao: mockRiskOutbox,
@@ -336,30 +329,27 @@ void main() {
   // ── Group 4: Submission orchestration (offline-first) ─────────────────
 
   group('submitAudit', () {
-    test('inserts to OutboxDao and skips API when offline', () async {
-      final mockOutbox = MockOutboxDao();
-      final mockApi = MockSubmissionApiService();
-      final mockConnectivity = MockConnectivityService();
+    test(
+      'inserts to OutboxDao and marks wasQueuedOffline when offline',
+      () async {
+        final mockOutbox = MockOutboxDao();
+        final mockConnectivity = MockConnectivityService();
 
-      when(
-        () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
-      ).thenAnswer((_) async {});
-      when(() => mockConnectivity.isOnline).thenReturn(false);
+        when(
+          () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
+        ).thenAnswer((_) async {});
+        when(() => mockConnectivity.isOnline).thenReturn(false);
 
-      final m = _manager(
-        outbox: mockOutbox,
-        api: mockApi,
-        connectivity: mockConnectivity,
-      );
-      await m.startAudit(_template(), 'store-1');
-      await m.submitAudit();
+        final m = _manager(outbox: mockOutbox, connectivity: mockConnectivity);
+        await m.startAudit(_template(), 'store-1');
+        await m.submitAudit();
 
-      verify(
-        () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
-      ).called(1);
-      verifyNever(() => mockApi.createSubmission(any()));
-      expect(m.wasQueuedOffline, isTrue);
-    });
+        verify(
+          () => mockOutbox.insertSubmissionWithAnswers(any(), any()),
+        ).called(1);
+        expect(m.wasQueuedOffline, isTrue);
+      },
+    );
 
     test(
       'inserts to outbox and marks wasQueuedOffline=false when online',

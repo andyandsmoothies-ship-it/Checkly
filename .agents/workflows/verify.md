@@ -50,7 +50,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 | Step | Execution Contract |
 |---|---|
 | **Coverage & Metrics Gen** | MANDATORY: Execute available tooling to calculate Test Coverage, Cyclomatic Complexity, File Sizing, and Mutation scores (e.g., `dotnet test /p:CollectCoverage=true`). The human relies on these metrics to govern the factory; do not skip them. |
-| **Artifact Form** | MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` into the `brain/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the green test suite. |
+| **Artifact Form** | MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` into the `docs/qa/gates/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the green test suite. |
 | **Yield & Handoff** | Yield to the user with the exact Next Command explicitly referencing `{Absolute_Path_to_verification_artifact.md}`. |
 
 > [!IMPORTANT]
@@ -60,3 +60,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Workflow complete. Share summary."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

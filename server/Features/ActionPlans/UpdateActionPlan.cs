@@ -39,8 +39,8 @@ public static class UpdateActionPlan
                 .FirstOrDefaultAsync(ct);
         }
 
-        if (!await SubmissionAccessGuard.CanAccessAsync(
-                user, plan.StoreId, areaId: null, linkedAuditorId, db, ct))
+        if (!await ResourceAccessGuard.CanAccessAsync(
+                user, new ResourceScope(StoreId: plan.StoreId, OwnerId: linkedAuditorId), db, ct))
         {
             return TypedResults.Forbid();
         }

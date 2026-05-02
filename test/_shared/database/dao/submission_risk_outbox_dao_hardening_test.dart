@@ -25,8 +25,10 @@ void main() {
         // Arrange
         final now = DateTime.now();
         await dao.enqueueRisk('sub-1', 'risk-1');
-        
-        final rowsBefore = await db.select(db.submissionRiskOutboxEntries).get();
+
+        final rowsBefore = await db
+            .select(db.submissionRiskOutboxEntries)
+            .get();
         final id = rowsBefore.first.id;
 
         // Act
@@ -40,9 +42,21 @@ void main() {
 
         // Assert
         final rowsAfter = await db.select(db.submissionRiskOutboxEntries).get();
-        expect(rowsAfter.first.retryCount, 1, reason: 'Retry count should be updated to 1');
-        expect(rowsAfter.first.nextRetryAt, isNotNull, reason: 'Next retry time should be set');
-        expect(rowsAfter.first.syncError, 'Network Error', reason: 'Sync error should be recorded');
+        expect(
+          rowsAfter.first.retryCount,
+          1,
+          reason: 'Retry count should be updated to 1',
+        );
+        expect(
+          rowsAfter.first.nextRetryAt,
+          isNotNull,
+          reason: 'Next retry time should be set',
+        );
+        expect(
+          rowsAfter.first.syncError,
+          'Network Error',
+          reason: 'Sync error should be recorded',
+        );
       },
     );
 
@@ -51,8 +65,10 @@ void main() {
       () async {
         // Arrange
         await dao.enqueueRisk('sub-2', 'risk-2');
-        
-        final rowsBefore = await db.select(db.submissionRiskOutboxEntries).get();
+
+        final rowsBefore = await db
+            .select(db.submissionRiskOutboxEntries)
+            .get();
         final id = rowsBefore.first.id;
 
         // Act
@@ -64,8 +80,16 @@ void main() {
 
         // Assert
         final rowsAfter = await db.select(db.submissionRiskOutboxEntries).get();
-        expect(rowsAfter.first.syncStatus, 'exhausted', reason: 'Status should be marked exhausted');
-        expect(rowsAfter.first.syncError, 'Fatal 400 Bad Request', reason: 'Fatal error should be recorded');
+        expect(
+          rowsAfter.first.syncStatus,
+          'exhausted',
+          reason: 'Status should be marked exhausted',
+        );
+        expect(
+          rowsAfter.first.syncError,
+          'Fatal 400 Bad Request',
+          reason: 'Fatal error should be recorded',
+        );
       },
     );
 
@@ -74,30 +98,38 @@ void main() {
       () async {
         // Arrange
         await dao.enqueueRisk('sub-3', 'risk-3'); // Eligible
-        
+
         // Insert a row that is waiting for backoff
-        await db.into(db.submissionRiskOutboxEntries).insert(
-          SubmissionRiskOutboxEntriesCompanion.insert(
-            id: 'waiting-id',
-            submissionId: 'sub-4',
-            globalRiskId: 'risk-4',
-            syncStatus: const Value('pending'),
-            nextRetryAt: Value(DateTime.now().add(const Duration(minutes: 5))), // Future
-            createdAt: DateTime.now(),
-          ),
-        );
+        await db
+            .into(db.submissionRiskOutboxEntries)
+            .insert(
+              SubmissionRiskOutboxEntriesCompanion.insert(
+                id: 'waiting-id',
+                submissionId: 'sub-4',
+                globalRiskId: 'risk-4',
+                syncStatus: const Value('pending'),
+                nextRetryAt: Value(
+                  DateTime.now().add(const Duration(minutes: 5)),
+                ), // Future
+                createdAt: DateTime.now(),
+              ),
+            );
 
         // Insert a row that has backoff expired
-        await db.into(db.submissionRiskOutboxEntries).insert(
-          SubmissionRiskOutboxEntriesCompanion.insert(
-            id: 'expired-id',
-            submissionId: 'sub-5',
-            globalRiskId: 'risk-5',
-            syncStatus: const Value('pending'),
-            nextRetryAt: Value(DateTime.now().subtract(const Duration(minutes: 1))), // Past
-            createdAt: DateTime.now(),
-          ),
-        );
+        await db
+            .into(db.submissionRiskOutboxEntries)
+            .insert(
+              SubmissionRiskOutboxEntriesCompanion.insert(
+                id: 'expired-id',
+                submissionId: 'sub-5',
+                globalRiskId: 'risk-5',
+                syncStatus: const Value('pending'),
+                nextRetryAt: Value(
+                  DateTime.now().subtract(const Duration(minutes: 1)),
+                ), // Past
+                createdAt: DateTime.now(),
+              ),
+            );
 
         // Act
         final pending = await dao.getEligiblePending();

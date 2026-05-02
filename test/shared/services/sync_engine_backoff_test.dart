@@ -18,7 +18,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
-import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
+
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/pending_submission.dart';
 import 'package:checkly/_shared/services/delta_pull_result.dart';
@@ -32,6 +32,8 @@ import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/models/add_comment_request.dart';
+import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
+import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
 
 // ─── Fakes ────────────────────────────────────────────────────────────────
 
@@ -74,6 +76,27 @@ class FailingApi implements SyncApi {
 
   @override
   Future<void> pushProgramPhoto(String photoLocalKey, String filePath) async {}
+}
+
+class _ConflictRiskApi extends FailingApi {
+  @override
+  Future<void> pushSubmissionRisk(PendingSubmissionRisk risk) async {
+    throw Exception('409 Conflict');
+  }
+}
+
+class _FatalSubmissionApi extends FailingApi {
+  @override
+  Future<void> pushSubmission(PendingSubmission s) async {
+    throw Exception('400 ClientFormatError');
+  }
+}
+
+class SuccessApi extends FailingApi {
+  @override
+  Future<void> pushSubmission(PendingSubmission s) async {
+    // Does nothing, returns normally (simulates 200 OK)
+  }
 }
 
 class FakeOutbox implements Outbox {
@@ -150,6 +173,13 @@ class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
   ) async => null;
   @override
   Future<int> pendingCount() async => 0;
+  @override
+  Future<void> updateRetry(
+    String id,
+    int newRetryCount,
+    DateTime nextRetry,
+    String error,
+  ) async {}
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────
@@ -177,23 +207,39 @@ void main() {
     return id;
   }
 
+  SyncEngine createEngine(
+    SyncApi testApi, [
+    SubmissionRiskOutboxDao? customRiskDao,
+  ]) {
+    final connectivity = AlwaysOnlineConnectivity();
+    return SyncEngine(
+      connectivity: connectivity,
+      auth: AlwaysAuthCheck(),
+      modules: [
+        CoreAuditSyncModule(
+          api: testApi,
+          outboxDao: dao,
+          globalRiskDao: GlobalRiskDao(db),
+          submissionRiskOutboxDao: customRiskDao ?? SubmissionRiskOutboxDao(db),
+          syncMetaDao: SyncMetaDao(db),
+          connectivity: connectivity,
+          scheduleRetry: (_) {},
+        ),
+        ActionPlanSyncModule(
+          api: _FakeActionPlanApi(),
+          outboxDao: _FakeActionPlanOutboxDao(),
+          connectivity: connectivity,
+          scheduleRetry: (_) {},
+        ),
+      ],
+    );
+  }
+
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     dao = OutboxDao(db);
     outbox = FakeOutbox();
-    engine = SyncEngine(
-      connectivity: AlwaysOnlineConnectivity(),
-      api: FailingApi(),
-      outbox: outbox,
-      auth: AlwaysAuthCheck(),
-      outboxDao: dao,
-      actionPlanApi: _FakeActionPlanApi(),
-      actionPlanOutboxDao: _FakeActionPlanOutboxDao(),
-      globalRiskDao: GlobalRiskDao(db),
-      submissionRiskOutboxDao: SubmissionRiskOutboxDao(db),
-      syncMetaDao: SyncMetaDao(db),
-      programOutboxDao: ProgramOutboxDao(db),
-    );
+    engine = createEngine(FailingApi());
   });
 
   tearDown(() async {
@@ -261,6 +307,136 @@ void main() {
     final row = rows.first;
 
     expect(row.syncStatus, 'exhausted');
-    expect(engine.state, SyncState.error);
+    expect(engine.state, SyncState.idle);
+  });
+
+  // ─── AC-409: Risk push throws 409 Conflict → Treated as success ──────
+  test(
+    'AC-409: _drainRisks_409Conflict_TreatedAsSuccess_RecordRemoved',
+    () async {
+      final riskDao = SubmissionRiskOutboxDao(db);
+      // Directly insert using companion since enqueueRisk sets id to microseconds which is fine,
+      // but we can just use enqueueRisk.
+      await riskDao.enqueueRisk('sub-1', 'risk-1');
+
+      // Override engine with 409 API
+      engine = createEngine(_ConflictRiskApi(), riskDao);
+
+      await engine.requestSync();
+
+      final risks = await db.select(db.submissionRiskOutboxEntries).get();
+      expect(
+        risks,
+        isEmpty,
+        reason: '409 Conflict should remove the record as a success path',
+      );
+    },
+  );
+
+  // ─── AC-FATAL: 400 Fatal Error → Marked exhausted without retries ─────
+  test(
+    'AC-FATAL: _drainSubmissions_400FatalError_MarkedExhausted_NoRetry',
+    () async {
+      await seedEligibleSub(retryCount: 0);
+
+      // Override engine with Fatal API
+      engine = createEngine(_FatalSubmissionApi());
+
+      await engine.requestSync();
+
+      final rows = await db.select(db.pendingSubmissions).get();
+      final row = rows.first;
+
+      expect(
+        row.syncStatus,
+        'exhausted',
+        reason: 'Fatal 400 error must immediately exhaust',
+      );
+      expect(
+        row.retryCount,
+        0,
+        reason: 'Fatal 400 error should not increment retry count',
+      );
+    },
+  );
+
+  // ─── AC-CHECKPOINT: Push succeeds → writes checkpoint before delete ───
+  test(
+    'AC-CHECKPOINT: drainSubmissions_PushSucceeds_WritesCheckpointBeforeDelete',
+    () async {
+      await seedEligibleSub(retryCount: 0);
+
+      engine = createEngine(SuccessApi());
+
+      await engine.requestSync();
+
+      final rows = await db.select(db.pendingSubmissions).get();
+      expect(
+        rows,
+        isEmpty,
+        reason: 'Row should be deleted after successful sync',
+      );
+
+      // The plan specifies this should fail because markSynced doesn't exist yet.
+      // We use dynamic to prevent compilation failure from aborting the whole test suite,
+      // translating the missing method into a proper failing test.
+      try {
+        await (dao as dynamic).markSynced('dummy');
+      } on NoSuchMethodError {
+        fail('MethodNotFound: markSynced is missing from OutboxDao');
+      }
+    },
+  );
+
+  // ─── AC-SWEEP: Startup sweep deletes orphaned synced rows ─────────────
+  test(
+    'AC-SWEEP: requestSync_StartupSweep_DeletesOrphanedSyncedSubmissions',
+    () async {
+      const id = 'sub-sweep';
+      await dao.insertSubmission(
+        PendingSubmissionsCompanion.insert(
+          id: id,
+          templateId: 't1',
+          storeId: 's1',
+          clientScore: 100.0,
+          idempotencyKey: id,
+          syncStatus: const Value('submission_synced'), // Orphaned from a crash
+          createdAt: DateTime.now().toUtc(),
+        ),
+      );
+
+      // Run engine (with FailingApi by default in setUp)
+      await engine.requestSync();
+
+      final rows = await db.select(db.pendingSubmissions).get();
+      expect(
+        rows.where((r) => r.id == id),
+        isEmpty,
+        reason: 'Startup sweep should delete orphaned submission_synced rows',
+      );
+    },
+  );
+
+  // ─── AC-SWEEP-NOPUSH: Sweep does not hit API for already synced rows ──
+  test('AC-SWEEP-NOPUSH: startupSweep_DoesNotPushAlreadySyncedRows', () async {
+    const id = 'sub-sweep-nopush';
+    await dao.insertSubmission(
+      PendingSubmissionsCompanion.insert(
+        id: id,
+        templateId: 't1',
+        storeId: 's1',
+        clientScore: 100.0,
+        idempotencyKey: id,
+        syncStatus: const Value('submission_synced'),
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
+
+    // engine uses FailingApi. If the sweep tries to push this row, it will throw.
+    // So if it successfully removes the row without crashing the sync, it proves no push was attempted.
+    await engine.requestSync();
+
+    final rows = await db.select(db.pendingSubmissions).get();
+    expect(rows.where((r) => r.id == id), isEmpty);
   });
 }

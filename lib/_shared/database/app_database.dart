@@ -47,7 +47,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 23;
+  int get schemaVersion => 24;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -156,15 +156,35 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 22) {
         // SyncEngine Queue Hardening: Add backoff columns to Risk Outbox Table
-        await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.syncError);
-        await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.retryCount);
-        await m.addColumn(submissionRiskOutboxEntries, submissionRiskOutboxEntries.nextRetryAt);
+        await m.addColumn(
+          submissionRiskOutboxEntries,
+          submissionRiskOutboxEntries.syncError,
+        );
+        await m.addColumn(
+          submissionRiskOutboxEntries,
+          submissionRiskOutboxEntries.retryCount,
+        );
+        await m.addColumn(
+          submissionRiskOutboxEntries,
+          submissionRiskOutboxEntries.nextRetryAt,
+        );
       }
       if (from < 23) {
         // Programs Module Slice 2B: offline cache + outbox tables.
         await m.createTable(cachedProgramAssignments);
         await m.createTable(pendingProgramSubmissions);
         await m.createTable(pendingProgramPhotos);
+      }
+      if (from < 24) {
+        // BUG-1: Migrate ActionPlanSyncModule to processQueue — add backoff columns.
+        await m.addColumn(
+          pendingActionPlanUpdates,
+          pendingActionPlanUpdates.retryCount,
+        );
+        await m.addColumn(
+          pendingActionPlanUpdates,
+          pendingActionPlanUpdates.nextRetryAt,
+        );
       }
     },
     beforeOpen: (details) async {

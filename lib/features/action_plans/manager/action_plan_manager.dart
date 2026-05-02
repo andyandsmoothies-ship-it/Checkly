@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/dao/action_plan_outbox_dao.dart';
 import '../../../_shared/services/connectivity_service.dart';
+import '../../../_shared/services/user_role_provider.dart';
 import '../model/action_plan_dto.dart';
 import '../model/stale_conflict.dart';
 import 'action_plan_api.dart';

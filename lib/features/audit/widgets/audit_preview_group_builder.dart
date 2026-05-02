@@ -103,9 +103,7 @@ class AuditPreviewGroupBuilder extends StatelessWidget {
         elevation: 1,
         color: theme.colorScheme.surface,
         shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

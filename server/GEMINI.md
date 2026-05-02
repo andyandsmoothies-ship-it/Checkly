@@ -30,7 +30,7 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query pa
 
 ### Shared Services Pattern
 - **ActionPlanService**: Call safely to automatically create action plans from answers.
-- **SubmissionAccessGuard**: Reusable permission guard.
+- **ResourceAccessGuard**: Reusable IDOR guard. Use `new ResourceScope(StoreId: ..., OwnerId: ..., AreaId: ...)` to scope access.
 - **AuditLogger**: Helper for writing to `system_logs`.
 
 ## Business Logic Gotchas

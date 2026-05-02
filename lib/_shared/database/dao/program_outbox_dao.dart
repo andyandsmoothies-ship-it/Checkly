@@ -27,7 +27,8 @@ class ProgramOutboxDao {
           ..where(
             (r) =>
                 r.syncStatus.equals('pending') &
-                (r.nextRetryAt.isNull() | r.nextRetryAt.isSmallerOrEqualValue(now)),
+                (r.nextRetryAt.isNull() |
+                    r.nextRetryAt.isSmallerOrEqualValue(now)),
           )
           ..orderBy([(r) => OrderingTerm.asc(r.createdAt)])
           ..limit(50))
@@ -36,16 +37,16 @@ class ProgramOutboxDao {
 
   /// Remove a submitted row after a successful server response.
   Future<void> remove(String id) async {
-    await (_db.delete(_db.pendingProgramSubmissions)
-          ..where((r) => r.id.equals(id)))
-        .go();
+    await (_db.delete(
+      _db.pendingProgramSubmissions,
+    )..where((r) => r.id.equals(id))).go();
   }
 
   /// Mark a row as permanently failed (max retries exhausted or 400/403).
   Future<void> markExhausted(String id, String error) async {
-    await (_db.update(_db.pendingProgramSubmissions)
-          ..where((r) => r.id.equals(id)))
-        .write(
+    await (_db.update(
+      _db.pendingProgramSubmissions,
+    )..where((r) => r.id.equals(id))).write(
       PendingProgramSubmissionsCompanion(
         syncStatus: const Value('exhausted'),
         syncError: Value(error),
@@ -60,9 +61,9 @@ class ProgramOutboxDao {
     DateTime nextRetry,
     String error,
   ) async {
-    await (_db.update(_db.pendingProgramSubmissions)
-          ..where((r) => r.id.equals(id)))
-        .write(
+    await (_db.update(
+      _db.pendingProgramSubmissions,
+    )..where((r) => r.id.equals(id))).write(
       PendingProgramSubmissionsCompanion(
         retryCount: Value(newCount),
         nextRetryAt: Value(nextRetry),
@@ -77,9 +78,7 @@ class ProgramOutboxDao {
   Future<void> upsertCachedAssignment(
     CachedProgramAssignmentsCompanion row,
   ) async {
-    await _db
-        .into(_db.cachedProgramAssignments)
-        .insertOnConflictUpdate(row);
+    await _db.into(_db.cachedProgramAssignments).insertOnConflictUpdate(row);
   }
 
   /// Delete ALL cached assignments (full-replace pull strategy).
@@ -90,7 +89,9 @@ class ProgramOutboxDao {
   /// Watch cached assignments as a live stream (for home widget in Slice C).
   Stream<List<CachedProgramAssignment>> watchPendingAssignments() {
     return (_db.select(_db.cachedProgramAssignments)
-          ..where((r) => r.status.equals('pending') | r.status.equals('overdue'))
+          ..where(
+            (r) => r.status.equals('pending') | r.status.equals('overdue'),
+          )
           ..orderBy([(r) => OrderingTerm.asc(r.deadline)]))
         .watch();
   }
@@ -110,9 +111,9 @@ class ProgramOutboxDao {
   ///
   /// Returns `null` if not found.
   Future<CachedProgramAssignment?> getCachedAssignment(String id) {
-    return (_db.select(_db.cachedProgramAssignments)
-          ..where((r) => r.id.equals(id)))
-        .getSingleOrNull();
+    return (_db.select(
+      _db.cachedProgramAssignments,
+    )..where((r) => r.id.equals(id))).getSingleOrNull();
   }
 
   // ── Outbox: PendingProgramPhotos ──────────────────────────────────────────
@@ -135,15 +136,16 @@ class ProgramOutboxDao {
 
   /// Remove a photo after successful upload.
   Future<void> removePhoto(String id) async {
-    await (_db.delete(_db.pendingProgramPhotos)
-          ..where((r) => r.id.equals(id)))
-        .go();
+    await (_db.delete(
+      _db.pendingProgramPhotos,
+    )..where((r) => r.id.equals(id))).go();
   }
+
   /// Mark a photo row as permanently failed (max retries exhausted or 400/403/415).
   Future<void> markPhotoExhausted(String id, String error) async {
-    await (_db.update(_db.pendingProgramPhotos)
-          ..where((r) => r.id.equals(id)))
-        .write(
+    await (_db.update(
+      _db.pendingProgramPhotos,
+    )..where((r) => r.id.equals(id))).write(
       PendingProgramPhotosCompanion(
         syncStatus: const Value('exhausted'),
         syncError: Value(error),
@@ -158,9 +160,9 @@ class ProgramOutboxDao {
     DateTime nextRetry,
     String error,
   ) async {
-    await (_db.update(_db.pendingProgramPhotos)
-          ..where((r) => r.id.equals(id)))
-        .write(
+    await (_db.update(
+      _db.pendingProgramPhotos,
+    )..where((r) => r.id.equals(id))).write(
       PendingProgramPhotosCompanion(
         retryCount: Value(newCount),
         nextRetryAt: Value(nextRetry),
@@ -169,4 +171,3 @@ class ProgramOutboxDao {
     );
   }
 }
-

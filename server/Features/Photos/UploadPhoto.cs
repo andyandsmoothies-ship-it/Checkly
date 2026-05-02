@@ -59,8 +59,8 @@ public static class UploadPhoto
             return TypedResults.NotFound(new { error = "Submission not found" });
 
         // IDOR: Verify the caller can access this submission
-        var hasAccess = await SubmissionAccessGuard.CanAccessAsync(
-            user, submission.StoreId, areaId: null, auditorId: submission.AuditorId, db, ct);
+        var hasAccess = await ResourceAccessGuard.CanAccessAsync(
+            user, new ResourceScope(StoreId: submission.StoreId, OwnerId: submission.AuditorId), db, ct);
         if (!hasAccess)
             return TypedResults.Forbid();
 

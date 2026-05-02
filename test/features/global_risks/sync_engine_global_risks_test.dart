@@ -12,7 +12,7 @@ import 'package:checkly/_shared/database/dao/action_plan_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/global_risk_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_risk_outbox_dao.dart';
 import 'package:checkly/_shared/database/dao/sync_meta_dao.dart';
-import 'package:checkly/_shared/database/dao/program_outbox_dao.dart';
+
 import 'package:checkly/_shared/services/sync_engine.dart';
 import 'package:checkly/_shared/services/pending_submission.dart';
 import 'package:checkly/_shared/services/delta_pull_result.dart';
@@ -25,6 +25,8 @@ import 'package:checkly/features/action_plans/manager/action_plan_manager.dart';
 import 'package:checkly/features/action_plans/model/action_plan_dto.dart';
 import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/models/add_comment_request.dart';
+import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
+import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
 
 class FakeConnectivity implements ConnectivityService {
   @override
@@ -86,6 +88,13 @@ class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
   ) async => null;
   @override
   Future<int> pendingCount() async => 0;
+  @override
+  Future<void> updateRetry(
+    String id,
+    int newRetryCount,
+    DateTime nextRetry,
+    String error,
+  ) async {}
 }
 
 class FakeSyncApi implements SyncApi {
@@ -152,18 +161,27 @@ void main() {
     globalRiskDao = GlobalRiskDao(testDb);
     riskOutboxDao = SubmissionRiskOutboxDao(testDb);
 
+    final connectivity = FakeConnectivity();
     engine = SyncEngine(
-      connectivity: FakeConnectivity(),
-      api: fakeApi,
-      outbox: FakeOutbox(),
+      connectivity: connectivity,
       auth: FakeAuthCheck(),
-      outboxDao: OutboxDao(testDb),
-      actionPlanApi: _FakeActionPlanApi(),
-      actionPlanOutboxDao: _FakeActionPlanOutboxDao(),
-      globalRiskDao: globalRiskDao,
-      submissionRiskOutboxDao: riskOutboxDao,
-      syncMetaDao: SyncMetaDao(testDb),
-      programOutboxDao: ProgramOutboxDao(testDb),
+      modules: [
+        CoreAuditSyncModule(
+          api: fakeApi,
+          outboxDao: OutboxDao(testDb),
+          globalRiskDao: globalRiskDao,
+          submissionRiskOutboxDao: riskOutboxDao,
+          syncMetaDao: SyncMetaDao(testDb),
+          connectivity: connectivity,
+          scheduleRetry: (delay) {},
+        ),
+        ActionPlanSyncModule(
+          api: _FakeActionPlanApi(),
+          outboxDao: _FakeActionPlanOutboxDao(),
+          connectivity: connectivity,
+          scheduleRetry: (delay) {},
+        ),
+      ],
     );
   });
 

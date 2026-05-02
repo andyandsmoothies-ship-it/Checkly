@@ -33,7 +33,7 @@ Workflow: /analyze-epic | Track: C
 - [ ] Phase 4: Break Down Work
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | brain/.../analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Epic Plan |
+| [NEW]  | docs/architecture/analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Epic Plan |
 ```
 
 ## Phase 1: Discover & Plan
@@ -72,7 +72,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Instructions |
 |---|---|
-| **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `brain/` folder. Do not print the whole plan in the chat. |
+| **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `docs/architecture/` folder. Do not print the whole plan in the chat. |
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Does the document have all required sections?
 
@@ -98,6 +98,7 @@ Send each slice to the right workflow:
 
 ### Final Output Rules
 > [!IMPORTANT]
+<output_schema>
 > **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST have these exact sections. Keep it short and simple.
 > 1. `<latent_space_scratchpad>`: Your hidden thoughts and tradeoffs.
 > 2. `## Input Lineage`: Absolute path to the original requirements document or idea.
@@ -129,3 +130,9 @@ Send each slice to the right workflow:
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and try again.
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
+
+</output_schema>

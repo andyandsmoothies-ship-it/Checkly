@@ -143,9 +143,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/programs/review/:programId',
-      builder: (context, state) => ProgramDashboardPage(
-        programId: state.pathParameters['programId']!,
-      ),
+      builder: (context, state) =>
+          ProgramDashboardPage(programId: state.pathParameters['programId']!),
     ),
 
     // ---------- Admin routes ----------

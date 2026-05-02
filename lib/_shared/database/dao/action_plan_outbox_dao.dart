@@ -41,6 +41,24 @@ class ActionPlanOutboxDao {
     );
   }
 
+  /// Increment retry count and schedule next attempt at [nextRetry].
+  Future<void> updateRetry(
+    String id,
+    int newRetryCount,
+    DateTime nextRetry,
+    String error,
+  ) async {
+    await (_db.update(
+      _db.pendingActionPlanUpdates,
+    )..where((r) => r.id.equals(id))).write(
+      PendingActionPlanUpdatesCompanion(
+        retryCount: Value(newRetryCount),
+        nextRetryAt: Value(nextRetry),
+        syncError: Value(error),
+      ),
+    );
+  }
+
   /// Count of pending (not yet attempted) items — for debug/badge use.
   Future<int> pendingCount() async {
     final countExp = countAll();

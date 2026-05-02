@@ -31,4 +31,3 @@ abstract class SyncApi {
   /// Push a program evidence photo via multipart/form-data.
   Future<void> pushProgramPhoto(String photoLocalKey, String filePath);
 }
-

@@ -279,6 +279,8 @@ class PendingActionPlanUpdates extends Table {
   TextColumn get photoPath => text().nullable()();
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   TextColumn get syncError => text().nullable()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get nextRetryAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 
   @override
@@ -332,6 +334,7 @@ class CachedProgramAssignments extends Table {
   TextColumn get programTitle => text()();
   TextColumn get category => text()();
   DateTimeColumn get deadline => dateTime()();
+
   /// Values: 'pending' | 'overdue' | 'submitted' | 'needs_revision'
   TextColumn get status => text().withDefault(const Constant('pending'))();
   TextColumn get rejectionComment => text().nullable()();
@@ -379,4 +382,3 @@ class PendingProgramPhotos extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-

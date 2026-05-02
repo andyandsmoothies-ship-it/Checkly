@@ -51,7 +51,9 @@ class _ReadMoreTextState extends State<ReadMoreText> {
             Text.rich(
               textSpan,
               maxLines: _isExpanded ? null : widget.trimLines,
-              overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+              overflow: _isExpanded
+                  ? TextOverflow.visible
+                  : TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
             InkWell(
@@ -65,9 +67,9 @@ class _ReadMoreTextState extends State<ReadMoreText> {
                 child: Text(
                   _isExpanded ? 'Show less' : 'Read more',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),

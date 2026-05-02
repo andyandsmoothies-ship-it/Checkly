@@ -55,7 +55,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_code_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `brain/` folder. IF zero issues -> create `audit_code_pass_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
+| **Artifact Gen** | Create `audit_code_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `docs/diagnostics/` folder. IF zero issues -> create `audit_code_pass_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
 | **Severity Matrix**| `🔴 Critical` (Breaks build/Untestable) | `🟡 Warning` (Convention fail/Stale TODO) | `🟢 Optimization` (Dead code/Redundant). |
 | **Actionable Fix & Trade-offs** | MANDATORY: Provide exact fix command or refactor snippet for EVERY finding.<br><br>**CRITICAL:** For each refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.<br><br>**CRITICAL:** You MUST present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation. |
 
@@ -73,3 +73,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 > - `Code 0`: *"Handoff complete."*
 > - `Code 1`: Fix errors and retry. (Fail twice = Write Handoff).
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>

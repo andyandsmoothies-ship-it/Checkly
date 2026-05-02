@@ -48,12 +48,6 @@ Before ANY workflow response involving analysis, design, or implementation:
 - **Action**: When generating scripts for bulk actions (moving files, renaming, deleting), you MUST write out actions explicitly, 1-by-1, on individual lines (e.g. 50 distinct `Move-Item` statements).
 - **Why**: This guarantees transparency. The user can see exactly what is being modified line-by-line and safely comment out (`#`) any specific exceptions before running the script.
 
-## SDLC Artifact Storage
-- **Generate Default**: Always create ALL artifacts in the `brain/` folder first.
-- **Copy High-Value**: Explicitly copy ADRs, Test Contracts, Audits, and final `implementation_plan.md` to `docs/` after creation.
-- **First-Class Plans**: Implementation plans are the memory of the project. Once approved, you MUST copy `implementation_plan_[topic].md` to `docs/architecture/plans/`.
-- **Discard Transients**: Leave temporary task trackers (`task_[topic].md`) in `brain/`. Do not copy transient tasks to `docs/`.
-
 ## Absolute Path Output Mandate
 **Always provide full absolute file paths.**
 - **Rule:** In all UI responses and Handoff blocks, output the absolute path (`C:\Users\...`) so the user can instantly copy-paste it to the next agent.
@@ -99,3 +93,19 @@ If an AI agent skips or merges a workflow phase (e.g. bypassing `[/tdd]` because
 **An executable specification (Test) is worth a thousand markdown documents.**
 - **Rule**: During the `[/implement]` phase, if the narrative markdown plan (`implementation_plan_[topic].md`) ever contradicts the ATDD/TDD test contracts, the **TEST ALWAYS WINS**.
 - **Action**: Treat tests as the immutable source of truth. Markdown is intent; passing tests are the law. You must adapt your code to pass the immutable behavioral test, not rewrite the test to match a flawed markdown plan.
+
+## Enterprise Artifact Storage Mandate
+**To prevent artifact bloat in the AI session memory, generated files MUST be saved into the project's permanent repository structure.**
+- **Rule**: Do not save generated markdown reports or plans in the default `brain/` directory. Use the designated project folders below.
+- **Action**: Always use `write_to_file` to output to the absolute path of these locations:
+  - `docs/architecture/` : ADRs, implementation plans, epic plans, foundation blueprints.
+  - `docs/product/` : Requirements, process models, research notes.
+  - `docs/diagnostics/` : Audit reports (`audit_*_report.md`), incident/failure reports (`failure_report_*.md`).
+  - `docs/qa/contracts/` : Test contracts (`test_contracts_*.md`).
+  - `docs/qa/gates/` : Executed test logs, preflight reports, verification logs.
+  - `.agents/active_tasks/` : Transient trackers (`task_*.md`, `walkthrough_*.md`).
+
+<mandatory_constraints>
+- NEVER execute `git` commands. Yield to the user.
+- TESTS ALWAYS WIN over Markdown plans.
+</mandatory_constraints>
