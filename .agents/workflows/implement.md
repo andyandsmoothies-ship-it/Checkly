@@ -76,12 +76,14 @@ Review from 6 angles:
 | Step | Execution Contract |
 |---|---|
 | **Test Analytics**| Bypassing terminal limits: output tests to `.agents/tmp/results.json` and `view_file` them. |
+| **Test Verification**| IF modifying business logic -> You MUST verify failing tests exist for your slice BEFORE coding. If missing, HALT and instruct user to run `@[/tdd]`. Do not write tests yourself. |
 | **Diff Check** | `git diff --name-only`. Revert unplanned. |
+| **Arch Boundaries**| MANDATORY: Verify UI/presentation files do not directly import DB/API layers. |
 | **Orphaned Stub Check** | MANDATORY: Execute `grep_search` to ensure absolutely NO `fail('Implement...')` or placeholder stubs remain from QA in the active slice. |
 | **Anti-Collapse Gate**| IF any modified file >400 lines: STRICTLY PROHIBITED from handoff. You MUST halt and extract components. |
 | **Handoff Trap** | IF Context Limit Approaching: Create `handoff.md` -> YIELD. |
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) 4 angles reviewed? (2) State tests exist AND NO orphaned stubs remain? (3) `git diff` clean? (4) File lines <400?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) 4 angles reviewed? (2) State tests exist AND NO orphaned stubs remain? (3) Arch boundaries respected? (4) File lines <400?
 
 ## Phase 3: Handoff
 | State | Condition | Result Action |

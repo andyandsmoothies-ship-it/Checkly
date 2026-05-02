@@ -73,6 +73,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 > [!CAUTION]
 > **Too Big?** If the task has unknown rules, new complex states, or needs more than 1 new database table, STOP. Tell the user to use `/analyze-epic` instead.
+> **Logic Bypass?** If a slice creates or modifies Business Logic (e.g., Managers, Services, state math), You MUST route to `/tdd` first.
 
 | Signal Check | Route 2: Direct Build (`/implement`) | Route 1: Logic/Standard (`/tdd`) | Route 3: Integration/High-Risk (`/atdd`) |
 |---|---|---|---|

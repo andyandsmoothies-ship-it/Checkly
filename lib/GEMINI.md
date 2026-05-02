@@ -4,6 +4,9 @@
 
 ### Patterns
 - **PFA Pattern**: Services (API calls), Managers (State/Logic), Pages (UI).
+- **Gotcha 20: DAO/API Leakage**: UI Layers (Widgets/Pages) must NEVER import `database/dao/` or `services/api/` directly. All UI-to-Data communication MUST route through a `Manager` or `SyncEngine`.
+- **Gotcha 21: UI File Size Limits**: Never place a complex `Form` or standalone widget in the same file as a `Page` Scaffold if combined lines > 200. Split into `pages/` and `widgets/` early to avoid the 400-line hard cap.
+- **Gotcha 22: Logic Nesting**: Keep logic flat. Do not define complex recursive closures inside methods like `build()` or `validate()`. Extract them to private helpers.
 - **DTO Pattern**: DTOs are plain Dart classes. Server JSON uses `camelCase`. Add new fields as nullable.
 
 ### Offline-First Sync
