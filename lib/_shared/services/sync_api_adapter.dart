@@ -90,10 +90,17 @@ class SyncApiAdapter implements SyncApi {
     }
   }
 
+  /// **SYNTHETIC STUB — NOT YET IMPLEMENTED.**
+  ///
+  /// A future delta-sync endpoint would allow the backend to broadcast
+  /// what changed since [since], reducing redundant fetches.
+  ///
+  /// Currently, each manager (e.g. [TemplateManager], [AuditManager])
+  /// independently handles its own cache refresh on reconnect. Until a
+  /// unified pull-delta API exists on the server, this method returns an
+  /// empty [DeltaPullResult] and MUST NOT be used for real data fetching.
   @override
   Future<DeltaPullResult> pullDeltas(DateTime? since) async {
-    // Delta pull â€” future enhancement to sync templates/stores/submissions.
-    // For now, individual managers handle their own cache refresh.
     return DeltaPullResult(serverTimestamp: DateTime.now());
   }
 

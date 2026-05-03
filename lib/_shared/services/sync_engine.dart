@@ -4,6 +4,7 @@ import 'connectivity_service.dart';
 import 'sync_state.dart';
 import 'sync_module.dart';
 import 'auth_check.dart';
+import '../database/dao/outbox_dao.dart';
 // ============================================================
 // SyncEngine — orchestrator
 // ============================================================
@@ -23,6 +24,7 @@ class SyncEngine {
   final ConnectivityService _connectivity;
   final AuthCheck _auth;
   final List<SyncModule> _modules;
+  final OutboxDao? _outboxDao;
 
   StreamSubscription<bool>? _connectivitySub;
 
@@ -34,8 +36,10 @@ class SyncEngine {
     required ConnectivityService connectivity,
     required AuthCheck auth,
     required List<SyncModule> modules,
+    OutboxDao? outboxDao,
   }) : _connectivity = connectivity,
        _auth = auth,
+       _outboxDao = outboxDao,
        _modules = List.unmodifiable(
          [...modules]..sort((a, b) => a.priority.compareTo(b.priority)),
        ) {
@@ -122,6 +126,25 @@ class SyncEngine {
       await module.executePush();
     }
   }
+
+  // ── Outbox monitoring proxy ─────────────────────────────────────────────
+  // UI widgets must NOT import OutboxDao directly. Route all outbox queries
+  // through SyncEngine to keep the architecture boundary clean.
+
+  /// Emits the count of exhausted outbox items (triggers UX Red Badge).
+  Stream<int> watchExhaustedCount() => _outboxDao!.watchExhaustedCount();
+
+  /// Permanently discards all exhausted outbox items.
+  Future<void> discardExhausted() => _outboxDao!.discardExhausted();
+
+  /// Resets all exhausted outbox items back to 'pending' for retry.
+  Future<void> requeueExhausted() => _outboxDao!.requeueExhausted();
+
+  /// Returns the count of items eligible for sync (pending, not exhausted).
+  Future<int> syncableCount() => _outboxDao!.syncableCount();
+
+  /// Returns the count of exhausted items.
+  Future<int> exhaustedCount() => _outboxDao!.exhaustedCount();
 
   /// Dispose the connectivity listener.
   void dispose() {

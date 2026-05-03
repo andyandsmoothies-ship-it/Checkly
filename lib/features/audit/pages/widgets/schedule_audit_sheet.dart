@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../admin/pages/schedule_audit_page.dart';
+import '../../../admin/widgets/schedule_audit_form.dart';
 import '../../manager/history_manager.dart';
 
 final _di = GetIt.instance;

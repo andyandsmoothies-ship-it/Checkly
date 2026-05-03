@@ -10,6 +10,13 @@ Before any implementation or analysis, include this checklist in your response:
 - **Rules Compliance**: [Confirm project governance adherence]
 - **Context Inventory**: [List rules, docs, or MCP schemas referenced]
 
+## Artifact Naming Conventions & Terminology
+- **`[ShortID]`**: An 8-character unique identifier for the current session. Because you may run inside different IDEs or CLIs (e.g., Cursor, Claude Code, Antigravity), determine it as follows:
+  - If your environment provides a UUID or long Conversation/Session ID, use the **first 8 characters** (e.g., `2c7e5b91`).
+  - If your environment provides a short ID, just use that.
+  - If your environment provides NO session ID, generate a random 8-character alphanumeric string (e.g., `a8b2f9x1`) and use it consistently for the duration of the task.
+  - Do not include parentheses or explanations in the actual filename.
+
 ## Zero Trust AI Governance (The "Untrusted Actor" Mandate)
 **AI agents (including yourself) are treated as untrusted actors.**
 - **Rule**: Never implicitly trust that an upstream AI's plan or code is secure, optimized, or correct.
@@ -94,16 +101,29 @@ If an AI agent skips or merges a workflow phase (e.g. bypassing `[/tdd]` because
 - **Rule**: During the `[/implement]` phase, if the narrative markdown plan (`implementation_plan_[topic].md`) ever contradicts the ATDD/TDD test contracts, the **TEST ALWAYS WINS**.
 - **Action**: Treat tests as the immutable source of truth. Markdown is intent; passing tests are the law. You must adapt your code to pass the immutable behavioral test, not rewrite the test to match a flawed markdown plan.
 
+
+## SDLC Folder-Based Tracking (Traceability Mandate)
+**To guarantee traceability across multiple workflows (Analyze -> ATDD -> Implement -> Verify), artifacts MUST be grouped by Topic/Issue Folder, NOT by long filenames.**
+- **Prefixing**: Topics MUST start with an Issue/Epic ID (e.g., `F-123_auth_fixes`).
+- **Context-Passing**: When invoked with an upstream artifact (e.g., `@[/implement] docs/architecture/F-123_auth_fixes/implementation_plan.md`), you MUST extract the parent folder name (`F-123_auth_fixes`) and use it EXACTLY for all output artifacts. Do NOT invent or guess topic names.
+- **Folder Structure**: Always use exact filenames inside the topic folder:
+  - `.agents/active_tasks/[topic]/task.md`
+  - `.agents/active_tasks/[topic]/walkthrough.md`
+  - `docs/architecture/[topic]/implementation_plan.md`
+  - `docs/qa/contracts/[topic]/test_contracts.md`
+  - `docs/qa/gates/[topic]/executed_tests.md`
+  - `docs/diagnostics/[topic]/audit_report.md`
+
 ## Enterprise Artifact Storage Mandate
 **To prevent artifact bloat in the AI session memory, generated files MUST be saved into the project's permanent repository structure.**
 - **Rule**: Do not save generated markdown reports or plans in the default `brain/` directory. Use the designated project folders below.
 - **Action**: Always use `write_to_file` to output to the absolute path of these locations:
-  - `docs/architecture/` : ADRs, implementation plans, epic plans, foundation blueprints.
+  - `docs/architecture/[topic]/` : implementation_plan.md, etc.
   - `docs/product/` : Requirements, process models, research notes.
   - `docs/diagnostics/` : Audit reports (`audit_*_report.md`), incident/failure reports (`failure_report_*.md`).
-  - `docs/qa/contracts/` : Test contracts (`test_contracts_*.md`).
-  - `docs/qa/gates/` : Executed test logs, preflight reports, verification logs.
-  - `.agents/active_tasks/` : Transient trackers (`task_*.md`, `walkthrough_*.md`).
+  - `docs/qa/contracts/[topic]/` : test_contracts.md
+  - `docs/qa/gates/[topic]/` : executed_tests.md
+  - `.agents/active_tasks/[topic]/` : task.md, walkthrough.md
 
 <mandatory_constraints>
 - NEVER execute `git` commands. Yield to the user.

@@ -5,21 +5,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/notifications/manager/notification_manager.dart';
 import '../../features/notifications/model/notification_dto.dart';
-import '../database/dao/outbox_dao.dart';
 import '../services/sync_engine.dart';
 import '../theme/app_theme.dart';
+import 'app_router.dart';
 
 final _di = GetIt.instance;
-
-int _shellIndexFromLocation(String location) {
-  if (location.startsWith('/activity')) return 1;
-  if (location.startsWith('/plans')) return 2;
-  if (location.startsWith('/templates')) return 3;
-  if (location.startsWith('/profile')) return 4;
-  if (location.startsWith('/admin')) return 4;
-  if (location.startsWith('/inbox')) return 5;
-  return 0; // /home
-}
 
 /// Main shell with 6-tab bottom navigation.
 /// Tabs: Home | Activity | Plans | Templates | Profile | Inbox
@@ -31,7 +21,7 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    final currentIndex = _shellIndexFromLocation(location);
+    final currentIndex = shellIndexFromLocation(location);
 
     return Scaffold(
       extendBody: true,
@@ -44,7 +34,7 @@ class MainShell extends StatelessWidget {
             right: 0,
             bottom: 96,
             child: StreamBuilder<int>(
-              stream: _di<OutboxDao>().watchExhaustedCount(),
+              stream: _di<SyncEngine>().watchExhaustedCount(),
               initialData: 0,
               builder: (context, snapshot) {
                 final count = snapshot.data ?? 0;
@@ -111,7 +101,7 @@ class MainShell extends StatelessWidget {
                               ),
                             );
                             if (confirm == true) {
-                              await _di<OutboxDao>().discardExhausted();
+                              await _di<SyncEngine>().discardExhausted();
                             }
                           },
                           icon: const Icon(
@@ -127,7 +117,7 @@ class MainShell extends StatelessWidget {
                         TextButton(
                           onPressed: () async {
                             // Tap to requeue: clears nextRetryAt and retryCount
-                            await _di<OutboxDao>().requeueExhausted();
+                            await _di<SyncEngine>().requeueExhausted();
                             // Trigger sync cycle explicitly so records don't just sit there
                             _di<SyncEngine>().requestSync();
                           },

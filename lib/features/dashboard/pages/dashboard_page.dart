@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
-import '../../admin/pages/schedule_audit_page.dart';
+import '../../admin/widgets/schedule_audit_form.dart';
 import '../../auth/manager/auth_manager.dart';
 
 import '../../../_shared/theme/app_fonts.dart';

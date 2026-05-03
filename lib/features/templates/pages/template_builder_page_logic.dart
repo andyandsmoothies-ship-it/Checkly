@@ -150,55 +150,7 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
     }
 
     // Section & criteria checks (recursive)
-    void validateGroups(List<EditableGroup> groups, String prefix) {
-      for (var i = 0; i < groups.length; i++) {
-        final g = groups[i];
-        final sKey = '$prefix$i';
-        _errorKeys.putIfAbsent(sKey, () => GlobalKey());
-
-        if (g.titleCtrl.text.trim().isEmpty) {
-          errors.add(sKey, 'Section title is required');
-        }
-        if (g.criteria.isEmpty && g.subSections.isEmpty) {
-          errors.add(sKey, 'Section must have at least one criterion');
-        }
-
-        // Density: weight > 0 (root sections only, when enabled)
-        if (_weightedDensity && prefix == 'section:') {
-          if ((double.tryParse(g.weightCtrl.text) ?? 0) <= 0) {
-            errors.add(sKey, 'Section weight must be greater than 0%');
-          }
-        }
-
-        // Criteria checks
-        for (var ci = 0; ci < g.criteria.length; ci++) {
-          final c = g.criteria[ci];
-          final cKey = '$sKey:c:$ci';
-          _errorKeys.putIfAbsent(cKey, () => GlobalKey());
-
-          if (c.inputType == 'scale' && c.scaleOptions.length < 2) {
-            errors.add(cKey, 'Scale criteria must have at least 2 options');
-          }
-          if ((c.inputType == 'single_choice' ||
-                  c.inputType == 'multi_choice') &&
-              c.choiceOptions.length < 2) {
-            errors.add(cKey, 'Choice criteria must have at least 2 options');
-          }
-          // V6: Pointless criteria (numeric + scale only)
-          if (_scoringMode != 'survey' &&
-              (c.inputType == 'numeric' || c.inputType == 'scale')) {
-            if ((double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) {
-              errors.add(cKey, 'Scoring criteria must have points > 0');
-            }
-          }
-        }
-
-        // Recurse into sub-sections
-        validateGroups(g.subSections, '$sKey:sub:');
-      }
-    }
-
-    validateGroups(_sections, 'section:');
+    _validateGroups(_sections, 'section:', errors);
 
     // V5: Ghost template guard
     if (_scoringMode != 'survey' && _sections.isNotEmpty) {
@@ -232,6 +184,63 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
 
     return errors;
   }
+
+  // ── Validation helpers ──
+
+  /// Recursively validates [groups] and populates [errors].
+  /// Extracted from [_validate] to make it independently testable.
+  void _validateGroups(
+    List<EditableGroup> groups,
+    String prefix,
+    ValidationErrors errors,
+  ) {
+    for (var i = 0; i < groups.length; i++) {
+      final g = groups[i];
+      final sKey = '$prefix$i';
+      _errorKeys.putIfAbsent(sKey, () => GlobalKey());
+
+      if (g.titleCtrl.text.trim().isEmpty) {
+        errors.add(sKey, 'Section title is required');
+      }
+      if (g.criteria.isEmpty && g.subSections.isEmpty) {
+        errors.add(sKey, 'Section must have at least one criterion');
+      }
+
+      // Density: weight > 0 (root sections only, when enabled)
+      if (_weightedDensity && prefix == 'section:') {
+        if ((double.tryParse(g.weightCtrl.text) ?? 0) <= 0) {
+          errors.add(sKey, 'Section weight must be greater than 0%');
+        }
+      }
+
+      // Criteria checks
+      for (var ci = 0; ci < g.criteria.length; ci++) {
+        final c = g.criteria[ci];
+        final cKey = '$sKey:c:$ci';
+        _errorKeys.putIfAbsent(cKey, () => GlobalKey());
+
+        if (c.inputType == 'scale' && c.scaleOptions.length < 2) {
+          errors.add(cKey, 'Scale criteria must have at least 2 options');
+        }
+        if ((c.inputType == 'single_choice' ||
+                c.inputType == 'multi_choice') &&
+            c.choiceOptions.length < 2) {
+          errors.add(cKey, 'Choice criteria must have at least 2 options');
+        }
+        // V6: Pointless criteria (numeric + scale only)
+        if (_scoringMode != 'survey' &&
+            (c.inputType == 'numeric' || c.inputType == 'scale')) {
+          if ((double.tryParse(c.pointsCtrl.text) ?? 0) <= 0) {
+            errors.add(cKey, 'Scoring criteria must have points > 0');
+          }
+        }
+      }
+
+      // Recurse into sub-sections
+      _validateGroups(g.subSections, '$sKey:sub:', errors);
+    }
+  }
+
 
   void _scrollToFirstError() {
     final firstKey = _validationErrors?.firstKey;
@@ -306,10 +315,6 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
     setState(() {
       _sections.add(EditableGroup());
       _isDirty = true;
-    });
-    // Auto-scroll to the new section after frame renders
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // The new section is at the bottom of the ScrollView
     });
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/database/dao/outbox_dao.dart';
+import '../../../_shared/services/sync_engine.dart';
 import '../../auth/manager/auth_manager.dart';
 
 final _di = GetIt.instance;
@@ -34,8 +34,8 @@ class _SignOutTileState extends State<SignOutTile> {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
-    final syncable = await _di<OutboxDao>().syncableCount();
-    final exhausted = await _di<OutboxDao>().exhaustedCount();
+    final syncable = await _di<SyncEngine>().syncableCount();
+    final exhausted = await _di<SyncEngine>().exhaustedCount();
 
     if (!context.mounted) return;
 

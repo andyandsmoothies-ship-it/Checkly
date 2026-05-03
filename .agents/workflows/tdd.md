@@ -10,7 +10,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 > This is the **Test-Driven Development (TDD)** workflow. The QA Agent (@Sentinel) uses this to write failing unit tests based on a plan. The Builder Agent (@Forge) should never run this workflow.
 
 ## Pre-Flight Setup
-- **Task File**: Create a `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` document right now using this exact template. Update your progress as you work.
+- **Task File**: Create a `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` document right now using this exact template. Update your progress as you work.
   ```markdown
   # Task: [Test Generation Topic]
   Workflow: /tdd | Track: [A / B1 / B2 / C]
@@ -25,8 +25,8 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
   - [ ] Phase 4: Handoff
   ## Artifact Inventory
   | Status | File Path | Type |
-  | [NEW]  | docs/qa/gates/executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Red Tests |
-  | [NEW]  | .agents/active_tasks/walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Summary |
+  | [NEW]  | docs/qa/gates/executed_tests_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Red Tests |
+  | [NEW]  | .agents/active_tasks/walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Summary |
   ```
 
 ## Phase 1: Read the Plan
@@ -82,15 +82,15 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you run the tests? (2) Are they failing ONLY because the feature is missing?
 
 ## Phase 4: Handoff
-- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `docs/qa/gates/` folder. Do not print long logs in the chat.
-- **Write Summary**: Use `write_to_file` to create `walkthrough_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `.agents/active_tasks/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
+- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `executed_tests_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `docs/qa/gates/` folder. Do not print long logs in the chat.
+- **Write Summary**: Use `write_to_file` to create `walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `.agents/active_tasks/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
 - **Give Command**: Print the exact block below for the user:
 
 ## 🚦 User Handoff & Next Steps
 
 > [!IMPORTANT]
 <output_schema>
-> **Outputs Created:** Failing Unit Tests + `executed_tests_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`.
+> **Outputs Created:** Failing Unit Tests + `executed_tests_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`.
 >
 > **YOUR NEXT COMMAND:** 
 > - Return to your chat with Forge Builder and paste: `Here is the result of tdd from this artifact: {Absolute_Path_to_executed_tests.md}. Go.`
@@ -100,7 +100,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 ## Final Phase: Script Verification
 
 > [!IMPORTANT]
-> **Update `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`**: Change all checkboxes to `[x]` and add the absolute file paths to your Artifact Inventory.
+> **Update `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`**: Change all checkboxes to `[x]` and add the absolute file paths to your Artifact Inventory.
 
 Run this exact command using the `run_command` tool:
 // turbo

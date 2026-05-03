@@ -13,7 +13,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 
 | Step | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the strict schema BEFORE proceeding. |
 | **Skill Load** | MANDATORY: Load `ux-heuristic-evaluation` skill. |
 | **Auto-Chunking**| Ask the user for the main sitemap or `router.dart`. Divide the app into logical "Chunks" (e.g. Login Flow). Present the chunks and ask the user to confirm starting with Chunk 1. |
 | **Scope Extract**| Document the Target Screen(s) for the current chunk, User Group (e.g. Admin), and Device Type. |

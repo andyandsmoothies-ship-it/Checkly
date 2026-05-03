@@ -14,7 +14,7 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 | Vector | Execution Contract |
 |---|---|
 | **Git Diff** | Execute `git diff --name-only` -> identify active modified files. |
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the strict schema below BEFORE proceeding. |
 | **Rule Load** | Parse dynamically loaded `GEMINI.md` Context Cascade for project gotchas. |
 
 ## Phase 2: Dynamic Classification
@@ -49,7 +49,7 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `preflight_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
+| **Artifact Gen** | Create `preflight_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`. |
 | **Payload Schema**| `Summary Counts` | `Automated Results Table (w/ rules & FAIL details)` | `Vertical-Slice Completeness Table` | `Manual Checkboxes [ ]`. |
 
 ### Hard Gate Logic

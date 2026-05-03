@@ -10,7 +10,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 > Used to bridge the gap between a raw idea and technical implementation. Establishes the "Who, What, and Rules" using the shaping methodology.
 
 ## Phase 1: Intake & Context Alignment
-- [ ] **Task Tracking**: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
+- [ ] **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
 - [ ] **Skill Load**: Load the `shaping` skill, the `use-case-creator` skill, and the `use-case-slicing` skill from `.agents/skills/`.
 - [ ] **Intake Gate**:
   - If the user provides a raw idea: Extract the `[ORIGIN_IDEA]`.
@@ -40,7 +40,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Identify Unknowns**: Flag any unresolved business logic with ⚠️.
 
 ## Phase 4: Deliverable Generation
-- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `docs/product/` directory.
+- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/product/` directory.
 - [ ] **Payload Schema**:
     1. `## Input Lineage`: Absolute path to the original request or idea document.
     2. `[ORIGIN_IDEA]` or `[ADR_REFERENCE]`.

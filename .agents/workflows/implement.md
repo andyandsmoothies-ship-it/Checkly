@@ -14,7 +14,7 @@ description: The Core Builder Implementation Workflow
 |---|---|
 | **Context Load** | `view_file(implement.md)` -> load `@@SCAN` into active context. |
 | **Governance** | Run Pre-Flight check (`governance-rules.md`). |
-| **Task Tracker**| MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` BEFORE coding. |
+| **Task Tracker**| MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` BEFORE coding. |
 
 ```markdown
 # Task: [Name]
@@ -37,8 +37,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 ## Artifacts
 | Status | File Path | Type |
 |---|---|---|
-| [NEW] | .agents/active_tasks/walkthrough_[topic].md | Result |
-| [NEW] | docs/qa/gates/executed_tests_[topic].md | Test Log |
+| [NEW] | .agents/active_tasks/[topic]/walkthrough.md | Result |
+| [NEW] | docs/qa/gates/[topic]/executed_tests.md | Test Log |
 ```
 
 ## Phase 1: Coding (The Builder Phase)
@@ -93,7 +93,7 @@ Review from 6 angles:
 
 ### Walkthrough Schema
 > [!IMPORTANT]
-> Your `walkthrough_[topic].md` MUST INCLUDE the following EXACT sections:
+> Your `.agents/active_tasks/[topic]/walkthrough.md` MUST INCLUDE the following EXACT sections:
 > 1. `## Input Lineage`: Absolute path of the implementation plan or input file.
 > 2. `## Decision Log`: Proposed vs Implemented.
 > 3. `## Verification Handoff`: Steps for QA.
@@ -109,7 +109,7 @@ Review from 6 angles:
 ## 🚦 User Handoff & Next Steps
 > [!IMPORTANT]
 <output_schema>
-> **Outputs Created:** Implemented code (GREEN) + `walkthrough_[topic].md` (or `handoff.md` if more slices remain).
+> **Outputs Created:** Implemented code (GREEN) + `.agents/active_tasks/[topic]/walkthrough.md` (or `handoff.md` if more slices remain).
 >
 > **HOW TO CONTINUE THE SLICING LOOP:**
 >

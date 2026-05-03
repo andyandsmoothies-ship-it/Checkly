@@ -38,7 +38,22 @@ import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';
+import 'package:checkly/_shared/services/sync_engine.dart';
+import 'package:checkly/_shared/services/auth_check.dart';
+import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:drift/native.dart';
+
+class _FakeConnectivity implements ConnectivityService {
+  @override
+  bool get isOnline => false;
+  @override
+  Stream<bool> get onConnectivityChanged => const Stream.empty();
+}
+
+class _AlwaysAuth implements AuthCheck {
+  @override
+  bool get isLoggedIn => true;
+}
 
 // ── Mock Declarations ─────────────────────────────────────────────────────────
 // mocktail auto-generates correct overrides matching all interface signatures.
@@ -98,6 +113,15 @@ _MockAuthManager _registerDi({UserSession? user}) {
   when(() => mockOutboxDao.syncableCount()).thenAnswer((_) async => 0);
   when(() => mockOutboxDao.exhaustedCount()).thenAnswer((_) async => 0);
   di.registerSingleton<OutboxDao>(mockOutboxDao);
+
+  di.registerSingleton<SyncEngine>(
+    SyncEngine(
+      connectivity: _FakeConnectivity(),
+      auth: _AlwaysAuth(),
+      outboxDao: mockOutboxDao,
+      modules: [],
+    ),
+  );
 
   return mockAuth;
 }

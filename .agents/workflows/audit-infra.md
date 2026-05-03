@@ -14,7 +14,7 @@ description: Infrastructure & architecture audit — database health, security p
 | Step | Execution Contract |
 |---|---|
 | **Trigger** | Execute post-major feature release or pre-scaling. |
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Task Tracking** | MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
 | **Skill Load** | Extract 2-3 keywords (e.g., "database", "security", "api-design") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list. |
 
 ## Phase 2: Database & Query Audit
@@ -63,7 +63,7 @@ description: Infrastructure & architecture audit — database health, security p
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | Create `audit_infra_report_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in `docs/diagnostics/` folder. IF zero issues -> create `audit_infra_pass_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. |
+| **Artifact Gen** | Create `audit_infra_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in `docs/diagnostics/` folder. IF zero issues -> create `audit_infra_pass_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`. |
 | **Severity Matrix**| `🔴 Critical` (Data loss/Security breach/Unbounded rows) | `🟡 Warning` (Performance drag/Leakage) | `🟢 Optimization` (Cleanups). |
 | **Actionable Fix & Trade-offs** | MANDATORY: Provide exact fix snippet or EF migration plan for EVERY finding.<br><br>**CRITICAL:** For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.<br><br>**CRITICAL:** When proposing a fix, you MUST explicitly present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation. |
 

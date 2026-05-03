@@ -13,7 +13,7 @@ description: Acceptance Test-Driven Development — defines acceptance tests BEF
 
 | Step | Execution Contract |
 |---|---|
-| **Task Tracking** | MANDATORY: Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the strict schema below BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the strict schema below BEFORE proceeding. |
 
 ```markdown
 # Task: [Feature / Acceptance Test Topic]
@@ -28,7 +28,7 @@ Workflow: /atdd | Track: [B2 / C]
 - [ ] Phase 3: Deliverable
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/qa/contracts/test_contracts_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Contracts |
+| [NEW]  | docs/qa/contracts/test_contracts_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Contracts |
 ```
 
 ## Phase 1: Spec Discovery
@@ -38,7 +38,7 @@ Workflow: /atdd | Track: [B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Skill Load** | MANDATORY: Load `atdd-quality-gates` skill. |
-| **Verification** | MANDATORY: Read upstream `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`. Execute `grep_search` / `view_file` to confirm existing entities. **Exception:** If the plan explicitly defines a NET-NEW API route/feature to be built, do NOT flag its absence as an error. Your job is to write the failing test for it (Red Phase). For existing dependencies that are missing, IF discrepancy THEN Flag to user → STOP. |
+| **Verification** | MANDATORY: Read upstream `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`. Execute `grep_search` / `view_file` to confirm existing entities. **Exception:** If the plan explicitly defines a NET-NEW API route/feature to be built, do NOT flag its absence as an error. Your job is to write the failing test for it (Red Phase). For existing dependencies that are missing, IF discrepancy THEN Flag to user → STOP. |
 | **Origin Idea Alignment** | MANDATORY: Read the `[ORIGIN_IDEA]` tag. You must evaluate if the upstream plan actually solves the human's goal. Then, your test scenarios MUST explicitly assert that the original business goal is achieved. Prove the business value, not just the compiler state. |
 | **Gap Analysis** | MANDATORY: Play the Adversary. Independent of the upstream spec, ask: "What edge cases, state leaks, migrations, or boundary errors did the Architect forget?" Define minimally 2 ACs that are NOT explicitly requested by the spec to act as a safety net. |
 
@@ -94,13 +94,13 @@ Workflow: /atdd | Track: [B2 / C]
 
 > [!IMPORTANT]
 <output_schema>
-> **Outputs Created:** Physical test files (RED) + `test_contracts_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md`.
+> **Outputs Created:** Physical test files (RED) + `test_contracts_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`.
 >
 > **YOUR NEXT COMMAND:** (Do not send test logs to Builder)
 > - Switch to Forge Builder and type: `@[/implement] this [INSERT THE EXACT RELATIVE PATH OF THE ORIGINAL implementation_plan YOU WERE GIVEN]`
 
 > [!IMPORTANT]
-> **Update task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.

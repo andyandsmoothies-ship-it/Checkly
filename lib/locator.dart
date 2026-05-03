@@ -180,6 +180,7 @@ void configureDependencies() {
     () => SyncEngine(
       connectivity: di<ConnectivityService>(),
       auth: AuthCheckAdapter(di<AuthManager>()),
+      outboxDao: di<OutboxDao>(),
       modules: [
         di<CoreAuditSyncModule>(),
         di<ActionPlanSyncModule>(),

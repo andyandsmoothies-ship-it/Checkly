@@ -311,7 +311,6 @@ String? authRedirect(BuildContext context, GoRouterState state) {
   return null;
 }
 
-@visibleForTesting
 int shellIndexFromLocation(String location) {
   if (location.startsWith('/activity')) return 1;
   if (location.startsWith('/plans')) return 2;

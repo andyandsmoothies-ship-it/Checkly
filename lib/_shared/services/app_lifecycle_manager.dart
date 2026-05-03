@@ -21,6 +21,11 @@ class AppLifecycleManager with WidgetsBindingObserver {
   static const _tier3 = Duration(hours: 12);
   static const _tier4 = Duration(days: 7);
 
+  @visibleForTesting
+  void setLastPausedAt(DateTime time) {
+    _lastPausedAt = time;
+  }
+
   void init() {
     WidgetsBinding.instance.addObserver(this);
   }

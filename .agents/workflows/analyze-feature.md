@@ -13,7 +13,7 @@ description: Easy-to-read analysis workflow for standard features and bugs.
 
 | Step | Instructions |
 |---|---|
-| **Task Tracking** | Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the template below before doing anything else. List only the implementation plan in the Artifact Inventory. |
+| **Task Tracking** | Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the template below before doing anything else. List only the implementation plan in the Artifact Inventory. |
 | **Check Epic Rules** | If this task is part of a larger Epic, read the Epic's plan first. Your job is to create exact database schemas, file paths, and code changes that match the Epic, without changing the main rules. |
 
 ```markdown
@@ -30,7 +30,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 - [ ] Phase 4: Pick Next Route
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/architecture/implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Plan |
+| [NEW]  | docs/architecture/implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Plan |
 ```
 
 ## Phase 1: Search & Understand
@@ -66,7 +66,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 |---|---|
 | **Acceptance Criteria** | You must write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
 | **Tools Needed** | Write down which skills the Builder will need. Write down the commands to test the code (like `flutter test` or `dotnet test`). |
-| **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` in the `docs/architecture/` folder. Do not print the whole plan in the chat. Make it easy for a human to read. |
+| **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `docs/architecture/` folder. Do not print the whole plan in the chat. Make it easy for a human to read. |
 | **Clear Goals** | The plan must have clear steps (like 'Write X test -> Check it fails -> Write Y code -> Check it passes'). |
 
 ## Phase 4: Pick Next Route
@@ -103,7 +103,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 ### Final Output Rules
 > [!IMPORTANT]
 <output_schema>
-> **File Format:** Your `implementation_plan_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST have these exact sections. Keep it short and simple.
+> **File Format:** Your `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` MUST have these exact sections. Keep it short and simple.
 > - `<latent_space_scratchpad>`: Your hidden thoughts about edge cases.
 > - `## Input Lineage`: Absolute path of the source Epic Plan, Bug Report, or idea document.
 > - `## Executive Summary & Out of Scope`
@@ -118,7 +118,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `<command_logs>`: A list of terminal commands you ran.
 > - `## Handoff Block`: A short summary for the next AI agent. You MUST include the exact `@[/...]` routing command (like `@[/tdd]`) for EVERY step, with the absolute file path.
 >
-> **Update task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
+> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
 > 
 > **Script Verification (Required)**:
 > Use the `run_command` tool to run this script before finishing.

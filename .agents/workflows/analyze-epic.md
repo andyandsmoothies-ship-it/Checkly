@@ -17,7 +17,7 @@ description: Easy-to-read analysis workflow for large features and epics.
 | Step | Instructions |
 |---|---|
 | **Check Rules** | If `.agents/rules/governance-rules.md` is not in memory, view it first. |
-| **Task Tracking** | Create `task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` using the template below before doing anything else. List only the Epic Plan in the Artifact Inventory. |
+| **Task Tracking** | Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the template below before doing anything else. List only the Epic Plan in the Artifact Inventory. |
 
 ```markdown
 # Task: [Epic Name]
@@ -33,7 +33,7 @@ Workflow: /analyze-epic | Track: C
 - [ ] Phase 4: Break Down Work
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/architecture/analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md | Epic Plan |
+| [NEW]  | docs/architecture/analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Epic Plan |
 ```
 
 ## Phase 1: Discover & Plan
@@ -72,7 +72,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Instructions |
 |---|---|
-| **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` to the `docs/architecture/` folder. Do not print the whole plan in the chat. |
+| **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/architecture/` folder. Do not print the whole plan in the chat. |
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Does the document have all required sections?
 
@@ -99,7 +99,7 @@ Send each slice to the right workflow:
 ### Final Output Rules
 > [!IMPORTANT]
 <output_schema>
-> **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md` MUST have these exact sections. Keep it short and simple.
+> **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` MUST have these exact sections. Keep it short and simple.
 > 1. `<latent_space_scratchpad>`: Your hidden thoughts and tradeoffs.
 > 2. `## Input Lineage`: Absolute path to the original requirements document or idea.
 > 3. `## Executive Summary`
@@ -122,7 +122,7 @@ Send each slice to the right workflow:
 > 3. **Next Steps**: A 1-2 sentence summary for the next agent.
 > 4. Exact next workflow command using the `{Absolute_Path}`.
 >
-> **Update task_[YYYYMMDD_HHMMSS]_[ConversationID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
+> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
 > 
 > **Script Verification (Required)**:
 > Use the `run_command` tool to run this script before finishing.
