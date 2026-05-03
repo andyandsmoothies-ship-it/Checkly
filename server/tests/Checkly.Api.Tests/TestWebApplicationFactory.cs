@@ -9,19 +9,39 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using Testcontainers.PostgreSql;
+using Xunit;
+
 namespace Checkly.Api.Tests;
 
 /// <summary>
-/// Custom WebApplicationFactory using a separate PostgreSQL test database.
-/// DB is created once per test run, not per class.
+/// Custom WebApplicationFactory using an isolated PostgreSQL Docker container.
+/// This prevents wiping local databases and guarantees a clean slate per test run.
 /// </summary>
-public class TestWebApplicationFactory : WebApplicationFactory<Program>
+public class TestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private const string TestConnectionString =
-        "Host=localhost;Database=checkly_test;Username=postgres;Password=Aa1234567@";
-
+    private readonly PostgreSqlContainer _dbContainer;
     private static bool _dbInitialized;
     private static readonly object _lock = new();
+
+    public TestWebApplicationFactory()
+    {
+        _dbContainer = new PostgreSqlBuilder("postgres:16-alpine")
+            .WithDatabase("checkly_test")
+            .WithUsername("postgres")
+            .WithPassword("Aa1234567@")
+            .Build();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _dbContainer.StartAsync();
+    }
+
+    public new async Task DisposeAsync()
+    {
+        await _dbContainer.DisposeAsync();
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -44,7 +64,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:DefaultConnection"] = TestConnectionString
+                ["ConnectionStrings:DefaultConnection"] = _dbContainer.GetConnectionString()
             });
         });
 
@@ -56,7 +76,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(descriptor);
 
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(TestConnectionString));
+                options.UseNpgsql(_dbContainer.GetConnectionString()));
         });
     }
 
@@ -66,12 +86,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         {
             if (!_dbInitialized)
             {
-                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-                optionsBuilder.UseNpgsql(TestConnectionString);
-                using (var dbDrop = new AppDbContext(optionsBuilder.Options))
-                {
-                    dbDrop.Database.EnsureDeleted();
-                }
+                // We no longer need dbDrop.Database.EnsureDeleted()
+                // Testcontainers guarantees a fresh DB instance every test run.
 
                 using var scopeInit = Services.CreateScope();
                 var dbInit = scopeInit.ServiceProvider.GetRequiredService<AppDbContext>();

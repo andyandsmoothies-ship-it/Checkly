@@ -19,15 +19,15 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Shaping skill loaded? (2) Input source identified (Raw vs ADR)? (3) Did you cross-reference terminology with the code and push back on vague terms?
 
-## Phase 2: Use Cases & Slicing (The "What" and "Who")
-- [ ] **Actors & RBAC**: Explicitly list every user role (e.g., Admin, Auditor) and their strict permissions.
-- [ ] **Zero Trust Boundary**: Define the minimum privilege required. Explicitly document authorization boundaries and data classification (e.g., PII).
-- [ ] **Use Case Narrative**: Write the Main Success Scenario and all Alternate Flows (extensions/error states) strictly using the formal structure defined in the `use-case-creator` skill.
-- [ ] **Post-Execution Lifecycle**: Explicitly define what happens *after* the main scenario. (e.g., Can submissions be rejected/resubmitted? How is data aggregated? What are the reporting/dashboarding requirements?).
-- [ ] **Use-Case Slicing**: Apply Use-Case 3.0 slicing. Break the large use case into smaller, logical, deliverable slices.
-- [ ] **Testability Check (Binary Truth)**: For each slice, define plain-English Test Cases (Rules). MANDATORY: Acceptance criteria must be strictly binary (e.g. "Score returns 0", not "Score works well"). If a requirement is vague, push back and force a binary test contract.
+## Phase 2: The 3 Core Contexts (Functional, Visual, Data)
+- [ ] **1. Functional Context (Use Cases)**: Write the Main Success Scenario and all Alternate Flows (extensions/error states) strictly using the formal structure defined in the `use-case-creator` skill. Explicitly list Actors & RBAC permissions.
+- [ ] **2. Visual Context (UI Flow & Screens)**: Map the exact UI screens, modals, or CLI commands required to fulfill those Use Cases. Use ASCII wireframes or Mermaid diagrams to visualize the flow. Do not leave the UI to guesswork.
+- [ ] **3. Data Context (Schema)**: Map the rough data model, entities, and mock JSON needed to populate the visual context.
+- [ ] **Traceability Check**: MANDATORY: Does every Use Case have a mapped UI screen? Does every UI screen have a data schema? If no, fix it before slicing.
+- [ ] **Use-Case Slicing**: Apply Use-Case 3.0 slicing. Break the large use case into smaller, logical, deliverable slices. Each slice must include its Functional, Visual, and Data context.
+- [ ] **Testability Check (Binary Truth)**: For each slice, define plain-English Test Cases (Rules). MANDATORY: Acceptance criteria must be strictly binary.
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Are Use Cases sliced? (2) Do slices have plain-English Test Cases?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Are all 3 Contexts mapped and traced? (2) Are Use Cases sliced?
 
 ## Phase 3: The Fit Check
 - [ ] **Apply Shaping**: Propose 1-3 high-level UX/Feature "Shapes" (mechanisms, not code). MANDATORY: To prevent Cognitive Debt, you MUST include a "Dumb Shape" (the absolute simplest flat/procedural solution) alongside any complex patterns. **MANDATORY Guardrail**: Do not select deep technical architectures (e.g., Database types, specific Push protocols) at this stage. Keep shapes strictly focused on Business Logic, UX, and Process flows.
@@ -44,12 +44,12 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Payload Schema**:
     1. `## Input Lineage`: Absolute path to the original request or idea document.
     2. `[ORIGIN_IDEA]` or `[ADR_REFERENCE]`.
-    2. Defined Actors & RBAC Rules.
-    3. The Use Case Narrative (Basic Scenario + Extensions).
-    4. Use-Case Slices and their associated Test Cases (Acceptance Criteria).
-    5. Selected Shape & Fit Check.
-    6. **Concept Diagram**: A short, concise text-based flowchart (e.g., `[Actor] --> [Action] --> [System]`) explaining the core logic of the chosen shape.
-    7. **Handoff Block**: Brief for the next Agent, and the next command (usually `[/analyze-feature]`, `[/atdd]`, or `[/research]`).
+    3. **Functional Context**: Defined Actors, RBAC, and Use Case Narrative.
+    4. **Visual Context**: UI Flow mapping and Wireframes.
+    5. **Data Context**: Rough schema and mock data.
+    6. Use-Case Slices and their associated Test Cases (Acceptance Criteria).
+    7. Selected Shape & Fit Check.
+    8. **Handoff Block**: Brief for the next Agent, and the next command.
 - [ ] **Workspace Copy**: Copy the artifact to `.agents/tmp/research/` so the user can review it.
 
 > **Script Verification Gate (MANDATORY)**:

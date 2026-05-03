@@ -40,7 +40,11 @@ class SecureStorageService {
 
   // ---------- Clear All ----------
   Future<void> clearAll() async {
+    // We cannot use _storage.deleteAll() because it wipes Theme preferences.
+    // Instead, delete sequentially but add a short delay to allow Windows OS
+    // to release the file lock (preventing PathAccessException errno 32).
     await deleteToken();
+    await Future.delayed(const Duration(milliseconds: 100));
     await deleteSession();
   }
 }

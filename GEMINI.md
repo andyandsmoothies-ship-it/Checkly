@@ -58,7 +58,8 @@
   - **Fix:** Checkly uses `mocktail` exclusively for Flutter tests. Never import `mockito` or use `@GenerateMocks` code generation. Always use `class MockMyService extends Mock implements MyService {}`.
 - **Gotcha: Orphaned ATDD Stubs (`fail(...)`)**
   - **Fix:** If a QA agent leaves an ATDD stub like `fail('Implement...')`, the Builder MUST implement the test logic and fulfill the UI/Backend contract in the current slice. Do not leave `fail()` stubs behind for future slices unless explicitly documented.
-
+- **Gotcha: Database Wipes in Integration Tests**
+  - **Fix:** NEVER use framework commands that drop or wipe the host database (e.g. `EnsureDeleted`, `dropDatabase()`) in test setups. This risks destroying local development data. ALWAYS use isolated, ephemeral containerized databases (e.g. Docker Testcontainers) to guarantee 100% test isolation without host risk.
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.
 - **No Interactive CLI:** Do not run `dotnet run`, `dotnet watch`, or `flutter run`.

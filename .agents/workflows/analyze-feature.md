@@ -56,9 +56,10 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **Impact Check** | Do not change existing tests or mocks just to make your new code pass. Make your code fit the current rules. If you change a database or API, make sure you update both the backend and frontend. |
 | **Trust the Source** | Do not trust UI state alone. If your plan depends on a status (like `if status == 'x'`), search the database or API to prove it can actually send that status. |
 | **File Size Limit** | If the file you want to edit has more than 250 lines, your plan must include a step to split the file before adding new features. |
-| **State Matrix** | Define how the UI looks in 4 situations: `Loading`, `Empty`, `Error`, and `Success`. |
+| **System Context** | Define environmental constraints: Is this offline-first, live API, or hybrid? What exact RBAC permissions gate this feature? |
+| **Lifecycle Context** | Define the 4-State Matrix: How does the UI look in `Loading`, `Empty`, `Error`, and `Success` situations? |
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Is the Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Is the 4-State Matrix defined?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Is the Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined?
 
 ## Phase 3: Create Plan
 
@@ -107,8 +108,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `<latent_space_scratchpad>`: Your hidden thoughts about edge cases.
 > - `## Input Lineage`: Absolute path of the source Epic Plan, Bug Report, or idea document.
 > - `## Executive Summary & Out of Scope`
-> - `## Logs & Audits`: What logs or database trails are needed.
-> - `## 4-State Matrix` (Success, Error, Empty, Loading)
+> - `## System Context` (Offline/Online, APIs, RBAC, Logs)
+> - `## Lifecycle Context` (4-State Matrix: Success, Error, Empty, Loading)
 > - `## Test Contracts` (ID, Exact Text, State Matrix, Why it fails first). **CRITICAL:** Every boundary constraint MUST be an explicit row.
 > - `## Test Fixture & Payloads` (Explicit setup requirements like "Seeded Admin" and raw JSON Request/Response examples for API slices).
 > - `## Tools & Commands` (Skills and test commands)

@@ -44,9 +44,9 @@ Workflow: /analyze-epic | Track: C
 | **Check the Goal** | Before proposing a technical plan, ask: Does this actually solve the user's original problem? If the plan is too complex and forgets the main goal, stop and fix it. |
 | **Check Ideas** | If the user provides a document or idea, check if it works with the current code. Check if it breaks Clean Architecture or causes bad side effects. Reject impossible or dangerous ideas. |
 | **Load Skills & Shaping** | Load the `shaping` skill and architecture skills (like `clean-architecture`). Use the Fit Check matrix from the shaping skill to map requirements against possible shapes (options) before committing to a plan. |
-| **State Constraints** | Explicitly list the user's constraints (e.g., must work offline, zero-bloat, performance limits) and ensure all proposed options optimize for them. |
+| **Traceability Check** | MANDATORY: Does every backend/API capability have a frontend UI mapped to it? (Visual Context). Do not propose APIs without UIs. |
+| **System & Lifecycle Context** | Explicitly list constraints (e.g., offline-first, sync logic, RBAC) and edge states (Empty/Error). Ensure all proposed options optimize for them. |
 | **Build vs Buy** | Search the code to see if you can reuse existing components instead of building new ones. |
-| **Deep Modules** | Make sure core APIs hide complexity (Deep Modules). Do not create empty wrappers just to pass data (Shallow Modules). |
 | **Core vs Leaf** | Clearly list which parts are Core (needs strong design) and which are Leaf (can be simple, repetitive code). |
 | **Keep It Simple**| If you suggest a complex design (like a Factory or EventBus), you must explain why a simple flat structure or basic function would not work. |
 | **Backend Only?** | Check if this is a "Backend-Only" task (like a background job). If yes, skip the UI and Frontend API steps. |
@@ -105,14 +105,13 @@ Send each slice to the right workflow:
 > 3. `## Executive Summary`
 > 3. `## Decision Matrix`
 > 4. `## Risk Assessment`
-> 5. `## Architecture Flow`: (Clear text summary of how data moves)
-> 6. `## Concept Diagrams`: Simple text flowcharts (like `[Actor] --> [Action] --> [System]`) for main parts.
-> 7. `## Database Migrations`
-> 8. `## API Contracts`
-> 9. `## Impacts & Rollback Plan`
-> 10. `## Risk Review Log`
-> 11. `## Security`
-> 12. `## Logs & Audits`
+> 5. `## Visual & Functional Context`: (Mapped UI Screens and Use Cases)
+> 6. `## System Context`: (Offline/Online, RBAC, API Contracts)
+> 7. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan)
+> 8. `## Data Context`: (Database Migrations, Schema)
+> 9. `## Architecture Flow`: (Clear text summary of how data moves)
+> 10. `## Risk Review & Security`
+> 11. `## Logs & Audits`
 > 13. `## Testing Expectations`
 > 14. `<command_logs>`: A list of terminal commands you ran.
 > 

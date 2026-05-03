@@ -39,8 +39,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 | Step | Execution Contract |
 |---|---|
-| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/product/` directory. NEVER output the research directly to the chat UI. |
-| **Workspace Copy**| MANDATORY: Because the AI session folder is invisible to the user's IDE, you MUST copy the generated research artifact to `.agents/tmp/research/` so the user can review it. Output the absolute path to this visible file in your final message. |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/product/` directory. NEVER output the research directly to the chat UI. Output the absolute path to this visible file in your final message. |
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 <output_schema>

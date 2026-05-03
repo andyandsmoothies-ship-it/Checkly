@@ -10,10 +10,9 @@
 > **Problem:** `EnsureCreated()` skips raw SQL `CHECK` constraints, causing false positives.
 > **Fix:** `TestWebApplicationFactory` MUST use `db.Database.Migrate()`. Never use `EnsureCreated()`.
 
-> [!WARNING]
-> **WAF Parallel Initialization DB Race Condition**
-> **Problem:** xUnit parallel tests interleave `EnsureDeleted()` + `Migrate()`, yielding false `3D000` or `42P07` Postgres/EF errors.
-> **Fix:** These are infrastructure flakes. Test isolated fixes via `--filter`. Trust the combined sequential `dotnet test` result as the source of truth. Do NOT rewrite application logic to fix a 3D000 DB initialization error.
+> [!TIP]
+> **Database Isolation via Testcontainers**
+> **Status:** The integration tests now use `Testcontainers.PostgreSql`. The legacy issue where tests interleaved `EnsureDeleted()` + `Migrate()` and wiped the developer's local `checkly_test` DB has been permanently resolved. Every `TestWebApplicationFactory` instance spins up a pristine PostgreSQL Docker container and disposes it upon completion.
 
 > [!IMPORTANT]
 > **Register Endpoint Role Allowlist Blocks Test-Role Injection**
