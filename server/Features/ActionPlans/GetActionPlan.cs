@@ -9,7 +9,7 @@ namespace Checkly.Api.Features.ActionPlans;
 /// Role-based IDOR guard mirrors ListActionPlans.cs:
 ///   admin → any plan
 ///   store_manager → only plans for their assigned store
-///   area_manager → only plans for stores in their area
+///   area_manager → only plans for stores assigned via ProfileStoreAssignment
 ///   auditor → only plans linked to their own submissions
 ///   other → 404 by design (no information leakage)
 /// Returns 404 if not found or caller has no access.
@@ -42,8 +42,8 @@ public static class GetActionPlan
             var hasAccess = role switch
             {
                 "store_manager" => profile?.StoreId != null && plan.StoreId == profile.StoreId,
-                "area_manager" => profile?.AreaId != null && await db.Stores
-                    .AnyAsync(s => s.Id == plan.StoreId && s.AreaId == profile.AreaId, ct),
+                "area_manager" => await db.ProfileStoreAssignments
+                    .AnyAsync(a => a.ProfileId == userId && a.StoreId == plan.StoreId, ct),
                 "auditor" => plan.SubmissionId != null && await db.Submissions
                     .AnyAsync(s => s.Id == plan.SubmissionId && s.AuditorId == userId, ct),
                 _ => false,

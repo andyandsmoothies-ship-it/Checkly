@@ -43,18 +43,18 @@ public class GetCapabilityCatalog_WithMetadata_Tests : IClassFixture<TestWebAppl
         var json = JsonDocument.Parse(jsonStr);
 
         // The response should have the "capabilityMetadata" property
-        Assert.True(json.RootElement.TryGetProperty("capabilityMetadata", out var metaBlock), 
+        Assert.True(json.RootElement.TryGetProperty("capabilityMetadata", out var metaBlock),
             "The response JSON must contain a 'capabilityMetadata' property.");
-            
+
         Assert.Equal(JsonValueKind.Object, metaBlock.ValueKind);
-        
+
         // Assert that a specific metadata block exists
-        Assert.True(metaBlock.TryGetProperty("templates:create", out var templateCreateMeta), 
+        Assert.True(metaBlock.TryGetProperty("templates:create", out var templateCreateMeta),
             "Expected metadata for 'templates:create' to be present.");
-            
+
         Assert.True(templateCreateMeta.TryGetProperty("label", out var labelProp));
         Assert.Equal("Create Templates", labelProp.GetString());
-        
+
         Assert.True(templateCreateMeta.TryGetProperty("group", out var groupProp));
         Assert.Equal("Templates", groupProp.GetString());
     }

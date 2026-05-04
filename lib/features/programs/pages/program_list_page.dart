@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 
 import '../services/program_api_service.dart';
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_fonts.dart';
 
 /// HQ-facing list of all programs.
@@ -53,6 +55,9 @@ class _ProgramListPageState extends State<ProgramListPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final canCreate = GetIt.instance<PolicyManager>().can(
+      AppCapabilities.programsCreate,
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Programs'),
@@ -65,6 +70,17 @@ class _ProgramListPageState extends State<ProgramListPage> {
         ],
       ),
       body: _buildBody(theme),
+      floatingActionButton: canCreate
+          ? FloatingActionButton(
+              key: const Key('create_program_fab'),
+              tooltip: 'New Program',
+              onPressed: () async {
+                await context.push('/programs/new');
+                _load();
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 

@@ -14,9 +14,13 @@
 - **Rule**: Write the simplest code that solves the problem. Don't make bad abstractions.
 - **Enforcement**: Duplication is cheaper than the wrong abstraction (WET). Do not extract shared helpers unless used in 3+ places.
 
-### Rule: Use Existing Tools
-- **Rule**: Prove you are using the project's existing tools before building your own custom logic.
-- **Enforcement**: Search `server/Common/` or `lib/_shared/` before building utilities, routing logic, or UI components.
+### Rule: Use Existing Tools & Dependencies
+- **Rule**: Prove you are using the project's existing tools before building your own. If a well-maintained, standard external dependency perfectly handles what we are custom-coding, propose replacing our custom code with that dependency. 
+- **Enforcement**: Search `server/Common/` or `lib/_shared/` first. Do not invent custom state management or routing if standard libraries already exist.
+
+### Rule: Prune Unwired Code
+- **Rule**: Aggressively delete dead code, unused files, and unused dependencies. Less code is better code.
+- **Enforcement**: Periodically use language-native dead-code analyzers (e.g., `dotnet format analyzers`, `dart analyze`, or unused reference sweeps) to cut out anything that isn't wired in. If you delete a feature's usage, you MUST delete its underlying implementation.
 
 ### Rule: Trust Shared Tools
 - **Rule**: When using a shared utility, delete any surrounding guard clauses or boilerplate it already handles internally. Don't write manual checks around it.
@@ -59,9 +63,10 @@
 - **Gotcha: Orphaned ATDD Stubs (`fail(...)`)**
   - **Fix:** If a QA agent leaves an ATDD stub like `fail('Implement...')`, the Builder MUST implement the test logic and fulfill the UI/Backend contract in the current slice. Do not leave `fail()` stubs behind for future slices unless explicitly documented.
 - **Gotcha: Database Wipes in Integration Tests**
-  - **Fix:** NEVER use framework commands that drop or wipe the host database (e.g. `EnsureDeleted`, `dropDatabase()`) in test setups. This risks destroying local development data. ALWAYS use isolated, ephemeral containerized databases (e.g. Docker Testcontainers) to guarantee 100% test isolation without host risk.
+  - **Fix:** NEVER use framework commands that drop or wipe the host database (e.g. `EnsureDeleted()`) on the `checkly_dev` database. ALWAYS point integration tests to a dedicated `checkly_test` database and safely wipe/recreate that specific database using `EnsureDeleted()` and `EnsureCreated()` to guarantee test isolation.
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.
 - **No Interactive CLI:** Do not run `dotnet run`, `dotnet watch`, or `flutter run`.
 - **Zero Bloat:** Do not install packages without permission.
 - **RTK Wrapper:** Always prepend `rtk` to terminal commands (e.g., `rtk dotnet build`).
+- **Test Logs & Output:** NEVER pipe test output or logs to the project root, `server/`, or `lib/`. Any command output (e.g., `> test_output.txt`) MUST be written exclusively to `.agents/tmp/`.

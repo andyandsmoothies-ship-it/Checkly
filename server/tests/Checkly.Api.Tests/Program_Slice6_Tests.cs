@@ -70,7 +70,7 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
 
         var response = await adminClient.PostAsJsonAsync("/api/programs", request);
         Assert.True(response.IsSuccessStatusCode, "Setup: Could not create program");
-        
+
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         return Guid.Parse(body.GetProperty("programId").GetString()!);
     }
@@ -102,12 +102,12 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     {
         var adminClient = await CreateAdminClientAsync();
         var programId = await CreateProgramAsync(adminClient, "TC U2 Program");
-        
+
         var smClient = await CreateRoleClientAsync("tc_u2@test.test", "store_manager");
 
         var request = new { title = "Hacked Title", deadline = DateTimeOffset.UtcNow.AddDays(14), category = "Hacked" };
         var response = await smClient.PutAsJsonAsync($"/api/programs/{programId}", request);
-        
+
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -115,10 +115,10 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     public async Task TC_U3_Admin_Updates_NonExistent_Program_ReturnsNotFound()
     {
         var adminClient = await CreateAdminClientAsync();
-        
+
         var request = new { title = "New Title", deadline = DateTimeOffset.UtcNow.AddDays(14), category = "Test" };
         var response = await adminClient.PutAsJsonAsync($"/api/programs/{Guid.NewGuid()}", request);
-        
+
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
@@ -127,10 +127,10 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     {
         var adminClient = await CreateAdminClientAsync();
         var programId = await CreateProgramAsync(adminClient, "TC U4 Program");
-        
+
         var request = new { title = "New Title", deadline = DateTimeOffset.UtcNow.AddDays(-1), category = "Test" };
         var response = await adminClient.PutAsJsonAsync($"/api/programs/{programId}", request);
-        
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -139,7 +139,7 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     {
         var adminClient = await CreateAdminClientAsync();
         var programId = await CreateProgramAsync(adminClient, "TC U5 Program");
-        
+
         // Archive it first
         var archiveResponse = await adminClient.DeleteAsync($"/api/programs/{programId}");
         if (!archiveResponse.IsSuccessStatusCode) Assert.Fail($"Status: {archiveResponse.StatusCode}. Body: {await archiveResponse.Content.ReadAsStringAsync()}");
@@ -147,7 +147,7 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
         // Try to update
         var request = new { title = "New Title", deadline = DateTimeOffset.UtcNow.AddDays(14), category = "Test" };
         var updateResponse = await adminClient.PutAsJsonAsync($"/api/programs/{programId}", request);
-        
+
         Assert.Equal(HttpStatusCode.BadRequest, updateResponse.StatusCode);
     }
 
@@ -156,10 +156,10 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     {
         var adminClient = await CreateAdminClientAsync();
         var programId = await CreateProgramAsync(adminClient, "TC U6 Program");
-        
+
         var request = new { title = "", deadline = DateTimeOffset.UtcNow.AddDays(14), category = "Test" };
         var response = await adminClient.PutAsJsonAsync($"/api/programs/{programId}", request);
-        
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -168,10 +168,10 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     {
         var adminClient = await CreateAdminClientAsync();
         var programId = await CreateProgramAsync(adminClient, "TC A1 Program");
-        
+
         var response = await adminClient.DeleteAsync($"/api/programs/{programId}");
         if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
-        
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
         // Verify status changed to cancelled via GET
@@ -186,11 +186,11 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     {
         var adminClient = await CreateAdminClientAsync();
         var programId = await CreateProgramAsync(adminClient, "TC A2 Program");
-        
+
         var smClient = await CreateRoleClientAsync("tc_a2@test.test", "store_manager");
 
         var response = await smClient.DeleteAsync($"/api/programs/{programId}");
-        
+
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -207,7 +207,7 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
     {
         var adminClient = await CreateAdminClientAsync();
         var programId = await CreateProgramAsync(adminClient, "TC A4 Program");
-        
+
         // Archive it first
         var archive1 = await adminClient.DeleteAsync($"/api/programs/{programId}");
         if (!archive1.IsSuccessStatusCode) Assert.Fail($"Status: {archive1.StatusCode}. Body: {await archive1.Content.ReadAsStringAsync()}");

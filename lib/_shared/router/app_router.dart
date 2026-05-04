@@ -38,6 +38,7 @@ import '../../features/admin/pages/global_risk_management_page.dart';
 import '../../features/programs/pages/program_execution_page.dart';
 import '../../features/programs/pages/program_list_page.dart';
 import '../../features/programs/pages/program_dashboard_page.dart';
+import '../../features/programs/pages/program_create_wizard_page.dart';
 
 final _di = GetIt.instance;
 
@@ -128,6 +129,15 @@ final appRouter = GoRouter(
       path: '/plans/:id',
       builder: (context, state) =>
           ActionPlanDetailPage(actionPlanId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/programs/new',
+      redirect: (context, state) {
+        final pm = _di<PolicyManager>();
+        if (!pm.can(AppCapabilities.programsCreate)) return '/home';
+        return null;
+      },
+      builder: (context, state) => const ProgramCreateWizardPage(),
     ),
     GoRoute(
       path: '/programs/:assignmentId',

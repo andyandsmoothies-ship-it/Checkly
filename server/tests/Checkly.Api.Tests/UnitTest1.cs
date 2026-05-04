@@ -1,4 +1,4 @@
-﻿namespace Checkly.Api.Tests;
+namespace Checkly.Api.Tests;
 
 public class UnitTest1
 {

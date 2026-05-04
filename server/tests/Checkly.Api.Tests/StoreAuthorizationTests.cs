@@ -145,7 +145,7 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
     //          Citation: implementation_plan_infra_slice_1.md line 21
 
     [Fact]
-    public async Task GetStoreDashboard_AsAreaManager_OtherArea_ReturnsForbidden()
+    public async Task GetStoreDashboard_AsAreaManager_NoJunction_ReturnsForbidden()
     {
         // Arrange — admin creates two areas with one store each
         var adminClnt = _factory.CreateClient();
@@ -153,8 +153,7 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
         var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
 
         var areaA = await CreateAreaAsync(adminClient, $"Area North {_runId}");
-        var areaB = await CreateAreaAsync(adminClient, $"Area South {_runId}");
-        var storeBId = await CreateStoreAsync(adminClient, $"AM Store B {_runId}", areaB);
+        var storeAId = await CreateStoreAsync(adminClient, $"AM Store A {_runId}", areaA);
 
         // Arrange — register area_manager assigned to Area A
         var (amToken, amId) = await CreateUserWithRoleAsync(adminClient, UniqueEmail("am-idor"), "area_manager");
@@ -166,10 +165,10 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
 
         var amClient = _factory.CreateAuthenticatedClient(amToken);
 
-        // Act — AM tries to access a store in Area B
-        var response = await amClient.GetAsync($"/api/stores/{storeBId}/dashboard");
+        // Act — AM tries to access a store in Area A, BUT has no junction row
+        var response = await amClient.GetAsync($"/api/stores/{storeAId}/dashboard");
 
-        // Assert — IDOR prevention must return Forbidden
+        // Assert — IDOR prevention must return Forbidden (fails currently, returns 200)
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -191,7 +190,8 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
         var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
 
         var storeA = await CreateStoreAsync(adminClient, $"SM List StoreA {_runId}");
-        /*var storeB =*/ await CreateStoreAsync(adminClient, $"SM List StoreB {_runId}");
+        /*var storeB =*/
+        await CreateStoreAsync(adminClient, $"SM List StoreB {_runId}");
 
         // Arrange — register SM assigned to Store A
         var (smToken, smId) = await CreateUserWithRoleAsync(adminClient, UniqueEmail("sm-list"), "store_manager");
@@ -221,7 +221,7 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
     //          Citation: implementation_plan_infra_slice_1.md line 30
 
     [Fact]
-    public async Task ListStores_AsAreaManager_ReturnsOnlyOwnArea()
+    public async Task ListStores_AsAreaManager_ReturnsOnlyJunctionStores()
     {
         // Arrange — create two areas, put 2 stores in area A, 1 in area B
         var adminClnt = _factory.CreateClient();
@@ -231,27 +231,37 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
         var areaA = await CreateAreaAsync(adminClient, $"AM List North {_runId}");
         var areaB = await CreateAreaAsync(adminClient, $"AM List South {_runId}");
 
-        await CreateStoreAsync(adminClient, $"AM North Store1 {_runId}", areaA);
-        await CreateStoreAsync(adminClient, $"AM North Store2 {_runId}", areaA);
-        await CreateStoreAsync(adminClient, $"AM South Store1 {_runId}", areaB);
+        var storeA1 = await CreateStoreAsync(adminClient, $"AM North Store1 {_runId}", areaA);
+        var storeA2 = await CreateStoreAsync(adminClient, $"AM North Store2 {_runId}", areaA);
+        var storeB1 = await CreateStoreAsync(adminClient, $"AM South Store1 {_runId}", areaB);
 
         // Arrange — register AM assigned to Area A
         var (amToken, amId) = await CreateUserWithRoleAsync(adminClient, UniqueEmail("am-list"), "area_manager");
         await adminClient.PutAsJsonAsync($"/api/admin/users/{amId}", new { areaId = areaA });
+
+        // Insert junction rows for StoreA1 and StoreB1 (cross-area)
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
+            db.ProfileStoreAssignments.Add(new Checkly.Api.Common.Persistence.Entities.ProfileStoreAssignment { ProfileId = amId, StoreId = storeA1 });
+            db.ProfileStoreAssignments.Add(new Checkly.Api.Common.Persistence.Entities.ProfileStoreAssignment { ProfileId = amId, StoreId = storeB1 });
+            await db.SaveChangesAsync();
+        }
 
         var amClient = _factory.CreateAuthenticatedClient(amToken);
 
         // Act
         var response = await amClient.GetAsync("/api/stores");
 
-        // Assert — AM sees exactly 2 stores (their area only)
+        // Assert — AM sees exactly 2 stores (junction assigned only)
+        // Currently fails because it returns all 2 stores in Area A, ignoring junction and Store B1.
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var items = body.GetProperty("items");
-        Assert.Equal(2, items.GetArrayLength());
-        // All returned stores must belong to Area A
-        foreach (var item in items.EnumerateArray())
-            Assert.Equal(areaA.ToString(), item.GetProperty("areaId").GetString());
+        var items = body.GetProperty("items").EnumerateArray().Select(x => x.GetProperty("id").GetString()).ToList();
+
+        Assert.Equal(2, items.Count);
+        Assert.Contains(storeA1.ToString(), items);
+        Assert.Contains(storeB1.ToString(), items);
     }
 
     // ─── ListStores: Auditor Sees All Active Stores ───────────────────────────
@@ -282,7 +292,7 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
         var auditorClient = _factory.CreateAuthenticatedClient(auditorToken);
 
         // Act
-        var response = await auditorClient.GetAsync("/api/stores");
+        var response = await auditorClient.GetAsync("/api/stores?pageSize=1000");
 
         // Assert — auditor gets a result set that contains BOTH stores
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

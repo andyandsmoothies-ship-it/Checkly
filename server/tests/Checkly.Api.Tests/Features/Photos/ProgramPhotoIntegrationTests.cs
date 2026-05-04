@@ -36,7 +36,7 @@ public class ProgramPhotoIntegrationTests : IClassFixture<TestWebApplicationFact
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            
+
             var profile = await db.Profiles.FindAsync(smUserId);
             if (profile != null)
             {
@@ -55,33 +55,33 @@ public class ProgramPhotoIntegrationTests : IClassFixture<TestWebApplicationFact
             });
 
             var progId = Guid.NewGuid();
-            db.Programs.Add(new ChecklyProgram 
-            { 
-                Id = progId, 
+            db.Programs.Add(new ChecklyProgram
+            {
+                Id = progId,
                 TemplateId = templateId,
-                Title = "Test Prog", 
-                Status = "published", 
+                Title = "Test Prog",
+                Status = "published",
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             });
 
-            db.ProgramAssignments.Add(new ProgramAssignment 
-            { 
-                Id = assignmentId, 
-                ProgramId = progId, 
-                StoreId = storeId, 
-                Status = "assigned", 
+            db.ProgramAssignments.Add(new ProgramAssignment
+            {
+                Id = assignmentId,
+                ProgramId = progId,
+                StoreId = storeId,
+                Status = "assigned",
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             });
 
-            db.ProgramEvidence.Add(new ProgramEvidence 
-            { 
-                Id = Guid.NewGuid(), 
-                AssignmentId = assignmentId, 
-                Value = "evidence val", 
-                PhotoLocalKey = photoLocalKey, 
-                CreatedAt = DateTimeOffset.UtcNow 
+            db.ProgramEvidence.Add(new ProgramEvidence
+            {
+                Id = Guid.NewGuid(),
+                AssignmentId = assignmentId,
+                Value = "evidence val",
+                PhotoLocalKey = photoLocalKey,
+                CreatedAt = DateTimeOffset.UtcNow
             });
 
             await db.SaveChangesAsync();
@@ -139,7 +139,7 @@ public class ProgramPhotoIntegrationTests : IClassFixture<TestWebApplicationFact
     {
         // ARRANGE
         var (_, assignmentId, _, _) = await SetupAssignmentAsync(); // Store A assignment
-        
+
         // Setup another user in a different store
         var client = _factory.CreateClient();
         var adminToken = await _factory.LoginBootstrapAdminAsync(client);

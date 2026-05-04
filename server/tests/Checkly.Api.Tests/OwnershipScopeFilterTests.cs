@@ -71,7 +71,7 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
         Assert.DoesNotContain(result.Items, s => s.Id == sub2Id);
 
         // EXTRA DEFENSIVE: Asserts the exact count logic to prevent pagination leakage
-        Assert.Equal(1, result.Items.Count(s => s.Id == sub1Id || s.Id == sub2Id)); 
+        Assert.Equal(1, result.Items.Count(s => s.Id == sub1Id || s.Id == sub2Id));
     }
 
     [Fact]
@@ -82,17 +82,17 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
         // We must manually insert a user with a 'phantom' role into the DB 
         // to bypass the 401 Unauthorized check and reach the 403 Forbidden check.
         var phantomUserId = Guid.NewGuid();
-        var phantomEmail = "phantom@test.test";
+        var phantomEmail = $"phantom_{Guid.NewGuid()}@test.test";
         var phantomRole = "phantom";
 
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-            
+
             var user = new AppUser { Id = phantomUserId, UserName = phantomEmail, Email = phantomEmail };
             await userManager.CreateAsync(user, "Pass123!@");
-            
+
             db.AppUserRoles.Add(new UserRole { Id = Guid.NewGuid(), UserId = phantomUserId, Role = phantomRole });
             await db.SaveChangesAsync();
         }
@@ -150,7 +150,7 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
     {
         // ARRANGE
         var client = _factory.CreateClient();
-        
+
         // Register a store_manager but DO NOT assign them to a store via UserGroup/Profile mapping.
         var (smToken, smId) = await _factory.RegisterUserAsync(client, "sm_nostore@test.test", "Pass123!@", "Orphan SM", "store_manager");
         var smClient = _factory.CreateAuthenticatedClient(smToken);
@@ -158,7 +158,7 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
         // Create some data in the system as admin
         var adminToken = await _factory.LoginBootstrapAdminAsync(client);
         var adminClient = _factory.CreateAuthenticatedClient(adminToken);
-        
+
         var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Unrelated Store" });
         storeResponse.EnsureSuccessStatusCode();
         var storeId = (await storeResponse.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();

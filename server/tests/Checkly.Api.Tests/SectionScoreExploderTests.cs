@@ -27,7 +27,7 @@ public class SectionScoreExploderTests : IClassFixture<TestWebApplicationFactory
         var storeId = Guid.NewGuid();
         var templateId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
-        
+
         var json = @"{
             ""Kitchen Hygiene"": { ""score"": 90, ""maxScore"": 100 },
             ""Staff Training"": { ""score"": 50, ""maxScore"": 50 }
@@ -49,12 +49,12 @@ public class SectionScoreExploderTests : IClassFixture<TestWebApplicationFactory
             .ToListAsync();
 
         Assert.Equal(2, scores.Count);
-        
+
         Assert.Equal("Kitchen Hygiene", scores[0].SectionTitle);
         Assert.Equal(90m, scores[0].Score);
         Assert.Equal(100m, scores[0].MaxScore);
         Assert.Equal(0.9m, scores[0].Ratio);
-        
+
         Assert.Equal("Staff Training", scores[1].SectionTitle);
         Assert.Equal(50m, scores[1].Score);
         Assert.Equal(50m, scores[1].MaxScore);
@@ -70,7 +70,7 @@ public class SectionScoreExploderTests : IClassFixture<TestWebApplicationFactory
 
         var submissionId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
-        
+
         var malformedJson = @"{ ""Kitchen Hygiene"": broken_json ";
 
         // Act

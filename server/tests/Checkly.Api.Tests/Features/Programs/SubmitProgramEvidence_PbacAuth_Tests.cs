@@ -53,14 +53,14 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
             db.Templates.Add(new Template { Id = templateId, Title = "Auth Template", Type = "QC", CreatedAt = DateTimeOffset.UtcNow });
             var store = new Store { Id = storeId, Name = "Auth Test Store", CreatedAt = DateTimeOffset.UtcNow };
             db.Stores.Add(store);
-            
+
             var program = new ChecklyProgram { Id = Guid.NewGuid(), TemplateId = templateId, Title = "Auth Test", Deadline = DateTimeOffset.UtcNow.AddDays(7), CreatedAt = DateTimeOffset.UtcNow };
             db.Programs.Add(program);
-            
-            db.ProgramAssignments.Add(new ProgramAssignment 
-            { 
-                Id = assignmentId, 
-                ProgramId = program.Id, 
+
+            db.ProgramAssignments.Add(new ProgramAssignment
+            {
+                Id = assignmentId,
+                ProgramId = program.Id,
                 StoreId = store.Id,
                 Status = "pending",
                 CreatedAt = DateTimeOffset.UtcNow
@@ -74,7 +74,7 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
         }
 
         var (token, userId) = await _factory.RegisterUserAsync(_client, "exec1@test.com", "Exec123!@", "Exec One", userRole, adminToken);
-        
+
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -84,7 +84,7 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
         }
 
         var client = _factory.CreateAuthenticatedClient(token);
-        
+
         var request = new SubmitEvidenceRequest(new[]
         {
             new EvidenceItemRequest(Guid.NewGuid(), "100", null)
@@ -138,27 +138,27 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
             db.Templates.Add(new Template { Id = templateId, Title = "Auth Template 2", Type = "QC", CreatedAt = DateTimeOffset.UtcNow });
             db.Stores.Add(new Store { Id = userStoreId, Name = "User Store", CreatedAt = DateTimeOffset.UtcNow });
             db.Stores.Add(new Store { Id = assignmentStoreId, Name = "Target Store", CreatedAt = DateTimeOffset.UtcNow });
-            
+
             var program = new ChecklyProgram { Id = Guid.NewGuid(), TemplateId = templateId, Title = "Auth Test 2", Deadline = DateTimeOffset.UtcNow.AddDays(7), CreatedAt = DateTimeOffset.UtcNow };
             db.Programs.Add(program);
-            
-            db.ProgramAssignments.Add(new ProgramAssignment 
-            { 
-                Id = assignmentId, 
-                ProgramId = program.Id, 
+
+            db.ProgramAssignments.Add(new ProgramAssignment
+            {
+                Id = assignmentId,
+                ProgramId = program.Id,
                 StoreId = assignmentStoreId,
                 Status = "pending",
                 CreatedAt = DateTimeOffset.UtcNow
             });
 
             await db.SaveChangesAsync();
-            
+
             var cache = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Auth.PbacDictionaryCache>();
             await cache.InitializeAsync(scope.ServiceProvider);
         }
 
         var (token, userId) = await _factory.RegisterUserAsync(_client, "exec2@test.com", "Exec123!@", "Exec Two", userRole, adminToken);
-        
+
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -168,7 +168,7 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
         }
 
         var client = _factory.CreateAuthenticatedClient(token);
-        
+
         try
         {
             var request = new SubmitEvidenceRequest(new[] { new EvidenceItemRequest(Guid.NewGuid(), "100", null) });
@@ -207,16 +207,20 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
             db.Stores.Add(new Store { Id = storeId, Name = "Auth Test 3 Store", CreatedAt = DateTimeOffset.UtcNow });
             var program = new ChecklyProgram { Id = Guid.NewGuid(), TemplateId = templateId, Title = "Auth Test 3", Deadline = DateTimeOffset.UtcNow.AddDays(7), CreatedAt = DateTimeOffset.UtcNow };
             db.Programs.Add(program);
-            db.ProgramAssignments.Add(new ProgramAssignment 
-            { 
-                Id = assignmentId, ProgramId = program.Id, StoreId = storeId, Status = "pending", CreatedAt = DateTimeOffset.UtcNow 
+            db.ProgramAssignments.Add(new ProgramAssignment
+            {
+                Id = assignmentId,
+                ProgramId = program.Id,
+                StoreId = storeId,
+                Status = "pending",
+                CreatedAt = DateTimeOffset.UtcNow
             });
             await db.SaveChangesAsync();
         }
 
         // We use "auditor" which does NOT have 'programs:execute'
         var (token, userId) = await _factory.RegisterUserAsync(_client, "exec3@test.com", "Exec123!@", "Exec Three", "auditor", adminToken);
-        
+
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -226,13 +230,13 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
         }
 
         var client = _factory.CreateAuthenticatedClient(token);
-        
+
         var request = new SubmitEvidenceRequest(new[] { new EvidenceItemRequest(Guid.NewGuid(), "100", null) });
         var response = await client.PostAsJsonAsync($"/api/programs/assignments/{assignmentId}/submit", request);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
-    
+
     [Fact]
     public async Task SubmitProgramEvidence_WhenCallerIsAnonymous_ReturnsUnauthorized()
     {
@@ -264,7 +268,7 @@ public class SubmitProgramEvidence_PbacAuth_Tests : IClassFixture<TestWebApplica
 
             var profile = await db.Profiles.FindAsync(userId);
             profile!.StoreId = storeId;
-            
+
             // Delete capability for store_manager
             await db.Database.ExecuteSqlAsync($"DELETE FROM role_capabilities WHERE role = 'store_manager' AND capability = 'programs:execute'");
             await db.SaveChangesAsync();

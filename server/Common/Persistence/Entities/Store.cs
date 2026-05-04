@@ -21,4 +21,5 @@ public sealed class Store
     public ICollection<Profile> Profiles { get; set; } = [];
     public ICollection<Submission> Submissions { get; set; } = [];
     public ICollection<ActionPlan> ActionPlans { get; set; } = [];
+    public ICollection<ProfileStoreAssignment> AssignedManagers { get; set; } = [];
 }

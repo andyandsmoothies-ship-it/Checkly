@@ -28,11 +28,12 @@ public class AuthTests : IClassFixture<TestWebApplicationFactory>
     public async Task Register_And_Login_Returns_Token()
     {
         var client = _factory.CreateClient();
+        var email = $"test-{Guid.NewGuid():N}@auth.test";
 
         // Register
         var regResponse = await client.PostAsJsonAsync("/api/auth/register", new
         {
-            email = "test@auth.test",
+            email = email,
             password = "Test123!@",
             fullName = "Test User",
             role = "auditor"
@@ -42,7 +43,7 @@ public class AuthTests : IClassFixture<TestWebApplicationFactory>
         // Login
         var loginResponse = await client.PostAsJsonAsync("/api/auth/login", new
         {
-            email = "test@auth.test",
+            email = email,
             password = "Test123!@"
         });
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
@@ -62,7 +63,7 @@ public class AuthTests : IClassFixture<TestWebApplicationFactory>
         var client = _factory.CreateClient();
         var response = await client.PostAsJsonAsync("/api/auth/register", new
         {
-            email = "rogue@admin.test",
+            email = $"rogue-{Guid.NewGuid():N}@admin.test",
             password = "Rogue123!@",
             fullName = "Rogue Admin",
             role = "admin"
@@ -84,7 +85,7 @@ public class AuthTests : IClassFixture<TestWebApplicationFactory>
         // Without admin token, admin creation should fail
         var failResponse = await client.PostAsJsonAsync("/api/auth/register", new
         {
-            email = "second-admin@test.test",
+            email = $"second-admin-{Guid.NewGuid():N}@test.test",
             password = "Admin123!@",
             fullName = "Second Admin",
             role = "admin"

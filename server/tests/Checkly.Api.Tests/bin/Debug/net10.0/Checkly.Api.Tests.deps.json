@@ -43,7 +43,6 @@
           "Microsoft.EntityFrameworkCore.InMemory": "10.0.4",
           "Microsoft.EntityFrameworkCore.Sqlite": "10.0.4",
           "Microsoft.NET.Test.Sdk": "17.14.1",
-          "Testcontainers.PostgreSql": "4.11.0",
           "coverlet.collector": "6.0.4",
           "xunit": "2.9.3",
           "xunit.runner.visualstudio": "3.1.4",
@@ -360,42 +359,6 @@
         },
         "compile": {
           "Checkly.Api.Tests.dll": {}
-        }
-      },
-      "BouncyCastle.Cryptography/2.6.2": {
-        "runtime": {
-          "lib/net6.0/BouncyCastle.Cryptography.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.6.2.46322"
-          }
-        },
-        "compile": {
-          "lib/net6.0/BouncyCastle.Cryptography.dll": {}
-        }
-      },
-      "Docker.DotNet.Enhanced/3.131.1": {
-        "runtime": {
-          "lib/net10.0/Docker.DotNet.dll": {
-            "assemblyVersion": "3.131.0.0",
-            "fileVersion": "3.131.1.1"
-          }
-        },
-        "compile": {
-          "lib/net10.0/Docker.DotNet.dll": {}
-        }
-      },
-      "Docker.DotNet.Enhanced.X509/3.131.1": {
-        "dependencies": {
-          "Docker.DotNet.Enhanced": "3.131.1"
-        },
-        "runtime": {
-          "lib/net10.0/Docker.DotNet.X509.dll": {
-            "assemblyVersion": "3.131.0.0",
-            "fileVersion": "3.131.1.1"
-          }
-        },
-        "compile": {
-          "lib/net10.0/Docker.DotNet.X509.dll": {}
         }
       },
       "FirebaseAdmin/3.5.0": {
@@ -1341,17 +1304,6 @@
           "lib/net8.0/Serilog.Sinks.File.dll": {}
         }
       },
-      "SharpZipLib/1.4.2": {
-        "runtime": {
-          "lib/net6.0/ICSharpCode.SharpZipLib.dll": {
-            "assemblyVersion": "1.4.2.13",
-            "fileVersion": "1.4.2.13"
-          }
-        },
-        "compile": {
-          "lib/net6.0/ICSharpCode.SharpZipLib.dll": {}
-        }
-      },
       "SQLitePCLRaw.bundle_e_sqlite3/2.1.11": {
         "dependencies": {
           "SQLitePCLRaw.lib.e_sqlite3": "2.1.11",
@@ -1511,20 +1463,6 @@
           "lib/net6.0/SQLitePCLRaw.provider.e_sqlite3.dll": {}
         }
       },
-      "SSH.NET/2025.1.0": {
-        "dependencies": {
-          "BouncyCastle.Cryptography": "2.6.2"
-        },
-        "runtime": {
-          "lib/net9.0/Renci.SshNet.dll": {
-            "assemblyVersion": "2025.1.0.1",
-            "fileVersion": "2025.1.0.1"
-          }
-        },
-        "compile": {
-          "lib/net9.0/Renci.SshNet.dll": {}
-        }
-      },
       "System.CodeDom/7.0.0": {
         "runtime": {
           "lib/net7.0/System.CodeDom.dll": {
@@ -1571,37 +1509,6 @@
         },
         "compile": {
           "lib/net7.0/System.Management.dll": {}
-        }
-      },
-      "Testcontainers/4.11.0": {
-        "dependencies": {
-          "Docker.DotNet.Enhanced": "3.131.1",
-          "Docker.DotNet.Enhanced.X509": "3.131.1",
-          "SSH.NET": "2025.1.0",
-          "SharpZipLib": "1.4.2"
-        },
-        "runtime": {
-          "lib/net10.0/Testcontainers.dll": {
-            "assemblyVersion": "4.11.0.0",
-            "fileVersion": "4.11.0.0"
-          }
-        },
-        "compile": {
-          "lib/net10.0/Testcontainers.dll": {}
-        }
-      },
-      "Testcontainers.PostgreSql/4.11.0": {
-        "dependencies": {
-          "Testcontainers": "4.11.0"
-        },
-        "runtime": {
-          "lib/net10.0/Testcontainers.PostgreSql.dll": {
-            "assemblyVersion": "4.11.0.0",
-            "fileVersion": "4.11.0.0"
-          }
-        },
-        "compile": {
-          "lib/net10.0/Testcontainers.PostgreSql.dll": {}
         }
       },
       "xunit/2.9.3": {
@@ -3552,27 +3459,6 @@
       "serviceable": false,
       "sha512": ""
     },
-    "BouncyCastle.Cryptography/2.6.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w==",
-      "path": "bouncycastle.cryptography/2.6.2",
-      "hashPath": "bouncycastle.cryptography.2.6.2.nupkg.sha512"
-    },
-    "Docker.DotNet.Enhanced/3.131.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-hGLHCNUsQbT2Ab/HUznRnNqYZQs40zInXa3eLwYjeNyfUYbw1pqqDGqcOLl5uGepS8IuigEYakEdAcVT/2ezYg==",
-      "path": "docker.dotnet.enhanced/3.131.1",
-      "hashPath": "docker.dotnet.enhanced.3.131.1.nupkg.sha512"
-    },
-    "Docker.DotNet.Enhanced.X509/3.131.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-8FU7zmttFQzp0xb0EPupxQ0nGtC2cTpukgh3jMxMT8luj5TSDyzIKTnroDpXCjpg9P2fV+6JIvC+IetsMEfyBA==",
-      "path": "docker.dotnet.enhanced.x509/3.131.1",
-      "hashPath": "docker.dotnet.enhanced.x509.3.131.1.nupkg.sha512"
-    },
     "FirebaseAdmin/3.5.0": {
       "type": "package",
       "serviceable": true,
@@ -3944,13 +3830,6 @@
       "path": "serilog.sinks.file/6.0.0",
       "hashPath": "serilog.sinks.file.6.0.0.nupkg.sha512"
     },
-    "SharpZipLib/1.4.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A==",
-      "path": "sharpziplib/1.4.2",
-      "hashPath": "sharpziplib.1.4.2.nupkg.sha512"
-    },
     "SQLitePCLRaw.bundle_e_sqlite3/2.1.11": {
       "type": "package",
       "serviceable": true,
@@ -3979,13 +3858,6 @@
       "path": "sqlitepclraw.provider.e_sqlite3/2.1.11",
       "hashPath": "sqlitepclraw.provider.e_sqlite3.2.1.11.nupkg.sha512"
     },
-    "SSH.NET/2025.1.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-jrnbtf0ItVaXAe6jE8X/kSLa6uC+0C+7W1vepcnRQB/rD88qy4IxG7Lf1FIbWmkoc4iVXv0pKrz+Wc6J4ngmHw==",
-      "path": "ssh.net/2025.1.0",
-      "hashPath": "ssh.net.2025.1.0.nupkg.sha512"
-    },
     "System.CodeDom/7.0.0": {
       "type": "package",
       "serviceable": true,
@@ -4006,20 +3878,6 @@
       "sha512": "sha512-/qEUN91mP/MUQmJnM5y5BdT7ZoPuVrtxnFlbJ8a3kBJGhe2wCzBfnPFtK2wTtEEcf3DMGR9J00GZZfg6HRI6yA==",
       "path": "system.management/7.0.2",
       "hashPath": "system.management.7.0.2.nupkg.sha512"
-    },
-    "Testcontainers/4.11.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-9pBNaK9Ra3GVnr5h6gaDJOBH0txA5G3Juho5WANPuyu38l5xyr2lCvf11oA5/uSd+Lh4Wtng34nKp3nMiea02g==",
-      "path": "testcontainers/4.11.0",
-      "hashPath": "testcontainers.4.11.0.nupkg.sha512"
-    },
-    "Testcontainers.PostgreSql/4.11.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-OWGi0Og+qFpr2OPDignA74aJSfUd0nvZOaXNGWXwMJR1BvpdzhCNHQB2h7yLSTb0a8JVmmQQ4mUpHAC9q27NLw==",
-      "path": "testcontainers.postgresql/4.11.0",
-      "hashPath": "testcontainers.postgresql.4.11.0.nupkg.sha512"
     },
     "xunit/2.9.3": {
       "type": "package",

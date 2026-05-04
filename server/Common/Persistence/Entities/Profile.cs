@@ -18,4 +18,5 @@ public sealed class Profile
     // Navigation properties
     public Store? Store { get; set; }
     public Area? Area { get; set; }
+    public ICollection<ProfileStoreAssignment> StoreAssignments { get; set; } = [];
 }

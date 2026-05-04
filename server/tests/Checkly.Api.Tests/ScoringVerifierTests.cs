@@ -70,7 +70,7 @@ public class ScoringVerifierTests
 
         var groups = new[] { MakeSection(sectionId, weight: 100) };
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 5m) };
-        
+
         // Perfect score natively
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "conform") };
 
@@ -94,7 +94,7 @@ public class ScoringVerifierTests
 
         var groups = new[] { MakeSection(sectionId) };
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 5m) };
-        
+
         // Even with a fault answer, survey mode should bypass scoring
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "non_conform") };
 
@@ -118,13 +118,13 @@ public class ScoringVerifierTests
         var c1 = Guid.NewGuid();
 
         var groups = new[] { MakeSection(sectionId, weight: 100) };
-        
+
         // Data-collection inputs typically have null pointsWeight
-        var crit = MakeCriterion(c1, sectionId, points: 0m); 
+        var crit = MakeCriterion(c1, sectionId, points: 0m);
         crit.InputType = inputType;
         crit.PointsWeight = null;
         var criteria = new[] { crit };
-        
+
         // Some answer value
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "Option A") };
 
@@ -145,7 +145,7 @@ public class ScoringVerifierTests
         var c1 = Guid.NewGuid();
         var groups = new[] { MakeSection(sectionId, weight: 100) };
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m) };
-        
+
         // Flutter sends numericValue = 1 for non_conform answers
         var answers = new[] { MakeAnswer(c1, numericValue: 1, value: "non_conform", repeatedFaults: 2) };
 
@@ -164,7 +164,7 @@ public class ScoringVerifierTests
         var c1 = Guid.NewGuid();
         var groups = new[] { MakeSection(sectionId, weight: 100) };
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m) };
-        
+
         // Flutter sends numericValue = 1 for non_conform answers
         var answers = new[] { MakeAnswer(c1, numericValue: 1, value: "non_conform", repeatedFaults: 2) };
 
@@ -183,7 +183,7 @@ public class ScoringVerifierTests
         var c1 = Guid.NewGuid();
         var groups = new[] { MakeSection(sectionId, weight: 100) };
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m) };
-        
+
         var answers = new[] { MakeAnswer(c1, numericValue: 1, value: "non_conform", repeatedFaults: 0) };
 
         // Act - checklist mode score = 100 - deductions
@@ -203,11 +203,11 @@ public class ScoringVerifierTests
         var sectionId = Guid.NewGuid();
         var c1 = Guid.NewGuid();
         var groups = new[] { MakeSection(sectionId, weight: 100) };
-        
+
         // Setup: PointsWeight = 1, but MinusImpact = 5.
         // The deduction per fault should be 5, not 1.
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m, minusImpact: 5m) };
-        
+
         // 2 faults
         var answers = new[] { MakeAnswer(c1, numericValue: 2, value: null) };
 
@@ -224,10 +224,10 @@ public class ScoringVerifierTests
         var sectionId = Guid.NewGuid();
         var c1 = Guid.NewGuid();
         var groups = new[] { MakeSection(sectionId, weight: 100) };
-        
+
         // Setup: MinusImpact = 5, but MaxDeductionPoints = 8.
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 1m, minusImpact: 5m, maxDeductionPoints: 8m) };
-        
+
         // 2 faults
         var answers = new[] { MakeAnswer(c1, numericValue: 2, value: null) };
 
@@ -245,10 +245,10 @@ public class ScoringVerifierTests
         var sectionId = Guid.NewGuid();
         var c1 = Guid.NewGuid();
         var groups = new[] { MakeSection(sectionId, weight: 100) };
-        
+
         // Setup: PointsWeight = 3, MinusImpact = null.
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 3m, minusImpact: null) };
-        
+
         // 2 faults
         var answers = new[] { MakeAnswer(c1, numericValue: 2, value: null) };
 

@@ -37,8 +37,8 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 ## Artifacts
 | Status | File Path | Type |
 |---|---|---|
-| [NEW] | .agents/active_tasks/[topic]/walkthrough.md | Result |
-| [NEW] | docs/qa/gates/[topic]/executed_tests.md | Test Log |
+| [NEW] | .agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Result |
+| [NEW] | docs/qa/gates/[topic]/executed_tests_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Test Log |
 ```
 
 ## Phase 1: Coding (The Builder Phase)
@@ -88,12 +88,12 @@ Review from 6 angles:
 ## Phase 3: Handoff
 | State | Condition | Result Action |
 |---|---|---|
-| **Ship/Show** | Green TDD, Blast Radius 0 | Write FULL `walkthrough.md` + `executed_tests.md` -> Execute Verify Script. |
+| **Ship/Show** | Green TDD, Blast Radius 0 | Write FULL `walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` + `executed_tests_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` -> Execute Verify Script. |
 | **Ask** | Arch change, Security | Notify user BEFORE action. Wait go-ahead. |
 
 ### Walkthrough Schema
 > [!IMPORTANT]
-> Your `.agents/active_tasks/[topic]/walkthrough.md` MUST INCLUDE the following EXACT sections:
+> Your `.agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` MUST INCLUDE the following EXACT sections:
 > 1. `## Input Lineage`: Absolute path of the implementation plan or input file.
 > 2. `## Decision Log`: Proposed vs Implemented.
 > 3. `## Verification Handoff`: Steps for QA.
@@ -109,7 +109,7 @@ Review from 6 angles:
 ## 🚦 User Handoff & Next Steps
 > [!IMPORTANT]
 <output_schema>
-> **Outputs Created:** Implemented code (GREEN) + `.agents/active_tasks/[topic]/walkthrough.md` (or `handoff.md` if more slices remain).
+> **Outputs Created:** Implemented code (GREEN) + `.agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` (or `handoff_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` if more slices remain).
 >
 > **HOW TO CONTINUE THE SLICING LOOP:**
 >

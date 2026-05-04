@@ -14,8 +14,8 @@ namespace Checkly.Api.Tests.Features.Auth;
 public class PbacListenerTests(TestWebApplicationFactory fixture) : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
     private IServiceProvider _sp = null!;
-    
-    public async Task InitializeAsync() 
+
+    public async Task InitializeAsync()
     {
         _sp = fixture.Services;
         fixture.EnsureDatabaseCreated();
@@ -30,7 +30,7 @@ public class PbacListenerTests(TestWebApplicationFactory fixture) : IClassFixtur
             await db.SaveChangesAsync();
         }
     }
-    
+
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
@@ -93,25 +93,26 @@ public class PbacListenerTests(TestWebApplicationFactory fixture) : IClassFixtur
 
         var cache = new PbacDictionaryCache();
         await cache.InitializeAsync(_sp);
-        
+
         var listener = new PbacCacheListenerService(cache, config, new NullLogger<PbacCacheListenerService>(), _sp);
         var cts = new CancellationTokenSource();
-        
+
         // Act
         var listenerTask = listener.StartAsync(cts.Token);
-        
+
         // Add a new capability into DB
-        db.RoleCapabilities.Add(new RoleCapability { Id = Guid.NewGuid(), Role = "auditor", Capability = "test:notify", CreatedAt = DateTime.UtcNow });
+        var uniqueCap = $"test:notify:{Guid.NewGuid()}";
+        db.RoleCapabilities.Add(new RoleCapability { Id = Guid.NewGuid(), Role = "auditor", Capability = uniqueCap, CreatedAt = DateTime.UtcNow });
         await db.SaveChangesAsync(); // This should trigger the NOTIFY
-        
+
         // Wait for propagation
         await Task.Delay(1000);
-        
+
         await cts.CancelAsync();
         await listener.StopAsync(CancellationToken.None);
 
         // Assert
         var caps = cache.GetCapabilities("auditor");
-        Assert.Contains("test:notify", caps);
+        Assert.Contains(uniqueCap, caps);
     }
 }

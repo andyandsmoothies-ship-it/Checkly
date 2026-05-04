@@ -8,7 +8,7 @@ namespace Checkly.Api.Features.ActionPlans;
 /// <summary>
 /// GET /api/action-plans — role-based list.
 /// admin sees all, store_manager sees their store's plans,
-/// area_manager sees all plans for stores in their area.
+/// area_manager sees all plans for stores assigned via ProfileStoreAssignment.
 /// Auditors and unknown roles receive an empty list by design —
 /// auditors access plan details via submission review, not this list endpoint.
 /// </summary>
@@ -36,14 +36,13 @@ public static class ListActionPlans
                 // SM sees all plans for their assigned store, regardless of StoreManagerId snapshot.
                 query = query.Where(ap => ap.StoreId == profile.StoreId);
             }
-            else if (role == "area_manager" && profile?.AreaId != null)
+            else if (role == "area_manager")
             {
-                // AM sees all plans for every store in their assigned area.
-                // IN-subquery pattern: same approach as SyncSubmissions.cs:82 and ListStores.cs:85.
-                var storeIdsInArea = db.Stores
-                    .Where(s => s.AreaId == profile.AreaId.Value)
-                    .Select(s => s.Id);
-                query = query.Where(ap => ap.StoreId != null && storeIdsInArea.Contains(ap.StoreId.Value));
+                // AM sees all plans for stores assigned via junction.
+                var assignedStoreIds = db.ProfileStoreAssignments
+                    .Where(a => a.ProfileId == userId)
+                    .Select(a => a.StoreId);
+                query = query.Where(ap => ap.StoreId != null && assignedStoreIds.Contains(ap.StoreId.Value));
             }
             else if (role == "auditor")
             {

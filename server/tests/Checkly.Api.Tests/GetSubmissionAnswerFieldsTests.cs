@@ -156,7 +156,7 @@ public class GetSubmissionAnswerFieldsTests : IClassFixture<TestWebApplicationFa
             };
 
             db.Submissions.Add(submission);
-            
+
             var actionPlan = new ActionPlan
             {
                 Id = actionPlanId,
@@ -169,7 +169,7 @@ public class GetSubmissionAnswerFieldsTests : IClassFixture<TestWebApplicationFa
                 UpdatedAt = DateTimeOffset.UtcNow
             };
             db.ActionPlans.Add(actionPlan);
-            
+
             await db.SaveChangesAsync();
         }
 

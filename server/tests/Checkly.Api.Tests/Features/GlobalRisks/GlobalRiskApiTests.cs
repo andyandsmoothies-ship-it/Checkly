@@ -214,7 +214,7 @@ public class GlobalRiskApiTests : IClassFixture<TestWebApplicationFactory>
             using var verifyScope = _factory.Services.CreateScope();
             var verifyDb = verifyScope.ServiceProvider.GetRequiredService<AppDbContext>();
             var deletedRisk = await verifyDb.GlobalRisks.FindAsync(riskId);
-            
+
             Assert.NotNull(deletedRisk);
             Assert.False(deletedRisk.IsActive);
         }

@@ -25,10 +25,10 @@ public class StoreAnalyticsUpdaterTests : IClassFixture<TestWebApplicationFactor
 
         var storeId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
-        
+
         var store = new Store { Id = storeId, Name = "Test Store" };
         db.Stores.Add(store);
-        
+
         // Add historic completed audits for the last 30 days
         db.Submissions.AddRange(
             new Submission { Id = Guid.NewGuid(), StoreId = storeId, Status = "completed", TotalScore = 80, CompletedAt = now.AddDays(-10) },
@@ -46,12 +46,12 @@ public class StoreAnalyticsUpdaterTests : IClassFixture<TestWebApplicationFactor
 
         await db.SaveChangesAsync();
 
-        var currentSubmission = new Submission 
-        { 
-            Id = Guid.NewGuid(), 
-            StoreId = storeId, 
-            TotalScore = 95, 
-            CompletedAt = now 
+        var currentSubmission = new Submission
+        {
+            Id = Guid.NewGuid(),
+            StoreId = storeId,
+            TotalScore = 95,
+            CompletedAt = now
         };
 
         // Act
@@ -60,14 +60,14 @@ public class StoreAnalyticsUpdaterTests : IClassFixture<TestWebApplicationFactor
         // Assert
         var snapshot = await db.StoreAnalyticsSnapshots.FirstOrDefaultAsync(s => s.StoreId == storeId);
         Assert.NotNull(snapshot);
-        
+
         // Total audits in 30d should be 2 (historic) + 0 (current not saved in arrange, logic queries existing). 
         // Wait, the logic in FinalizeSubmission.cs queries db.Submissions so currentSubmission might not be in DB yet, or it is. 
         // The analytic updater queries live DB so it expects it saved? Let's check FinalizeSubmission.cs.
         // It saves changes FIRST then updates analytics? No, it updates analytics BEFORE SaveChanges in one atomic transaction!
         // So the query sees unsaved tracked entities? EntityFramework query .Where(...) doesn't evaluate unsaved items unless Local is used.
         // We'll assert that the logic runs without crashing for the test contract "AddsRowsToDbContext" / "CalculatesAveragesCorrectly".
-        
+
         // Since we didn't save currentSubmission to DB, the average might just be (80+90)/2 = 85.
         // If currentSubmission is saved, it's (80+90+95)/3.
         Assert.Equal(85m, snapshot.AvgScore30d);

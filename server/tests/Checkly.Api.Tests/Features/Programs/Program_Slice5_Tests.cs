@@ -72,7 +72,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var assignments = db.ProgramAssignments.Where(a => a.ProgramId == programId).ToList();
-            
+
             assignments[0].Status = "pending";
             assignments[1].Status = "pending";
             assignments[2].Status = "submitted";
@@ -97,7 +97,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(1, json.GetProperty("submitted").GetInt32());
         Assert.Equal(1, json.GetProperty("needsRevision").GetInt32());
         Assert.Equal(1, json.GetProperty("verified").GetInt32());
-        
+
         // Completion Rate = (1 submitted + 1 needs_rev + 1 verified) / 5 = 3/5 = 60
         Assert.Equal(60, json.GetProperty("completionRate").GetInt32());
     }
@@ -145,7 +145,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
             program.Deadline = DateTimeOffset.UtcNow.AddDays(-1); // Mutate deadline to be in the past
 
             var assignments = db.ProgramAssignments.Where(a => a.ProgramId == programId).ToList();
-            
+
             assignments[0].Status = "pending";
             assignments[1].Status = "pending";
             assignments[2].Status = "submitted";
@@ -154,7 +154,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
 
         // Act
         var response = await adminClient.GetAsync($"/api/programs/{programId}/summary");
-        
+
         if (!response.IsSuccessStatusCode)
         {
             Assert.Fail($"Expected 200 OK but got {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
@@ -168,7 +168,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(0, json.GetProperty("pending").GetInt32());
         Assert.Equal(2, json.GetProperty("overdue").GetInt32());
         Assert.Equal(1, json.GetProperty("submitted").GetInt32());
-        
+
         // Completion Rate = (1 submitted) / 3 = 33%
         Assert.Equal(33, json.GetProperty("completionRate").GetInt32());
     }
@@ -196,7 +196,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
         {
             Assert.Fail($"Expected 200 OK but got {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
         }
-        
+
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
 
         // Assert
@@ -225,7 +225,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
         // Assert
         var jsonA = await responseA.Content.ReadFromJsonAsync<JsonElement>();
         var jsonB = await responseB.Content.ReadFromJsonAsync<JsonElement>();
-        
+
         Assert.Equal(2, jsonA.GetProperty("total").GetInt32());
         Assert.Equal(5, jsonB.GetProperty("total").GetInt32());
     }

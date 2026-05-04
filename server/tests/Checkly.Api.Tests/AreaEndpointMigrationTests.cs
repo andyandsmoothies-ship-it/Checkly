@@ -95,8 +95,7 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var profile = await db.Profiles.FindAsync(amUserId);
-            profile!.AreaId = area1Id;  // ← FK assignment
-            await db.SaveChangesAsync();
+            profile!.AreaId = area1Id;  // Kept for schema compatibility if needed
 
             // Create stores: store1 in area1, store2 in area2
             var store1 = new Store
@@ -118,6 +117,14 @@ public class AreaEndpointMigrationTests : IClassFixture<TestWebApplicationFactor
                 UpdatedAt = DateTimeOffset.UtcNow
             };
             db.Stores.AddRange(store1, store2);
+
+            // Assign AM to area1 via the new ProfileStoreAssignment junction table
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment
+            {
+                ProfileId = amUserId,
+                StoreId = store1.Id
+            });
+
 
             // Create a submission for each store
             db.Submissions.AddRange(

@@ -49,19 +49,19 @@ public class TemplateSnapshotBuilderTests
 
         // Assert
         Assert.False(string.IsNullOrWhiteSpace(resultJson));
-        
+
         using var doc = JsonDocument.Parse(resultJson);
         var root = doc.RootElement;
-        
+
         Assert.Equal("Food Safety", root.GetProperty("title").GetString());
         Assert.Equal(2, root.GetProperty("version").GetInt32());
-        
+
         var groupsArray = root.GetProperty("groups");
         Assert.Equal(1, groupsArray.GetArrayLength());
-        
+
         var firstGroup = groupsArray[0];
         Assert.Equal("Kitchen Hygiene", firstGroup.GetProperty("title").GetString());
-        
+
         var criteriaArray = firstGroup.GetProperty("criteria");
         Assert.Equal(1, criteriaArray.GetArrayLength());
         Assert.Equal("Floors are clean", criteriaArray[0].GetProperty("label").GetString());
@@ -83,10 +83,10 @@ public class TemplateSnapshotBuilderTests
 
         // Assert
         Assert.False(string.IsNullOrWhiteSpace(resultJson));
-        
+
         using var doc = JsonDocument.Parse(resultJson);
         var root = doc.RootElement;
-        
+
         Assert.Equal("Empty Audit", root.GetProperty("title").GetString());
         Assert.Equal(0, root.GetProperty("groups").GetArrayLength());
     }

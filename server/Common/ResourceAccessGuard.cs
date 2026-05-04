@@ -42,14 +42,25 @@ public static class ResourceAccessGuard
     private static async Task<bool> IsUserAreaAsync(Guid userId, Guid? storeId, Guid? areaId, AppDbContext db, CancellationToken ct)
     {
         if (storeId is null && areaId is null) return false;
-        var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == userId, ct);
-        if (profile?.AreaId is null) return false;
 
-        if (areaId.HasValue) return areaId.Value == profile.AreaId;
+        if (storeId.HasValue)
+        {
+            return await db.ProfileStoreAssignments
+                .AnyAsync(a => a.ProfileId == userId && a.StoreId == storeId.Value, ct);
+        }
 
-        // Single query instead of two separate round-trips
-        return await db.Stores.AsNoTracking()
-            .AnyAsync(s => s.Id == storeId && s.AreaId == profile.AreaId, ct);
+        if (areaId.HasValue)
+        {
+            var areaStoreCount = await db.Stores.CountAsync(s => s.AreaId == areaId.Value, ct);
+            if (areaStoreCount == 0) return false;
+
+            var assignedAreaStoreCount = await db.ProfileStoreAssignments
+                .CountAsync(a => a.ProfileId == userId && a.Store != null && a.Store.AreaId == areaId.Value, ct);
+
+            return assignedAreaStoreCount == areaStoreCount;
+        }
+
+        return false;
     }
 
     /// <summary>

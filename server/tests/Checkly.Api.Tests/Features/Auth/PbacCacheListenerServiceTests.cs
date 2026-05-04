@@ -18,10 +18,10 @@ public class TrackingServiceProvider : IServiceProvider
     {
         if (serviceType == typeof(IServiceScopeFactory))
             return new TrackingServiceScopeFactory(_inner.GetRequiredService<IServiceScopeFactory>(), this);
-            
+
         if (serviceType == typeof(AppDbContext))
             DbContextResolutions++;
-            
+
         return _inner.GetService(serviceType);
     }
 }
@@ -60,7 +60,7 @@ public class TrackingServiceScope : IServiceScope, IServiceProvider
     {
         if (serviceType == typeof(AppDbContext))
             _tracker.DbContextResolutions++;
-            
+
         return _innerScope.ServiceProvider.GetService(serviceType);
     }
 
@@ -95,12 +95,12 @@ public class PbacCacheListenerServiceTests(TestWebApplicationFactory fixture) : 
 
         // Act
         Assert.False(cache.IsReady, "Pre-condition: Cache should not be ready initially.");
-        
+
         var listenerTask = listener.StartAsync(cts.Token);
 
         // Give the service 1 second to connect and theoretically call InitializeAsync
         await Task.Delay(1000);
-        
+
         await cts.CancelAsync();
         await listener.StopAsync(CancellationToken.None);
 
@@ -118,33 +118,33 @@ public class PbacCacheListenerServiceTests(TestWebApplicationFactory fixture) : 
         var config = _sp.GetRequiredService<IConfiguration>();
         var listener = new PbacCacheListenerService(cache, config, new NullLogger<PbacCacheListenerService>(), tracker);
         var cts = new CancellationTokenSource();
-        
+
         // Act
         var listenerTask = listener.StartAsync(cts.Token);
-        
+
         // Wait for connection to establish so it is waiting on WaitAsync
         await Task.Delay(1000);
-        
+
         // Reset tracker count so we only count post-connect Initializations!
         // Right now the service DOES NOT initialize on connect, but once fixed, this will be 1 here.
         // We set to 0 to specifically measure the burst response behavior!
         tracker.DbContextResolutions = 0;
-        
+
         // Burst 50 Postgres NOTIFYs
         using var scope = _sp.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
+
         for (int i = 0; i < 50; i++)
         {
-             await db.Database.ExecuteSqlRawAsync("NOTIFY pbac_invalidate;");
+            await db.Database.ExecuteSqlRawAsync("NOTIFY pbac_invalidate;");
         }
-        
+
         // Wait for debounce window (assume around 1000ms max in future config) plus safety margin
-        await Task.Delay(2000); 
-        
+        await Task.Delay(2000);
+
         await cts.CancelAsync();
         await listener.StopAsync(CancellationToken.None);
-        
+
         // Assert
         // Expect exactly ONE invocation of InitializeAsync after 50 NOTIFYs
         Assert.Equal(1, tracker.DbContextResolutions);
@@ -160,12 +160,12 @@ public class PbacCacheListenerServiceTests(TestWebApplicationFactory fixture) : 
         var config = _sp.GetRequiredService<IConfiguration>();
         var listener = new PbacCacheListenerService(cache, config, new NullLogger<PbacCacheListenerService>(), tracker);
         var cts = new CancellationTokenSource();
-        
+
         var listenerTask = listener.StartAsync(cts.Token);
-        
+
         // Act
         // Phase 1 (Resync-on-Connect):
-        await Task.Delay(1500); 
+        await Task.Delay(1500);
         Assert.True(cache.IsReady, "Resync-on-Connect should initialize cache.");
         Assert.True(tracker.DbContextResolutions >= 1);
 
@@ -176,8 +176,8 @@ public class PbacCacheListenerServiceTests(TestWebApplicationFactory fixture) : 
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await db.Database.ExecuteSqlRawAsync("NOTIFY pbac_invalidate;");
         }
-        
-        await Task.Delay(2000); 
+
+        await Task.Delay(2000);
 
         // Phase 3 (Teardown):
         await cts.CancelAsync();

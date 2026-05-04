@@ -27,7 +27,7 @@ public class PbacEnforcementTests : IClassFixture<TestWebApplicationFactory>
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
+
         var exists = await db.RoleCapabilities.AnyAsync(rc => rc.Role == role && rc.Capability == capability);
         if (!exists)
         {
@@ -52,14 +52,14 @@ public class PbacEnforcementTests : IClassFixture<TestWebApplicationFactory>
         // ARRANGE
         const string capability = "submissions:create"; // Using string literal as constant doesn't exist yet
         await SeedCapabilityAsync("auditor", capability);
-        
+
         var client = _factory.CreateClient();
         var (token, _) = await _factory.RegisterUserAsync(client, "auditor_can@test.test", "Pass123!@", "Auditor Can", "auditor");
         var authClient = _factory.CreateAuthenticatedClient(token);
 
         // ACT
-        var response = await authClient.PostAsJsonAsync("/api/submissions", new 
-        { 
+        var response = await authClient.PostAsJsonAsync("/api/submissions", new
+        {
             TemplateId = Guid.NewGuid(),
             StoreId = Guid.NewGuid()
         });
@@ -87,8 +87,8 @@ public class PbacEnforcementTests : IClassFixture<TestWebApplicationFactory>
         }
 
         // ACT
-        var response = await authClient.PostAsJsonAsync("/api/submissions", new 
-        { 
+        var response = await authClient.PostAsJsonAsync("/api/submissions", new
+        {
             templateId = Guid.NewGuid(), // Still fake, but backend might check Store first
             storeId = storeId,
             answers = new List<object>()
@@ -116,10 +116,10 @@ public class PbacEnforcementTests : IClassFixture<TestWebApplicationFactory>
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            
+
             // Need a store to satisfy FK
             db.Stores.Add(new Store { Id = storeId, Name = "Test Store", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            
+
             db.ActionPlans.Add(new ActionPlan
             {
                 Id = planId,

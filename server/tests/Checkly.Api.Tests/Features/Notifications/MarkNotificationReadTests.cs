@@ -66,7 +66,7 @@ public class MarkNotificationReadTests : IClassFixture<TestWebApplicationFactory
         var client = _factory.CreateClient();
         var (ownerToken, ownerId) = await _factory.RegisterUserAsync(client, "victim@test.test", "Pass123!@", "Victim", "auditor");
         var (attackerToken, attackerId) = await _factory.RegisterUserAsync(client, "attacker@test.test", "Pass123!@", "Attacker", "auditor");
-        
+
         var notificationId = Guid.NewGuid();
 
         using (var scope = _factory.Services.CreateScope())

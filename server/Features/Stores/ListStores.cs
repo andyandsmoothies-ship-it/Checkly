@@ -81,9 +81,16 @@ public static class ListStores
                 if (profile is not null)
                 {
                     if (role == "store_manager" && profile.StoreId.HasValue)
+                    {
                         query = query.Where(s => s.Id == profile.StoreId.Value);
-                    else if (role == "area_manager" && profile.AreaId.HasValue)
-                        query = query.Where(s => s.AreaId == profile.AreaId.Value);
+                    }
+                    else if (role == "area_manager")
+                    {
+                        var assignedStoreSubquery = db.ProfileStoreAssignments
+                            .Where(a => a.ProfileId == userGuid)
+                            .Select(a => a.StoreId);
+                        query = query.Where(s => assignedStoreSubquery.Contains(s.Id));
+                    }
                 }
             }
         }

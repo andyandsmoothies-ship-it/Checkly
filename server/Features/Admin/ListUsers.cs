@@ -36,7 +36,12 @@ public static class ListUsers
                     from s in storeJoin.DefaultIfEmpty()
                     join a in db.Areas.AsNoTracking() on p.AreaId equals a.Id into areaJoin
                     from a in areaJoin.DefaultIfEmpty()
-                    select new { p, r, u, s, a };
+                    select new { 
+                        p, r, u, s, a,
+                        AssignedStoreIds = r.Role == "area_manager" 
+                            ? db.ProfileStoreAssignments.Where(psa => psa.ProfileId == p.Id).Select(psa => psa.StoreId).ToArray()
+                            : null
+                    };
 
         if (!string.IsNullOrEmpty(roleFilter))
             query = query.Where(x => x.r.Role == roleFilter);
@@ -67,7 +72,8 @@ public static class ListUsers
                 x.p.AreaId,
                 x.a != null ? x.a.Name : null,
                 x.u != null && x.u.LockoutEnd != null && x.u.LockoutEnd > now,
-                x.p.CreatedAt))
+                x.p.CreatedAt,
+                x.AssignedStoreIds))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<UserDto>(users, total, page, pageSize));

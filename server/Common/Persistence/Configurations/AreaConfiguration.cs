@@ -13,9 +13,12 @@ public class AreaConfiguration : IEntityTypeConfiguration<Area>
         e.HasKey(x => x.Id);
         e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
         e.Property(x => x.Name).HasColumnName("name").IsRequired();
+        e.Property(x => x.Code).HasColumnName("code");
         e.Property(x => x.Description).HasColumnName("description");
         e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
         e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+
+        e.HasIndex(x => x.UpdatedAt);
 
     }
 }

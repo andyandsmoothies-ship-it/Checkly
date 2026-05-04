@@ -66,8 +66,9 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         return (_factory.CreateAuthenticatedClient(token), userId);
     }
 
-    private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string name, Guid? areaId = null)
+    private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string namePrefix, Guid? areaId = null)
     {
+        var name = $"{namePrefix} {Guid.NewGuid()}";
         var payload = areaId.HasValue
             ? (object)new { name, areaId }
             : new { name };
@@ -78,8 +79,9 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         return Guid.Parse(json.GetProperty("id").GetString()!);
     }
 
-    private async Task<Guid> CreateAreaAsync(HttpClient adminClient, string name)
+    private async Task<Guid> CreateAreaAsync(HttpClient adminClient, string namePrefix)
     {
+        var name = $"{namePrefix} {Guid.NewGuid()}";
         var response = await adminClient.PostAsJsonAsync("/api/areas",
             new { name, description = "Test area" });
         Assert.True(response.IsSuccessStatusCode,
@@ -529,10 +531,10 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         // Arrange
         var adminClient = await CreateAdminClientAsync("a5");
         var storeId = await CreateStoreAsync(adminClient, "SC-A5 Store");
-        
+
         var (templateId, criteriaIds) = await CreateTemplateWithSectionsAsync(adminClient);
         // We know from setup: criteriaIds[0], [1], [2] exist.
-        
+
         var (auditorClient, _) = await CreateRoleClientAsync("s5-aud@test.test", "auditor");
 
         var sectionScores = JsonSerializer.Serialize(new Dictionary<string, object>
@@ -567,7 +569,7 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
 
         // RED: This will fail compilation until Answer.IsFailure is added
         var dbAnswers = await db.Answers.Where(a => a.SubmissionId == subId).ToListAsync();
-        
+
         var c1Answer = dbAnswers.Single(a => a.CriteriaId == criteriaIds[0]);
         var c2Answer = dbAnswers.Single(a => a.CriteriaId == criteriaIds[1]);
 
@@ -594,8 +596,8 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
 
         var answers = new[]
         {
-            new { criteriaId = criteriaIds[0], value = "non_conform" }, 
-            new { criteriaId = criteriaIds[1], value = "conform" },     
+            new { criteriaId = criteriaIds[0], value = "non_conform" },
+            new { criteriaId = criteriaIds[1], value = "conform" },
         };
 
         await auditorClient.PutAsJsonAsync($"/api/submissions/{subId}/finalize", new
@@ -609,7 +611,7 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var dbAnswers = await db.Answers.Where(a => a.SubmissionId == subId).ToListAsync();
-        
+
         // RED: Compilation fails until Answer.IsFailure exists
         Assert.All(dbAnswers, a => Assert.False(a.IsFailure, "Survey answer should never be marked IsFailure"));
     }
@@ -624,12 +626,12 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         // Arrange
         var adminClient = await CreateAdminClientAsync("a7");
         var storeId = await CreateStoreAsync(adminClient, "SC-A7 Store");
-        
+
         // Custom template: C1 is pass_fail, C2 is numeric.
         var tResp = await adminClient.PostAsJsonAsync("/api/templates", new { title = "A7", type = "qc" });
         var templateId = Guid.Parse((await tResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);
         var gId = await CreateGroupAsync(adminClient, templateId, "G1", 100m, 10m, 5m, 0);
-        
+
         var c1Id = await CreateCriterionAsync(adminClient, templateId, gId, "True Failure", "pass_fail", 5m, 0);
         var c2Id = await CreateCriterionAsync(adminClient, templateId, gId, "Not A Failure", "numeric", 5m, 1);
 
@@ -648,7 +650,7 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
             // True semantic failure
             new { criteriaId = c1Id, value = "non_conform", numericValue = (decimal?)null }, 
             // NOT a semantic failure, but string is not "pass"
-            new { criteriaId = c2Id, value = "0", numericValue = (decimal?)0 } 
+            new { criteriaId = c2Id, value = "0", numericValue = (decimal?)0 }
         };
 
         var sectionScores = JsonSerializer.Serialize(new Dictionary<string, object> { ["G1"] = new { score = 50.0, maxScore = 100.0 } });
@@ -662,7 +664,7 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
 
         // Query analytics
         var response = await adminClient.GetAsync($"/api/analytics/top-failures?templateId={templateId}");
-        
+
         // Assert
         response.EnsureSuccessStatusCode();
         var items = await response.Content.ReadFromJsonAsync<JsonElement>();

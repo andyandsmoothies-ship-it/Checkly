@@ -33,7 +33,7 @@ public class UpdateUserTests : IClassFixture<TestWebApplicationFactory>
         listResponse.EnsureSuccessStatusCode();
         var pagedResult = await listResponse.Content.ReadFromJsonAsync<JsonElement>();
         var items = pagedResult.GetProperty("items").EnumerateArray();
-        
+
         Guid? adminUserId = null;
         foreach (var item in items)
         {
@@ -43,7 +43,7 @@ public class UpdateUserTests : IClassFixture<TestWebApplicationFactory>
                 break;
             }
         }
-        
+
         Assert.NotNull(adminUserId);
 
         var request = new { role = "auditor" };

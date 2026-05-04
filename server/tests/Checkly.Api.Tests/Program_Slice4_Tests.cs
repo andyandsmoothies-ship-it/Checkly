@@ -121,7 +121,7 @@ public class Program_Slice4_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var (adminClient, _, assignmentId, _) = await SetupSubmittedAssignmentAsync();
-        
+
         // Reject once
         await adminClient.PostAsJsonAsync($"/api/programs/assignments/{assignmentId}/reject", new { reason = "First reject" });
 
@@ -139,7 +139,7 @@ public class Program_Slice4_Tests : IClassFixture<TestWebApplicationFactory>
         var adminClient = await CreateAdminClientAsync();
         var storeResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = "Pending-Store" });
         var storeId = (await storeResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
-        
+
         var tplResp = await adminClient.PostAsJsonAsync("/api/templates", new { title = "Pending-Tpl", type = "checklist" });
         var templateId = (await tplResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 
@@ -200,7 +200,7 @@ public class Program_Slice4_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var (adminClient, _, assignmentId, _) = await SetupSubmittedAssignmentAsync();
-        
+
         // Verify once
         await adminClient.PostAsync($"/api/programs/assignments/{assignmentId}/verify", null);
 
@@ -229,7 +229,7 @@ public class Program_Slice4_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var (adminClient, smClient, assignmentId, programId) = await SetupSubmittedAssignmentAsync();
-        
+
         // Admin rejects
         await adminClient.PostAsJsonAsync($"/api/programs/assignments/{assignmentId}/reject", new { reason = "Needs fixing" });
 
@@ -253,7 +253,7 @@ public class Program_Slice4_Tests : IClassFixture<TestWebApplicationFactory>
         var item = assignJson.GetProperty("items")[0];
 
         Assert.Equal("submitted", item.GetProperty("status").GetString());
-        
+
         // Rejection comment should be null
         Assert.Equal(JsonValueKind.Null, item.GetProperty("rejectionComment").ValueKind);
     }

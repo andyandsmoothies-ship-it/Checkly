@@ -189,7 +189,7 @@ public class SubmissionRiskApiTests : IClassFixture<TestWebApplicationFactory>
         var (client1, auditor1Id) = await SetupAuditorAsync();
         var (_, auditor2Id) = await SetupAuditorAsync();
         var riskId = await SetupGlobalRiskAsync();
-        
+
         // Submission belongs to auditor 2
         var submissionId = await SetupSubmissionAsync(auditor2Id, "draft");
 

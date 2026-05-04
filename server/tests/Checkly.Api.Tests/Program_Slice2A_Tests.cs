@@ -86,10 +86,10 @@ public class Program_Slice2A_Tests : IClassFixture<TestWebApplicationFactory>
         // Arrange
         var adminClient = await CreateAdminClientAsync();
         var (smClient, smId) = await CreateStoreManagerAsync($"tc1-sm-{Guid.NewGuid()}@test.test");
-        
+
         var storeId = await CreateStoreAsync(adminClient, "TC1 Store");
         await LinkStoreManagerToStoreAsync(smId, storeId);
-        
+
         var templateId = await CreateTemplateAsync(adminClient, "TC1 Template");
         await AssignProgramAsync(adminClient, templateId, storeId, "TC1 Program");
 
@@ -100,7 +100,7 @@ public class Program_Slice2A_Tests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var items = body.GetProperty("items").EnumerateArray().ToList();
-        
+
         Assert.Single(items);
         var item = items[0];
         Assert.Equal("TC1 Program", item.GetProperty("programTitle").GetString());
@@ -113,13 +113,13 @@ public class Program_Slice2A_Tests : IClassFixture<TestWebApplicationFactory>
         // Arrange
         var adminClient = await CreateAdminClientAsync();
         var (smClient, smId) = await CreateStoreManagerAsync($"tc2-sm-{Guid.NewGuid()}@test.test");
-        
+
         var ownStoreId = await CreateStoreAsync(adminClient, "TC2 Own Store");
         var otherStoreId = await CreateStoreAsync(adminClient, "TC2 Other Store");
         await LinkStoreManagerToStoreAsync(smId, ownStoreId);
-        
+
         var templateId = await CreateTemplateAsync(adminClient, "TC2 Template");
-        
+
         // Assign to BOTH stores
         await AssignProgramAsync(adminClient, templateId, ownStoreId, "TC2 Own Program");
         await AssignProgramAsync(adminClient, templateId, otherStoreId, "TC2 Other Program");
@@ -131,7 +131,7 @@ public class Program_Slice2A_Tests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var items = body.GetProperty("items").EnumerateArray().ToList();
-        
+
         // Should only see the 1 assignment for their own store, implicitly verifying store scoping (IDOR protection)
         Assert.Single(items);
         Assert.Equal("TC2 Own Program", items[0].GetProperty("programTitle").GetString());
@@ -264,13 +264,13 @@ public class Program_Slice2A_Tests : IClassFixture<TestWebApplicationFactory>
         var adminClient = await CreateAdminClientAsync();
         var (smClientA, smIdA) = await CreateStoreManagerAsync($"gap3-sma-{Guid.NewGuid()}@test.test");
         var (smClientB, smIdB) = await CreateStoreManagerAsync($"gap3-smb-{Guid.NewGuid()}@test.test");
-        
+
         var storeIdA = await CreateStoreAsync(adminClient, "Gap3 Store A");
         var storeIdB = await CreateStoreAsync(adminClient, "Gap3 Store B");
-        
+
         await LinkStoreManagerToStoreAsync(smIdA, storeIdA);
         await LinkStoreManagerToStoreAsync(smIdB, storeIdB);
-        
+
         var templateId = await CreateTemplateAsync(adminClient, "Gap3 Template");
         await AssignProgramAsync(adminClient, templateId, storeIdB, "Gap3 Program B");
 

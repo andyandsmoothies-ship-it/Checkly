@@ -27,18 +27,18 @@ public class CloneTemplateTests : IClassFixture<TestWebApplicationFactory>
         var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
 
         var bootstrapToken = await _factory.LoginBootstrapAdminAsync(_factory.CreateClient());
-        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"admin_clone_{Guid.NewGuid()}@test.com", "Aa1234567@", "Admin Clone Test", "admin", bootstrapToken);
 
         var sourceTemplateId = Guid.NewGuid();
         var parentGroupId = Guid.NewGuid();
         var childGroupId = Guid.NewGuid();
 
-        db.Templates.Add(new Template 
-        { 
-            Id = sourceTemplateId, 
-            Title = "Source Template", 
-            Version = 2, 
+        db.Templates.Add(new Template
+        {
+            Id = sourceTemplateId,
+            Title = "Source Template",
+            Version = 2,
             IsActive = true,
             Type = "custom",
             Description = "Original description",
@@ -126,7 +126,7 @@ public class CloneTemplateTests : IClassFixture<TestWebApplicationFactory>
         var newTemplateIdStr = node["id"]?.GetValue<string>();
         Assert.NotNull(newTemplateIdStr);
         Assert.True(Guid.TryParse(newTemplateIdStr, out var newTemplateId));
-        
+
         Assert.NotEqual(sourceTemplateId, newTemplateId);
         Assert.True(node["isActive"]?.GetValue<bool>());
         Assert.Equal(1, node["version"]?.GetValue<int>());
@@ -142,9 +142,9 @@ public class CloneTemplateTests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var bootstrapToken = await _factory.LoginBootstrapAdminAsync(_factory.CreateClient());
-        var (token, _) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, _) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"admin_clone404_{Guid.NewGuid()}@test.com", "Aa1234567@", "Admin Clone 404", "admin", bootstrapToken);
-        
+
         var client = _factory.CreateAuthenticatedClient(token);
         var randomId = Guid.NewGuid();
 

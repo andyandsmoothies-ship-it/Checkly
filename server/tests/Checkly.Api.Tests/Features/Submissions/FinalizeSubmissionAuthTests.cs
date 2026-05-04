@@ -26,12 +26,12 @@ public class FinalizeSubmissionAuthTests : IClassFixture<TestWebApplicationFacto
         var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
 
         // Create the auditor (the one assigned to the submission)
-        var auditorReg = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var auditorReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"auditor_{Guid.NewGuid()}@test.com", "Aa1234567@", "Assigned Auditor", "auditor");
-        
+
         // Create the admin (the one attempting to finalize it)
         var bootstrapToken = await _factory.LoginBootstrapAdminAsync(_factory.CreateClient());
-        var adminReg = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var adminReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"admin_{Guid.NewGuid()}@test.com", "Aa1234567@", "Admin User", "admin", bootstrapToken);
 
         var templateId = Guid.NewGuid();
@@ -40,7 +40,7 @@ public class FinalizeSubmissionAuthTests : IClassFixture<TestWebApplicationFacto
 
         db.Templates.Add(new Template { Id = templateId, Title = "Auth Test", Version = 1, IsActive = true, ScoringLogicConfig = "{\"scoringMode\":\"penalty\"}" });
         db.Stores.Add(new Store { Id = storeId, Name = "Auth Store", IsActive = true });
-        
+
         var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "G1", IsActive = true, Weight = 1.0m };
         db.Groups.Add(group);
         var criteria = new Criterion { Id = Guid.NewGuid(), GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = 10, IsActive = true };
@@ -62,7 +62,7 @@ public class FinalizeSubmissionAuthTests : IClassFixture<TestWebApplicationFacto
 
         // Client is logged in as ADMIN
         var adminClient = _factory.CreateAuthenticatedClient(adminReg.Token);
-        
+
         var payload = new
         {
             ClientScore = 100m,

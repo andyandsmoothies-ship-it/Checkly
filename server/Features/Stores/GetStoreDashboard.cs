@@ -10,7 +10,7 @@ namespace Checkly.Api.Features.Stores;
 ///   admin       → full access
 ///   auditor     → 403 (auditors use the audit form, not the dashboard)
 ///   store_manager → only their assigned store (profile.StoreId == id)
-///   area_manager  → only stores in their assigned area (store.AreaId == profile.AreaId)
+///   area_manager  → only stores assigned via ProfileStoreAssignment
 /// </summary>
 public static class GetStoreDashboard
 {
@@ -50,8 +50,12 @@ public static class GetStoreDashboard
             if (role == "store_manager" && profile.StoreId != id)
                 return TypedResults.Forbid();
 
-            if (role == "area_manager" && store.AreaId != profile.AreaId)
-                return TypedResults.Forbid();
+            if (role == "area_manager")
+            {
+                var isAssigned = await db.ProfileStoreAssignments
+                    .AnyAsync(a => a.ProfileId == userGuid && a.StoreId == id, ct);
+                if (!isAssigned) return TypedResults.Forbid();
+            }
         }
 
         var submissions = await db.Submissions

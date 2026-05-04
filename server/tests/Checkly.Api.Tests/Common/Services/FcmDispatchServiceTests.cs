@@ -20,13 +20,13 @@ public class FcmDispatchServiceTests : IClassFixture<TestWebApplicationFactory>
         // Arrange
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
+
         var userId = Guid.NewGuid();
 
         // This uses reflection to avoid CS0246 while the Builder hasn't implemented it yet. (Valid Red)
         var serviceType = Type.GetType("Checkly.Api.Common.Services.IFcmDispatchService, Checkly.Api");
         if (serviceType == null) throw new NotImplementedException("IFcmDispatchService is not defined yet.");
-        
+
         var service = scope.ServiceProvider.GetRequiredService(serviceType);
 
         var method = serviceType.GetMethod("DispatchSyncNeededAsync");
@@ -46,23 +46,23 @@ public class FcmDispatchServiceTests : IClassFixture<TestWebApplicationFactory>
         // Arrange
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
+
         var userId = Guid.NewGuid();
-        
+
         // Insert the magic 'invalid-token-123' token using raw SQL to bypass compiler error for missing DbSet
         using var command = db.Database.GetDbConnection().CreateCommand();
         command.CommandText = "INSERT INTO user_device_tokens (id, user_id, fcm_token, platform, created_at, last_used_at) " +
                               "VALUES (@id, @userId, 'invalid-token-123', 'ios', now(), now())";
-        
+
         var p1 = command.CreateParameter(); p1.ParameterName = "@id"; p1.Value = Guid.NewGuid(); command.Parameters.Add(p1);
         var p2 = command.CreateParameter(); p2.ParameterName = "@userId"; p2.Value = userId; command.Parameters.Add(p2);
-        
+
         await db.Database.OpenConnectionAsync();
         await command.ExecuteNonQueryAsync();
 
         var serviceType = Type.GetType("Checkly.Api.Common.Services.IFcmDispatchService, Checkly.Api");
         if (serviceType == null) throw new NotImplementedException("IFcmDispatchService is not defined yet.");
-        
+
         var service = scope.ServiceProvider.GetRequiredService(serviceType);
 
         var method = serviceType.GetMethod("DispatchSyncNeededAsync");
@@ -76,9 +76,9 @@ public class FcmDispatchServiceTests : IClassFixture<TestWebApplicationFactory>
         using var checkCmd = db.Database.GetDbConnection().CreateCommand();
         checkCmd.CommandText = "SELECT COUNT(*) FROM user_device_tokens WHERE user_id = @userId";
         var p3 = checkCmd.CreateParameter(); p3.ParameterName = "@userId"; p3.Value = userId; checkCmd.Parameters.Add(p3);
-        
+
         var count = (long)(await checkCmd.ExecuteScalarAsync())!;
-        
+
         // In the test environment, FirebaseAdmin is not initialized.
         // It should simply log a warning and return. It should NOT contain magic fallback logic that deletes 'invalid-token-123'.
         Assert.Equal(1, count); // Token MUST remain.

@@ -15,5 +15,11 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
         e.Property(x => x.UserId).HasColumnName("user_id").IsRequired();
         e.Property(x => x.Role).HasColumnName("role").IsRequired();
         e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+
+        // UserRole → AppUser: many-to-1
+        e.HasOne<AppUser>()
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

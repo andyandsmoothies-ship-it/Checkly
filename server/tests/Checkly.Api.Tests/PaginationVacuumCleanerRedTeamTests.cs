@@ -36,12 +36,12 @@ public class PaginationVacuumCleanerRedTeamTests : IClassFixture<TestWebApplicat
     {
         using var scope = _fixture.Services.CreateScope();
         var client = _fixture.CreateClient();
-        
+
         // Use a unique email to avoid collisions in the Sequential test run
         var uniqueEmail = $"auditor-p11-{Guid.NewGuid():N}@redteam.test";
         var (token, _) = await _fixture.RegisterUserAsync(
             client, uniqueEmail, "Aa1234567@", "Auditor P11", "auditor");
-        
+
         return token;
     }
 
@@ -63,7 +63,7 @@ public class PaginationVacuumCleanerRedTeamTests : IClassFixture<TestWebApplicat
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var content = await response.Content.ReadAsStringAsync();
         var json = JsonDocument.Parse(content);
-        
+
         var pageSize = json.RootElement.GetProperty("pageSize").GetInt32();
         Assert.InRange(pageSize, 1, 200); // Most are clamped to 200 or 100
     }
@@ -86,10 +86,10 @@ public class PaginationVacuumCleanerRedTeamTests : IClassFixture<TestWebApplicat
         // Assert
         Assert.Equal(HttpStatusCode.OK, response0.StatusCode);
         Assert.Equal(HttpStatusCode.OK, responseNeg.StatusCode);
-        
+
         var json0 = await response0.Content.ReadFromJsonAsync<JsonElement>();
         var jsonNeg = await responseNeg.Content.ReadFromJsonAsync<JsonElement>();
-        
+
         Assert.Equal(1, json0.GetProperty("pageSize").GetInt32());
         Assert.Equal(1, jsonNeg.GetProperty("pageSize").GetInt32());
     }
@@ -111,10 +111,10 @@ public class PaginationVacuumCleanerRedTeamTests : IClassFixture<TestWebApplicat
         // Assert
         // We expect a 200 OK with 0 items, NOT a 500 Internal Server Error
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         var items = json.GetProperty("items");
-        
+
         Assert.Equal(0, items.GetArrayLength());
         Assert.Equal(2147483647, json.GetProperty("page").GetInt32());
     }
@@ -135,7 +135,7 @@ public class PaginationVacuumCleanerRedTeamTests : IClassFixture<TestWebApplicat
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal(1, json.GetProperty("page").GetInt32());
         Assert.Equal(50, json.GetProperty("pageSize").GetInt32());
@@ -157,7 +157,7 @@ public class PaginationVacuumCleanerRedTeamTests : IClassFixture<TestWebApplicat
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal(1, json.GetProperty("page").GetInt32());
         Assert.Equal(50, json.GetProperty("pageSize").GetInt32());

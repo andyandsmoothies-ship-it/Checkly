@@ -26,12 +26,12 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
 
-        var (token, storeManagerId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, storeManagerId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"sm_{Guid.NewGuid()}@test.com", "Aa1234567@", "SM User", "store_manager");
 
-        var (_, auditorId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (_, auditorId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"auditor_{Guid.NewGuid()}@test.com", "Aa1234567@", "Auditor User", "auditor");
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
         var submissionId = Guid.NewGuid();
@@ -39,7 +39,7 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
 
         db.Templates.Add(new Template { Id = templateId, Title = "Test Template", Version = 1, IsActive = true });
         db.Stores.Add(new Store { Id = storeId, Name = "Test Store", IsActive = true });
-        
+
         db.Submissions.Add(new Submission
         {
             Id = submissionId,
@@ -68,7 +68,7 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
         await db.SaveChangesAsync();
 
         var client = _factory.CreateAuthenticatedClient(token);
-        
+
         var payload = new { body = "This is a comment" };
 
         // Act
@@ -96,7 +96,7 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
     public async Task AddComment_ActionPlanNotFound_Returns404()
     {
         // Arrange
-        var (token, _) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, _) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"sm_{Guid.NewGuid()}@test.com", "Aa1234567@", "SM User", "store_manager");
 
         var client = _factory.CreateAuthenticatedClient(token);
@@ -116,14 +116,14 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
 
-        var (token, storeManagerId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, storeManagerId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"sm_{Guid.NewGuid()}@test.com", "Aa1234567@", "SM User", "store_manager");
-        
+
         var storeId = Guid.NewGuid();
         var planId = Guid.NewGuid();
 
         db.Stores.Add(new Store { Id = storeId, Name = "Test Store", IsActive = true });
-        
+
         db.ActionPlans.Add(new ActionPlan
         {
             Id = planId,
@@ -140,8 +140,9 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
         await db.SaveChangesAsync();
 
         var client = _factory.CreateAuthenticatedClient(token);
-        
-        var payload = new { body = "This is a comment" };
+
+        var uniqueBody = "This is a comment " + Guid.NewGuid();
+        var payload = new { body = uniqueBody };
 
         // Act
         var response = await client.PostAsJsonAsync($"/api/action-plans/{planId}/comments", payload);
@@ -150,7 +151,7 @@ public class AddCommentTests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         // Ensure NO Notification was inserted for any auditor, since we don't know the auditor
-        var notificationsCount = await db.Notifications.CountAsync(n => n.Type == "action_plan_comment_added");
+        var notificationsCount = await db.Notifications.CountAsync(n => n.Message != null && n.Message.Contains(uniqueBody));
         Assert.Equal(0, notificationsCount);
     }
 }

@@ -9,38 +9,21 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace Checkly.Api.Tests;
 
 /// <summary>
-/// Custom WebApplicationFactory using an isolated PostgreSQL Docker container.
-/// This prevents wiping local databases and guarantees a clean slate per test run.
+/// Custom WebApplicationFactory using a dedicated local PostgreSQL database (checkly_test).
+/// EnsureDeleted() is used here to reset the DB state before tests.
 /// </summary>
-public class TestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
-    private readonly PostgreSqlContainer _dbContainer;
     private static bool _dbInitialized;
     private static readonly object _lock = new();
 
     public TestWebApplicationFactory()
     {
-        _dbContainer = new PostgreSqlBuilder("postgres:16-alpine")
-            .WithDatabase("checkly_test")
-            .WithUsername("postgres")
-            .WithPassword("Aa1234567@")
-            .Build();
-    }
-
-    public async Task InitializeAsync()
-    {
-        await _dbContainer.StartAsync();
-    }
-
-    public new async Task DisposeAsync()
-    {
-        await _dbContainer.DisposeAsync();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -60,11 +43,12 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncL
 
         // Ensure IConfiguration["ConnectionStrings:DefaultConnection"] matches the test DB
         // so background listeners connect to the right database.
+        var testConnectionString = "Host=127.0.0.1;Port=5432;Database=checkly_test;Username=postgres;Password=Aa1234567@";
         builder.ConfigureAppConfiguration((context, config) =>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:DefaultConnection"] = _dbContainer.GetConnectionString()
+                ["ConnectionStrings:DefaultConnection"] = testConnectionString
             });
         });
 
@@ -76,7 +60,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncL
                 services.Remove(descriptor);
 
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(_dbContainer.GetConnectionString()));
+                options.UseNpgsql(testConnectionString));
         });
     }
 
@@ -86,37 +70,41 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncL
         {
             if (!_dbInitialized)
             {
-                // We no longer need dbDrop.Database.EnsureDeleted()
-                // Testcontainers guarantees a fresh DB instance every test run.
-
                 using var scopeInit = Services.CreateScope();
                 var dbInit = scopeInit.ServiceProvider.GetRequiredService<AppDbContext>();
 
+                // The database is migrated automatically by Program.cs during app startup.
+                // We rely on tests creating unique entities (Guid.NewGuid) to avoid conflicts.
+
                 // Seed a bootstrap admin so tests can create admin users via the API
                 var userManagerInit = scopeInit.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-                var adminUserInit = new AppUser
+                var existingAdmin = userManagerInit.FindByEmailAsync("bootstrap@admin.test").GetAwaiter().GetResult();
+                if (existingAdmin == null)
                 {
-                    Id = Guid.NewGuid(),
-                    UserName = "bootstrap@admin.test",
-                    Email = "bootstrap@admin.test"
-                };
-                userManagerInit.CreateAsync(adminUserInit, "Bootstrap123!@").GetAwaiter().GetResult();
-                dbInit.Profiles.Add(new Profile
-                {
-                    Id = adminUserInit.Id,
-                    FullName = "Bootstrap Admin",
-                    Email = "bootstrap@admin.test",
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    UpdatedAt = DateTimeOffset.UtcNow
-                });
-                dbInit.AppUserRoles.Add(new UserRole
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = adminUserInit.Id,
-                    Role = "admin",
-                    CreatedAt = DateTimeOffset.UtcNow
-                });
-                dbInit.SaveChanges();
+                    var adminUserInit = new AppUser
+                    {
+                        Id = Guid.NewGuid(),
+                        UserName = "bootstrap@admin.test",
+                        Email = "bootstrap@admin.test"
+                    };
+                    userManagerInit.CreateAsync(adminUserInit, "Bootstrap123!@").GetAwaiter().GetResult();
+                    dbInit.Profiles.Add(new Profile
+                    {
+                        Id = adminUserInit.Id,
+                        FullName = "Bootstrap Admin",
+                        Email = "bootstrap@admin.test",
+                        CreatedAt = DateTimeOffset.UtcNow,
+                        UpdatedAt = DateTimeOffset.UtcNow
+                    });
+                    dbInit.AppUserRoles.Add(new UserRole
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = adminUserInit.Id,
+                        Role = "admin",
+                        CreatedAt = DateTimeOffset.UtcNow
+                    });
+                    dbInit.SaveChanges();
+                }
                 _dbInitialized = true;
             }
 
@@ -159,13 +147,13 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncL
                 email = "bootstrap@admin.test",
                 password = "Bootstrap123!@"
             });
-            
+
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
             {
                 await Task.Delay(200 * (int)Math.Pow(2, i));
                 continue;
             }
-            
+
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadFromJsonAsync<JsonElement>();
             return json.GetProperty("token").GetString()!;
@@ -177,6 +165,13 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncL
         HttpClient client, string email, string password, string fullName, string role,
         string? adminToken = null)
     {
+        // Automatically make emails unique to avoid parallel test suite conflicts
+        if (email.Contains("@"))
+        {
+            var parts = email.Split('@');
+            email = $"{parts[0]}-{Guid.NewGuid():N}@{parts[1]}";
+        }
+
         for (int i = 0; i < 5; i++)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/register")

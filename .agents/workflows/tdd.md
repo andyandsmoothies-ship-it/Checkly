@@ -58,9 +58,11 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 - **No Double Underscores (Dart)**: Do not use `(_, __)` for empty parameters. This causes warning errors. Use real names or a single `_`.
 - **New Files Only**: Create 1 new test file for 1 feature slice. Do not add tests to massive, generic test files (like `UserServiceTests.cs`). Create a specific new file (like `UserService_Password_Tests.cs`).
 - **Cover All States**: Your tests must cover:
-  1. **Happy Path** (Success - 200 OK, UI renders correctly).
-  2. **Error State** (Validation errors, 404s, exceptions).
-  3. **Empty State** (Null inputs, empty lists).
+  1. **Happy Path**: Success - 200 OK, UI renders correctly.
+  2. **Error State**: Validation errors, 404s, exceptions.
+  3. **Empty State**: Null inputs, empty lists, uninitialized state.
+  4. **Edge Cases**: Boundary limits (max/min), zero/negative inputs, timezones.
+  5. **Concurrency**: Double-submissions, race conditions, timeouts.
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you cover Happy, Error, and Empty states? (2) Did you avoid writing main app code?
 

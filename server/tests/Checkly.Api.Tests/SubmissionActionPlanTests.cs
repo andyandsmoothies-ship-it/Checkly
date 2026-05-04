@@ -165,8 +165,11 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 90m,
-            answers, idempotencyKey = Guid.NewGuid().ToString()
+            templateId,
+            storeId,
+            clientScore = 90m,
+            answers,
+            idempotencyKey = Guid.NewGuid().ToString()
         });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -196,7 +199,9 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 95m,
+            templateId,
+            storeId,
+            clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = Guid.NewGuid().ToString()
         });
@@ -227,7 +232,9 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 95m,
+            templateId,
+            storeId,
+            clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = Guid.NewGuid().ToString()
         });
@@ -267,7 +274,10 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 100m, answers,
+            templateId,
+            storeId,
+            clientScore = 100m,
+            answers,
             idempotencyKey = Guid.NewGuid().ToString()
         });
 
@@ -295,7 +305,9 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var payload = new
         {
-            templateId, storeId, clientScore = 95m,
+            templateId,
+            storeId,
+            clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = key
         };
@@ -328,7 +340,9 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         // clientScore = 0m because IsRisk = true will trigger a critical failure and 0 out the score
         var payload = new
         {
-            templateId, storeId, clientScore = 0m,
+            templateId,
+            storeId,
+            clientScore = 0m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "conform", numericValue = 5m, note = "Needs fixing", isRisk = true, isRepeatedError = false } },
             idempotencyKey = Guid.NewGuid().ToString()
         };
@@ -363,16 +377,21 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         var storeId = Guid.NewGuid();
         seedDb.Stores.Add(new Store
         {
-            Id = storeId, Name = "S2-1 Store",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = storeId,
+            Name = "S2-1 Store",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var smId = Guid.NewGuid();
         seedDb.Profiles.Add(new Profile
         {
-            Id = smId, FullName = "SM", Email = "sm@s2-1.test",
+            Id = smId,
+            FullName = "SM",
+            Email = "sm@s2-1.test",
             StoreId = storeId,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         // Register a real auditor via the API so PBAC cache recognises their role.
@@ -384,23 +403,31 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         seedDb.Submissions.Add(new Submission
         {
             Id = submissionId,
-            TemplateId = null, TemplateTitle = "S2-1 Template",
-            StoreId = storeId, StoreName = "S2-1 Store",
-            AuditorId = auditorUserId, AuditorName = "Test Auditor",
+            TemplateId = null,
+            TemplateTitle = "S2-1 Template",
+            StoreId = storeId,
+            StoreName = "S2-1 Store",
+            AuditorId = auditorUserId,
+            AuditorName = "Test Auditor",
             ScoringMode = "penalty",
             Status = "draft",
             TotalScore = 0m,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var apId = Guid.NewGuid();
         seedDb.ActionPlans.Add(new ActionPlan
         {
-            Id = apId, StoreId = storeId, StoreManagerId = smId,
+            Id = apId,
+            StoreId = storeId,
+            StoreManagerId = smId,
             SubmissionId = submissionId,
-            CriteriaLabel = "H1", GroupTitle = "HOSPITALITY",
+            CriteriaLabel = "H1",
+            GroupTitle = "HOSPITALITY",
             Status = "open",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
         await seedDb.SaveChangesAsync();
 
@@ -435,16 +462,21 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         var storeId = Guid.NewGuid();
         seedDb.Stores.Add(new Store
         {
-            Id = storeId, Name = "S2-2 Store",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = storeId,
+            Name = "S2-2 Store",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var smId = Guid.NewGuid();
         seedDb.Profiles.Add(new Profile
         {
-            Id = smId, FullName = "SM Close", Email = "sm@s2-2.test",
+            Id = smId,
+            FullName = "SM Close",
+            Email = "sm@s2-2.test",
             StoreId = storeId,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         // Seed a Submission with the auditor as AuditorId
@@ -455,23 +487,31 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         seedDb.Submissions.Add(new Submission
         {
             Id = submissionId,
-            TemplateId = null, TemplateTitle = "S2-2 Template",
-            StoreId = storeId, StoreName = "S2-2 Store",
-            AuditorId = auditorUserId, AuditorName = "Test Auditor",
+            TemplateId = null,
+            TemplateTitle = "S2-2 Template",
+            StoreId = storeId,
+            StoreName = "S2-2 Store",
+            AuditorId = auditorUserId,
+            AuditorName = "Test Auditor",
             ScoringMode = "penalty",
             Status = "draft",
             TotalScore = 0m,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var apId = Guid.NewGuid();
         seedDb.ActionPlans.Add(new ActionPlan
         {
-            Id = apId, StoreId = storeId, StoreManagerId = smId,
+            Id = apId,
+            StoreId = storeId,
+            StoreManagerId = smId,
             SubmissionId = submissionId,
-            CriteriaLabel = "H2", GroupTitle = "HYGIENE",
+            CriteriaLabel = "H2",
+            GroupTitle = "HYGIENE",
             Status = "pending_verify",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
         await seedDb.SaveChangesAsync();
 
@@ -499,16 +539,21 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         var storeId = Guid.NewGuid();
         seedDb.Stores.Add(new Store
         {
-            Id = storeId, Name = "S2-3 Store",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = storeId,
+            Name = "S2-3 Store",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var smId = Guid.NewGuid();
         seedDb.Profiles.Add(new Profile
         {
-            Id = smId, FullName = "SM Reject", Email = "sm@s2-3.test",
+            Id = smId,
+            FullName = "SM Reject",
+            Email = "sm@s2-3.test",
             StoreId = storeId,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         // Seed a Submission with the auditor as AuditorId
@@ -519,23 +564,31 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         seedDb.Submissions.Add(new Submission
         {
             Id = submissionId,
-            TemplateId = null, TemplateTitle = "S2-3 Template",
-            StoreId = storeId, StoreName = "S2-3 Store",
-            AuditorId = auditorUserId, AuditorName = "Test Auditor",
+            TemplateId = null,
+            TemplateTitle = "S2-3 Template",
+            StoreId = storeId,
+            StoreName = "S2-3 Store",
+            AuditorId = auditorUserId,
+            AuditorName = "Test Auditor",
             ScoringMode = "penalty",
             Status = "draft",
             TotalScore = 0m,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var apId = Guid.NewGuid();
         seedDb.ActionPlans.Add(new ActionPlan
         {
-            Id = apId, StoreId = storeId, StoreManagerId = smId,
+            Id = apId,
+            StoreId = storeId,
+            StoreManagerId = smId,
             SubmissionId = submissionId,
-            CriteriaLabel = "H3", GroupTitle = "HEALTH",
+            CriteriaLabel = "H3",
+            GroupTitle = "HEALTH",
             Status = "pending_verify",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
         await seedDb.SaveChangesAsync();
 
@@ -562,9 +615,12 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         var apId = Guid.NewGuid();
         seedDb.ActionPlans.Add(new ActionPlan
         {
-            Id = apId, CriteriaLabel = "H4", GroupTitle = "GENERAL",
+            Id = apId,
+            CriteriaLabel = "H4",
+            GroupTitle = "GENERAL",
             Status = "open",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
         await seedDb.SaveChangesAsync();
 
@@ -600,33 +656,47 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         var storeId = Guid.NewGuid();
         db.Stores.Add(new Store
         {
-            Id = storeId, Name = "Config Test Store",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = storeId,
+            Name = "Config Test Store",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var smProfileId = Guid.NewGuid();
         db.Profiles.Add(new Profile
         {
-            Id = smProfileId, FullName = "Config SM",
-            Email = $"sm-{smProfileId:N}@test.com", StoreId = storeId,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = smProfileId,
+            FullName = "Config SM",
+            Email = $"sm-{smProfileId:N}@test.com",
+            StoreId = storeId,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var templateId = Guid.NewGuid();
         db.Templates.Add(new Template
         {
-            Id = templateId, Title = "Config Test Template", Type = "QC",
-            Version = 1, IsActive = true,
+            Id = templateId,
+            Title = "Config Test Template",
+            Type = "QC",
+            Version = 1,
+            IsActive = true,
             ScoringLogicConfig = scoringLogicConfig,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var groupId = Guid.NewGuid();
         db.Groups.Add(new Group
         {
-            Id = groupId, TemplateId = templateId, Title = "TEST SECTION",
-            IsActive = true, OrderIndex = 0, MaxDeductionPoints = 100,
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = groupId,
+            TemplateId = templateId,
+            Title = "TEST SECTION",
+            IsActive = true,
+            OrderIndex = 0,
+            MaxDeductionPoints = 100,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         var criteriaIds = new List<Guid>();
@@ -636,10 +706,15 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
             criteriaIds.Add(cId);
             db.Criteria.Add(new Criterion
             {
-                Id = cId, GroupId = groupId, Label = $"C{i + 1}",
-                InputType = "pass_fail", IsActive = true, OrderIndex = i,
+                Id = cId,
+                GroupId = groupId,
+                Label = $"C{i + 1}",
+                InputType = "pass_fail",
+                IsActive = true,
+                OrderIndex = i,
                 PointsWeight = 5,
-                CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
             });
         }
 
@@ -665,7 +740,9 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
 
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 95m,
+            templateId,
+            storeId,
+            clientScore = 95m,
             answers = new[] { new { criteriaId = criteriaIds[0], value = "non_conform", numericValue = 0m, isRepeatedError = false } },
             idempotencyKey = Guid.NewGuid().ToString()
         });
@@ -710,8 +787,11 @@ public class SubmissionActionPlanTests : IClassFixture<TestWebApplicationFactory
         // Survey mode: clientScore must be provided (validation is mode-agnostic), use 0
         var response = await client.PostAsJsonAsync("/api/submissions", new
         {
-            templateId, storeId, clientScore = 0m,
-            answers, idempotencyKey = Guid.NewGuid().ToString()
+            templateId,
+            storeId,
+            clientScore = 0m,
+            answers,
+            idempotencyKey = Guid.NewGuid().ToString()
         });
 
         // Survey submissions should succeed

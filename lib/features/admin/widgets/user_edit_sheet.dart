@@ -85,7 +85,10 @@ class _UserEditSheetState extends State<UserEditSheet> {
   /// Silent empty-list is worse than a visible error — Sentinel observation.
   Future<void> _loadStores() async {
     try {
-      final stores = await widget.loadStores();
+      final stores = await widget.loadStores(
+        assignableAs: 'store_manager',
+        exceptUser: widget.user['id'] as String,
+      );
       if (mounted) setState(() => assignableStores = stores);
     } catch (_) {
       if (mounted) {

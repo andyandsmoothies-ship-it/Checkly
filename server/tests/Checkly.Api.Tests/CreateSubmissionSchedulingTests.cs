@@ -28,7 +28,7 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
         var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
 
         var token = await _fixture.LoginBootstrapAdminAsync(_fixture.CreateClient());
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
 
@@ -37,10 +37,10 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
         await db.SaveChangesAsync();
 
         var client = _fixture.CreateAuthenticatedClient(token);
-        
+
         // Simulating the bug payload: DateTimeOffset with a +07:00 offset
         var localTimeWithOffset = new DateTimeOffset(2026, 4, 30, 10, 0, 0, TimeSpan.FromHours(7));
-        
+
         var requestPayload = new
         {
             TemplateId = templateId,
@@ -51,7 +51,7 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
 
         // Act
         var response = await client.PostAsJsonAsync($"/api/submissions", requestPayload);
-        
+
         // Assert - If backend does not convert, Npgsql throws 500. We expect 201 Created.
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
@@ -60,7 +60,7 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
 
         var dbSubmission = await db.Submissions.FirstOrDefaultAsync(s => s.Id == submissionId);
         Assert.NotNull(dbSubmission);
-        
+
         // The saved time should be perfectly matching the universal UTC equivalent.
         Assert.Equal(localTimeWithOffset.ToUniversalTime(), dbSubmission.ScheduledAt);
     }
@@ -76,7 +76,7 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
         var adminToken = await _fixture.LoginBootstrapAdminAsync(_fixture.CreateClient());
         var (_, adminUserId) = await _fixture.RegisterUserAsync(_fixture.CreateClient(), "admindg_scheduling@test.com", "Aa1234567@", "Admin Delegate", "admin", adminToken);
         var (_, assigneeUserId) = await _fixture.RegisterUserAsync(_fixture.CreateClient(), "assignee_scheduling@test.com", "Aa1234567@", "Target Auditor", "auditor", adminToken);
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
 
@@ -85,7 +85,7 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
         await db.SaveChangesAsync();
 
         var client = _fixture.CreateAuthenticatedClient(adminToken);
-        
+
         var requestPayload = new
         {
             TemplateId = templateId,
@@ -97,7 +97,7 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
 
         // Act
         var response = await client.PostAsJsonAsync($"/api/submissions", requestPayload);
-        
+
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
@@ -106,10 +106,10 @@ public class CreateSubmissionSchedulingTests : IClassFixture<TestWebApplicationF
 
         var dbSubmission = await db.Submissions.FirstOrDefaultAsync(s => s.Id == submissionId);
         Assert.NotNull(dbSubmission);
-        
+
         // BUG VERIFICATION: The submission should belong to the assigneeUserId, NOT the admin's own ID.
         Assert.Equal(assigneeUserId, dbSubmission.AuditorId);
-        
+
         // The AuditorName snapshot should also match the assignee.
         Assert.Equal("Target Auditor", dbSubmission.AuditorName);
     }

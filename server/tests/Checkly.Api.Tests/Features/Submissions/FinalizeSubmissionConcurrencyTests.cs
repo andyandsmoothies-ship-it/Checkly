@@ -26,16 +26,16 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
 
-        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"concur_{Guid.NewGuid()}@test.com", "Aa1234567@", "Concur Auditor", "auditor");
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
         var submissionId = Guid.NewGuid();
 
         db.Templates.Add(new Template { Id = templateId, Title = "Concur Test", Version = 1, IsActive = true });
         db.Stores.Add(new Store { Id = storeId, Name = "Concur Store", IsActive = true });
-        
+
         var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "G1", IsActive = true, Weight = 1.0m };
         db.Groups.Add(group);
         var criteria = new Criterion { Id = Guid.NewGuid(), GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = 10, IsActive = true };
@@ -57,7 +57,7 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
 
         var client1 = _factory.CreateAuthenticatedClient(token);
         var client2 = _factory.CreateAuthenticatedClient(token);
-        
+
         var payload = new
         {
             ClientScore = 100m,
@@ -74,11 +74,11 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         var task2 = client2.PutAsJsonAsync($"/api/submissions/{submissionId}/finalize", payload);
 
         await Task.WhenAll(task1, task2);
-        
+
         var response1 = await task1;
         var response2 = await task2;
         var results = new[] { response1.StatusCode, response2.StatusCode };
-        
+
         // One must be 200, one must be 409
         Assert.Contains(HttpStatusCode.OK, results);
         Assert.Contains(HttpStatusCode.Conflict, results);
@@ -118,21 +118,21 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
-            
-            var reg = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+
+            var reg = await _factory.RegisterUserAsync(_factory.CreateClient(),
                 $"concur_ap_{Guid.NewGuid()}@test.com", "Aa1234567@", "AP Auditor", "auditor");
             token = reg.Token;
             userId = reg.UserId;
 
             var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "G1", IsActive = true, Weight = 1.0m };
             db.Groups.Add(group);
-            
+
             var criteria = new Criterion { Id = criteriaId, GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = 10, IsActive = true };
             db.Criteria.Add(criteria);
 
             db.Templates.Add(new Template { Id = templateId, Title = "AP Concur", Version = 1, IsActive = true, ScoringLogicConfig = "{\"scoringMode\":\"penalty\"}" });
             db.Stores.Add(new Store { Id = storeId, Name = "AP Store", IsActive = true });
-            
+
             db.Submissions.Add(new Submission
             {
                 Id = submissionId,
@@ -150,7 +150,7 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
 
         var client1 = _factory.CreateAuthenticatedClient(token);
         var client2 = _factory.CreateAuthenticatedClient(token);
-        
+
         var payload = new
         {
             ClientScore = 90m,
@@ -180,12 +180,12 @@ public class FinalizeSubmissionConcurrencyTests : IClassFixture<TestWebApplicati
         // One of the bodies should contain the conflict message
         var bodies = response1Body + response2Body;
         Assert.Contains("Submission is being finalized by another request. Please retry.", bodies);
-        
+
         using (var verifyScope = _factory.Services.CreateScope())
         {
             var verifyDb = verifyScope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
             var actionPlanCount = await verifyDb.ActionPlans.CountAsync(ap => ap.SubmissionId == submissionId);
-            
+
             // Expected exactly 1 action plan since exactly one request succeeded
             Assert.Equal(1, actionPlanCount);
         }

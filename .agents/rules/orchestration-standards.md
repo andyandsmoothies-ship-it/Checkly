@@ -80,6 +80,7 @@ When writing or moving files via terminal commands (e.g., `copy`, `move`):
 1. **Idempotent Directories**: Pre-create target directories to prevent silent failures (e.g., `if not exist [dir] mkdir [dir]`).
 2. **Quote Paths**: Always wrap full source and destination paths in `""`.
 3. **Mandatory Verification**: Never trust command exit codes. You MUST execute `dir` or `list_dir` on the destination to mathematically prove the file exists before yielding.
+4. **Test Logs & Output Routing**: NEVER pipe command output (e.g., `dotnet test > test_output.txt`) into the project root, `server/`, or `lib/`. ALL terminal output dumps MUST be routed to `.agents/tmp/` to prevent workspace pollution.
 
 ## Workflow Bypassing (TRANSPARENCY MANDATE)
 If an AI agent skips or merges a workflow phase (e.g. bypassing `[/tdd]` because `[/atdd]` provided enough coverage):
@@ -106,24 +107,24 @@ If an AI agent skips or merges a workflow phase (e.g. bypassing `[/tdd]` because
 **To guarantee traceability across multiple workflows (Analyze -> ATDD -> Implement -> Verify), artifacts MUST be grouped by Topic/Issue Folder, NOT by long filenames.**
 - **Prefixing**: Topics MUST start with an Issue/Epic ID (e.g., `F-123_auth_fixes`).
 - **Context-Passing**: When invoked with an upstream artifact (e.g., `@[/implement] docs/architecture/F-123_auth_fixes/implementation_plan.md`), you MUST extract the parent folder name (`F-123_auth_fixes`) and use it EXACTLY for all output artifacts. Do NOT invent or guess topic names.
-- **Folder Structure**: Always use exact filenames inside the topic folder:
-  - `.agents/active_tasks/[topic]/task.md`
-  - `.agents/active_tasks/[topic]/walkthrough.md`
-  - `docs/architecture/[topic]/implementation_plan.md`
-  - `docs/qa/contracts/[topic]/test_contracts.md`
-  - `docs/qa/gates/[topic]/executed_tests.md`
-  - `docs/diagnostics/[topic]/audit_report.md`
+- **Artifact Naming Convention**: Always use dynamic filenames that include a timestamp and unique ID to prevent collisions, especially across multiple slices of an epic:
+  - `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`
+  - `.agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`
+  - `docs/architecture/[topic]/implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`
+  - `docs/qa/contracts/[topic]/test_contracts_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`
+  - `docs/qa/gates/[topic]/executed_tests_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`
+  - `docs/diagnostics/[topic]/audit_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`
 
 ## Enterprise Artifact Storage Mandate
 **To prevent artifact bloat in the AI session memory, generated files MUST be saved into the project's permanent repository structure.**
 - **Rule**: Do not save generated markdown reports or plans in the default `brain/` directory. Use the designated project folders below.
-- **Action**: Always use `write_to_file` to output to the absolute path of these locations:
-  - `docs/architecture/[topic]/` : implementation_plan.md, etc.
+- **Action**: Always use `write_to_file` to output to the absolute path of these locations using the dynamic naming convention:
+  - `docs/architecture/[topic]/` : implementation_plan, analysis_epic, decision_record, etc.
   - `docs/product/` : Requirements, process models, research notes.
-  - `docs/diagnostics/` : Audit reports (`audit_*_report.md`), incident/failure reports (`failure_report_*.md`).
-  - `docs/qa/contracts/[topic]/` : test_contracts.md
-  - `docs/qa/gates/[topic]/` : executed_tests.md
-  - `.agents/active_tasks/[topic]/` : task.md, walkthrough.md
+  - `docs/diagnostics/[topic]/` : Audit reports, failure reports.
+  - `docs/qa/contracts/[topic]/` : test_contracts.
+  - `docs/qa/gates/[topic]/` : executed_tests, verification.
+  - `.agents/active_tasks/[topic]/` : task, walkthrough.
 
 <mandatory_constraints>
 - NEVER execute `git` commands. Yield to the user.

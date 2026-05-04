@@ -59,18 +59,6 @@ public static class CreateUser
                 });
         }
 
-        if (request.Role == "area_manager" && request.AreaId.HasValue)
-        {
-            var existingAm = await RoleAssignmentGuard.FindExistingAreaManager(
-                db, request.AreaId.Value, null, ct);
-            if (existingAm.HasValue)
-                return TypedResults.Conflict(new
-                {
-                    error = "Area already has an area manager assigned",
-                    existingManagerId = existingAm.Value
-                });
-        }
-
         // 5. Create Identity user
         var appUser = new AppUser
         {

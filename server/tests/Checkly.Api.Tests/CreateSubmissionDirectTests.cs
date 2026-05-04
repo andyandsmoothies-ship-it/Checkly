@@ -28,13 +28,13 @@ public class CreateSubmissionDirectTests : IClassFixture<TestWebApplicationFacto
 
         var adminToken = await _fixture.LoginBootstrapAdminAsync(_fixture.CreateClient());
         var (token, userId) = await _fixture.RegisterUserAsync(_fixture.CreateClient(), "createcomp@test.com", "Aa1234567@", "Create Test", "auditor");
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
 
         db.Templates.Add(new Template { Id = templateId, Title = "Direct Completes", Version = 1, IsActive = true });
         db.Stores.Add(new Store { Id = storeId, Name = "Direct Store", IsActive = true });
-        
+
         var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "Section 1", IsActive = true };
         db.Groups.Add(group);
         var criteria = new Criterion { Id = Guid.NewGuid(), GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = 10, IsActive = true };
@@ -43,7 +43,7 @@ public class CreateSubmissionDirectTests : IClassFixture<TestWebApplicationFacto
         await db.SaveChangesAsync();
 
         var client = _fixture.CreateAuthenticatedClient(token);
-        
+
         var requestPayload = new
         {
             TemplateId = templateId,
@@ -59,7 +59,7 @@ public class CreateSubmissionDirectTests : IClassFixture<TestWebApplicationFacto
 
         // Act
         var response = await client.PostAsJsonAsync($"/api/submissions", requestPayload);
-        
+
         // Assert
         if (!response.IsSuccessStatusCode)
         {
@@ -74,7 +74,7 @@ public class CreateSubmissionDirectTests : IClassFixture<TestWebApplicationFacto
         var sectionScores = await db.SubmissionSectionScores
             .Where(s => s.SubmissionId == submissionId)
             .ToListAsync();
-        
+
         Assert.Single(sectionScores);
         Assert.Equal("Section 1", sectionScores[0].SectionTitle);
         Assert.Equal(10m, sectionScores[0].Score);
@@ -82,7 +82,7 @@ public class CreateSubmissionDirectTests : IClassFixture<TestWebApplicationFacto
         // Verify that the StoreAnalyticsUpdater ran
         var snapshot = await db.StoreAnalyticsSnapshots
             .FirstOrDefaultAsync(s => s.StoreId == storeId);
-            
+
         Assert.NotNull(snapshot);
         Assert.Equal(1, snapshot.TotalAudits30d); // This direct submission is the first one
         Assert.Equal(100m, snapshot.LastAuditScore);

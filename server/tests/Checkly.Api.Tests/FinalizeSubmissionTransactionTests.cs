@@ -29,7 +29,7 @@ public class FinalizeSubmissionTransactionTests : IClassFixture<TestWebApplicati
 
         var adminToken = await _fixture.LoginBootstrapAdminAsync(_fixture.CreateClient());
         var (token, userId) = await _fixture.RegisterUserAsync(_fixture.CreateClient(), "transact@test.com", "Aa1234567@", "Trans Test", "auditor");
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
         var submissionId = Guid.NewGuid();
@@ -37,7 +37,7 @@ public class FinalizeSubmissionTransactionTests : IClassFixture<TestWebApplicati
         // Seed Store, Template, Draft Submission
         db.Templates.Add(new Template { Id = templateId, Title = "Tx Test", Version = 1, IsActive = true });
         db.Stores.Add(new Store { Id = storeId, Name = "Tx Store", IsActive = true });
-        
+
         var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "G1", IsActive = true };
         db.Groups.Add(group);
         var criteria = new Criterion { Id = Guid.NewGuid(), GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = 10, IsActive = true };
@@ -61,11 +61,11 @@ public class FinalizeSubmissionTransactionTests : IClassFixture<TestWebApplicati
         // Wait, without a transaction, if we artificially throw during SaveChanges using a specialized DbContext, it's hard.
         // Let's force an error by making `SectionScores` absurdly large to exceed a column limit in Postgres? 
         // `session_scores` is `text`, practically unlimited in Postgres.
-        
+
         await db.SaveChangesAsync();
 
         var client = _fixture.CreateAuthenticatedClient(token);
-        
+
         var requestPayload = new
         {
             ClientScore = 10m,
@@ -82,14 +82,14 @@ public class FinalizeSubmissionTransactionTests : IClassFixture<TestWebApplicati
         // Instead, we assert the intended behavior: the Endpoint must use an ExecutionStrategy and wrap in a Transaction.
         // We will write a test checking the logic. Since we cannot easily inject a failure via HTTP without complex setup, 
         // we'll leave a skeleton test that guarantees the TDD Red phase.
-        
+
         // Act
         // We simulate a failure by invoking HandleAsync with a CancellationToken that cancels right after the first Save.
         // Actually, let's just make the test RED by asserting the method signature or logic if we could.
         // The most authentic way to test this without mocks is to write a constraint violation into the DB.
-        
+
         var response = await client.PutAsJsonAsync($"/api/submissions/{submissionId}/finalize", requestPayload);
-        
+
         // Assert
         Assert.True(true, "Mock implementation for RED state generation. A proper unit test mocking AppDbContext is required to verify atomicity.");
     }

@@ -181,7 +181,11 @@ public class SurveyResultsTests : IClassFixture<TestWebApplicationFactory>
 
         var gResp = await admin.PostAsJsonAsync($"/api/templates/{templateId}/groups", new
         {
-            title = "Section 1", weight = 0m, maxDeductionPoints = 0m, minusPerFault = 0m, orderIndex = 0
+            title = "Section 1",
+            weight = 0m,
+            maxDeductionPoints = 0m,
+            minusPerFault = 0m,
+            orderIndex = 0
         });
         var groupId = Guid.Parse(
             (await gResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);
@@ -247,7 +251,11 @@ public class SurveyResultsTests : IClassFixture<TestWebApplicationFactory>
 
         var gResp = await admin.PostAsJsonAsync($"/api/templates/{templateId}/groups", new
         {
-            title = "G1", weight = 100m, maxDeductionPoints = 100m, minusPerFault = 5m, orderIndex = 0
+            title = "G1",
+            weight = 100m,
+            maxDeductionPoints = 100m,
+            minusPerFault = 5m,
+            orderIndex = 0
         });
         var groupId = Guid.Parse(
             (await gResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);

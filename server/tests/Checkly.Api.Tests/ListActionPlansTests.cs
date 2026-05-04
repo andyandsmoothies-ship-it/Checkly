@@ -44,16 +44,26 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
         // Add one action plan for each store
         db.ActionPlans.Add(new ActionPlan
         {
-            Id = Guid.NewGuid(), StoreId = store1Id, StoreName = "Store 1",
-            CriteriaLabel = "H1", GroupTitle = "HOSPITALITY", Status = "open",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = Guid.NewGuid(),
+            StoreId = store1Id,
+            StoreName = "Store 1",
+            CriteriaLabel = "H1",
+            GroupTitle = "HOSPITALITY",
+            Status = "open",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         db.ActionPlans.Add(new ActionPlan
         {
-            Id = Guid.NewGuid(), StoreId = store2Id, StoreName = "Store 2",
-            CriteriaLabel = "H2", GroupTitle = "HYGIENE", Status = "open",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+            Id = Guid.NewGuid(),
+            StoreId = store2Id,
+            StoreName = "Store 2",
+            CriteriaLabel = "H2",
+            GroupTitle = "HYGIENE",
+            Status = "open",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         });
 
         await db.SaveChangesAsync();
@@ -86,59 +96,63 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
     // ==========================================
 
     [Fact]
-    public async Task AM_GetsList_ReturnsPlansForStoresInArea()
-    {
-        // Arrange
-        var (area1Id, _, store1Id, _) = await SeedTestDataAsync();
-        var (client, _) = await CreateManagerClientAsync("area_manager", areaId: area1Id);
-
-        // Act
-        var response = await client.GetAsync("/api/action-plans");
-
-        // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var items = body.GetProperty("items").EnumerateArray().ToList();
-
-        Assert.NotEmpty(items);
-        Assert.All(items, i => Assert.Equal(store1Id.ToString(), i.GetProperty("storeId").GetString()));
-    }
-
-    [Fact]
-    public async Task AM_GetsList_ExcludesPlansFromStoresOutsideArea()
+    public async Task AM_GetsList_ReturnsPlansForAssignedStores_RegardlessOfArea()
     {
         // Arrange
         var (area1Id, area2Id, store1Id, store2Id) = await SeedTestDataAsync();
-        var (client, _) = await CreateManagerClientAsync("area_manager", areaId: area1Id);
+        // Give AM no areaId so old logic fails
+        var (client, userId) = await CreateManagerClientAsync("area_manager");
+
+        // Assign both store1 and store2 via junction
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = userId, StoreId = store1Id });
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = userId, StoreId = store2Id });
+            await db.SaveChangesAsync();
+        }
 
         // Act
         var response = await client.GetAsync("/api/action-plans");
 
-        // Assert
+        // Assert - Expect both plans because they are in junction
+        // Fails currently: returns empty because profile.AreaId doesn't match store.AreaId
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var items = body.GetProperty("items").EnumerateArray().ToList();
+        var items = body.GetProperty("items").EnumerateArray().Select(x => x.GetProperty("storeId").GetString()).ToList();
 
-        Assert.DoesNotContain(items, i => i.GetProperty("storeId").GetString() == store2Id.ToString());
+        Assert.Equal(2, items.Count);
+        Assert.Contains(store1Id.ToString(), items);
+        Assert.Contains(store2Id.ToString(), items);
     }
 
     [Fact]
-    public async Task AM_Unscoped_GetsList_ReturnsEmpty()
+    public async Task AM_GetsList_ExcludesPlansFromStoresNotInJunction()
     {
         // Arrange
-        await SeedTestDataAsync();
-        // AreaId is explicitly null
-        var (client, _) = await CreateManagerClientAsync("area_manager", areaId: null);
+        var (area1Id, area2Id, store1Id, store2Id) = await SeedTestDataAsync();
+        // Set areaId to match area1 so old logic would pass for store1
+        var (client, userId) = await CreateManagerClientAsync("area_manager", areaId: area1Id);
+
+        // DO NOT add store1 to junction, ONLY add store2
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = userId, StoreId = store2Id });
+            await db.SaveChangesAsync();
+        }
 
         // Act
         var response = await client.GetAsync("/api/action-plans");
 
-        // Assert
+        // Assert - Expect ONLY store2's plan
+        // Fails currently: returns store1's plan because profile.AreaId == store1.AreaId
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var items = body.GetProperty("items").EnumerateArray().ToList();
+        var items = body.GetProperty("items").EnumerateArray().Select(x => x.GetProperty("storeId").GetString()).ToList();
 
-        Assert.Empty(items);
+        Assert.Single(items);
+        Assert.Contains(store2Id.ToString(), items);
     }
 
     /// <summary>
@@ -167,8 +181,11 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
         {
             Id = actionPlanId,
             SubmissionId = submissionId,
-            CriteriaLabel = "A1", GroupTitle = "AUDIT", Status = "open",
-            CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow,
+            CriteriaLabel = "A1",
+            GroupTitle = "AUDIT",
+            Status = "open",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
         });
 
         await db.SaveChangesAsync();

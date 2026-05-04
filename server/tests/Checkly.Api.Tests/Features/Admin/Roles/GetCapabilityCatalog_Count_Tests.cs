@@ -29,7 +29,7 @@ public class GetCapabilityCatalog_Count_Tests : IClassFixture<TestWebApplication
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var catalog = await response.Content.ReadFromJsonAsync<CatalogResponse>();
-        
+
         Assert.NotNull(catalog);
         Assert.Contains("admin:access", catalog.Capabilities);
         Assert.Contains("analytics:area", catalog.Capabilities);

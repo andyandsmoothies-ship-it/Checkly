@@ -94,13 +94,13 @@ public class UpdateActionPlan_StaleStateConflict_Tests : IClassFixture<TestWebAp
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var profile = await db.Profiles.FindAsync(userId);
-        
+
         var client = _factory.CreateClient();
         // Assume password is "SM123!@" from seeding. Actually, it's easier to just register a new user in the test.
         // I will change the Seed method to return the token too. Let's fix that.
         return client; // Unused, replaced by better approach below
     }
-    
+
     // Better seeding method returning the ready-to-use authenticated client.
     private async Task<(HttpClient Client, Guid ActionPlanId)> SeedActionPlanAndClientAsync(string status)
     {
@@ -202,11 +202,11 @@ public class UpdateActionPlan_StaleStateConflict_Tests : IClassFixture<TestWebAp
         var ap = await db.ActionPlans.FindAsync(apId);
         Assert.Equal("closed", ap!.Status); // Must remain closed
 
-        var auditLog = await db.SystemLogs.FirstOrDefaultAsync(l => 
-            l.EntityType == "ActionPlan" && 
-            l.EntityId == apId && 
+        var auditLog = await db.SystemLogs.FirstOrDefaultAsync(l =>
+            l.EntityType == "ActionPlan" &&
+            l.EntityId == apId &&
             l.Action == "action_plan_update_rejected");
-            
+
         Assert.NotNull(auditLog); // Audit log must be written for forensic visibility
     }
 
@@ -226,7 +226,7 @@ public class UpdateActionPlan_StaleStateConflict_Tests : IClassFixture<TestWebAp
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var ap = await db.ActionPlans.FindAsync(apId);
-        
+
         Assert.Equal("pending_verify", ap!.Status);
         Assert.NotNull(ap.EvidenceSubmittedAt);
     }

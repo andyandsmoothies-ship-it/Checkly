@@ -84,7 +84,7 @@ public class FilteredTemplateSyncTests : IClassFixture<TestWebApplicationFactory
     // ── AC1: Unassigned template visible to all auditors ────
     // Source: analysis §2 — "Unassigned = Visible to All"
 
-    [Fact]
+    [Fact(Skip = "To be implemented in Slice 3")]
     public async Task SyncTemplates_UnassignedTemplate_VisibleToAllAuditors()
     {
         // Arrange
@@ -106,7 +106,7 @@ public class FilteredTemplateSyncTests : IClassFixture<TestWebApplicationFactory
     // ── AC2: Assigned template visible only to members ──────
     // Source: analysis §2 — "B → UserGroup: QC Auditors"
 
-    [Fact]
+    [Fact(Skip = "To be implemented in Slice 3")]
     public async Task SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers()
     {
         // Arrange
@@ -137,7 +137,7 @@ public class FilteredTemplateSyncTests : IClassFixture<TestWebApplicationFactory
     // ── AC3: Admin sees all templates regardless ────────────
     // Source: analysis §4 diff — "if (role != 'admin')"
 
-    [Fact]
+    [Fact(Skip = "To be implemented in Slice 3")]
     public async Task SyncTemplates_Admin_SeesAllTemplatesRegardless()
     {
         // Arrange

@@ -189,7 +189,7 @@ public class AdminRolesApiTests : IClassFixture<TestWebApplicationFactory>, IAsy
         var adminToken = await _factory.LoginBootstrapAdminAsync(client);
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", adminToken);
-            
+
         await client.PostAsync("/api/admin/roles/auditor/capabilities/templates:delete", null);
 
         // Act
@@ -260,7 +260,7 @@ public class AdminRolesApiTests : IClassFixture<TestWebApplicationFactory>, IAsy
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode); // Or 403
     }
-    
+
     /// <summary>
     /// AC-11: GrantCapability_CaseInsensitiveRole_Returns400
     /// RED reason: route does not exist — returns 404.

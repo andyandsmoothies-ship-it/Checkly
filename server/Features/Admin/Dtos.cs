@@ -13,6 +13,7 @@ public sealed record UserDto(
     Guid? AreaId,
     string? AreaName,
     bool IsLocked,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    Guid[]? AssignedStoreIds = null);
 
 public sealed record BanUserResponse(Guid Id, bool IsBanned);

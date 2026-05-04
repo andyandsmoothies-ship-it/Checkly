@@ -88,7 +88,7 @@ public class LocalFileStorageIntegrationTests : IClassFixture<TestWebApplication
 
         // ASSERT
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        
+
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         var url = json.GetProperty("url").GetString();
         Assert.Contains(submissionId.ToString(), url);
@@ -105,10 +105,10 @@ public class LocalFileStorageIntegrationTests : IClassFixture<TestWebApplication
         var fileContent = new ByteArrayContent([0xFF, 0xD8, 0xFF]);
         fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
         content.Add(fileContent, "file", "downloadable.jpg");
-        
+
         var uploadResponse = await client.PostAsync($"/api/photos/upload/{submissionId}", content);
         uploadResponse.EnsureSuccessStatusCode();
-        
+
         var json = await uploadResponse.Content.ReadFromJsonAsync<JsonElement>();
         var url = json.GetProperty("url").GetString();
 
@@ -118,7 +118,7 @@ public class LocalFileStorageIntegrationTests : IClassFixture<TestWebApplication
         // ASSERT
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("image/jpeg", response.Content.Headers.ContentType?.MediaType);
-        
+
         var bytes = await response.Content.ReadAsByteArrayAsync();
         Assert.Equal(3, bytes.Length);
     }
@@ -148,7 +148,7 @@ public class LocalFileStorageIntegrationTests : IClassFixture<TestWebApplication
         var content = new MultipartFormDataContent();
         var fileContent = new ByteArrayContent([0xFF, 0xD8, 0xFF]);
         fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-        
+
         content.Add(fileContent, "file", "../../evil.exe");
 
         // ACT

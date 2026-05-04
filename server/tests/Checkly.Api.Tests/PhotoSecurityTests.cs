@@ -25,7 +25,7 @@ public class PhotoSecurityTests : IClassFixture<TestWebApplicationFactory>
             client, "sec1@test.com", "Sec123!@", "Sec1", "auditor");
 
         var authClient = _factory.CreateAuthenticatedClient(token);
-        
+
         // Act: Use traversal payload that breaks Guid.TryParse
         var response = await authClient.GetAsync("/api/photos/..%2f..%2fappsettings.json/some-file.jpg");
 
@@ -44,7 +44,7 @@ public class PhotoSecurityTests : IClassFixture<TestWebApplicationFactory>
 
         var authClient = _factory.CreateAuthenticatedClient(token);
         var subId = Guid.NewGuid();
-        
+
         // Act: Attempt traversal in filename
         var response = await authClient.GetAsync($"/api/photos/{subId}/..%2f..%2f..%2fetc%2fpasswd");
 

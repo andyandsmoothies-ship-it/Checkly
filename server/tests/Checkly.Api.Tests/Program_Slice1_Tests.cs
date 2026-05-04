@@ -157,7 +157,7 @@ public class Program_Slice1_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var adminClient = await CreateAdminClientAsync();
-        
+
         // Act
         var response = await adminClient.GetAsync("/api/programs");
 

@@ -26,19 +26,19 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
 
-        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"sm_audit_{Guid.NewGuid()}@test.com", "Aa1234567@", "Store Manager Audit", "store_manager");
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
         var planId = Guid.NewGuid();
 
         db.Templates.Add(new Template { Id = templateId, Title = "Audit Test", Version = 1, IsActive = true });
         db.Stores.Add(new Store { Id = storeId, Name = "Audit Store", IsActive = true });
-        
+
         var profile = await db.Profiles.FindAsync(userId);
         if (profile != null) profile.StoreId = storeId;
-        
+
         db.ActionPlans.Add(new ActionPlan
         {
             Id = planId,
@@ -54,7 +54,7 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
         await db.SaveChangesAsync();
 
         var client = _factory.CreateAuthenticatedClient(token);
-        
+
         var payload = new
         {
             Status = "pending_verify",
@@ -69,13 +69,13 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
 
         var json = await response.Content.ReadAsStringAsync();
         var node = JsonNode.Parse(json);
-        
+
         Assert.NotNull(node);
-        
+
         // Assert fields are present in the response
         Assert.NotNull(node["evidenceSubmittedAt"]);
         Assert.NotNull(node["evidenceSubmittedByName"]);
-        
+
         // Assert the correct name was captured from the profile
         Assert.Equal("Store Manager Audit", node["evidenceSubmittedByName"]?.GetValue<string>());
     }
@@ -87,9 +87,9 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
 
-        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var (token, userId) = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"auditor_{Guid.NewGuid()}@test.com", "Aa1234567@", "Auditor Test", "auditor");
-        
+
         var templateId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
         var planId = Guid.NewGuid();
@@ -97,7 +97,7 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
 
         db.Templates.Add(new Template { Id = templateId, Title = "Audit Test 2", Version = 1, IsActive = true });
         db.Stores.Add(new Store { Id = storeId, Name = "Audit Store 2", IsActive = true });
-        
+
         db.Submissions.Add(new Submission
         {
             Id = submissionId,
@@ -132,9 +132,9 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
         // If the fields don't exist yet, this will fail setup, which is fine, but we'll try it.
         // Actually, if we use raw SQL and the columns aren't there, the test arrange will crash.
         // So we will just test that the API response has closedAt but DOES NOT return evidenceSubmittedAt as DateTimeOffset.UtcNow.
-        
+
         var client = _factory.CreateAuthenticatedClient(token);
-        
+
         var payload = new
         {
             Status = "closed"
@@ -148,12 +148,12 @@ public class UpdateActionPlan_AuditTrail_Tests : IClassFixture<TestWebApplicatio
 
         var json = await response.Content.ReadAsStringAsync();
         var node = JsonNode.Parse(json);
-        
+
         Assert.NotNull(node);
-        
+
         // Ensure closedAt is set
         Assert.NotNull(node["closedAt"]);
-        
+
         // Ideally we check it didn't overwrite, but since we can't seed the DB without the columns,
         // The implementation MUST ensure EvidenceSubmittedAt is not updated if status == closed.
         // This test ensures the endpoint doesn't crash on closing.

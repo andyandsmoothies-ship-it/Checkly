@@ -35,7 +35,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
 
         db.Templates.Add(new Template { Id = templateId, Title = "Tx Test", Version = 1, IsActive = true, ScoringLogicConfig = $"{{\"scoringMode\":\"{scoringMode}\"}}", CreatedBy = userId, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
         db.Stores.Add(new Store { Id = storeId, Name = "Tx Store", IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-        
+
         var group = new Group { Id = Guid.NewGuid(), TemplateId = templateId, Title = "G1", IsActive = true, Weight = weight, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
         db.Groups.Add(group);
         var criteria = new Criterion { Id = Guid.NewGuid(), GroupId = group.Id, Label = "C1", InputType = "pass_fail", PointsWeight = pointsWeight, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
@@ -73,11 +73,11 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var responseContent = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseContent);
-        
+
         var rawEarned = doc.RootElement.GetProperty("rawEarnedPoints").GetDecimal();
         var rawMax = doc.RootElement.GetProperty("rawMaxPoints").GetDecimal();
         var isWeighted = doc.RootElement.GetProperty("isWeighted").ValueKind;
-        
+
         // numericValue=0 (no faults) → binary pass → earned = full pointsWeight = 10
         Assert.Equal(10m, rawEarned);
         Assert.Equal(10m, rawMax);
@@ -99,11 +99,11 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var responseContent = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseContent);
-        
+
         var rawEarned = doc.RootElement.GetProperty("rawEarnedPoints").ValueKind;
         var rawMax = doc.RootElement.GetProperty("rawMaxPoints").ValueKind;
         var isWeighted = doc.RootElement.GetProperty("isWeighted").GetBoolean();
-        
+
         Assert.Equal(JsonValueKind.Null, rawEarned);
         Assert.Equal(JsonValueKind.Null, rawMax);
         Assert.True(isWeighted);
@@ -124,7 +124,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var responseContent = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseContent);
-        
+
         var isWeighted = doc.RootElement.GetProperty("isWeighted").GetBoolean();
         Assert.False(isWeighted);
     }
@@ -144,7 +144,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var responseContent = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseContent);
-        
+
         Assert.Equal(JsonValueKind.Null, doc.RootElement.GetProperty("rawEarnedPoints").ValueKind);
         Assert.Equal(JsonValueKind.Null, doc.RootElement.GetProperty("rawMaxPoints").ValueKind);
         Assert.Equal(JsonValueKind.Null, doc.RootElement.GetProperty("isWeighted").ValueKind);
@@ -166,9 +166,9 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var responseContent = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseContent);
-        
+
         var item = doc.RootElement.GetProperty("items").EnumerateArray().FirstOrDefault(x => x.GetProperty("id").GetGuid() == setup.SubmissionId);
-        
+
         Assert.Equal(10m, item.GetProperty("rawEarnedPoints").GetDecimal());
         Assert.Equal(10m, item.GetProperty("rawMaxPoints").GetDecimal());
         Assert.Equal(JsonValueKind.Null, item.GetProperty("isWeighted").ValueKind);
@@ -190,7 +190,7 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var responseContent = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseContent);
-        
+
         Assert.Equal(10m, doc.RootElement.GetProperty("rawEarnedPoints").GetDecimal());
     }
 
@@ -210,10 +210,10 @@ public class DualLayerScoringIntegrationTests : IClassFixture<TestWebApplication
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var responseContent = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseContent);
-        
+
         var items = doc.RootElement.GetProperty("items").EnumerateArray();
         var item = items.FirstOrDefault(x => x.GetProperty("id").GetGuid() == setup.SubmissionId);
-        
+
         Assert.Equal(10m, item.GetProperty("rawEarnedPoints").GetDecimal());
     }
 }

@@ -325,6 +325,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("Code")
+                        .HasColumnType("text")
+                        .HasColumnName("code");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -742,6 +746,29 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("StoreId");
 
                     b.ToTable("profiles", (string)null);
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProfileStoreAssignment", b =>
+                {
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("profile_id");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("ProfileId", "StoreId");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("profile_store_assignments", (string)null);
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", b =>
@@ -1835,6 +1862,25 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Store");
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProfileStoreAssignment", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Profile", "Profile")
+                        .WithMany("StoreAssignments")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
+                        .WithMany("AssignedManagers")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Store");
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", b =>
                 {
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", "Program")
@@ -2065,9 +2111,16 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Criteria");
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Profile", b =>
+                {
+                    b.Navigation("StoreAssignments");
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Store", b =>
                 {
                     b.Navigation("ActionPlans");
+
+                    b.Navigation("AssignedManagers");
 
                     b.Navigation("Profiles");
 

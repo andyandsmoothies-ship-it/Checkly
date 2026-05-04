@@ -170,4 +170,28 @@ class ProgramApiService {
     );
     return ProgramSummaryResponse.fromJson(response.data!);
   }
+
+  /// Creates a new program and issues it to the specified stores.
+  /// POST /api/programs → 201 Created with { programId, assignmentCount }
+  ///
+  /// Throws [DioException] on network or non-2xx server errors.
+  Future<Map<String, dynamic>> createProgram({
+    required String title,
+    required String category,
+    required DateTime deadline,
+    required String templateId,
+    required List<String> storeIds,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/programs',
+      data: {
+        'title': title,
+        'category': category,
+        'deadline': deadline.toIso8601String(),
+        'templateId': templateId,
+        'storeIds': storeIds,
+      },
+    );
+    return response.data!;
+  }
 }

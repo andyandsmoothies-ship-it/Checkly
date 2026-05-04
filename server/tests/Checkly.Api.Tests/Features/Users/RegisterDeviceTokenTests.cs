@@ -36,10 +36,10 @@ public class RegisterDeviceTokenTests : IClassFixture<TestWebApplicationFactory>
         // Assert DB state using raw SQL to avoid compiler errors on missing DbSets
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
+
         using var command = db.Database.GetDbConnection().CreateCommand();
         command.CommandText = "SELECT COUNT(*) FROM user_device_tokens WHERE user_id = @userId AND fcm_token = @token";
-        
+
         var p1 = command.CreateParameter();
         p1.ParameterName = "@userId";
         p1.Value = user.UserId;

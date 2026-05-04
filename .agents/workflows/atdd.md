@@ -40,7 +40,7 @@ Workflow: /atdd | Track: [B2 / C]
 | **Skill Load** | MANDATORY: Load `atdd-quality-gates` skill. |
 | **Verification** | MANDATORY: Read upstream `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md`. Execute `grep_search` / `view_file` to confirm existing entities. **Exception:** If the plan explicitly defines a NET-NEW API route/feature to be built, do NOT flag its absence as an error. Your job is to write the failing test for it (Red Phase). For existing dependencies that are missing, IF discrepancy THEN Flag to user → STOP. |
 | **Origin Idea Alignment** | MANDATORY: Read the `[ORIGIN_IDEA]` tag. You must evaluate if the upstream plan actually solves the human's goal. Then, your test scenarios MUST explicitly assert that the original business goal is achieved. Prove the business value, not just the compiler state. |
-| **Gap Analysis** | MANDATORY: Play the Adversary. Independent of the upstream spec, ask: "What edge cases, state leaks, migrations, or boundary errors did the Architect forget?" Define minimally 2 ACs that are NOT explicitly requested by the spec to act as a safety net. |
+| **Gap Analysis** | MANDATORY: Play the Adversary. Ask: "What boundary limits, concurrency flaws (double-clicks), timeouts, or hostile bypasses did the spec miss?" Define minimally 2 ACs that are NOT explicitly requested by the spec to act as an edge-case safety net. |
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response to the user before proceeding to the next phase. (1) `atdd-quality-gates` loaded? (2) API routes confirmed in BOTH server/ and lib/? (3) Discrepancies found? (4) Gap Analysis ACs defined?
 

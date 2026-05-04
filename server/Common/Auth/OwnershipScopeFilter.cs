@@ -14,7 +14,7 @@ namespace Checkly.Api.Common.Auth;
 ///   admin         → all rows (no filter)
 ///   auditor       → own submissions (AuditorId == userId)
 ///   store_manager → submissions for their store (Profile.StoreId)
-///   area_manager  → submissions for all stores in their area (Profile.AreaId → Stores)
+///   area_manager  → submissions for all stores assigned via ProfileStoreAssignment
 ///   (other)       → no rows (defensive fallback)
 ///
 /// Called AFTER the capability gate (RequireCapability) has already passed.
@@ -50,20 +50,10 @@ public static class OwnershipScopeFilter
                 break;
 
             case "area_manager":
-                var amProfile = await db.Profiles
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.Id == userId, ct);
-                if (amProfile?.AreaId != null)
-                {
-                    var storeSubquery = db.Stores
-                        .Where(s => s.AreaId == amProfile.AreaId)
-                        .Select(s => s.Id);
-                    query = query.Where(s => s.StoreId.HasValue && storeSubquery.Contains(s.StoreId.Value));
-                }
-                else
-                {
-                    query = query.Where(_ => false); // No area → no results (defensive)
-                }
+                var assignedStoreSubquery = db.ProfileStoreAssignments
+                    .Where(a => a.ProfileId == userId)
+                    .Select(a => a.StoreId);
+                query = query.Where(s => s.StoreId.HasValue && assignedStoreSubquery.Contains(s.StoreId.Value));
                 break;
 
             default:

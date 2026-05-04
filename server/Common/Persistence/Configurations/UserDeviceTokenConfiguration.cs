@@ -19,5 +19,6 @@ public class UserDeviceTokenConfiguration : IEntityTypeConfiguration<UserDeviceT
         e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
 
         e.HasIndex(x => new { x.UserId, x.FcmToken }).IsUnique();
+        e.HasIndex(x => x.UserId);
     }
 }

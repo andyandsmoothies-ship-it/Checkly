@@ -38,46 +38,20 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
     [Fact]
     public void CanDelegate_Admin_ReturnsTrue()
     {
+        // Arrange
         var user = MakeUser("admin");
+
+        // Act
         var result = AccessGuard.CanDelegate(user);
+
+        // Assert
         Assert.True(result);
     }
 
     // ─── DB-Dependent Tests (Area Manager) ────────────────────────────────────
 
     [Fact]
-    public async Task CanDelegate_AreaManager_ReturnsTrue_IfInArea()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var areaId = Guid.NewGuid();
-        var storeId = Guid.NewGuid();
-
-        using (var scope = _fixture.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
-            db.Areas.Add(new Area { Id = areaId, Name = "Same Area", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            db.Stores.Add(new Store { Id = storeId, AreaId = areaId, Name = "Same Area Store", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            db.Profiles.Add(new Profile { Id = userId, AreaId = areaId, FullName = "Area Mgr", Email = "am@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            await db.SaveChangesAsync();
-        }
-
-        var user = MakeUser("area_manager", userId);
-
-        // Act
-        bool result;
-        using (var actScope = _fixture.Services.CreateScope())
-        {
-            var db = actScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
-            result = await AccessGuard.CanDelegateAsync(user, new ResourceScope(StoreId: storeId), db, default);
-        }
-
-        // Assert
-        Assert.True(result);
-    }
-
-    [Fact]
-    public async Task CanDelegate_AreaManager_ReturnsFalse_IfOutsideArea()
+    public async Task CanDelegate_AreaManager_ReturnsTrue_IfInJunction()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -88,11 +62,15 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
             var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
             var areaA = Guid.NewGuid();
             var areaB = Guid.NewGuid();
-            db.Areas.Add(new Area { Id = areaA, Name = "Diff Area A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            db.Areas.Add(new Area { Id = areaB, Name = "Diff Area B", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            
-            db.Stores.Add(new Store { Id = storeId, AreaId = areaA, Name = "Diff Area Store", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            db.Areas.Add(new Area { Id = areaA, Name = "Area A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            db.Areas.Add(new Area { Id = areaB, Name = "Area B", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            db.Stores.Add(new Store { Id = storeId, AreaId = areaA, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            // Profile has different AreaId to prove junction wins
             db.Profiles.Add(new Profile { Id = userId, AreaId = areaB, FullName = "Area Mgr Diff", Email = "am_diff@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            // Add junction row
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = userId, StoreId = storeId });
             await db.SaveChangesAsync();
         }
 
@@ -106,7 +84,43 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
             result = await AccessGuard.CanDelegateAsync(user, new ResourceScope(StoreId: storeId), db, default);
         }
 
-        // Assert — GREEN: CanDelegateAsync checks DB, area mismatch → false.
+        // Assert — Expect True because junction exists. Fails until code updated.
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task CanDelegate_AreaManager_ReturnsFalse_IfNotInJunction()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var storeId = Guid.NewGuid();
+
+        using (var scope = _fixture.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            var areaA = Guid.NewGuid();
+            db.Areas.Add(new Area { Id = areaA, Name = "Area A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            db.Stores.Add(new Store { Id = storeId, AreaId = areaA, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            // Profile has SAME AreaId
+            db.Profiles.Add(new Profile { Id = userId, AreaId = areaA, FullName = "Area Mgr Diff", Email = "am_diff2@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            // NO junction row inserted
+            await db.SaveChangesAsync();
+        }
+
+        var user = MakeUser("area_manager", userId);
+
+        // Act
+        bool result;
+        using (var actScope = _fixture.Services.CreateScope())
+        {
+            var db = actScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            result = await AccessGuard.CanDelegateAsync(user, new ResourceScope(StoreId: storeId), db, default);
+        }
+
+        // Assert — Expect False because NO junction exists.
+        // Fails right now because current code allows access since AreaIds match.
         Assert.False(result);
     }
 
@@ -115,16 +129,26 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
     [Fact]
     public void CanDelegate_Auditor_ReturnsFalse()
     {
+        // Arrange
         var user = MakeUser("auditor");
+
+        // Act
         var result = AccessGuard.CanDelegate(user);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
     public void CanDelegate_StoreManager_ReturnsFalse()
     {
+        // Arrange
         var user = MakeUser("store_manager");
+
+        // Act
         var result = AccessGuard.CanDelegate(user);
+
+        // Assert
         Assert.False(result);
     }
 
@@ -133,8 +157,13 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
     [Fact]
     public void CanDelegate_NoRoleClaim_ReturnsFalse()
     {
+        // Arrange
         var user = MakeUser(null);
+
+        // Act
         var result = AccessGuard.CanDelegate(user);
+
+        // Assert
         Assert.False(result);
     }
 
@@ -145,8 +174,13 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
     [InlineData("Area_Manager")]
     public void CanDelegate_UnrecognizedRole_ReturnsFalse(string role)
     {
+        // Arrange
         var user = MakeUser(role);
+
+        // Act
         var result = AccessGuard.CanDelegate(user);
+
+        // Assert
         Assert.False(result);
     }
 
@@ -155,28 +189,43 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
     [Fact]
     public async Task CanAccessAsync_Admin_ReturnsTrue_RegardlessOfScope()
     {
+        // Arrange
         var user = MakeUser("admin");
         var scope = new ResourceScope(OwnerId: Guid.NewGuid());
+
+        // Act
         var result = await AccessGuard.CanAccessAsync(user, scope, null!, default);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
     public async Task CanAccessAsync_AuditorIsOwner_ReturnsTrue()
     {
+        // Arrange
         var userId = Guid.NewGuid();
         var user = MakeUser("auditor", userId);
         var scope = new ResourceScope(OwnerId: userId);
+
+        // Act
         var result = await AccessGuard.CanAccessAsync(user, scope, null!, default);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
     public async Task CanAccessAsync_AuditorIsNotOwner_ReturnsFalse()
     {
+        // Arrange
         var user = MakeUser("auditor", Guid.NewGuid());
         var scope = new ResourceScope(OwnerId: Guid.NewGuid());
+
+        // Act
         var result = await AccessGuard.CanAccessAsync(user, scope, null!, default);
+
+        // Assert
         Assert.False(result);
     }
 }

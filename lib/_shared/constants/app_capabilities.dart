@@ -22,6 +22,7 @@ class AppCapabilities {
   static const submissionsReview = 'submissions:review';
   static const actionPlansWrite = 'action_plans:write';
   static const actionPlansVerify = 'action_plans:verify';
+  static const programsCreate = 'programs:create';
 
   // --- Implicit Admin Access Domain ---
   // Any capability in this set grants implicit admin:access via PolicyManager.
@@ -35,5 +36,6 @@ class AppCapabilities {
     usersManage,
     analyticsAdmin,
     adminManageRoles,
+    programsCreate,
   };
 }

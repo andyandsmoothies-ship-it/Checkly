@@ -53,7 +53,7 @@ public class ScoringVerifierJsonTests
         // but this test serves as documentation for the Gap AC1.
         var envRoot = Environment.GetEnvironmentVariable("CHECKLY_REPO_ROOT");
         Environment.SetEnvironmentVariable("CHECKLY_REPO_ROOT", "/some/invalid/path/that/does/not/exist");
-        
+
         try
         {
             // Note: The static constructor of ScoringTestVectorReader might have already run.

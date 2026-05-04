@@ -106,11 +106,12 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
             var amProfile = await db.Profiles.FirstAsync(p => p.Id == amId);
 
             var area = new Area { Id = Guid.NewGuid(), Name = $"Area Own {uid}" };
-            amProfile.AreaId = area.Id;
             db.Areas.Add(area);
 
             var store = new Store { Id = Guid.NewGuid(), Name = $"Store Own {uid}", AreaId = area.Id };
             db.Stores.Add(store);
+
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amId, StoreId = store.Id });
 
             var submission = new Submission
             {
@@ -157,10 +158,13 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
 
             var areaA = new Area { Id = Guid.NewGuid(), Name = $"Area A {uid}" };
             var areaB = new Area { Id = Guid.NewGuid(), Name = $"Area B {uid}" };
-            amProfile.AreaId = areaA.Id;
             db.Areas.AddRange(areaA, areaB);
 
             // Submission is in area B — the area manager is assigned to area A
+            var storeInA = new Store { Id = Guid.NewGuid(), Name = $"Store in A {uid}", AreaId = areaA.Id };
+            db.Stores.Add(storeInA);
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amId, StoreId = storeInA.Id });
+
             var storeInB = new Store { Id = Guid.NewGuid(), Name = $"Store in B {uid}", AreaId = areaB.Id };
             db.Stores.Add(storeInB);
 

@@ -98,7 +98,6 @@ class _CriterionEditorDrawerState extends State<CriterionEditorDrawer> {
               avatar: Icon(inputTypeIcon(widget.criterion.inputType), size: 18),
               label: Text(inputTypeLabel(widget.criterion.inputType)),
               onPressed: () async {
-                Navigator.pop(context);
                 final selected = await showModalBottomSheet<String>(
                   context: context,
                   isScrollControlled: true,

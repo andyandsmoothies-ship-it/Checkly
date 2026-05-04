@@ -39,13 +39,13 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var apId = Guid.NewGuid();
 
         // Create Area Manager
-        var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager", "area_manager");
 
         db.Areas.Add(new Area { Id = areaId, Name = "Overdue Area" });
         db.Stores.Add(new Store { Id = storeId, Name = "Overdue Store", AreaId = areaId, IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
-        
+
         db.Submissions.Add(new Submission
         {
             Id = submissionId,
@@ -101,13 +101,13 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var submissionId = Guid.NewGuid();
         var apId = Guid.NewGuid();
 
-        var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager", "area_manager");
 
         db.Areas.Add(new Area { Id = areaId, Name = "Dup Area" });
         db.Stores.Add(new Store { Id = storeId, Name = "Dup Store", AreaId = areaId, IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
-        
+
         db.Submissions.Add(new Submission
         {
             Id = submissionId,
@@ -158,7 +158,7 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var notifications = await db.Notifications
             .Where(n => n.ActionUrl == $"/action-plans/{apId}" && n.Type == "action_plan_overdue_escalation")
             .ToListAsync();
-        
+
         Assert.Single(notifications); // Should only be the one we seeded, no duplicate created
     }
 
@@ -177,7 +177,7 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         db.Areas.Add(new Area { Id = areaId, Name = "Orphan Area" });
         db.Stores.Add(new Store { Id = storeId, Name = "Orphan Store", AreaId = areaId, IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
-        
+
         db.Submissions.Add(new Submission
         {
             Id = submissionId,
@@ -228,13 +228,13 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var submissionId = Guid.NewGuid();
         var apId = Guid.NewGuid();
 
-        var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(), 
+        var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager", "area_manager");
 
         db.Areas.Add(new Area { Id = areaId, Name = "Closed Area" });
         db.Stores.Add(new Store { Id = storeId, Name = "Closed Store", AreaId = areaId, IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
-        
+
         db.Submissions.Add(new Submission
         {
             Id = submissionId,

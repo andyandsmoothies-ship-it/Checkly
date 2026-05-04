@@ -38,9 +38,14 @@ public class Analytics_GetAnalytics_OpenAPs_Tests : IClassFixture<TestWebApplica
         {
             db.ActionPlans.Add(new ActionPlan
             {
-                Id = Guid.NewGuid(), StoreId = storeAId, StoreName = "Store A",
-                CriteriaLabel = $"A-{i}", GroupTitle = "G", Status = "open",
-                CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+                Id = Guid.NewGuid(),
+                StoreId = storeAId,
+                StoreName = "Store A",
+                CriteriaLabel = $"A-{i}",
+                GroupTitle = "G",
+                Status = "open",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
             });
         }
 
@@ -49,9 +54,14 @@ public class Analytics_GetAnalytics_OpenAPs_Tests : IClassFixture<TestWebApplica
         {
             db.ActionPlans.Add(new ActionPlan
             {
-                Id = Guid.NewGuid(), StoreId = storeBId, StoreName = "Store B",
-                CriteriaLabel = $"B-{i}", GroupTitle = "G", Status = "open",
-                CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
+                Id = Guid.NewGuid(),
+                StoreId = storeBId,
+                StoreName = "Store B",
+                CriteriaLabel = $"B-{i}",
+                GroupTitle = "G",
+                Status = "open",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
             });
         }
 
@@ -110,7 +120,7 @@ public class Analytics_GetAnalytics_OpenAPs_Tests : IClassFixture<TestWebApplica
     {
         // Arrange
         var client = await CreateAdminClientAsync();
-        
+
         // Get baseline open APs count
         var baseResponse = await client.GetAsync("/api/analytics");
         var baseKpis = (await baseResponse.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("kpis");

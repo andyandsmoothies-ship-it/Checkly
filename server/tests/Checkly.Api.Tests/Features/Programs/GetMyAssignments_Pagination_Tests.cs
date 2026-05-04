@@ -130,7 +130,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
 
         // Act
         var response = await smClient.GetAsync("/api/programs/assignments/my");
-        
+
         // Assert
         if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
 
@@ -139,7 +139,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
         Assert.Equal(201, body.GetProperty("total").GetInt32());
         Assert.Equal(1, body.GetProperty("page").GetInt32());
         Assert.Equal(50, body.GetProperty("pageSize").GetInt32());
-        
+
         var items = body.GetProperty("items").EnumerateArray().ToList();
         Assert.Equal(50, items.Count);
     }
@@ -158,7 +158,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
 
         // Act
         var response = await smClient.GetAsync("/api/programs/assignments/my?pageSize=999");
-        
+
         // Assert
         if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
 
@@ -166,7 +166,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
 
         Assert.Equal(201, body.GetProperty("total").GetInt32());
         Assert.Equal(200, body.GetProperty("pageSize").GetInt32());
-        
+
         var items = body.GetProperty("items").EnumerateArray().ToList();
         Assert.Equal(200, items.Count);
     }
@@ -185,7 +185,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
 
         // Act
         var response = await smClient.GetAsync("/api/programs/assignments/my?page=5&pageSize=50");
-        
+
         // Assert
         if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
 
@@ -193,7 +193,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
 
         Assert.Equal(10, body.GetProperty("total").GetInt32());
         Assert.Equal(5, body.GetProperty("page").GetInt32());
-        
+
         var items = body.GetProperty("items").EnumerateArray().ToList();
         Assert.Empty(items);
     }
@@ -207,7 +207,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
 
         // Act
         var response = await smClient.GetAsync("/api/programs/assignments/my");
-        
+
         // Assert
         if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
 
@@ -232,7 +232,7 @@ public class GetMyAssignments_Pagination_Tests : IClassFixture<TestWebApplicatio
 
         // Act
         var response = await smClient.GetAsync("/api/programs/assignments/my?page=-5");
-        
+
         // Assert
         if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
 

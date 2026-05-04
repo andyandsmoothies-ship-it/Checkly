@@ -131,6 +131,8 @@ class AdminUserManager extends ChangeNotifier {
     String? role,
     String? storeId,
     String? areaId,
+    String? virtualAreaId,
+    List<String>? assignedStoreIds,
     bool forceReassign = false,
   }) async {
     // ── Root Suicide Guard ──
@@ -145,6 +147,8 @@ class AdminUserManager extends ChangeNotifier {
         role: role,
         storeId: storeId,
         areaId: areaId,
+        virtualAreaId: virtualAreaId,
+        assignedStoreIds: assignedStoreIds,
         forceReassign: forceReassign,
       );
 
@@ -180,6 +184,8 @@ class AdminUserManager extends ChangeNotifier {
     required String role,
     String? storeId,
     String? areaId,
+    String? virtualAreaId,
+    List<String>? assignedStoreIds,
   }) async {
     final created = await _adminApi.createUser(
       email: email,
@@ -188,6 +194,8 @@ class AdminUserManager extends ChangeNotifier {
       role: role,
       storeId: storeId,
       areaId: areaId,
+      virtualAreaId: virtualAreaId,
+      assignedStoreIds: assignedStoreIds,
     );
 
     // Prepend so the new user appears at the top without a reload.

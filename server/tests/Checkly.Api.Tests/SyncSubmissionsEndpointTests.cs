@@ -159,7 +159,7 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
         // Arrange
         var client = _factory.CreateClient();
         var (smToken, smUserId) = await _factory.RegisterUserAsync(
-            client, "sm-correct@test.test", "StMgr123!@", "StoreMgr", "store_manager");
+            client, $"sm-correct-{Guid.NewGuid()}@test.com", "StMgr123!@", "StoreMgr", "store_manager");
 
         var storeId = await SeedStoreAsync("sm-correct1");
         await LinkStoreManagerToStoreAsync(smUserId, storeId);
@@ -180,7 +180,7 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
         // Arrange
         var client = _factory.CreateClient();
         var (amToken, amUserId) = await _factory.RegisterUserAsync(
-            client, "am-correct@test.test", "AreaMgr123!@", "AreaMgr", "area_manager");
+            client, $"am-correct-{Guid.NewGuid()}@test.com", "AreaMgr123!@", "AreaMgr", "area_manager");
 
         var areaId = Guid.NewGuid();
         using (var scope = _factory.Services.CreateScope())
@@ -191,8 +191,15 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
         }
 
         var storeId = await SeedStoreAsync("am-correct1", areaId: areaId);
-        
-        await LinkAreaManagerToAreaAsync(amUserId, areaId);
+
+        // Profile.AreaId is left null so old logic fails
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amUserId, StoreId = storeId });
+            await db.SaveChangesAsync();
+        }
+
         await SeedSubmissionAsync(storeId);
 
         var authClient = _factory.CreateAuthenticatedClient(amToken);
@@ -200,8 +207,49 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
         // Act - request by areaId
         var response = await authClient.GetAsync($"/api/sync/submissions?areaId={areaId}");
 
-        // Assert
+        // Assert - Expect 200 because AM has junction row for the only store in area
+        // Currently fails (returns 403) because Profile.AreaId != areaId
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SyncSubmissions_AsAreaManager_MissingOneStoreInJunction_Returns403()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var (amToken, amUserId) = await _factory.RegisterUserAsync(
+            client, $"am-partial-{Guid.NewGuid()}@test.com", "AreaMgr123!@", "AreaMgr", "area_manager");
+
+        var areaId = Guid.NewGuid();
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Areas.Add(new Area { Id = areaId, Name = "Test Area", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            await db.SaveChangesAsync();
+        }
+
+        var storeId1 = await SeedStoreAsync("am-partial1", areaId: areaId);
+        var storeId2 = await SeedStoreAsync("am-partial2", areaId: areaId);
+
+        // Set Profile.AreaId to match areaId so old logic passes
+        await LinkAreaManagerToAreaAsync(amUserId, areaId);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            // ONLY assign store1, missing store2
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amUserId, StoreId = storeId1 });
+            await db.SaveChangesAsync();
+        }
+
+        var authClient = _factory.CreateAuthenticatedClient(amToken);
+
+        // Act - request by areaId
+        var response = await authClient.GetAsync($"/api/sync/submissions?areaId={areaId}");
+
+        // Assert - Expect 403 because AM doesn't have ALL stores in the area.
+        // Currently fails (returns 200 OK) because old logic only checks Profile.AreaId == areaId
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
     [Fact]
@@ -210,7 +258,7 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
         // Arrange
         var client = _factory.CreateClient();
         var (smToken, smUserId) = await _factory.RegisterUserAsync(
-            client, "sm-wrong@test.test", "StMgr123!@", "StoreMgrWrong", "store_manager");
+            client, $"sm-wrong-{Guid.NewGuid()}@test.test", "StMgr123!@", "StoreMgrWrong", "store_manager");
 
         var ownStoreId = await SeedStoreAsync("sm-wrong-own");
         var otherStoreId = await SeedStoreAsync("sm-wrong-other");
@@ -277,7 +325,7 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
         // Arrange — non-admin with no storeId or areaId
         var client = _factory.CreateClient();
         var (auditorToken, _) = await _factory.RegisterUserAsync(
-            client, "auditor-scope@test.test", "Aud12345!@", "ScopeAuditor", "auditor");
+            client, $"auditor-scope-{Guid.NewGuid()}@test.test", "Aud12345!@", "ScopeAuditor", "auditor");
         var authClient = _factory.CreateAuthenticatedClient(auditorToken);
 
         // Act — no storeId, no areaId

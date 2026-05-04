@@ -289,14 +289,22 @@ public class ReminderServiceDeadlineTests(TestWebApplicationFactory fixture)
         db.Notifications.AddRange(
             new Notification
             {
-                Id = Guid.NewGuid(), UserId = _storeManagerId, Type = "ap_deadline_reminder",
-                Title = "Pre", Message = null, ActionUrl = $"/action-plans/{ap1}",
+                Id = Guid.NewGuid(),
+                UserId = _storeManagerId,
+                Type = "ap_deadline_reminder",
+                Title = "Pre",
+                Message = null,
+                ActionUrl = $"/action-plans/{ap1}",
                 CreatedAt = DateTimeOffset.UtcNow,
             },
             new Notification
             {
-                Id = Guid.NewGuid(), UserId = _storeManagerId, Type = "ap_deadline_reminder",
-                Title = "Pre", Message = null, ActionUrl = $"/action-plans/{ap2}",
+                Id = Guid.NewGuid(),
+                UserId = _storeManagerId,
+                Type = "ap_deadline_reminder",
+                Title = "Pre",
+                Message = null,
+                ActionUrl = $"/action-plans/{ap2}",
                 CreatedAt = DateTimeOffset.UtcNow,
             });
         await db.SaveChangesAsync();
