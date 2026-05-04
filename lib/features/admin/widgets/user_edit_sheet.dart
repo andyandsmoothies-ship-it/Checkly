@@ -29,6 +29,7 @@ class UserEditSheet extends StatefulWidget {
     String? role,
     String? storeId,
     String? areaId,
+    String? virtualAreaId,
   })
   onSave;
 
@@ -258,6 +259,7 @@ class _UserEditSheetState extends State<UserEditSheet> {
                   role: selectedRole,
                   storeId: selectedStoreId,
                   areaId: selectedAreaId,
+                  virtualAreaId: selectedRole == 'area_manager' ? selectedAreaId : null,
                 ),
                 icon: const Icon(Icons.save),
                 label: const Text('Save Changes'),

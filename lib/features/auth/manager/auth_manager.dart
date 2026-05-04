@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../_shared/services/api_client.dart';
 import '../../../_shared/database/dao/policy_dao.dart';
+import '../../../_shared/database/dao/profile_dao.dart';
 import '../model/auth_state.dart';
 import '../model/user_session.dart';
 import '../services/auth_api_service.dart';
@@ -24,6 +25,7 @@ class AuthManager extends ChangeNotifier {
   final ApiClient _apiClient;
   final PolicyApiService _policyApi;
   final PolicyDao _policyDao;
+  final ProfileDao? _profileDao;
   final DatabaseService _dbService;
 
   AuthManager({
@@ -32,12 +34,14 @@ class AuthManager extends ChangeNotifier {
     required ApiClient apiClient,
     required PolicyApiService policyApi,
     required PolicyDao policyDao,
+    ProfileDao? profileDao,
     required DatabaseService dbService,
   }) : _authApi = authApi,
        _storage = storage,
        _apiClient = apiClient,
        _policyApi = policyApi,
        _policyDao = policyDao,
+       _profileDao = profileDao,
        _dbService = dbService;
 
   // ---------- State ----------
@@ -82,6 +86,31 @@ class AuthManager extends ChangeNotifier {
       } catch (e) {
         debugPrint('[PBAC] Capability sync failed (non-fatal): $e');
         // capabilities remain as previous value (empty on first login)
+      }
+
+      // Slice 4: Sync and persist profile assignment snapshot for offline scope.
+      if (_profileDao != null) {
+        try {
+          final profile = await _authApi.syncProfile();
+          final assignedStoreIdsRaw =
+              profile['assignedStoreIds'] as List<dynamic>?;
+          final assignedStoreIds = assignedStoreIdsRaw
+                  ?.map((e) => e.toString())
+                  .where((e) => e.isNotEmpty)
+                  .toList() ??
+              const <String>[];
+          await _profileDao.upsertProfile(
+            ProfileSyncSnapshot(
+              profileId: (profile['profileId'] ?? session.userId).toString(),
+              fullName: profile['fullName'] as String?,
+              email: profile['email'] as String?,
+              role: profile['role'] as String?,
+              assignedStoreIds: assignedStoreIds,
+            ),
+          );
+        } catch (e) {
+          debugPrint('[ProfileSync] profile sync failed (non-fatal): $e');
+        }
       }
 
       _authState.value = AuthState.authenticated;
@@ -131,6 +160,7 @@ class AuthManager extends ChangeNotifier {
     await _dbService.db
         .clearAllData(); // Full SQLite wipe to prevent data bleed
     await _policyDao.clearCapabilities(); // [PBAC Slice 4] clear Drift cache
+    await _profileDao?.clearProfiles();
     _apiClient.clearAuthToken();
     _currentUser = null;
     _capabilities.value = {}; // [PBAC Slice 4] clear memory cache

@@ -5905,6 +5905,442 @@ class CachedPoliciesCompanion extends UpdateCompanion<CachedPolicy> {
   }
 }
 
+class $CachedProfilesTable extends CachedProfiles
+    with TableInfo<$CachedProfilesTable, CachedProfile> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _profileIdMeta = const VerificationMeta(
+    'profileId',
+  );
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fullNameMeta = const VerificationMeta(
+    'fullName',
+  );
+  @override
+  late final GeneratedColumn<String> fullName = GeneratedColumn<String>(
+    'full_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _assignedStoreOverridesMeta =
+      const VerificationMeta('assignedStoreOverrides');
+  @override
+  late final GeneratedColumn<String> assignedStoreOverrides =
+      GeneratedColumn<String>(
+        'assigned_store_overrides',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    profileId,
+    fullName,
+    email,
+    role,
+    assignedStoreOverrides,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CachedProfile> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('profile_id')) {
+      context.handle(
+        _profileIdMeta,
+        profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('full_name')) {
+      context.handle(
+        _fullNameMeta,
+        fullName.isAcceptableOrUnknown(data['full_name']!, _fullNameMeta),
+      );
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    }
+    if (data.containsKey('assigned_store_overrides')) {
+      context.handle(
+        _assignedStoreOverridesMeta,
+        assignedStoreOverrides.isAcceptableOrUnknown(
+          data['assigned_store_overrides']!,
+          _assignedStoreOverridesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {profileId};
+  @override
+  CachedProfile map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedProfile(
+      profileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_id'],
+      )!,
+      fullName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}full_name'],
+      ),
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      ),
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      ),
+      assignedStoreOverrides: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}assigned_store_overrides'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CachedProfilesTable createAlias(String alias) {
+    return $CachedProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class CachedProfile extends DataClass implements Insertable<CachedProfile> {
+  final String profileId;
+  final String? fullName;
+  final String? email;
+  final String? role;
+  final String? assignedStoreOverrides;
+  final DateTime updatedAt;
+  const CachedProfile({
+    required this.profileId,
+    this.fullName,
+    this.email,
+    this.role,
+    this.assignedStoreOverrides,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['profile_id'] = Variable<String>(profileId);
+    if (!nullToAbsent || fullName != null) {
+      map['full_name'] = Variable<String>(fullName);
+    }
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String>(email);
+    }
+    if (!nullToAbsent || role != null) {
+      map['role'] = Variable<String>(role);
+    }
+    if (!nullToAbsent || assignedStoreOverrides != null) {
+      map['assigned_store_overrides'] = Variable<String>(
+        assignedStoreOverrides,
+      );
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CachedProfilesCompanion toCompanion(bool nullToAbsent) {
+    return CachedProfilesCompanion(
+      profileId: Value(profileId),
+      fullName: fullName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fullName),
+      email: email == null && nullToAbsent
+          ? const Value.absent()
+          : Value(email),
+      role: role == null && nullToAbsent ? const Value.absent() : Value(role),
+      assignedStoreOverrides: assignedStoreOverrides == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignedStoreOverrides),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CachedProfile.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedProfile(
+      profileId: serializer.fromJson<String>(json['profileId']),
+      fullName: serializer.fromJson<String?>(json['fullName']),
+      email: serializer.fromJson<String?>(json['email']),
+      role: serializer.fromJson<String?>(json['role']),
+      assignedStoreOverrides: serializer.fromJson<String?>(
+        json['assignedStoreOverrides'],
+      ),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'profileId': serializer.toJson<String>(profileId),
+      'fullName': serializer.toJson<String?>(fullName),
+      'email': serializer.toJson<String?>(email),
+      'role': serializer.toJson<String?>(role),
+      'assignedStoreOverrides': serializer.toJson<String?>(
+        assignedStoreOverrides,
+      ),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CachedProfile copyWith({
+    String? profileId,
+    Value<String?> fullName = const Value.absent(),
+    Value<String?> email = const Value.absent(),
+    Value<String?> role = const Value.absent(),
+    Value<String?> assignedStoreOverrides = const Value.absent(),
+    DateTime? updatedAt,
+  }) => CachedProfile(
+    profileId: profileId ?? this.profileId,
+    fullName: fullName.present ? fullName.value : this.fullName,
+    email: email.present ? email.value : this.email,
+    role: role.present ? role.value : this.role,
+    assignedStoreOverrides: assignedStoreOverrides.present
+        ? assignedStoreOverrides.value
+        : this.assignedStoreOverrides,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CachedProfile copyWithCompanion(CachedProfilesCompanion data) {
+    return CachedProfile(
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      fullName: data.fullName.present ? data.fullName.value : this.fullName,
+      email: data.email.present ? data.email.value : this.email,
+      role: data.role.present ? data.role.value : this.role,
+      assignedStoreOverrides: data.assignedStoreOverrides.present
+          ? data.assignedStoreOverrides.value
+          : this.assignedStoreOverrides,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedProfile(')
+          ..write('profileId: $profileId, ')
+          ..write('fullName: $fullName, ')
+          ..write('email: $email, ')
+          ..write('role: $role, ')
+          ..write('assignedStoreOverrides: $assignedStoreOverrides, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    profileId,
+    fullName,
+    email,
+    role,
+    assignedStoreOverrides,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedProfile &&
+          other.profileId == this.profileId &&
+          other.fullName == this.fullName &&
+          other.email == this.email &&
+          other.role == this.role &&
+          other.assignedStoreOverrides == this.assignedStoreOverrides &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CachedProfilesCompanion extends UpdateCompanion<CachedProfile> {
+  final Value<String> profileId;
+  final Value<String?> fullName;
+  final Value<String?> email;
+  final Value<String?> role;
+  final Value<String?> assignedStoreOverrides;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CachedProfilesCompanion({
+    this.profileId = const Value.absent(),
+    this.fullName = const Value.absent(),
+    this.email = const Value.absent(),
+    this.role = const Value.absent(),
+    this.assignedStoreOverrides = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedProfilesCompanion.insert({
+    required String profileId,
+    this.fullName = const Value.absent(),
+    this.email = const Value.absent(),
+    this.role = const Value.absent(),
+    this.assignedStoreOverrides = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : profileId = Value(profileId),
+       updatedAt = Value(updatedAt);
+  static Insertable<CachedProfile> custom({
+    Expression<String>? profileId,
+    Expression<String>? fullName,
+    Expression<String>? email,
+    Expression<String>? role,
+    Expression<String>? assignedStoreOverrides,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (profileId != null) 'profile_id': profileId,
+      if (fullName != null) 'full_name': fullName,
+      if (email != null) 'email': email,
+      if (role != null) 'role': role,
+      if (assignedStoreOverrides != null)
+        'assigned_store_overrides': assignedStoreOverrides,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedProfilesCompanion copyWith({
+    Value<String>? profileId,
+    Value<String?>? fullName,
+    Value<String?>? email,
+    Value<String?>? role,
+    Value<String?>? assignedStoreOverrides,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CachedProfilesCompanion(
+      profileId: profileId ?? this.profileId,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      assignedStoreOverrides:
+          assignedStoreOverrides ?? this.assignedStoreOverrides,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (fullName.present) {
+      map['full_name'] = Variable<String>(fullName.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (assignedStoreOverrides.present) {
+      map['assigned_store_overrides'] = Variable<String>(
+        assignedStoreOverrides.value,
+      );
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedProfilesCompanion(')
+          ..write('profileId: $profileId, ')
+          ..write('fullName: $fullName, ')
+          ..write('email: $email, ')
+          ..write('role: $role, ')
+          ..write('assignedStoreOverrides: $assignedStoreOverrides, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CachedGlobalRisksTable extends CachedGlobalRisks
     with TableInfo<$CachedGlobalRisksTable, CachedGlobalRisk> {
   @override
@@ -11875,6 +12311,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CachedNotificationsTable cachedNotifications =
       $CachedNotificationsTable(this);
   late final $CachedPoliciesTable cachedPolicies = $CachedPoliciesTable(this);
+  late final $CachedProfilesTable cachedProfiles = $CachedProfilesTable(this);
   late final $CachedGlobalRisksTable cachedGlobalRisks =
       $CachedGlobalRisksTable(this);
   late final $CachedProgramAssignmentsTable cachedProgramAssignments =
@@ -11906,6 +12343,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cachedActionPlans,
     cachedNotifications,
     cachedPolicies,
+    cachedProfiles,
     cachedGlobalRisks,
     cachedProgramAssignments,
     pendingSubmissions,
@@ -15170,6 +15608,229 @@ typedef $$CachedPoliciesTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $CachedPoliciesTable, CachedPolicy>,
       ),
       CachedPolicy,
+      PrefetchHooks Function()
+    >;
+typedef $$CachedProfilesTableCreateCompanionBuilder =
+    CachedProfilesCompanion Function({
+      required String profileId,
+      Value<String?> fullName,
+      Value<String?> email,
+      Value<String?> role,
+      Value<String?> assignedStoreOverrides,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CachedProfilesTableUpdateCompanionBuilder =
+    CachedProfilesCompanion Function({
+      Value<String> profileId,
+      Value<String?> fullName,
+      Value<String?> email,
+      Value<String?> role,
+      Value<String?> assignedStoreOverrides,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$CachedProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $CachedProfilesTable> {
+  $$CachedProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fullName => $composableBuilder(
+    column: $table.fullName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get assignedStoreOverrides => $composableBuilder(
+    column: $table.assignedStoreOverrides,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CachedProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CachedProfilesTable> {
+  $$CachedProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fullName => $composableBuilder(
+    column: $table.fullName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get assignedStoreOverrides => $composableBuilder(
+    column: $table.assignedStoreOverrides,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CachedProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CachedProfilesTable> {
+  $$CachedProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get profileId =>
+      $composableBuilder(column: $table.profileId, builder: (column) => column);
+
+  GeneratedColumn<String> get fullName =>
+      $composableBuilder(column: $table.fullName, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<String> get assignedStoreOverrides => $composableBuilder(
+    column: $table.assignedStoreOverrides,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$CachedProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CachedProfilesTable,
+          CachedProfile,
+          $$CachedProfilesTableFilterComposer,
+          $$CachedProfilesTableOrderingComposer,
+          $$CachedProfilesTableAnnotationComposer,
+          $$CachedProfilesTableCreateCompanionBuilder,
+          $$CachedProfilesTableUpdateCompanionBuilder,
+          (
+            CachedProfile,
+            BaseReferences<_$AppDatabase, $CachedProfilesTable, CachedProfile>,
+          ),
+          CachedProfile,
+          PrefetchHooks Function()
+        > {
+  $$CachedProfilesTableTableManager(
+    _$AppDatabase db,
+    $CachedProfilesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CachedProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CachedProfilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CachedProfilesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> profileId = const Value.absent(),
+                Value<String?> fullName = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> role = const Value.absent(),
+                Value<String?> assignedStoreOverrides = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedProfilesCompanion(
+                profileId: profileId,
+                fullName: fullName,
+                email: email,
+                role: role,
+                assignedStoreOverrides: assignedStoreOverrides,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String profileId,
+                Value<String?> fullName = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> role = const Value.absent(),
+                Value<String?> assignedStoreOverrides = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CachedProfilesCompanion.insert(
+                profileId: profileId,
+                fullName: fullName,
+                email: email,
+                role: role,
+                assignedStoreOverrides: assignedStoreOverrides,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CachedProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CachedProfilesTable,
+      CachedProfile,
+      $$CachedProfilesTableFilterComposer,
+      $$CachedProfilesTableOrderingComposer,
+      $$CachedProfilesTableAnnotationComposer,
+      $$CachedProfilesTableCreateCompanionBuilder,
+      $$CachedProfilesTableUpdateCompanionBuilder,
+      (
+        CachedProfile,
+        BaseReferences<_$AppDatabase, $CachedProfilesTable, CachedProfile>,
+      ),
+      CachedProfile,
       PrefetchHooks Function()
     >;
 typedef $$CachedGlobalRisksTableCreateCompanionBuilder =
@@ -18983,6 +19644,8 @@ class $AppDatabaseManager {
       $$CachedNotificationsTableTableManager(_db, _db.cachedNotifications);
   $$CachedPoliciesTableTableManager get cachedPolicies =>
       $$CachedPoliciesTableTableManager(_db, _db.cachedPolicies);
+  $$CachedProfilesTableTableManager get cachedProfiles =>
+      $$CachedProfilesTableTableManager(_db, _db.cachedProfiles);
   $$CachedGlobalRisksTableTableManager get cachedGlobalRisks =>
       $$CachedGlobalRisksTableTableManager(_db, _db.cachedGlobalRisks);
   $$CachedProgramAssignmentsTableTableManager get cachedProgramAssignments =>

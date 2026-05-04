@@ -98,13 +98,22 @@ class _UserManagementPageState extends State<UserManagementPage> {
         user: user,
         areas: _manager.areas,
         loadStores: _manager.loadStores,
-        onSave: ({required userId, fullName, role, storeId, areaId}) =>
+        onSave:
+            ({
+              required userId,
+              fullName,
+              role,
+              storeId,
+              areaId,
+              virtualAreaId,
+            }) =>
             _saveUser(
               userId,
               fullName: fullName,
               role: role,
               storeId: storeId,
               areaId: areaId,
+              virtualAreaId: virtualAreaId,
             ),
         onResetPassword: (sheetCtx, userId, userName) =>
             UserManagementDialogs.showResetPasswordDialog(
@@ -123,6 +132,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     String? role,
     String? storeId,
     String? areaId,
+    String? virtualAreaId,
   }) async {
     Navigator.of(context).pop(); // Close sheet first
 
@@ -133,6 +143,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         role: role,
         storeId: storeId,
         areaId: areaId,
+        virtualAreaId: virtualAreaId,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -169,6 +180,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             role: role,
             storeId: storeId,
             areaId: areaId,
+            virtualAreaId: virtualAreaId,
             forceReassign: true,
           );
           if (mounted) {
@@ -220,6 +232,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               required role,
               storeId,
               areaId,
+              virtualAreaId,
             }) => _manager.createUser(
               email: email,
               password: password,
@@ -227,6 +240,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               role: role,
               storeId: storeId,
               areaId: areaId,
+              virtualAreaId: virtualAreaId,
             ),
       ),
     );

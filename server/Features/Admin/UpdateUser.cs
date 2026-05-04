@@ -209,7 +209,9 @@ public static class UpdateUser
             var appUser = await userManager.FindByIdAsync(id.ToString());
             if (appUser is not null)
             {
-                appUser.InvalidateTokensBefore = DateTimeOffset.UtcNow;
+                // Set to 2 seconds ago to avoid JWT second-level precision truncation issues
+                // when tokens are generated immediately after role updates.
+                appUser.InvalidateTokensBefore = DateTimeOffset.UtcNow.AddSeconds(-2);
                 await userManager.UpdateAsync(appUser);
             }
         }

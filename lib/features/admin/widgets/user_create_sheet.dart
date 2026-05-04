@@ -31,6 +31,7 @@ class UserCreateSheet extends StatefulWidget {
     required String role,
     String? storeId,
     String? areaId,
+    String? virtualAreaId,
   })
   onCreate;
 
@@ -124,6 +125,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
         role: selectedRole,
         storeId: selectedStoreId,
         areaId: selectedAreaId,
+        virtualAreaId: selectedRole == 'area_manager' ? selectedAreaId : null,
       );
       if (mounted) {
         Navigator.of(context).pop(true); // Signal page to refresh

@@ -11,11 +11,26 @@ class StoreDao {
 
   /// Read all cached stores.
   Future<List<StoreDto>> getAllStores() async {
-    final rows =
-        await (_db.select(_db.cachedStores)
-              ..where((s) => s.isActive.equals(true))
-              ..limit(1000)) // Bounded to 1000 for memory safety (Gotcha #14)
-            .get();
+    final profileRow = await (_db.select(_db.cachedProfiles)
+          ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
+          ..limit(1))
+        .getSingleOrNull();
+    final isAreaManager = profileRow?.role == 'area_manager';
+    final overrideIds = _parseAssignedStoreOverrides(
+      profileRow?.assignedStoreOverrides,
+    );
+
+    final query = _db.select(_db.cachedStores)
+      ..where((s) => s.isActive.equals(true))
+      ..limit(1000); // Bounded to 1000 for memory safety (Gotcha #14)
+
+    if (isAreaManager && overrideIds.isNotEmpty) {
+      query.where((s) => s.id.isIn(overrideIds));
+    } else if (isAreaManager && overrideIds.isEmpty) {
+      query.where((_) => const Constant(false));
+    }
+
+    final rows = await query.get();
     return rows.map(_rowToDto).toList();
   }
 
@@ -58,4 +73,14 @@ class StoreDao {
         createdAt: dto.createdAt,
         updatedAt: DateTime.now(),
       );
+
+  List<String> _parseAssignedStoreOverrides(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return const [];
+    return raw
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toSet()
+        .toList();
+  }
 }

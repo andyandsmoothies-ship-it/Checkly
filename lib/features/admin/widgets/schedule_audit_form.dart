@@ -7,6 +7,8 @@ import '../../audit/model/create_submission_request.dart';
 import '../../audit/services/submission_api_service.dart';
 import '../manager/admin_audit_manager.dart';
 import '../widgets/dropdown_card.dart';
+import 'schedule_audit_date_picker.dart';
+import 'schedule_audit_form_logic.dart';
 
 final _di = GetIt.instance;
 
@@ -48,7 +50,18 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
     super.initState();
     _manager = _di<AdminAuditManager>();
     _manager.addListener(_onManagerChanged);
-    _manager.loadScheduleData();
+    
+    // Check if data is already available (e.g. from tests or prior loads)
+    if (_manager.scheduleData != null) {
+      _isLoadingData = false;
+      _templates = _manager.scheduleData!.templates;
+      _allStores = _manager.scheduleData!.allStores;
+      _allAuditors = _manager.scheduleData!.allAuditors;
+      _stores = List.from(_allStores);
+      _auditors = List.from(_allAuditors);
+    } else {
+      _manager.loadScheduleData();
+    }
   }
 
   @override
@@ -85,44 +98,17 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
   /// Recompute displayed lists based on current selections.
   void _applyCrossFilter() {
     setState(() {
-      if (_selectedStoreId != null) {
-        // Find the selected store's areaId
-        final store = _allStores.firstWhere(
-          (s) => s['id'] == _selectedStoreId,
-          orElse: () => <String, dynamic>{},
-        );
-        final storeAreaId = store['areaId'] as String?;
+      _auditors = ScheduleAuditFormLogic.filterAuditors(
+        selectedStoreId: _selectedStoreId,
+        allAuditors: _allAuditors,
+        allStores: _allStores,
+      );
 
-        if (storeAreaId != null) {
-          _auditors = _allAuditors
-              .where((u) => u['areaId'] == storeAreaId || u['areaId'] == null)
-              .toList();
-        } else {
-          _auditors = List.from(_allAuditors);
-        }
-      } else {
-        _auditors = List.from(_allAuditors);
-      }
-
-      if (_selectedAuditorId != null) {
-        // Find the selected auditor's areaId
-        final auditor = _allAuditors.firstWhere(
-          (u) => u['id'] == _selectedAuditorId,
-          orElse: () => <String, dynamic>{},
-        );
-        final auditorAreaId = auditor['areaId'] as String?;
-
-        if (auditorAreaId != null) {
-          _stores = _allStores
-              .where((s) => s['areaId'] == auditorAreaId)
-              .toList();
-        } else {
-          // Floating auditor (no area) — show all stores
-          _stores = List.from(_allStores);
-        }
-      } else {
-        _stores = List.from(_allStores);
-      }
+      _stores = ScheduleAuditFormLogic.filterStores(
+        selectedAuditorId: _selectedAuditorId,
+        allStores: _allStores,
+        allAuditors: _allAuditors,
+      );
 
       // Clear selection if it's no longer in the filtered list
       if (_selectedStoreId != null &&
@@ -290,64 +276,9 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         const SizedBox(height: 12),
 
         // Date picker
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'SCHEDULED DATE',
-                  style: AppFonts.displayStyle(
-                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.4),
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                InkWell(
-                  onTap: _pickDate,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppTheme.sageGray.withValues(alpha: 0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 18,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '${_scheduledDate.day}/${_scheduledDate.month}/${_scheduledDate.year}',
-                          style: theme.textTheme.bodyLarge,
-                        ),
-                        const Spacer(),
-                        Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        ScheduleAuditDatePicker(
+          scheduledDate: _scheduledDate,
+          onTap: _pickDate,
         ),
         const SizedBox(height: 32),
 

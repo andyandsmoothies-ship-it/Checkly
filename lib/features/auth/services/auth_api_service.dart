@@ -39,4 +39,10 @@ class AuthApiService {
     );
     return UserSession.fromJson(response.data as Map<String, dynamic>);
   }
+
+  /// GET /sync/profile → profile snapshot with optional assigned store IDs.
+  Future<Map<String, dynamic>> syncProfile() async {
+    final response = await _dio.get('/sync/profile');
+    return response.data as Map<String, dynamic>;
+  }
 }

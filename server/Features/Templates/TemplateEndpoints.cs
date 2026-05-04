@@ -80,5 +80,8 @@ public static class TemplateEndpoints
 
         syncGroup.MapGet("/submissions", Checkly.Api.Features.Submissions.SyncSubmissions.HandleAsync)
             .WithName("SyncSubmissions");
+
+        syncGroup.MapGet("/profile", Checkly.Api.Features.Auth.SyncProfile.HandleAsync)
+            .WithName("SyncProfile");
     }
 }

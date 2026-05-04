@@ -24,6 +24,7 @@ part 'app_database.g.dart';
     CachedActionPlans,
     CachedNotifications,
     CachedPolicies,
+    CachedProfiles,
     CachedGlobalRisks,
     CachedProgramAssignments,
     // Outbox tables
@@ -47,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 24;
+  int get schemaVersion => 25;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -185,6 +186,10 @@ class AppDatabase extends _$AppDatabase {
           pendingActionPlanUpdates,
           pendingActionPlanUpdates.nextRetryAt,
         );
+      }
+      if (from < 25) {
+        // Slice 4: Profile cache for assigned store override sync.
+        await m.createTable(cachedProfiles);
       }
     },
     beforeOpen: (details) async {

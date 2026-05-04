@@ -222,8 +222,7 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
         if (c.inputType == 'scale' && c.scaleOptions.length < 2) {
           errors.add(cKey, 'Scale criteria must have at least 2 options');
         }
-        if ((c.inputType == 'single_choice' ||
-                c.inputType == 'multi_choice') &&
+        if ((c.inputType == 'single_choice' || c.inputType == 'multi_choice') &&
             c.choiceOptions.length < 2) {
           errors.add(cKey, 'Choice criteria must have at least 2 options');
         }
@@ -240,7 +239,6 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
       _validateGroups(g.subSections, '$sKey:sub:', errors);
     }
   }
-
 
   void _scrollToFirstError() {
     final firstKey = _validationErrors?.firstKey;

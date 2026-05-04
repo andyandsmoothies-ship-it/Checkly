@@ -29,6 +29,10 @@
 - **Rule**: If a test fails, fix the code, not the test.
 - **Enforcement**: Never write tests and main code in the exact same prompt cycle.
 
+### Rule: Testing is Architecture
+- **Rule**: Tests verify behavior, not implementation. Do not test business logic through volatile UI layers.
+- **Enforcement**: Refactoring internal code should not break tests (Liskov substitution). Keep test-only APIs (e.g., DB seeders) strictly bounded to the test project.
+
 ### Rule: Keep Files Small
 - **Rule**: Files must NEVER exceed 400 lines. Split them to prevent AI confusion.
 - **Enforcement**: Reduce size by pulling logic into new files, not by deleting comments or whitespace.
@@ -63,7 +67,9 @@
 - **Gotcha: Orphaned ATDD Stubs (`fail(...)`)**
   - **Fix:** If a QA agent leaves an ATDD stub like `fail('Implement...')`, the Builder MUST implement the test logic and fulfill the UI/Backend contract in the current slice. Do not leave `fail()` stubs behind for future slices unless explicitly documented.
 - **Gotcha: Database Wipes in Integration Tests**
-  - **Fix:** NEVER use framework commands that drop or wipe the host database (e.g. `EnsureDeleted()`) on the `checkly_dev` database. ALWAYS point integration tests to a dedicated `checkly_test` database and safely wipe/recreate that specific database using `EnsureDeleted()` and `EnsureCreated()` to guarantee test isolation.
+  - **Fix:** NEVER use framework commands that drop or wipe the host database (e.g. `EnsureDeleted()`) without an explicit code-level safeguard. Integration test factories must hardcode an exception throw if the connected database string does not contain `_test` to guarantee the development and production databases cannot be wiped accidentally.
+- **Gotcha: Local Testing Environment**
+  - **Fix:** The project utilizes Logical Database Separation on the local PostgreSQL instance. The `checkly_test` database **already exists** natively alongside the main `checkly` database. Agents must never try to drop it manually or assume tests need a mocked server. Simply run `dotnet test`, and `TestWebApplicationFactory` will seamlessly route traffic to `checkly_test` and auto-migrate its schema.
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.
 - **No Interactive CLI:** Do not run `dotnet run`, `dotnet watch`, or `flutter run`.

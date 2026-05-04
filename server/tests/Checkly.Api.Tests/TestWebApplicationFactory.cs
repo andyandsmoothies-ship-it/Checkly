@@ -73,6 +73,13 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 using var scopeInit = Services.CreateScope();
                 var dbInit = scopeInit.ServiceProvider.GetRequiredService<AppDbContext>();
 
+                // SAFETY GUARD: Prevent tests from ever touching the main/production database.
+                var connString = dbInit.Database.GetConnectionString() ?? "";
+                if (!connString.Contains("_test", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException($"SAFETY ABORT: Test factory is connected to '{connString}'. Tests must ONLY run against a dedicated '_test' database to prevent accidental data wipes.");
+                }
+
                 // The database is migrated automatically by Program.cs during app startup.
                 // We rely on tests creating unique entities (Guid.NewGuid) to avoid conflicts.
 

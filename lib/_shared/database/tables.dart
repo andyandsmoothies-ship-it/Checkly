@@ -161,6 +161,20 @@ class CachedPolicies extends Table {
   Set<Column> get primaryKey => {capability};
 }
 
+/// Cached profile snapshot used for offline store-scope decisions.
+/// assignedStoreOverrides stores comma-separated GUIDs for AM direct assignments.
+class CachedProfiles extends Table {
+  TextColumn get profileId => text()();
+  TextColumn get fullName => text().nullable()();
+  TextColumn get email => text().nullable()();
+  TextColumn get role => text().nullable()();
+  TextColumn get assignedStoreOverrides => text().nullable()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {profileId};
+}
+
 // ============================================================
 // Outbox Tables (local-first writes pending sync)
 // ============================================================
