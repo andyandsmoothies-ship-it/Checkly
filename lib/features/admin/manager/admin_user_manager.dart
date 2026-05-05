@@ -183,6 +183,7 @@ class AdminUserManager extends ChangeNotifier {
     String? storeId,
     String? areaId,
     List<String>? assignedStoreIds,
+    bool forceReassign = false,
   }) async {
     final created = await _adminApi.createUser(
       email: email,
@@ -192,6 +193,7 @@ class AdminUserManager extends ChangeNotifier {
       storeId: storeId,
       areaId: areaId,
       assignedStoreIds: assignedStoreIds,
+      forceReassign: forceReassign,
     );
 
     // Prepend so the new user appears at the top without a reload.

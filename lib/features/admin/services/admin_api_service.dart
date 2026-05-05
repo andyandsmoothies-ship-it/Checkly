@@ -112,6 +112,7 @@ class AdminApiService {
     String? storeId,
     String? areaId,
     List<String>? assignedStoreIds,
+    bool forceReassign = false,
   }) async {
     final body = <String, dynamic>{
       'email': email,
@@ -122,6 +123,7 @@ class AdminApiService {
     if (storeId != null) body['storeId'] = storeId;
     if (areaId != null) body['areaId'] = areaId;
     if (assignedStoreIds != null) body['assignedStoreIds'] = assignedStoreIds;
+    if (forceReassign) body['forceReassign'] = true;
 
     final response = await _dio.post('/admin/users', data: body);
     return response.data as Map<String, dynamic>;

@@ -1,4 +1,4 @@
-# Task: Enforce Strict 1-to-Many Area Manager to Store Assignment
+# /
 Workflow: /analyze-feature | Track: B2
 
 ## Input Lineage

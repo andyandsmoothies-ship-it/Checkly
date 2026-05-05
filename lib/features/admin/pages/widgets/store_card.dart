@@ -145,55 +145,67 @@ class StoreCard extends StatelessWidget {
 
               // Manager row (always visible)
               const SizedBox(height: 4),
-              if (store.managerName != null)
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person_outline,
-                      size: 14,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        'SM: ${store.managerName!}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+              Builder(
+                builder: (context) {
+                  final smText = store.managerName ?? 'Unassigned';
+                  final amText = store.areaManagerName ?? 'Unassigned';
+                  final isBothUnassigned = store.managerName == null && store.areaManagerName == null;
+                  
+                  if (isBothUnassigned) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
                       ),
-                    ),
-                  ],
-                )
-              else
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warning.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                      decoration: BoxDecoration(
+                        color: AppTheme.warning.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.warning_amber,
+                            size: 12,
+                            color: AppTheme.warningText,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'SM: Unassigned • AM: Unassigned',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppTheme.warningText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Row(
                     children: [
                       Icon(
-                        Icons.warning_amber,
-                        size: 12,
-                        color: AppTheme.warningText,
+                        Icons.person_outline,
+                        size: 14,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        'SM: Unassigned',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppTheme.warningText,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text(
+                          'SM: $smText • AM: $amText',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
-                  ),
-                ),
+                  );
+                },
+              ),
             ],
           ),
         ),

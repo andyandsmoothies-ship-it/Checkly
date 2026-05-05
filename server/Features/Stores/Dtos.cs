@@ -10,6 +10,7 @@ public sealed record StoreDto(
     Guid? AreaId,
     string? AreaName,
     string? ManagerName,
+    string? AreaManagerName,
     decimal? GpsLat,
     decimal? GpsLng,
     bool? IsActive,

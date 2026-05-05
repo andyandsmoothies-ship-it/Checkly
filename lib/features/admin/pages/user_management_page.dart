@@ -233,6 +233,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               storeId,
               areaId,
               assignedStoreIds,
+              forceReassign,
             }) => _manager.createUser(
               email: email,
               password: password,
@@ -241,6 +242,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               storeId: storeId,
               areaId: areaId,
               assignedStoreIds: assignedStoreIds,
+              forceReassign: forceReassign ?? false,
             ),
       ),
     );

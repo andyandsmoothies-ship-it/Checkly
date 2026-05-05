@@ -21,6 +21,13 @@ public static class GetStore
                   (p, r) => new { p.StoreId, p.FullName, r.Role })
             .Where(x => x.Role == "store_manager" && x.StoreId != null);
 
+        var amLookup = db.ProfileStoreAssignments
+            .Join(db.Profiles, a => a.ProfileId, p => p.Id,
+                  (a, p) => new { a.StoreId, a.ProfileId, p.FullName })
+            .Join(db.AppUserRoles, x => x.ProfileId, r => r.UserId,
+                  (x, r) => new { x.StoreId, x.FullName, r.Role })
+            .Where(x => x.Role == "area_manager");
+
         var store = await db.Stores
             .AsNoTracking()
             .Where(s => s.Id == id && s.IsActive == true)
@@ -28,6 +35,7 @@ public static class GetStore
                 s.Id, s.Name, s.Address, s.AreaId,
                 s.Area != null ? s.Area.Name : null,
                 smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
+                amLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))
             .FirstOrDefaultAsync(ct);
 

@@ -116,6 +116,14 @@ public static class ListStores
                   (p, r) => new { p.StoreId, p.FullName, r.Role })
             .Where(x => x.Role == "store_manager" && x.StoreId != null);
 
+        // Subquery: AM name per store
+        var amLookup = db.ProfileStoreAssignments
+            .Join(db.Profiles, a => a.ProfileId, p => p.Id,
+                  (a, p) => new { a.StoreId, a.ProfileId, p.FullName })
+            .Join(db.AppUserRoles, x => x.ProfileId, r => r.UserId,
+                  (x, r) => new { x.StoreId, x.FullName, r.Role })
+            .Where(x => x.Role == "area_manager");
+
         // Pagination (defaults: page 1, 50 items, max 200)
         var page = int.TryParse(httpContext.Request.Query["page"], out var pg) ? Math.Max(1, pg) : 1;
         var pageSize = int.TryParse(httpContext.Request.Query["pageSize"], out var ps) ? Math.Clamp(ps, 1, 200) : 50;
@@ -134,6 +142,7 @@ public static class ListStores
                 s.Id, s.Name, s.Address, s.AreaId,
                 s.Area != null ? s.Area.Name : null,
                 smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
+                amLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))
             .ToListAsync(ct);
 
