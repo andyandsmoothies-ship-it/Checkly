@@ -36,3 +36,7 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query pa
 ## Business Logic Gotchas
 - **Gotcha 5: Survey Mode**: Submissions have `TotalScore = null`. Filter `WHERE scoring_mode != 'survey'` before averaging scores.
 - **Gotcha 13: PBAC Route Authorization**: Minimal APIs in this project require using `.RequireAuthorization("PolicyName")` (e.g., `"AdminOnly"`) rather than chainable role methods. Always prefer `.RequireCapability(AppCapabilities.X)` where possible.
+
+## Build & Infrastructure Gotchas
+- **Gotcha: Nested Projects in MSBuild**: Because `tests/` and other mini-projects (like `Hasher/`) are nested *inside* the `server/` directory, the root `Checkly.Api.csproj` will accidentally compile their files, causing `CS8802` (duplicate top-level statements) and `CS0579` (duplicate assembly attributes) errors.
+  - **Fix:** `DefaultItemExcludes` using `folder\**` is not recursive enough. Always use strict, explicit MSBuild exclusions for any nested project: `<Compile Remove="tests\**" />` and `<Compile Remove="Hasher\**" />` inside an `<ItemGroup>` in the root `.csproj`.
