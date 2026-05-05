@@ -42,7 +42,6 @@ class AdminApiService {
     String? role,
     String? storeId,
     String? areaId,
-    String? virtualAreaId,
     List<String>? assignedStoreIds,
     bool forceReassign = false,
   }) async {
@@ -51,7 +50,6 @@ class AdminApiService {
     if (role != null) body['role'] = role;
     if (storeId != null) body['storeId'] = storeId;
     if (areaId != null) body['areaId'] = areaId;
-    if (virtualAreaId != null) body['virtualAreaId'] = virtualAreaId;
     if (assignedStoreIds != null) body['assignedStoreIds'] = assignedStoreIds;
     if (forceReassign) body['forceReassign'] = true;
 
@@ -113,7 +111,6 @@ class AdminApiService {
     required String role,
     String? storeId,
     String? areaId,
-    String? virtualAreaId,
     List<String>? assignedStoreIds,
   }) async {
     final body = <String, dynamic>{
@@ -124,7 +121,6 @@ class AdminApiService {
     };
     if (storeId != null) body['storeId'] = storeId;
     if (areaId != null) body['areaId'] = areaId;
-    if (virtualAreaId != null) body['virtualAreaId'] = virtualAreaId;
     if (assignedStoreIds != null) body['assignedStoreIds'] = assignedStoreIds;
 
     final response = await _dio.post('/admin/users', data: body);

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../_shared/widgets/role_badge.dart';
+
 /// Reusable card widget for displaying a user in the admin user list.
 class UserCard extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -17,23 +19,6 @@ class UserCard extends StatelessWidget {
     required this.onBanToggle,
   });
 
-  static Color _roleColor(String role, ThemeData theme) {
-    return switch (role) {
-      'admin' => theme.colorScheme.tertiary,
-      'auditor' => theme.colorScheme.primary,
-      'store_manager' => theme.colorScheme.secondary,
-      'area_manager' => theme.colorScheme.onSurfaceVariant,
-      _ => theme.colorScheme.onSurfaceVariant,
-    };
-  }
-
-  static const _roleLabels = <String, String>{
-    'admin': 'Admin',
-    'auditor': 'Auditor',
-    'store_manager': 'Store Manager',
-    'area_manager': 'Area Manager',
-  };
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -42,7 +27,6 @@ class UserCard extends StatelessWidget {
     final fullName = user['fullName'] as String? ?? 'Unknown';
     final email = user['email'] as String? ?? '';
     final avatarUrl = user['avatarUrl'] as String?;
-    final roleColor = _roleColor(role, theme);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -112,28 +96,12 @@ class UserCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
-                  Row(
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
                     children: [
-                      // Role badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: roleColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _roleLabels[role] ?? role,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: roleColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      if (isLocked) ...[
-                        const SizedBox(width: 6),
+                      RoleBadge(role: role),
+                      if (isLocked)
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -151,7 +119,6 @@ class UserCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ],
                     ],
                   ),
                   // Assignment info

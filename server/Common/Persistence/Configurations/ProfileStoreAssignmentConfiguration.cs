@@ -15,8 +15,11 @@ public sealed class ProfileStoreAssignmentConfiguration : IEntityTypeConfigurati
     {
         e.ToTable("profile_store_assignments");
 
-        // Composite PK — this IS the unique index; no extra index needed.
+        // Composite PK
         e.HasKey(x => new { x.ProfileId, x.StoreId });
+
+        // Strict 1-to-M constraint: A store can only be assigned to one Area Manager
+        e.HasIndex(x => x.StoreId).IsUnique();
 
         e.Property(x => x.ProfileId).HasColumnName("profile_id").IsRequired();
         e.Property(x => x.StoreId).HasColumnName("store_id").IsRequired();

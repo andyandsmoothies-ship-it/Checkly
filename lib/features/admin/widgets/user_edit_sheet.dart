@@ -29,7 +29,7 @@ class UserEditSheet extends StatefulWidget {
     String? role,
     String? storeId,
     String? areaId,
-    String? virtualAreaId,
+    List<String>? assignedStoreIds,
   })
   onSave;
 
@@ -54,10 +54,13 @@ class UserEditSheet extends StatefulWidget {
 class _UserEditSheetState extends State<UserEditSheet> {
   late final TextEditingController _fullNameCtrl;
   late String? selectedRole;
-  late String? selectedStoreId;
-  late String? selectedAreaId;
+  String? selectedStoreId;
+  String? selectedAreaId;
+  List<String> _selectedStoreIds = [];
   List<Map<String, dynamic>> assignableStores = [];
+  bool _isLoadingStores = false;
   bool isDirty = false;
+  bool showAssignedStores = false;
 
   @override
   void initState() {
@@ -70,9 +73,15 @@ class _UserEditSheetState extends State<UserEditSheet> {
     selectedStoreId = widget.user['storeId'] as String?;
     selectedAreaId = widget.user['areaId'] as String?;
 
-    // Pre-load stores if the user is already a store_manager
-    if (selectedRole == 'store_manager') {
-      _loadStores();
+    if (widget.user['assignedStoreIds'] != null) {
+      _selectedStoreIds = (widget.user['assignedStoreIds'] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList();
+    }
+
+    // Pre-load stores if the user is already a store_manager or area_manager
+    if (selectedRole == 'store_manager' || selectedRole == 'area_manager') {
+      _loadStores(selectedRole!);
     }
   }
 
@@ -83,16 +92,26 @@ class _UserEditSheetState extends State<UserEditSheet> {
   }
 
   /// Loads assignable stores and shows a SnackBar on network failure.
-  /// Silent empty-list is worse than a visible error — Sentinel observation.
-  Future<void> _loadStores() async {
+  /// silent empty-list is worse than a visible error — Sentinel observation.
+  Future<void> _loadStores(String role) async {
+    if (mounted) setState(() => _isLoadingStores = true);
     try {
+      final String? assignableAs = showAssignedStores
+          ? null
+          : (role == 'store_manager' ? 'store_manager' : (role == 'area_manager' ? 'area_manager' : null));
       final stores = await widget.loadStores(
-        assignableAs: 'store_manager',
-        exceptUser: widget.user['id'] as String,
+        assignableAs: assignableAs,
+        exceptUser: role == 'store_manager' ? widget.user['id'] as String : null,
       );
-      if (mounted) setState(() => assignableStores = stores);
+      if (mounted) {
+        setState(() {
+          assignableStores = stores;
+          _isLoadingStores = false;
+        });
+      }
     } catch (_) {
       if (mounted) {
+        setState(() => _isLoadingStores = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Could not load stores. Check your connection.'),
@@ -117,10 +136,11 @@ class _UserEditSheetState extends State<UserEditSheet> {
           top: 24,
           bottom: MediaQuery.of(context).viewInsets.bottom + 24,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // ── Header ────────────────────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -176,9 +196,10 @@ class _UserEditSheetState extends State<UserEditSheet> {
               ],
               onChanged: (v) async {
                 _markDirty();
-                // Lazy-load stores only on the first switch to store_manager
-                if (v == 'store_manager' && selectedRole != 'store_manager') {
-                  await _loadStores(); // error-handled, shows SnackBar on failure
+                // Lazy-load stores on the first switch to a role that needs them
+                if ((v == 'store_manager' || v == 'area_manager') && 
+                    selectedRole != v) {
+                  await _loadStores(v!); // error-handled, shows SnackBar on failure
                 }
                 if (mounted) {
                   setState(() {
@@ -186,10 +207,13 @@ class _UserEditSheetState extends State<UserEditSheet> {
                     if (v == 'admin' || v == 'auditor') {
                       selectedStoreId = null;
                       selectedAreaId = null;
+                      _selectedStoreIds.clear();
                     } else if (v == 'store_manager') {
                       selectedAreaId = null;
+                      _selectedStoreIds.clear();
                     } else if (v == 'area_manager') {
                       selectedStoreId = null;
+                      selectedAreaId = null;
                     }
                   });
                 }
@@ -221,28 +245,76 @@ class _UserEditSheetState extends State<UserEditSheet> {
               ),
             ],
 
-            // ── Area picker (area_manager only) ──────────────────────────
+            // ── Direct Store Assignments (area_manager only) ──────────────────────────
             if (selectedRole == 'area_manager') ...[
               const SizedBox(height: 12),
-              DropdownCard(
-                icon: Icons.map_outlined,
-                label: 'ASSIGNED AREA',
-                hint: 'Select an area',
-                value: selectedAreaId,
-                itemIcon: Icons.map_outlined,
-                nullable: true,
-                items: widget.areas.map((a) {
-                  final mgr = a['managerName'] as String?;
-                  return (
-                    id: a['id'] as String,
-                    label: a['name'] as String,
-                    subtitle: mgr != null ? 'AM: $mgr' : 'Vacant',
-                  );
-                }).toList(),
-                onChanged: (v) {
-                  _markDirty();
-                  setState(() => selectedAreaId = v);
+              SwitchListTile(
+                title: const Text('Show assigned stores'),
+                value: showAssignedStores,
+                onChanged: (val) {
+                  setState(() => showAssignedStores = val);
+                  _loadStores(selectedRole!);
                 },
+                contentPadding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'DIRECT STORE ASSIGNMENTS',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.1,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                constraints: const BoxConstraints(maxHeight: 200),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: _isLoadingStores
+                    ? const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : assignableStores.isEmpty
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text('No active stores found.'),
+                            ),
+                          )
+                        : ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: assignableStores.length,
+                        separatorBuilder: (context, index) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final store = assignableStores[index];
+                          final id = store['id'] as String;
+                          final name = store['name'] as String;
+                          final isSelected = _selectedStoreIds.contains(id);
+
+                          return CheckboxListTile(
+                            title: Text(name),
+                            value: isSelected,
+                            onChanged: (bool? checked) {
+                              _markDirty();
+                              setState(() {
+                                if (checked == true) {
+                                  _selectedStoreIds.add(id);
+                                } else {
+                                  _selectedStoreIds.remove(id);
+                                }
+                              });
+                            },
+                          );
+                        },
+                      ),
               ),
             ],
             const SizedBox(height: 20),
@@ -259,7 +331,9 @@ class _UserEditSheetState extends State<UserEditSheet> {
                   role: selectedRole,
                   storeId: selectedStoreId,
                   areaId: selectedAreaId,
-                  virtualAreaId: selectedRole == 'area_manager' ? selectedAreaId : null,
+                  assignedStoreIds: selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty
+                      ? _selectedStoreIds
+                      : null,
                 ),
                 icon: const Icon(Icons.save),
                 label: const Text('Save Changes'),
@@ -281,6 +355,7 @@ class _UserEditSheetState extends State<UserEditSheet> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

@@ -42,24 +42,38 @@ public static class ListStores
             query = query.Where(s => s.AreaId == areaId);
 
         // Smart filter: only stores assignable to a specific role
-        if (assignableAs == "store_manager")
+        if (assignableAs == "store_manager" || assignableAs == "area_manager")
         {
             // Only active stores
             query = query.Where(s => s.IsActive == true);
 
-            // Exclude stores that already have a store_manager
             Guid? exceptUserId = null;
             if (Guid.TryParse(exceptUser, out var parsed))
                 exceptUserId = parsed;
 
-            // Subquery: store IDs that have an active store_manager (excluding except_user)
-            var takenStoreIds = db.Profiles
-                .Join(db.AppUserRoles, p => p.Id, r => r.UserId, (p, r) => new { p.StoreId, r.Role, p.Id })
-                .Where(x => x.Role == "store_manager" && x.StoreId != null)
-                .Where(x => exceptUserId == null || x.Id != exceptUserId)
-                .Select(x => x.StoreId);
+            if (assignableAs == "store_manager")
+            {
+                // Exclude stores that already have a store_manager
+                // Subquery: store IDs that have an active store_manager (excluding except_user)
+                var takenStoreIds = db.Profiles
+                    .Join(db.AppUserRoles, p => p.Id, r => r.UserId, (p, r) => new { p.StoreId, r.Role, p.Id })
+                    .Where(x => x.Role == "store_manager" && x.StoreId != null)
+                    .Where(x => exceptUserId == null || x.Id != exceptUserId)
+                    .Select(x => x.StoreId);
 
-            query = query.Where(s => !takenStoreIds.Contains(s.Id));
+                query = query.Where(s => !takenStoreIds.Contains(s.Id));
+            }
+            else if (assignableAs == "area_manager")
+            {
+                // Subquery: store IDs that have an active area_manager via ProfileStoreAssignments (excluding except_user)
+                var takenStoreIds = db.ProfileStoreAssignments
+                    .Join(db.AppUserRoles, a => a.ProfileId, r => r.UserId, (a, r) => new { a.StoreId, r.Role, a.ProfileId })
+                    .Where(x => x.Role == "area_manager")
+                    .Where(x => exceptUserId == null || x.ProfileId != exceptUserId)
+                    .Select(x => x.StoreId);
+
+                query = query.Where(s => !takenStoreIds.Contains(s.Id));
+            }
         }
 
         // ── Infra Slice 1: Role-scoped filtering ────────────────────────────────

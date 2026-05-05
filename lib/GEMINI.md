@@ -23,3 +23,7 @@
 ### Rendering
 - **Gotcha 19: PopScope Trap**: Calling `Navigator.pop()` right after `setState()` freezes the UI.
   - **Fix:** Wait for the frame using `WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));`.
+
+## State & Payload Gotchas
+- **Gotcha 23: Direct Store Assignment UI**: The backend API allows sending an array of `assignedStoreIds` for Area Managers. 
+  - **Fix:** The UI MUST provide a Multi-Store Picker component when editing an Area Manager. The Virtual Area dropdown is only a macro shortcut, and should be explicitly labeled to avoid confusing users who expect 1-to-1 hierarchy.

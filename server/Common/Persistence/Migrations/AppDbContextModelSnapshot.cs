@@ -766,7 +766,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("ProfileId", "StoreId");
 
-                    b.HasIndex("StoreId");
+                    b.HasIndex("StoreId")
+                        .IsUnique();
 
                     b.ToTable("profile_store_assignments", (string)null);
                 });

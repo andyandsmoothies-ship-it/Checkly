@@ -131,7 +131,6 @@ class AdminUserManager extends ChangeNotifier {
     String? role,
     String? storeId,
     String? areaId,
-    String? virtualAreaId,
     List<String>? assignedStoreIds,
     bool forceReassign = false,
   }) async {
@@ -147,7 +146,6 @@ class AdminUserManager extends ChangeNotifier {
         role: role,
         storeId: storeId,
         areaId: areaId,
-        virtualAreaId: virtualAreaId,
         assignedStoreIds: assignedStoreIds,
         forceReassign: forceReassign,
       );
@@ -184,7 +182,6 @@ class AdminUserManager extends ChangeNotifier {
     required String role,
     String? storeId,
     String? areaId,
-    String? virtualAreaId,
     List<String>? assignedStoreIds,
   }) async {
     final created = await _adminApi.createUser(
@@ -194,7 +191,6 @@ class AdminUserManager extends ChangeNotifier {
       role: role,
       storeId: storeId,
       areaId: areaId,
-      virtualAreaId: virtualAreaId,
       assignedStoreIds: assignedStoreIds,
     );
 

@@ -52,4 +52,26 @@ public static class RoleAssignmentGuard
 
         return existing;
     }
+
+    /// <summary>
+    /// Checks if a store already has an area_manager assigned via ProfileStoreAssignments.
+    /// Returns the existing AM's profile ID if one exists, null otherwise.
+    /// </summary>
+    public static async Task<Guid?> FindExistingAreaManagerForStore(
+        AppDbContext db, Guid storeId, Guid? excludeUserId, CancellationToken ct)
+    {
+        var existing = await db.ProfileStoreAssignments
+            .AsNoTracking()
+            .Where(a => a.StoreId == storeId)
+            .Join(db.AppUserRoles,
+                  a => a.ProfileId,
+                  r => r.UserId,
+                  (a, r) => new { a.ProfileId, r.Role })
+            .Where(x => x.Role == "area_manager")
+            .Where(x => excludeUserId == null || x.ProfileId != excludeUserId)
+            .Select(x => (Guid?)x.ProfileId)
+            .FirstOrDefaultAsync(ct);
+
+        return existing;
+    }
 }

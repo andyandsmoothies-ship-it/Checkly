@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/role_badge.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String initials;
@@ -17,7 +18,6 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final roleColor = _roleColor(role, theme);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -48,24 +48,7 @@ class ProfileHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: roleColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    _roleLabel(role),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: roleColor,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
+                RoleBadge(role: role, size: RoleBadgeSize.medium),
               ],
             ),
           ),
@@ -73,20 +56,4 @@ class ProfileHeader extends StatelessWidget {
       ),
     );
   }
-
-  Color _roleColor(String role, ThemeData theme) => switch (role) {
-    'admin' => theme.colorScheme.error,
-    'auditor' => theme.colorScheme.primary,
-    'store_manager' => theme.colorScheme.secondary,
-    'area_manager' => theme.colorScheme.tertiary,
-    _ => theme.colorScheme.primary,
-  };
-
-  String _roleLabel(String role) => switch (role) {
-    'admin' => 'ADMIN',
-    'auditor' => 'AUDITOR',
-    'store_manager' => 'STORE MANAGER',
-    'area_manager' => 'AREA MANAGER',
-    _ => role.toUpperCase(),
-  };
 }

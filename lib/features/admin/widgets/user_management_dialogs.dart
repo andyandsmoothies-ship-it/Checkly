@@ -43,7 +43,7 @@ class UserManagementDialogs {
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Transfer Required'),
+        title: const Text('Transfer Store Assignment?'),
         content: Text(
           'This position is currently held by $existingManagerName. '
           'Do you want to remove them and assign this user instead?',

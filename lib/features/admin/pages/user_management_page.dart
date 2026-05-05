@@ -105,7 +105,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               role,
               storeId,
               areaId,
-              virtualAreaId,
+              assignedStoreIds,
             }) =>
             _saveUser(
               userId,
@@ -113,7 +113,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               role: role,
               storeId: storeId,
               areaId: areaId,
-              virtualAreaId: virtualAreaId,
+              assignedStoreIds: assignedStoreIds,
             ),
         onResetPassword: (sheetCtx, userId, userName) =>
             UserManagementDialogs.showResetPasswordDialog(
@@ -132,7 +132,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     String? role,
     String? storeId,
     String? areaId,
-    String? virtualAreaId,
+    List<String>? assignedStoreIds,
   }) async {
     Navigator.of(context).pop(); // Close sheet first
 
@@ -143,7 +143,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         role: role,
         storeId: storeId,
         areaId: areaId,
-        virtualAreaId: virtualAreaId,
+        assignedStoreIds: assignedStoreIds,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -180,7 +180,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             role: role,
             storeId: storeId,
             areaId: areaId,
-            virtualAreaId: virtualAreaId,
+            assignedStoreIds: assignedStoreIds,
             forceReassign: true,
           );
           if (mounted) {
@@ -232,7 +232,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               required role,
               storeId,
               areaId,
-              virtualAreaId,
+              assignedStoreIds,
             }) => _manager.createUser(
               email: email,
               password: password,
@@ -240,7 +240,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               role: role,
               storeId: storeId,
               areaId: areaId,
-              virtualAreaId: virtualAreaId,
+              assignedStoreIds: assignedStoreIds,
             ),
       ),
     );

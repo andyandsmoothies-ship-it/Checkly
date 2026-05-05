@@ -13,7 +13,16 @@ namespace Checkly.Api.Features.Admin;
 /// </summary>
 public static class CreateUser
 {
-    public record Request(string Email, string Password, string FullName, string Role, Guid? StoreId = null, Guid? AreaId = null);
+    public record Request(
+        string Email,
+        string Password,
+        string FullName,
+        string Role,
+        Guid? StoreId = null,
+        Guid? AreaId = null,
+        Guid[]? AssignedStoreIds = null,
+        bool ForceReassign = false);
+
     public record Response(Guid Id, string Email, string FullName, string Role);
 
     private static readonly HashSet<string> ValidRoles = ["admin", "auditor", "store_manager", "area_manager"];
@@ -52,11 +61,46 @@ public static class CreateUser
             var existingSm = await RoleAssignmentGuard.FindExistingStoreManager(
                 db, request.StoreId.Value, null, ct);
             if (existingSm.HasValue)
-                return TypedResults.Conflict(new
+            {
+                if (!request.ForceReassign)
                 {
-                    error = "Store already has a store manager assigned",
-                    existingManagerId = existingSm.Value
-                });
+                    return TypedResults.Conflict(new
+                    {
+                        error = "Store already has a store manager assigned",
+                        existingManagerId = existingSm.Value
+                    });
+                }
+            }
+        }
+
+        if (request.Role == "area_manager" && request.AssignedStoreIds is not null)
+        {
+            foreach (var storeId in request.AssignedStoreIds)
+            {
+                var store = await db.Stores.AsNoTracking()
+                    .FirstOrDefaultAsync(s => s.Id == storeId, ct);
+                if (store is null || store.IsActive != true)
+                    return TypedResults.BadRequest(new { message = $"Store {storeId} is invalid or inactive" });
+
+                var existingAm = await RoleAssignmentGuard.FindExistingAreaManagerForStore(
+                    db, storeId, null, ct);
+
+                if (existingAm.HasValue)
+                {
+                    if (!request.ForceReassign)
+                    {
+                        var existingName = await db.Profiles.Where(p => p.Id == existingAm.Value)
+                            .Select(p => p.FullName).FirstOrDefaultAsync(ct);
+                        return TypedResults.Conflict(new
+                        {
+                            error = "Store already has an area manager assigned",
+                            existingManagerId = existingAm.Value,
+                            existingManagerName = existingName,
+                            storeName = store.Name
+                        });
+                    }
+                }
+            }
         }
 
         // 5. Create Identity user
@@ -97,6 +141,26 @@ public static class CreateUser
                 CreatedAt = DateTimeOffset.UtcNow
             };
             db.AppUserRoles.Add(userRole);
+
+            if (request.Role == "area_manager" && request.AssignedStoreIds is not null)
+            {
+                // Force reassign cleanup
+                if (request.ForceReassign)
+                {
+                    var oldAssignments = await db.ProfileStoreAssignments
+                        .Where(a => request.AssignedStoreIds.Contains(a.StoreId))
+                        .ToListAsync(ct);
+                    db.ProfileStoreAssignments.RemoveRange(oldAssignments);
+                }
+
+                var newAssignments = request.AssignedStoreIds.Select(storeId => new ProfileStoreAssignment
+                {
+                    ProfileId = appUser.Id,
+                    StoreId = storeId,
+                    CreatedAt = DateTimeOffset.UtcNow
+                });
+                db.ProfileStoreAssignments.AddRange(newAssignments);
+            }
 
             await db.SaveChangesAsync(ct);
         }

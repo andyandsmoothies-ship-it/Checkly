@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import 'dropdown_card.dart';
+import 'user_management_dialogs.dart';
 
 /// Bottom sheet for creating a new user.
 ///
@@ -31,7 +32,8 @@ class UserCreateSheet extends StatefulWidget {
     required String role,
     String? storeId,
     String? areaId,
-    String? virtualAreaId,
+    List<String>? assignedStoreIds,
+    bool? forceReassign,
   })
   onCreate;
 
@@ -53,11 +55,12 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
 
   String selectedRole = 'auditor';
   String? selectedStoreId;
-  String? selectedAreaId;
+  final List<String> _selectedStoreIds = [];
   List<Map<String, dynamic>> assignableStores = [];
 
   bool isSubmitting = false;
   bool isDirty = false;
+  bool showAssignedStores = false;
   String? nameError;
   String? emailError;
   String? passwordError;
@@ -71,10 +74,15 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
   }
 
   /// Loads assignable stores and shows a SnackBar on network failure.
-  /// Silent empty-list is worse than a visible error — Sentinel observation.
-  Future<void> _loadStores() async {
+  /// silent empty-list is worse than a visible error — Sentinel observation.
+  Future<void> _loadStores(String role) async {
     try {
-      final stores = await widget.loadStores(assignableAs: 'store_manager');
+      final String? assignableAs = showAssignedStores
+          ? null
+          : (role == 'store_manager' ? 'store_manager' : (role == 'area_manager' ? 'area_manager' : null));
+      final stores = await widget.loadStores(
+        assignableAs: assignableAs,
+      );
       if (mounted) setState(() => assignableStores = stores);
     } catch (_) {
       if (mounted) {
@@ -91,7 +99,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
     if (!isDirty) setState(() => isDirty = true);
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit({bool forceReassign = false}) async {
     final name = nameCtrl.text.trim();
     final email = emailCtrl.text.trim();
     final pass = passCtrl.text;
@@ -124,8 +132,11 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
         fullName: name,
         role: selectedRole,
         storeId: selectedStoreId,
-        areaId: selectedAreaId,
-        virtualAreaId: selectedRole == 'area_manager' ? selectedAreaId : null,
+        areaId: null, // Removed Area for AM
+        assignedStoreIds: selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty 
+            ? _selectedStoreIds 
+            : null,
+        forceReassign: forceReassign,
       );
       if (mounted) {
         Navigator.of(context).pop(true); // Signal page to refresh
@@ -139,14 +150,28 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
     } catch (e) {
       String? serverMsg;
       int? statusCode;
+      dynamic responseData;
       if (e is DioException) {
         statusCode = e.response?.statusCode;
+        responseData = e.response?.data;
         final data = e.response?.data;
         serverMsg = data is Map
-            ? data['message']?.toString()
+            ? data['message']?.toString() ?? data['error']?.toString()
             : data?.toString() ?? e.message;
       } else {
         serverMsg = e.toString();
+      }
+
+      if (statusCode == 409 && responseData is Map && responseData['existingManagerName'] != null) {
+        if (mounted) setState(() => isSubmitting = false);
+        final confirm = await UserManagementDialogs.confirmTransfer(
+          context,
+          responseData['existingManagerName'] as String,
+        );
+        if (confirm == true) {
+          return _submit(forceReassign: true);
+        }
+        return;
       }
 
       // Route the error to the correct field
@@ -276,18 +301,19 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
                   DropdownMenuItem(value: 'admin', child: Text('Admin')),
                 ],
                 onChanged: (v) async {
-                  // Lazy-load stores on first switch to store_manager
-                  if (v == 'store_manager' && selectedRole != 'store_manager') {
-                    await _loadStores(); // error-handled, shows SnackBar on failure
+                  // Lazy-load stores on first switch to a role that needs them
+                  if ((v == 'store_manager' || v == 'area_manager') && 
+                      selectedRole != v) {
+                    await _loadStores(v!); // error-handled, shows SnackBar on failure
                   }
                   if (mounted) {
                     setState(() {
                       selectedRole = v ?? 'auditor';
                       if (v == 'admin' || v == 'auditor') {
                         selectedStoreId = null;
-                        selectedAreaId = null;
+                        _selectedStoreIds.clear();
                       } else if (v == 'store_manager') {
-                        selectedAreaId = null;
+                        _selectedStoreIds.clear();
                       } else if (v == 'area_manager') {
                         selectedStoreId = null;
                       }
@@ -319,26 +345,68 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
                 ),
               ],
 
-              // ── Area picker (area_manager only) ──────────────────────────
+              // ── Direct Store Assignments (area_manager only) ──────────────────────────
               if (selectedRole == 'area_manager') ...[
                 const SizedBox(height: 12),
-                DropdownCard(
-                  icon: Icons.map_outlined,
-                  label: 'ASSIGNED AREA',
-                  hint: 'Select an area',
-                  value: selectedAreaId,
-                  itemIcon: Icons.map_outlined,
-                  nullable: true,
-                  items: widget.areas
-                      .map(
-                        (a) => (
-                          id: a['id'] as String,
-                          label: a['name'] as String,
-                          subtitle: null as String?,
+                SwitchListTile(
+                  title: const Text('Show assigned stores'),
+                  value: showAssignedStores,
+                  onChanged: (val) {
+                    setState(() => showAssignedStores = val);
+                    _loadStores(selectedRole);
+                  },
+                  contentPadding: EdgeInsets.zero,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'DIRECT STORE ASSIGNMENTS',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: assignableStores.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text('No active stores found.'),
+                          ),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: assignableStores.length,
+                          separatorBuilder: (context, index) => const Divider(height: 1),
+                          itemBuilder: (context, index) {
+                            final store = assignableStores[index];
+                            final id = store['id'] as String;
+                            final name = store['name'] as String;
+                            final isSelected = _selectedStoreIds.contains(id);
+
+                            return CheckboxListTile(
+                              title: Text(name),
+                              value: isSelected,
+                              onChanged: (bool? checked) {
+                                setState(() {
+                                  if (checked == true) {
+                                    _selectedStoreIds.add(id);
+                                  } else {
+                                    _selectedStoreIds.remove(id);
+                                  }
+                                });
+                              },
+                            );
+                          },
                         ),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => selectedAreaId = v),
                 ),
               ],
               const SizedBox(height: 20),

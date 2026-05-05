@@ -67,7 +67,7 @@ class UserManagementList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onLoadData,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
         itemCount: filtered.length,
         itemBuilder: (context, index) {
           final user = filtered[index];

@@ -21,22 +21,22 @@ void main() {
     GetIt.instance.reset();
   });
 
-  group('Slice 5 - TC-5.1 & TC-5.2: Virtual Area ID forwarding', () {
-    testWidgets('UserEditSheet sends virtualAreaId for area_manager', (WidgetTester tester) async {
-      String? capturedVirtualAreaId;
+  group('Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM', () {
+    testWidgets('UserEditSheet sends assignedStoreIds for area_manager', (WidgetTester tester) async {
+      List<String>? capturedStoreIds;
       bool saveCalled = false;
 
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
           body: UserEditSheet(
             user: const {'id': 'u1', 'role': 'auditor', 'fullName': 'Test'},
-            areas: const [
-              {'id': 'v_area_1', 'name': 'Virtual Area 1'}
+            areas: const [],
+            loadStores: ({String? assignableAs, String? exceptUser}) async => [
+              {'id': 'store_1', 'name': 'Store 1', 'managerName': 'Manager 1'},
             ],
-            loadStores: ({String? assignableAs, String? exceptUser}) async => [],
-            onSave: ({required userId, fullName, role, storeId, areaId, virtualAreaId}) async {
+            onSave: ({required userId, fullName, role, storeId, areaId, assignedStoreIds}) async {
               saveCalled = true;
-              capturedVirtualAreaId = virtualAreaId;
+              capturedStoreIds = assignedStoreIds;
             },
             onResetPassword: (a, b, c) {},
           ),
@@ -50,10 +50,8 @@ void main() {
       await tester.tap(find.text('Area Manager').last);
       await tester.pumpAndSettle();
 
-      // Select area
-      await tester.tap(find.text('Select an area'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Virtual Area 1').last);
+      // Select store
+      await tester.tap(find.text('Store 1').last);
       await tester.pumpAndSettle();
 
       // Save
@@ -61,24 +59,23 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(saveCalled, isTrue);
-      // TC-5.1: Expect virtualAreaId to be sent, instead of legacy areaId
-      expect(capturedVirtualAreaId, 'v_area_1');
+      expect(capturedStoreIds, ['store_1']);
     });
 
-    testWidgets('UserCreateSheet sends virtualAreaId for area_manager', (WidgetTester tester) async {
-      String? capturedVirtualAreaId;
+    testWidgets('UserCreateSheet sends assignedStoreIds for area_manager', (WidgetTester tester) async {
+      List<String>? capturedStoreIds;
       bool createCalled = false;
 
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
           body: UserCreateSheet(
-            areas: const [
-              {'id': 'v_area_2', 'name': 'Virtual Area 2'}
+            areas: const [],
+            loadStores: ({String? assignableAs, String? exceptUser}) async => [
+              {'id': 'store_2', 'name': 'Store 2', 'managerName': 'Manager 2'},
             ],
-            loadStores: ({String? assignableAs, String? exceptUser}) async => [],
-            onCreate: ({required email, required password, required fullName, required role, storeId, areaId, virtualAreaId}) async {
+            onCreate: ({required email, required password, required fullName, required role, storeId, areaId, assignedStoreIds}) async {
               createCalled = true;
-              capturedVirtualAreaId = virtualAreaId;
+              capturedStoreIds = assignedStoreIds;
             },
           ),
         ),
@@ -96,10 +93,8 @@ void main() {
       await tester.tap(find.text('Area Manager').last);
       await tester.pumpAndSettle();
 
-      // Select area
-      await tester.tap(find.text('Select an area'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Virtual Area 2').last);
+      // Select store
+      await tester.tap(find.text('Store 2').last);
       await tester.pumpAndSettle();
 
       // Submit
@@ -107,8 +102,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(createCalled, isTrue);
-      // TC-5.2: Expect virtualAreaId to be sent
-      expect(capturedVirtualAreaId, 'v_area_2');
+      expect(capturedStoreIds, ['store_2']);
     });
   });
 

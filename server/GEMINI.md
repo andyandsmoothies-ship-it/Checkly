@@ -40,3 +40,7 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query pa
 ## Build & Infrastructure Gotchas
 - **Gotcha: Nested Projects in MSBuild**: Because `tests/` and other mini-projects (like `Hasher/`) are nested *inside* the `server/` directory, the root `Checkly.Api.csproj` will accidentally compile their files, causing `CS8802` (duplicate top-level statements) and `CS0579` (duplicate assembly attributes) errors.
   - **Fix:** `DefaultItemExcludes` using `folder\**` is not recursive enough. Always use strict, explicit MSBuild exclusions for any nested project: `<Compile Remove="tests\**" />` and `<Compile Remove="Hasher\**" />` inside an `<ItemGroup>` in the root `.csproj`.
+
+## Data Model Gotchas
+- **Gotcha: Deprecated AreaId Authorization**: The system has migrated from an Area-based hierarchy to **Pure Direct Store Assignment**. The `AreaId` field on `Profile` is deprecated for authorization purposes. 
+  - **Fix:** NEVER use `AreaId` checks (e.g., in `OwnershipScopeFilter` or `ResourceAccessGuard`) to determine if an Area Manager has access to a store. ALWAYS query the `ProfileStoreAssignment` junction table or verify `StoreId` exists in the user's `AssignedStoreIds` list.

@@ -98,6 +98,8 @@ public class UpdateUserTests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, initialResponse.StatusCode);
 
         // 2. Act — Admin demotes user to auditor
+        // Wait 2 seconds so the initial token is definitively older than the -2s invalidation threshold
+        await Task.Delay(2000);
         var demoteRequest = new { role = "auditor" };
         var demoteResponse = await authClient.PutAsJsonAsync($"/api/admin/users/{userId}", demoteRequest);
         demoteResponse.EnsureSuccessStatusCode();

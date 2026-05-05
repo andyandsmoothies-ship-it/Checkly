@@ -15,7 +15,7 @@ public static class SyncProfile
     {
         var profileIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var role = httpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-        
+
         if (profileIdClaim is null || !Guid.TryParse(profileIdClaim, out var profileId))
         {
             return Results.Unauthorized();
@@ -29,7 +29,7 @@ public static class SyncProfile
             return Results.NotFound();
 
         Guid[]? assignedStoreIds = null;
-        
+
         // Only return store scopes if the user's current role is area_manager.
         // This ensures downgraded AMs do not get stale store assignments.
         if (role == "area_manager")

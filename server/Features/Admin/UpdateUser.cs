@@ -144,6 +144,41 @@ public static class UpdateUser
 
                     if (existingStoreIds.Count != targetStoreIds.Count)
                         return TypedResults.BadRequest(new { error = "One or more assigned stores do not exist" });
+
+                    foreach (var storeId in targetStoreIds)
+                    {
+                        var existingAm = await RoleAssignmentGuard.FindExistingAreaManagerForStore(
+                            db, storeId, id, ct);
+                        if (existingAm.HasValue)
+                        {
+                            if (!request.ForceReassign)
+                            {
+                                var existingName = await db.Profiles.Where(p => p.Id == existingAm.Value)
+                                    .Select(p => p.FullName).FirstOrDefaultAsync(ct);
+                                var targetStoreName = await db.Stores.Where(s => s.Id == storeId).Select(s => s.Name).FirstOrDefaultAsync(ct);
+                                return TypedResults.Conflict(new
+                                {
+                                    error = "Store already has an area manager assigned",
+                                    existingManagerId = existingAm.Value,
+                                    existingManagerName = existingName,
+                                    storeName = targetStoreName
+                                });
+                            }
+
+                            // Force reassign: remove existing AM's assignment to this store
+                            var oldAssignment = await db.ProfileStoreAssignments
+                                .FirstOrDefaultAsync(a => a.StoreId == storeId && a.ProfileId == existingAm.Value, ct);
+                            if (oldAssignment != null)
+                            {
+                                db.ProfileStoreAssignments.Remove(oldAssignment);
+                                if (previousManagerName == null)
+                                {
+                                    previousManagerName = await db.Profiles.Where(p => p.Id == existingAm.Value)
+                                        .Select(p => p.FullName).FirstOrDefaultAsync(ct);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
