@@ -58,12 +58,16 @@ class OutboxDao {
   /// zombie `pending_submissions` rows with no linked answers.
   Future<void> insertSubmissionWithAnswers(
     PendingSubmissionsCompanion submission,
-    List<PendingAnswersCompanion> answers,
-  ) async {
+    List<PendingAnswersCompanion> answers, [
+    List<PendingPhotosCompanion> photos = const [],
+  ]) async {
     await _db.transaction(() async {
       await _db.into(_db.pendingSubmissions).insert(submission);
       await _db.batch((b) {
         b.insertAll(_db.pendingAnswers, answers);
+        if (photos.isNotEmpty) {
+          b.insertAll(_db.pendingPhotos, photos);
+        }
       });
     });
   }

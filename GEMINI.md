@@ -2,6 +2,10 @@
 
 ## 1. Governance Rules
 
+### Rule: Use Mechanical Language
+- **Rule**: Do not use human words (like "thought", "forgot") to describe code or system behavior. Be literal and concise.
+- **Enforcement**: Describe exactly what the code executes or lacks. (e.g. "The function lacked the instruction to write rows," not "The system forgot to save").
+
 ### Rule: Read Before You Write
 - **Rule**: Research the code before editing. Never change code you haven't read.
 - **Enforcement**: Use `grep_search` and `view_file`. Always check `GEMINI.md` in subfolders for local rules before editing files there.

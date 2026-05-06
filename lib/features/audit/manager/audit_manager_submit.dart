@@ -28,10 +28,27 @@ Future<void> _submitAuditLogic(AuditManager manager) async {
       );
     }
 
-    // 1. Build answer companions
+    // 1. Build answer and photo companions
+    final photos = <PendingPhotosCompanion>[];
     final answerCompanions = manager._answers.values.map((a) {
+      final answerId = _uuid.v4();
+
+      if (a.photoUrl != null &&
+          !a.photoUrl!.startsWith('http') &&
+          !a.photoUrl!.startsWith('/api/')) {
+        photos.add(
+          PendingPhotosCompanion.insert(
+            id: _uuid.v4(),
+            pendingSubmissionId: submissionId,
+            answerId: Value(answerId),
+            localPath: a.photoUrl!,
+            createdAt: now,
+          ),
+        );
+      }
+
       return PendingAnswersCompanion.insert(
-        id: _uuid.v4(),
+        id: answerId,
         pendingSubmissionId: submissionId,
         criteriaId: a.criteriaId,
         value: Value(a.value),
@@ -45,7 +62,7 @@ Future<void> _submitAuditLogic(AuditManager manager) async {
       );
     }).toList();
 
-    // 2. Atomically persist submission + answers to outbox
+    // 2. Atomically persist submission + answers + photos to outbox
     await manager._outbox.insertSubmissionWithAnswers(
       PendingSubmissionsCompanion.insert(
         id: submissionId,
@@ -62,6 +79,7 @@ Future<void> _submitAuditLogic(AuditManager manager) async {
         targetSubmissionId: Value(manager._targetSubmissionId),
       ),
       answerCompanions,
+      photos,
     );
 
     // 2.5. Delete draft now that submission is safely in outbox (atomic)

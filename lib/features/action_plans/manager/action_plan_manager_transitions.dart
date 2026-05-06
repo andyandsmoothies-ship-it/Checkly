@@ -101,7 +101,7 @@ Future<ActionPlanDto> _closePlanLogic(
   required String verifierName,
 }) async {
   manager._assertNotTerminal(plan);
-  manager._assertRole(['auditor', 'admin'], 'close plan');
+  manager._assertRole(['auditor', 'admin', 'area_manager'], 'close plan');
   manager._assertStatus(plan, 'pending_verify', 'closed');
 
   return manager._api.updateActionPlan(plan.id, {
@@ -118,7 +118,7 @@ Future<ActionPlanDto> _rejectEvidenceLogic(
   ActionPlanDto plan,
 ) async {
   manager._assertNotTerminal(plan);
-  manager._assertRole(['auditor', 'admin'], 'reject evidence');
+  manager._assertRole(['auditor', 'admin', 'area_manager'], 'reject evidence');
   manager._assertStatus(plan, 'pending_verify', 'open');
 
   return manager._api.updateActionPlan(plan.id, {

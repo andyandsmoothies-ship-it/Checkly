@@ -127,19 +127,21 @@ class AuditPhotoSection extends StatelessWidget {
       manager.setPhotoUrl(criterion.id, image.path);
     } catch (e) {
       if (!ctx.mounted) return;
-      
+
       // Handle the Windows/Desktop missing camera delegate error
       if (e is StateError && e.message.contains('cameraDelegate')) {
         ScaffoldMessenger.of(ctx).showSnackBar(
           const SnackBar(
-            content: Text('Camera capture is not supported on this device natively. Please use "Choose from Gallery" instead.'),
+            content: Text(
+              'Camera capture is not supported on this device natively. Please use "Choose from Gallery" instead.',
+            ),
             duration: Duration(seconds: 4),
           ),
         );
       } else {
-        ScaffoldMessenger.of(ctx).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
-        );
+        ScaffoldMessenger.of(
+          ctx,
+        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
       }
     }
   }

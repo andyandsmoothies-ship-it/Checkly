@@ -64,8 +64,11 @@ class ReadOnlyCriterionRow extends StatelessWidget {
       }
     }
 
-    // Fallback if no specific format is matched (e.g., text, scale)
-    if (answer.value != null && criterion?.inputType != 'multi_choice') {
+    // Fallback if no specific format is matched (e.g., scale)
+    // Do not use a chip for 'text' as it is rendered as a subtitle instead.
+    if (answer.value != null &&
+        criterion?.inputType != 'multi_choice' &&
+        criterion?.inputType != 'text') {
       if (answer.value!.trim().isNotEmpty) {
         return _ValueChip(value: answer.value!, theme: theme);
       }
@@ -317,7 +320,7 @@ class _ValueChip extends StatelessWidget {
       case 'na':
         return 'N/A';
       default:
-        return value.toUpperCase();
+        return value;
     }
   }
 }

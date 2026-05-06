@@ -102,6 +102,8 @@ class ChecklyFab extends StatelessWidget {
       );
     }
 
+    if (items.isEmpty) return;
+
     showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
@@ -123,6 +125,11 @@ class ChecklyFab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // If the user has no actions available, hide the FAB completely.
+    if (!canCreateSubmission && !(isAdmin && onAssignTask != null)) {
+      return const SizedBox.shrink();
+    }
+
     final theme = Theme.of(context);
 
     return Padding(
