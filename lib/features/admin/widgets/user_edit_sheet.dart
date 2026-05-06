@@ -98,10 +98,14 @@ class _UserEditSheetState extends State<UserEditSheet> {
     try {
       final String? assignableAs = showAssignedStores
           ? null
-          : (role == 'store_manager' ? 'store_manager' : (role == 'area_manager' ? 'area_manager' : null));
+          : (role == 'store_manager'
+                ? 'store_manager'
+                : (role == 'area_manager' ? 'area_manager' : null));
       final stores = await widget.loadStores(
         assignableAs: assignableAs,
-        exceptUser: role == 'store_manager' ? widget.user['id'] as String : null,
+        exceptUser: role == 'store_manager'
+            ? widget.user['id'] as String
+            : null,
       );
       if (mounted) {
         setState(() {
@@ -141,221 +145,229 @@ class _UserEditSheetState extends State<UserEditSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            // ── Header ────────────────────────────────────────────────────
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextFormField(
-                        controller: _fullNameCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Full Name',
-                          border: OutlineInputBorder(),
+              // ── Header ────────────────────────────────────────────────────
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          controller: _fullNameCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Full Name',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.user['email'] ?? '',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.user['email'] ?? '',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.maybePop(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // ── Role dropdown ─────────────────────────────────────────────
-            DropdownButtonFormField<String>(
-              initialValue: selectedRole,
-              borderRadius: BorderRadius.circular(12),
-              decoration: const InputDecoration(
-                labelText: 'Role',
-                border: OutlineInputBorder(),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                DropdownMenuItem(value: 'auditor', child: Text('Auditor')),
-                DropdownMenuItem(
-                  value: 'store_manager',
-                  child: Text('Store Manager'),
-                ),
-                DropdownMenuItem(
-                  value: 'area_manager',
-                  child: Text('Area Manager'),
-                ),
-              ],
-              onChanged: (v) async {
-                _markDirty();
-                // Lazy-load stores on the first switch to a role that needs them
-                if ((v == 'store_manager' || v == 'area_manager') && 
-                    selectedRole != v) {
-                  await _loadStores(v!); // error-handled, shows SnackBar on failure
-                }
-                if (mounted) {
-                  setState(() {
-                    selectedRole = v;
-                    if (v == 'admin' || v == 'auditor') {
-                      selectedStoreId = null;
-                      selectedAreaId = null;
-                      _selectedStoreIds.clear();
-                    } else if (v == 'store_manager') {
-                      selectedAreaId = null;
-                      _selectedStoreIds.clear();
-                    } else if (v == 'area_manager') {
-                      selectedStoreId = null;
-                      selectedAreaId = null;
-                    }
-                  });
-                }
-              },
-            ),
-
-            // ── Store picker (store_manager only) ──────────────────────────
-            if (selectedRole == 'store_manager') ...[
-              const SizedBox(height: 12),
-              DropdownCard(
-                icon: Icons.store_outlined,
-                label: 'ASSIGNED STORE',
-                hint: 'Select a store',
-                value: selectedStoreId,
-                itemIcon: Icons.store_outlined,
-                nullable: true,
-                items: assignableStores.map((s) {
-                  final mgr = s['managerName'] as String?;
-                  return (
-                    id: s['id'] as String,
-                    label: s['name'] as String,
-                    subtitle: mgr != null ? 'SM: $mgr' : 'Vacant',
-                  );
-                }).toList(),
-                onChanged: (v) {
-                  _markDirty();
-                  setState(() => selectedStoreId = v);
-                },
-              ),
-            ],
-
-            // ── Direct Store Assignments (area_manager only) ──────────────────────────
-            if (selectedRole == 'area_manager') ...[
-              const SizedBox(height: 12),
-              SwitchListTile(
-                title: const Text('Show assigned stores'),
-                value: showAssignedStores,
-                onChanged: (val) {
-                  setState(() => showAssignedStores = val);
-                  _loadStores(selectedRole!);
-                },
-                contentPadding: EdgeInsets.zero,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'DIRECT STORE ASSIGNMENTS',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.1,
+                      ],
                     ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                constraints: const BoxConstraints(maxHeight: 200),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: _isLoadingStores
-                    ? const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    : assignableStores.isEmpty
-                        ? const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Text('No active stores found.'),
-                            ),
-                          )
-                        : ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: assignableStores.length,
-                        separatorBuilder: (context, index) => const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          final store = assignableStores[index];
-                          final id = store['id'] as String;
-                          final name = store['name'] as String;
-                          final isSelected = _selectedStoreIds.contains(id);
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.maybePop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
 
-                          return CheckboxListTile(
-                            title: Text(name),
-                            value: isSelected,
-                            onChanged: (bool? checked) {
-                              _markDirty();
-                              setState(() {
-                                if (checked == true) {
-                                  _selectedStoreIds.add(id);
-                                } else {
-                                  _selectedStoreIds.remove(id);
-                                }
-                              });
-                            },
-                          );
-                        },
-                      ),
+              // ── Role dropdown ─────────────────────────────────────────────
+              DropdownButtonFormField<String>(
+                initialValue: selectedRole,
+                borderRadius: BorderRadius.circular(12),
+                decoration: const InputDecoration(
+                  labelText: 'Role',
+                  border: OutlineInputBorder(),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                  DropdownMenuItem(value: 'auditor', child: Text('Auditor')),
+                  DropdownMenuItem(
+                    value: 'store_manager',
+                    child: Text('Store Manager'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'area_manager',
+                    child: Text('Area Manager'),
+                  ),
+                ],
+                onChanged: (v) async {
+                  _markDirty();
+                  // Lazy-load stores on the first switch to a role that needs them
+                  if ((v == 'store_manager' || v == 'area_manager') &&
+                      selectedRole != v) {
+                    await _loadStores(
+                      v!,
+                    ); // error-handled, shows SnackBar on failure
+                  }
+                  if (mounted) {
+                    setState(() {
+                      selectedRole = v;
+                      if (v == 'admin' || v == 'auditor') {
+                        selectedStoreId = null;
+                        selectedAreaId = null;
+                        _selectedStoreIds.clear();
+                      } else if (v == 'store_manager') {
+                        selectedAreaId = null;
+                        _selectedStoreIds.clear();
+                      } else if (v == 'area_manager') {
+                        selectedStoreId = null;
+                        selectedAreaId = null;
+                      }
+                    });
+                  }
+                },
+              ),
+
+              // ── Store picker (store_manager only) ──────────────────────────
+              if (selectedRole == 'store_manager') ...[
+                const SizedBox(height: 12),
+                DropdownCard(
+                  icon: Icons.store_outlined,
+                  label: 'ASSIGNED STORE',
+                  hint: 'Select a store',
+                  value: selectedStoreId,
+                  itemIcon: Icons.store_outlined,
+                  nullable: true,
+                  items: assignableStores.map((s) {
+                    final mgr = s['managerName'] as String?;
+                    return (
+                      id: s['id'] as String,
+                      label: s['name'] as String,
+                      subtitle: mgr != null ? 'SM: $mgr' : 'Vacant',
+                    );
+                  }).toList(),
+                  onChanged: (v) {
+                    _markDirty();
+                    setState(() => selectedStoreId = v);
+                  },
+                ),
+              ],
+
+              // ── Direct Store Assignments (area_manager only) ──────────────────────────
+              if (selectedRole == 'area_manager') ...[
+                const SizedBox(height: 12),
+                SwitchListTile(
+                  title: const Text('Show assigned stores'),
+                  value: showAssignedStores,
+                  onChanged: (val) {
+                    setState(() => showAssignedStores = val);
+                    _loadStores(selectedRole!);
+                  },
+                  contentPadding: EdgeInsets.zero,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'DIRECT STORE ASSIGNMENTS',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: _isLoadingStores
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : assignableStores.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text('No active stores found.'),
+                          ),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: assignableStores.length,
+                          separatorBuilder: (context, index) =>
+                              const Divider(height: 1),
+                          itemBuilder: (context, index) {
+                            final store = assignableStores[index];
+                            final id = store['id'] as String;
+                            final name = store['name'] as String;
+                            final isSelected = _selectedStoreIds.contains(id);
+
+                            return CheckboxListTile(
+                              title: Text(name),
+                              value: isSelected,
+                              onChanged: (bool? checked) {
+                                _markDirty();
+                                setState(() {
+                                  if (checked == true) {
+                                    _selectedStoreIds.add(id);
+                                  } else {
+                                    _selectedStoreIds.remove(id);
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                ),
+              ],
+              const SizedBox(height: 20),
+
+              // ── Save button ───────────────────────────────────────────────
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => widget.onSave(
+                    userId: widget.user['id'] as String,
+                    fullName: _fullNameCtrl.text.trim().isEmpty
+                        ? null
+                        : _fullNameCtrl.text.trim(),
+                    role: selectedRole,
+                    storeId: selectedStoreId,
+                    areaId: selectedAreaId,
+                    assignedStoreIds:
+                        selectedRole == 'area_manager' &&
+                            _selectedStoreIds.isNotEmpty
+                        ? _selectedStoreIds
+                        : null,
+                  ),
+                  icon: const Icon(Icons.save),
+                  label: const Text('Save Changes'),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // ── Reset Password button ─────────────────────────────────────
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => widget.onResetPassword(
+                    context,
+                    widget.user['id'] as String,
+                    widget.user['fullName'] as String? ?? 'this user',
+                  ),
+                  icon: const Icon(Icons.lock_reset),
+                  label: const Text('Reset Password'),
+                ),
               ),
             ],
-            const SizedBox(height: 20),
-
-            // ── Save button ───────────────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: () => widget.onSave(
-                  userId: widget.user['id'] as String,
-                  fullName: _fullNameCtrl.text.trim().isEmpty
-                      ? null
-                      : _fullNameCtrl.text.trim(),
-                  role: selectedRole,
-                  storeId: selectedStoreId,
-                  areaId: selectedAreaId,
-                  assignedStoreIds: selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty
-                      ? _selectedStoreIds
-                      : null,
-                ),
-                icon: const Icon(Icons.save),
-                label: const Text('Save Changes'),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // ── Reset Password button ─────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => widget.onResetPassword(
-                  context,
-                  widget.user['id'] as String,
-                  widget.user['fullName'] as String? ?? 'this user',
-                ),
-                icon: const Icon(Icons.lock_reset),
-                label: const Text('Reset Password'),
-              ),
-            ),
-          ],
-        ),
+          ),
         ),
       ),
     );

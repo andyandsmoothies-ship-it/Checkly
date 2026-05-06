@@ -94,7 +94,8 @@ class AuthManager extends ChangeNotifier {
           final profile = await _authApi.syncProfile();
           final assignedStoreIdsRaw =
               profile['assignedStoreIds'] as List<dynamic>?;
-          final assignedStoreIds = assignedStoreIdsRaw
+          final assignedStoreIds =
+              assignedStoreIdsRaw
                   ?.map((e) => e.toString())
                   .where((e) => e.isNotEmpty)
                   .toList() ??

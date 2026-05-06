@@ -50,7 +50,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
     super.initState();
     _manager = _di<AdminAuditManager>();
     _manager.addListener(_onManagerChanged);
-    
+
     // Check if data is already available (e.g. from tests or prior loads)
     if (_manager.scheduleData != null) {
       _isLoadingData = false;

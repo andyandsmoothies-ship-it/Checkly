@@ -67,6 +67,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 |---|---|
 | **Acceptance Criteria** | You must write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
 | **Tools Needed** | Write down which skills the Builder will need. Write down the commands to test the code (like `flutter test` or `dotnet test`). |
+| **Slicing Strategy** | **MANDATORY**: You MUST load and apply the `use-case-slicing` skill. Use the 'Maximum Thickness' exception to split heavy slices horizontally. Every slice must define an 'Entry State Required' and 'Exit State Guaranteed'. Output slices as 'Micro-Specs'. |
 | **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `docs/architecture/` folder. Do not print the whole plan in the chat. Make it easy for a human to read. |
 | **Clear Goals** | The plan must have clear steps (like 'Write X test -> Check it fails -> Write Y code -> Check it passes'). |
 
@@ -115,7 +116,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Tools & Commands` (Skills and test commands)
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
 > - `## Concept Diagram`: A simple text flowchart (like `[User] --> [Click] --> [Save]`) to explain the idea.
-> - `## Execution Slices`: Group the work into small, safe technical phases. **CRITICAL:** To prevent AI context overflow, if a plan spans both backend APIs and new frontend UI, YOU MUST split it (e.g., `Phase A: Backend API`, `Phase B: Frontend UI`). Never assign an AI to build DB migrations, APIs, and UI in a single phase. Keep the blast radius under 400 lines per phase. Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
+> - `## Execution Slices` (Micro-Specs): Group the work using the `use-case-slicing` skill methodology. **CRITICAL:** Apply the 'Maximum Thickness' rule. To prevent AI context overflow, if a plan spans both backend APIs and new frontend UI, YOU MUST split it horizontally (e.g., `Phase A: Backend API`, `Phase B: Frontend UI`). Keep the blast radius under 200 lines per phase. For each slice, you MUST output the Micro-Spec format (Plain English Summary, Value Delivered, Entry/Exit State, Scope, Acceptance Criteria). Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
 > - `<command_logs>`: A list of terminal commands you ran.
 > - `## Handoff Block`: A short summary for the next AI agent. You MUST include the exact `@[/...]` routing command (like `@[/tdd]`) for EVERY step, with the absolute file path.
 >

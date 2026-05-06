@@ -117,7 +117,11 @@ class _WizardStepReviewState extends State<WizardStepReview> {
           : '"${c.labelCtrl.text.trim()}"';
       final isChoice =
           c.inputType == 'single_choice' || c.inputType == 'multi_choice';
-      final isScored = !isSurvey && c.inputType != 'text' && !isChoice;
+      final isScored =
+          !isSurvey &&
+          widget.scoringMode != 'checklist' &&
+          c.inputType != 'text' &&
+          !isChoice;
       if (isChoice && c.choiceOptions.length < 2) {
         errors.add('$cName needs at least 2 options.');
       }
@@ -186,15 +190,6 @@ class _WizardStepReviewState extends State<WizardStepReview> {
 
         // V6 validation badge (blocking errors — red)
         if (!isV6Valid) ReviewValidationBanner(errors: v6Errors),
-
-        // Quality indicator (non-blocking: coverage recommendation)
-        ReviewQualityBanner(
-          isV6Valid: isV6Valid,
-          isProductionReady: _isProductionReady,
-          sectionCount: widget.sections.length,
-          totalCriteria: _totalCriteria,
-        ),
-        const SizedBox(height: 16),
 
         // Summary card
         Card(

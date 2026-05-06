@@ -15,37 +15,40 @@ void main() {
   });
 
   group('SyncApiAdapter.pullGlobalRisks', () {
-    test('pullGlobalRisks_includesSinceQueryParam_whenTimestampProvided', () async {
-      final since = DateTime.utc(2026, 5, 2, 11, 30);
+    test(
+      'pullGlobalRisks_includesSinceQueryParam_whenTimestampProvided',
+      () async {
+        final since = DateTime.utc(2026, 5, 2, 11, 30);
 
-      when(
-        () => mockDio.get<Map<String, dynamic>>(
-          any(),
-          queryParameters: any(named: 'queryParameters'),
-        ),
-      ).thenAnswer(
-        (_) async => Response<Map<String, dynamic>>(
-          requestOptions: RequestOptions(path: '/global-risks'),
-          data: {
-            'items': List.generate(10, (index) => {'id': index}),
-          },
-        ),
-      );
+        when(
+          () => mockDio.get<Map<String, dynamic>>(
+            any(),
+            queryParameters: any(named: 'queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<Map<String, dynamic>>(
+            requestOptions: RequestOptions(path: '/global-risks'),
+            data: {
+              'items': List.generate(10, (index) => {'id': index}),
+            },
+          ),
+        );
 
-      final result = await adapter.pullGlobalRisks(since);
+        final result = await adapter.pullGlobalRisks(since);
 
-      expect(result, hasLength(10));
-      verify(
-        () => mockDio.get<Map<String, dynamic>>(
-          '/global-risks',
-          queryParameters: {
-            'page': 1,
-            'pageSize': 100,
-            'since': since.toIso8601String(),
-          },
-        ),
-      ).called(1);
-    });
+        expect(result, hasLength(10));
+        verify(
+          () => mockDio.get<Map<String, dynamic>>(
+            '/global-risks',
+            queryParameters: {
+              'page': 1,
+              'pageSize': 100,
+              'since': since.toIso8601String(),
+            },
+          ),
+        ).called(1);
+      },
+    );
 
     test('pullGlobalRisks_stopsAtMaxPages_whenServerAlwaysReturnsFull', () async {
       // Arrange

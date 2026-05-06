@@ -4,9 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget buildWidget() {
-    return const MaterialApp(
-      home: ProgramStoreSelectorPage(),
-    );
+    return const MaterialApp(home: ProgramStoreSelectorPage());
   }
 
   group('ProgramStoreSelectorPage Tests', () {

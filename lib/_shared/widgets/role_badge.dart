@@ -44,8 +44,9 @@ class RoleBadge extends StatelessWidget {
         ? const EdgeInsets.symmetric(horizontal: 8, vertical: 3)
         : const EdgeInsets.symmetric(horizontal: 12, vertical: 4);
 
-    final baseStyle =
-        isSmall ? theme.textTheme.labelSmall : theme.textTheme.labelMedium;
+    final baseStyle = isSmall
+        ? theme.textTheme.labelSmall
+        : theme.textTheme.labelMedium;
 
     return Container(
       padding: padding,
@@ -55,10 +56,7 @@ class RoleBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: baseStyle?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
+        style: baseStyle?.copyWith(color: color, fontWeight: FontWeight.w600),
         overflow: TextOverflow.ellipsis,
       ),
     );

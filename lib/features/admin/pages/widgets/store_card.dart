@@ -149,8 +149,10 @@ class StoreCard extends StatelessWidget {
                 builder: (context) {
                   final smText = store.managerName ?? 'Unassigned';
                   final amText = store.areaManagerName ?? 'Unassigned';
-                  final isBothUnassigned = store.managerName == null && store.areaManagerName == null;
-                  
+                  final isBothUnassigned =
+                      store.managerName == null &&
+                      store.areaManagerName == null;
+
                   if (isBothUnassigned) {
                     return Container(
                       padding: const EdgeInsets.symmetric(

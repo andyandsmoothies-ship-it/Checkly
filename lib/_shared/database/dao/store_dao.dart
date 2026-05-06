@@ -11,10 +11,11 @@ class StoreDao {
 
   /// Read all cached stores.
   Future<List<StoreDto>> getAllStores() async {
-    final profileRow = await (_db.select(_db.cachedProfiles)
-          ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
-          ..limit(1))
-        .getSingleOrNull();
+    final profileRow =
+        await (_db.select(_db.cachedProfiles)
+              ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
+              ..limit(1))
+            .getSingleOrNull();
     final isAreaManager = profileRow?.role == 'area_manager';
     final overrideIds = _parseAssignedStoreOverrides(
       profileRow?.assignedStoreOverrides,

@@ -26,24 +26,27 @@ class ProfileDao {
 
   Future<void> upsertProfile(ProfileSyncSnapshot snapshot) async {
     final serialized = _serializeStoreIds(snapshot.assignedStoreIds);
-    await _db.into(_db.cachedProfiles).insertOnConflictUpdate(
-      CachedProfilesCompanion(
-        profileId: Value(snapshot.profileId),
-        fullName: Value(snapshot.fullName),
-        email: Value(snapshot.email),
-        role: Value(snapshot.role),
-        assignedStoreOverrides: Value(serialized),
-        updatedAt: Value(DateTime.now()),
-      ),
-    );
+    await _db
+        .into(_db.cachedProfiles)
+        .insertOnConflictUpdate(
+          CachedProfilesCompanion(
+            profileId: Value(snapshot.profileId),
+            fullName: Value(snapshot.fullName),
+            email: Value(snapshot.email),
+            role: Value(snapshot.role),
+            assignedStoreOverrides: Value(serialized),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
   }
 
   Future<List<String>> getAssignedStoreIdsForRole(String role) async {
     if (role != 'area_manager') return const [];
-    final row = await (_db.select(_db.cachedProfiles)
-          ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (_db.select(_db.cachedProfiles)
+              ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return const [];
     return _deserializeStoreIds(row.assignedStoreOverrides);
   }
@@ -53,12 +56,9 @@ class ProfileDao {
   }
 
   static String? _serializeStoreIds(List<String> ids) {
-    final normalized = ids
-        .map((e) => e.trim())
-        .where((e) => e.isNotEmpty)
-        .toSet()
-        .toList()
-      ..sort();
+    final normalized =
+        ids.map((e) => e.trim()).where((e) => e.isNotEmpty).toSet().toList()
+          ..sort();
     if (normalized.isEmpty) return null;
     return normalized.join(',');
   }

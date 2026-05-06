@@ -17,7 +17,7 @@ class ScheduleAuditFormLogic {
       if (role == 'area_manager') {
         final assignedStoreIds =
             (u['assignedStoreIds'] as List<dynamic>?)?.cast<String>() ??
-                <String>[];
+            <String>[];
         return assignedStoreIds.contains(selectedStoreId);
       } else {
         return u['areaId'] == storeAreaId || u['areaId'] == null;
@@ -41,7 +41,7 @@ class ScheduleAuditFormLogic {
     if (role == 'area_manager') {
       final assignedStoreIds =
           (auditor['assignedStoreIds'] as List<dynamic>?)?.cast<String>() ??
-              <String>[];
+          <String>[];
       return allStores
           .where((s) => assignedStoreIds.contains(s['id']))
           .toList();

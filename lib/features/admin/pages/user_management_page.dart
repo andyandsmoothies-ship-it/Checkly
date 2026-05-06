@@ -106,8 +106,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               storeId,
               areaId,
               assignedStoreIds,
-            }) =>
-            _saveUser(
+            }) => _saveUser(
               userId,
               fullName: fullName,
               role: role,

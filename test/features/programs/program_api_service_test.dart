@@ -19,10 +19,10 @@ void main() {
     test('TC-01: createProgram posts correct payload', () async {
       // Arrange
       final deadline = DateTime.utc(2026, 6, 30, 23, 59, 59);
-      when(() => mockDio.post<Map<String, dynamic>>(
-            any(),
-            data: any(named: 'data'),
-          )).thenAnswer(
+      when(
+        () =>
+            mockDio.post<Map<String, dynamic>>(any(), data: any(named: 'data')),
+      ).thenAnswer(
         (_) async => Response(
           requestOptions: RequestOptions(path: '/programs'),
           statusCode: 201,
@@ -46,32 +46,36 @@ void main() {
       expect(result['programId'], '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d');
       expect(result['assignmentCount'], 2);
 
-      verify(() => mockDio.post<Map<String, dynamic>>(
-            '/programs',
-            data: {
-              'title': 'Q2 Hygiene Blitz',
-              'category': 'Hygiene',
-              'deadline': deadline.toIso8601String(),
-              'templateId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-              'storeIds': ['a1b2c3d4-1111', 'e5f6a7b8-2222'],
-            },
-          )).called(1);
+      verify(
+        () => mockDio.post<Map<String, dynamic>>(
+          '/programs',
+          data: {
+            'title': 'Q2 Hygiene Blitz',
+            'category': 'Hygiene',
+            'deadline': deadline.toIso8601String(),
+            'templateId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+            'storeIds': ['a1b2c3d4-1111', 'e5f6a7b8-2222'],
+          },
+        ),
+      ).called(1);
     });
 
     test('TC-02: createProgram throws on non-2xx', () async {
       // Arrange
       final deadline = DateTime.utc(2026, 6, 30, 23, 59, 59);
-      when(() => mockDio.post<Map<String, dynamic>>(
-            any(),
-            data: any(named: 'data'),
-          )).thenThrow(DioException(
-        requestOptions: RequestOptions(path: '/programs'),
-        response: Response(
+      when(
+        () =>
+            mockDio.post<Map<String, dynamic>>(any(), data: any(named: 'data')),
+      ).thenThrow(
+        DioException(
           requestOptions: RequestOptions(path: '/programs'),
-          statusCode: 400,
-          data: 'Bad Request',
+          response: Response(
+            requestOptions: RequestOptions(path: '/programs'),
+            statusCode: 400,
+            data: 'Bad Request',
+          ),
         ),
-      ));
+      );
 
       // Act & Assert
       expect(
