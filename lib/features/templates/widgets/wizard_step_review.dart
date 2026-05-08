@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../_shared/services/scoring_mode.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../widgets/advanced_settings_card.dart';
@@ -9,7 +10,7 @@ import '../widgets/review_section_breakdown.dart';
 /// Wizard Step 3: Review & optional advanced settings before saving.
 class WizardStepReview extends StatefulWidget {
   final String title;
-  final String scoringMode;
+  final ScoringMode scoringMode;
   final String type;
   final List<EditableGroup> sections;
 
@@ -64,9 +65,6 @@ class _WizardStepReviewState extends State<WizardStepReview> {
   int get _totalCriteria =>
       widget.sections.fold(0, (sum, s) => sum + s.countCriteria());
 
-  bool get _isProductionReady =>
-      widget.sections.length >= 3 && _totalCriteria >= 5;
-
   /// V6 blocking errors — if non-empty, the template CANNOT be saved.
   List<String> get _v6Errors {
     final errors = <String>[];
@@ -74,7 +72,7 @@ class _WizardStepReviewState extends State<WizardStepReview> {
       errors.add('Add at least one section before saving.');
       return errors;
     }
-    final isSurvey = widget.scoringMode == 'survey';
+    final isSurvey = widget.scoringMode == ScoringMode.survey;
     for (int si = 0; si < widget.sections.length; si++) {
       final s = widget.sections[si];
       final sName = s.titleCtrl.text.trim().isEmpty
@@ -119,7 +117,7 @@ class _WizardStepReviewState extends State<WizardStepReview> {
           c.inputType == 'single_choice' || c.inputType == 'multi_choice';
       final isScored =
           !isSurvey &&
-          widget.scoringMode != 'checklist' &&
+          widget.scoringMode != ScoringMode.checklist &&
           c.inputType != 'text' &&
           !isChoice;
       if (isChoice && c.choiceOptions.length < 2) {
@@ -133,18 +131,12 @@ class _WizardStepReviewState extends State<WizardStepReview> {
   }
 
   String get _modeLabel {
-    switch (widget.scoringMode) {
-      case 'penalty':
-        return 'Compliance Audit (Penalty)';
-      case 'accumulation':
-        return 'Training Assessment (Accumulation)';
-      case 'checklist':
-        return 'Custom Checklist';
-      case 'survey':
-        return 'Feedback Survey';
-      default:
-        return widget.scoringMode;
-    }
+    return switch (widget.scoringMode) {
+      ScoringMode.penalty => 'Compliance Audit (Penalty)',
+      ScoringMode.accumulation => 'Training Assessment (Accumulation)',
+      ScoringMode.checklist => 'Custom Checklist',
+      ScoringMode.survey => 'Feedback Survey',
+    };
   }
 
   @override
@@ -261,7 +253,7 @@ class _WizardStepReviewState extends State<WizardStepReview> {
         if (_showAdvanced) ...[
           const SizedBox(height: 16),
           AdvancedSettingsCard(
-            scoringMode: widget.scoringMode,
+            scoringMode: widget.scoringMode.name,
             ccpOverride: widget.ccpOverride,
             riskOverride: widget.riskOverride,
             weightedDensity: widget.weightedDensity,

@@ -11,8 +11,10 @@ import '../../audit/services/submission_api_service.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../stores/manager/store_manager.dart';
 import '../../../_shared/database/dao/outbox_dao.dart';
+import '../../../_shared/database/dao/program_outbox_dao.dart';
 import '../../audit/manager/history_manager.dart';
 import '../../action_plans/manager/action_plan_manager.dart';
+import '../../programs/model/pending_assignment_vm.dart';
 import 'dashboard_queries.dart';
 import '../../../_shared/constants/user_persona.dart';
 
@@ -105,6 +107,24 @@ class DashboardManager extends ChangeNotifier {
   DashboardManager({AppDatabase? db, AuthManager? auth})
     : _db = db ?? _di<DatabaseService>().db,
       _auth = auth ?? _di<AuthManager>();
+
+  /// Watches pending program assignments and maps them to a UI-safe VM.
+  ///
+  /// Returns `null` when there are no pending assignments (widget hides itself).
+  /// The [ProgramOutboxDao] is resolved lazily from GetIt so that tests that
+  /// do not exercise this method are unaffected.
+  Stream<PendingAssignmentVm?> watchActionRequired([
+    ProgramOutboxDao? programOutboxDao,
+  ]) {
+    final dao = programOutboxDao ?? _di<ProgramOutboxDao>();
+    return dao.watchPendingAssignments().map((assignments) {
+      if (assignments.isEmpty) return null;
+      return PendingAssignmentVm(
+        firstId: assignments.first.id,
+        count: assignments.length,
+      );
+    });
+  }
 
   DashboardState _state = DashboardLoading();
   DashboardState get dashboardState => _state;

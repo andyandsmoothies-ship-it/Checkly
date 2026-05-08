@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/services/scoring_mode.dart';
 import '../manager/template_manager.dart';
 import '../models/editable_group.dart';
 import '../widgets/wizard_step_name.dart';
@@ -306,7 +307,10 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
               // Step 4: Review
               WizardStepReview(
                 title: _titleCtrl.text,
-                scoringMode: _scoringMode,
+                scoringMode: ScoringMode.values.firstWhere(
+                  (e) => e.name == _scoringMode,
+                  orElse: () => ScoringMode.penalty,
+                ),
                 type: _type,
                 sections: _sections,
                 ccpOverride: _ccpOverride,
