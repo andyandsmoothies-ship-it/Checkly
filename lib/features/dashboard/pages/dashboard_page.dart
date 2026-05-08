@@ -9,6 +9,7 @@ import '../../admin/widgets/schedule_audit_form.dart';
 import '../../auth/manager/auth_manager.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/constants/user_persona.dart';
 import '../manager/dashboard_manager.dart';
 import 'widgets/admin_dashboard_variant.dart';
 import 'widgets/auditor_dashboard_variant.dart';
@@ -83,11 +84,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final role = _di<AuthManager>().currentUser?.role ?? 'admin';
+    final persona = UserPersona.fromRole(_di<AuthManager>().currentUser?.role);
 
     return Scaffold(
       floatingActionButton: ChecklyFab(
-        isAdmin: role == 'admin',
+        canAssignTask: _di<PolicyManager>().can(AppCapabilities.programsCreate),
         canCreateSubmission: _di<PolicyManager>().can(
           AppCapabilities.submissionsCreate,
         ),
@@ -101,7 +102,7 @@ class _DashboardPageState extends State<DashboardPage> {
             bottom: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              child: Greeting(role: role),
+              child: Greeting(),
             ),
           ),
           // ── Role-scoped body ──
@@ -117,7 +118,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   ManagerDashboardState s => ManagerDashboardVariant(
                     state: s,
-                    role: role,
+                    persona: persona,
                     onRefresh: () => _manager.loadStats(showLoading: false),
                   ),
                   AdminDashboardState s => AdminDashboardVariant(
@@ -138,8 +139,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
 @visibleForTesting
 class Greeting extends StatelessWidget {
-  final String role;
-  const Greeting({required this.role, super.key});
+  const Greeting({super.key});
 
   @override
   Widget build(BuildContext context) {

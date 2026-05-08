@@ -10,6 +10,8 @@ import '../../../audit/services/draft_service.dart';
 import '../../../auth/manager/auth_manager.dart';
 import '../../manager/dashboard_manager.dart';
 import '../../../audit/utils/score_formatter.dart';
+import '../../../../_shared/services/policy_manager.dart';
+import '../../../../_shared/constants/app_capabilities.dart';
 
 /// Single submission row in the feed.
 @visibleForTesting
@@ -250,8 +252,9 @@ class _SubmissionRowState extends State<SubmissionRow> {
                     if (value == 'void') Future.microtask(_voidAudit);
                   },
                   itemBuilder: (_) {
-                    final isAdmin =
-                        _di<AuthManager>().currentUser?.role == 'admin';
+                    final canVoid = _di<PolicyManager>().can(
+                      AppCapabilities.submissionsReview,
+                    );
                     return [
                       const PopupMenuItem(
                         value: 'resume',
@@ -273,7 +276,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
                           ],
                         ),
                       ),
-                      if (isAdmin)
+                      if (canVoid)
                         const PopupMenuItem(
                           value: 'void',
                           child: Row(

@@ -74,6 +74,11 @@
   - **Fix:** NEVER use framework commands that drop or wipe the host database (e.g. `EnsureDeleted()`) without an explicit code-level safeguard. Integration test factories must hardcode an exception throw if the connected database string does not contain `_test` to guarantee the development and production databases cannot be wiped accidentally.
 - **Gotcha: Local Testing Environment**
   - **Fix:** The project utilizes Logical Database Separation on the local PostgreSQL instance. The `checkly_test` database **already exists** natively alongside the main `checkly` database. Agents must never try to drop it manually or assume tests need a mocked server. Simply run `dotnet test`, and `TestWebApplicationFactory` will seamlessly route traffic to `checkly_test` and auto-migrate its schema.
+- **Gotcha: Interface Drift in Mocks (Compiler Mismatches)**
+  - **Fix:** Avoid manual fakes (e.g., `class FakeDao extends RealDao`) which require manual signature rewrites. Use `mocktail` (`class MockDao extends Mock implements RealDao {}`). Whenever you modify a core service, entity, or database DAO, you MUST run the global `flutter test` or `dotnet test` suite before committing to instantly catch drifted interfaces across the entire project.
+- **Gotcha: Hardcoded Role Filtering in UI Lists**
+  - **Fix:** Do not hardcode role string checks (e.g., `u['role'] == 'auditor'`) in the frontend to filter dropdowns or UI lists, especially when migrating to PBAC. If the UI arbitrarily excludes roles like `area_manager`, dropdowns will appear empty and lead to silent null-reference validation errors. Always prefer backend-driven capability lists or PBAC-aware filtering.
+
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.
 - **No Interactive CLI:** Do not run `dotnet run`, `dotnet watch`, or `flutter run`.

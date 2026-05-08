@@ -331,8 +331,9 @@ class _ThrowingOutboxDao extends OutboxDao {
   @override
   Future<void> insertSubmissionWithAnswers(
     PendingSubmissionsCompanion submission,
-    List<PendingAnswersCompanion> answers,
-  ) async {
+    List<PendingAnswersCompanion> answers, [
+    List<PendingPhotosCompanion> photos = const [],
+  ]) async {
     throw Exception('Simulated SQLite failure');
   }
 }

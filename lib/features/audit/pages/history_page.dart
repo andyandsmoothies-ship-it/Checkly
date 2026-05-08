@@ -6,7 +6,7 @@ import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
 import '../../../_shared/widgets/warm_chip.dart';
-import '../../auth/manager/auth_manager.dart';
+
 import '../manager/history_manager.dart';
 import '../model/submission_dto.dart';
 import '../utils/category_utils.dart';
@@ -182,7 +182,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Audits')),
       floatingActionButton: ChecklyFab(
-        isAdmin: _di<AuthManager>().currentUser?.role == 'admin',
+        canAssignTask: _di<PolicyManager>().can(AppCapabilities.programsCreate),
         canCreateSubmission: _di<PolicyManager>().can(
           AppCapabilities.submissionsCreate,
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../auth/manager/auth_manager.dart';
+import '../../../_shared/constants/user_persona.dart';
 import '../widgets/sign_out_tile.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/settings_section_group.dart';
@@ -20,6 +21,7 @@ class ProfilePage extends StatelessWidget {
     final displayName = user?.fullName ?? user?.email ?? 'user@checkly.app';
     final email = user?.email ?? 'user@checkly.app';
     final role = user?.role ?? 'auditor';
+    final persona = UserPersona.fromRole(user?.role);
     final initials = getInitials(user?.fullName ?? email);
 
     return Scaffold(
@@ -32,7 +34,7 @@ class ProfilePage extends StatelessWidget {
           const SizedBox(height: 24),
 
           // ── Management Section ──
-          SettingsSectionGroup(items: _managementItems(context, role)),
+          SettingsSectionGroup(items: _managementItems(context, persona)),
           const SizedBox(height: 12),
 
           // ── General Section (Activity + Notifications + Theme) ──
@@ -114,9 +116,9 @@ class ProfilePage extends StatelessWidget {
     return '??';
   }
 
-  List<MenuItemData> _managementItems(BuildContext context, String role) {
+  List<MenuItemData> _managementItems(BuildContext context, UserPersona persona) {
     final items = <MenuItemData>[];
-    if (role == 'admin') {
+    if (persona == UserPersona.admin) {
       items.add(
         MenuItemData(
           icon: Icons.admin_panel_settings,
@@ -126,7 +128,7 @@ class ProfilePage extends StatelessWidget {
         ),
       );
     }
-    if (role == 'area_manager') {
+    if (persona == UserPersona.areaManager) {
       items.add(
         MenuItemData(
           icon: Icons.map_outlined,
@@ -136,7 +138,7 @@ class ProfilePage extends StatelessWidget {
         ),
       );
     }
-    if (role == 'store_manager') {
+    if (persona == UserPersona.storeManager) {
       items.add(
         MenuItemData(
           icon: Icons.store,

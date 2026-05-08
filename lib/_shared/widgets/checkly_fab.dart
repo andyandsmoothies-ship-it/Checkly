@@ -8,14 +8,14 @@ import 'package:flutter/material.dart';
 /// This inner FAB MUST have `Padding(bottom: 80)` or it renders behind the
 /// nav bar and becomes invisible. Do NOT remove this padding.
 class ChecklyFab extends StatelessWidget {
-  final bool isAdmin;
+  final bool canAssignTask;
   final bool canCreateSubmission;
   final VoidCallback onNewAudit;
   final VoidCallback? onAssignTask;
 
   const ChecklyFab({
     super.key,
-    required this.isAdmin,
+    required this.canAssignTask,
     required this.canCreateSubmission,
     required this.onNewAudit,
     this.onAssignTask,
@@ -67,7 +67,7 @@ class ChecklyFab extends StatelessWidget {
         ),
     ];
 
-    if (isAdmin && onAssignTask != null) {
+    if (canAssignTask && onAssignTask != null) {
       items.add(
         PopupMenuItem<String>(
           value: 'assign',
@@ -126,7 +126,7 @@ class ChecklyFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // If the user has no actions available, hide the FAB completely.
-    if (!canCreateSubmission && !(isAdmin && onAssignTask != null)) {
+    if (!canCreateSubmission && !(canAssignTask && onAssignTask != null)) {
       return const SizedBox.shrink();
     }
 

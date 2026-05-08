@@ -110,11 +110,13 @@ class AdminAuditManager extends ChangeNotifier {
           )
           .toList();
 
-      // Base auditor filter: active auditors and admins only
+      // Base auditor filter: active auditors, admins, and area managers
       var auditorList = users
           .where(
             (u) =>
-                (u['role'] == 'auditor' || u['role'] == 'admin') &&
+                (u['role'] == 'auditor' ||
+                    u['role'] == 'admin' ||
+                    u['role'] == 'area_manager') &&
                 u['isLocked'] != true,
           )
           .toList();

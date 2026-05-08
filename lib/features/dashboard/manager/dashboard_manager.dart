@@ -14,6 +14,7 @@ import '../../../_shared/database/dao/outbox_dao.dart';
 import '../../audit/manager/history_manager.dart';
 import '../../action_plans/manager/action_plan_manager.dart';
 import 'dashboard_queries.dart';
+import '../../../_shared/constants/user_persona.dart';
 
 final _di = GetIt.instance;
 
@@ -126,7 +127,7 @@ class DashboardManager extends ChangeNotifier {
     }
 
     try {
-      final role = _auth.currentUser?.role ?? 'admin';
+      final persona = UserPersona.fromRole(_auth.currentUser?.role);
       final queries = DashboardQueries(_db);
 
       if (showLoading && _di.isRegistered<SyncEngine>()) {
@@ -158,14 +159,13 @@ class DashboardManager extends ChangeNotifier {
         }
       }
 
-      switch (role) {
-        case 'auditor':
+      switch (persona) {
+        case UserPersona.auditor:
           _state = await _loadAuditorState(queries);
-        case 'store_manager':
-        case 'area_manager':
-          _state = await _loadManagerState(queries, role);
-        default:
-          // admin — also fallback for unknown roles
+        case UserPersona.storeManager:
+        case UserPersona.areaManager:
+          _state = await _loadManagerState(queries);
+        case UserPersona.admin:
           _state = await _loadAdminState(queries);
       }
     } catch (_) {
@@ -202,7 +202,6 @@ class DashboardManager extends ChangeNotifier {
 
   Future<DashboardState> _loadManagerState(
     DashboardQueries queries,
-    String role,
   ) async {
     // Get storeId from the cached store profile.
     // Store managers have exactly one store in the local cache.

@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/constants/user_persona.dart';
 import '../../../../_shared/services/policy_manager.dart';
 import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_theme.dart';
@@ -17,19 +18,19 @@ import 'action_required_widget.dart';
 /// Both use [ManagerDashboardState]; role string controls the title.
 class ManagerDashboardVariant extends StatelessWidget {
   final ManagerDashboardState state;
-  final String role;
+  final UserPersona persona;
   final Future<void> Function()? onRefresh;
   const ManagerDashboardVariant({
     super.key,
     required this.state,
-    required this.role,
+    required this.persona,
     this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isArea = role == 'area_manager';
+    final isArea = persona == UserPersona.areaManager;
     final contextLabel = isArea ? 'Your Area Fleet' : 'Your Store';
     final avgFormatted =
         state.storeAvgScore.truncateToDouble() == state.storeAvgScore

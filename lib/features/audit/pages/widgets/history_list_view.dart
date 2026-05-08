@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../auth/manager/auth_manager.dart';
+import '../../../../_shared/services/policy_manager.dart';
+import '../../../../_shared/constants/app_capabilities.dart';
 import '../../manager/history_manager.dart';
 import '../../model/submission_dto.dart';
 import '../audit_preview_sheet.dart';
@@ -36,6 +37,7 @@ class HistoryListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final manager = _di<HistoryManager>();
+    final canVoid = _di<PolicyManager>().can(AppCapabilities.submissionsReview);
 
     if (isEmpty) {
       return Center(
@@ -89,7 +91,7 @@ class HistoryListView extends StatelessWidget {
                       AuditPreviewSheet(submissionId: submission.id),
                 );
               },
-              onVoidAudit: _di<AuthManager>().currentUser?.role == 'admin'
+              onVoidAudit: canVoid
                   ? (submission) async {
                       final reasonController = TextEditingController();
                       final confirmed = await showDialog<bool>(
