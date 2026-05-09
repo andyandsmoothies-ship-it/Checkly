@@ -168,12 +168,13 @@ class Greeting extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 6),
         Text(
           'Store Overview',
           style: AppFonts.serifStyle(
             fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
             color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ],

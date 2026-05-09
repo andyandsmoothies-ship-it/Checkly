@@ -26,10 +26,10 @@ class SectionHeader extends StatelessWidget {
         text,
         style: AppFonts.displayStyle(
           fontSize: 11,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
           color: Theme.of(
             context,
-          ).colorScheme.onSurface.withValues(alpha: 0.65),
+          ).colorScheme.onSurface.withValues(alpha: 0.85),
           letterSpacing: 3,
         ),
       ),

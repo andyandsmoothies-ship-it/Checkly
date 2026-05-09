@@ -32,18 +32,6 @@ class SubmissionFeedSection extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 1),
-              child: Container(
-                width: 4,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: t.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
             const Expanded(child: SectionHeader('RECENT ACTIVITY')),
             InkWell(
               onTap: () => context.go('/activity'),

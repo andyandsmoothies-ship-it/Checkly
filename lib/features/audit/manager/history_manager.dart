@@ -56,7 +56,7 @@ class HistoryManager extends ChangeNotifier {
       // 1. Read from Drift cache first
       final cached = await _dao.getAllSubmissions();
       if (cached.isNotEmpty) {
-        submissions.value = await _applyLocalOverrides(cached);
+        submissions.value = await applyLocalOverrides(cached);
         isLoading.value = false;
         notifyListeners();
       }
@@ -64,7 +64,7 @@ class HistoryManager extends ChangeNotifier {
       // 2. Background API fetch (page 1)
       try {
         final fresh = await _api.getSubmissions(page: 1, pageSize: _pageSize);
-        submissions.value = await _applyLocalOverrides(fresh);
+        submissions.value = await applyLocalOverrides(fresh);
         hasMore = fresh.length >= _pageSize;
         lastRefreshed = DateTime.now();
 
@@ -93,7 +93,7 @@ class HistoryManager extends ChangeNotifier {
     try {
       _page++;
       final more = await _api.getSubmissions(page: _page, pageSize: _pageSize);
-      final hydrated = await _applyLocalOverrides(more);
+      final hydrated = await applyLocalOverrides(more);
       submissions.value = [...submissions.value, ...hydrated];
       hasMore = more.length >= _pageSize;
     } catch (_) {
@@ -195,7 +195,7 @@ class HistoryManager extends ChangeNotifier {
   /// Also injects any pending submissions from the outbox queue.
   /// The Drift cache is intentionally NOT updated — only the live in-memory
   /// list is patched, ensuring the server remains the source of truth on disk.
-  Future<List<SubmissionDto>> _applyLocalOverrides(
+  Future<List<SubmissionDto>> applyLocalOverrides(
     List<SubmissionDto> list,
   ) async {
     final draftKeys = await _draftService.getAllDraftKeys();

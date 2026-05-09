@@ -167,11 +167,24 @@ class _SubmissionRowState extends State<SubmissionRow> {
               : AppColors.destructive)
         : theme.colorScheme.onSurfaceVariant;
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        onTap: isDraft
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: isDraft
             ? _resumeDraft
             : () {
                 if (sub.id.startsWith('local_outbox_')) {
@@ -291,17 +304,32 @@ class _SubmissionRowState extends State<SubmissionRow> {
                   },
                 )
               else if (scoreText.isNotEmpty)
-                Text(
-                  scoreText == '—' ? 'Survey' : scoreText,
-                  style: scoreText == '—'
-                      ? theme.textTheme.labelMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        )
-                      : theme.textTheme.titleMedium?.copyWith(
+                scoreText == '—'
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'SURVEY',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        scoreText,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: semanticColor,
                         ),
-                )
+                      )
               else
                 Builder(
                   builder: (_) {
@@ -337,6 +365,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
