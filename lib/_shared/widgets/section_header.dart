@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../theme/app_fonts.dart';
 
-/// Uppercase tracked section header — "RECENT SCANS", "AUDITS", etc.
+/// Uppercase tracked section header — "RECENT AUDITS", etc.
 ///
 /// Matches the Apothecary reference: uppercase, deeply tracked, small text.
 /// ```dart
-/// SectionHeader('RECENT SCANS')
+/// SectionHeader('RECENT AUDITS')
 /// SectionHeader('OPEN ITEMS', padding: EdgeInsets.only(bottom: 12))
 /// ```
 class SectionHeader extends StatelessWidget {

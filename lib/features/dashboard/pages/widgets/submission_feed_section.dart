@@ -44,7 +44,7 @@ class SubmissionFeedSection extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Expanded(child: SectionHeader('LATEST SUBMISSIONS')),
+            const Expanded(child: SectionHeader('RECENT ACTIVITY')),
             InkWell(
               onTap: () => context.go('/activity'),
               borderRadius: BorderRadius.circular(8),

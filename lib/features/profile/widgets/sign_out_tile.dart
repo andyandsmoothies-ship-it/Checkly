@@ -120,7 +120,10 @@ class _SignOutTileState extends State<SignOutTile> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => _di<AuthManager>().logout(),
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              _di<AuthManager>().logout();
+            },
             child: Text(
               'Sign Out',
               style: TextStyle(color: Theme.of(context).colorScheme.error),

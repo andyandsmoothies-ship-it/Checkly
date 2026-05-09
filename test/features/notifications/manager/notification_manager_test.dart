@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:flutter/foundation.dart';
+import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/features/auth/model/auth_state.dart';
 import 'package:checkly/features/notifications/manager/notification_manager.dart';
 import 'package:checkly/features/notifications/model/notification_dto.dart';
 import 'package:checkly/features/notifications/services/notification_api_service.dart';
@@ -11,16 +14,22 @@ class MockNotificationApiService extends Mock
 
 class MockNotificationDao extends Mock implements NotificationDao {}
 
+class MockAuthManager extends Mock implements AuthManager {}
+
 void main() {
   late NotificationManager manager;
   late MockNotificationApiService api;
   late MockNotificationDao dao;
+  late MockAuthManager auth;
 
   setUp(() {
     api = MockNotificationApiService();
     dao = MockNotificationDao();
+    auth = MockAuthManager();
 
-    manager = NotificationManager(api: api, dao: dao);
+    when(() => auth.authState).thenReturn(ValueNotifier(AuthState.authenticated));
+
+    manager = NotificationManager(api: api, dao: dao, auth: auth);
   });
 
   group('NotificationManager —', () {

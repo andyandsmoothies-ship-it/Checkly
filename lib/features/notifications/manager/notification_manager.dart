@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 
 import '../../../_shared/database/dao/notification_dao.dart';
 import '../../../_shared/database/database_service.dart';
+import '../../auth/manager/auth_manager.dart';
+import '../../auth/model/auth_state.dart';
 import '../model/notification_dto.dart';
 import '../services/notification_api_service.dart';
 
@@ -18,10 +20,15 @@ final _di = GetIt.instance;
 class NotificationManager extends ChangeNotifier {
   final NotificationApiService _api;
   late final NotificationDao _dao;
+  final AuthManager _auth;
 
-  NotificationManager({NotificationApiService? api, NotificationDao? dao})
-    : _api = api ?? _di<NotificationApiService>(),
-      _dao = dao ?? NotificationDao(_di<DatabaseService>().db);
+  NotificationManager({
+    NotificationApiService? api,
+    NotificationDao? dao,
+    AuthManager? auth,
+  }) : _api = api ?? _di<NotificationApiService>(),
+       _dao = dao ?? NotificationDao(_di<DatabaseService>().db),
+       _auth = auth ?? _di<AuthManager>();
 
   // ---------- State ----------
   final ValueNotifier<List<NotificationDto>> notifications = ValueNotifier([]);
@@ -54,19 +61,21 @@ class NotificationManager extends ChangeNotifier {
       }
 
       // 2. Background API fetch (delta if we have a lastSync)
-      try {
-        final fresh = await _api.getNotifications(since: _lastSyncAt);
-        if (fresh.isNotEmpty) {
-          await _dao.upsertNotifications(fresh);
-          _lastSyncAt = DateTime.now();
-        }
+      if (_auth.authState.value == AuthState.authenticated) {
+        try {
+          final fresh = await _api.getNotifications(since: _lastSyncAt);
+          if (fresh.isNotEmpty) {
+            await _dao.upsertNotifications(fresh);
+            _lastSyncAt = DateTime.now();
+          }
 
-        // 3. Re-read from cache to get merged view
-        final merged = await _dao.getAllNotifications();
-        notifications.value = merged;
-        _unreadCount = merged.where((n) => !n.isRead).length;
-      } catch (_) {
-        // API failed — silently use cached data
+          // 3. Re-read from cache to get merged view
+          final merged = await _dao.getAllNotifications();
+          notifications.value = merged;
+          _unreadCount = merged.where((n) => !n.isRead).length;
+        } catch (_) {
+          // API failed — silently use cached data
+        }
       }
     } catch (e) {
       _error = 'Failed to load notifications';
@@ -92,6 +101,7 @@ class NotificationManager extends ChangeNotifier {
     notifyListeners();
 
     // 3. Sync to server (fire and forget)
+    if (_auth.authState.value != AuthState.authenticated) return;
     try {
       await _api.markAsRead(notificationId);
     } catch (_) {
@@ -116,6 +126,7 @@ class NotificationManager extends ChangeNotifier {
     notifyListeners();
 
     // 3. Sync to server
+    if (_auth.authState.value != AuthState.authenticated) return;
     try {
       await _api.markAllRead();
     } catch (_) {
@@ -138,6 +149,8 @@ class NotificationManager extends ChangeNotifier {
 
   /// Fetch only notifications since last sync — called on app resume.
   Future<List<NotificationDto>> refreshDelta() async {
+    if (_auth.authState.value != AuthState.authenticated) return [];
+
     try {
       final fresh = await _api.getNotifications(since: _lastSyncAt);
       if (fresh.isNotEmpty) {

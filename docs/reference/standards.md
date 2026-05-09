@@ -21,6 +21,8 @@ description: Engineering standards — architecture, security, and verification 
 - **Pattern**: Feature-folder structure under `lib/features/[feature]/`
 - **Sub-folders**: `pages/`, `manager/`, `model/`, `services/`, `widgets/`
 - **State**: Manager classes extend `ChangeNotifier`, registered via `GetIt`
+- **Domain Entities**: Complex state transitions and business logic MUST be encapsulated in pure Dart entities inside the `model/` directory. Managers should act as thin wrappers orchestrating services and entities.
+- **Storage Separation**: Use `shared_preferences` for non-sensitive app settings (e.g., ThemeMode). Use `flutter_secure_storage` STRICTLY for sensitive secrets (JWTs, sessions) to prevent physical file-locking crashes.
 - **Navigation**: GoRouter declarative routing
 - **DI**: GetIt service locator (singleton managers, scoped services)
 - **Database (Drift)**: All unpaginated `.get()` queries MUST include a `.limit(n)` boundary to prevent OOM violations on large datasets.

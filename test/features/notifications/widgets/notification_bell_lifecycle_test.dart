@@ -10,6 +10,9 @@ import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/notification_dao.dart';
 
+import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/features/auth/model/auth_state.dart';
+
 class MockNotificationApiService extends Mock
     implements NotificationApiService {}
 
@@ -18,6 +21,8 @@ class MockNotificationDao extends Mock implements NotificationDao {}
 class MockDatabaseService extends Mock implements DatabaseService {}
 
 class MockAppDatabase extends Mock implements AppDatabase {}
+
+class MockAuthManager extends Mock implements AuthManager {}
 
 void main() {
   late NotificationManager manager;
@@ -41,8 +46,12 @@ void main() {
       () => api.getNotifications(since: any(named: 'since')),
     ).thenAnswer((_) async => <NotificationDto>[]);
 
+    final auth = MockAuthManager();
+    when(() => auth.authState).thenReturn(ValueNotifier(AuthState.authenticated));
+    GetIt.instance.registerSingleton<AuthManager>(auth);
+
     // Register a real manager so notifyListeners() actually works synchronously
-    manager = NotificationManager(api: api, dao: dao);
+    manager = NotificationManager(api: api, dao: dao, auth: auth);
     GetIt.instance.registerSingleton<NotificationManager>(manager);
   });
 

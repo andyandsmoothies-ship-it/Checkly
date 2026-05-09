@@ -54,7 +54,7 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Task queued — will sync when online'),
+            content: Text('Audit queued — will sync when online'),
             behavior: SnackBarBehavior.floating,
           ),
         );
