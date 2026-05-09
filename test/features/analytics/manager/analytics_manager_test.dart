@@ -1,10 +1,8 @@
 import 'package:checkly/_shared/database/app_database.dart';
-import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/features/analytics/manager/analytics_manager.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
