@@ -147,9 +147,7 @@ class _UserEditSheetState extends State<UserEditSheet> {
         // Lazy-load stores on the first switch to a role that needs them
         if ((v == 'store_manager' || v == 'area_manager') &&
             selectedRole != v) {
-          await _loadStores(
-            v!,
-          ); // error-handled, shows SnackBar on failure
+          await _loadStores(v!); // error-handled, shows SnackBar on failure
         }
         if (mounted) {
           setState(() {
@@ -196,8 +194,8 @@ class _UserEditSheetState extends State<UserEditSheet> {
         areaId: selectedAreaId,
         assignedStoreIds:
             selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty
-                ? _selectedStoreIds
-                : null,
+            ? _selectedStoreIds
+            : null,
       ),
       onResetPassword: () => widget.onResetPassword(
         context,

@@ -11,8 +11,11 @@ import 'package:checkly/_shared/database/app_database.dart';
 import 'package:get_it/get_it.dart';
 
 class MockTemplateApiService extends Mock implements TemplateApiService {}
+
 class MockTemplateDao extends Mock implements TemplateDao {}
+
 class MockDatabaseService extends Mock implements DatabaseService {}
+
 class MockAppDatabase extends Mock implements AppDatabase {}
 
 void main() {
@@ -26,12 +29,12 @@ void main() {
     mockApi = MockTemplateApiService();
     mockDao = MockTemplateDao();
     mockDbService = MockDatabaseService();
-    
+
     when(() => mockDbService.db).thenReturn(MockAppDatabase());
-    
+
     GetIt.I.reset();
     GetIt.I.registerSingleton<DatabaseService>(mockDbService);
-    
+
     manager = TemplateManager(api: mockApi, dao: mockDao);
   });
 
@@ -96,7 +99,9 @@ void main() {
       when(() => mockDao.getTemplateTree('t1')).thenAnswer((_) async => tree1);
       when(() => mockApi.getTemplateTree('t1')).thenAnswer((_) async => tree1);
       when(() => mockDao.upsertTemplates(any())).thenAnswer((_) async => {});
-      when(() => mockDao.upsertGroups(any(), any(), any())).thenAnswer((_) async => {});
+      when(
+        () => mockDao.upsertGroups(any(), any(), any()),
+      ).thenAnswer((_) async => {});
 
       await manager.loadTemplateTree('t1');
 

@@ -132,7 +132,8 @@ class UserEditSheetBody extends StatelessWidget {
                 showAssignedStores: showAssignedStores,
                 onStoreChanged: onStoreChanged,
                 onShowAssignedStoresChanged: onShowAssignedStoresChanged,
-                onStoreSelectionChanged: (id, checked) => onStoreSelectionChanged(checked, id),
+                onStoreSelectionChanged: (id, checked) =>
+                    onStoreSelectionChanged(checked, id),
               ),
               const SizedBox(height: 20),
 

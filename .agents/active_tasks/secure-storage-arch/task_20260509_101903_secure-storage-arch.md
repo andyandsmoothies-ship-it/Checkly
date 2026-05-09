@@ -5,10 +5,10 @@ Workflow: /verify | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\.agents\active_tasks\secure-storage-arch\walkthrough_20260509_101318_storage_secure-storage-arch.md`
 
 ## Phases
-- [ ] Phase 1: Context & Accountability Audit
-- [ ] Phase 1.5: Adversarial Interrogation
-- [ ] Phase 2: Continuous Integration (CI) Gate
-- [ ] Phase 3: Deliverable (The Metrics Snapshot)
+- [x] Phase 1: Context & Accountability Audit
+- [x] Phase 1.5: Adversarial Interrogation
+- [x] Phase 2: Continuous Integration (CI) Gate
+- [x] Phase 3: Deliverable (The Metrics Snapshot)
 
 ## Artifact Inventory
 | Status | File Path | Type |

@@ -177,7 +177,8 @@ class UserCreateSheetBody extends StatelessWidget {
                 selectedStoreId: selectedStoreId,
                 selectedStoreIds: selectedStoreIds,
                 assignableStores: assignableStores,
-                isLoadingStores: false, // Create form doesn't support lazy-loading stores
+                isLoadingStores:
+                    false, // Create form doesn't support lazy-loading stores
                 showAssignedStores: showAssignedStores,
                 onStoreChanged: onStoreChanged,
                 onShowAssignedStoresChanged: onShowAssignedStoresChanged,

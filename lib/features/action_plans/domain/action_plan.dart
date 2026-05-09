@@ -8,11 +8,17 @@ class ActionPlan {
 
   void _assertNotTerminal() {
     if (dto.status == 'closed') {
-      throw const InvalidTransitionException('Cannot transition from closed state');
+      throw const InvalidTransitionException(
+        'Cannot transition from closed state',
+      );
     }
   }
 
-  void _assertRole(String currentRole, List<String> allowedRoles, String action) {
+  void _assertRole(
+    String currentRole,
+    List<String> allowedRoles,
+    String action,
+  ) {
     if (!allowedRoles.contains(currentRole)) {
       throw RoleGuardException('Role "$currentRole" cannot $action');
     }
@@ -20,7 +26,9 @@ class ActionPlan {
 
   void _assertStatus(String requiredStatus, String targetStatus) {
     if (dto.status != requiredStatus) {
-      throw InvalidTransitionException('Cannot transition from "${dto.status}" to "$targetStatus"');
+      throw InvalidTransitionException(
+        'Cannot transition from "${dto.status}" to "$targetStatus"',
+      );
     }
   }
 
@@ -60,10 +68,7 @@ class ActionPlan {
     return ActionPlan(optimisticDto);
   }
 
-  ActionPlan closePlan({
-    required String role,
-    required String verifierName,
-  }) {
+  ActionPlan closePlan({required String role, required String verifierName}) {
     _assertNotTerminal();
     _assertRole(role, ['auditor', 'admin', 'area_manager'], 'close plan');
     _assertStatus('pending_verify', 'closed');
@@ -93,10 +98,7 @@ class ActionPlan {
     return ActionPlan(optimisticDto);
   }
 
-  ActionPlan rejectEvidence({
-    required String role,
-    required String reason,
-  }) {
+  ActionPlan rejectEvidence({required String role, required String reason}) {
     _assertNotTerminal();
     _assertRole(role, ['auditor', 'admin', 'area_manager'], 'reject evidence');
     _assertStatus('pending_verify', 'open');

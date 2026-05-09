@@ -116,7 +116,10 @@ class ProfilePage extends StatelessWidget {
     return '??';
   }
 
-  List<MenuItemData> _managementItems(BuildContext context, UserPersona persona) {
+  List<MenuItemData> _managementItems(
+    BuildContext context,
+    UserPersona persona,
+  ) {
     final items = <MenuItemData>[];
     if (persona == UserPersona.admin) {
       items.add(

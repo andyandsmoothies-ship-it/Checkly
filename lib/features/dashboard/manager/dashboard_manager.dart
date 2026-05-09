@@ -220,9 +220,7 @@ class DashboardManager extends ChangeNotifier {
     );
   }
 
-  Future<DashboardState> _loadManagerState(
-    DashboardQueries queries,
-  ) async {
+  Future<DashboardState> _loadManagerState(DashboardQueries queries) async {
     // Get storeId from the cached store profile.
     // Store managers have exactly one store in the local cache.
     final stores = await (_db.select(_db.cachedStores)..limit(1)).get();

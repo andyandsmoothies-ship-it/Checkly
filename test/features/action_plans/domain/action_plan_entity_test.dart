@@ -57,143 +57,163 @@ void main() {
     }
 
     // TC-11-01
-    test('submitEvidence() throws RoleGuardException if role is not store_manager', () {
-      final plan = ActionPlan(baseDto);
-      expect(
-        () => plan.submitEvidence(
-          role: 'auditor',
-          correctionPlan: 'Fix the floor',
-          currentUserName: 'John',
-          evidenceNote: 'Fixed',
-          photoPath: null,
-        ),
-        throwsA(isA<RoleGuardException>()),
-      );
-    });
+    test(
+      'submitEvidence() throws RoleGuardException if role is not store_manager',
+      () {
+        final plan = ActionPlan(baseDto);
+        expect(
+          () => plan.submitEvidence(
+            role: 'auditor',
+            correctionPlan: 'Fix the floor',
+            currentUserName: 'John',
+            evidenceNote: 'Fixed',
+            photoPath: null,
+          ),
+          throwsA(isA<RoleGuardException>()),
+        );
+      },
+    );
 
     // TC-11-02
-    test('submitEvidence() throws InvalidTransitionException if status is not open', () {
-      final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
-      expect(
-        () => plan.submitEvidence(
-          role: 'store_manager',
-          correctionPlan: 'Fix the floor',
-          currentUserName: 'John',
-          evidenceNote: 'Fixed',
-          photoPath: null,
-        ),
-        throwsA(isA<InvalidTransitionException>()),
-      );
-    });
+    test(
+      'submitEvidence() throws InvalidTransitionException if status is not open',
+      () {
+        final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
+        expect(
+          () => plan.submitEvidence(
+            role: 'store_manager',
+            correctionPlan: 'Fix the floor',
+            currentUserName: 'John',
+            evidenceNote: 'Fixed',
+            photoPath: null,
+          ),
+          throwsA(isA<InvalidTransitionException>()),
+        );
+      },
+    );
 
     // TC-11-03
-    test('submitEvidence() throws InvalidTransitionException if status is closed', () {
-      final plan = ActionPlan(copyWithStatus(baseDto, 'closed'));
-      expect(
-        () => plan.submitEvidence(
-          role: 'store_manager',
-          correctionPlan: 'Fix the floor',
-          currentUserName: 'John',
-          evidenceNote: 'Fixed',
-          photoPath: null,
-        ),
-        throwsA(isA<InvalidTransitionException>()),
-      );
-    });
+    test(
+      'submitEvidence() throws InvalidTransitionException if status is closed',
+      () {
+        final plan = ActionPlan(copyWithStatus(baseDto, 'closed'));
+        expect(
+          () => plan.submitEvidence(
+            role: 'store_manager',
+            correctionPlan: 'Fix the floor',
+            currentUserName: 'John',
+            evidenceNote: 'Fixed',
+            photoPath: null,
+          ),
+          throwsA(isA<InvalidTransitionException>()),
+        );
+      },
+    );
 
     // TC-11-04
     test('closePlan() throws RoleGuardException if role is store_manager', () {
       final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
       expect(
-        () => plan.closePlan(
-          role: 'store_manager',
-          verifierName: 'John',
-        ),
+        () => plan.closePlan(role: 'store_manager', verifierName: 'John'),
         throwsA(isA<RoleGuardException>()),
       );
     });
 
     // TC-11-05
-    test('closePlan() throws InvalidTransitionException if status is not pending_verify', () {
-      final plan = ActionPlan(copyWithStatus(baseDto, 'open'));
-      expect(
-        () => plan.closePlan(
-          role: 'auditor',
-          verifierName: 'John',
-        ),
-        throwsA(isA<InvalidTransitionException>()),
-      );
-    });
+    test(
+      'closePlan() throws InvalidTransitionException if status is not pending_verify',
+      () {
+        final plan = ActionPlan(copyWithStatus(baseDto, 'open'));
+        expect(
+          () => plan.closePlan(role: 'auditor', verifierName: 'John'),
+          throwsA(isA<InvalidTransitionException>()),
+        );
+      },
+    );
 
     // TC-11-06
-    test('rejectEvidence() throws RoleGuardException if role is store_manager', () {
-      final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
-      expect(
-        () => plan.rejectEvidence(
-          role: 'store_manager',
-          reason: 'Still dirty',
-        ),
-        throwsA(isA<RoleGuardException>()),
-      );
-    });
+    test(
+      'rejectEvidence() throws RoleGuardException if role is store_manager',
+      () {
+        final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
+        expect(
+          () =>
+              plan.rejectEvidence(role: 'store_manager', reason: 'Still dirty'),
+          throwsA(isA<RoleGuardException>()),
+        );
+      },
+    );
 
     // TC-11-07
-    test('rejectEvidence() throws InvalidTransitionException if status is not pending_verify', () {
-      final plan = ActionPlan(copyWithStatus(baseDto, 'closed'));
-      expect(
-        () => plan.rejectEvidence(
-          role: 'admin',
-          reason: 'Still dirty',
-        ),
-        throwsA(isA<InvalidTransitionException>()),
-      );
-    });
+    test(
+      'rejectEvidence() throws InvalidTransitionException if status is not pending_verify',
+      () {
+        final plan = ActionPlan(copyWithStatus(baseDto, 'closed'));
+        expect(
+          () => plan.rejectEvidence(role: 'admin', reason: 'Still dirty'),
+          throwsA(isA<InvalidTransitionException>()),
+        );
+      },
+    );
 
     // TC-11-08
-    test('submitEvidence() returns a new ActionPlan with status = pending_verify', () {
-      final plan = ActionPlan(baseDto);
-      final newPlan = plan.submitEvidence(
-        role: 'store_manager',
-        correctionPlan: 'Cleaned the floor thoroughly',
-        currentUserName: 'StoreManager1',
-        evidenceNote: 'Floor is clean',
-        photoPath: 'path/to/photo.jpg',
-      );
-      
-      expect(newPlan.dto.status, 'pending_verify');
-      expect(newPlan.dto.correctionPlan, 'Cleaned the floor thoroughly');
-      expect(newPlan.dto.evidenceNote, 'Floor is clean');
-      expect(newPlan.dto.evidencePhotoUrl, 'path/to/photo.jpg');
-      expect(newPlan.dto.evidenceSubmittedByName, 'StoreManager1');
-      expect(newPlan.dto.evidenceSubmittedAt, isNotNull);
-      expect(newPlan.dto.updatedAt.isAfter(baseDto.updatedAt) || newPlan.dto.updatedAt.isAtSameMomentAs(baseDto.updatedAt), isTrue);
-      expect(newPlan.dto.id, 'plan-123'); // Unchanged
-    });
+    test(
+      'submitEvidence() returns a new ActionPlan with status = pending_verify',
+      () {
+        final plan = ActionPlan(baseDto);
+        final newPlan = plan.submitEvidence(
+          role: 'store_manager',
+          correctionPlan: 'Cleaned the floor thoroughly',
+          currentUserName: 'StoreManager1',
+          evidenceNote: 'Floor is clean',
+          photoPath: 'path/to/photo.jpg',
+        );
+
+        expect(newPlan.dto.status, 'pending_verify');
+        expect(newPlan.dto.correctionPlan, 'Cleaned the floor thoroughly');
+        expect(newPlan.dto.evidenceNote, 'Floor is clean');
+        expect(newPlan.dto.evidencePhotoUrl, 'path/to/photo.jpg');
+        expect(newPlan.dto.evidenceSubmittedByName, 'StoreManager1');
+        expect(newPlan.dto.evidenceSubmittedAt, isNotNull);
+        expect(
+          newPlan.dto.updatedAt.isAfter(baseDto.updatedAt) ||
+              newPlan.dto.updatedAt.isAtSameMomentAs(baseDto.updatedAt),
+          isTrue,
+        );
+        expect(newPlan.dto.id, 'plan-123'); // Unchanged
+      },
+    );
 
     // TC-11-09
-    test('closePlan() returns a new ActionPlan with status = closed and verifierName set', () {
-      final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
-      final newPlan = plan.closePlan(
-        role: 'area_manager',
-        verifierName: 'Alice',
-      );
-      
-      expect(newPlan.dto.status, 'closed');
-      expect(newPlan.dto.verifierName, 'Alice');
-      expect(newPlan.dto.closedAt, isNotNull);
-    });
+    test(
+      'closePlan() returns a new ActionPlan with status = closed and verifierName set',
+      () {
+        final plan = ActionPlan(copyWithStatus(baseDto, 'pending_verify'));
+        final newPlan = plan.closePlan(
+          role: 'area_manager',
+          verifierName: 'Alice',
+        );
+
+        expect(newPlan.dto.status, 'closed');
+        expect(newPlan.dto.verifierName, 'Alice');
+        expect(newPlan.dto.closedAt, isNotNull);
+      },
+    );
 
     // TC-11-10
-    test('rejectEvidence() returns a new ActionPlan with status = open and evidence cleared', () {
-      final plan = ActionPlan(dtoWithEvidence(baseDto));
-      final newPlan = plan.rejectEvidence(
-        role: 'auditor',
-        reason: 'Missing clear photo',
-      );
-      
-      expect(newPlan.dto.status, 'open');
-      expect(newPlan.dto.evidenceNote, isNull);
-      expect(newPlan.dto.evidencePhotoUrl, isNull);
-    });
+    test(
+      'rejectEvidence() returns a new ActionPlan with status = open and evidence cleared',
+      () {
+        final plan = ActionPlan(dtoWithEvidence(baseDto));
+        final newPlan = plan.rejectEvidence(
+          role: 'auditor',
+          reason: 'Missing clear photo',
+        );
+
+        expect(newPlan.dto.status, 'open');
+        expect(newPlan.dto.evidenceNote, isNull);
+        expect(newPlan.dto.evidencePhotoUrl, isNull);
+      },
+    );
   });
 }

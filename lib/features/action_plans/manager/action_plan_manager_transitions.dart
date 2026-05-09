@@ -85,10 +85,7 @@ Future<ActionPlanDto> _closePlanLogic(
   required String verifierName,
 }) async {
   final entity = ActionPlan(plan);
-  entity.closePlan(
-    role: manager._userRole.role,
-    verifierName: verifierName,
-  );
+  entity.closePlan(role: manager._userRole.role, verifierName: verifierName);
 
   return manager._api.updateActionPlan(plan.id, {
     'status': 'closed',
@@ -106,7 +103,8 @@ Future<ActionPlanDto> _rejectEvidenceLogic(
   final entity = ActionPlan(plan);
   entity.rejectEvidence(
     role: manager._userRole.role,
-    reason: 'reject evidence', // Unused in entity currently, but required by API
+    reason:
+        'reject evidence', // Unused in entity currently, but required by API
   );
 
   return manager._api.updateActionPlan(plan.id, {
