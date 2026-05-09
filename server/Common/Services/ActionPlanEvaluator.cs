@@ -26,6 +26,7 @@ public static class ActionPlanEvaluator
         List<Criterion> criteria)
     {
         var triggered = new List<Answer>();
+        var ruleCache = new Dictionary<string, TriggerRule?>();
 
         foreach (var answer in answers)
         {
@@ -36,7 +37,7 @@ public static class ActionPlanEvaluator
             if (criterion is null)
                 continue;
 
-            if (ShouldTrigger(answer, criterion))
+            if (ShouldTrigger(answer, criterion, ruleCache))
                 triggered.Add(answer);
         }
 
@@ -53,7 +54,7 @@ public static class ActionPlanEvaluator
         return false;
     }
 
-    private static bool ShouldTrigger(Answer answer, Criterion criterion)
+    private static bool ShouldTrigger(Answer answer, Criterion criterion, Dictionary<string, TriggerRule?> cache)
     {
         // 1. MANUAL OVERRIDE (Unconditional)
         // If the auditor explicitly flipped RISK or CCP on during the audit, it ALWAYS creates an Action Plan.
@@ -69,7 +70,12 @@ public static class ActionPlanEvaluator
             return true;
         }
 
-        var trigger = ParseTrigger(criterion.Metadata);
+        var metadataKey = criterion.Metadata ?? string.Empty;
+        if (!cache.TryGetValue(metadataKey, out var trigger))
+        {
+            trigger = ParseTrigger(criterion.Metadata);
+            cache[metadataKey] = trigger;
+        }
 
         // No trigger defined → use legacy behavior
         if (trigger is null)

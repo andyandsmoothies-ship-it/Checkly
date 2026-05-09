@@ -16,43 +16,27 @@ Future<ActionPlanDto> _submitEvidenceLogic(
   String? evidenceNote,
   String? photoPath,
 }) async {
-  manager._assertNotTerminal(plan);
-  manager._assertRole(['store_manager'], 'submit evidence');
-  manager._assertStatus(plan, 'open', 'pending_verify');
+  final entity = ActionPlan(plan);
+  final updatedEntity = entity.submitEvidence(
+    role: manager._userRole.role,
+    correctionPlan: correctionPlan,
+    currentUserName: currentUserName,
+    evidenceNote: evidenceNote,
+    photoPath: photoPath,
+  );
+  final optimistic = updatedEntity.dto;
 
   if (!manager._connectivity.isOnline) {
     // --- Offline path: queue and optimistic update ---
-    const uuid = Uuid();
     await manager._outboxDao.enqueue(
       PendingActionPlanUpdatesCompanion(
-        id: Value(uuid.v4()),
+        id: Value(plan.id),
         actionPlanId: Value(plan.id),
         correctionPlan: Value(correctionPlan),
         evidenceNote: Value(evidenceNote ?? ''),
         photoPath: Value(photoPath),
         createdAt: Value(DateTime.now().toUtc()),
       ),
-    );
-
-    // Build the optimistic DTO so the UI transitions instantly
-    final optimistic = ActionPlanDto(
-      id: plan.id,
-      status: 'pending_verify',
-      criteriaLabel: plan.criteriaLabel,
-      groupTitle: plan.groupTitle,
-      storeName: plan.storeName,
-      storeManagerName: plan.storeManagerName,
-      rootCause: plan.rootCause,
-      correctionPlan: correctionPlan,
-      evidencePhotoUrl: photoPath ?? plan.evidencePhotoUrl,
-      evidenceNote: evidenceNote,
-      closedAt: plan.closedAt,
-      verifierName: plan.verifierName,
-      evidenceSubmittedAt: DateTime.now().toUtc(),
-      evidenceSubmittedByName: currentUserName,
-      deadline: plan.deadline,
-      createdAt: plan.createdAt,
-      updatedAt: DateTime.now(),
     );
 
     // Patch in-memory list so the UI reflects the change without a DB reload
@@ -100,9 +84,11 @@ Future<ActionPlanDto> _closePlanLogic(
   ActionPlanDto plan, {
   required String verifierName,
 }) async {
-  manager._assertNotTerminal(plan);
-  manager._assertRole(['auditor', 'admin', 'area_manager'], 'close plan');
-  manager._assertStatus(plan, 'pending_verify', 'closed');
+  final entity = ActionPlan(plan);
+  entity.closePlan(
+    role: manager._userRole.role,
+    verifierName: verifierName,
+  );
 
   return manager._api.updateActionPlan(plan.id, {
     'status': 'closed',
@@ -117,9 +103,11 @@ Future<ActionPlanDto> _rejectEvidenceLogic(
   ActionPlanManager manager,
   ActionPlanDto plan,
 ) async {
-  manager._assertNotTerminal(plan);
-  manager._assertRole(['auditor', 'admin', 'area_manager'], 'reject evidence');
-  manager._assertStatus(plan, 'pending_verify', 'open');
+  final entity = ActionPlan(plan);
+  entity.rejectEvidence(
+    role: manager._userRole.role,
+    reason: 'reject evidence', // Unused in entity currently, but required by API
+  );
 
   return manager._api.updateActionPlan(plan.id, {
     'status': 'open',

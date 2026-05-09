@@ -25,9 +25,10 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 |---|---|
 | **Trigger** | Execute when user asks to improve architecture, refactor tight coupling, or `/deepen-arch`. |
 | **Exploration** | Find friction: (1) Shallow modules. (2) Untestable coupling. (3) Wasted abstractions. <br><br>**MANDATORY Blast Radius Check**: Before finalizing the list, you MUST use `grep_search`, `view_file`, or ANY other available tools and strategies to cross-reference upstream callers (how many files use this?), DB schemas (does this change a table?), and existing tests. Your trade-off/cost estimate must be exhaustively verified against codebase reality, not blind guessing. |
-| **Candidate List**| Output a numbered list of 3 deepening opportunities. For each provide:<br>- **Files**: Affected modules.<br>- **Problem**: Why it causes friction.<br>- **Solution**: What would change.<br>- **Benefits**: Explained via Leverage and Locality.<br>- **Trade-offs / Cost**: The effort, risk, or blast radius required (e.g., requires database schema changes, massive refactoring). This ensures the user can weigh the ROI before selecting one to analyze. |
+| **Candidate List**| Output an exhaustive, numbered list of ALL viable deepening opportunities found during your analysis. For each provide:<br>- **Files**: Affected modules.<br>- **Problem**: Why it causes friction.<br>- **Solution**: What would change.<br>- **Benefits**: Explained via Leverage and Locality.<br>- **Trade-offs / Cost**: The effort, risk, or blast radius required (e.g., requires database schema changes, massive refactoring). This ensures the user can weigh the ROI before selecting one to analyze. |
+| **Candidate Pugh Matrix** | Create a Markdown table comparing all candidates against each other and the status quo. Score them on expected non-functional requirements (e.g., Expected Locality, Expected Leverage, Blast Radius Safety, Execution Cost). Score as Status Quo (`0`), Better (`+1`), or Worse (`-1`). This detailed comparison acts as the input for Phase 2. |
 
-> **MANDATORY @@SCAN**: You MUST print the candidate list and then explicitly YIELD to the user: *"Which of these would you like to explore?"*
+> **MANDATORY @@SCAN**: You MUST print the candidate list, followed by the Candidate Pugh Matrix, and then explicitly YIELD to the user: *"Which of these would you like to explore?"*
 
 ## Phase 2: Design It Thrice & Synthesize
 

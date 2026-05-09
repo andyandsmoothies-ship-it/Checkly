@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/dao/action_plan_outbox_dao.dart';
 import '../../../_shared/services/connectivity_service.dart';
 import '../../../_shared/services/user_role_provider.dart';
+import '../domain/action_plan.dart';
 import '../model/action_plan_dto.dart';
 import '../model/stale_conflict.dart';
 import 'action_plan_api.dart';
@@ -267,31 +267,4 @@ class ActionPlanManager extends ChangeNotifier {
     }
   }
 
-  // ---------- Guards ----------
-
-  void _assertNotTerminal(ActionPlanDto plan) {
-    if (plan.status == 'closed') {
-      throw const InvalidTransitionException(
-        'Cannot transition from closed state',
-      );
-    }
-  }
-
-  void _assertRole(List<String> allowedRoles, String action) {
-    if (!allowedRoles.contains(_userRole.role)) {
-      throw RoleGuardException('Role "${_userRole.role}" cannot $action');
-    }
-  }
-
-  void _assertStatus(
-    ActionPlanDto plan,
-    String requiredStatus,
-    String targetStatus,
-  ) {
-    if (plan.status != requiredStatus) {
-      throw InvalidTransitionException(
-        'Cannot transition from "${plan.status}" to "$targetStatus"',
-      );
-    }
-  }
 }
