@@ -90,6 +90,9 @@ _MockAuthManager _registerDi({UserSession? user}) {
 
   // AuthManager stubs
   when(() => mockAuth.currentUser).thenReturn(user ?? _auditorUser);
+  when(
+    () => mockAuth.capabilities,
+  ).thenReturn(ValueNotifier<Set<String>>({'conduct_audit'}));
   when(() => mockAuth.logout()).thenAnswer((_) async {});
   when(() => mockAuth.addListener(any())).thenReturn(null);
   when(() => mockAuth.removeListener(any())).thenReturn(null);
@@ -234,6 +237,10 @@ void main() {
         final mockAuth = _registerDi(user: _auditorUser);
         await pumpProfilePage(tester);
 
+        // Scroll down in case the lazy ListView hasn't built the Sign Out tile yet
+        await tester.drag(find.byType(ListView), const Offset(0, -1000));
+        await tester.pumpAndSettle();
+
         // Ensure Sign Out tile is scrolled into view and hittable
         await tester.ensureVisible(find.text('SIGN OUT'));
         await tester.pumpAndSettle();
@@ -261,6 +268,10 @@ void main() {
         // Fix needed: AlertDialog with confirm button that calls auth.logout().
         final mockAuth = _registerDi(user: _auditorUser);
         await pumpProfilePage(tester);
+
+        // Scroll down in case the lazy ListView hasn't built the Sign Out tile yet
+        await tester.drag(find.byType(ListView), const Offset(0, -1000));
+        await tester.pumpAndSettle();
 
         // Ensure Sign Out tile is scrolled into view and hittable
         await tester.ensureVisible(find.text('SIGN OUT'));

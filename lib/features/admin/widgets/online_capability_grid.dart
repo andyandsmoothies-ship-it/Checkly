@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/constants/capability_dictionary.dart';
 import '../manager/role_manager.dart';
 import '../model/role_dto.dart';
 import '../services/admin_api_service.dart';
@@ -8,7 +9,7 @@ import '../services/admin_api_service.dart';
 class OnlineCapabilityGrid extends StatelessWidget {
   final String role;
   final RoleManager manager;
-  final bool isMutating;
+  final String? mutatingCapability;
   final bool canManage;
   final Future<void> Function({
     required String capability,
@@ -20,7 +21,7 @@ class OnlineCapabilityGrid extends StatelessWidget {
     super.key,
     required this.role,
     required this.manager,
-    required this.isMutating,
+    required this.mutatingCapability,
     required this.canManage,
     required this.onToggle,
   });
@@ -59,7 +60,8 @@ class OnlineCapabilityGrid extends StatelessWidget {
                     final groups = <String, List<String>>{};
                     for (final cap in allCapabilities) {
                       final meta = catalogMeta?[cap];
-                      final groupName = meta?.group ?? 'Other';
+                      final groupName =
+                          meta?.group ?? CapabilityDictionary.getGroup(cap);
                       groups.putIfAbsent(groupName, () => []).add(cap);
                     }
 
@@ -115,23 +117,50 @@ class OnlineCapabilityGrid extends StatelessWidget {
                             cap == AppCapabilities.adminAccess;
                         final isEnabled =
                             canManage &&
-                            !isMutating &&
+                            mutatingCapability == null &&
                             !isSelfLock &&
                             !isImplicitlyGranted;
 
-                        final titleText = meta?.label ?? cap;
+                        final titleText =
+                            meta?.label ?? CapabilityDictionary.getLabel(cap);
                         final subtitleText = isSelfLock
                             ? 'Cannot revoke your own admin access'
                             : isImplicitlyGranted
                             ? 'Implicitly Granted via assigned capabilities'
                             : (meta?.description ??
-                                  (isAssigned ? 'Assigned' : 'Not assigned'));
+                                  CapabilityDictionary.getDescription(cap));
 
                         return CheckboxListTile(
                           key: ValueKey(cap),
                           value: isAssigned || isImplicitlyGranted,
                           enabled: isEnabled,
-                          title: Text(titleText),
+                          title: Row(
+                            children: [
+                              Expanded(child: Text(titleText)),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  cap,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           subtitle: Text(
                             subtitleText,
                             style: TextStyle(
@@ -144,6 +173,15 @@ class OnlineCapabilityGrid extends StatelessWidget {
                                           ).colorScheme.onSurfaceVariant),
                             ),
                           ),
+                          secondary: mutatingCapability == cap
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : null,
                           onChanged: isEnabled
                               ? (_) => onToggle(
                                   capability: cap,

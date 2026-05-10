@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../../_shared/constants/app_capabilities.dart';
-import '../../../_shared/services/policy_manager.dart';
 import '../manager/user_group_manager.dart';
 import '../widgets/create_group_sheet.dart';
 import '../widgets/empty_state.dart';
@@ -15,7 +12,7 @@ final _di = GetIt.instance;
 /// Admin-only page for listing and creating User Groups.
 ///
 /// Capability gate: users without [AppCapabilities.usersManage]
-/// are redirected to `/home` on load.
+/// are redirected to `/home` by the router.
 ///
 /// 4-state handling:
 /// - Loading: [CircularProgressIndicator]
@@ -36,15 +33,7 @@ class _UserGroupListPageState extends State<UserGroupListPage> {
   void initState() {
     super.initState();
     _manager = _di<UserGroupManager>();
-
-    // Capability gate — redirect if not authorized
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_di<PolicyManager>().can(AppCapabilities.usersManage)) {
-        context.go('/home');
-        return;
-      }
-      _manager.loadGroups();
-    });
+    _manager.loadGroups();
   }
 
   @override

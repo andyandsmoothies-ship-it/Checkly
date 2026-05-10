@@ -5,10 +5,10 @@ Workflow: /diagnose | Track: A
 - **Source Input**: User request concerning missing PBAC UI prevention measures.
 
 ## Phases
-- [ ] Phase 1: Symptom Isolation
-- [ ] Phase 2: Skill & Rule Discovery
-- [ ] Phase 3: Resolution Plan
-- [ ] Phase 4: Deliverable Handoff
+- [x] Phase 1: Symptom Isolation
+- [x] Phase 2: Skill & Rule Discovery
+- [x] Phase 3: Resolution Plan
+- [x] Phase 4: Deliverable Handoff
 
 ## Artifact Inventory
 | Status | File Path | Type |

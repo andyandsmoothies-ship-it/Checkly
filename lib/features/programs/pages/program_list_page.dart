@@ -148,7 +148,9 @@ class _ProgramListPageState extends State<ProgramListPage> {
               ),
               subtitle: Text('$category · $status · $total stores'),
               trailing: canReview ? const Icon(Icons.chevron_right) : null,
-              onTap: canReview ? () => context.push('/programs/review/$id') : null,
+              onTap: canReview
+                  ? () => context.push('/programs/review/$id')
+                  : null,
             ),
           );
         },

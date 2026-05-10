@@ -28,7 +28,7 @@ class _RoleDetailPageState extends State<RoleDetailPage> {
   late final RoleManager _manager;
   late final ConnectivityService _connectivity;
   late final PolicyManager _policy;
-  bool _isMutating = false;
+  String? _mutatingCapability;
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _RoleDetailPageState extends State<RoleDetailPage> {
     required String capability,
     required bool currentlyAssigned,
   }) async {
-    setState(() => _isMutating = true);
+    setState(() => _mutatingCapability = capability);
     try {
       if (currentlyAssigned) {
         await _manager.revokeCommand.execute({
@@ -74,7 +74,7 @@ class _RoleDetailPageState extends State<RoleDetailPage> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isMutating = false);
+      if (mounted) setState(() => _mutatingCapability = null);
     }
   }
 
@@ -83,17 +83,7 @@ class _RoleDetailPageState extends State<RoleDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.role} — Capabilities'),
-        actions: [
-          if (_isMutating)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-        ],
+        actions: const [],
       ),
       body: StreamBuilder<bool>(
         stream: _connectivity.onConnectivityChanged,
@@ -105,7 +95,7 @@ class _RoleDetailPageState extends State<RoleDetailPage> {
           return OnlineCapabilityGrid(
             role: widget.role,
             manager: _manager,
-            isMutating: _isMutating,
+            mutatingCapability: _mutatingCapability,
             canManage: _policy.can('admin:manage_roles'),
             onToggle: _toggle,
           );

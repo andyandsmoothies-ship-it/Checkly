@@ -30,8 +30,9 @@ class UserCard extends StatelessWidget {
     final fullName = user['fullName'] as String? ?? 'Unknown';
     final email = user['email'] as String? ?? '';
     final avatarUrl = user['avatarUrl'] as String?;
-    final canManage =
-        GetIt.instance<PolicyManager>().can(AppCapabilities.usersManage);
+    final canManage = GetIt.instance<PolicyManager>().can(
+      AppCapabilities.usersManage,
+    );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -199,7 +200,9 @@ class UserCard extends StatelessWidget {
                   if (!isSelf)
                     PopupMenuItem(
                       value: 'toggle',
-                      child: Text(isLocked ? 'Activate User' : 'Deactivate User'),
+                      child: Text(
+                        isLocked ? 'Activate User' : 'Deactivate User',
+                      ),
                     ),
                 ],
               ),

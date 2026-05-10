@@ -112,12 +112,28 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/stores/select',
+      redirect: (context, state) {
+        final pm = _di<PolicyManager>();
+        if (!pm.can(AppCapabilities.submissionsCreate)) return '/home';
+        return null;
+      },
       builder: (context, state) => StoreSelectorPage(
         templateId: state.uri.queryParameters['templateId'] ?? '',
       ),
     ),
     GoRoute(
       path: '/audit',
+      redirect: (context, state) {
+        // Allow resuming an existing draft — the draft already exists locally
+        // and blocking it would cause data loss if capabilities changed after creation.
+        final params = state.uri.queryParameters;
+        final isResume =
+            params['autoResume'] == 'true' || params['submissionId'] != null;
+        if (isResume) return null;
+        final pm = _di<PolicyManager>();
+        if (!pm.can(AppCapabilities.submissionsCreate)) return '/home';
+        return null;
+      },
       builder: (context, state) => AuditFormPage(
         templateId: state.uri.queryParameters['templateId'] ?? '',
         storeId: state.uri.queryParameters['storeId'] ?? '',
@@ -201,6 +217,11 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/admin/user-groups',
+      redirect: (context, state) {
+        final pm = _di<PolicyManager>();
+        if (!pm.can(AppCapabilities.usersManage)) return '/home';
+        return null;
+      },
       builder: (context, state) => const UserGroupListPage(),
     ),
     GoRoute(

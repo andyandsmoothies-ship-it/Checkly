@@ -6,6 +6,7 @@ import '../../../_shared/constants/user_persona.dart';
 import '../widgets/sign_out_tile.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/settings_section_group.dart';
+import '../widgets/profile_capabilities_section.dart';
 
 final _di = GetIt.instance;
 
@@ -72,6 +73,10 @@ class ProfilePage extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 24),
+
+          // ── PBAC Capabilities Section ──
+          const ProfileCapabilitiesSection(),
           const SizedBox(height: 24),
 
           // ── Sign Out ──
