@@ -345,12 +345,14 @@ try
         // Reload cache so new programs:* rows are immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
 
-        // Programs Module Slice 2A / PBAC execution: Seed store_manager assignment access + execution (idempotent)
+        // Programs Module Slice 2A / PBAC execution: Seed store_manager and area_manager assignment access + execution (idempotent)
         await db.Database.ExecuteSqlRawAsync("""
             INSERT INTO role_capabilities (id, role, capability, created_at)
             VALUES
                 (gen_random_uuid(), 'store_manager', 'programs:assignments_my', now()),
-                (gen_random_uuid(), 'store_manager', 'programs:execute', now())
+                (gen_random_uuid(), 'store_manager', 'programs:execute', now()),
+                (gen_random_uuid(), 'area_manager',  'programs:assignments_my', now()),
+                (gen_random_uuid(), 'area_manager',  'programs:execute', now())
             ON CONFLICT (role, capability) DO NOTHING;
             """);
 

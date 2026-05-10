@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../manager/admin_area_manager.dart';
 import '../widgets/area_card.dart';
 import '../widgets/area_sheets.dart';
@@ -87,14 +89,17 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final canWrite = _di<PolicyManager>().can(AppCapabilities.areasWrite);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Area Management')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateSheet,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: canWrite
+          ? FloatingActionButton(
+              onPressed: _showCreateSheet,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: Column(
         children: [
           // Search bar
@@ -123,13 +128,13 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
           ),
 
           // Content
-          Expanded(child: _buildBody(theme)),
+          Expanded(child: _buildBody(theme, canWrite)),
         ],
       ),
     );
   }
 
-  Widget _buildBody(ThemeData theme) {
+  Widget _buildBody(ThemeData theme, bool canWrite) {
     if (_manager.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -187,7 +192,10 @@ class _AreaManagementPageState extends State<AreaManagementPage> {
         itemCount: _filtered.length,
         itemBuilder: (_, index) {
           final area = _filtered[index];
-          return AreaCard(area: area, onTap: () => _showEditSheet(area));
+          return AreaCard(
+            area: area,
+            onTap: canWrite ? () => _showEditSheet(area) : null,
+          );
         },
       ),
     );

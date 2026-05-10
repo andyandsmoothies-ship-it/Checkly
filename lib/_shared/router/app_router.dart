@@ -310,6 +310,35 @@ String? authRedirect(BuildContext context, GoRouterState state) {
     }
   }
 
+  if (isAuthenticated) {
+    final pm = _di<PolicyManager>();
+
+    if (state.matchedLocation.startsWith('/analytics') &&
+        !pm.can(AppCapabilities.analyticsView)) {
+      return '/home';
+    }
+
+    if (state.matchedLocation.startsWith('/activity') &&
+        !pm.can(AppCapabilities.submissionsList)) {
+      return '/home';
+    }
+
+    if (state.matchedLocation.startsWith('/programs')) {
+      final parts = state.matchedLocation.split('/');
+      if (parts.length == 2 && !pm.can(AppCapabilities.programsList)) {
+        return '/home';
+      } else if (parts.length == 3 &&
+          parts[2] != 'new' &&
+          !pm.can(AppCapabilities.programsExecute)) {
+        return '/home';
+      } else if (parts.length == 4 &&
+          parts[2] == 'review' &&
+          !pm.can(AppCapabilities.programsReview)) {
+        return '/home';
+      }
+    }
+  }
+
   // No-role guard on all app routes (except /access-pending and /login)
   if (isAuthenticated &&
       state.matchedLocation != '/access-pending' &&

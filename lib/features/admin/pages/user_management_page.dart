@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/warm_chip.dart';
 import '../manager/admin_user_manager.dart';
@@ -253,13 +255,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final canManage = _di<PolicyManager>().can(AppCapabilities.usersManage);
     return Scaffold(
       appBar: AppBar(title: const Text('User Management')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateUserSheet,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.person_add),
-      ),
+      floatingActionButton: canManage
+          ? FloatingActionButton(
+              onPressed: _showCreateUserSheet,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.person_add),
+            )
+          : null,
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {

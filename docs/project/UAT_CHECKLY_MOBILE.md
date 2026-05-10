@@ -31,7 +31,7 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 2.3 | Global Scroll Restoration | Scroll down a list → Navigate away → Go back | List restores exact scroll position. | [ ] |
 | 2.4 | Capability Route Guard | Login as Auditor → Navigate to `/admin/dashboard` | Redirected to `/home`. Admin pages are not accessible (missing `admin:access` capability). | [ ] |
 | 2.5 | Access Pending Redirect | Login as user with no role assigned | Redirected to Access Pending page, not Dashboard. | [ ] |
-| 2.6 | Admin Nav Items | Login as Admin → Open Admin Dashboard | All 5 menu items (Users, Stores, Approvals, Logs, Areas) navigate correctly. | [ ] |
+| 2.6 | Admin Nav Items | Login as Admin → Open Admin Dashboard | Menu items (Users, Stores, Approvals, Areas, Roles, Programs, Global Risks) render dynamically based on user capabilities. All items navigate correctly. | [ ] |
 
 ## Module 3: Store & Area Selector
 **Focus**: Selecting the audit context (Areas Entity).

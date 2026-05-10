@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../manager/admin_global_risk_manager.dart';
 import 'widgets/risk_card.dart';
 import 'widgets/risk_form_sheet.dart';
@@ -66,15 +68,20 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final canManage = _di<PolicyManager>().can(
+      AppCapabilities.globalRisksManage,
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Global Risk Management')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            showRiskFormSheet(context: context, onSaved: _loadData),
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: canManage
+          ? FloatingActionButton(
+              onPressed: () =>
+                  showRiskFormSheet(context: context, onSaved: _loadData),
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: Column(
         children: [
           // Search bar
@@ -103,13 +110,13 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
           ),
 
           // Content
-          Expanded(child: _buildBody(theme)),
+          Expanded(child: _buildBody(theme, canManage)),
         ],
       ),
     );
   }
 
-  Widget _buildBody(ThemeData theme) {
+  Widget _buildBody(ThemeData theme, bool canManage) {
     if (_manager.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -171,11 +178,13 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
           final risk = _filtered[index];
           return RiskCard(
             risk: risk,
-            onTap: () => showRiskFormSheet(
-              context: context,
-              risk: risk,
-              onSaved: _loadData,
-            ),
+            onTap: canManage
+                ? () => showRiskFormSheet(
+                    context: context,
+                    risk: risk,
+                    onSaved: _loadData,
+                  )
+                : null,
           );
         },
       ),

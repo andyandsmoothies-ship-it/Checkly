@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/services/policy_manager.dart';
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../manager/template_manager.dart';
@@ -11,18 +13,15 @@ import 'type_badge.dart';
 class TemplateCard extends StatelessWidget {
   final TemplateDto template;
 
-  /// Whether the current user has admin role. Controls mutation actions.
-  final bool isAdmin;
-
-  const TemplateCard({
-    super.key,
-    required this.template,
-    required this.isAdmin,
-  });
+  const TemplateCard({super.key, required this.template});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final policy = GetIt.instance<PolicyManager>();
+    final canStart = policy.can(AppCapabilities.submissionsCreate);
+    final canEdit = policy.can(AppCapabilities.templatesUpdate);
+    final canDelete = policy.can(AppCapabilities.templatesDelete);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -117,99 +116,89 @@ class TemplateCard extends StatelessWidget {
                     case 'start':
                       context.push('/stores/select?templateId=${template.id}');
                     case 'edit':
-                      if (isAdmin) {
-                        context.push('/templates/edit/${template.id}');
-                      }
+                      context.push('/templates/edit/${template.id}');
                     case 'duplicate':
-                      if (isAdmin) {
-                        () async {
-                          try {
-                            final cloned =
-                                await GetIt.instance<TemplateManager>()
-                                    .duplicateTemplate(template.id);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    "'${cloned.title}' created as draft",
-                                  ),
+                      () async {
+                        try {
+                          final cloned = await GetIt.instance<TemplateManager>()
+                              .duplicateTemplate(template.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "'${cloned.title}' created as draft",
                                 ),
-                              );
-                            }
-                          } catch (_) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Could not duplicate template. Please try again.',
-                                  ),
-                                ),
-                              );
-                            }
+                              ),
+                            );
                           }
-                        }();
-                      }
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Could not duplicate template. Please try again.',
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      }();
                     case 'delete':
-                      if (isAdmin) {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: const Text('Delete Template'),
-                            content: Text(
-                              'Delete "${template.title}"? This cannot be undone.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx),
-                                child: const Text('Cancel'),
-                              ),
-                              FilledButton(
-                                onPressed: () async {
-                                  Navigator.pop(ctx);
-                                  try {
-                                    await GetIt.instance<TemplateManager>()
-                                        .deleteTemplate(template.id);
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Template deleted'),
-                                        ),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                },
-                                child: const Text('Delete'),
-                              ),
-                            ],
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete Template'),
+                          content: Text(
+                            'Delete "${template.title}"? This cannot be undone.',
                           ),
-                        );
-                      }
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Cancel'),
+                            ),
+                            FilledButton(
+                              onPressed: () async {
+                                Navigator.pop(ctx);
+                                try {
+                                  await GetIt.instance<TemplateManager>()
+                                      .deleteTemplate(template.id);
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Template deleted'),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      );
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'start',
-                    child: ListTile(
-                      leading: Icon(Icons.play_arrow),
-                      title: Text('Quick Start'),
-                      dense: true,
+                  if (canStart)
+                    const PopupMenuItem(
+                      value: 'start',
+                      child: ListTile(
+                        leading: Icon(Icons.play_arrow),
+                        title: Text('Quick Start'),
+                        dense: true,
+                      ),
                     ),
-                  ),
-                  if (isAdmin) ...[
+                  if (canEdit) ...[
                     const PopupMenuItem(
                       value: 'edit',
                       child: ListTile(
@@ -226,6 +215,8 @@ class TemplateCard extends StatelessWidget {
                         dense: true,
                       ),
                     ),
+                  ],
+                  if (canDelete)
                     PopupMenuItem(
                       value: 'delete',
                       child: Builder(
@@ -245,7 +236,6 @@ class TemplateCard extends StatelessWidget {
                         },
                       ),
                     ),
-                  ],
                 ],
               ),
             ],

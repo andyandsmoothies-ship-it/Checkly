@@ -87,10 +87,21 @@ void main() {
 
   void arrangeAuthRole(String role) {
     // Admin gets templates:create capability so PermissionGuard shows FAB.
-    // All other roles get empty capabilities (fail-safe deny).
-    final caps = role == 'admin'
-        ? {'templates:create', 'admin:access'}
-        : <String>{};
+    // Admin also needs granular capabilities to see Quick Start, Edit, Duplicate, Delete.
+    // Auditor needs submissions:create to see Quick Start.
+    Set<String> caps = {};
+    if (role == 'admin') {
+      caps = {
+        'templates:create',
+        'admin:access',
+        'submissions:create',
+        'templates:update',
+        'templates:delete',
+      };
+    } else if (role == 'auditor') {
+      caps = {'submissions:create'};
+    }
+
     final auth = _StubAuthManager(role: role, capabilities: caps);
     GetIt.I.registerSingleton<AuthManager>(auth);
     GetIt.I.registerSingleton<PolicyManager>(PolicyManager(auth: auth));

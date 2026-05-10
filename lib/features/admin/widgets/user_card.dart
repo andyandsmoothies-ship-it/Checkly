@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/role_badge.dart';
 
 /// Reusable card widget for displaying a user in the admin user list.
 class UserCard extends StatelessWidget {
   final Map<String, dynamic> user;
   final bool isSelf;
-  final VoidCallback onEdit;
-  final VoidCallback onResetPassword;
-  final void Function(bool ban) onBanToggle;
+  final VoidCallback? onEdit;
+  final VoidCallback? onResetPassword;
+  final void Function(bool ban)? onBanToggle;
 
   const UserCard({
     super.key,
     required this.user,
     required this.isSelf,
-    required this.onEdit,
-    required this.onResetPassword,
-    required this.onBanToggle,
+    this.onEdit,
+    this.onResetPassword,
+    this.onBanToggle,
   });
 
   @override
@@ -27,6 +30,8 @@ class UserCard extends StatelessWidget {
     final fullName = user['fullName'] as String? ?? 'Unknown';
     final email = user['email'] as String? ?? '';
     final avatarUrl = user['avatarUrl'] as String?;
+    final canManage =
+        GetIt.instance<PolicyManager>().can(AppCapabilities.usersManage);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -170,33 +175,34 @@ class UserCard extends StatelessWidget {
               ),
             ),
 
-            // 3-dot menu
-            PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              onSelected: (value) {
-                if (value == 'edit') onEdit();
-                if (value == 'reset_password') onResetPassword();
-                if (value == 'toggle') onBanToggle(!isLocked);
-              },
-              itemBuilder: (ctx) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Text('Edit Role & Assignment'),
+            // 3-dot menu — hidden when user lacks users:manage
+            if (canManage)
+              PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.more_vert,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                const PopupMenuItem(
-                  value: 'reset_password',
-                  child: Text('Reset Password'),
-                ),
-                if (!isSelf)
-                  PopupMenuItem(
-                    value: 'toggle',
-                    child: Text(isLocked ? 'Activate User' : 'Deactivate User'),
+                onSelected: (value) {
+                  if (value == 'edit') onEdit?.call();
+                  if (value == 'reset_password') onResetPassword?.call();
+                  if (value == 'toggle') onBanToggle?.call(!isLocked);
+                },
+                itemBuilder: (ctx) => [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Text('Edit Role & Assignment'),
                   ),
-              ],
-            ),
+                  const PopupMenuItem(
+                    value: 'reset_password',
+                    child: Text('Reset Password'),
+                  ),
+                  if (!isSelf)
+                    PopupMenuItem(
+                      value: 'toggle',
+                      child: Text(isLocked ? 'Activate User' : 'Deactivate User'),
+                    ),
+                ],
+              ),
           ],
         ),
       ),

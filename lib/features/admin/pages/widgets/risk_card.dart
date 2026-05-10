@@ -4,9 +4,9 @@ import '../../../../_shared/theme/app_fonts.dart';
 
 class RiskCard extends StatelessWidget {
   final Map<String, dynamic> risk;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
-  const RiskCard({super.key, required this.risk, required this.onTap});
+  const RiskCard({super.key, required this.risk, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +95,11 @@ class RiskCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              if (onTap != null)
+                Icon(
+                  Icons.chevron_right,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
             ],
           ),
         ),

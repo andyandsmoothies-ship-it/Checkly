@@ -5,7 +5,6 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/widgets/warm_chip.dart';
-import '../../../_shared/services/policy_manager.dart';
 import '../manager/template_manager.dart';
 import '../models/template_dto.dart';
 import '../widgets/template_card.dart';
@@ -159,7 +158,6 @@ class _TemplateListPageState extends State<TemplateListPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final manager = _di<TemplateManager>();
-    final isAdmin = _di<PolicyManager>().can(AppCapabilities.templatesCreate);
     return Scaffold(
       appBar: AppBar(title: const Text('Templates')),
       floatingActionButton: PermissionGuard(
@@ -272,10 +270,7 @@ class _TemplateListPageState extends State<TemplateListPage> {
                         count: templates.length,
                         initiallyExpanded: false,
                         children: templates
-                            .map(
-                              (t) =>
-                                  TemplateCard(template: t, isAdmin: isAdmin),
-                            )
+                            .map((t) => TemplateCard(template: t))
                             .toList(),
                       );
                     }).toList(),

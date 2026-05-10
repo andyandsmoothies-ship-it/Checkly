@@ -28,6 +28,7 @@ import 'package:checkly/features/stores/services/store_api_service.dart';
 import 'package:checkly/features/templates/services/template_api_service.dart';
 import 'package:checkly/features/stores/model/store_dto.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
+import 'package:checkly/_shared/services/policy_manager.dart';
 
 // ── Mock declarations ─────────────────────────────────────────────────────────
 // mocktail generates the correct override matching ANY method signature.
@@ -38,6 +39,8 @@ class _MockAdminApiService extends Mock implements AdminApiService {}
 class _MockStoreApiService extends Mock implements StoreApiService {}
 
 class _MockTemplateApiService extends Mock implements TemplateApiService {}
+
+class _MockPolicyManager extends Mock implements PolicyManager {}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -54,6 +57,11 @@ _MockDashboardManager _setupManager() {
 void _registerDi({bool apiShouldThrow = false}) {
   final di = GetIt.instance;
   di.registerSingleton<DashboardManager>(_setupManager());
+
+  // PolicyManager — admin user sees all menu items
+  final pm = _MockPolicyManager();
+  when(() => pm.can(any())).thenReturn(true);
+  di.registerSingleton<PolicyManager>(pm);
 
   final adminSvc = _MockAdminApiService();
   if (apiShouldThrow) {

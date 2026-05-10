@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../stores/services/store_api_service.dart';
@@ -99,17 +101,20 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final canWrite = _di<PolicyManager>().can(AppCapabilities.storesWrite);
     return Scaffold(
       appBar: AppBar(title: const Text('Store Management')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showStoreFormSheet(
-          context: context,
-          areas: _manager.areas,
-          onSaved: _loadData,
-        ),
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: canWrite
+          ? FloatingActionButton(
+              onPressed: () => showStoreFormSheet(
+                context: context,
+                areas: _manager.areas,
+                onSaved: _loadData,
+              ),
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {
@@ -123,7 +128,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                   _loadData();
                 },
               ),
-              Expanded(child: _buildBody()),
+              Expanded(child: _buildBody(canWrite)),
             ],
           );
         },
@@ -131,7 +136,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(bool canWrite) {
     final theme = Theme.of(context);
 
     if (_manager.isLoading) {
@@ -174,13 +179,15 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
           final store = _manager.stores[index];
           return StoreCard(
             store: store,
-            onEdit: () => showStoreFormSheet(
-              context: context,
-              store: store,
-              areas: _manager.areas,
-              onSaved: _loadData,
-            ),
-            onToggleActive: () => _toggleActive(store),
+            onEdit: canWrite
+                ? () => showStoreFormSheet(
+                    context: context,
+                    store: store,
+                    areas: _manager.areas,
+                    onSaved: _loadData,
+                  )
+                : null,
+            onToggleActive: canWrite ? () => _toggleActive(store) : null,
           );
         },
       ),

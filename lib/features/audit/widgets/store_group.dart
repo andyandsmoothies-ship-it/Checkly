@@ -28,7 +28,7 @@ class StoreGroup extends StatelessWidget {
       data: theme.copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         initiallyExpanded: true,
-        tilePadding: EdgeInsets.zero,
+        tilePadding: const EdgeInsets.symmetric(vertical: 8),
         childrenPadding: EdgeInsets.zero,
         title: Row(
           children: [

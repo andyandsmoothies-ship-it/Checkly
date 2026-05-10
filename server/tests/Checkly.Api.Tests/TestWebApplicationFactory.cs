@@ -20,7 +20,7 @@ namespace Checkly.Api.Tests;
 public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
     private static bool _dbInitialized;
-    private static readonly object _lock = new();
+    private static readonly System.Threading.Lock _lock = new();
 
     public TestWebApplicationFactory()
     {
@@ -133,7 +133,9 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                        (gen_random_uuid(), 'admin',         'programs:review',             now()),
                        (gen_random_uuid(), 'admin',         'programs:manage',             now()),
                        (gen_random_uuid(), 'store_manager', 'programs:assignments_my',     now()),
-                       (gen_random_uuid(), 'store_manager', 'programs:execute',            now())
+                       (gen_random_uuid(), 'store_manager', 'programs:execute',            now()),
+                       (gen_random_uuid(), 'area_manager',  'programs:assignments_my',     now()),
+                       (gen_random_uuid(), 'area_manager',  'programs:execute',            now())
                 ON CONFLICT (role, capability) DO NOTHING;
                 """);
 
@@ -173,7 +175,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         string? adminToken = null)
     {
         // Automatically make emails unique to avoid parallel test suite conflicts
-        if (email.Contains("@"))
+        if (email.Contains('@'))
         {
             var parts = email.Split('@');
             email = $"{parts[0]}-{Guid.NewGuid():N}@{parts[1]}";

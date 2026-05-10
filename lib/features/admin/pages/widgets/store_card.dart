@@ -5,14 +5,14 @@ import '../../../stores/model/store_dto.dart';
 
 class StoreCard extends StatelessWidget {
   final StoreDto store;
-  final VoidCallback onEdit;
-  final VoidCallback onToggleActive;
+  final VoidCallback? onEdit;
+  final VoidCallback? onToggleActive;
 
   const StoreCard({
     super.key,
     required this.store,
-    required this.onEdit,
-    required this.onToggleActive,
+    this.onEdit,
+    this.onToggleActive,
   });
 
   @override
@@ -25,6 +25,9 @@ class StoreCard extends StatelessWidget {
       child: InkWell(
         onTap: onEdit,
         borderRadius: BorderRadius.circular(12),
+        mouseCursor: onEdit == null
+            ? SystemMouseCursors.basic
+            : SystemMouseCursors.click,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -95,27 +98,30 @@ class StoreCard extends StatelessWidget {
                     ),
                   ),
 
-                  // 3-dot menu
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: theme.colorScheme.onSurfaceVariant,
+                  // 3-dot menu — hidden in read-only mode
+                  if (onEdit != null || onToggleActive != null)
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      onSelected: (value) {
+                        if (value == 'edit') onEdit?.call();
+                        if (value == 'toggle') onToggleActive?.call();
+                      },
+                      itemBuilder: (ctx) => [
+                        if (onEdit != null)
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Edit Store'),
+                          ),
+                        if (onToggleActive != null)
+                          PopupMenuItem(
+                            value: 'toggle',
+                            child: Text(isActive ? 'Deactivate' : 'Activate'),
+                          ),
+                      ],
                     ),
-                    onSelected: (value) {
-                      if (value == 'edit') onEdit();
-                      if (value == 'toggle') onToggleActive();
-                    },
-                    itemBuilder: (ctx) => [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Text('Edit Store'),
-                      ),
-                      PopupMenuItem(
-                        value: 'toggle',
-                        child: Text(isActive ? 'Deactivate' : 'Activate'),
-                      ),
-                    ],
-                  ),
                 ],
               ),
 

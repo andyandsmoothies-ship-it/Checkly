@@ -10,13 +10,11 @@ description: Easy-to-read analysis workflow for large features and epics.
 > Use this workflow for large, complex features (Epics). Use it when the task has unknown rules, new complex states, or needs more than 1 new database table. It helps you review risks and break the work into smaller slices.
 
 > [!CAUTION]
-> **No Exact Code:** Do not generate exact code, SQL schemas, or line-by-line diffs here. Keep the plan high-level (Architecture Flow, APIs, Risks, and Slices). Leave the exact code for the Builder workflow.
-
+> **No Exact Code:** Do not generate exact code, SQL schemas, or line-by-line diffs here. Keep the plan high-level (Architecture Flow, APIs, Risks, and Slices).
 ## Phase 0: Start
 
 | Step | Instructions |
 |---|---|
-| **Check Rules** | If `.agents/rules/governance-rules.md` is not in memory, view it first. |
 | **Task Tracking** | Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the template below before doing anything else. List only the Epic Plan in the Artifact Inventory. |
 
 ```markdown

@@ -6,9 +6,9 @@ import '../../../_shared/theme/app_theme.dart';
 
 class AreaCard extends StatelessWidget {
   final Map<String, dynamic> area;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
-  const AreaCard({super.key, required this.area, required this.onTap});
+  const AreaCard({super.key, required this.area, this.onTap});
 
   @override
   Widget build(BuildContext context) {

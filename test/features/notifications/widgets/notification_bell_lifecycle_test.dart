@@ -47,7 +47,9 @@ void main() {
     ).thenAnswer((_) async => <NotificationDto>[]);
 
     final auth = MockAuthManager();
-    when(() => auth.authState).thenReturn(ValueNotifier(AuthState.authenticated));
+    when(
+      () => auth.authState,
+    ).thenReturn(ValueNotifier(AuthState.authenticated));
     GetIt.instance.registerSingleton<AuthManager>(auth);
 
     // Register a real manager so notifyListeners() actually works synchronously

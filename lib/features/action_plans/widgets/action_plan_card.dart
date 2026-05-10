@@ -59,7 +59,7 @@ class ActionPlanCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      plan.groupTitle,
+                      'Section: ${plan.groupTitle}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),

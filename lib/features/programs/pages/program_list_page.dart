@@ -85,6 +85,10 @@ class _ProgramListPageState extends State<ProgramListPage> {
   }
 
   Widget _buildBody(ThemeData theme) {
+    final canReview = GetIt.instance<PolicyManager>().can(
+      AppCapabilities.programsReview,
+    );
+
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -143,8 +147,8 @@ class _ProgramListPageState extends State<ProgramListPage> {
                 ),
               ),
               subtitle: Text('$category · $status · $total stores'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/programs/review/$id'),
+              trailing: canReview ? const Icon(Icons.chevron_right) : null,
+              onTap: canReview ? () => context.push('/programs/review/$id') : null,
             ),
           );
         },

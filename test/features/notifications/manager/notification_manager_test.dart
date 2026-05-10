@@ -27,7 +27,9 @@ void main() {
     dao = MockNotificationDao();
     auth = MockAuthManager();
 
-    when(() => auth.authState).thenReturn(ValueNotifier(AuthState.authenticated));
+    when(
+      () => auth.authState,
+    ).thenReturn(ValueNotifier(AuthState.authenticated));
 
     manager = NotificationManager(api: api, dao: dao, auth: auth);
   });

@@ -10,7 +10,7 @@ namespace Checkly.Api.Features.Programs;
 /// POST /api/programs/assignments/{id}/submit
 /// Stores evidence items and transitions the assignment status to "submitted".
 /// Security:
-///   - Endpoint is restricted to role=store_manager (RequireRole at route level).
+///   - Endpoint is restricted via PBAC capability (programs:execute).
 ///   - IDOR guard: assignment.StoreId MUST match the caller's Profile.StoreId → 404 on mismatch.
 /// Idempotency: Double-submit on a non-pending assignment → 400 BadRequest.
 /// </summary>

@@ -246,15 +246,20 @@ server/
 |--------|-----------------|:-----:|:-------:|:-------------:|:------------:|
 | Create/edit templates | `templates:create/update` | ✅ | ❌ | ❌ | ❌ |
 | Create/edit stores | `stores:write` | ✅ | ❌ | ❌ | ❌ |
+| Create/edit areas | `areas:write` | ✅ | ❌ | ❌ | ❌ |
 | Manage users | `users:manage` | ✅ | ❌ | ❌ | ❌ |
+| Manage roles | `admin:manage_roles` | ✅ | ❌ | ❌ | ❌ |
+| Manage global risks | `global_risks:manage`| ✅ | ❌ | ❌ | ❌ |
 | Execute audits (Start New) | `submissions:create` | ✅ | ✅ | ❌ | ❌ |
 | View own submissions | `submissions:list` | ✅ | ✅ | ❌ | ❌ |
 | View store's submissions | `submissions:list` | ✅ | ❌ | ✅ (own store) | ✅ (own area) |
 | View all submissions | `submissions:list` | ✅ | ❌ | ❌ | ❌ |
 | Approve/reject audits | `submissions:review` | ✅ | ❌ | ❌ | ✅ |
-| Void/Cancel audits | *(Hardcoded Admin)*| ✅ | ❌ | ❌ | ❌ |
 | Submit action plan evidence| `action_plans:write` | ❌ | ❌ | ✅ | ❌ |
 | Verify action plan completion| `action_plans:verify`| ✅ | ✅ | ❌ | ✅ |
+| Create/manage programs | `programs:create`, `programs:manage` | ✅ | ❌ | ❌ | ❌ |
+| Execute assigned programs| `programs:execute` | ❌ | ❌ | ✅ | ✅ |
+| Review programs        | `programs:review`  | ✅ | ❌ | ❌ | ✅ |
 
 ---
 

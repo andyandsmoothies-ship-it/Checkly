@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
@@ -59,6 +61,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final pm = _di<PolicyManager>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Admin Dashboard')),
@@ -118,116 +121,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Menu items — grouped elegantly in a single card
+                  // Menu items — only show items the current user has access to
                   Card(
                     child: Column(
-                      children: [
-                        _MenuItem(
-                          icon: Icons.people,
-                          title: 'User Management',
-                          subtitle: 'Manage auditors & managers',
-                          onTap: () => context.push('/admin/users'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.store,
-                          title: 'Store Management',
-                          subtitle: 'Manage store locations',
-                          onTap: () => context.push('/admin/stores'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.map_outlined,
-                          title: 'Area Management',
-                          subtitle: 'Manage geographic areas',
-                          onTap: () => context.push('/admin/areas'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.assignment,
-                          title: 'Audit Approvals',
-                          subtitle: 'Review submitted audits',
-                          onTap: () => context.push('/admin/approvals'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.warning_amber,
-                          title: 'System Logs',
-                          subtitle: 'Monitor application events',
-                          onTap: () => context.push('/admin/logs'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.bar_chart,
-                          title: 'Analytics',
-                          subtitle: 'View performance data',
-                          onTap: () => context.push('/analytics'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.event_note,
-                          title: 'Schedule Audit',
-                          subtitle: 'Delegate audits to auditors',
-                          onTap: () => context.push('/admin/schedule'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.manage_accounts,
-                          title: 'Role Management',
-                          subtitle: 'Manage role capabilities',
-                          onTap: () => context.push('/admin/roles'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.group_work_outlined,
-                          title: 'User Groups',
-                          subtitle: 'Manage user group assignments',
-                          onTap: () => context.push('/admin/user-groups'),
-                        ),
-                        Divider(
-                          height: 1,
-                          indent: 56,
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                        _MenuItem(
-                          icon: Icons.shield_outlined,
-                          title: 'Global Risk Management',
-                          subtitle: 'Configure risk categories for audits',
-                          onTap: () => context.push('/admin/global-risks'),
-                        ),
-                      ],
+                      children: _buildMenuItems(context, theme, pm),
                     ),
                   ),
                 ],
@@ -237,6 +134,133 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         },
       ),
     );
+  }
+
+  /// Builds the visible menu items for the current user.
+  /// Dividers are inserted only between adjacent visible items.
+  List<Widget> _buildMenuItems(
+    BuildContext context,
+    ThemeData theme,
+    PolicyManager pm,
+  ) {
+    final divider = Divider(
+      height: 1,
+      indent: 56,
+      color: theme.colorScheme.outlineVariant,
+    );
+
+    // Each entry: (capability | null for ungated, _MenuItem)
+    final gated = <({String? cap, _MenuItem item})>[
+      (
+        cap: AppCapabilities.usersManage,
+        item: _MenuItem(
+          icon: Icons.people,
+          title: 'User Management',
+          subtitle: 'Manage auditors & managers',
+          onTap: () => context.push('/admin/users'),
+        ),
+      ),
+      (
+        cap: AppCapabilities.storesWrite,
+        item: _MenuItem(
+          icon: Icons.store,
+          title: 'Store Management',
+          subtitle: 'Manage store locations',
+          onTap: () => context.push('/admin/stores'),
+        ),
+      ),
+      (
+        cap: AppCapabilities.areasWrite,
+        item: _MenuItem(
+          icon: Icons.map_outlined,
+          title: 'Area Management',
+          subtitle: 'Manage geographic areas',
+          onTap: () => context.push('/admin/areas'),
+        ),
+      ),
+      // Audit Approvals — ungated (admin:access implicit)
+      (
+        cap: null,
+        item: _MenuItem(
+          icon: Icons.assignment,
+          title: 'Audit Approvals',
+          subtitle: 'Review submitted audits',
+          onTap: () => context.push('/admin/approvals'),
+        ),
+      ),
+      // System Logs — ungated (Item 4 deferred per plan)
+      (
+        cap: null,
+        item: _MenuItem(
+          icon: Icons.warning_amber,
+          title: 'System Logs',
+          subtitle: 'Monitor application events',
+          onTap: () => context.push('/admin/logs'),
+        ),
+      ),
+      // Analytics — ungated (admin:access implicit)
+      (
+        cap: null,
+        item: _MenuItem(
+          icon: Icons.bar_chart,
+          title: 'Analytics',
+          subtitle: 'View performance data',
+          onTap: () => context.push('/analytics'),
+        ),
+      ),
+      // Schedule Audit — ungated (Item 3 handled in its own page)
+      (
+        cap: null,
+        item: _MenuItem(
+          icon: Icons.event_note,
+          title: 'Schedule Audit',
+          subtitle: 'Delegate audits to auditors',
+          onTap: () => context.push('/admin/schedule'),
+        ),
+      ),
+      (
+        cap: AppCapabilities.adminManageRoles,
+        item: _MenuItem(
+          icon: Icons.manage_accounts,
+          title: 'Role Management',
+          subtitle: 'Manage role capabilities',
+          onTap: () => context.push('/admin/roles'),
+        ),
+      ),
+      // User Groups — ungated (admin:access implicit)
+      (
+        cap: null,
+        item: _MenuItem(
+          icon: Icons.group_work_outlined,
+          title: 'User Groups',
+          subtitle: 'Manage user group assignments',
+          onTap: () => context.push('/admin/user-groups'),
+        ),
+      ),
+      (
+        cap: AppCapabilities.globalRisksManage,
+        item: _MenuItem(
+          icon: Icons.shield_outlined,
+          title: 'Global Risk Management',
+          subtitle: 'Configure risk categories for audits',
+          onTap: () => context.push('/admin/global-risks'),
+        ),
+      ),
+    ];
+
+    // Filter to only visible items
+    final visible = gated
+        .where((e) => e.cap == null || pm.can(e.cap!))
+        .map((e) => e.item)
+        .toList();
+
+    // Interleave dividers between items
+    final widgets = <Widget>[];
+    for (var i = 0; i < visible.length; i++) {
+      widgets.add(visible[i]);
+      if (i < visible.length - 1) widgets.add(divider);
+    }
+    return widgets;
   }
 }
 

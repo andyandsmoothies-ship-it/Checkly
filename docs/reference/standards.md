@@ -118,7 +118,7 @@ src/entities/[entity]/
 - **JWT**: ValidateIssuer, ValidateAudience, ValidateLifetime, ValidateIssuerSigningKey = `true`. ClockSkew = `Zero`.
 - **Lockout**: 5 attempts max, 15-min lockout, enabled for new users.
 - **CORS**: Middleware ordering: `UseCors()` → `UseAuthentication()` → `UseAuthorization()`.
-- **PBAC Capabilities**: Extracted to strongly typed constants in `AppCapabilities.cs` (e.g., `stores:write`, `analytics:area`, `users:manage`). Endpoints must gate using `RequireCapability()`. UX-only signals like `admin:access` must not be used on C# routes.
+- **PBAC Capabilities**: Extracted to strongly typed constants in `AppCapabilities.cs` and `app_capabilities.dart` (e.g., `stores:write`, `programs:create`, `users:manage`). Endpoints and UI elements must gate using `RequireCapability()` or `PolicyManager.can()`. UX-only signals like `admin:access` must not be used on C# routes, and granular checks must be used instead of role checks.
 - **IDOR Guard**: `SubmissionAccessGuard` (`Common/SubmissionAccessGuard.cs`) — reusable guard for all submission-scoped resources. Uses `Guid.TryParse` for defense-in-depth. Role-based access: admin→all, auditor→owns, store_manager→their store, area_manager→their area.
 
 ### Media & Storage Security

@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/notifications/manager/notification_manager.dart';
 import '../../features/notifications/model/notification_dto.dart';
+import '../constants/app_capabilities.dart';
+import '../services/policy_manager.dart';
 import '../services/sync_engine.dart';
 import '../theme/app_theme.dart';
 import 'app_router.dart';
@@ -22,6 +24,9 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
     final currentIndex = shellIndexFromLocation(location);
+    final canViewActivity = _di<PolicyManager>().can(
+      AppCapabilities.submissionsList,
+    );
 
     return Scaffold(
       extendBody: true,
@@ -164,12 +169,13 @@ class MainShell extends StatelessWidget {
                   isActive: currentIndex == 0,
                   onTap: () => context.go('/home'),
                 ),
-                _NavItem(
-                  icon: Icons.assignment,
-                  label: 'ACTIVITY',
-                  isActive: currentIndex == 1,
-                  onTap: () => context.go('/activity'),
-                ),
+                if (canViewActivity)
+                  _NavItem(
+                    icon: Icons.assignment,
+                    label: 'ACTIVITY',
+                    isActive: currentIndex == 1,
+                    onTap: () => context.go('/activity'),
+                  ),
                 _NavItem(
                   icon: Icons.fact_check,
                   label: 'PLANS',
