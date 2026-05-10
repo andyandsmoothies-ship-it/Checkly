@@ -12,6 +12,10 @@ namespace Checkly.Api.Common.Auth;
 ///
 /// RULE: AnalyticsArea is reserved for Slice 2.
 /// The 'analytics:area' DB row does not exist until the Slice 2 migration runs.
+///
+/// ARCHITECTURE NOTE: Capabilities are NOT FIXED to specific roles. The PRD and DB 
+/// Migrations represent "Factory Defaults". An Admin can dynamically assign or 
+/// unassign ANY capability to ANY role via the UI at runtime.
 /// </summary>
 public static class AppCapabilities
 {

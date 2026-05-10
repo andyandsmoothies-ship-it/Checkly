@@ -240,7 +240,9 @@ server/
 ## 6. Access Control Matrix (PBAC)
 
 > [!NOTE]
-> **Permission-Based Access Control (PBAC)**: The system dynamically evaluates access using `capabilities` (e.g., `templates:create`) via `PolicyManager.can()`, instead of hard-coded role strings. The matrix below shows the *default* semantic mappings for the 4 out-of-the-box roles, but all system gates evaluate underlying capabilities.
+> **Permission-Based Access Control (PBAC)**: The system dynamically evaluates access using `capabilities` (e.g., `templates:create`) via `PolicyManager.can()`, instead of hard-coded role strings. 
+> 
+> **CRITICAL ARCHITECTURE NOTE:** Capabilities are **NOT FIXED**. The matrix below shows the *"Factory Defaults"* (Day 1 database seed) for the 4 out-of-the-box roles. However, an Admin can freely assign or unassign ANY capability to ANY role via the Admin UI at runtime. The Admin UI is the ultimate source of truth.
 
 | Action | PBAC Capability | Admin | Auditor | Store Manager | Area Manager |
 |--------|-----------------|:-----:|:-------:|:-------------:|:------------:|

@@ -1,8 +1,13 @@
 /// Strongly-typed PBAC capability constants.
 /// Mirrors `AppCapabilities.cs` on the backend to eliminate naked strings.
 ///
+///
 /// Anti-Magic-String Mandate: Never use raw capability strings in production code.
 /// Always use these constants so the compiler catches typos at build time.
+///
+/// ARCHITECTURE NOTE: Capabilities are NOT FIXED to specific roles. The PRD matrix
+/// represents "Factory Defaults". An Admin can dynamically assign or unassign ANY
+/// capability to ANY role via the UI at runtime.
 class AppCapabilities {
   AppCapabilities._(); // prevent instantiation
 

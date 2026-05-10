@@ -30,6 +30,13 @@ public static class GetCapabilityCatalog
         "action_plans:write",
         "action_plans:verify",
         "programs:execute",
+        "programs:create",
+        "programs:list",
+        "programs:manage",
+        "programs:review",
+        "programs:assignments_my",
+        "programs:assignments_list",
+        "global_risks:manage",
         "admin:manage_roles",
         "admin:access",
     ];
@@ -51,6 +58,13 @@ public static class GetCapabilityCatalog
         { "action_plans:write", new("Write Action Plans", "Action Plans", "Create and submit action plans") },
         { "action_plans:verify", new("Verify Action Plans", "Action Plans", "Approve or reject action plans") },
         { "programs:execute", new("Execute Programs", "Programs", "Submit program evidence for assigned store work") },
+        { "programs:create", new("Create Programs", "Programs", "Create new programs and assignments") },
+        { "programs:list", new("View Programs", "Programs", "View list of available programs") },
+        { "programs:manage", new("Manage Programs", "Programs", "Edit or archive existing programs") },
+        { "programs:review", new("Review Programs", "Programs", "Review and verify submitted program evidence") },
+        { "programs:assignments_my", new("My Assignments", "Programs", "View personal program assignments") },
+        { "programs:assignments_list", new("View All Assignments", "Programs", "View program assignments across all stores") },
+        { "global_risks:manage", new("Manage Global Risks", "Global Risks", "Configure global risk categories") },
         { "admin:manage_roles", new("Manage Roles", "Admin", "Assign capabilities to roles") },
         { "admin:access", new("Admin Console Access", "Admin", "Access the web admin panel") }
     };
