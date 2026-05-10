@@ -96,6 +96,14 @@ public static class ResourceAccessGuard
             return await IsUserAreaAsync(userId, scope.StoreId, scope.AreaId, db, ct);
         }
 
+        if (role == "store_manager")
+        {
+            if (!Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+                return false;
+
+            return await IsUserStoreAsync(userId, scope.StoreId, db, ct);
+        }
+
         return false;
     }
 }

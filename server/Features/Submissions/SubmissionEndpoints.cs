@@ -38,8 +38,7 @@ public static class SubmissionEndpoints
             .RequireCapability(AppCapabilities.SubmissionsReview);
 
         group.MapPut("/{id}/finalize", FinalizeSubmission.HandleAsync)
-            .WithName("FinalizeSubmission")
-            .RequireCapability(AppCapabilities.SubmissionsCreate);
+            .WithName("FinalizeSubmission");
 
         group.MapPost("/{id}/void", VoidSubmission.HandleAsync)
             .WithName("VoidSubmission")

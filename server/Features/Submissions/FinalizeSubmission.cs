@@ -47,12 +47,16 @@ public static class FinalizeSubmission
 
         // Must be the same auditor (or admin/area_manager scoped to this store's area)
         if (submission.AuditorId != auditorId && !await ResourceAccessGuard.CanDelegateAsync(user, new ResourceScope(StoreId: submission.StoreId), db, ct))
+        {
+            Log.Warning("FinalizeSubmission 403: User {UserId} is not auditor {AuditorId} and cannot delegate.", auditorId, submission.AuditorId);
             return TypedResults.Forbid();
+        }
 
         // 1.5 Load Global Risks for this submission
         var globalRisks = await db.SubmissionRisks
             .Include(r => r.GlobalRisk)
             .Where(r => r.SubmissionId == submission.Id)
+            .OrderBy(r => r.Id)
             .Take(500) // Safety cap — a submission will never legitimately have 500 global risks
             .ToListAsync(ct);
         bool hasGlobalRisk = globalRisks.Count > 0;
@@ -287,6 +291,7 @@ public static class FinalizeSubmission
             var storeManagerId = await (from p in db.Profiles
                                         join r in db.AppUserRoles on p.Id equals r.UserId
                                         where p.StoreId == submission.StoreId.Value && r.Role == "store_manager"
+                                        orderby p.Id
                                         select p.Id).FirstOrDefaultAsync(ct);
 
             if (storeManagerId != Guid.Empty)

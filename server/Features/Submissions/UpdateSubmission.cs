@@ -58,11 +58,8 @@ public static class UpdateSubmission
                     submission.Status = "draft";
                     submission.StartedAt = now;
 
-                    // Claim auditor if not already assigned
-                    if (!submission.AuditorId.HasValue)
-                    {
-                        submission.AuditorId = callerId;
-                    }
+                    // Claim auditor when starting a scheduled audit
+                    submission.AuditorId = callerId;
 
                     // Update auditor info if provided
                     if (request.AuditorName is not null)
