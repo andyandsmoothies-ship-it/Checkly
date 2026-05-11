@@ -6,6 +6,7 @@ import '../../audit/services/submission_api_service.dart';
 import '../../stores/services/store_api_service.dart';
 import '../../templates/services/template_api_service.dart';
 import '../../auth/manager/auth_manager.dart';
+import '../../../_shared/constants/app_capabilities.dart';
 
 /// Schedule form data returned by [AdminAuditManager.loadScheduleData].
 class ScheduleFormData {
@@ -71,7 +72,7 @@ class AdminAuditManager extends ChangeNotifier {
         _templateApi.getTemplates(),
         _storeApi.getStores(),
         _adminApi.searchUsersByCapability(
-          'submissions:execute',
+          AppCapabilities.submissionsCreate,
         ), // Backend PBAC filter
       ]);
 
@@ -112,7 +113,7 @@ class AdminAuditManager extends ChangeNotifier {
           )
           .toList();
 
-      // Build auditor list: users filtered by submissions:execute capability (PBAC backend filter)
+      // Build auditor list: users filtered by submissions:create capability (PBAC backend filter)
       var auditorList = users;
 
       // Role-based filtering for area_manager

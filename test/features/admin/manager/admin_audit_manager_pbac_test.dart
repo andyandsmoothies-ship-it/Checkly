@@ -1,7 +1,7 @@
 // Test Plan:
 // Covers TC-PBAC-04 from the PBAC Phase A implementation plan.
 // Spec: AdminAuditManager.loadScheduleData() must call the PBAC backend filter
-// endpoint (searchUsersByCapability('submissions:execute')) to build the auditor
+// endpoint (searchUsersByCapability('submissions:create')) to build the auditor
 // list, NOT hardcoded role-string logic on the frontend.
 //
 // Input Lineage:
@@ -9,7 +9,7 @@
 //
 // Why these tests will fail (RED phase):
 // AdminAuditManager currently calls searchUsersByCapability('submissions:create'),
-// but TC-PBAC-04 specifies the auditor list is filtered by 'submissions:execute'.
+// but TC-PBAC-04 specifies the auditor list is filtered by 'submissions:create'.
 // Tests will pinpoint the exact capability string the Builder must switch to.
 //
 // Additional coverage:
@@ -99,13 +99,13 @@ void main() {
   // ── TC-PBAC-04: Core Contract — backend PBAC filter is called ─────────────
 
   test(
-    'TC-PBAC-04a: LoadScheduleData_CallsBackend_WithSubmissionsExecuteCapability',
+    'TC-PBAC-04a: LoadScheduleData_CallsBackend_WithSubmissionsCreateCapability',
     () async {
       // Arrange: stub the PBAC endpoint with the CORRECT capability string.
-      // If the Builder switches the call to 'submissions:execute', this PASSES.
-      // If the code still calls 'submissions:create', verify() will FAIL.
+      // If the Builder switches the call to 'submissions:create', this PASSES.
+      // If the code still calls 'submissions:execute', verify() will FAIL.
       when(
-        () => mockAdminApi.searchUsersByCapability('submissions:execute'),
+        () => mockAdminApi.searchUsersByCapability('submissions:create'),
       ).thenAnswer(
         (_) async => [
           {
@@ -120,20 +120,20 @@ void main() {
       // Act
       await sut.loadScheduleData();
 
-      // Assert: the manager MUST call the backend with 'submissions:execute'
+      // Assert: the manager MUST call the backend with 'submissions:create'
       verify(
-        () => mockAdminApi.searchUsersByCapability('submissions:execute'),
+        () => mockAdminApi.searchUsersByCapability('submissions:create'),
       ).called(1);
     },
   );
 
   test(
-    'TC-PBAC-04b: LoadScheduleData_DoesNotCallBackend_WithSubmissionsCreateCapability',
+    'TC-PBAC-04b: LoadScheduleData_DoesNotCallBackend_WithSubmissionsExecuteCapability',
     () async {
-      // Arrange: only stub 'submissions:execute'. If production code calls
-      // 'submissions:create', the missing stub will throw a MissingStubError.
+      // Arrange: only stub 'submissions:create'. If production code calls
+      // 'submissions:execute', the missing stub will throw a MissingStubError.
       when(
-        () => mockAdminApi.searchUsersByCapability('submissions:execute'),
+        () => mockAdminApi.searchUsersByCapability('submissions:create'),
       ).thenAnswer((_) async => []);
 
       // Act
@@ -141,7 +141,7 @@ void main() {
 
       // Assert: the OLD capability string must NOT be used
       verifyNever(
-        () => mockAdminApi.searchUsersByCapability('submissions:create'),
+        () => mockAdminApi.searchUsersByCapability('submissions:execute'),
       );
     },
   );
@@ -167,7 +167,7 @@ void main() {
         },
       ];
       when(
-        () => mockAdminApi.searchUsersByCapability('submissions:execute'),
+        () => mockAdminApi.searchUsersByCapability('submissions:create'),
       ).thenAnswer((_) async => apiAuditors);
 
       // Act
@@ -193,7 +193,7 @@ void main() {
     () async {
       // Arrange: backend returns empty list (no users have submissions:execute)
       when(
-        () => mockAdminApi.searchUsersByCapability('submissions:execute'),
+        () => mockAdminApi.searchUsersByCapability('submissions:create'),
       ).thenAnswer((_) async => []);
 
       // Act
@@ -215,7 +215,7 @@ void main() {
   test('TC-PBAC-04e: LoadScheduleData_ApiThrows_SetsScheduleError', () async {
     // Arrange: the PBAC user endpoint throws (network failure scenario)
     when(
-      () => mockAdminApi.searchUsersByCapability('submissions:execute'),
+      () => mockAdminApi.searchUsersByCapability('submissions:create'),
     ).thenThrow(Exception('Network timeout'));
 
     // Act
@@ -241,7 +241,7 @@ void main() {
     () async {
       // Arrange
       when(
-        () => mockAdminApi.searchUsersByCapability('submissions:execute'),
+        () => mockAdminApi.searchUsersByCapability('submissions:create'),
       ).thenAnswer((_) async => []);
 
       // Act

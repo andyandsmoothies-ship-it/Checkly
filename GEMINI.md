@@ -58,6 +58,8 @@
   - 🟢 Safe Scope (Features).
 
 ## 3. Global Gotchas
+- **Gotcha: Terminology Map (Audit vs Submission)**
+  - **Fix:** In the UI (Business Language), users talk about "Audits" (e.g., Schedule Audit, Assign Task). In the codebase and database (Technical Language), the entity is named "Submission" (e.g., `submissions:create`, `SubmissionApiService`). DO NOT rename these files. Understand that `Audit` in the UI = `Submission` in the DB.
 - **Gotcha: The 7 Sync Steps (for PBAC & Data Sync)**
   - **Fix:** Update in order: (1) Entity, (2) DbContext, (3) Server DTO, (4) Endpoint projections, (5) Sync endpoint, (6) Flutter DTO, **(7) If adding a capability, seed it in `Program.cs` and `TestWebApplicationFactory.cs`**.
 - **Gotcha: Programs Module Sync Steps**

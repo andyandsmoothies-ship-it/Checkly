@@ -281,6 +281,7 @@ server/
 | **Lifecycle (C2)** | 4-tier app lifecycle recovery: <5min no-op, 5min-12h auth check, 12h-7d full resync, >7d force re-login |
 | **Data retention** | Notifications and system logs auto-purged after 90 days |
 | **Rejected exclusion (C8)** | Rejected audits excluded from all dashboard metrics and analytics |
+| **Error UX** | Unified error handling with Problem Details (RFC 9457), actionable snackbars, and deterministic offline styling |
 
 ---
 
@@ -318,7 +319,8 @@ server/
 | **Batch 6** | Analytics + Polish — Scoring edge cases (C3+C4), reminders (S6+S7), lifecycle (C2) | ✅ Done |
 | **Batch 7** | Scoring Engine & Builder — Generic builder layout, 3 scoring modes, Scale input (Maturity Matrix) | ✅ Done |
 | **Batch 8** | Enterprise Dashboard & Fleet Analytics — Role-aware command center (Auditor/Manager/Admin), Drift SQLite aggregations, contextual stat cards, hierarchical drilldowns | ✅ Done |
-| **Batch 8** | Enterprise Dashboard & Fleet Analytics — Role-aware command center (Auditor/Manager/Admin), Drift SQLite aggregations, contextual stat cards, hierarchical drilldowns | ✅ Done |
+| **Batch 9** | PBAC UI Capabilities — Dynamic role tabs, PermissionGuard, backend capability syncing | ✅ Done |
+| **Batch 10** | Error UX & Observability — RFC 9457 Problem Details, actionable snackbar queues, and deterministic styling | ✅ Done |
 
 ### Future Phases
 
