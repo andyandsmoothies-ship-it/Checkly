@@ -370,13 +370,3 @@ String? authRedirect(BuildContext context, GoRouterState state) {
 
   return null;
 }
-
-int shellIndexFromLocation(String location) {
-  if (location.startsWith('/activity')) return 1;
-  if (location.startsWith('/plans')) return 2;
-  if (location.startsWith('/templates')) return 3;
-  if (location.startsWith('/profile')) return 4;
-  if (location.startsWith('/admin')) return 4;
-  if (location.startsWith('/inbox')) return 5;
-  return 0; // /home
-}

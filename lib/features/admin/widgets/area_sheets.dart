@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../services/admin_api_service.dart';
 
 class AreaCreateSheet extends StatefulWidget {
@@ -36,9 +38,12 @@ class _AreaCreateSheetState extends State<AreaCreateSheet> {
     final name = _nameCtrl.text.trim();
     final desc = _descCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Area name is required')));
+      GetIt.I<ErrorDisplayService>().show(
+        const AppError(
+          code: 'validation_error',
+          message: 'Area name is required',
+        ),
+      );
       return;
     }
     try {
@@ -58,13 +63,11 @@ class _AreaCreateSheetState extends State<AreaCreateSheet> {
       }
     } on DioException catch (e) {
       if (mounted) {
-        final msg = e.response?.data?['error'] ?? 'Failed to create area';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(msg.toString()),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        GetIt.I<ErrorDisplayService>().show(AppError.fromDioException(e));
+      }
+    } catch (e) {
+      if (mounted) {
+        GetIt.I<ErrorDisplayService>().show(const AppError(code: 'unknown'));
       }
     }
   }
@@ -173,9 +176,9 @@ class _AreaEditSheetState extends State<AreaEditSheet> {
     final name = _nameCtrl.text.trim();
     final desc = _descCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Name is required')));
+      GetIt.I<ErrorDisplayService>().show(
+        const AppError(code: 'validation_error', message: 'Name is required'),
+      );
       return;
     }
     try {
@@ -196,14 +199,11 @@ class _AreaEditSheetState extends State<AreaEditSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              'An unexpected issue occurred. Please check your connection or restart the app.',
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        if (e is DioException) {
+          GetIt.I<ErrorDisplayService>().show(AppError.fromDioException(e));
+        } else {
+          GetIt.I<ErrorDisplayService>().show(const AppError(code: 'unknown'));
+        }
       }
     }
   }

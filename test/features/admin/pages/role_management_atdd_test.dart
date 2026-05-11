@@ -12,6 +12,7 @@ import 'package:checkly/features/admin/model/role_dto.dart';
 import 'package:checkly/features/admin/services/admin_api_service.dart';
 import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/policy_manager.dart';
+import 'package:checkly/_shared/services/error_display_service.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
 
 // ── Fakes & Mocks ──────────────────────────────────────────────────────────
@@ -45,7 +46,8 @@ class MockAuthManager extends Mock implements AuthManager {}
 
 final _di = GetIt.instance;
 
-Widget _pump(Widget child) => MaterialApp(home: child);
+final _navKey = GlobalKey<NavigatorState>();
+Widget _pump(Widget child) => MaterialApp(navigatorKey: _navKey, home: child);
 
 final _mockRoles = [
   RoleDto(role: 'auditor', capabilities: ['submissions:list']),
@@ -85,6 +87,9 @@ void main() {
           g.registerSingleton<ConnectivityService>(connectivity);
           g.registerSingleton<RoleManager>(manager);
           g.registerSingleton<PolicyManager>(policy);
+          g.registerSingleton<ErrorDisplayService>(
+            ErrorDisplayService(_navKey),
+          );
         },
       );
     });

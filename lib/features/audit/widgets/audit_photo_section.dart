@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
+import '../../../_shared/widgets/app_network_image.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
-import '../../../_shared/widgets/app_network_image.dart';
+
+final _di = GetIt.instance;
 
 /// Photo capture button and preview for the bottom sheet.
 class AuditPhotoSection extends StatelessWidget {
@@ -130,18 +135,17 @@ class AuditPhotoSection extends StatelessWidget {
 
       // Handle the Windows/Desktop missing camera delegate error
       if (e is StateError && e.message.contains('cameraDelegate')) {
-        ScaffoldMessenger.of(ctx).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Camera capture is not supported on this device natively. Please use "Choose from Gallery" instead.',
-            ),
-            duration: Duration(seconds: 4),
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'camera_unsupported',
+            message:
+                'Camera capture is not supported on this device natively. Please use "Choose from Gallery" instead.',
           ),
         );
       } else {
-        ScaffoldMessenger.of(
-          ctx,
-        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
+        _di<ErrorDisplayService>().show(
+          AppError(code: 'photo_failed', message: 'Failed to pick image: $e'),
+        );
       }
     }
   }

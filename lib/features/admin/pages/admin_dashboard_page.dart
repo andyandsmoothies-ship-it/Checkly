@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/section_header.dart';
@@ -48,13 +50,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   void _onCountsChanged() {
     if (!mounted) return;
     if (_countsManager.error != null && !_countsManager.isLoading) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'We couldn\'t load the latest data. Please check your internet connection and refresh.',
-          ),
-        ),
-      );
+      _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
     }
   }
 

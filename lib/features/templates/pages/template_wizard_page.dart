@@ -1,7 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/services/scoring_mode.dart';
 import '../manager/template_manager.dart';
 import '../models/editable_group.dart';
@@ -204,14 +207,19 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
           curve: Curves.easeInOut,
         );
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        setState(() => _saving = false);
+        _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.',
-            ),
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'unknown',
+            message:
+                'We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.',
           ),
         );
       }

@@ -1,6 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../_shared/exceptions/app_error.dart';
+import '../../../../_shared/services/error_display_service.dart';
 
 import '../../../../_shared/constants/app_capabilities.dart';
 import '../../../../_shared/services/policy_manager.dart';
@@ -131,13 +135,19 @@ class TemplateCard extends StatelessWidget {
                               ),
                             );
                           }
+                        } on DioException catch (e) {
+                          if (context.mounted) {
+                            GetIt.instance<ErrorDisplayService>().show(
+                              AppError.fromDioException(e),
+                            );
+                          }
                         } catch (_) {
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Could not duplicate template. Please try again.',
-                                ),
+                            GetIt.instance<ErrorDisplayService>().show(
+                              const AppError(
+                                code: 'unknown',
+                                message:
+                                    'Could not duplicate template. Please try again.',
                               ),
                             );
                           }
@@ -169,13 +179,19 @@ class TemplateCard extends StatelessWidget {
                                       ),
                                     );
                                   }
+                                } on DioException catch (e) {
+                                  if (context.mounted) {
+                                    GetIt.instance<ErrorDisplayService>().show(
+                                      AppError.fromDioException(e),
+                                    );
+                                  }
                                 } catch (e) {
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
-                                        ),
+                                    GetIt.instance<ErrorDisplayService>().show(
+                                      const AppError(
+                                        code: 'unknown',
+                                        message:
+                                            'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
                                       ),
                                     );
                                   }

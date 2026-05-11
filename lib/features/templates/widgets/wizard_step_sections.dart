@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../../_shared/exceptions/app_error.dart';
+import '../../../../_shared/services/error_display_service.dart';
 
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
@@ -135,11 +139,11 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 widget.onChanged();
                 Navigator.pop(ctx);
                 if (capped && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Maximum 20 criteria per batch. Additional lines were ignored.',
-                      ),
+                  GetIt.instance<ErrorDisplayService>().show(
+                    const AppError(
+                      code: 'validation_error',
+                      message:
+                          'Maximum 20 criteria per batch. Additional lines were ignored.',
                     ),
                   );
                 }

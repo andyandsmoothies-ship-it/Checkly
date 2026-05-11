@@ -6,15 +6,78 @@ import 'package:go_router/go_router.dart';
 import '../../features/notifications/manager/notification_manager.dart';
 import '../../features/notifications/model/notification_dto.dart';
 import '../constants/app_capabilities.dart';
-import '../services/policy_manager.dart';
 import '../services/sync_engine.dart';
 import '../theme/app_theme.dart';
-import 'app_router.dart';
+import '../../features/auth/manager/auth_manager.dart';
 
 final _di = GetIt.instance;
 
-/// Main shell with 6-tab bottom navigation.
-/// Tabs: Home | Activity | Plans | Templates | Profile | Inbox
+/// Tab definition for the bottom shell navigation.
+///
+/// [requiredCapability] — if null, the tab is always visible.
+/// If set, the tab is shown only when the user's capabilities contain it.
+class _ShellTab {
+  final IconData icon;
+  final String label;
+  final String route;
+  final String? requiredCapability;
+
+  const _ShellTab({
+    required this.icon,
+    required this.label,
+    required this.route,
+    this.requiredCapability,
+  });
+
+  /// Ordered list of all shell tabs.
+  /// Tabs without [requiredCapability] are always visible.
+  /// Tabs with [requiredCapability] are hidden when the user lacks it.
+  static const all = [
+    _ShellTab(icon: Icons.grid_view, label: 'HOME', route: '/home'),
+    _ShellTab(
+      icon: Icons.assignment,
+      label: 'ACTIVITY',
+      route: '/activity',
+      requiredCapability: AppCapabilities.submissionsList,
+    ),
+    _ShellTab(
+      icon: Icons.fact_check,
+      label: 'PLANS',
+      route: '/plans',
+      requiredCapability: AppCapabilities.programsList,
+    ),
+    _ShellTab(
+      icon: Icons.description_outlined,
+      label: 'TEMPLATES',
+      route: '/templates',
+      requiredCapability: AppCapabilities.templatesCreate,
+    ),
+    _ShellTab(icon: Icons.account_circle, label: 'PROFILE', route: '/profile'),
+    _ShellTab(icon: Icons.inbox_outlined, label: 'INBOX', route: '/inbox'),
+  ];
+}
+
+/// Returns the visual active-tab index for [location] given the user's [caps].
+///
+/// The index is the 0-based position within the *visible* tab list (tabs whose
+/// [_ShellTab.requiredCapability] is satisfied by [caps]). This matches what
+/// the shell renders and what the user sees highlighted.
+///
+/// Returns 0 (Home) if no visible tab matches [location].
+@visibleForTesting
+int shellActiveIndexFromLocation(String location, Set<String> caps) {
+  final visible = _ShellTab.all.where((tab) {
+    return tab.requiredCapability == null ||
+        caps.contains(tab.requiredCapability);
+  }).toList();
+  final idx = visible.indexWhere((tab) => location.startsWith(tab.route));
+  return idx < 0 ? 0 : idx;
+}
+
+/// Main shell with dynamic bottom navigation (2–6 tabs based on capabilities).
+/// Capability-gated tabs are hidden entirely when the user lacks the required cap.
+/// The active tab highlight is computed from the visible tab list — not fixed positions —
+/// so the correct tab is highlighted even when optional tabs are hidden.
 class MainShell extends StatelessWidget {
   final Widget child;
 
@@ -23,10 +86,6 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    final currentIndex = shellIndexFromLocation(location);
-    final canViewActivity = _di<PolicyManager>().can(
-      AppCapabilities.submissionsList,
-    );
 
     return Scaffold(
       extendBody: true,
@@ -160,58 +219,73 @@ class MainShell extends StatelessWidget {
               ),
             ),
             padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _NavItem(
-                  icon: Icons.grid_view,
-                  label: 'HOME',
-                  isActive: currentIndex == 0,
-                  onTap: () => context.go('/home'),
-                ),
-                if (canViewActivity)
-                  _NavItem(
-                    icon: Icons.assignment,
-                    label: 'ACTIVITY',
-                    isActive: currentIndex == 1,
-                    onTap: () => context.go('/activity'),
-                  ),
-                _NavItem(
-                  icon: Icons.fact_check,
-                  label: 'PLANS',
-                  isActive: currentIndex == 2,
-                  onTap: () => context.go('/plans'),
-                ),
-                _NavItem(
-                  icon: Icons.description_outlined,
-                  label: 'TEMPLATES',
-                  isActive: currentIndex == 3,
-                  onTap: () => context.go('/templates'),
-                ),
-                _NavItem(
-                  icon: Icons.account_circle,
-                  label: 'PROFILE',
-                  isActive: currentIndex == 4,
-                  onTap: () => context.go('/profile'),
-                ),
-                ValueListenableBuilder<List<NotificationDto>>(
-                  valueListenable: _di<NotificationManager>().notifications,
-                  builder: (context, items, _) {
-                    final unread = items.where((n) => !n.isRead).length;
-                    return _NavItem(
-                      icon: Icons.inbox_outlined,
-                      label: 'INBOX',
-                      isActive: currentIndex == 5,
-                      onTap: () => context.go('/inbox'),
-                      badgeCount: unread,
-                    );
-                  },
-                ),
-              ],
+            // Single ValueListenableBuilder covers all capability-gated tabs.
+            // Rebuilds the row when AuthManager.capabilities changes
+            // (e.g., after an admin assigns or removes a capability in real time).
+            child: ValueListenableBuilder<Set<String>>(
+              valueListenable: _di<AuthManager>().capabilities,
+              builder: (context, caps, _) {
+                // Filter the full tab list to only those the user can access.
+                final visibleTabs = _ShellTab.all.where((tab) {
+                  return tab.requiredCapability == null ||
+                      caps.contains(tab.requiredCapability);
+                }).toList();
+
+                // Determine which visible tab matches the current route.
+                // Clamp to 0 (Home) if no tab matches (e.g., user is on /admin).
+                final activeIndex = () {
+                  final idx = visibleTabs.indexWhere(
+                    (tab) => location.startsWith(tab.route),
+                  );
+                  return idx < 0 ? 0 : idx;
+                }();
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    for (int i = 0; i < visibleTabs.length; i++)
+                      _buildNavItem(
+                        context,
+                        tab: visibleTabs[i],
+                        isActive: i == activeIndex,
+                      ),
+                  ],
+                );
+              },
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// Builds a single nav item. INBOX gets a nested badge-count listener.
+  Widget _buildNavItem(
+    BuildContext context, {
+    required _ShellTab tab,
+    required bool isActive,
+  }) {
+    if (tab.route == '/inbox') {
+      return ValueListenableBuilder<List<NotificationDto>>(
+        valueListenable: _di<NotificationManager>().notifications,
+        builder: (context, items, _) {
+          final unread = items.where((n) => !n.isRead).length;
+          return _NavItem(
+            icon: tab.icon,
+            label: tab.label,
+            isActive: isActive,
+            onTap: () => context.go(tab.route),
+            badgeCount: unread,
+          );
+        },
+      );
+    }
+
+    return _NavItem(
+      icon: tab.icon,
+      label: tab.label,
+      isActive: isActive,
+      onTap: () => context.go(tab.route),
     );
   }
 }
@@ -256,9 +330,9 @@ class _NavItem extends StatelessWidget {
                       horizontal: 4,
                       vertical: 1,
                     ),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.error,
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
                     ),
                     constraints: const BoxConstraints(
                       minWidth: 16,
@@ -266,12 +340,11 @@ class _NavItem extends StatelessWidget {
                     ),
                     child: Text(
                       badgeCount > 99 ? '99+' : '$badgeCount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onError,
+                            fontWeight: FontWeight.w700,
+                            height: 1.2,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -281,12 +354,11 @@ class _NavItem extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: color,
-              letterSpacing: -0.5,
-            ),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                  letterSpacing: -0.5,
+                ),
           ),
         ],
       ),

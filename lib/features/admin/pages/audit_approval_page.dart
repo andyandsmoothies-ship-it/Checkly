@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
+
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../audit/model/submission_dto.dart';
@@ -11,10 +15,6 @@ import 'widgets/review_card.dart';
 import '../../../_shared/constants/review_status.dart';
 
 final _di = GetIt.instance;
-
-/// Generic error message shown on any network failure.
-const _kNetworkErrorMsg =
-    'An unexpected issue occurred. Please check your connection or restart the app.';
 
 /// Audit Approval page — admin reviews submitted audits.
 /// Tab bar: Pending | Approved | Rejected with counts.
@@ -120,15 +120,10 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
         );
         _loadSubmissions();
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(_kNetworkErrorMsg),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
+    } on DioException catch (e) {
+      _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+    } catch (_) {
+      _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
     }
   }
 
@@ -173,15 +168,10 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
         );
         _loadSubmissions();
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(_kNetworkErrorMsg),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
+    } on DioException catch (e) {
+      _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+    } catch (_) {
+      _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
     }
   }
 

@@ -59,10 +59,9 @@ class ProfileCapabilitiesSection extends StatelessWidget {
                         children: [
                           Text(
                             group.toUpperCase(),
-                            style: TextStyle(
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: colorScheme.primary,
                               fontWeight: FontWeight.bold,
-                              fontSize: 12,
                             ),
                           ),
                           const SizedBox(height: 8),

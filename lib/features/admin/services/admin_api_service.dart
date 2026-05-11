@@ -23,6 +23,19 @@ class AdminApiService {
     return list.cast<Map<String, dynamic>>();
   }
 
+  /// GET /users — search users by capability (accessible by non-admins if authenticated).
+  Future<List<Map<String, dynamic>>> searchUsersByCapability(
+    String capability,
+  ) async {
+    final response = await _dio.get(
+      '/users',
+      queryParameters: {'requireCapability': capability},
+    );
+    final data = response.data as Map<String, dynamic>;
+    final list = data['items'] as List<dynamic>;
+    return list.cast<Map<String, dynamic>>();
+  }
+
   /// GET /admin/users — returns raw paginated envelope { items, total, page, pageSize }.
   Future<Map<String, dynamic>> getUsersRaw({
     int page = 1,

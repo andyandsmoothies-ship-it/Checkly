@@ -2,7 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../../_shared/exceptions/app_error.dart';
+import '../../../../_shared/services/error_display_service.dart';
 
 /// The evidence form for a single program assignment.
 ///
@@ -57,9 +61,10 @@ class _ProgramEvidenceFormState extends State<ProgramEvidenceForm> {
     final fileSize = await File(xfile.path).length();
     if (fileSize > maxPhotoBytes) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Photo is too large. Please take a simpler picture.'),
+        GetIt.instance<ErrorDisplayService>().show(
+          const AppError(
+            code: 'validation_error',
+            message: 'Photo is too large. Please take a simpler picture.',
           ),
         );
       }

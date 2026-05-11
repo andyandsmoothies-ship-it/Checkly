@@ -1,67 +1,125 @@
 /// Test Plan (Sentinel — Detroit Style)
 /// ======================================
-/// Target: _MainShell._indexFromLocation (private static helper)
+/// Target: shellActiveIndexFromLocation (visible tab index mapping)
 ///
-/// Observable contract: The bottom nav's active index must correctly reflect
-/// the current router location. We test this by extracting the mapping logic
-/// from the public behavior — the nav item that renders as "active" — rather
-/// than calling the private static method directly.
+/// Observable contract: The bottom nav's active tab index must correctly
+/// reflect the current router location, relative to the VISIBLE tab list
+/// (which varies by the user's capabilities).
 ///
-/// Since _indexFromLocation is private, we validate the INDEX CONTRACT by
-/// importing the app_router.dart and extracting the function signature
-/// through a @visibleForTesting exposure or by wrapping the logic.
+/// The new function replaces shellIndexFromLocation (which returned fixed
+/// positions 0-5). The new function is capability-aware: if ACTIVITY is
+/// hidden because the user lacks submissionsList, the visible tab list
+/// shifts and /plans maps to visual index 1, not 2.
 ///
-/// Strategy: These tests use a pure unit approach by mirroring the exact
-/// mapping logic from app_router.dart and asserting the expected indices.
-/// This is intentionally a spec-test that will FAIL until the production
-/// code is updated to handle /admin/* → 4 (Profile index).
-///
-/// Contracts from test_contracts_admin_ui_fixes.md:
-///   - /admin/dashboard → 4
-///   - /admin/users     → 4
-///   - /profile         → 4
-///   - /home            → 0
+/// Contracts tested:
+///   - Full caps: /activity → 1, /plans → 2, /templates → 3
+///   - No submissionsList cap: /plans → 1 (ACTIVITY tab hidden, shifts left)
+///   - No submissionsList + no programsList: /templates → 1
+///   - /home → always 0 (Home is always first and always visible)
+///   - /inbox → last visible tab (always visible)
+///   - /admin/* → 0 (no admin tab exists; falls back to Home highlight)
 
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:checkly/_shared/router/app_router.dart';
+import 'package:checkly/_shared/router/main_shell.dart';
+import 'package:checkly/_shared/constants/app_capabilities.dart';
+
+/// Full caps set: user has all optional tab capabilities.
+const _fullCaps = {
+  AppCapabilities.submissionsList,
+  AppCapabilities.programsList,
+  AppCapabilities.templatesCreate,
+};
 
 void main() {
-  group('Router — shellIndexFromLocation', () {
-    test(
-      '_indexFromLocation_AdminRoute_ReturnsProfileIndex — /admin/dashboard maps to tab 4',
-      () {
-        // VALID RED: Fails because production code has no `/admin` branch.
-        // Current production returns 0. Expected: 4.
-        expect(shellIndexFromLocation('/admin/dashboard'), equals(4));
-      },
-    );
-
-    test(
-      '_indexFromLocation_AdminSubRoute_ReturnsProfileIndex — /admin/users maps to tab 4',
-      () {
-        // VALID RED: Fails for same reason — no /admin branch in production.
-        expect(shellIndexFromLocation('/admin/users'), equals(4));
-      },
-    );
-
-    test(
-      '_indexFromLocation_ProfileRoute_ReturnsProfileIndex — /profile maps to tab 4',
-      () {
-        // HAPPY PATH: Already passes in production code.
-        expect(shellIndexFromLocation('/profile'), equals(4));
-      },
-    );
-
-    test('_indexFromLocation_HomeRoute_ReturnsZero — /home maps to tab 0', () {
-      // HAPPY PATH: Already passes in production code.
-      expect(shellIndexFromLocation('/home'), equals(0));
+  group('shellActiveIndexFromLocation — full caps (all tabs visible)', () {
+    test('/home → visual index 0 (Home tab)', () {
+      expect(shellActiveIndexFromLocation('/home', _fullCaps), equals(0));
     });
 
-    // TC1.2a: /inbox → index 5
-    test('_inbox_Route_ExistsInShell — /inbox maps to tab 5', () {
-      expect(shellIndexFromLocation('/inbox'), equals(5));
+    test('/activity → visual index 1 (Activity tab)', () {
+      expect(shellActiveIndexFromLocation('/activity', _fullCaps), equals(1));
+    });
+
+    test('/plans → visual index 2 (Plans tab)', () {
+      expect(shellActiveIndexFromLocation('/plans', _fullCaps), equals(2));
+    });
+
+    test('/templates → visual index 3 (Templates tab)', () {
+      expect(shellActiveIndexFromLocation('/templates', _fullCaps), equals(3));
+    });
+
+    test('/profile → visual index 4 (Profile tab)', () {
+      expect(shellActiveIndexFromLocation('/profile', _fullCaps), equals(4));
+    });
+
+    test('/inbox → visual index 5 (Inbox tab)', () {
+      expect(shellActiveIndexFromLocation('/inbox', _fullCaps), equals(5));
+    });
+
+    // /admin/* has no shell tab — must clamp to 0 (Home highlighted, not Profile).
+    test(
+      '/admin/* → visual index 0 (no shell tab for admin; fallback to Home)',
+      () {
+        expect(
+          shellActiveIndexFromLocation('/admin/dashboard', _fullCaps),
+          equals(0),
+          reason:
+              '/admin/* routes have no shell tab; active index clamps to Home (0)',
+        );
+      },
+    );
+  });
+
+  group(
+    'shellActiveIndexFromLocation — no submissionsList cap (Activity hidden)',
+    () {
+      const caps = {
+        AppCapabilities.programsList,
+        AppCapabilities.templatesCreate,
+      };
+
+      // Visible tabs: Home(0) Plans(1) Templates(2) Profile(3) Inbox(4)
+      test('/home → 0', () {
+        expect(shellActiveIndexFromLocation('/home', caps), equals(0));
+      });
+
+      test('/plans → 1 (Activity tab hidden, Plans shifts left)', () {
+        expect(shellActiveIndexFromLocation('/plans', caps), equals(1));
+      });
+
+      test('/templates → 2', () {
+        expect(shellActiveIndexFromLocation('/templates', caps), equals(2));
+      });
+    },
+  );
+
+  group('shellActiveIndexFromLocation — only Home/Profile/Inbox visible', () {
+    const caps = <String>{}; // no optional caps
+
+    // Visible tabs: Home(0) Profile(1) Inbox(2)
+    test('/home → 0', () {
+      expect(shellActiveIndexFromLocation('/home', caps), equals(0));
+    });
+
+    test('/profile → 1', () {
+      expect(shellActiveIndexFromLocation('/profile', caps), equals(1));
+    });
+
+    test('/inbox → 2', () {
+      expect(shellActiveIndexFromLocation('/inbox', caps), equals(2));
+    });
+
+    // /activity is hidden — location matches no visible tab → clamp to 0.
+    test('/activity → 0 when Activity tab is hidden (clamp to Home)', () {
+      expect(
+        shellActiveIndexFromLocation('/activity', caps),
+        equals(0),
+        reason:
+            'When Activity tab is hidden, navigating to /activity must '
+            'not produce a wrong index — clamped to 0 (Home)',
+      );
     });
   });
 }

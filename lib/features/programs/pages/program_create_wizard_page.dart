@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../services/program_api_service.dart';
-import '../pages/program_store_selector_page.dart';
-import '../widgets/program_wizard_steps.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../templates/managers/template_manager.dart';
+import '../pages/program_store_selector_page.dart';
+import '../services/program_api_service.dart';
+import '../widgets/program_wizard_steps.dart';
 
 /// In-wizard draft state (transient — no DI, no persistence).
 class ProgramDraft {
@@ -103,11 +106,15 @@ class _ProgramCreateWizardPageState extends State<ProgramCreateWizardPage> {
       );
       if (!mounted) return;
       Navigator.of(context).pop(result);
+    } on DioException catch (e) {
+      if (!mounted) return;
+      GetIt.instance<ErrorDisplayService>().show(AppError.fromDioException(e));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not create program. Please try again.'),
+      GetIt.instance<ErrorDisplayService>().show(
+        const AppError(
+          code: 'unknown',
+          message: 'Could not create program. Please try again.',
         ),
       );
     } finally {

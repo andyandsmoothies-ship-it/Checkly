@@ -36,9 +36,10 @@ class ProgramEvidenceViewerDialog extends StatelessWidget {
                   Expanded(
                     child: Text(
                       assignment.storeName,
-                      style: AppFonts.displayStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                      style: theme.textTheme.titleMedium?.merge(
+                        AppFonts.displayStyle(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),

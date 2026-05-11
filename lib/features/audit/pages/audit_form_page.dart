@@ -1,7 +1,10 @@
+// ignore_for_file: pbac_fab
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/utils/date_format_utils.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
@@ -134,12 +137,11 @@ class _AuditFormPageState extends State<AuditFormPage> {
     );
     if (missingRequired.isNotEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${missingRequired.length} required criteria still need review',
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
+        _di<ErrorDisplayService>().show(
+          AppError(
+            code: 'validation_error',
+            message:
+                '${missingRequired.length} required criteria still need review',
           ),
         );
       }
@@ -187,11 +189,8 @@ class _AuditFormPageState extends State<AuditFormPage> {
           }
           context.go('/home');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(manager.error!),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          _di<ErrorDisplayService>().show(
+            AppError(code: 'submission_failed', message: manager.error!),
           );
         }
       }

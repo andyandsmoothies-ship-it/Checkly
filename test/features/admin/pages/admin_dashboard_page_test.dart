@@ -29,6 +29,7 @@ import 'package:checkly/features/templates/services/template_api_service.dart';
 import 'package:checkly/features/stores/model/store_dto.dart';
 import 'package:checkly/features/templates/models/template_dto.dart';
 import 'package:checkly/_shared/services/policy_manager.dart';
+import 'package:checkly/_shared/services/error_display_service.dart';
 
 // ── Mock declarations ─────────────────────────────────────────────────────────
 // mocktail generates the correct override matching ANY method signature.
@@ -54,9 +55,12 @@ _MockDashboardManager _setupManager() {
   return m;
 }
 
+final _navKey = GlobalKey<NavigatorState>();
+
 void _registerDi({bool apiShouldThrow = false}) {
   final di = GetIt.instance;
   di.registerSingleton<DashboardManager>(_setupManager());
+  di.registerSingleton<ErrorDisplayService>(ErrorDisplayService(_navKey));
 
   // PolicyManager — admin user sees all menu items
   final pm = _MockPolicyManager();
@@ -101,7 +105,9 @@ void _registerDi({bool apiShouldThrow = false}) {
 }
 
 Future<void> pumpAdminDashboard(WidgetTester tester) async {
-  await tester.pumpWidget(const MaterialApp(home: AdminDashboardPage()));
+  await tester.pumpWidget(
+    MaterialApp(navigatorKey: _navKey, home: const AdminDashboardPage()),
+  );
   await tester.pump(); // initState postFrameCallback
   await tester.pump(const Duration(seconds: 1)); // async _loadCounts
 }
@@ -130,7 +136,7 @@ void main() {
         expect(
           find.descendant(
             of: find.byType(SnackBar),
-            matching: find.textContaining('latest data', findRichText: true),
+            matching: find.textContaining('went wrong', findRichText: true),
           ),
           findsOneWidget,
           reason: 'SnackBar must contain the UX copy text.',

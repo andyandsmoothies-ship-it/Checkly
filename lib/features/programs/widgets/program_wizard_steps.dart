@@ -213,9 +213,8 @@ class StepStores extends StatelessWidget {
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 'Select at least 1 store.',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.error,
-                  fontSize: 12,
                 ),
               ),
             ),

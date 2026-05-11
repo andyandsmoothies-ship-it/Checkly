@@ -20,12 +20,12 @@ class DeadlineBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.schedule, size: 16, color: Colors.deepOrange.shade800),
+          Icon(Icons.schedule, size: 16, color: AppTheme.warningText),
           const SizedBox(width: 8),
           Text(
             'Next Action Plan Deadline: ${timeAgo(deadline)}',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.deepOrange.shade800,
+              color: AppTheme.warningText,
               fontWeight: FontWeight.w600,
             ),
           ),

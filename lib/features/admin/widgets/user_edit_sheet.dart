@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
+import '../../../locator.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import 'user_edit_sheet_body.dart';
 
 /// Bottom sheet for editing an existing user's role, store and area assignment.
@@ -112,14 +116,14 @@ class _UserEditSheetState extends State<UserEditSheet> {
           _isLoadingStores = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         setState(() => _isLoadingStores = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not load stores. Check your connection.'),
-          ),
-        );
+        if (e is DioException) {
+          di<ErrorDisplayService>().show(AppError.fromDioException(e));
+        } else {
+          di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
+        }
       }
     }
   }

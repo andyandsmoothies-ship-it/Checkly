@@ -34,9 +34,10 @@ class ProgramKpiCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               value,
-              style: AppFonts.displayStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
+              style: theme.textTheme.titleLarge?.merge(
+                AppFonts.displayStyle(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             const SizedBox(height: 2),

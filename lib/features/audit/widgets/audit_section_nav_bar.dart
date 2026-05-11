@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/widgets/permission_guard.dart';
+
 // ============================================================
 // Section Navigation Bar — Submit always visible (Slice 1)
 // ============================================================
@@ -92,20 +95,23 @@ class AuditSectionNavBar extends StatelessWidget {
 
             const Spacer(),
 
-            // Submit button — ALWAYS visible (Slice 1)
-            FilledButton.icon(
-              onPressed: !isSubmitting ? onSubmit : null,
-              icon: isSubmitting
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.send, size: 18),
-              label: Text(isSubmitting ? 'Submitting...' : 'Submit'),
+            // Submit button — ALWAYS visible (Slice 1), but capability guarded
+            PermissionGuard(
+              capability: AppCapabilities.submissionsCreate,
+              child: FilledButton.icon(
+                onPressed: !isSubmitting ? onSubmit : null,
+                icon: isSubmitting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.send, size: 18),
+                label: Text(isSubmitting ? 'Submitting...' : 'Submit'),
+              ),
             ),
           ],
         ),

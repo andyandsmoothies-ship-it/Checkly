@@ -1,7 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../manager/auth_manager.dart';
 
 final _di = GetIt.instance;
@@ -20,7 +23,6 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -32,10 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _onLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    setState(() => _isLoading = true);
 
     try {
       await _di<AuthManager>().login(
@@ -45,38 +44,15 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         context.go('/home');
       }
-    } catch (e) {
-      setState(() {
-        _errorMessage = _parseError(e);
-      });
+    } on DioException catch (e) {
+      _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+    } catch (_) {
+      _di<ErrorDisplayService>().show(AppError(code: 'unknown'));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  String _parseError(Object e) {
-    final msg = e.toString();
-    if (msg.contains('401') || msg.contains('Unauthorized')) {
-      return 'Invalid email or password';
-    }
-    if (msg.contains('403') || msg.contains('Forbidden')) {
-      return 'Your account is suspended. Contact admin.';
-    }
-    if (msg.contains('404') || msg.contains('Not Found')) {
-      return 'No account found with this email.';
-    }
-    if (msg.contains('429') || msg.contains('Too Many')) {
-      return 'Too many attempts. Try again later.';
-    }
-    if (msg.contains('SocketException') || msg.contains('Connection')) {
-      return 'Cannot connect to server. Check your network.';
-    }
-    if (msg.contains('Timeout') || msg.contains('TimeoutException')) {
-      return 'Server took too long. Try again.';
-    }
-    return 'Login failed. Please try again.';
   }
 
   @override
@@ -118,36 +94,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 48),
-
-                  // ---------- Error ----------
-                  if (_errorMessage != null)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.error.withAlpha(20),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: theme.colorScheme.error.withAlpha(60),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: theme.colorScheme.error,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _errorMessage!,
-                              style: TextStyle(color: theme.colorScheme.error),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
 
                   // ---------- Email ----------
                   TextFormField(

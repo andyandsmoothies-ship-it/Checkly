@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 
@@ -11,8 +15,11 @@ bool validateWizardStep(
   switch (step) {
     case 0: // Name
       if (title.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a template title')),
+        GetIt.instance<ErrorDisplayService>().show(
+          const AppError(
+            code: 'validation_error',
+            message: 'Please enter a template title',
+          ),
         );
         return false;
       }
@@ -20,15 +27,21 @@ bool validateWizardStep(
 
     case 1: // Structure
       if (sections.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please add at least one section.')),
+        GetIt.instance<ErrorDisplayService>().show(
+          const AppError(
+            code: 'validation_error',
+            message: 'Please add at least one section.',
+          ),
         );
         return false;
       }
       for (int i = 0; i < sections.length; i++) {
         if (sections[i].titleCtrl.text.trim().isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Please name Section ${i + 1}')),
+          GetIt.instance<ErrorDisplayService>().show(
+            AppError(
+              code: 'validation_error',
+              message: 'Please name Section ${i + 1}',
+            ),
           );
           return false;
         }
@@ -43,19 +56,19 @@ bool validateWizardStep(
             : '"${sec.titleCtrl.text}"';
         // BL-3: section is valid if it has criteria OR sub-sections.
         if (sec.criteria.isEmpty && sec.subSections.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$secName needs at least one criterion')),
+          GetIt.instance<ErrorDisplayService>().show(
+            AppError(
+              code: 'validation_error',
+              message: '$secName needs at least one criterion',
+            ),
           );
           return false;
         }
         // Validate root criteria
         final rootError = _validateCriteriaList(sec.criteria, secName);
         if (rootError != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(rootError),
-              duration: const Duration(seconds: 4),
-            ),
+          GetIt.instance<ErrorDisplayService>().show(
+            AppError(code: 'validation_error', message: rootError),
           );
           return false;
         }
@@ -66,18 +79,18 @@ bool validateWizardStep(
               ? 'Sub-section ${si + 1} in $secName'
               : '"${sub.titleCtrl.text}"';
           if (sub.criteria.isEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('$subName has no criteria')));
+            GetIt.instance<ErrorDisplayService>().show(
+              AppError(
+                code: 'validation_error',
+                message: '$subName has no criteria',
+              ),
+            );
             return false;
           }
           final subError = _validateCriteriaList(sub.criteria, subName);
           if (subError != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(subError),
-                duration: const Duration(seconds: 4),
-              ),
+            GetIt.instance<ErrorDisplayService>().show(
+              AppError(code: 'validation_error', message: subError),
             );
             return false;
           }

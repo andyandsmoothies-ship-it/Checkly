@@ -151,8 +151,7 @@ class OnlineCapabilityGrid extends StatelessWidget {
                                 ),
                                 child: Text(
                                   cap,
-                                  style: TextStyle(
-                                    fontSize: 10,
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurfaceVariant,

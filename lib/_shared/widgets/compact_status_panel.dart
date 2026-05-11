@@ -71,11 +71,12 @@ class CompactStatusPanel extends StatelessWidget {
                           ),
                           Text(
                             item.value,
-                            style: AppFonts.serifStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium?.merge(
+                                  AppFonts.serifStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                ),
                           ),
                           const SizedBox(width: 8),
                           Icon(

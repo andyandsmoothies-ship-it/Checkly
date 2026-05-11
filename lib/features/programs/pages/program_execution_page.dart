@@ -1,8 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../model/program_assignment_dto.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../programs/manager/program_manager.dart';
+import '../model/program_assignment_dto.dart';
 import 'widgets/program_evidence_form.dart';
 
 /// Full-screen page where the Store Manager submits evidence for one
@@ -64,12 +67,18 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
           if (mounted) Navigator.pop(context);
         });
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        GetIt.instance<ErrorDisplayService>().show(
+          AppError.fromDioException(e),
+        );
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to submit: ${e.toString()}'),
-            behavior: SnackBarBehavior.floating,
+        GetIt.instance<ErrorDisplayService>().show(
+          AppError(
+            code: 'unknown',
+            message: 'Failed to submit: ${e.toString()}',
           ),
         );
       }

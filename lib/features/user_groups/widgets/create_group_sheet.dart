@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../manager/user_group_manager.dart';
 
 class CreateGroupSheet extends StatefulWidget {
@@ -109,10 +113,10 @@ class _CreateGroupSheetState extends State<CreateGroupSheet> {
         context,
       ).showSnackBar(SnackBar(content: Text('Group "$name" created.')));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(widget.manager.error ?? 'Failed to create group.'),
-          backgroundColor: Theme.of(context).colorScheme.error,
+      GetIt.instance<ErrorDisplayService>().show(
+        AppError(
+          code: 'unknown',
+          message: widget.manager.error ?? 'Failed to create group.',
         ),
       );
     }

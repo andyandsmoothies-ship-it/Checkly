@@ -1,17 +1,20 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/exceptions/app_error.dart';
+import '../../../../_shared/services/error_display_service.dart';
+import '../../../../_shared/services/policy_manager.dart';
 import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../../../audit/model/submission_dto.dart';
 import '../../../audit/pages/audit_preview_sheet.dart';
 import '../../../audit/services/draft_service.dart';
+import '../../../audit/utils/score_formatter.dart';
 import '../../../auth/manager/auth_manager.dart';
 import '../../manager/dashboard_manager.dart';
-import '../../../audit/utils/score_formatter.dart';
-import '../../../../_shared/services/policy_manager.dart';
-import '../../../../_shared/constants/app_capabilities.dart';
 
 /// Single submission row in the feed.
 @visibleForTesting
@@ -50,13 +53,17 @@ class _SubmissionRowState extends State<SubmissionRow> {
           context,
         ).showSnackBar(const SnackBar(content: Text('Draft discarded')));
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
-            ),
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'unknown',
+            message:
+                'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
           ),
         );
       }
@@ -109,8 +116,11 @@ class _SubmissionRowState extends State<SubmissionRow> {
     if (confirmed != true || !mounted) return;
     final reason = reasonController.text.trim();
     if (reason.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('A void reason is required.')),
+      _di<ErrorDisplayService>().show(
+        const AppError(
+          code: 'validation_error',
+          message: 'A void reason is required.',
+        ),
       );
       return;
     }
@@ -122,13 +132,17 @@ class _SubmissionRowState extends State<SubmissionRow> {
           context,
         ).showSnackBar(const SnackBar(content: Text('Audit voided.')));
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
-            ),
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'unknown',
+            message:
+                'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
           ),
         );
       }

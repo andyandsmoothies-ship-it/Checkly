@@ -13,11 +13,12 @@ class ProgramSegmentedBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     if (summary.total == 0) {
       return Container(
         height: 12,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(6),
         ),
       );
@@ -40,11 +41,11 @@ class ProgramSegmentedBarChart extends StatelessWidget {
             height: 12,
             child: Row(
               children: [
-                buildSegment(summary.verified, Colors.green.shade700),
-                buildSegment(summary.submitted, Colors.blue),
-                buildSegment(summary.needsRevision, Colors.red),
-                buildSegment(summary.pending, Colors.grey.shade400),
-                buildSegment(summary.overdue, Colors.orange),
+                buildSegment(summary.verified, theme.colorScheme.primary),
+                buildSegment(summary.submitted, theme.colorScheme.secondary),
+                buildSegment(summary.needsRevision, theme.colorScheme.error),
+                buildSegment(summary.pending, theme.colorScheme.surfaceContainerHighest),
+                buildSegment(summary.overdue, theme.colorScheme.tertiary),
               ],
             ),
           ),
@@ -55,23 +56,23 @@ class ProgramSegmentedBarChart extends StatelessWidget {
           runSpacing: 8,
           children: [
             _LegendItem(
-              color: Colors.green.shade700,
+              color: theme.colorScheme.primary,
               label: 'Verified (${summary.verified})',
             ),
             _LegendItem(
-              color: Colors.blue,
+              color: theme.colorScheme.secondary,
               label: 'Submitted (${summary.submitted})',
             ),
             _LegendItem(
-              color: Colors.red,
+              color: theme.colorScheme.error,
               label: 'Needs Rev (${summary.needsRevision})',
             ),
             _LegendItem(
-              color: Colors.orange,
+              color: theme.colorScheme.tertiary,
               label: 'Overdue (${summary.overdue})',
             ),
             _LegendItem(
-              color: Colors.grey.shade400,
+              color: theme.colorScheme.surfaceContainerHighest,
               label: 'Pending (${summary.pending})',
             ),
           ],
@@ -100,7 +101,9 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: Colors.black54),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
         ),
       ],
     );

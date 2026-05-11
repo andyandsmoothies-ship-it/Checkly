@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:dio/dio.dart';
+
 import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../manager/action_plan_manager.dart';
@@ -156,23 +160,21 @@ class _ActionPlanDetailPageState extends State<ActionPlanDetailPage> {
       }
     } on RoleGuardException catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'This action requires higher permissions. Please contact your workspace administrator.',
-            ),
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'forbidden',
+            message:
+                'This action requires higher permissions. Please contact your workspace administrator.',
           ),
         );
       }
-    } catch (e) {
-      // H2 Fix: Sanitise generic errors — never expose raw Dart exception strings
-      // to users. Domain-specific RoleGuardException is handled above.
+    } on DioException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Something went wrong. Please try again.'),
-          ),
-        );
+        _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+      }
+    } catch (e) {
+      if (mounted) {
+        _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
       }
     } finally {
       if (mounted) setState(() => _busy = false);

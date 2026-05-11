@@ -21,12 +21,16 @@ class PermissionGuard extends StatelessWidget {
   final String capability;
   final Widget child;
   final Widget? fallback;
+  final bool showAsDisabled;
+  final String? disabledTooltip;
 
   const PermissionGuard({
     super.key,
     required this.capability,
     required this.child,
     this.fallback,
+    this.showAsDisabled = false,
+    this.disabledTooltip,
   });
 
   @override
@@ -35,7 +39,25 @@ class PermissionGuard extends StatelessWidget {
       valueListenable: _di<AuthManager>().capabilities,
       builder: (context, caps, _) {
         final allowed = caps.contains(capability);
-        return allowed ? child : (fallback ?? const SizedBox.shrink());
+
+        if (allowed) return child;
+
+        if (showAsDisabled) {
+          Widget disabledChild = IgnorePointer(
+            child: Opacity(opacity: 0.5, child: child),
+          );
+
+          if (disabledTooltip != null) {
+            disabledChild = Tooltip(
+              message: disabledTooltip!,
+              child: disabledChild,
+            );
+          }
+
+          return disabledChild;
+        }
+
+        return fallback ?? const SizedBox.shrink();
       },
     );
   }

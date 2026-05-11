@@ -1,12 +1,18 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
+
+final _di = GetIt.instance;
 
 /// Bottom sheet that lets the Store Manager submit corrective evidence.
 ///
@@ -90,21 +96,21 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
       }
     } on RoleGuardException catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'This action requires higher permissions. Please contact your workspace administrator.',
-            ),
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'forbidden',
+            message:
+                'This action requires higher permissions. Please contact your workspace administrator.',
           ),
         );
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+      }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Something went wrong. Please try again.'),
-          ),
-        );
+        _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -204,11 +210,11 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                     final fileSize = await File(xfile.path).length();
                     if (fileSize > maxPhotoBytes) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Photo is too complex to compress. Please take a simpler picture.',
-                            ),
+                        _di<ErrorDisplayService>().show(
+                          const AppError(
+                            code: 'validation_error',
+                            message:
+                                'Photo is too complex to compress. Please take a simpler picture.',
                           ),
                         );
                       }

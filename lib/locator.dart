@@ -19,6 +19,8 @@ import 'features/action_plans/services/action_plan_sync_module.dart';
 import 'features/programs/services/program_sync_module.dart';
 import 'features/action_plans/adapters/action_plan_api_adapter.dart';
 import '_shared/theme/theme_manager.dart';
+import '_shared/services/error_display_service.dart';
+import '_shared/router/app_router.dart';
 import 'features/auth/services/auth_api_service.dart';
 import 'features/auth/services/secure_storage_service.dart';
 import 'features/auth/services/policy_api_service.dart';
@@ -69,6 +71,9 @@ void configureDependencies() {
   di.registerLazySingleton<Dio>(() => createDio());
   di.registerLazySingleton<ApiClient>(() => ApiClient(di<Dio>()));
   di.registerLazySingleton<ThemeManager>(() => ThemeManager());
+  di.registerLazySingleton<ErrorDisplayService>(
+    () => ErrorDisplayService(appRouter.routerDelegate.navigatorKey),
+  );
   di.registerLazySingleton<OutboxDao>(
     () => OutboxDao(di<DatabaseService>().db),
   );

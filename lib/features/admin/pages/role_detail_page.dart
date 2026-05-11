@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:dio/dio.dart';
+
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/services/connectivity_service.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../manager/role_manager.dart';
@@ -61,18 +65,11 @@ class _RoleDetailPageState extends State<RoleDetailPage> {
           'capability': capability,
         });
       }
-    } catch (e) {
-      // AT-05: mutation failed — do NOT toggle local state; show SnackBar.
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'We hit a snag processing your request. Please check your internet connection and try again.',
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
+    } on DioException catch (e) {
+      // AT-05: mutation failed — do NOT toggle local state; show error.
+      _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+    } catch (_) {
+      _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
     } finally {
       if (mounted) setState(() => _mutatingCapability = null);
     }

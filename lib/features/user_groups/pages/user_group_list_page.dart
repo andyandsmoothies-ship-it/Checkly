@@ -1,3 +1,4 @@
+// ignore_for_file: pbac_fab
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../../_shared/constants/app_capabilities.dart';

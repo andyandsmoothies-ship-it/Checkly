@@ -293,13 +293,17 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
         );
         context.pop();
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              'We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.',
-            ),
+        _di<ErrorDisplayService>().show(
+          const AppError(
+            code: 'unknown',
+            message:
+                'We hit a snag saving this. Your progress is kept safely on your device. Please check your network connection to sync.',
           ),
         );
       }

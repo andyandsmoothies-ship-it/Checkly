@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../_shared/services/policy_manager.dart';
+import 'package:dio/dio.dart';
+
 import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/exceptions/app_error.dart';
+import '../../../../_shared/services/error_display_service.dart';
+import '../../../../_shared/services/policy_manager.dart';
 import '../../manager/history_manager.dart';
 import '../../model/submission_dto.dart';
 import '../audit_preview_sheet.dart';
@@ -137,9 +141,10 @@ class HistoryListView extends StatelessWidget {
                       final reason = reasonController.text.trim();
                       if (reason.isEmpty) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('A void reason is required.'),
+                          _di<ErrorDisplayService>().show(
+                            const AppError(
+                              code: 'validation_error',
+                              message: 'A void reason is required.',
                             ),
                           );
                         }
@@ -152,16 +157,19 @@ class HistoryListView extends StatelessWidget {
                             const SnackBar(content: Text('Audit voided.')),
                           );
                         }
+                      } on DioException catch (e) {
+                        if (context.mounted) {
+                          _di<ErrorDisplayService>().show(
+                            AppError.fromDioException(e),
+                          );
+                        }
                       } catch (e) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text(
-                                'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
-                              ),
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.error,
+                          _di<ErrorDisplayService>().show(
+                            const AppError(
+                              code: 'unknown',
+                              message:
+                                  'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
                             ),
                           );
                         }
@@ -175,11 +183,11 @@ class HistoryListView extends StatelessWidget {
                   final sId = submission.storeId;
                   if (tId == null || sId == null) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Cannot resume — draft is missing template or store data.',
-                          ),
+                      _di<ErrorDisplayService>().show(
+                        const AppError(
+                          code: 'validation_error',
+                          message:
+                              'Cannot resume — draft is missing template or store data.',
                         ),
                       );
                     }
@@ -213,14 +221,19 @@ class HistoryListView extends StatelessWidget {
                       );
                     }
                   }
+                } on DioException catch (e) {
+                  if (context.mounted) {
+                    _di<ErrorDisplayService>().show(
+                      AppError.fromDioException(e),
+                    );
+                  }
                 } catch (e) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                          "We couldn't start this process right now. Please check your internet connection.",
-                        ),
-                        backgroundColor: Theme.of(context).colorScheme.error,
+                    _di<ErrorDisplayService>().show(
+                      const AppError(
+                        code: 'network_error',
+                        message:
+                            "We couldn't start this process right now. Please check your internet connection.",
                       ),
                     );
                   }

@@ -10,12 +10,13 @@ class ProgramStatusIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return switch (status) {
-      'submitted' => const Icon(Icons.check_circle, color: Colors.blue),
-      'verified' => const Icon(Icons.verified, color: Colors.green),
-      'needs_revision' => const Icon(Icons.error, color: Colors.red),
-      'overdue' => const Icon(Icons.warning_amber, color: Colors.orange),
-      _ => const Icon(Icons.pending_outlined, color: Colors.grey),
+      'submitted' => Icon(Icons.check_circle, color: colorScheme.secondary),
+      'verified' => Icon(Icons.verified, color: colorScheme.primary),
+      'needs_revision' => Icon(Icons.error, color: colorScheme.error),
+      'overdue' => Icon(Icons.warning_amber, color: colorScheme.tertiary),
+      _ => Icon(Icons.pending_outlined, color: colorScheme.surfaceContainerHighest),
     };
   }
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
@@ -85,11 +89,11 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
       });
     } else if (_manager.scheduleError != null) {
       setState(() => _isLoadingData = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'We couldn\'t load the latest data. Please check your internet connection and refresh.',
-          ),
+      _di<ErrorDisplayService>().show(
+        const AppError(
+          code: 'network_error',
+          message:
+              'We couldn\'t load the latest data. Please check your internet connection and refresh.',
         ),
       );
     }
@@ -148,9 +152,12 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
     if (_selectedTemplateId == null ||
         _selectedStoreId == null ||
         _selectedAuditorId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      _di<ErrorDisplayService>().show(
+        const AppError(
+          code: 'validation_error',
+          message: 'Please fill all fields',
+        ),
+      );
       return;
     }
 
@@ -178,14 +185,11 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'We hit a snag processing your request. Please check your internet connection and try again.',
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        if (e is DioException) {
+          _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+        } else {
+          _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
+        }
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);

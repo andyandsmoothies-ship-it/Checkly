@@ -2,6 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../locator.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import 'user_create_sheet_body.dart';
 import 'user_management_dialogs.dart';
 
@@ -83,13 +86,13 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
                 : (role == 'area_manager' ? 'area_manager' : null));
       final stores = await widget.loadStores(assignableAs: assignableAs);
       if (mounted) setState(() => assignableStores = stores);
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not load stores. Check your connection.'),
-          ),
-        );
+        if (e is DioException) {
+          di<ErrorDisplayService>().show(AppError.fromDioException(e));
+        } else {
+          di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
+        }
       }
     }
   }

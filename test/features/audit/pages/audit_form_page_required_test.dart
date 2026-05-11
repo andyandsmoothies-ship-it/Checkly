@@ -11,6 +11,8 @@ import 'package:checkly/features/templates/models/template_dto.dart';
 import 'package:checkly/features/dashboard/manager/dashboard_manager.dart';
 import 'package:checkly/features/stores/manager/store_manager.dart';
 import 'package:checkly/_shared/services/gps_service.dart';
+import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/_shared/services/error_display_service.dart';
 
 class MockAuditManager extends Mock implements AuditManager {}
 
@@ -21,6 +23,10 @@ class MockDashboardManager extends Mock implements DashboardManager {}
 class MockStoreManager extends Mock implements StoreManager {}
 
 class MockGpsService extends Mock implements GpsService {}
+
+class MockAuthManager extends Mock implements AuthManager {}
+
+class MockErrorDisplayService extends Mock implements ErrorDisplayService {}
 
 class FakeTemplateTreeDto extends Fake implements TemplateTreeDto {}
 
@@ -34,6 +40,8 @@ void main() {
   late MockDashboardManager mockDashboardManager;
   late MockStoreManager mockStoreManager;
   late MockGpsService mockGpsService;
+  late MockAuthManager mockAuthManager;
+  late MockErrorDisplayService mockErrorDisplayService;
 
   setUp(() {
     mockAuditManager = MockAuditManager();
@@ -41,6 +49,8 @@ void main() {
     mockDashboardManager = MockDashboardManager();
     mockStoreManager = MockStoreManager();
     mockGpsService = MockGpsService();
+    mockAuthManager = MockAuthManager();
+    mockErrorDisplayService = MockErrorDisplayService();
 
     final di = GetIt.instance;
     di.reset();
@@ -49,6 +59,12 @@ void main() {
     di.registerSingleton<DashboardManager>(mockDashboardManager);
     di.registerSingleton<StoreManager>(mockStoreManager);
     di.registerSingleton<GpsService>(mockGpsService);
+    di.registerSingleton<AuthManager>(mockAuthManager);
+    di.registerSingleton<ErrorDisplayService>(mockErrorDisplayService);
+
+    when(
+      () => mockAuthManager.capabilities,
+    ).thenReturn(ValueNotifier({'submissions:create'}));
 
     when(
       () => mockAuditManager.startAudit(

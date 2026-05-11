@@ -70,7 +70,9 @@ class AdminAuditManager extends ChangeNotifier {
       final results = await Future.wait([
         _templateApi.getTemplates(),
         _storeApi.getStores(),
-        _adminApi.getUsers(),
+        _adminApi.searchUsersByCapability(
+          'submissions:execute',
+        ), // Backend PBAC filter
       ]);
 
       final templates = results[0] as List<dynamic>;
@@ -110,16 +112,8 @@ class AdminAuditManager extends ChangeNotifier {
           )
           .toList();
 
-      // Base auditor filter: active auditors, admins, and area managers
-      var auditorList = users
-          .where(
-            (u) =>
-                (u['role'] == 'auditor' ||
-                    u['role'] == 'admin' ||
-                    u['role'] == 'area_manager') &&
-                u['isLocked'] != true,
-          )
-          .toList();
+      // Build auditor list: users filtered by submissions:execute capability (PBAC backend filter)
+      var auditorList = users;
 
       // Role-based filtering for area_manager
       if (currentUserRole == 'area_manager' && myAreaId != null) {

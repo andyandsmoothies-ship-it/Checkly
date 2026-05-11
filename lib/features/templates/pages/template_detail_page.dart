@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
-import '../../../_shared/services/policy_manager.dart';
+import '../../../_shared/widgets/permission_guard.dart';
 import '../manager/template_manager.dart';
 import 'widgets/criterion_row.dart';
 import 'widgets/overview_card.dart';
@@ -39,29 +39,27 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final manager = _di<TemplateManager>();
-    final canStart = _di<PolicyManager>().can(
-      AppCapabilities.submissionsCreate,
-    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Template Detail')),
-      bottomNavigationBar: canStart
-          ? SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => context.push(
-                      '/stores/select?templateId=${widget.templateId}',
-                    ),
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('START AUDIT'),
-                  ),
+      bottomNavigationBar: PermissionGuard(
+        capability: AppCapabilities.submissionsCreate,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => context.push(
+                  '/stores/select?templateId=${widget.templateId}',
                 ),
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('START AUDIT'),
               ),
-            )
-          : null,
+            ),
+          ),
+        ),
+      ),
       body: ListenableBuilder(
         listenable: manager,
         builder: (context, _) {

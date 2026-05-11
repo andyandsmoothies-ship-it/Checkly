@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/widgets/unsaved_changes_guard.dart';
+import '../../../../_shared/exceptions/app_error.dart';
+import '../../../../_shared/services/error_display_service.dart';
 import '../../services/admin_api_service.dart';
 
 final _di = GetIt.instance;
@@ -133,8 +135,11 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
 
                 if (isEdit) {
                   if (label.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Label is required')),
+                    _di<ErrorDisplayService>().show(
+                      const AppError(
+                        code: 'validation_error',
+                        message: 'Label is required',
+                      ),
                     );
                     return;
                   }
@@ -156,19 +161,24 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                     }
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'An unexpected issue occurred. Please check your connection.',
-                          ),
-                        ),
-                      );
+                      if (e is DioException) {
+                        _di<ErrorDisplayService>().show(
+                          AppError.fromDioException(e),
+                        );
+                      } else {
+                        _di<ErrorDisplayService>().show(
+                          const AppError(code: 'unknown'),
+                        );
+                      }
                     }
                   }
                 } else {
                   if (label.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Risk label is required')),
+                    _di<ErrorDisplayService>().show(
+                      const AppError(
+                        code: 'validation_error',
+                        message: 'Risk label is required',
+                      ),
                     );
                     return;
                   }
@@ -189,14 +199,14 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                     }
                   } on DioException catch (e) {
                     if (context.mounted) {
-                      final msg =
-                          e.response?.data?['message'] ??
-                          'Failed to create global risk';
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(msg.toString()),
-                          backgroundColor: Theme.of(context).colorScheme.error,
-                        ),
+                      _di<ErrorDisplayService>().show(
+                        AppError.fromDioException(e),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      _di<ErrorDisplayService>().show(
+                        const AppError(code: 'unknown'),
                       );
                     }
                   }
@@ -251,13 +261,15 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'An unexpected issue occurred. Please check your connection.',
-                            ),
-                          ),
-                        );
+                        if (e is DioException) {
+                          _di<ErrorDisplayService>().show(
+                            AppError.fromDioException(e),
+                          );
+                        } else {
+                          _di<ErrorDisplayService>().show(
+                            const AppError(code: 'unknown'),
+                          );
+                        }
                       }
                     }
                   }

@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../_shared/database/database_service.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../model/activity_item.dart';
 
 final _di = GetIt.instance;
@@ -19,14 +21,12 @@ class ProfileManager extends ChangeNotifier {
 
   // ---------- State ----------
   bool isLoading = false;
-  String? error;
   List<ActivityItem> items = [];
 
   // ---------- Load ----------
   /// Loads the user's activity from the local Drift cache.
   Future<void> loadActivity() async {
     isLoading = true;
-    error = null;
     notifyListeners();
 
     try {
@@ -50,8 +50,8 @@ class ProfileManager extends ChangeNotifier {
               )
               .toList()
             ..sort((a, b) => b.date.compareTo(a.date));
-    } catch (e) {
-      error = 'Failed to load activity';
+    } catch (_) {
+      _di<ErrorDisplayService>().show(AppError(code: 'unknown'));
     } finally {
       isLoading = false;
       notifyListeners();

@@ -187,9 +187,10 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                   leading: ProgramStatusIcon(status: a.status),
                   title: Text(
                     a.storeName,
-                    style: AppFonts.displayStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                    style: theme.textTheme.bodyMedium?.merge(
+                      AppFonts.displayStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   subtitle: Text(

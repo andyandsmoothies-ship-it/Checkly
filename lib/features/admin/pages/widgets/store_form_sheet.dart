@@ -5,6 +5,9 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/widgets/unsaved_changes_guard.dart';
+import '../../../../_shared/exceptions/app_error.dart';
+import '../../../../_shared/services/error_display_service.dart';
+import 'package:dio/dio.dart';
 import '../../../stores/model/store_dto.dart';
 import '../../../stores/services/store_api_service.dart';
 
@@ -92,10 +95,10 @@ class _StoreFormSheetState extends State<StoreFormSheet> {
   Future<void> _saveStore() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Store name is required'),
-          backgroundColor: Theme.of(context).colorScheme.error,
+      _di<ErrorDisplayService>().show(
+        const AppError(
+          code: 'validation_error',
+          message: 'Store name is required',
         ),
       );
       return;
@@ -144,14 +147,11 @@ class _StoreFormSheetState extends State<StoreFormSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              'An unexpected issue occurred. Please check your connection or restart the app.',
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        if (e is DioException) {
+          _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+        } else {
+          _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
+        }
       }
     }
   }

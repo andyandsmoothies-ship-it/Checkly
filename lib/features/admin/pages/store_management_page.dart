@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:dio/dio.dart';
+
 import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/exceptions/app_error.dart';
+import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
@@ -81,17 +85,10 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
         );
         _loadData();
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'An unexpected issue occurred. Please check your connection or restart the app.',
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
+    } on DioException catch (e) {
+      _di<ErrorDisplayService>().show(AppError.fromDioException(e));
+    } catch (_) {
+      _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
     }
   }
 
