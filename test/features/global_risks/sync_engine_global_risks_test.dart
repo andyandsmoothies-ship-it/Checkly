@@ -138,14 +138,7 @@ class FakeSyncApi implements SyncApi {
   @override
   Future<List<dynamic>> pullProgramAssignments() async => [];
 
-  @override
-  Future<void> pushProgramEvidence(
-    String assignmentId,
-    List<Map<String, dynamic>> evidenceItems,
-  ) async {}
 
-  @override
-  Future<void> pushProgramPhoto(String photoLocalKey, String filePath) async {}
 }
 
 void main() {
