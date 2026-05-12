@@ -9,6 +9,7 @@ namespace Checkly.Api.Common.Persistence.Entities;
 public sealed class Submission
 {
     public Guid Id { get; set; }
+    public Guid? ProgramAssignmentId { get; set; }
     public Guid? TemplateId { get; set; }
     public Guid? AuditorId { get; set; }
     public Guid? StoreId { get; set; }
@@ -57,6 +58,7 @@ public sealed class Submission
     // Navigation properties
     public Template? Template { get; set; }
     public Store? Store { get; set; }
+    public ProgramAssignment? ProgramAssignment { get; set; }
     public ICollection<Answer> Answers { get; set; } = [];
     public ICollection<ActionPlan> ActionPlans { get; set; } = [];
     public ICollection<SubmissionRisk> SubmissionRisks { get; set; } = [];

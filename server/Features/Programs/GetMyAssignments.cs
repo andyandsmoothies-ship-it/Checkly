@@ -59,7 +59,8 @@ public static class GetMyAssignments
                 a.Status == "pending" && a.Program.Deadline < DateTimeOffset.UtcNow
                     ? "overdue"
                     : a.Status,
-                a.CreatedAt))
+                a.CreatedAt,
+                a.Program.TemplateId))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<AssignmentSummaryDto>(assignments, total, page, pageSize));

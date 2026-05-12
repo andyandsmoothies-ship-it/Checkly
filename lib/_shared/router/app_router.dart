@@ -131,6 +131,10 @@ final appRouter = GoRouter(
             params['autoResume'] == 'true' || params['submissionId'] != null;
         if (isResume) return null;
         final pm = _di<PolicyManager>();
+        if (params['programAssignmentId'] != null) {
+          if (!pm.can(AppCapabilities.programsExecute)) return '/home';
+          return null;
+        }
         if (!pm.can(AppCapabilities.submissionsCreate)) return '/home';
         return null;
       },
@@ -139,6 +143,7 @@ final appRouter = GoRouter(
         storeId: state.uri.queryParameters['storeId'] ?? '',
         autoResume: state.uri.queryParameters['autoResume'] == 'true',
         targetSubmissionId: state.uri.queryParameters['submissionId'],
+        programAssignmentId: state.uri.queryParameters['programAssignmentId'],
       ),
     ),
     GoRoute(

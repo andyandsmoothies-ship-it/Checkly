@@ -68,34 +68,6 @@ public static class GetProgramAssignments
         if (assignments.Count == 0)
             return TypedResults.Ok(new AssignmentDetailPagedResponse([], total, page, pageSize));
 
-        // Batch-load all evidence for the returned assignments in a single query
-        var assignmentIds = assignments.Select(a => a.Id).ToList();
-        var evidenceMap = await db.ProgramEvidence
-            .AsNoTracking()
-            .Where(e => assignmentIds.Contains(e.AssignmentId))
-            .Select(e => new
-            {
-                e.AssignmentId,
-                CriteriaId = e.CriteriaId ?? Guid.Empty,
-                e.CriteriaLabel,
-                e.Value,
-                e.PhotoLocalKey,
-                e.CreatedAt,
-            })
-            .ToListAsync(ct);
-
-        // Group evidence by assignment
-        var evidenceByAssignment = evidenceMap
-            .GroupBy(e => e.AssignmentId)
-            .ToDictionary(
-                g => g.Key,
-                g => g.Select(e => new ProgramEvidenceDto(
-                    e.CriteriaId,
-                    e.CriteriaLabel,
-                    e.Value,
-                    e.PhotoLocalKey,
-                    e.CreatedAt)).ToArray());
-
         var result = assignments.Select(a => new ProgramAssignmentDetailDto(
             a.Id,
             a.ProgramId,
@@ -106,7 +78,9 @@ public static class GetProgramAssignments
             a.CreatedAt,
             a.RejectionComment,
             a.VerifiedAt,
-            evidenceByAssignment.TryGetValue(a.Id, out var ev) ? ev : [])).ToList();
+            null,
+            null,
+            null)).ToList();
 
         return TypedResults.Ok(new AssignmentDetailPagedResponse(result, total, page, pageSize));
     }

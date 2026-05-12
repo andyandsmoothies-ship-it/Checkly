@@ -25,14 +25,14 @@ class SectionHeader extends StatelessWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.labelSmall?.merge(
-              AppFonts.displayStyle(
-                fontWeight: FontWeight.w800,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.85),
-                letterSpacing: 3,
-              ),
-            ),
+          AppFonts.displayStyle(
+            fontWeight: FontWeight.w800,
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.85),
+            letterSpacing: 3,
+          ),
+        ),
       ),
     );
   }

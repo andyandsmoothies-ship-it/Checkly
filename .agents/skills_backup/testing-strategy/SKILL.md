@@ -15,6 +15,13 @@ description: >
 3. **AAA pattern is mandatory** — Every test has three clearly separated sections: Arrange, Act, Assert. No mixing.
 4. **Test behavior, not implementation** — Tests should survive refactoring. Test what the system does, not how it does it.
 
+## Testing is Architecture
+
+1. **Test Behavior, Not State**: Tests must be decoupled from implementation details. If changing the internal code (like extracting a new class) breaks 100 tests, your tests are too delicate. Use Detroit-school (Classical) TDD by avoiding heavy mocking. 
+2. **Liskov Substitution in Tests**: Changes to the client (the implementation) should be irrelevant to the tests as long as the behavior remains the same.
+3. **Isolate Business Logic from the GUI**: Tests, like all other system components, cannot depend on volatile parts of the system. Do not test business logic indirectly through a volatile GUI (e.g., Widget Tests). Test the business layer (Managers/Services) directly.
+4. **Secure Test APIs**: You may define APIs expressly for testing (e.g., programmatic test login helpers or DB seeders), but they must remain physically bounded to the test project. Never expose a "test backdoor" in the production API layer.
+
 ## Patterns
 
 ### xUnit v3 Basics

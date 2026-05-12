@@ -12,6 +12,7 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.ToTable("submissions");
         e.HasKey(x => x.Id);
         e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+        e.Property(x => x.ProgramAssignmentId).HasColumnName("program_assignment_id");
         e.Property(x => x.TemplateId).HasColumnName("template_id");
         e.Property(x => x.AuditorId).HasColumnName("auditor_id");
         e.Property(x => x.StoreId).HasColumnName("store_id");
@@ -75,6 +76,13 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.HasOne(x => x.Store)
             .WithMany(s => s.Submissions)
             .HasForeignKey(x => x.StoreId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        e.HasIndex(x => x.ProgramAssignmentId).HasFilter("program_assignment_id IS NOT NULL");
+
+        e.HasOne(x => x.ProgramAssignment)
+            .WithMany(a => a.Submissions)
+            .HasForeignKey(x => x.ProgramAssignmentId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -37,7 +37,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
     public DbSet<ChecklyProgram> Programs => Set<ChecklyProgram>();
     public DbSet<ProgramAssignment> ProgramAssignments => Set<ProgramAssignment>();
-    public DbSet<ProgramEvidence> ProgramEvidence => Set<ProgramEvidence>();
     public DbSet<ProfileStoreAssignment> ProfileStoreAssignments => Set<ProfileStoreAssignment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

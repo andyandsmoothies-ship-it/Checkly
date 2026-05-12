@@ -26,6 +26,10 @@ Recent longitudinal studies (2020-2025) confirm these findings at scale: project
 
 **Bad specs** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means. The warning sign: your spec breaks when you refactor, but behavior hasn't changed.
 
+**Testability as Architecture**: Tests are part of the system's architecture, not an afterthought. Architectural principles like Single Responsibility apply strictly to test suites. Business rules must be isolated into components so that if they change, the test-change blast radius is minimized. Never test business logic indirectly through volatile layers (like the GUI) — this violates encapsulation and creates extreme fragility.
+
+**Liskov Substitution in Tests**: Changes to the implementation (the client code) must be irrelevant to the tests as long as the observable behavior remains unchanged. If changing internal code breaks 100 tests, you have lost all safety and developers will resist necessary refactoring. A robust test suite enables change; fragile tests paralyze it.
+
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
 
 ## Detroit vs. London Style

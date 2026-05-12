@@ -17,6 +17,8 @@ class ProgramAssignmentDto {
   final String programId;
   final String programTitle;
   final String category;
+  final String? templateId;
+  final String? activeSubmissionId;
   final DateTime? deadline;
   final String status;
   final String? rejectionComment;
@@ -27,6 +29,8 @@ class ProgramAssignmentDto {
     required this.programId,
     required this.programTitle,
     required this.category,
+    required this.templateId,
+    required this.activeSubmissionId,
     required this.deadline,
     required this.status,
     required this.rejectionComment,
@@ -43,6 +47,8 @@ class ProgramAssignmentDto {
       programId: db.programId,
       programTitle: db.programTitle,
       category: db.category,
+      templateId: db.templateId,
+      activeSubmissionId: db.activeSubmissionId,
       deadline: db.deadline,
       status: db.status,
       rejectionComment: db.rejectionComment,

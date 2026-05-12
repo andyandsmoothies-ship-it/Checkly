@@ -36,12 +36,16 @@ class AuditFormPage extends StatefulWidget {
   /// Passed by the Activity screen when resuming a scheduled/server-draft audit.
   final String? targetSubmissionId;
 
+  /// When non-null, indicates this audit fulfills a ProgramAssignment.
+  final String? programAssignmentId;
+
   const AuditFormPage({
     super.key,
     required this.templateId,
     required this.storeId,
     this.autoResume = false,
     this.targetSubmissionId,
+    this.programAssignmentId,
   });
 
   @override
@@ -72,6 +76,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
         tree,
         widget.storeId,
         targetSubmissionId: widget.targetSubmissionId,
+        programAssignmentId: widget.programAssignmentId,
       );
       manager.addListener(_onManagerChanged);
 

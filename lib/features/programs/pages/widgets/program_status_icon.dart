@@ -16,7 +16,10 @@ class ProgramStatusIcon extends StatelessWidget {
       'verified' => Icon(Icons.verified, color: colorScheme.primary),
       'needs_revision' => Icon(Icons.error, color: colorScheme.error),
       'overdue' => Icon(Icons.warning_amber, color: colorScheme.tertiary),
-      _ => Icon(Icons.pending_outlined, color: colorScheme.surfaceContainerHighest),
+      _ => Icon(
+        Icons.pending_outlined,
+        color: colorScheme.surfaceContainerHighest,
+      ),
     };
   }
 }

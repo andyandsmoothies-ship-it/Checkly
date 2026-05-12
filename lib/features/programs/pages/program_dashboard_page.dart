@@ -188,9 +188,7 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                   title: Text(
                     a.storeName,
                     style: theme.textTheme.bodyMedium?.merge(
-                      AppFonts.displayStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      AppFonts.displayStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
                   subtitle: Text(

@@ -19,15 +19,4 @@ abstract class SyncApi {
   /// The backend is paginated, but this method aggregates all pages internally
   /// and returns a full, raw JSON list matching AssignmentSummaryDto.
   Future<List<dynamic>> pullProgramAssignments();
-
-  /// Push evidence items for a specific program assignment.
-  /// [assignmentId]: server UUID of the ProgramAssignment.
-  /// [evidenceItems]: list of {criteriaId, value, photoUrl?} maps.
-  Future<void> pushProgramEvidence(
-    String assignmentId,
-    List<Map<String, dynamic>> evidenceItems,
-  );
-
-  /// Push a program evidence photo via multipart/form-data.
-  Future<void> pushProgramPhoto(String photoLocalKey, String filePath);
 }

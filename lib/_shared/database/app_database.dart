@@ -33,8 +33,6 @@ part 'app_database.g.dart';
     PendingPhotos,
     PendingActionPlanUpdates,
     SubmissionRiskOutboxEntries,
-    PendingProgramSubmissions,
-    PendingProgramPhotos,
     // Metadata
     SyncMeta,
     // Drafts
@@ -48,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 25;
+  int get schemaVersion => 27;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -173,8 +171,7 @@ class AppDatabase extends _$AppDatabase {
       if (from < 23) {
         // Programs Module Slice 2B: offline cache + outbox tables.
         await m.createTable(cachedProgramAssignments);
-        await m.createTable(pendingProgramSubmissions);
-        await m.createTable(pendingProgramPhotos);
+        // pendingProgramSubmissions and pendingProgramPhotos deleted in v26
       }
       if (from < 24) {
         // BUG-1: Migrate ActionPlanSyncModule to processQueue — add backoff columns.
@@ -190,6 +187,28 @@ class AppDatabase extends _$AppDatabase {
       if (from < 25) {
         // Slice 4: Profile cache for assigned store override sync.
         await m.createTable(cachedProfiles);
+      }
+      if (from < 26) {
+        // v26: Bridge Slice 3 — drop legacy evidence tables + add templateId to assignments
+        await customStatement('DROP TABLE IF EXISTS pending_program_photos');
+        await customStatement(
+          'DROP TABLE IF EXISTS pending_program_submissions',
+        );
+        await m.addColumn(
+          cachedProgramAssignments,
+          cachedProgramAssignments.templateId,
+        );
+      }
+      if (from < 27) {
+        // v27: Bridge Slice 4 — add activeSubmissionId and programAssignmentId
+        await m.addColumn(
+          cachedProgramAssignments,
+          cachedProgramAssignments.activeSubmissionId,
+        );
+        await m.addColumn(
+          pendingSubmissions,
+          pendingSubmissions.programAssignmentId,
+        );
       }
     },
     beforeOpen: (details) async {

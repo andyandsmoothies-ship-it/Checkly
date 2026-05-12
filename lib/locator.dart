@@ -181,7 +181,6 @@ void configureDependencies() {
       api: SyncApiAdapter(di<Dio>()),
       outboxDao: di<ProgramOutboxDao>(),
       syncMetaDao: di<SyncMetaDao>(),
-      connectivity: di<ConnectivityService>(),
       scheduleRetry: (delay) => di<SyncEngine>().requestSync(),
     ),
   );

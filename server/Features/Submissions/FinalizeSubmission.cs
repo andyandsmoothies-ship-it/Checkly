@@ -311,6 +311,20 @@ public static class FinalizeSubmission
             }
         }
 
+        // 11. Program Bridge post-commit hook — runs outside the main transaction (same pattern as step 10).
+        //     If this submission is linked to a ProgramAssignment, transition both entities.
+        if (result is Microsoft.AspNetCore.Http.HttpResults.Ok<SubmissionDto> && submission.ProgramAssignmentId.HasValue)
+        {
+            var assignment = await db.ProgramAssignments.FindAsync([submission.ProgramAssignmentId.Value], ct);
+            if (assignment is not null)
+            {
+                assignment.Status = "submitted";
+                submission.ReviewStatus = "approved";
+                await db.SaveChangesAsync(ct);
+            }
+        }
+
         return result;
     }
 }
+

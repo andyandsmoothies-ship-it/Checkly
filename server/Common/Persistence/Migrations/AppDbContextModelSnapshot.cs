@@ -843,50 +843,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("program_assignments", (string)null);
                 });
 
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramEvidence", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<Guid>("AssignmentId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("assignment_id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<Guid?>("CriteriaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("criteria_id");
-
-                    b.Property<string>("CriteriaLabel")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("criteria_label");
-
-                    b.Property<string>("PhotoLocalKey")
-                        .HasColumnType("text")
-                        .HasColumnName("photo_local_key");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignmentId");
-
-                    b.ToTable("program_evidence", (string)null);
-                });
-
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.RoleCapability", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1099,6 +1055,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("notes");
 
+                    b.Property<Guid?>("ProgramAssignmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("program_assignment_id");
+
                     b.Property<decimal?>("RawEarnedPoints")
                         .HasColumnType("numeric")
                         .HasColumnName("raw_earned_points");
@@ -1199,6 +1159,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("IdempotencyKey")
                         .IsUnique()
                         .HasFilter("idempotency_key IS NOT NULL");
+
+                    b.HasIndex("ProgramAssignmentId")
+                        .HasFilter("program_assignment_id IS NOT NULL");
 
                     b.HasIndex("UpdatedAt");
 
@@ -1901,17 +1864,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramEvidence", b =>
-                {
-                    b.HasOne("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", "Assignment")
-                        .WithMany()
-                        .HasForeignKey("AssignmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Assignment");
-                });
-
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Store", b =>
                 {
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Area", "Area")
@@ -1935,6 +1887,11 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Submission", b =>
                 {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", "ProgramAssignment")
+                        .WithMany("Submissions")
+                        .HasForeignKey("ProgramAssignmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
                         .WithMany("Submissions")
                         .HasForeignKey("StoreId")
@@ -1944,6 +1901,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .WithMany("Submissions")
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ProgramAssignment");
 
                     b.Navigation("Store");
 
@@ -2115,6 +2074,11 @@ namespace Checkly.Api.Common.Persistence.Migrations
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Profile", b =>
                 {
                     b.Navigation("StoreAssignments");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProgramAssignment", b =>
+                {
+                    b.Navigation("Submissions");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Store", b =>

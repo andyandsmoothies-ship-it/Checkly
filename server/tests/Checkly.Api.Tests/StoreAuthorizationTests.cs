@@ -292,7 +292,7 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
         var auditorClient = _factory.CreateAuthenticatedClient(auditorToken);
 
         // Act
-        var response = await auditorClient.GetAsync("/api/stores?pageSize=1000");
+        var response = await auditorClient.GetAsync($"/api/stores?search={_runId}&pageSize=200");
 
         // Assert — auditor gets a result set that contains BOTH stores
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

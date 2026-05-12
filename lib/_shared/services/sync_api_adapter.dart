@@ -161,25 +161,4 @@ class SyncApiAdapter implements SyncApi {
       },
     );
   }
-
-  @override
-  Future<void> pushProgramEvidence(
-    String assignmentId,
-    List<Map<String, dynamic>> evidenceItems,
-  ) async {
-    // POST /api/programs/assignments/{id}/submit
-    await _dio.post(
-      '/programs/assignments/$assignmentId/submit',
-      data: {'evidenceItems': evidenceItems},
-    );
-  }
-
-  @override
-  Future<void> pushProgramPhoto(String photoLocalKey, String filePath) async {
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(filePath),
-    });
-
-    await _dio.post('/photos/programs/evidence/$photoLocalKey', data: formData);
-  }
 }

@@ -71,10 +71,13 @@ class CompactStatusPanel extends StatelessWidget {
                           ),
                           Text(
                             item.value,
-                            style: Theme.of(context).textTheme.titleMedium?.merge(
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.merge(
                                   AppFonts.serifStyle(
                                     fontWeight: FontWeight.w700,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                           ),

@@ -141,9 +141,7 @@ class _ProgramListPageState extends State<ProgramListPage> {
               title: Text(
                 title,
                 style: theme.textTheme.titleSmall?.merge(
-                  AppFonts.displayStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  AppFonts.displayStyle(fontWeight: FontWeight.w600),
                 ),
               ),
               subtitle: Text('$category · $status · $total stores'),

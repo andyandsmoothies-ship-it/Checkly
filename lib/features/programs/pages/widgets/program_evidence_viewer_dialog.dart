@@ -37,9 +37,7 @@ class ProgramEvidenceViewerDialog extends StatelessWidget {
                     child: Text(
                       assignment.storeName,
                       style: theme.textTheme.titleMedium?.merge(
-                        AppFonts.displayStyle(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        AppFonts.displayStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),

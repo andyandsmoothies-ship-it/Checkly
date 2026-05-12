@@ -45,37 +45,10 @@ public record AssignmentSummaryDto(
     string Category,
     DateTimeOffset Deadline,
     string Status,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    Guid? TemplateId = null);
 
-/// <summary>One evidence item within a POST /api/programs/assignments/{id}/submit request.</summary>
-public record EvidenceItemRequest(
-    Guid CriteriaId,
-    string Value,
-    string? PhotoLocalKey);
 
-/// <summary>Request body for POST /api/programs/assignments/{id}/submit.</summary>
-public record SubmitEvidenceRequest(EvidenceItemRequest[] EvidenceItems);
-
-// ── Slice 3: HQ Review DTOs ─────────────────────────────────────────────────
-
-/// <summary>
-/// A single evidence item within a submitted assignment, as seen by HQ.
-/// PhotoUrl may be null if no photo was attached.
-/// </summary>
-public record ProgramEvidenceDto(
-    Guid CriteriaId,
-    string CriteriaLabel,
-    string Value,
-    string? PhotoUrl,
-    DateTimeOffset CreatedAt);
-
-/// <summary>
-/// Full detail of a program assignment as seen by HQ on
-/// GET /api/programs/{programId}/assignments.
-/// Includes nested evidence items to avoid N+1 queries.
-/// RejectionComment: populated when status = 'needs_revision'. Null otherwise.
-/// VerifiedAt: populated when status = 'verified'. Null otherwise.
-/// </summary>
 public record ProgramAssignmentDetailDto(
     Guid Id,
     Guid ProgramId,
@@ -86,7 +59,9 @@ public record ProgramAssignmentDetailDto(
     DateTimeOffset CreatedAt,
     string? RejectionComment,
     DateTimeOffset? VerifiedAt,
-    ProgramEvidenceDto[] Evidence);
+    Guid? LinkedSubmissionId,
+    string? LinkedSubmissionStatus,
+    decimal? LinkedSubmissionScore);
 
 // ── Slice 4: HQ Rejection & Verification DTOs ────────────────────────────────
 

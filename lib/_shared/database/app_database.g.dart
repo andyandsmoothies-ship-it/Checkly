@@ -6816,6 +6816,28 @@ class $CachedProgramAssignmentsTable extends CachedProgramAssignments
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<String> templateId = GeneratedColumn<String>(
+    'template_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activeSubmissionIdMeta =
+      const VerificationMeta('activeSubmissionId');
+  @override
+  late final GeneratedColumn<String> activeSubmissionId =
+      GeneratedColumn<String>(
+        'active_submission_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
@@ -6855,6 +6877,8 @@ class $CachedProgramAssignmentsTable extends CachedProgramAssignments
     programTitle,
     category,
     deadline,
+    templateId,
+    activeSubmissionId,
     status,
     rejectionComment,
     createdAt,
@@ -6911,6 +6935,21 @@ class $CachedProgramAssignmentsTable extends CachedProgramAssignments
     } else if (isInserting) {
       context.missing(_deadlineMeta);
     }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    }
+    if (data.containsKey('active_submission_id')) {
+      context.handle(
+        _activeSubmissionIdMeta,
+        activeSubmissionId.isAcceptableOrUnknown(
+          data['active_submission_id']!,
+          _activeSubmissionIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('status')) {
       context.handle(
         _statusMeta,
@@ -6966,6 +7005,14 @@ class $CachedProgramAssignmentsTable extends CachedProgramAssignments
         DriftSqlType.dateTime,
         data['${effectivePrefix}deadline'],
       )!,
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_id'],
+      ),
+      activeSubmissionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}active_submission_id'],
+      ),
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}status'],
@@ -6994,6 +7041,8 @@ class CachedProgramAssignment extends DataClass
   final String programTitle;
   final String category;
   final DateTime deadline;
+  final String? templateId;
+  final String? activeSubmissionId;
 
   /// Values: 'pending' | 'overdue' | 'submitted' | 'needs_revision'
   final String status;
@@ -7005,6 +7054,8 @@ class CachedProgramAssignment extends DataClass
     required this.programTitle,
     required this.category,
     required this.deadline,
+    this.templateId,
+    this.activeSubmissionId,
     required this.status,
     this.rejectionComment,
     required this.createdAt,
@@ -7017,6 +7068,12 @@ class CachedProgramAssignment extends DataClass
     map['program_title'] = Variable<String>(programTitle);
     map['category'] = Variable<String>(category);
     map['deadline'] = Variable<DateTime>(deadline);
+    if (!nullToAbsent || templateId != null) {
+      map['template_id'] = Variable<String>(templateId);
+    }
+    if (!nullToAbsent || activeSubmissionId != null) {
+      map['active_submission_id'] = Variable<String>(activeSubmissionId);
+    }
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || rejectionComment != null) {
       map['rejection_comment'] = Variable<String>(rejectionComment);
@@ -7032,6 +7089,12 @@ class CachedProgramAssignment extends DataClass
       programTitle: Value(programTitle),
       category: Value(category),
       deadline: Value(deadline),
+      templateId: templateId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateId),
+      activeSubmissionId: activeSubmissionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activeSubmissionId),
       status: Value(status),
       rejectionComment: rejectionComment == null && nullToAbsent
           ? const Value.absent()
@@ -7051,6 +7114,10 @@ class CachedProgramAssignment extends DataClass
       programTitle: serializer.fromJson<String>(json['programTitle']),
       category: serializer.fromJson<String>(json['category']),
       deadline: serializer.fromJson<DateTime>(json['deadline']),
+      templateId: serializer.fromJson<String?>(json['templateId']),
+      activeSubmissionId: serializer.fromJson<String?>(
+        json['activeSubmissionId'],
+      ),
       status: serializer.fromJson<String>(json['status']),
       rejectionComment: serializer.fromJson<String?>(json['rejectionComment']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -7065,6 +7132,8 @@ class CachedProgramAssignment extends DataClass
       'programTitle': serializer.toJson<String>(programTitle),
       'category': serializer.toJson<String>(category),
       'deadline': serializer.toJson<DateTime>(deadline),
+      'templateId': serializer.toJson<String?>(templateId),
+      'activeSubmissionId': serializer.toJson<String?>(activeSubmissionId),
       'status': serializer.toJson<String>(status),
       'rejectionComment': serializer.toJson<String?>(rejectionComment),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -7077,6 +7146,8 @@ class CachedProgramAssignment extends DataClass
     String? programTitle,
     String? category,
     DateTime? deadline,
+    Value<String?> templateId = const Value.absent(),
+    Value<String?> activeSubmissionId = const Value.absent(),
     String? status,
     Value<String?> rejectionComment = const Value.absent(),
     DateTime? createdAt,
@@ -7086,6 +7157,10 @@ class CachedProgramAssignment extends DataClass
     programTitle: programTitle ?? this.programTitle,
     category: category ?? this.category,
     deadline: deadline ?? this.deadline,
+    templateId: templateId.present ? templateId.value : this.templateId,
+    activeSubmissionId: activeSubmissionId.present
+        ? activeSubmissionId.value
+        : this.activeSubmissionId,
     status: status ?? this.status,
     rejectionComment: rejectionComment.present
         ? rejectionComment.value
@@ -7103,6 +7178,12 @@ class CachedProgramAssignment extends DataClass
           : this.programTitle,
       category: data.category.present ? data.category.value : this.category,
       deadline: data.deadline.present ? data.deadline.value : this.deadline,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+      activeSubmissionId: data.activeSubmissionId.present
+          ? data.activeSubmissionId.value
+          : this.activeSubmissionId,
       status: data.status.present ? data.status.value : this.status,
       rejectionComment: data.rejectionComment.present
           ? data.rejectionComment.value
@@ -7119,6 +7200,8 @@ class CachedProgramAssignment extends DataClass
           ..write('programTitle: $programTitle, ')
           ..write('category: $category, ')
           ..write('deadline: $deadline, ')
+          ..write('templateId: $templateId, ')
+          ..write('activeSubmissionId: $activeSubmissionId, ')
           ..write('status: $status, ')
           ..write('rejectionComment: $rejectionComment, ')
           ..write('createdAt: $createdAt')
@@ -7133,6 +7216,8 @@ class CachedProgramAssignment extends DataClass
     programTitle,
     category,
     deadline,
+    templateId,
+    activeSubmissionId,
     status,
     rejectionComment,
     createdAt,
@@ -7146,6 +7231,8 @@ class CachedProgramAssignment extends DataClass
           other.programTitle == this.programTitle &&
           other.category == this.category &&
           other.deadline == this.deadline &&
+          other.templateId == this.templateId &&
+          other.activeSubmissionId == this.activeSubmissionId &&
           other.status == this.status &&
           other.rejectionComment == this.rejectionComment &&
           other.createdAt == this.createdAt);
@@ -7158,6 +7245,8 @@ class CachedProgramAssignmentsCompanion
   final Value<String> programTitle;
   final Value<String> category;
   final Value<DateTime> deadline;
+  final Value<String?> templateId;
+  final Value<String?> activeSubmissionId;
   final Value<String> status;
   final Value<String?> rejectionComment;
   final Value<DateTime> createdAt;
@@ -7168,6 +7257,8 @@ class CachedProgramAssignmentsCompanion
     this.programTitle = const Value.absent(),
     this.category = const Value.absent(),
     this.deadline = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.activeSubmissionId = const Value.absent(),
     this.status = const Value.absent(),
     this.rejectionComment = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -7179,6 +7270,8 @@ class CachedProgramAssignmentsCompanion
     required String programTitle,
     required String category,
     required DateTime deadline,
+    this.templateId = const Value.absent(),
+    this.activeSubmissionId = const Value.absent(),
     this.status = const Value.absent(),
     this.rejectionComment = const Value.absent(),
     required DateTime createdAt,
@@ -7195,6 +7288,8 @@ class CachedProgramAssignmentsCompanion
     Expression<String>? programTitle,
     Expression<String>? category,
     Expression<DateTime>? deadline,
+    Expression<String>? templateId,
+    Expression<String>? activeSubmissionId,
     Expression<String>? status,
     Expression<String>? rejectionComment,
     Expression<DateTime>? createdAt,
@@ -7206,6 +7301,9 @@ class CachedProgramAssignmentsCompanion
       if (programTitle != null) 'program_title': programTitle,
       if (category != null) 'category': category,
       if (deadline != null) 'deadline': deadline,
+      if (templateId != null) 'template_id': templateId,
+      if (activeSubmissionId != null)
+        'active_submission_id': activeSubmissionId,
       if (status != null) 'status': status,
       if (rejectionComment != null) 'rejection_comment': rejectionComment,
       if (createdAt != null) 'created_at': createdAt,
@@ -7219,6 +7317,8 @@ class CachedProgramAssignmentsCompanion
     Value<String>? programTitle,
     Value<String>? category,
     Value<DateTime>? deadline,
+    Value<String?>? templateId,
+    Value<String?>? activeSubmissionId,
     Value<String>? status,
     Value<String?>? rejectionComment,
     Value<DateTime>? createdAt,
@@ -7230,6 +7330,8 @@ class CachedProgramAssignmentsCompanion
       programTitle: programTitle ?? this.programTitle,
       category: category ?? this.category,
       deadline: deadline ?? this.deadline,
+      templateId: templateId ?? this.templateId,
+      activeSubmissionId: activeSubmissionId ?? this.activeSubmissionId,
       status: status ?? this.status,
       rejectionComment: rejectionComment ?? this.rejectionComment,
       createdAt: createdAt ?? this.createdAt,
@@ -7255,6 +7357,12 @@ class CachedProgramAssignmentsCompanion
     if (deadline.present) {
       map['deadline'] = Variable<DateTime>(deadline.value);
     }
+    if (templateId.present) {
+      map['template_id'] = Variable<String>(templateId.value);
+    }
+    if (activeSubmissionId.present) {
+      map['active_submission_id'] = Variable<String>(activeSubmissionId.value);
+    }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
@@ -7278,6 +7386,8 @@ class CachedProgramAssignmentsCompanion
           ..write('programTitle: $programTitle, ')
           ..write('category: $category, ')
           ..write('deadline: $deadline, ')
+          ..write('templateId: $templateId, ')
+          ..write('activeSubmissionId: $activeSubmissionId, ')
           ..write('status: $status, ')
           ..write('rejectionComment: $rejectionComment, ')
           ..write('createdAt: $createdAt, ')
@@ -7452,6 +7562,17 @@ class $PendingSubmissionsTable extends PendingSubmissions
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _programAssignmentIdMeta =
+      const VerificationMeta('programAssignmentId');
+  @override
+  late final GeneratedColumn<String> programAssignmentId =
+      GeneratedColumn<String>(
+        'program_assignment_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7469,6 +7590,7 @@ class $PendingSubmissionsTable extends PendingSubmissions
     nextRetryAt,
     createdAt,
     targetSubmissionId,
+    programAssignmentId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7596,6 +7718,15 @@ class $PendingSubmissionsTable extends PendingSubmissions
         ),
       );
     }
+    if (data.containsKey('program_assignment_id')) {
+      context.handle(
+        _programAssignmentIdMeta,
+        programAssignmentId.isAcceptableOrUnknown(
+          data['program_assignment_id']!,
+          _programAssignmentIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -7665,6 +7796,10 @@ class $PendingSubmissionsTable extends PendingSubmissions
         DriftSqlType.string,
         data['${effectivePrefix}target_submission_id'],
       ),
+      programAssignmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}program_assignment_id'],
+      ),
     );
   }
 
@@ -7695,6 +7830,9 @@ class PendingSubmission extends DataClass
   /// SyncEngine routes to PUT /submissions/{id}/finalize instead of POST /submissions.
   /// Null = fresh new audit (default POST path).
   final String? targetSubmissionId;
+
+  /// The UUID of the ProgramAssignment this submission is linked to (if any).
+  final String? programAssignmentId;
   const PendingSubmission({
     required this.id,
     required this.templateId,
@@ -7711,6 +7849,7 @@ class PendingSubmission extends DataClass
     this.nextRetryAt,
     required this.createdAt,
     this.targetSubmissionId,
+    this.programAssignmentId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7743,6 +7882,9 @@ class PendingSubmission extends DataClass
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || targetSubmissionId != null) {
       map['target_submission_id'] = Variable<String>(targetSubmissionId);
+    }
+    if (!nullToAbsent || programAssignmentId != null) {
+      map['program_assignment_id'] = Variable<String>(programAssignmentId);
     }
     return map;
   }
@@ -7778,6 +7920,9 @@ class PendingSubmission extends DataClass
       targetSubmissionId: targetSubmissionId == null && nullToAbsent
           ? const Value.absent()
           : Value(targetSubmissionId),
+      programAssignmentId: programAssignmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(programAssignmentId),
     );
   }
 
@@ -7804,6 +7949,9 @@ class PendingSubmission extends DataClass
       targetSubmissionId: serializer.fromJson<String?>(
         json['targetSubmissionId'],
       ),
+      programAssignmentId: serializer.fromJson<String?>(
+        json['programAssignmentId'],
+      ),
     );
   }
   @override
@@ -7825,6 +7973,7 @@ class PendingSubmission extends DataClass
       'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'targetSubmissionId': serializer.toJson<String?>(targetSubmissionId),
+      'programAssignmentId': serializer.toJson<String?>(programAssignmentId),
     };
   }
 
@@ -7844,6 +7993,7 @@ class PendingSubmission extends DataClass
     Value<DateTime?> nextRetryAt = const Value.absent(),
     DateTime? createdAt,
     Value<String?> targetSubmissionId = const Value.absent(),
+    Value<String?> programAssignmentId = const Value.absent(),
   }) => PendingSubmission(
     id: id ?? this.id,
     templateId: templateId ?? this.templateId,
@@ -7864,6 +8014,9 @@ class PendingSubmission extends DataClass
     targetSubmissionId: targetSubmissionId.present
         ? targetSubmissionId.value
         : this.targetSubmissionId,
+    programAssignmentId: programAssignmentId.present
+        ? programAssignmentId.value
+        : this.programAssignmentId,
   );
   PendingSubmission copyWithCompanion(PendingSubmissionsCompanion data) {
     return PendingSubmission(
@@ -7898,6 +8051,9 @@ class PendingSubmission extends DataClass
       targetSubmissionId: data.targetSubmissionId.present
           ? data.targetSubmissionId.value
           : this.targetSubmissionId,
+      programAssignmentId: data.programAssignmentId.present
+          ? data.programAssignmentId.value
+          : this.programAssignmentId,
     );
   }
 
@@ -7918,7 +8074,8 @@ class PendingSubmission extends DataClass
           ..write('retryCount: $retryCount, ')
           ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt, ')
-          ..write('targetSubmissionId: $targetSubmissionId')
+          ..write('targetSubmissionId: $targetSubmissionId, ')
+          ..write('programAssignmentId: $programAssignmentId')
           ..write(')'))
         .toString();
   }
@@ -7940,6 +8097,7 @@ class PendingSubmission extends DataClass
     nextRetryAt,
     createdAt,
     targetSubmissionId,
+    programAssignmentId,
   );
   @override
   bool operator ==(Object other) =>
@@ -7959,7 +8117,8 @@ class PendingSubmission extends DataClass
           other.retryCount == this.retryCount &&
           other.nextRetryAt == this.nextRetryAt &&
           other.createdAt == this.createdAt &&
-          other.targetSubmissionId == this.targetSubmissionId);
+          other.targetSubmissionId == this.targetSubmissionId &&
+          other.programAssignmentId == this.programAssignmentId);
 }
 
 class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
@@ -7978,6 +8137,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
   final Value<DateTime?> nextRetryAt;
   final Value<DateTime> createdAt;
   final Value<String?> targetSubmissionId;
+  final Value<String?> programAssignmentId;
   final Value<int> rowid;
   const PendingSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -7995,6 +8155,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     this.nextRetryAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.targetSubmissionId = const Value.absent(),
+    this.programAssignmentId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingSubmissionsCompanion.insert({
@@ -8013,6 +8174,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     this.nextRetryAt = const Value.absent(),
     required DateTime createdAt,
     this.targetSubmissionId = const Value.absent(),
+    this.programAssignmentId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        templateId = Value(templateId),
@@ -8036,6 +8198,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Expression<DateTime>? nextRetryAt,
     Expression<DateTime>? createdAt,
     Expression<String>? targetSubmissionId,
+    Expression<String>? programAssignmentId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -8055,6 +8218,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
       if (createdAt != null) 'created_at': createdAt,
       if (targetSubmissionId != null)
         'target_submission_id': targetSubmissionId,
+      if (programAssignmentId != null)
+        'program_assignment_id': programAssignmentId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -8075,6 +8240,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Value<DateTime?>? nextRetryAt,
     Value<DateTime>? createdAt,
     Value<String?>? targetSubmissionId,
+    Value<String?>? programAssignmentId,
     Value<int>? rowid,
   }) {
     return PendingSubmissionsCompanion(
@@ -8093,6 +8259,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
       nextRetryAt: nextRetryAt ?? this.nextRetryAt,
       createdAt: createdAt ?? this.createdAt,
       targetSubmissionId: targetSubmissionId ?? this.targetSubmissionId,
+      programAssignmentId: programAssignmentId ?? this.programAssignmentId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -8145,6 +8312,11 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     if (targetSubmissionId.present) {
       map['target_submission_id'] = Variable<String>(targetSubmissionId.value);
     }
+    if (programAssignmentId.present) {
+      map['program_assignment_id'] = Variable<String>(
+        programAssignmentId.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -8169,6 +8341,7 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
           ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('targetSubmissionId: $targetSubmissionId, ')
+          ..write('programAssignmentId: $programAssignmentId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -10615,1135 +10788,6 @@ class SubmissionRiskOutboxEntriesCompanion
   }
 }
 
-class $PendingProgramSubmissionsTable extends PendingProgramSubmissions
-    with TableInfo<$PendingProgramSubmissionsTable, PendingProgramSubmission> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PendingProgramSubmissionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _assignmentIdMeta = const VerificationMeta(
-    'assignmentId',
-  );
-  @override
-  late final GeneratedColumn<String> assignmentId = GeneratedColumn<String>(
-    'assignment_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _evidenceItemsJsonMeta = const VerificationMeta(
-    'evidenceItemsJson',
-  );
-  @override
-  late final GeneratedColumn<String> evidenceItemsJson =
-      GeneratedColumn<String>(
-        'evidence_items_json',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      );
-  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
-    'syncStatus',
-  );
-  @override
-  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-    'sync_status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('pending'),
-  );
-  static const VerificationMeta _syncErrorMeta = const VerificationMeta(
-    'syncError',
-  );
-  @override
-  late final GeneratedColumn<String> syncError = GeneratedColumn<String>(
-    'sync_error',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _retryCountMeta = const VerificationMeta(
-    'retryCount',
-  );
-  @override
-  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
-    'retry_count',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta(
-    'nextRetryAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> nextRetryAt = GeneratedColumn<DateTime>(
-    'next_retry_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    assignmentId,
-    evidenceItemsJson,
-    syncStatus,
-    syncError,
-    retryCount,
-    nextRetryAt,
-    createdAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'pending_program_submissions';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<PendingProgramSubmission> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('assignment_id')) {
-      context.handle(
-        _assignmentIdMeta,
-        assignmentId.isAcceptableOrUnknown(
-          data['assignment_id']!,
-          _assignmentIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_assignmentIdMeta);
-    }
-    if (data.containsKey('evidence_items_json')) {
-      context.handle(
-        _evidenceItemsJsonMeta,
-        evidenceItemsJson.isAcceptableOrUnknown(
-          data['evidence_items_json']!,
-          _evidenceItemsJsonMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_evidenceItemsJsonMeta);
-    }
-    if (data.containsKey('sync_status')) {
-      context.handle(
-        _syncStatusMeta,
-        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
-      );
-    }
-    if (data.containsKey('sync_error')) {
-      context.handle(
-        _syncErrorMeta,
-        syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
-      );
-    }
-    if (data.containsKey('retry_count')) {
-      context.handle(
-        _retryCountMeta,
-        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
-      );
-    }
-    if (data.containsKey('next_retry_at')) {
-      context.handle(
-        _nextRetryAtMeta,
-        nextRetryAt.isAcceptableOrUnknown(
-          data['next_retry_at']!,
-          _nextRetryAtMeta,
-        ),
-      );
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  PendingProgramSubmission map(
-    Map<String, dynamic> data, {
-    String? tablePrefix,
-  }) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PendingProgramSubmission(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      assignmentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}assignment_id'],
-      )!,
-      evidenceItemsJson: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}evidence_items_json'],
-      )!,
-      syncStatus: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_status'],
-      )!,
-      syncError: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_error'],
-      ),
-      retryCount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}retry_count'],
-      )!,
-      nextRetryAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}next_retry_at'],
-      ),
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  $PendingProgramSubmissionsTable createAlias(String alias) {
-    return $PendingProgramSubmissionsTable(attachedDatabase, alias);
-  }
-}
-
-class PendingProgramSubmission extends DataClass
-    implements Insertable<PendingProgramSubmission> {
-  final String id;
-  final String assignmentId;
-
-  /// JSON-encoded List<{criteriaId, value, photoLocalKey?}>.
-  final String evidenceItemsJson;
-  final String syncStatus;
-  final String? syncError;
-  final int retryCount;
-  final DateTime? nextRetryAt;
-  final DateTime createdAt;
-  const PendingProgramSubmission({
-    required this.id,
-    required this.assignmentId,
-    required this.evidenceItemsJson,
-    required this.syncStatus,
-    this.syncError,
-    required this.retryCount,
-    this.nextRetryAt,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['assignment_id'] = Variable<String>(assignmentId);
-    map['evidence_items_json'] = Variable<String>(evidenceItemsJson);
-    map['sync_status'] = Variable<String>(syncStatus);
-    if (!nullToAbsent || syncError != null) {
-      map['sync_error'] = Variable<String>(syncError);
-    }
-    map['retry_count'] = Variable<int>(retryCount);
-    if (!nullToAbsent || nextRetryAt != null) {
-      map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
-    }
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  PendingProgramSubmissionsCompanion toCompanion(bool nullToAbsent) {
-    return PendingProgramSubmissionsCompanion(
-      id: Value(id),
-      assignmentId: Value(assignmentId),
-      evidenceItemsJson: Value(evidenceItemsJson),
-      syncStatus: Value(syncStatus),
-      syncError: syncError == null && nullToAbsent
-          ? const Value.absent()
-          : Value(syncError),
-      retryCount: Value(retryCount),
-      nextRetryAt: nextRetryAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(nextRetryAt),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory PendingProgramSubmission.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PendingProgramSubmission(
-      id: serializer.fromJson<String>(json['id']),
-      assignmentId: serializer.fromJson<String>(json['assignmentId']),
-      evidenceItemsJson: serializer.fromJson<String>(json['evidenceItemsJson']),
-      syncStatus: serializer.fromJson<String>(json['syncStatus']),
-      syncError: serializer.fromJson<String?>(json['syncError']),
-      retryCount: serializer.fromJson<int>(json['retryCount']),
-      nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'assignmentId': serializer.toJson<String>(assignmentId),
-      'evidenceItemsJson': serializer.toJson<String>(evidenceItemsJson),
-      'syncStatus': serializer.toJson<String>(syncStatus),
-      'syncError': serializer.toJson<String?>(syncError),
-      'retryCount': serializer.toJson<int>(retryCount),
-      'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  PendingProgramSubmission copyWith({
-    String? id,
-    String? assignmentId,
-    String? evidenceItemsJson,
-    String? syncStatus,
-    Value<String?> syncError = const Value.absent(),
-    int? retryCount,
-    Value<DateTime?> nextRetryAt = const Value.absent(),
-    DateTime? createdAt,
-  }) => PendingProgramSubmission(
-    id: id ?? this.id,
-    assignmentId: assignmentId ?? this.assignmentId,
-    evidenceItemsJson: evidenceItemsJson ?? this.evidenceItemsJson,
-    syncStatus: syncStatus ?? this.syncStatus,
-    syncError: syncError.present ? syncError.value : this.syncError,
-    retryCount: retryCount ?? this.retryCount,
-    nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
-    createdAt: createdAt ?? this.createdAt,
-  );
-  PendingProgramSubmission copyWithCompanion(
-    PendingProgramSubmissionsCompanion data,
-  ) {
-    return PendingProgramSubmission(
-      id: data.id.present ? data.id.value : this.id,
-      assignmentId: data.assignmentId.present
-          ? data.assignmentId.value
-          : this.assignmentId,
-      evidenceItemsJson: data.evidenceItemsJson.present
-          ? data.evidenceItemsJson.value
-          : this.evidenceItemsJson,
-      syncStatus: data.syncStatus.present
-          ? data.syncStatus.value
-          : this.syncStatus,
-      syncError: data.syncError.present ? data.syncError.value : this.syncError,
-      retryCount: data.retryCount.present
-          ? data.retryCount.value
-          : this.retryCount,
-      nextRetryAt: data.nextRetryAt.present
-          ? data.nextRetryAt.value
-          : this.nextRetryAt,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PendingProgramSubmission(')
-          ..write('id: $id, ')
-          ..write('assignmentId: $assignmentId, ')
-          ..write('evidenceItemsJson: $evidenceItemsJson, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('syncError: $syncError, ')
-          ..write('retryCount: $retryCount, ')
-          ..write('nextRetryAt: $nextRetryAt, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    assignmentId,
-    evidenceItemsJson,
-    syncStatus,
-    syncError,
-    retryCount,
-    nextRetryAt,
-    createdAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PendingProgramSubmission &&
-          other.id == this.id &&
-          other.assignmentId == this.assignmentId &&
-          other.evidenceItemsJson == this.evidenceItemsJson &&
-          other.syncStatus == this.syncStatus &&
-          other.syncError == this.syncError &&
-          other.retryCount == this.retryCount &&
-          other.nextRetryAt == this.nextRetryAt &&
-          other.createdAt == this.createdAt);
-}
-
-class PendingProgramSubmissionsCompanion
-    extends UpdateCompanion<PendingProgramSubmission> {
-  final Value<String> id;
-  final Value<String> assignmentId;
-  final Value<String> evidenceItemsJson;
-  final Value<String> syncStatus;
-  final Value<String?> syncError;
-  final Value<int> retryCount;
-  final Value<DateTime?> nextRetryAt;
-  final Value<DateTime> createdAt;
-  final Value<int> rowid;
-  const PendingProgramSubmissionsCompanion({
-    this.id = const Value.absent(),
-    this.assignmentId = const Value.absent(),
-    this.evidenceItemsJson = const Value.absent(),
-    this.syncStatus = const Value.absent(),
-    this.syncError = const Value.absent(),
-    this.retryCount = const Value.absent(),
-    this.nextRetryAt = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  PendingProgramSubmissionsCompanion.insert({
-    required String id,
-    required String assignmentId,
-    required String evidenceItemsJson,
-    this.syncStatus = const Value.absent(),
-    this.syncError = const Value.absent(),
-    this.retryCount = const Value.absent(),
-    this.nextRetryAt = const Value.absent(),
-    required DateTime createdAt,
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       assignmentId = Value(assignmentId),
-       evidenceItemsJson = Value(evidenceItemsJson),
-       createdAt = Value(createdAt);
-  static Insertable<PendingProgramSubmission> custom({
-    Expression<String>? id,
-    Expression<String>? assignmentId,
-    Expression<String>? evidenceItemsJson,
-    Expression<String>? syncStatus,
-    Expression<String>? syncError,
-    Expression<int>? retryCount,
-    Expression<DateTime>? nextRetryAt,
-    Expression<DateTime>? createdAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (assignmentId != null) 'assignment_id': assignmentId,
-      if (evidenceItemsJson != null) 'evidence_items_json': evidenceItemsJson,
-      if (syncStatus != null) 'sync_status': syncStatus,
-      if (syncError != null) 'sync_error': syncError,
-      if (retryCount != null) 'retry_count': retryCount,
-      if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
-      if (createdAt != null) 'created_at': createdAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  PendingProgramSubmissionsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? assignmentId,
-    Value<String>? evidenceItemsJson,
-    Value<String>? syncStatus,
-    Value<String?>? syncError,
-    Value<int>? retryCount,
-    Value<DateTime?>? nextRetryAt,
-    Value<DateTime>? createdAt,
-    Value<int>? rowid,
-  }) {
-    return PendingProgramSubmissionsCompanion(
-      id: id ?? this.id,
-      assignmentId: assignmentId ?? this.assignmentId,
-      evidenceItemsJson: evidenceItemsJson ?? this.evidenceItemsJson,
-      syncStatus: syncStatus ?? this.syncStatus,
-      syncError: syncError ?? this.syncError,
-      retryCount: retryCount ?? this.retryCount,
-      nextRetryAt: nextRetryAt ?? this.nextRetryAt,
-      createdAt: createdAt ?? this.createdAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (assignmentId.present) {
-      map['assignment_id'] = Variable<String>(assignmentId.value);
-    }
-    if (evidenceItemsJson.present) {
-      map['evidence_items_json'] = Variable<String>(evidenceItemsJson.value);
-    }
-    if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(syncStatus.value);
-    }
-    if (syncError.present) {
-      map['sync_error'] = Variable<String>(syncError.value);
-    }
-    if (retryCount.present) {
-      map['retry_count'] = Variable<int>(retryCount.value);
-    }
-    if (nextRetryAt.present) {
-      map['next_retry_at'] = Variable<DateTime>(nextRetryAt.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PendingProgramSubmissionsCompanion(')
-          ..write('id: $id, ')
-          ..write('assignmentId: $assignmentId, ')
-          ..write('evidenceItemsJson: $evidenceItemsJson, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('syncError: $syncError, ')
-          ..write('retryCount: $retryCount, ')
-          ..write('nextRetryAt: $nextRetryAt, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $PendingProgramPhotosTable extends PendingProgramPhotos
-    with TableInfo<$PendingProgramPhotosTable, PendingProgramPhoto> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PendingProgramPhotosTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _pendingProgramSubmissionIdMeta =
-      const VerificationMeta('pendingProgramSubmissionId');
-  @override
-  late final GeneratedColumn<String> pendingProgramSubmissionId =
-      GeneratedColumn<String>(
-        'pending_program_submission_id',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES pending_program_submissions (id)',
-        ),
-      );
-  static const VerificationMeta _criteriaIdMeta = const VerificationMeta(
-    'criteriaId',
-  );
-  @override
-  late final GeneratedColumn<String> criteriaId = GeneratedColumn<String>(
-    'criteria_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _localPathMeta = const VerificationMeta(
-    'localPath',
-  );
-  @override
-  late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
-    'local_path',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
-    'syncStatus',
-  );
-  @override
-  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-    'sync_status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('pending'),
-  );
-  static const VerificationMeta _syncErrorMeta = const VerificationMeta(
-    'syncError',
-  );
-  @override
-  late final GeneratedColumn<String> syncError = GeneratedColumn<String>(
-    'sync_error',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _retryCountMeta = const VerificationMeta(
-    'retryCount',
-  );
-  @override
-  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
-    'retry_count',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta(
-    'nextRetryAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> nextRetryAt = GeneratedColumn<DateTime>(
-    'next_retry_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    pendingProgramSubmissionId,
-    criteriaId,
-    localPath,
-    syncStatus,
-    syncError,
-    retryCount,
-    nextRetryAt,
-    createdAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'pending_program_photos';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<PendingProgramPhoto> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('pending_program_submission_id')) {
-      context.handle(
-        _pendingProgramSubmissionIdMeta,
-        pendingProgramSubmissionId.isAcceptableOrUnknown(
-          data['pending_program_submission_id']!,
-          _pendingProgramSubmissionIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_pendingProgramSubmissionIdMeta);
-    }
-    if (data.containsKey('criteria_id')) {
-      context.handle(
-        _criteriaIdMeta,
-        criteriaId.isAcceptableOrUnknown(data['criteria_id']!, _criteriaIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_criteriaIdMeta);
-    }
-    if (data.containsKey('local_path')) {
-      context.handle(
-        _localPathMeta,
-        localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_localPathMeta);
-    }
-    if (data.containsKey('sync_status')) {
-      context.handle(
-        _syncStatusMeta,
-        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
-      );
-    }
-    if (data.containsKey('sync_error')) {
-      context.handle(
-        _syncErrorMeta,
-        syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
-      );
-    }
-    if (data.containsKey('retry_count')) {
-      context.handle(
-        _retryCountMeta,
-        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
-      );
-    }
-    if (data.containsKey('next_retry_at')) {
-      context.handle(
-        _nextRetryAtMeta,
-        nextRetryAt.isAcceptableOrUnknown(
-          data['next_retry_at']!,
-          _nextRetryAtMeta,
-        ),
-      );
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  PendingProgramPhoto map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PendingProgramPhoto(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      pendingProgramSubmissionId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}pending_program_submission_id'],
-      )!,
-      criteriaId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}criteria_id'],
-      )!,
-      localPath: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}local_path'],
-      )!,
-      syncStatus: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_status'],
-      )!,
-      syncError: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_error'],
-      ),
-      retryCount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}retry_count'],
-      )!,
-      nextRetryAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}next_retry_at'],
-      ),
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  $PendingProgramPhotosTable createAlias(String alias) {
-    return $PendingProgramPhotosTable(attachedDatabase, alias);
-  }
-}
-
-class PendingProgramPhoto extends DataClass
-    implements Insertable<PendingProgramPhoto> {
-  final String id;
-  final String pendingProgramSubmissionId;
-  final String criteriaId;
-  final String localPath;
-  final String syncStatus;
-  final String? syncError;
-  final int retryCount;
-  final DateTime? nextRetryAt;
-  final DateTime createdAt;
-  const PendingProgramPhoto({
-    required this.id,
-    required this.pendingProgramSubmissionId,
-    required this.criteriaId,
-    required this.localPath,
-    required this.syncStatus,
-    this.syncError,
-    required this.retryCount,
-    this.nextRetryAt,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['pending_program_submission_id'] = Variable<String>(
-      pendingProgramSubmissionId,
-    );
-    map['criteria_id'] = Variable<String>(criteriaId);
-    map['local_path'] = Variable<String>(localPath);
-    map['sync_status'] = Variable<String>(syncStatus);
-    if (!nullToAbsent || syncError != null) {
-      map['sync_error'] = Variable<String>(syncError);
-    }
-    map['retry_count'] = Variable<int>(retryCount);
-    if (!nullToAbsent || nextRetryAt != null) {
-      map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
-    }
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  PendingProgramPhotosCompanion toCompanion(bool nullToAbsent) {
-    return PendingProgramPhotosCompanion(
-      id: Value(id),
-      pendingProgramSubmissionId: Value(pendingProgramSubmissionId),
-      criteriaId: Value(criteriaId),
-      localPath: Value(localPath),
-      syncStatus: Value(syncStatus),
-      syncError: syncError == null && nullToAbsent
-          ? const Value.absent()
-          : Value(syncError),
-      retryCount: Value(retryCount),
-      nextRetryAt: nextRetryAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(nextRetryAt),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory PendingProgramPhoto.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PendingProgramPhoto(
-      id: serializer.fromJson<String>(json['id']),
-      pendingProgramSubmissionId: serializer.fromJson<String>(
-        json['pendingProgramSubmissionId'],
-      ),
-      criteriaId: serializer.fromJson<String>(json['criteriaId']),
-      localPath: serializer.fromJson<String>(json['localPath']),
-      syncStatus: serializer.fromJson<String>(json['syncStatus']),
-      syncError: serializer.fromJson<String?>(json['syncError']),
-      retryCount: serializer.fromJson<int>(json['retryCount']),
-      nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'pendingProgramSubmissionId': serializer.toJson<String>(
-        pendingProgramSubmissionId,
-      ),
-      'criteriaId': serializer.toJson<String>(criteriaId),
-      'localPath': serializer.toJson<String>(localPath),
-      'syncStatus': serializer.toJson<String>(syncStatus),
-      'syncError': serializer.toJson<String?>(syncError),
-      'retryCount': serializer.toJson<int>(retryCount),
-      'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  PendingProgramPhoto copyWith({
-    String? id,
-    String? pendingProgramSubmissionId,
-    String? criteriaId,
-    String? localPath,
-    String? syncStatus,
-    Value<String?> syncError = const Value.absent(),
-    int? retryCount,
-    Value<DateTime?> nextRetryAt = const Value.absent(),
-    DateTime? createdAt,
-  }) => PendingProgramPhoto(
-    id: id ?? this.id,
-    pendingProgramSubmissionId:
-        pendingProgramSubmissionId ?? this.pendingProgramSubmissionId,
-    criteriaId: criteriaId ?? this.criteriaId,
-    localPath: localPath ?? this.localPath,
-    syncStatus: syncStatus ?? this.syncStatus,
-    syncError: syncError.present ? syncError.value : this.syncError,
-    retryCount: retryCount ?? this.retryCount,
-    nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
-    createdAt: createdAt ?? this.createdAt,
-  );
-  PendingProgramPhoto copyWithCompanion(PendingProgramPhotosCompanion data) {
-    return PendingProgramPhoto(
-      id: data.id.present ? data.id.value : this.id,
-      pendingProgramSubmissionId: data.pendingProgramSubmissionId.present
-          ? data.pendingProgramSubmissionId.value
-          : this.pendingProgramSubmissionId,
-      criteriaId: data.criteriaId.present
-          ? data.criteriaId.value
-          : this.criteriaId,
-      localPath: data.localPath.present ? data.localPath.value : this.localPath,
-      syncStatus: data.syncStatus.present
-          ? data.syncStatus.value
-          : this.syncStatus,
-      syncError: data.syncError.present ? data.syncError.value : this.syncError,
-      retryCount: data.retryCount.present
-          ? data.retryCount.value
-          : this.retryCount,
-      nextRetryAt: data.nextRetryAt.present
-          ? data.nextRetryAt.value
-          : this.nextRetryAt,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PendingProgramPhoto(')
-          ..write('id: $id, ')
-          ..write('pendingProgramSubmissionId: $pendingProgramSubmissionId, ')
-          ..write('criteriaId: $criteriaId, ')
-          ..write('localPath: $localPath, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('syncError: $syncError, ')
-          ..write('retryCount: $retryCount, ')
-          ..write('nextRetryAt: $nextRetryAt, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    pendingProgramSubmissionId,
-    criteriaId,
-    localPath,
-    syncStatus,
-    syncError,
-    retryCount,
-    nextRetryAt,
-    createdAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PendingProgramPhoto &&
-          other.id == this.id &&
-          other.pendingProgramSubmissionId == this.pendingProgramSubmissionId &&
-          other.criteriaId == this.criteriaId &&
-          other.localPath == this.localPath &&
-          other.syncStatus == this.syncStatus &&
-          other.syncError == this.syncError &&
-          other.retryCount == this.retryCount &&
-          other.nextRetryAt == this.nextRetryAt &&
-          other.createdAt == this.createdAt);
-}
-
-class PendingProgramPhotosCompanion
-    extends UpdateCompanion<PendingProgramPhoto> {
-  final Value<String> id;
-  final Value<String> pendingProgramSubmissionId;
-  final Value<String> criteriaId;
-  final Value<String> localPath;
-  final Value<String> syncStatus;
-  final Value<String?> syncError;
-  final Value<int> retryCount;
-  final Value<DateTime?> nextRetryAt;
-  final Value<DateTime> createdAt;
-  final Value<int> rowid;
-  const PendingProgramPhotosCompanion({
-    this.id = const Value.absent(),
-    this.pendingProgramSubmissionId = const Value.absent(),
-    this.criteriaId = const Value.absent(),
-    this.localPath = const Value.absent(),
-    this.syncStatus = const Value.absent(),
-    this.syncError = const Value.absent(),
-    this.retryCount = const Value.absent(),
-    this.nextRetryAt = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  PendingProgramPhotosCompanion.insert({
-    required String id,
-    required String pendingProgramSubmissionId,
-    required String criteriaId,
-    required String localPath,
-    this.syncStatus = const Value.absent(),
-    this.syncError = const Value.absent(),
-    this.retryCount = const Value.absent(),
-    this.nextRetryAt = const Value.absent(),
-    required DateTime createdAt,
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       pendingProgramSubmissionId = Value(pendingProgramSubmissionId),
-       criteriaId = Value(criteriaId),
-       localPath = Value(localPath),
-       createdAt = Value(createdAt);
-  static Insertable<PendingProgramPhoto> custom({
-    Expression<String>? id,
-    Expression<String>? pendingProgramSubmissionId,
-    Expression<String>? criteriaId,
-    Expression<String>? localPath,
-    Expression<String>? syncStatus,
-    Expression<String>? syncError,
-    Expression<int>? retryCount,
-    Expression<DateTime>? nextRetryAt,
-    Expression<DateTime>? createdAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (pendingProgramSubmissionId != null)
-        'pending_program_submission_id': pendingProgramSubmissionId,
-      if (criteriaId != null) 'criteria_id': criteriaId,
-      if (localPath != null) 'local_path': localPath,
-      if (syncStatus != null) 'sync_status': syncStatus,
-      if (syncError != null) 'sync_error': syncError,
-      if (retryCount != null) 'retry_count': retryCount,
-      if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
-      if (createdAt != null) 'created_at': createdAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  PendingProgramPhotosCompanion copyWith({
-    Value<String>? id,
-    Value<String>? pendingProgramSubmissionId,
-    Value<String>? criteriaId,
-    Value<String>? localPath,
-    Value<String>? syncStatus,
-    Value<String?>? syncError,
-    Value<int>? retryCount,
-    Value<DateTime?>? nextRetryAt,
-    Value<DateTime>? createdAt,
-    Value<int>? rowid,
-  }) {
-    return PendingProgramPhotosCompanion(
-      id: id ?? this.id,
-      pendingProgramSubmissionId:
-          pendingProgramSubmissionId ?? this.pendingProgramSubmissionId,
-      criteriaId: criteriaId ?? this.criteriaId,
-      localPath: localPath ?? this.localPath,
-      syncStatus: syncStatus ?? this.syncStatus,
-      syncError: syncError ?? this.syncError,
-      retryCount: retryCount ?? this.retryCount,
-      nextRetryAt: nextRetryAt ?? this.nextRetryAt,
-      createdAt: createdAt ?? this.createdAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (pendingProgramSubmissionId.present) {
-      map['pending_program_submission_id'] = Variable<String>(
-        pendingProgramSubmissionId.value,
-      );
-    }
-    if (criteriaId.present) {
-      map['criteria_id'] = Variable<String>(criteriaId.value);
-    }
-    if (localPath.present) {
-      map['local_path'] = Variable<String>(localPath.value);
-    }
-    if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(syncStatus.value);
-    }
-    if (syncError.present) {
-      map['sync_error'] = Variable<String>(syncError.value);
-    }
-    if (retryCount.present) {
-      map['retry_count'] = Variable<int>(retryCount.value);
-    }
-    if (nextRetryAt.present) {
-      map['next_retry_at'] = Variable<DateTime>(nextRetryAt.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PendingProgramPhotosCompanion(')
-          ..write('id: $id, ')
-          ..write('pendingProgramSubmissionId: $pendingProgramSubmissionId, ')
-          ..write('criteriaId: $criteriaId, ')
-          ..write('localPath: $localPath, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('syncError: $syncError, ')
-          ..write('retryCount: $retryCount, ')
-          ..write('nextRetryAt: $nextRetryAt, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $SyncMetaTable extends SyncMeta
     with TableInfo<$SyncMetaTable, SyncMetaData> {
   @override
@@ -12324,10 +11368,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $PendingActionPlanUpdatesTable(this);
   late final $SubmissionRiskOutboxEntriesTable submissionRiskOutboxEntries =
       $SubmissionRiskOutboxEntriesTable(this);
-  late final $PendingProgramSubmissionsTable pendingProgramSubmissions =
-      $PendingProgramSubmissionsTable(this);
-  late final $PendingProgramPhotosTable pendingProgramPhotos =
-      $PendingProgramPhotosTable(this);
   late final $SyncMetaTable syncMeta = $SyncMetaTable(this);
   late final $DraftAnswersTable draftAnswers = $DraftAnswersTable(this);
   @override
@@ -12351,8 +11391,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pendingPhotos,
     pendingActionPlanUpdates,
     submissionRiskOutboxEntries,
-    pendingProgramSubmissions,
-    pendingProgramPhotos,
     syncMeta,
     draftAnswers,
   ];
@@ -16074,6 +15112,8 @@ typedef $$CachedProgramAssignmentsTableCreateCompanionBuilder =
       required String programTitle,
       required String category,
       required DateTime deadline,
+      Value<String?> templateId,
+      Value<String?> activeSubmissionId,
       Value<String> status,
       Value<String?> rejectionComment,
       required DateTime createdAt,
@@ -16086,6 +15126,8 @@ typedef $$CachedProgramAssignmentsTableUpdateCompanionBuilder =
       Value<String> programTitle,
       Value<String> category,
       Value<DateTime> deadline,
+      Value<String?> templateId,
+      Value<String?> activeSubmissionId,
       Value<String> status,
       Value<String?> rejectionComment,
       Value<DateTime> createdAt,
@@ -16123,6 +15165,16 @@ class $$CachedProgramAssignmentsTableFilterComposer
 
   ColumnFilters<DateTime> get deadline => $composableBuilder(
     column: $table.deadline,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activeSubmissionId => $composableBuilder(
+    column: $table.activeSubmissionId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16176,6 +15228,16 @@ class $$CachedProgramAssignmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activeSubmissionId => $composableBuilder(
+    column: $table.activeSubmissionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnOrderings(column),
@@ -16217,6 +15279,16 @@ class $$CachedProgramAssignmentsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get deadline =>
       $composableBuilder(column: $table.deadline, builder: (column) => column);
+
+  GeneratedColumn<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get activeSubmissionId => $composableBuilder(
+    column: $table.activeSubmissionId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
@@ -16281,6 +15353,8 @@ class $$CachedProgramAssignmentsTableTableManager
                 Value<String> programTitle = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<DateTime> deadline = const Value.absent(),
+                Value<String?> templateId = const Value.absent(),
+                Value<String?> activeSubmissionId = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> rejectionComment = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -16291,6 +15365,8 @@ class $$CachedProgramAssignmentsTableTableManager
                 programTitle: programTitle,
                 category: category,
                 deadline: deadline,
+                templateId: templateId,
+                activeSubmissionId: activeSubmissionId,
                 status: status,
                 rejectionComment: rejectionComment,
                 createdAt: createdAt,
@@ -16303,6 +15379,8 @@ class $$CachedProgramAssignmentsTableTableManager
                 required String programTitle,
                 required String category,
                 required DateTime deadline,
+                Value<String?> templateId = const Value.absent(),
+                Value<String?> activeSubmissionId = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> rejectionComment = const Value.absent(),
                 required DateTime createdAt,
@@ -16313,6 +15391,8 @@ class $$CachedProgramAssignmentsTableTableManager
                 programTitle: programTitle,
                 category: category,
                 deadline: deadline,
+                templateId: templateId,
+                activeSubmissionId: activeSubmissionId,
                 status: status,
                 rejectionComment: rejectionComment,
                 createdAt: createdAt,
@@ -16364,6 +15444,7 @@ typedef $$PendingSubmissionsTableCreateCompanionBuilder =
       Value<DateTime?> nextRetryAt,
       required DateTime createdAt,
       Value<String?> targetSubmissionId,
+      Value<String?> programAssignmentId,
       Value<int> rowid,
     });
 typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
@@ -16383,6 +15464,7 @@ typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
       Value<DateTime?> nextRetryAt,
       Value<DateTime> createdAt,
       Value<String?> targetSubmissionId,
+      Value<String?> programAssignmentId,
       Value<int> rowid,
     });
 
@@ -16528,6 +15610,11 @@ class $$PendingSubmissionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get programAssignmentId => $composableBuilder(
+    column: $table.programAssignmentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> pendingAnswersRefs(
     Expression<bool> Function($$PendingAnswersTableFilterComposer f) f,
   ) {
@@ -16662,6 +15749,11 @@ class $$PendingSubmissionsTableOrderingComposer
     column: $table.targetSubmissionId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get programAssignmentId => $composableBuilder(
+    column: $table.programAssignmentId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PendingSubmissionsTableAnnotationComposer
@@ -16731,6 +15823,11 @@ class $$PendingSubmissionsTableAnnotationComposer
 
   GeneratedColumn<String> get targetSubmissionId => $composableBuilder(
     column: $table.targetSubmissionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get programAssignmentId => $composableBuilder(
+    column: $table.programAssignmentId,
     builder: (column) => column,
   );
 
@@ -16836,6 +15933,7 @@ class $$PendingSubmissionsTableTableManager
                 Value<DateTime?> nextRetryAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<String?> targetSubmissionId = const Value.absent(),
+                Value<String?> programAssignmentId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion(
                 id: id,
@@ -16853,6 +15951,7 @@ class $$PendingSubmissionsTableTableManager
                 nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
                 targetSubmissionId: targetSubmissionId,
+                programAssignmentId: programAssignmentId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -16872,6 +15971,7 @@ class $$PendingSubmissionsTableTableManager
                 Value<DateTime?> nextRetryAt = const Value.absent(),
                 required DateTime createdAt,
                 Value<String?> targetSubmissionId = const Value.absent(),
+                Value<String?> programAssignmentId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion.insert(
                 id: id,
@@ -16889,6 +15989,7 @@ class $$PendingSubmissionsTableTableManager
                 nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
                 targetSubmissionId: targetSubmissionId,
+                programAssignmentId: programAssignmentId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -18447,853 +17548,6 @@ typedef $$SubmissionRiskOutboxEntriesTableProcessedTableManager =
       SubmissionRiskOutboxEntry,
       PrefetchHooks Function()
     >;
-typedef $$PendingProgramSubmissionsTableCreateCompanionBuilder =
-    PendingProgramSubmissionsCompanion Function({
-      required String id,
-      required String assignmentId,
-      required String evidenceItemsJson,
-      Value<String> syncStatus,
-      Value<String?> syncError,
-      Value<int> retryCount,
-      Value<DateTime?> nextRetryAt,
-      required DateTime createdAt,
-      Value<int> rowid,
-    });
-typedef $$PendingProgramSubmissionsTableUpdateCompanionBuilder =
-    PendingProgramSubmissionsCompanion Function({
-      Value<String> id,
-      Value<String> assignmentId,
-      Value<String> evidenceItemsJson,
-      Value<String> syncStatus,
-      Value<String?> syncError,
-      Value<int> retryCount,
-      Value<DateTime?> nextRetryAt,
-      Value<DateTime> createdAt,
-      Value<int> rowid,
-    });
-
-final class $$PendingProgramSubmissionsTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $PendingProgramSubmissionsTable,
-          PendingProgramSubmission
-        > {
-  $$PendingProgramSubmissionsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static MultiTypedResultKey<
-    $PendingProgramPhotosTable,
-    List<PendingProgramPhoto>
-  >
-  _pendingProgramPhotosRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.pendingProgramPhotos,
-        aliasName: $_aliasNameGenerator(
-          db.pendingProgramSubmissions.id,
-          db.pendingProgramPhotos.pendingProgramSubmissionId,
-        ),
-      );
-
-  $$PendingProgramPhotosTableProcessedTableManager
-  get pendingProgramPhotosRefs {
-    final manager =
-        $$PendingProgramPhotosTableTableManager(
-          $_db,
-          $_db.pendingProgramPhotos,
-        ).filter(
-          (f) => f.pendingProgramSubmissionId.id.sqlEquals(
-            $_itemColumn<String>('id')!,
-          ),
-        );
-
-    final cache = $_typedResult.readTableOrNull(
-      _pendingProgramPhotosRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$PendingProgramSubmissionsTableFilterComposer
-    extends Composer<_$AppDatabase, $PendingProgramSubmissionsTable> {
-  $$PendingProgramSubmissionsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get assignmentId => $composableBuilder(
-    column: $table.assignmentId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get evidenceItemsJson => $composableBuilder(
-    column: $table.evidenceItemsJson,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get syncError => $composableBuilder(
-    column: $table.syncError,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get retryCount => $composableBuilder(
-    column: $table.retryCount,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> pendingProgramPhotosRefs(
-    Expression<bool> Function($$PendingProgramPhotosTableFilterComposer f) f,
-  ) {
-    final $$PendingProgramPhotosTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.pendingProgramPhotos,
-      getReferencedColumn: (t) => t.pendingProgramSubmissionId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$PendingProgramPhotosTableFilterComposer(
-            $db: $db,
-            $table: $db.pendingProgramPhotos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$PendingProgramSubmissionsTableOrderingComposer
-    extends Composer<_$AppDatabase, $PendingProgramSubmissionsTable> {
-  $$PendingProgramSubmissionsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get assignmentId => $composableBuilder(
-    column: $table.assignmentId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get evidenceItemsJson => $composableBuilder(
-    column: $table.evidenceItemsJson,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get syncError => $composableBuilder(
-    column: $table.syncError,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get retryCount => $composableBuilder(
-    column: $table.retryCount,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$PendingProgramSubmissionsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $PendingProgramSubmissionsTable> {
-  $$PendingProgramSubmissionsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get assignmentId => $composableBuilder(
-    column: $table.assignmentId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get evidenceItemsJson => $composableBuilder(
-    column: $table.evidenceItemsJson,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get syncError =>
-      $composableBuilder(column: $table.syncError, builder: (column) => column);
-
-  GeneratedColumn<int> get retryCount => $composableBuilder(
-    column: $table.retryCount,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  Expression<T> pendingProgramPhotosRefs<T extends Object>(
-    Expression<T> Function($$PendingProgramPhotosTableAnnotationComposer a) f,
-  ) {
-    final $$PendingProgramPhotosTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.pendingProgramPhotos,
-          getReferencedColumn: (t) => t.pendingProgramSubmissionId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$PendingProgramPhotosTableAnnotationComposer(
-                $db: $db,
-                $table: $db.pendingProgramPhotos,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$PendingProgramSubmissionsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $PendingProgramSubmissionsTable,
-          PendingProgramSubmission,
-          $$PendingProgramSubmissionsTableFilterComposer,
-          $$PendingProgramSubmissionsTableOrderingComposer,
-          $$PendingProgramSubmissionsTableAnnotationComposer,
-          $$PendingProgramSubmissionsTableCreateCompanionBuilder,
-          $$PendingProgramSubmissionsTableUpdateCompanionBuilder,
-          (
-            PendingProgramSubmission,
-            $$PendingProgramSubmissionsTableReferences,
-          ),
-          PendingProgramSubmission,
-          PrefetchHooks Function({bool pendingProgramPhotosRefs})
-        > {
-  $$PendingProgramSubmissionsTableTableManager(
-    _$AppDatabase db,
-    $PendingProgramSubmissionsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$PendingProgramSubmissionsTableFilterComposer(
-                $db: db,
-                $table: table,
-              ),
-          createOrderingComposer: () =>
-              $$PendingProgramSubmissionsTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$PendingProgramSubmissionsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> assignmentId = const Value.absent(),
-                Value<String> evidenceItemsJson = const Value.absent(),
-                Value<String> syncStatus = const Value.absent(),
-                Value<String?> syncError = const Value.absent(),
-                Value<int> retryCount = const Value.absent(),
-                Value<DateTime?> nextRetryAt = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PendingProgramSubmissionsCompanion(
-                id: id,
-                assignmentId: assignmentId,
-                evidenceItemsJson: evidenceItemsJson,
-                syncStatus: syncStatus,
-                syncError: syncError,
-                retryCount: retryCount,
-                nextRetryAt: nextRetryAt,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String assignmentId,
-                required String evidenceItemsJson,
-                Value<String> syncStatus = const Value.absent(),
-                Value<String?> syncError = const Value.absent(),
-                Value<int> retryCount = const Value.absent(),
-                Value<DateTime?> nextRetryAt = const Value.absent(),
-                required DateTime createdAt,
-                Value<int> rowid = const Value.absent(),
-              }) => PendingProgramSubmissionsCompanion.insert(
-                id: id,
-                assignmentId: assignmentId,
-                evidenceItemsJson: evidenceItemsJson,
-                syncStatus: syncStatus,
-                syncError: syncError,
-                retryCount: retryCount,
-                nextRetryAt: nextRetryAt,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$PendingProgramSubmissionsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({pendingProgramPhotosRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (pendingProgramPhotosRefs) db.pendingProgramPhotos,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (pendingProgramPhotosRefs)
-                    await $_getPrefetchedData<
-                      PendingProgramSubmission,
-                      $PendingProgramSubmissionsTable,
-                      PendingProgramPhoto
-                    >(
-                      currentTable: table,
-                      referencedTable:
-                          $$PendingProgramSubmissionsTableReferences
-                              ._pendingProgramPhotosRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$PendingProgramSubmissionsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).pendingProgramPhotosRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where(
-                            (e) => e.pendingProgramSubmissionId == item.id,
-                          ),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$PendingProgramSubmissionsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $PendingProgramSubmissionsTable,
-      PendingProgramSubmission,
-      $$PendingProgramSubmissionsTableFilterComposer,
-      $$PendingProgramSubmissionsTableOrderingComposer,
-      $$PendingProgramSubmissionsTableAnnotationComposer,
-      $$PendingProgramSubmissionsTableCreateCompanionBuilder,
-      $$PendingProgramSubmissionsTableUpdateCompanionBuilder,
-      (PendingProgramSubmission, $$PendingProgramSubmissionsTableReferences),
-      PendingProgramSubmission,
-      PrefetchHooks Function({bool pendingProgramPhotosRefs})
-    >;
-typedef $$PendingProgramPhotosTableCreateCompanionBuilder =
-    PendingProgramPhotosCompanion Function({
-      required String id,
-      required String pendingProgramSubmissionId,
-      required String criteriaId,
-      required String localPath,
-      Value<String> syncStatus,
-      Value<String?> syncError,
-      Value<int> retryCount,
-      Value<DateTime?> nextRetryAt,
-      required DateTime createdAt,
-      Value<int> rowid,
-    });
-typedef $$PendingProgramPhotosTableUpdateCompanionBuilder =
-    PendingProgramPhotosCompanion Function({
-      Value<String> id,
-      Value<String> pendingProgramSubmissionId,
-      Value<String> criteriaId,
-      Value<String> localPath,
-      Value<String> syncStatus,
-      Value<String?> syncError,
-      Value<int> retryCount,
-      Value<DateTime?> nextRetryAt,
-      Value<DateTime> createdAt,
-      Value<int> rowid,
-    });
-
-final class $$PendingProgramPhotosTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $PendingProgramPhotosTable,
-          PendingProgramPhoto
-        > {
-  $$PendingProgramPhotosTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $PendingProgramSubmissionsTable _pendingProgramSubmissionIdTable(
-    _$AppDatabase db,
-  ) => db.pendingProgramSubmissions.createAlias(
-    $_aliasNameGenerator(
-      db.pendingProgramPhotos.pendingProgramSubmissionId,
-      db.pendingProgramSubmissions.id,
-    ),
-  );
-
-  $$PendingProgramSubmissionsTableProcessedTableManager
-  get pendingProgramSubmissionId {
-    final $_column = $_itemColumn<String>('pending_program_submission_id')!;
-
-    final manager = $$PendingProgramSubmissionsTableTableManager(
-      $_db,
-      $_db.pendingProgramSubmissions,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(
-      _pendingProgramSubmissionIdTable($_db),
-    );
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$PendingProgramPhotosTableFilterComposer
-    extends Composer<_$AppDatabase, $PendingProgramPhotosTable> {
-  $$PendingProgramPhotosTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get criteriaId => $composableBuilder(
-    column: $table.criteriaId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get localPath => $composableBuilder(
-    column: $table.localPath,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get syncError => $composableBuilder(
-    column: $table.syncError,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get retryCount => $composableBuilder(
-    column: $table.retryCount,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$PendingProgramSubmissionsTableFilterComposer
-  get pendingProgramSubmissionId {
-    final $$PendingProgramSubmissionsTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.pendingProgramSubmissionId,
-          referencedTable: $db.pendingProgramSubmissions,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$PendingProgramSubmissionsTableFilterComposer(
-                $db: $db,
-                $table: $db.pendingProgramSubmissions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return composer;
-  }
-}
-
-class $$PendingProgramPhotosTableOrderingComposer
-    extends Composer<_$AppDatabase, $PendingProgramPhotosTable> {
-  $$PendingProgramPhotosTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get criteriaId => $composableBuilder(
-    column: $table.criteriaId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get localPath => $composableBuilder(
-    column: $table.localPath,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get syncError => $composableBuilder(
-    column: $table.syncError,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get retryCount => $composableBuilder(
-    column: $table.retryCount,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$PendingProgramSubmissionsTableOrderingComposer
-  get pendingProgramSubmissionId {
-    final $$PendingProgramSubmissionsTableOrderingComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.pendingProgramSubmissionId,
-          referencedTable: $db.pendingProgramSubmissions,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$PendingProgramSubmissionsTableOrderingComposer(
-                $db: $db,
-                $table: $db.pendingProgramSubmissions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return composer;
-  }
-}
-
-class $$PendingProgramPhotosTableAnnotationComposer
-    extends Composer<_$AppDatabase, $PendingProgramPhotosTable> {
-  $$PendingProgramPhotosTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get criteriaId => $composableBuilder(
-    column: $table.criteriaId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get localPath =>
-      $composableBuilder(column: $table.localPath, builder: (column) => column);
-
-  GeneratedColumn<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get syncError =>
-      $composableBuilder(column: $table.syncError, builder: (column) => column);
-
-  GeneratedColumn<int> get retryCount => $composableBuilder(
-    column: $table.retryCount,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  $$PendingProgramSubmissionsTableAnnotationComposer
-  get pendingProgramSubmissionId {
-    final $$PendingProgramSubmissionsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.pendingProgramSubmissionId,
-          referencedTable: $db.pendingProgramSubmissions,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$PendingProgramSubmissionsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.pendingProgramSubmissions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return composer;
-  }
-}
-
-class $$PendingProgramPhotosTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $PendingProgramPhotosTable,
-          PendingProgramPhoto,
-          $$PendingProgramPhotosTableFilterComposer,
-          $$PendingProgramPhotosTableOrderingComposer,
-          $$PendingProgramPhotosTableAnnotationComposer,
-          $$PendingProgramPhotosTableCreateCompanionBuilder,
-          $$PendingProgramPhotosTableUpdateCompanionBuilder,
-          (PendingProgramPhoto, $$PendingProgramPhotosTableReferences),
-          PendingProgramPhoto,
-          PrefetchHooks Function({bool pendingProgramSubmissionId})
-        > {
-  $$PendingProgramPhotosTableTableManager(
-    _$AppDatabase db,
-    $PendingProgramPhotosTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$PendingProgramPhotosTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$PendingProgramPhotosTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$PendingProgramPhotosTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> pendingProgramSubmissionId = const Value.absent(),
-                Value<String> criteriaId = const Value.absent(),
-                Value<String> localPath = const Value.absent(),
-                Value<String> syncStatus = const Value.absent(),
-                Value<String?> syncError = const Value.absent(),
-                Value<int> retryCount = const Value.absent(),
-                Value<DateTime?> nextRetryAt = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PendingProgramPhotosCompanion(
-                id: id,
-                pendingProgramSubmissionId: pendingProgramSubmissionId,
-                criteriaId: criteriaId,
-                localPath: localPath,
-                syncStatus: syncStatus,
-                syncError: syncError,
-                retryCount: retryCount,
-                nextRetryAt: nextRetryAt,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String pendingProgramSubmissionId,
-                required String criteriaId,
-                required String localPath,
-                Value<String> syncStatus = const Value.absent(),
-                Value<String?> syncError = const Value.absent(),
-                Value<int> retryCount = const Value.absent(),
-                Value<DateTime?> nextRetryAt = const Value.absent(),
-                required DateTime createdAt,
-                Value<int> rowid = const Value.absent(),
-              }) => PendingProgramPhotosCompanion.insert(
-                id: id,
-                pendingProgramSubmissionId: pendingProgramSubmissionId,
-                criteriaId: criteriaId,
-                localPath: localPath,
-                syncStatus: syncStatus,
-                syncError: syncError,
-                retryCount: retryCount,
-                nextRetryAt: nextRetryAt,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$PendingProgramPhotosTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({pendingProgramSubmissionId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (pendingProgramSubmissionId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.pendingProgramSubmissionId,
-                                referencedTable:
-                                    $$PendingProgramPhotosTableReferences
-                                        ._pendingProgramSubmissionIdTable(db),
-                                referencedColumn:
-                                    $$PendingProgramPhotosTableReferences
-                                        ._pendingProgramSubmissionIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$PendingProgramPhotosTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $PendingProgramPhotosTable,
-      PendingProgramPhoto,
-      $$PendingProgramPhotosTableFilterComposer,
-      $$PendingProgramPhotosTableOrderingComposer,
-      $$PendingProgramPhotosTableAnnotationComposer,
-      $$PendingProgramPhotosTableCreateCompanionBuilder,
-      $$PendingProgramPhotosTableUpdateCompanionBuilder,
-      (PendingProgramPhoto, $$PendingProgramPhotosTableReferences),
-      PendingProgramPhoto,
-      PrefetchHooks Function({bool pendingProgramSubmissionId})
-    >;
 typedef $$SyncMetaTableCreateCompanionBuilder =
     SyncMetaCompanion Function({
       required String entityType,
@@ -19670,13 +17924,6 @@ class $AppDatabaseManager {
         _db,
         _db.submissionRiskOutboxEntries,
       );
-  $$PendingProgramSubmissionsTableTableManager get pendingProgramSubmissions =>
-      $$PendingProgramSubmissionsTableTableManager(
-        _db,
-        _db.pendingProgramSubmissions,
-      );
-  $$PendingProgramPhotosTableTableManager get pendingProgramPhotos =>
-      $$PendingProgramPhotosTableTableManager(_db, _db.pendingProgramPhotos);
   $$SyncMetaTableTableManager get syncMeta =>
       $$SyncMetaTableTableManager(_db, _db.syncMeta);
   $$DraftAnswersTableTableManager get draftAnswers =>

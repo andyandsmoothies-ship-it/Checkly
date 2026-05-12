@@ -1,12 +1,14 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Checkly.Api.Common;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+
 
 namespace Checkly.Api.Features.Submissions;
 
@@ -27,6 +29,7 @@ public static class CreateSubmission
         AppDbContext db,
         ScoringVerifier scorer,
         IConfiguration config,
+        PbacDictionaryCache pbac,
         CancellationToken ct)
     {
         var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -39,6 +42,46 @@ public static class CreateSubmission
             {
                 return TypedResults.Forbid();
             }
+        }
+
+        // Program Bridge: two-path PBAC check.
+        // Path A (ProgramAssignmentId set) → require programs:execute + 3-way IDOR via bridge.
+        // Path B (no ProgramAssignmentId)  → require submissions:create (existing audit path).
+        Checkly.Api.Common.Persistence.Entities.ProgramAssignment? linkedAssignment = null;
+        if (request.ProgramAssignmentId.HasValue)
+        {
+            // Resolve caller's store from Profile — never trust request for scoping.
+            var callerProfile = await db.Profiles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == callerId, ct);
+
+            if (callerProfile?.StoreId is null)
+                return TypedResults.Forbid();
+
+            var (assignment, bridgeError) = await ProgramAssignmentBridge.ValidateAndLinkAsync(
+                request.ProgramAssignmentId.Value,
+                request.TemplateId,
+                callerProfile.StoreId.Value,
+                user,
+                pbac,
+                db,
+                ct);
+
+            if (bridgeError is not null)
+                return bridgeError;
+
+            // Guard: Cannot create a new submission for an already-submitted assignment.
+            if (assignment!.Status == "submitted" || assignment.Status == "verified")
+                return TypedResults.BadRequest(new { error = $"Assignment is already in status '{assignment.Status}' and cannot be re-submitted." });
+
+            linkedAssignment = assignment;
+        }
+        else
+        {
+            // Normal audit path: require submissions:create capability (mirrors CapabilityAuthorizationHandler).
+            var role = user.FindFirstValue(ClaimTypes.Role);
+            if (role is null || !pbac.IsReady || !pbac.GetCapabilities(role).Contains(AppCapabilities.SubmissionsCreate))
+                return TypedResults.Forbid();
         }
 
         // Determine mode
@@ -230,7 +273,8 @@ public static class CreateSubmission
             DisplayNoun = template.DisplayNoun,
             IdempotencyKey = request.IdempotencyKey,
             TemplateSnapshot = templateSnapshotJson,
-            TemplateVersion = template.Version
+            TemplateVersion = template.Version,
+            ProgramAssignmentId = request.ProgramAssignmentId
         };
 
         var strategy = db.Database.CreateExecutionStrategy();
@@ -274,7 +318,18 @@ public static class CreateSubmission
                 message: $"Submission created with status '{submission.Status}' for store '{submission.StoreName}'",
                 userEmail: user.FindFirstValue(ClaimTypes.Email));
 
-            // Atomic flush 1: submission + answers + action plans + audit log
+            // Program Bridge: transition assignment status and write dedicated audit entry.
+            if (linkedAssignment is not null)
+            {
+                if (linkedAssignment.Status == "pending" || linkedAssignment.Status == "needs_revision")
+                    linkedAssignment.Status = "in_progress";
+
+                AuditLogger.Log(db, user, "program_submission_created", "Submission", submission.Id,
+                    message: $"SM created Program Submission for ProgramAssignment {linkedAssignment.Id}.",
+                    userEmail: $"/api/submissions");
+            }
+
+            // Atomic flush 1: submission + answers + action plans + audit log + assignment status
             await db.SaveChangesAsync(ct);
 
             if (!isDraft && !isScheduled)

@@ -53,6 +53,11 @@ Describe the optimal, straight-line path from the trigger to the successful achi
 
 This is the most critical part of Use-Case Authoring. Look at each step in the Basic Scenario and ask: "What could go wrong? What alternative choices does the actor have?"
 
+*Mandatory Checks:*
+- **Functional Errors**: Invalid input, declined actions.
+- **Edge & Boundary Cases**: Extreme data limits, zero/null values, timezone boundaries.
+- **Systemic & Concurrency**: Network timeouts, double-clicks/duplicate requests, race conditions.
+
 For each extension:
 - Reference the step it diverges from (e.g., `3a. Address validation fails`).
 - List the steps taken within the extension.

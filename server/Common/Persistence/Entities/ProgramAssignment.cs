@@ -34,4 +34,5 @@ public sealed class ProgramAssignment
     // Navigation properties
     public ChecklyProgram? Program { get; set; }
     public Store? Store { get; set; }
+    public ICollection<Submission> Submissions { get; set; } = [];
 }

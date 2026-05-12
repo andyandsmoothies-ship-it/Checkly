@@ -341,10 +341,10 @@ class _NavItem extends StatelessWidget {
                     child: Text(
                       badgeCount > 99 ? '99+' : '$badgeCount',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onError,
-                            fontWeight: FontWeight.w700,
-                            height: 1.2,
-                          ),
+                        color: Theme.of(context).colorScheme.onError,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -355,10 +355,10 @@ class _NavItem extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: color,
-                  letterSpacing: -0.5,
-                ),
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: -0.5,
+            ),
           ),
         ],
       ),

@@ -66,49 +66,4 @@ public class Program_Slice3_Tests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
-    [Fact]
-    public async Task GapAC1_ProgramAssignments_Contains_Evidence_List()
-    {
-        // Arrange — seed a real Program so the endpoint returns 200, not 404.
-        var adminClient = await CreateAdminClientAsync();
-
-        // 1. Create a Store
-        var storeResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = "GapAC1-Store" });
-        storeResp.EnsureSuccessStatusCode();
-        var storeJson = await storeResp.Content.ReadFromJsonAsync<JsonElement>();
-        var storeId = storeJson.GetProperty("id").GetGuid();
-
-        // 2. Create a Template
-        var tplResp = await adminClient.PostAsJsonAsync("/api/templates", new { title = "GapAC1-Template", type = "checklist" });
-        tplResp.EnsureSuccessStatusCode();
-        var tplJson = await tplResp.Content.ReadFromJsonAsync<JsonElement>();
-        var templateId = tplJson.GetProperty("id").GetGuid();
-
-        // 3. Create the Program
-        var createResp = await adminClient.PostAsJsonAsync("/api/programs", new
-        {
-            templateId,
-            storeIds = new[] { storeId },
-            deadline = DateTimeOffset.UtcNow.AddDays(7),
-            category = "GapAC1",
-            title = "GapAC1 Program"
-        });
-        createResp.EnsureSuccessStatusCode();
-        var createJson = await createResp.Content.ReadFromJsonAsync<JsonElement>();
-        var programId = createJson.GetProperty("programId").GetGuid();
-
-        // Act
-        var response = await adminClient.GetAsync($"/api/programs/{programId}/assignments");
-
-        // Assert — endpoint should return 200 with an items array (may be empty or populated)
-        Assert.True(response.IsSuccessStatusCode);
-        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.True(body.TryGetProperty("items", out var items), "Response must contain an 'items' property.");
-
-        // If any assignments exist, each must have an 'evidence' property.
-        foreach (var item in items.EnumerateArray())
-        {
-            Assert.True(item.TryGetProperty("evidence", out _), "Each assignment item must expose an 'evidence' list.");
-        }
-    }
 }

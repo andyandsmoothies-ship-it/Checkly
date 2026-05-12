@@ -102,6 +102,7 @@ class CoreAuditSyncModule extends BaseSyncModule {
               'status': 'completed',
               'idempotencyKey': dbRow.idempotencyKey,
               'targetSubmissionId': dbRow.targetSubmissionId,
+              'programAssignmentId': dbRow.programAssignmentId,
               'hasGlobalRisk': hasGlobalRisk,
               'answers': answers.map(buildAnswerPayload).toList(),
             }),

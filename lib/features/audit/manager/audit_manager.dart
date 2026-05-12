@@ -123,11 +123,15 @@ class AuditManager extends ChangeNotifier {
   /// SyncEngine reads this from the outbox row to route PUT instead of POST.
   String? _targetSubmissionId;
 
+  /// The UUID of the ProgramAssignment this submission is linked to (if any).
+  String? _programAssignmentId;
+
   // ---------- Init ----------
   Future<void> startAudit(
     TemplateTreeDto template,
     String storeId, {
     String? targetSubmissionId,
+    String? programAssignmentId,
   }) async {
     _template = template;
     _storeId = storeId;
@@ -141,6 +145,7 @@ class AuditManager extends ChangeNotifier {
     _wasQueuedOffline = false;
     _draftSavedAt = null;
     _targetSubmissionId = targetSubmissionId;
+    _programAssignmentId = programAssignmentId;
     _pendingSubmissionId = _uuid.v4(); // Stable ID for this local session
     _triggeredRiskIds.clear();
 
@@ -154,7 +159,10 @@ class AuditManager extends ChangeNotifier {
     try {
       userId = _di<AuthManager>().currentUser?.userId;
     } catch (_) {}
-    _draftKey = '${template.id}:$storeId:${userId ?? 'anon'}';
+    _draftKey =
+        '${template.id}:$storeId:${userId ?? 'anon'}'
+        '${targetSubmissionId != null ? ':$targetSubmissionId' : ''}'
+        '${programAssignmentId != null ? ':$programAssignmentId' : ''}';
 
     // Check for existing draft
     _pendingDraft = await _draftService.loadDraft(_draftKey!);
@@ -348,6 +356,7 @@ class AuditManager extends ChangeNotifier {
     _pendingDraft = null;
     _draftSavedAt = null;
     _targetSubmissionId = null;
+    _programAssignmentId = null;
     _pendingSubmissionId = null;
     _triggeredRiskIds.clear();
     _availableRisks = [];

@@ -29,6 +29,8 @@ void main() {
       final assignment = ProgramAssignmentDto(
         id: assignmentId,
         programId: 'prog-123',
+        activeSubmissionId: null,
+        templateId: null,
         programTitle: 'Fix Endcap Display',
         category: 'Merchandising',
         deadline: DateTime.now().add(const Duration(days: 1)),

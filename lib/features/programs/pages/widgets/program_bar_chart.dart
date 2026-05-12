@@ -44,7 +44,10 @@ class ProgramSegmentedBarChart extends StatelessWidget {
                 buildSegment(summary.verified, theme.colorScheme.primary),
                 buildSegment(summary.submitted, theme.colorScheme.secondary),
                 buildSegment(summary.needsRevision, theme.colorScheme.error),
-                buildSegment(summary.pending, theme.colorScheme.surfaceContainerHighest),
+                buildSegment(
+                  summary.pending,
+                  theme.colorScheme.surfaceContainerHighest,
+                ),
                 buildSegment(summary.overdue, theme.colorScheme.tertiary),
               ],
             ),
@@ -102,7 +105,9 @@ class _LegendItem extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
       ],

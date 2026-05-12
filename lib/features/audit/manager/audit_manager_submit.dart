@@ -77,6 +77,7 @@ Future<void> _submitAuditLogic(AuditManager manager) async {
         createdAt: now,
         syncStatus: Value('pending'),
         targetSubmissionId: Value(manager._targetSubmissionId),
+        programAssignmentId: Value(manager._programAssignmentId),
       ),
       answerCompanions,
       photos,

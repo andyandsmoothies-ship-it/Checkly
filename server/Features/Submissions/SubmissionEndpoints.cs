@@ -14,8 +14,8 @@ public static class SubmissionEndpoints
             .RequireAuthorization();
 
         group.MapPost("/", CreateSubmission.HandleAsync)
-            .WithName("CreateSubmission")
-            .RequireCapability(AppCapabilities.SubmissionsCreate);
+            .WithName("CreateSubmission");
+
 
         group.MapGet("/", ListSubmissions.HandleAsync)
             .WithName("ListSubmissions")

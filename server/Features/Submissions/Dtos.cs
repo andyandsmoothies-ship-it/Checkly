@@ -17,7 +17,9 @@ public sealed record CreateSubmissionRequest(
     DateTimeOffset? ScheduledAt = null,
     Guid? AssignToAuditorId = null,
     bool HasGlobalRisk = false,
-    Guid? Id = null);  // Allows client-provided UUIDs for offline-first sync mapping
+    Guid? Id = null,
+    Guid? ProgramAssignmentId = null);  // Program bridge: links submission to a ProgramAssignment
+
 
 public sealed record AnswerInput(
     Guid CriteriaId,
