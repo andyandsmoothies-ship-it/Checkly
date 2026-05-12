@@ -20,7 +20,7 @@ public static class SearchUsers
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapGet("/api/users", HandleAsync)
-            .RequireAuthorization()
+            .RequireAuthorization("AreaManagerAccess")
             .WithTags("Users");
     }
 

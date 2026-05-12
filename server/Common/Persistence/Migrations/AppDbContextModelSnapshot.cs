@@ -784,6 +784,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("assigned_by_id");
 
+                    b.Property<Guid?>("AssigneeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assignee_id");
+
                     b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("completed_at");
@@ -832,6 +836,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedById");
+
+                    b.HasIndex("AssigneeId");
 
                     b.HasIndex("ProgramId", "CreatedAt")
                         .IsDescending(false, true);

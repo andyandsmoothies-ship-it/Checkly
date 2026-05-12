@@ -14,6 +14,7 @@ public class ProgramAssignmentConfiguration : IEntityTypeConfiguration<ProgramAs
         e.Property(x => x.ProgramId).HasColumnName("program_id").IsRequired();
         e.Property(x => x.StoreId).HasColumnName("store_id").IsRequired();
         e.Property(x => x.AssignedById).HasColumnName("assigned_by_id").IsRequired();
+        e.Property(x => x.AssigneeId).HasColumnName("assignee_id");
         e.Property(x => x.Status).HasColumnName("status").HasDefaultValue("pending");
         e.Property(x => x.CompletedAt).HasColumnName("completed_at");
         e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
@@ -45,5 +46,6 @@ public class ProgramAssignmentConfiguration : IEntityTypeConfiguration<ProgramAs
         e.HasIndex(x => new { x.StoreId, x.Status });
         e.HasIndex(x => new { x.ProgramId, x.CreatedAt }).IsDescending(false, true);
         e.HasIndex(x => x.AssignedById);
+        e.HasIndex(x => x.AssigneeId);
     }
 }

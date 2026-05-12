@@ -14,6 +14,7 @@ public sealed class ProgramAssignment
     public Guid ProgramId { get; set; }
     public Guid StoreId { get; set; }
     public Guid AssignedById { get; set; }
+    public Guid? AssigneeId { get; set; }
     public string Status { get; set; } = "pending";
     public DateTimeOffset? CompletedAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

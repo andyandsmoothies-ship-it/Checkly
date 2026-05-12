@@ -14,18 +14,6 @@ public static class ListAreas
         HttpContext httpContext,
         CancellationToken ct)
     {
-        // C-03 Fix: Pre-load all area managers in 1 query instead of N correlated subqueries.
-        var managersByArea = await (
-            from p in db.Profiles.AsNoTracking()
-            join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
-            where r.Role == "area_manager"
-            select new { p.AreaId, p.FullName })
-            .ToListAsync(ct);
-
-        var managerDict = managersByArea
-            .Where(x => x.AreaId.HasValue)
-            .GroupBy(x => x.AreaId!.Value)
-            .ToDictionary(g => g.Key, g => g.First().FullName);
 
         var page = int.TryParse(httpContext.Request.Query["page"], out var pg) ? Math.Max(1, pg) : 1;
         var pageSize = int.TryParse(httpContext.Request.Query["pageSize"], out var ps) ? Math.Clamp(ps, 1, 200) : 50;
@@ -43,13 +31,23 @@ public static class ListAreas
         var areaRows = await areaQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(a => new { a.Id, a.Name, a.Description, StoreCount = a.Stores.Count(s => s.IsActive == true), a.CreatedAt })
+            .Select(a => new { 
+                a.Id, 
+                a.Name, 
+                a.Description, 
+                StoreCount = a.Stores.Count(s => s.IsActive == true), 
+                a.CreatedAt,
+                ManagerName = db.Profiles
+                    .Where(p => p.AreaId == a.Id && db.AppUserRoles.Any(r => r.UserId == p.Id && r.Role == "area_manager"))
+                    .Select(p => p.FullName)
+                    .FirstOrDefault()
+            })
             .ToListAsync(ct);
 
         var areas = areaRows
             .Select(a => new AreaDto(
                 a.Id, a.Name, a.Description, a.StoreCount,
-                managerDict.GetValueOrDefault(a.Id),
+                a.ManagerName,
                 a.CreatedAt))
             .ToList();
 
