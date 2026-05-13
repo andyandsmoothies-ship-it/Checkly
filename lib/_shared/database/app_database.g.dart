@@ -10816,8 +10816,19 @@ class $SyncMetaTable extends SyncMeta
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastCursorIdMeta = const VerificationMeta(
+    'lastCursorId',
+  );
   @override
-  List<GeneratedColumn> get $columns => [entityType, lastSyncAt];
+  late final GeneratedColumn<String> lastCursorId = GeneratedColumn<String>(
+    'last_cursor_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [entityType, lastSyncAt, lastCursorId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -10849,6 +10860,15 @@ class $SyncMetaTable extends SyncMeta
     } else if (isInserting) {
       context.missing(_lastSyncAtMeta);
     }
+    if (data.containsKey('last_cursor_id')) {
+      context.handle(
+        _lastCursorIdMeta,
+        lastCursorId.isAcceptableOrUnknown(
+          data['last_cursor_id']!,
+          _lastCursorIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -10866,6 +10886,10 @@ class $SyncMetaTable extends SyncMeta
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_sync_at'],
       )!,
+      lastCursorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_cursor_id'],
+      ),
     );
   }
 
@@ -10878,12 +10902,20 @@ class $SyncMetaTable extends SyncMeta
 class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
   final String entityType;
   final DateTime lastSyncAt;
-  const SyncMetaData({required this.entityType, required this.lastSyncAt});
+  final String? lastCursorId;
+  const SyncMetaData({
+    required this.entityType,
+    required this.lastSyncAt,
+    this.lastCursorId,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['entity_type'] = Variable<String>(entityType);
     map['last_sync_at'] = Variable<DateTime>(lastSyncAt);
+    if (!nullToAbsent || lastCursorId != null) {
+      map['last_cursor_id'] = Variable<String>(lastCursorId);
+    }
     return map;
   }
 
@@ -10891,6 +10923,9 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
     return SyncMetaCompanion(
       entityType: Value(entityType),
       lastSyncAt: Value(lastSyncAt),
+      lastCursorId: lastCursorId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastCursorId),
     );
   }
 
@@ -10902,6 +10937,7 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
     return SyncMetaData(
       entityType: serializer.fromJson<String>(json['entityType']),
       lastSyncAt: serializer.fromJson<DateTime>(json['lastSyncAt']),
+      lastCursorId: serializer.fromJson<String?>(json['lastCursorId']),
     );
   }
   @override
@@ -10910,14 +10946,19 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
     return <String, dynamic>{
       'entityType': serializer.toJson<String>(entityType),
       'lastSyncAt': serializer.toJson<DateTime>(lastSyncAt),
+      'lastCursorId': serializer.toJson<String?>(lastCursorId),
     };
   }
 
-  SyncMetaData copyWith({String? entityType, DateTime? lastSyncAt}) =>
-      SyncMetaData(
-        entityType: entityType ?? this.entityType,
-        lastSyncAt: lastSyncAt ?? this.lastSyncAt,
-      );
+  SyncMetaData copyWith({
+    String? entityType,
+    DateTime? lastSyncAt,
+    Value<String?> lastCursorId = const Value.absent(),
+  }) => SyncMetaData(
+    entityType: entityType ?? this.entityType,
+    lastSyncAt: lastSyncAt ?? this.lastSyncAt,
+    lastCursorId: lastCursorId.present ? lastCursorId.value : this.lastCursorId,
+  );
   SyncMetaData copyWithCompanion(SyncMetaCompanion data) {
     return SyncMetaData(
       entityType: data.entityType.present
@@ -10926,6 +10967,9 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
       lastSyncAt: data.lastSyncAt.present
           ? data.lastSyncAt.value
           : this.lastSyncAt,
+      lastCursorId: data.lastCursorId.present
+          ? data.lastCursorId.value
+          : this.lastCursorId,
     );
   }
 
@@ -10933,44 +10977,51 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
   String toString() {
     return (StringBuffer('SyncMetaData(')
           ..write('entityType: $entityType, ')
-          ..write('lastSyncAt: $lastSyncAt')
+          ..write('lastSyncAt: $lastSyncAt, ')
+          ..write('lastCursorId: $lastCursorId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(entityType, lastSyncAt);
+  int get hashCode => Object.hash(entityType, lastSyncAt, lastCursorId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is SyncMetaData &&
           other.entityType == this.entityType &&
-          other.lastSyncAt == this.lastSyncAt);
+          other.lastSyncAt == this.lastSyncAt &&
+          other.lastCursorId == this.lastCursorId);
 }
 
 class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
   final Value<String> entityType;
   final Value<DateTime> lastSyncAt;
+  final Value<String?> lastCursorId;
   final Value<int> rowid;
   const SyncMetaCompanion({
     this.entityType = const Value.absent(),
     this.lastSyncAt = const Value.absent(),
+    this.lastCursorId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SyncMetaCompanion.insert({
     required String entityType,
     required DateTime lastSyncAt,
+    this.lastCursorId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : entityType = Value(entityType),
        lastSyncAt = Value(lastSyncAt);
   static Insertable<SyncMetaData> custom({
     Expression<String>? entityType,
     Expression<DateTime>? lastSyncAt,
+    Expression<String>? lastCursorId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (entityType != null) 'entity_type': entityType,
       if (lastSyncAt != null) 'last_sync_at': lastSyncAt,
+      if (lastCursorId != null) 'last_cursor_id': lastCursorId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -10978,11 +11029,13 @@ class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
   SyncMetaCompanion copyWith({
     Value<String>? entityType,
     Value<DateTime>? lastSyncAt,
+    Value<String?>? lastCursorId,
     Value<int>? rowid,
   }) {
     return SyncMetaCompanion(
       entityType: entityType ?? this.entityType,
       lastSyncAt: lastSyncAt ?? this.lastSyncAt,
+      lastCursorId: lastCursorId ?? this.lastCursorId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -10996,6 +11049,9 @@ class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
     if (lastSyncAt.present) {
       map['last_sync_at'] = Variable<DateTime>(lastSyncAt.value);
     }
+    if (lastCursorId.present) {
+      map['last_cursor_id'] = Variable<String>(lastCursorId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -11007,6 +11063,7 @@ class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
     return (StringBuffer('SyncMetaCompanion(')
           ..write('entityType: $entityType, ')
           ..write('lastSyncAt: $lastSyncAt, ')
+          ..write('lastCursorId: $lastCursorId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -17552,12 +17609,14 @@ typedef $$SyncMetaTableCreateCompanionBuilder =
     SyncMetaCompanion Function({
       required String entityType,
       required DateTime lastSyncAt,
+      Value<String?> lastCursorId,
       Value<int> rowid,
     });
 typedef $$SyncMetaTableUpdateCompanionBuilder =
     SyncMetaCompanion Function({
       Value<String> entityType,
       Value<DateTime> lastSyncAt,
+      Value<String?> lastCursorId,
       Value<int> rowid,
     });
 
@@ -17577,6 +17636,11 @@ class $$SyncMetaTableFilterComposer
 
   ColumnFilters<DateTime> get lastSyncAt => $composableBuilder(
     column: $table.lastSyncAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastCursorId => $composableBuilder(
+    column: $table.lastCursorId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -17599,6 +17663,11 @@ class $$SyncMetaTableOrderingComposer
     column: $table.lastSyncAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get lastCursorId => $composableBuilder(
+    column: $table.lastCursorId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SyncMetaTableAnnotationComposer
@@ -17617,6 +17686,11 @@ class $$SyncMetaTableAnnotationComposer
 
   GeneratedColumn<DateTime> get lastSyncAt => $composableBuilder(
     column: $table.lastSyncAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastCursorId => $composableBuilder(
+    column: $table.lastCursorId,
     builder: (column) => column,
   );
 }
@@ -17654,20 +17728,24 @@ class $$SyncMetaTableTableManager
               ({
                 Value<String> entityType = const Value.absent(),
                 Value<DateTime> lastSyncAt = const Value.absent(),
+                Value<String?> lastCursorId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SyncMetaCompanion(
                 entityType: entityType,
                 lastSyncAt: lastSyncAt,
+                lastCursorId: lastCursorId,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String entityType,
                 required DateTime lastSyncAt,
+                Value<String?> lastCursorId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SyncMetaCompanion.insert(
                 entityType: entityType,
                 lastSyncAt: lastSyncAt,
+                lastCursorId: lastCursorId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

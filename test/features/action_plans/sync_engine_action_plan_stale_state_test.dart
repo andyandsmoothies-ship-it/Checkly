@@ -28,6 +28,11 @@ import 'package:checkly/features/action_plans/adapters/action_plan_api_adapter.d
 import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
 import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
 
+import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/_shared/database/dao/profile_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_dao.dart';
+import 'package:mocktail/mocktail.dart';
+
 // =================================================================
 // FAKES
 // =================================================================
@@ -46,8 +51,8 @@ class FakeSyncApi implements SyncApi {
   @override
   Future<void> pushSubmission(PendingSubmission submission) async {}
   @override
-  Future<DeltaPullResult> pullDeltas(DateTime? since) async =>
-      DeltaPullResult(serverTimestamp: DateTime.now());
+  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async =>
+      DeltaPullResult(serverTimestamp: DateTime.now(), hasNextPage: false, submissions: []);
   @override
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
   @override
@@ -142,6 +147,11 @@ class MockDio implements Dio {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+
+class MockAuthManager extends Mock implements AuthManager {}
+class MockProfileDao extends Mock implements ProfileDao {}
+class MockSubmissionDao extends Mock implements SubmissionDao {}
+
 void main() {
   group('SyncEngine ActionPlan Stale State Tests (Slice 2)', () {
     late AppDatabase db;
@@ -168,6 +178,9 @@ void main() {
             syncMetaDao: SyncMetaDao(db),
             connectivity: connectivity,
             scheduleRetry: (delay) {},
+            authManager: MockAuthManager(),
+            profileDao: MockProfileDao(),
+            submissionDao: MockSubmissionDao(),
           ),
           ActionPlanSyncModule(
             api: actionPlanApi,

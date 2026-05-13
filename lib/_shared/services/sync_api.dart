@@ -6,8 +6,13 @@ abstract class SyncApi {
   /// Push a single pending submission to the server.
   Future<void> pushSubmission(PendingSubmission submission);
 
-  /// Pull delta updates from server since [since].
-  Future<DeltaPullResult> pullDeltas(DateTime? since);
+  /// Pull delta updates from server using cursor pagination.
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  });
 
   /// Pull global risks delta from server since [since].
   Future<List<dynamic>> pullGlobalRisks(DateTime? since);

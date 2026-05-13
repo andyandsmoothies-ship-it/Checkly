@@ -20,7 +20,6 @@ public static class UpdateActionPlan
         ClaimsPrincipal user,
         AppDbContext db,
         [Microsoft.AspNetCore.Mvc.FromServices] PbacDictionaryCache cache,
-        IFcmDispatchService fcm,
         CancellationToken ct)
     {
         var plan = await db.ActionPlans.FindAsync([id], ct);
@@ -125,8 +124,6 @@ public static class UpdateActionPlan
                 : "Fields updated (no status change)",
             userEmail: user.FindFirstValue(ClaimTypes.Email));
 
-        await db.SaveChangesAsync(ct);
-
         // --- S2: Generate notifications on status change ---
         if (request.Status is not null && request.Status != oldStatus)
         {
@@ -199,10 +196,20 @@ public static class UpdateActionPlan
             if (notif is not null)
             {
                 db.Notifications.Add(notif);
-                await db.SaveChangesAsync(ct);
-                await fcm.DispatchSyncNeededAsync(notif.UserId);
+                
+                var outboxMsg = new OutboxMessage
+                {
+                    Id = Guid.NewGuid(),
+                    Type = "Notification",
+                    Payload = System.Text.Json.JsonSerializer.Serialize(new { notif.UserId, NotificationId = notif.Id }),
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+                db.OutboxMessages.Add(outboxMsg);
             }
         }
+
+        // Commit Action Plan, Notification, and OutboxMessage atomically
+        await db.SaveChangesAsync(ct);
 
         return TypedResults.Ok(CreateActionPlan.ToDto(plan));
     }

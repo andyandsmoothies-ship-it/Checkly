@@ -90,18 +90,49 @@ class SyncApiAdapter implements SyncApi {
     }
   }
 
-  /// **SYNTHETIC STUB — NOT YET IMPLEMENTED.**
-  ///
-  /// A future delta-sync endpoint would allow the backend to broadcast
-  /// what changed since [since], reducing redundant fetches.
-  ///
-  /// Currently, each manager (e.g. [TemplateManager], [AuditManager])
-  /// independently handles its own cache refresh on reconnect. Until a
-  /// unified pull-delta API exists on the server, this method returns an
-  /// empty [DeltaPullResult] and MUST NOT be used for real data fetching.
   @override
-  Future<DeltaPullResult> pullDeltas(DateTime? since) async {
-    return DeltaPullResult(serverTimestamp: DateTime.now());
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  }) async {
+    final params = <String, dynamic>{};
+    if (cursorUpdatedAt != null) {
+      params['cursorUpdatedAt'] = cursorUpdatedAt.toUtc().toIso8601String();
+    }
+    if (cursorId != null) params['cursorId'] = cursorId;
+    if (storeId != null) params['storeId'] = storeId;
+    if (areaId != null) params['areaId'] = areaId;
+
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/sync/submissions',
+      queryParameters: params,
+    );
+
+    final data = response.data;
+    if (data == null) {
+      return DeltaPullResult(serverTimestamp: cursorUpdatedAt ?? DateTime.now());
+    }
+
+    final items = data['items'] as List<dynamic>? ?? [];
+    final hasNextPage = data['hasNextPage'] as bool? ?? false;
+
+    DateTime nextTimestamp = cursorUpdatedAt ?? DateTime.now();
+    if (items.isNotEmpty) {
+      final lastItem = items.last as Map<String, dynamic>;
+      if (lastItem['updatedAt'] != null) {
+        nextTimestamp = DateTime.parse(lastItem['updatedAt'] as String);
+      } else if (lastItem['createdAt'] != null) {
+        nextTimestamp = DateTime.parse(lastItem['createdAt'] as String);
+      }
+    }
+
+    return DeltaPullResult(
+      serverTimestamp: nextTimestamp,
+      hasNextPage: hasNextPage,
+      submissions: items,
+    );
   }
 
   @override

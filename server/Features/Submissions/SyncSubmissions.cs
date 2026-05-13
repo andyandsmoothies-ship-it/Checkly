@@ -2,20 +2,22 @@ using System.Security.Claims;
 using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Checkly.Api.Features.Submissions;
 
 /// <summary>
 /// GET /api/sync/submissions — Mobile delta-sync endpoint.
-/// Returns a paginated, incremental list of submissions modified after a given timestamp.
+/// Returns a keyset paginated, incremental list of submissions modified after a given timestamp.
 ///
 /// Security:
 ///   - Non-admin callers MUST supply ?storeId or ?areaId. Unbounded syncs are rejected (400).
 ///   - IDOR: the caller's identity is verified against the requested storeId/areaId.
 ///   - Admin bypasses scope requirement and receives all matching records.
 ///
-/// Pagination: ?page=1&amp;pageSize=50. Hard cap at 200.
-/// Delta: ?since=ISO8601 timestamp. Defaults to DateTimeOffset.MinValue (full sync) when omitted.
+/// Pagination: Keyset. ?limit=50. Hard cap at 200.
+/// Cursor: ?cursorUpdatedAt=ISO8601&cursorId=UUID.
+/// Delta Fallback: ?since=ISO8601 timestamp (used if cursor is omitted). Defaults to DateTimeOffset.MinValue.
 /// </summary>
 public static class SyncSubmissions
 {
@@ -34,16 +36,21 @@ public static class SyncSubmissions
         decimal? RawMaxPoints = null,
         bool? IsWeighted = null);
 
+    public sealed record CursorPagedResult<T>(IEnumerable<T> Items, bool HasNextPage);
+
     public static async Task<IResult> HandleAsync(
         ClaimsPrincipal user,
         AppDbContext db,
+        ILoggerFactory loggerFactory,
         CancellationToken ct,
         DateTimeOffset? since = null,
+        DateTimeOffset? cursorUpdatedAt = null,
+        Guid? cursorId = null,
         Guid? storeId = null,
         Guid? areaId = null,
-        int page = 1,
-        int pageSize = 50)
+        int limit = 50)
     {
+        var logger = loggerFactory.CreateLogger(typeof(SyncSubmissions));
         var isAdmin = user.IsInRole("admin");
 
         // ── Rule 1: Scope guard — non-admins must provide storeId or areaId ──
@@ -66,34 +73,43 @@ public static class SyncSubmissions
                 return TypedResults.Forbid();
         }
 
-        // ── Rule 6: Coalesce null since to MinValue (prevent unbounded scans) ─
-        var sinceEffective = since ?? DateTimeOffset.MinValue;
+        if (!cursorUpdatedAt.HasValue || !cursorId.HasValue)
+        {
+            logger.LogInformation("SyncSubmissions fallback to full-sync (no cursor provided). StoreId: {StoreId}, AreaId: {AreaId}, Since: {Since}", storeId, areaId, since);
+        }
 
         // ── Clamp pagination params ──────────────────────────────────────────
-        page = Math.Max(1, page);
-        pageSize = Math.Clamp(pageSize, 1, 200);
+        limit = Math.Clamp(limit, 1, 200);
 
         // ── Build query ──────────────────────────────────────────────────────
-        var query = db.Submissions.AsNoTracking()
-            .Where(s => s.UpdatedAt >= sinceEffective);
+        var query = db.Submissions.AsNoTracking().AsQueryable();
 
         // Apply tenant scope filter (non-admin or admin who chose to scope)
         if (storeId.HasValue)
             query = query.Where(s => s.StoreId == storeId.Value);
         else if (areaId.HasValue)
-            // Area filter: join through Store.AreaId
             query = query.Where(s => s.Store != null && s.Store.AreaId == areaId.Value);
+
+        // Cursor logic
+        if (cursorUpdatedAt.HasValue && cursorId.HasValue)
+        {
+            query = query.Where(s => s.UpdatedAt > cursorUpdatedAt.Value || 
+                                    (s.UpdatedAt == cursorUpdatedAt.Value && s.Id > cursorId.Value));
+        }
+        else 
+        {
+            // ── Rule 6: Coalesce null since to MinValue (prevent unbounded scans) ─
+            var sinceEffective = since ?? DateTimeOffset.MinValue;
+            query = query.Where(s => s.UpdatedAt >= sinceEffective);
+        }
 
         // ── Rule 4: Stable ordering to prevent cursor drift ──────────────────
         var ordered = query
             .OrderBy(s => s.UpdatedAt)
             .ThenBy(s => s.Id);
 
-        var total = await ordered.CountAsync(ct);
-
         var items = await ordered
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Take(limit + 1)
             .Select(s => new SubmissionSyncDto(
                 s.Id,
                 s.Status,
@@ -107,6 +123,9 @@ public static class SyncSubmissions
                 s.RawEarnedPoints, s.RawMaxPoints, s.IsWeighted))
             .ToListAsync(ct);
 
-        return TypedResults.Ok(new PagedResult<SubmissionSyncDto>(items, total, page, pageSize));
+        var hasNextPage = items.Count > limit;
+        var resultItems = items.Take(limit);
+
+        return TypedResults.Ok(new CursorPagedResult<SubmissionSyncDto>(resultItems, hasNextPage));
     }
 }

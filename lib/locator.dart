@@ -165,6 +165,9 @@ void configureDependencies() {
       submissionRiskOutboxDao: di<SubmissionRiskOutboxDao>(),
       syncMetaDao: di<SyncMetaDao>(),
       connectivity: di<ConnectivityService>(),
+      authManager: di<AuthManager>(),
+      profileDao: di<ProfileDao>(),
+      submissionDao: SubmissionDao(di<DatabaseService>().db),
       scheduleRetry: (delay) => di<SyncEngine>().requestSync(),
     ),
   );

@@ -11,6 +11,10 @@ import '../../../_shared/database/app_database.dart' as db;
 import '../../../_shared/services/connectivity_service.dart';
 import '../../../_shared/services/pending_submission.dart';
 import '../../../_shared/services/pending_submission_risk.dart';
+import '../../../_shared/database/dao/profile_dao.dart';
+import '../../../_shared/database/dao/submission_dao.dart';
+import '../../auth/manager/auth_manager.dart';
+import '../model/submission_dto.dart';
 
 class CoreAuditSyncModule extends BaseSyncModule {
   final SyncApi _api;
@@ -19,6 +23,9 @@ class CoreAuditSyncModule extends BaseSyncModule {
   final SubmissionRiskOutboxDao _submissionRiskOutboxDao;
   final SyncMetaDao _syncMetaDao;
   final ConnectivityService _connectivity;
+  final AuthManager _authManager;
+  final ProfileDao _profileDao;
+  final SubmissionDao _submissionDao;
 
   CoreAuditSyncModule({
     required SyncApi api,
@@ -27,13 +34,19 @@ class CoreAuditSyncModule extends BaseSyncModule {
     required SubmissionRiskOutboxDao submissionRiskOutboxDao,
     required SyncMetaDao syncMetaDao,
     required ConnectivityService connectivity,
+    required AuthManager authManager,
+    required ProfileDao profileDao,
+    required SubmissionDao submissionDao,
     required super.scheduleRetry,
   }) : _api = api,
        _outboxDao = outboxDao,
        _globalRiskDao = globalRiskDao,
        _submissionRiskOutboxDao = submissionRiskOutboxDao,
        _syncMetaDao = syncMetaDao,
-       _connectivity = connectivity;
+       _connectivity = connectivity,
+       _authManager = authManager,
+       _profileDao = profileDao,
+       _submissionDao = submissionDao;
 
   @override
   int get priority => 10;
@@ -55,10 +68,31 @@ class CoreAuditSyncModule extends BaseSyncModule {
 
   Future<void> _pullDeltas() async {
     _lastSyncTimestamp ??= await _syncMetaDao.get('global');
-    final pullResult = await _api.pullDeltas(_lastSyncTimestamp);
-    _lastSyncTimestamp = pullResult.serverTimestamp;
-    if (_lastSyncTimestamp != null) {
-      await _syncMetaDao.set('global', _lastSyncTimestamp!);
+
+    bool hasNextPage = true;
+    String? cursorId;
+
+    while (hasNextPage) {
+      final pullResult = await _api.pullDeltas(
+        cursorUpdatedAt: _lastSyncTimestamp,
+        cursorId: cursorId,
+      );
+
+      final dtos = pullResult.submissions
+          .map((json) => SubmissionDto.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      if (dtos.isNotEmpty) {
+        await _submissionDao.upsertSubmissions(dtos);
+        cursorId = dtos.last.id;
+      }
+
+      _lastSyncTimestamp = pullResult.serverTimestamp;
+      hasNextPage = pullResult.hasNextPage;
+
+      if (_lastSyncTimestamp != null) {
+        await _syncMetaDao.set('global', _lastSyncTimestamp!);
+      }
     }
     final globalRisks = await _api.pullGlobalRisks(_lastSyncTimestamp);
     for (final json in globalRisks) {

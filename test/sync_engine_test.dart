@@ -35,6 +35,10 @@ import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:checkly/_shared/services/sync_state.dart';
 
 import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
+import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/_shared/database/dao/profile_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_dao.dart';
+import 'package:mocktail/mocktail.dart';
 // ============================================================
 // Fake dependencies for testing SyncEngine in isolation
 // ============================================================
@@ -95,9 +99,9 @@ class FakeSyncApi implements SyncApi {
   }
 
   @override
-  Future<DeltaPullResult> pullDeltas(DateTime? since) async {
-    pullLog.add(since?.toIso8601String() ?? 'null');
-    return DeltaPullResult(serverTimestamp: serverTimestamp);
+  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId}) async {
+    pullLog.add(cursorUpdatedAt?.toIso8601String() ?? 'null');
+    return DeltaPullResult(serverTimestamp: serverTimestamp, hasNextPage: false, submissions: []);
   }
 
   @override
@@ -141,6 +145,10 @@ class FakeAuthCheck implements AuthCheck {
 PendingSubmission _makePending(String key, DateTime createdAt) =>
     PendingSubmission(idempotencyKey: key, createdAt: createdAt, payload: '{}');
 
+class MockAuthManager extends Mock implements AuthManager {}
+class MockProfileDao extends Mock implements ProfileDao {}
+class MockSubmissionDao extends Mock implements SubmissionDao {}
+
 void main() {
   late FakeConnectivityService connectivity;
   late FakeSyncApi api;
@@ -165,6 +173,9 @@ void main() {
       submissionRiskOutboxDao: SubmissionRiskOutboxDao(testDb),
       syncMetaDao: SyncMetaDao(testDb),
       connectivity: connectivity,
+      authManager: MockAuthManager(),
+      profileDao: MockProfileDao(),
+      submissionDao: MockSubmissionDao(),
       scheduleRetry: (_) {},
     );
     engine = SyncEngine(

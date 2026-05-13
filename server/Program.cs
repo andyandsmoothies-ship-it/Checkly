@@ -240,6 +240,7 @@ try
     builder.Services.AddSingleton<DistributedLockManager>();
     builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
     builder.Services.AddHostedService<ReminderService>();
+    builder.Services.AddHostedService<OutboxBackgroundService>();
 
     builder.Services.AddResiliencePipeline("fcm", static pipeline =>
     {

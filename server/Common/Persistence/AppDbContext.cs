@@ -38,6 +38,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ChecklyProgram> Programs => Set<ChecklyProgram>();
     public DbSet<ProgramAssignment> ProgramAssignments => Set<ProgramAssignment>();
     public DbSet<ProfileStoreAssignment> ProfileStoreAssignments => Set<ProfileStoreAssignment>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

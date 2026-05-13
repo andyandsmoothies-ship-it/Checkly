@@ -292,7 +292,7 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
     }
 
     [Fact]
-    public async Task SyncSubmissions_Pagination_RespectsPageSize()
+    public async Task SyncSubmissions_Pagination_RespectsLimit_And_ReturnsHasNextPage()
     {
         // Arrange
         var client = _factory.CreateClient();
@@ -304,17 +304,82 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
         for (var i = 0; i < 5; i++)
             await SeedSubmissionAsync(storeId);
 
-        // Act — request page 1 with pageSize=2
+        // Act — request limit 2
         var response = await authClient.GetAsync(
-            $"/api/sync/submissions?storeId={storeId}&page=1&pageSize=2");
+            $"/api/sync/submissions?storeId={storeId}&limit=2");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var items = body.GetProperty("items").EnumerateArray().ToList();
-        Assert.True(items.Count <= 2, $"Expected ≤2 items on page 1, got {items.Count}");
-        // pageSize echoed in envelope
-        Assert.Equal(2, body.GetProperty("pageSize").GetInt32());
+        Assert.Equal(2, items.Count);
+        Assert.True(body.GetProperty("hasNextPage").GetBoolean());
+    }
+
+    [Fact]
+    public async Task SyncSubmissions_Pagination_Cursor_ReturnsNextPage()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+        var authClient = _factory.CreateAuthenticatedClient(adminToken);
+
+        var storeId = await SeedStoreAsync("pagination2");
+        var time1 = DateTimeOffset.UtcNow.AddMinutes(-10);
+        var time2 = DateTimeOffset.UtcNow.AddMinutes(-5);
+        
+        var sub1 = await SeedSubmissionAsync(storeId, updatedAt: time1);
+        var sub2 = await SeedSubmissionAsync(storeId, updatedAt: time2);
+        
+        var time1Param = Uri.EscapeDataString(time1.ToString("O"));
+        
+        // Act - use sub1 as cursor
+        var response = await authClient.GetAsync(
+            $"/api/sync/submissions?storeId={storeId}&cursorUpdatedAt={time1Param}&cursorId={sub1}&limit=2");
+            
+        // Assert
+        if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var items = body.GetProperty("items").EnumerateArray().ToList();
+        
+        Assert.Single(items);
+        Assert.Equal(sub2, Guid.Parse(items[0].GetProperty("id").GetString()!));
+        Assert.False(body.GetProperty("hasNextPage").GetBoolean());
+    }
+
+    [Fact]
+    public async Task SyncSubmissions_Pagination_Cursor_TieBreaker()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+        var authClient = _factory.CreateAuthenticatedClient(adminToken);
+
+        var storeId = await SeedStoreAsync("pagination3");
+        var sharedTime = DateTimeOffset.UtcNow.AddMinutes(-10);
+        
+        var sub1 = await SeedSubmissionAsync(storeId, updatedAt: sharedTime);
+        var sub2 = await SeedSubmissionAsync(storeId, updatedAt: sharedTime);
+        
+        var list = new[] { sub1, sub2 }.OrderBy(x => x).ToList();
+        var first = list[0];
+        var second = list[1];
+        
+        var sharedTimeParam = Uri.EscapeDataString(sharedTime.ToString("O"));
+        
+        // Act - use first as cursor
+        var response = await authClient.GetAsync(
+            $"/api/sync/submissions?storeId={storeId}&cursorUpdatedAt={sharedTimeParam}&cursorId={first}&limit=2");
+            
+        // Assert
+        if (!response.IsSuccessStatusCode) Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var items = body.GetProperty("items").EnumerateArray().ToList();
+        
+        Assert.Contains(items, i => Guid.Parse(i.GetProperty("id").GetString()!) == second);
+        Assert.DoesNotContain(items, i => Guid.Parse(i.GetProperty("id").GetString()!) == first);
     }
 
     // ── Error Paths ────────────────────────────────────────────────────────────

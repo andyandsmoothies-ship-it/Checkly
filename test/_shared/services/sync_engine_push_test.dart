@@ -25,6 +25,10 @@ import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/models/add_comment_request.dart';
 import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
 import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
+import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/_shared/database/dao/profile_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_dao.dart';
+import 'package:mocktail/mocktail.dart';
 
 // ============================================================
 // Fakes & Spies
@@ -49,8 +53,8 @@ class FakeSyncApi implements SyncApi {
   }
 
   @override
-  Future<DeltaPullResult> pullDeltas(DateTime? since) async =>
-      DeltaPullResult(serverTimestamp: DateTime.now());
+  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async =>
+      DeltaPullResult(serverTimestamp: DateTime.now(), hasNextPage: false, submissions: []);
 
   @override
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
@@ -99,6 +103,11 @@ class FakeActionPlanApi implements ActionPlanApi {
   Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
 }
 
+
+class MockAuthManager extends Mock implements AuthManager {}
+class MockProfileDao extends Mock implements ProfileDao {}
+class MockSubmissionDao extends Mock implements SubmissionDao {}
+
 void main() {
   late AppDatabase testDb;
   late OutboxDao outboxDao;
@@ -135,13 +144,16 @@ void main() {
             syncMetaDao: SyncMetaDao(testDb),
             connectivity: connectivity,
             scheduleRetry: (_) {},
+            authManager: MockAuthManager(),
+            profileDao: MockProfileDao(),
+            submissionDao: MockSubmissionDao(),
           ),
           ActionPlanSyncModule(
             api: FakeActionPlanApi(),
             outboxDao: actionPlanOutboxDao,
             connectivity: connectivity,
             scheduleRetry: (_) {},
-          ),
+            ),
         ],
       );
 

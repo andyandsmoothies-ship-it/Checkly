@@ -34,6 +34,10 @@ import 'package:checkly/features/action_plans/models/comment_dto.dart';
 import 'package:checkly/features/action_plans/models/add_comment_request.dart';
 import 'package:checkly/features/audit/services/core_audit_sync_module.dart';
 import 'package:checkly/features/action_plans/services/action_plan_sync_module.dart';
+import 'package:checkly/features/auth/manager/auth_manager.dart';
+import 'package:checkly/_shared/database/dao/profile_dao.dart';
+import 'package:checkly/_shared/database/dao/submission_dao.dart';
+import 'package:mocktail/mocktail.dart';
 
 // ─── Fakes ────────────────────────────────────────────────────────────────
 
@@ -56,7 +60,7 @@ class FailingApi implements SyncApi {
   }
 
   @override
-  Future<DeltaPullResult> pullDeltas(DateTime? since) async {
+  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async {
     return DeltaPullResult(serverTimestamp: DateTime.now().toUtc());
   }
 
@@ -177,6 +181,12 @@ class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
 
 // ─── Tests ────────────────────────────────────────────────────────────────
 
+
+
+class MockAuthManager extends Mock implements AuthManager {}
+class MockProfileDao extends Mock implements ProfileDao {}
+class MockSubmissionDao extends Mock implements SubmissionDao {}
+
 void main() {
   late AppDatabase db;
   late OutboxDao dao;
@@ -217,12 +227,16 @@ void main() {
           syncMetaDao: SyncMetaDao(db),
           connectivity: connectivity,
           scheduleRetry: (_) {},
+            authManager: MockAuthManager(),
+            profileDao: MockProfileDao(),
+            submissionDao: MockSubmissionDao(),
         ),
         ActionPlanSyncModule(
           api: _FakeActionPlanApi(),
           outboxDao: _FakeActionPlanOutboxDao(),
           connectivity: connectivity,
           scheduleRetry: (_) {},
+
         ),
       ],
     );
