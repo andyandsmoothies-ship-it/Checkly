@@ -50,6 +50,24 @@ public class AuthTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public async Task Login_With_Invalid_Credentials_Returns_401_ProblemDetails()
+    {
+        var client = _factory.CreateClient();
+        var email = $"invalid-{Guid.NewGuid():N}@auth.test";
+
+        var loginResponse = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = email,
+            password = "WrongPassword123!"
+        });
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
+        
+        var body = await loginResponse.Content.ReadAsStringAsync();
+        Assert.Contains("invalid_credentials", body);
+    }
+
+    [Fact]
     public async Task Unauthenticated_Request_Returns_401()
     {
         var client = _factory.CreateClient();

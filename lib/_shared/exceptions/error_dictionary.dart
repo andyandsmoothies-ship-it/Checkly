@@ -43,6 +43,9 @@ final class ErrorDictionary {
   static const String _serverError =
       "Something went wrong on our end. Try again shortly.";
 
+  static const String _invalidCredentials =
+      "Invalid email or password. Please try again.";
+
   // ---------------------------------------------------------------------------
   // Public API
   // ---------------------------------------------------------------------------
@@ -54,6 +57,7 @@ final class ErrorDictionary {
   }
 
   static const Map<String, String> _map = {
+    'invalid_credentials': _invalidCredentials,
     'network_timeout': _networkTimeout,
     'network_error': _networkError,
     'validation_error': _validationError,

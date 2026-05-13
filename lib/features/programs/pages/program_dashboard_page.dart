@@ -152,6 +152,7 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                     label: Text(opt.label),
                     selected: selected,
                     onSelected: (_) {
@@ -181,22 +182,59 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
           else
             ...List.generate(_assignments.length, (i) {
               final a = _assignments[i];
-              return Card(
+              return Container(
                 margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: theme.colorScheme.outlineVariant),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   leading: ProgramStatusIcon(status: a.status),
                   title: Text(
                     a.storeName,
-                    style: theme.textTheme.bodyMedium?.merge(
-                      AppFonts.displayStyle(fontWeight: FontWeight.w600),
+                    style: theme.textTheme.titleMedium?.merge(
+                      AppFonts.displayStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
-                  subtitle: Text(
-                    '${a.status.toUpperCase()} · ${a.evidence.length} evidence item(s)',
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            a.status.toUpperCase(),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '${a.evidence.length} evidence item(s)',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  trailing: a.status == 'submitted'
-                      ? const Icon(Icons.chevron_right)
-                      : null,
+                  trailing: const Icon(Icons.chevron_right),
                   onTap: a.status == 'submitted' && a.evidence.isNotEmpty
                       ? () => _showEvidence(context, a)
                       : null,

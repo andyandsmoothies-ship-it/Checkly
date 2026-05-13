@@ -55,6 +55,26 @@ public static class SyncSubmissions
 
         // ── Rule 1: Scope guard — non-admins must provide storeId or areaId ──
         if (!isAdmin && !storeId.HasValue && !areaId.HasValue)
+        {
+            var profileIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (profileIdClaim != null && Guid.TryParse(profileIdClaim, out var profileId))
+            {
+                var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == profileId, ct);
+                if (profile != null)
+                {
+                    if (user.IsInRole("store_manager"))
+                    {
+                        storeId = profile.StoreId;
+                    }
+                    else if (user.IsInRole("area_manager"))
+                    {
+                        areaId = profile.AreaId;
+                    }
+                }
+            }
+        }
+
+        if (!isAdmin && !storeId.HasValue && !areaId.HasValue)
             return TypedResults.BadRequest(new
             {
                 error = "A storeId or areaId query parameter is required for non-admin callers."

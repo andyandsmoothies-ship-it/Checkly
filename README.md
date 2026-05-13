@@ -8,11 +8,14 @@
 
 **Mobile-first audit & inspection platform** — build dynamic templates, run audits offline, score automatically, and track corrective actions. Built with Flutter and a self-hosted ASP.NET Core API backed by PostgreSQL. 
 
+> **Last Updated:** May 13, 2026
+
 ---
 
 ## Key Features
 
 - **Dynamic Template Engine** — 4 scoring modes (Penalty, Accumulation, Checklist, Survey), 5 input types, nested sections, CCP/RISK overrides, and weighted density. One engine powering food safety audits, mystery shops, training quizzes, daily checklists, and employee surveys.
+- **Programs & Campaigns** — Assign specific templates to target stores or areas with strict deadlines. Program assignments sync automatically to offline devices for execution.
 - **Offline-First** — Complete audits without internet. Data is persisted to a local SQLite database (Drift) and synced via a resilient, plugin-based background Sync Engine featuring exponential backoff when connectivity returns.
 - **Real-Time Scoring** — Live score HUD during audits with section breakdowns, progressive repeat penalties, and confirm-correct mode.
 - **Enterprise Analytics Dashboard** — Role-aware command center with contextual stat cards, hierarchical drilldowns, and SQLite aggregations for Auditors, Managers, and Admins.
@@ -62,6 +65,7 @@ Checkly/
 │   │   ├── dashboard/            ← Enterprise command center
 │   │   ├── notifications/        ← SignalR inbox
 │   │   ├── profile/              ← User profile & settings
+│   │   ├── programs/             ← Campaign targeting & assignments
 │   │   ├── stores/               ← Store directory & management
 │   │   ├── templates/            ← Template builder, detail, list
 │   │   └── user_groups/          ← RBAC management
@@ -76,6 +80,7 @@ Checkly/
 │   │   ├── GlobalRisks/          ← Template-agnostic critical flags
 │   │   ├── Notifications/        ← SignalR hub & alerts
 │   │   ├── Photos/               ← Offline sync & media storage
+│   │   ├── Programs/             ← Program & assignment logic
 │   │   ├── Stores/               ← Store management
 │   │   ├── Submissions/          ← Audit submissions & score verification
 │   │   ├── System/               ← Health checks & background workers

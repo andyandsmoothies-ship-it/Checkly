@@ -27,7 +27,10 @@ public static class Login
             var user = await userManager.FindByEmailAsync(request.Email);
             if (user is null)
             {
-                return TypedResults.Unauthorized();
+                return TypedResults.Problem(
+                    "Invalid email or password.", 
+                    statusCode: 401, 
+                    extensions: new Dictionary<string, object?> { { "code", "invalid_credentials" } });
             }
 
             // Verify password with lockout tracking
@@ -37,10 +40,14 @@ public static class Login
             if (result.IsLockedOut)
                 return TypedResults.Problem(
                     "Account locked due to multiple failed attempts. Try again in 15 minutes.",
-                    statusCode: 423);
+                    statusCode: 423,
+                    extensions: new Dictionary<string, object?> { { "code", "account_locked" } });
 
             if (!result.Succeeded)
-                return TypedResults.Unauthorized();
+                return TypedResults.Problem(
+                    "Invalid email or password.", 
+                    statusCode: 401, 
+                    extensions: new Dictionary<string, object?> { { "code", "invalid_credentials" } });
 
             // Get role from user_roles table
             var userRole = await db.AppUserRoles

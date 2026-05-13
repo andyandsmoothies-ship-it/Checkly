@@ -45,6 +45,7 @@ class ProgramSyncModule extends BaseSyncModule {
           programTitle: json['programTitle'] as String,
           category: json['category'] as String,
           templateId: Value(json['templateId'] as String?),
+          activeSubmissionId: Value(json['activeSubmissionId'] as String?),
           deadline: DateTime.parse(json['deadline'] as String),
           status: Value(json['status'] as String? ?? 'pending'),
           rejectionComment: Value(json['rejectionComment'] as String?),

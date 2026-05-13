@@ -45,7 +45,7 @@ class ProgramAssignmentDetailDto {
     required this.status,
     required this.deadline,
     required this.createdAt,
-    required this.evidence,
+    this.evidence = const [],
   });
 
   factory ProgramAssignmentDetailDto.fromJson(Map<String, dynamic> json) =>
@@ -57,9 +57,11 @@ class ProgramAssignmentDetailDto {
         status: json['status'] as String,
         deadline: DateTime.parse(json['deadline'] as String),
         createdAt: DateTime.parse(json['createdAt'] as String),
-        evidence: (json['evidence'] as List<dynamic>)
-            .map((e) => ProgramEvidenceDto.fromJson(e as Map<String, dynamic>))
-            .toList(),
+        evidence: json['evidence'] != null
+            ? (json['evidence'] as List<dynamic>)
+                .map((e) => ProgramEvidenceDto.fromJson(e as Map<String, dynamic>))
+                .toList()
+            : const [],
       );
 }
 
