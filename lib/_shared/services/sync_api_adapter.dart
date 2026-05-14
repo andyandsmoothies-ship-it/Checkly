@@ -112,7 +112,9 @@ class SyncApiAdapter implements SyncApi {
 
     final data = response.data;
     if (data == null) {
-      return DeltaPullResult(serverTimestamp: cursorUpdatedAt ?? DateTime.now());
+      return DeltaPullResult(
+        serverTimestamp: cursorUpdatedAt ?? DateTime.now(),
+      );
     }
 
     final items = data['items'] as List<dynamic>? ?? [];

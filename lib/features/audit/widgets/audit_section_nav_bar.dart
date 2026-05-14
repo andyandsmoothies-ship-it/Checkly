@@ -15,6 +15,7 @@ class AuditSectionNavBar extends StatelessWidget {
   final VoidCallback? onPrev;
   final VoidCallback? onNext;
   final VoidCallback onSubmit;
+  final String requiredCapability;
 
   const AuditSectionNavBar({
     super.key,
@@ -25,6 +26,7 @@ class AuditSectionNavBar extends StatelessWidget {
     required this.onPrev,
     required this.onNext,
     required this.onSubmit,
+    required this.requiredCapability,
   });
 
   @override
@@ -97,7 +99,7 @@ class AuditSectionNavBar extends StatelessWidget {
 
             // Submit button — ALWAYS visible (Slice 1), but capability guarded
             PermissionGuard(
-              capability: AppCapabilities.submissionsCreate,
+              capability: requiredCapability,
               child: FilledButton.icon(
                 onPressed: !isSubmitting ? onSubmit : null,
                 icon: isSubmitting

@@ -114,7 +114,7 @@ class _ProgramCreateWizardPageState extends State<ProgramCreateWizardPage> {
       GetIt.instance<ErrorDisplayService>().show(
         const AppError(
           code: 'unknown',
-          message: 'Could not create program. Please try again.',
+          message: 'Could not create campaign. Please try again.',
         ),
       );
     } finally {
@@ -126,7 +126,7 @@ class _ProgramCreateWizardPageState extends State<ProgramCreateWizardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Program'),
+        title: const Text('New Campaign'),
         leading: _currentStep > 0
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -241,7 +241,7 @@ class _WizardActionBar extends StatelessWidget {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Issue Program'),
+                : const Text('Issue Campaign'),
           ),
         ),
       ),

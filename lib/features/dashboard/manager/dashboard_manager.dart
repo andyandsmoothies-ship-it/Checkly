@@ -29,6 +29,12 @@ sealed class DashboardState {}
 /// Initial / in-progress loading state.
 class DashboardLoading extends DashboardState {}
 
+/// Error state indicating data failed to load.
+class DashboardErrorState extends DashboardState {
+  final String message;
+  DashboardErrorState(this.message);
+}
+
 /// State for Auditor role.
 class AuditorDashboardState extends DashboardState {
   final int draftCount;
@@ -112,16 +118,15 @@ class DashboardManager extends ChangeNotifier {
   /// Returns `null` when there are no pending assignments (widget hides itself).
   /// The [ProgramOutboxDao] is resolved lazily from GetIt so that tests that
   /// do not exercise this method are unaffected.
-  Stream<PendingAssignmentVm?> watchActionRequired([
+  Stream<List<PendingAssignmentVm>?> watchActionRequired([
     ProgramOutboxDao? programOutboxDao,
   ]) {
     final dao = programOutboxDao ?? _di<ProgramOutboxDao>();
     return dao.watchPendingAssignments().map((assignments) {
       if (assignments.isEmpty) return null;
-      return PendingAssignmentVm(
-        firstId: assignments.first.id,
-        count: assignments.length,
-      );
+      return assignments
+          .map((a) => PendingAssignmentVm(id: a.id, title: a.programTitle))
+          .toList();
     });
   }
 
@@ -188,9 +193,11 @@ class DashboardManager extends ChangeNotifier {
           _state = await _loadAdminState(queries);
       }
     } catch (_) {
-      // On any error (DB not ready, cache empty), fall back to loading state
-      // so the UI shows the loading placeholder rather than crashing.
-      _state = DashboardLoading();
+      // On any error (DB not ready, cache empty), fall back to error state
+      // so the UI shows the error placeholder with a retry button rather than crashing or infinite loading.
+      _state = DashboardErrorState(
+        'Failed to load dashboard data. Please try again.',
+      );
     } finally {
       notifyListeners();
     }

@@ -14,6 +14,7 @@ import '../../../_shared/services/pending_submission_risk.dart';
 import '../../../_shared/database/dao/profile_dao.dart';
 import '../../../_shared/database/dao/submission_dao.dart';
 import '../../auth/manager/auth_manager.dart';
+
 import '../model/submission_dto.dart';
 
 class CoreAuditSyncModule extends BaseSyncModule {
@@ -23,7 +24,9 @@ class CoreAuditSyncModule extends BaseSyncModule {
   final SubmissionRiskOutboxDao _submissionRiskOutboxDao;
   final SyncMetaDao _syncMetaDao;
   final ConnectivityService _connectivity;
+  // ignore: unused_field
   final AuthManager _authManager;
+  // ignore: unused_field
   final ProfileDao _profileDao;
   final SubmissionDao _submissionDao;
 

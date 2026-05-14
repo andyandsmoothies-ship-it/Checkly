@@ -3,10 +3,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_theme.dart';
-import '../../../../_shared/theme/app_fonts.dart';
+
 import '../../../../_shared/widgets/compact_status_panel.dart';
 import '../../manager/dashboard_manager.dart';
 import 'submission_feed_section.dart';
+import 'admin_active_campaigns_widget.dart';
 
 /// Command Center for Admins — global platform view.
 class AdminDashboardVariant extends StatelessWidget {
@@ -27,37 +28,6 @@ class AdminDashboardVariant extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
         children: [
-          const SizedBox(height: 24),
-
-          // ── Dashboard Title ──
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Mission Control',
-                style: AppFonts.serifStyle(
-                  fontSize:
-                      Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'PLATFORM OVERVIEW',
-                style: AppFonts.displayStyle(
-                  fontSize:
-                      Theme.of(context).textTheme.labelSmall?.fontSize ?? 11,
-                  fontWeight: FontWeight.w500,
-                  // WCAG fix: raised from 0.5 → 0.65
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.65),
-                  letterSpacing: 1.5,
-                ),
-              ),
-            ],
-          ),
-
           const SizedBox(height: 24),
 
           // ── Compact Status Panel: 4 KPIs ──
@@ -91,15 +61,11 @@ class AdminDashboardVariant extends StatelessWidget {
                 iconColor: AppTheme.success,
                 onTap: () => context.push('/analytics'),
               ),
-              StatRowData(
-                icon: Icons.campaign_outlined,
-                label: 'Active Programs',
-                value: 'View',
-                iconColor: theme.colorScheme.tertiary,
-                onTap: () => context.push('/programs'),
-              ),
             ],
           ),
+
+          const SizedBox(height: 32),
+          const AdminActiveCampaignsWidget(),
 
           const SizedBox(height: 32),
           SubmissionFeedSection(

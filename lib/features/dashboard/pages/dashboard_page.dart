@@ -13,6 +13,7 @@ import '../../../_shared/constants/user_persona.dart';
 import '../manager/dashboard_manager.dart';
 import 'widgets/admin_dashboard_variant.dart';
 import 'widgets/auditor_dashboard_variant.dart';
+import 'widgets/dashboard_error_view.dart';
 import 'widgets/dashboard_loading_view.dart';
 import 'widgets/manager_dashboard_variant.dart';
 
@@ -102,7 +103,7 @@ class _DashboardPageState extends State<DashboardPage> {
             bottom: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              child: Greeting(),
+              child: Greeting(persona: persona),
             ),
           ),
           // ── Role-scoped body ──
@@ -112,6 +113,10 @@ class _DashboardPageState extends State<DashboardPage> {
               builder: (context, _) {
                 return switch (_manager.dashboardState) {
                   DashboardLoading() => const DashboardLoadingView(),
+                  DashboardErrorState e => DashboardErrorView(
+                    message: e.message,
+                    onRetry: () => _manager.loadStats(),
+                  ),
                   AuditorDashboardState s => AuditorDashboardVariant(
                     state: s,
                     onRefresh: () => _manager.loadStats(showLoading: false),
@@ -139,7 +144,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
 @visibleForTesting
 class Greeting extends StatelessWidget {
-  const Greeting({super.key});
+  final UserPersona persona;
+  const Greeting({required this.persona, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +160,11 @@ class Greeting extends StatelessWidget {
     final personalizedGreeting = name.isNotEmpty
         ? '$timeGreeting, $name'
         : timeGreeting;
+    final String title = switch (persona) {
+      UserPersona.admin => 'Platform Overview',
+      UserPersona.areaManager => 'Area Overview',
+      _ => 'Store Overview',
+    };
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +181,7 @@ class Greeting extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Store Overview',
+          title,
           style: AppFonts.serifStyle(
             fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
             color: Theme.of(context).colorScheme.onSurface,

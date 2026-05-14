@@ -23,7 +23,6 @@ class TemplateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final policy = GetIt.instance<PolicyManager>();
-    final canStart = policy.can(AppCapabilities.submissionsCreate);
     final canEdit = policy.can(AppCapabilities.templatesUpdate);
     final canDelete = policy.can(AppCapabilities.templatesDelete);
 
@@ -109,7 +108,8 @@ class TemplateCard extends StatelessWidget {
               ),
 
               // Context menu
-              PopupMenuButton<String>(
+              if (canEdit || canDelete)
+                PopupMenuButton<String>(
                 tooltip: '',
                 icon: Icon(
                   Icons.more_vert,
@@ -117,8 +117,6 @@ class TemplateCard extends StatelessWidget {
                 ),
                 onSelected: (action) {
                   switch (action) {
-                    case 'start':
-                      context.push('/stores/select?templateId=${template.id}');
                     case 'edit':
                       context.push('/templates/edit/${template.id}');
                     case 'duplicate':
@@ -205,15 +203,6 @@ class TemplateCard extends StatelessWidget {
                   }
                 },
                 itemBuilder: (context) => [
-                  if (canStart)
-                    const PopupMenuItem(
-                      value: 'start',
-                      child: ListTile(
-                        leading: Icon(Icons.play_arrow),
-                        title: Text('Quick Start'),
-                        dense: true,
-                      ),
-                    ),
                   if (canEdit) ...[
                     const PopupMenuItem(
                       value: 'edit',

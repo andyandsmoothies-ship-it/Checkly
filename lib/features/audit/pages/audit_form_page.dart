@@ -10,6 +10,7 @@ import '../../../_shared/utils/date_format_utils.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../../templates/manager/template_manager.dart';
 import '../../templates/models/template_dto.dart';
+import '../../../_shared/constants/app_capabilities.dart';
 import '../manager/audit_manager.dart';
 
 import '../utils/audit_progress_utils.dart';
@@ -233,6 +234,10 @@ class _AuditFormPageState extends State<AuditFormPage> {
         final ccpEnabled = ScoringInputMapper.isCcpEnabled(template);
         final riskEnabled = ScoringInputMapper.isRiskEnabled(template);
 
+        final requiredCapability = widget.programAssignmentId != null
+            ? AppCapabilities.programsExecute
+            : AppCapabilities.submissionsCreate;
+
         return PopScope(
           canPop: !_hasChanges,
           onPopInvokedWithResult: (didPop, result) async {
@@ -358,6 +363,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
                   ? () => setState(() => _currentSection++)
                   : null,
               onSubmit: () => _onSubmit(manager),
+              requiredCapability: requiredCapability,
             ),
           ),
         );

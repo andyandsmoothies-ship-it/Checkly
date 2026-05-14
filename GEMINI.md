@@ -2,6 +2,10 @@
 
 ## 1. Governance Rules
 
+### Rule: Engage Strongly With Structure
+- **Rule**: Architecture is law. Inner rings MUST NOT import outer rings. 
+- **Enforcement**: Separate Technical Language (DB) from Business Language (UI).
+
 ### Rule: Use Mechanical Language
 - **Rule**: Do not use human words (like "thought", "forgot") to describe code or system behavior. Be literal and concise.
 - **Enforcement**: Describe exactly what the code executes or lacks. (e.g. "The function lacked the instruction to write rows," not "The system forgot to save").
@@ -18,9 +22,13 @@
 - **Rule**: Write the simplest code that solves the problem. Don't make bad abstractions.
 - **Enforcement**: Duplication is cheaper than the wrong abstraction (WET). Do not extract shared helpers unless used in 3+ places.
 
-### Rule: Use Existing Tools & Dependencies
-- **Rule**: Prove you are using the project's existing tools before building your own. If a well-maintained, standard external dependency perfectly handles what we are custom-coding, propose replacing our custom code with that dependency. 
-- **Enforcement**: Search `server/Common/` or `lib/_shared/` first. Do not invent custom state management or routing if standard libraries already exist.
+### Rule: Well Partitioned Modules
+- **Rule**: Keep domains strongly partitioned. Reject "God" modules and tightly coupled designs.
+- **Enforcement**: Control coupling. Refactor monolithic services by using events (MediatR/EventBus) to decouple.
+
+### Rule: Tightly Controlled Dependencies
+- **Rule**: Prove you are using the project's existing tools before building your own. 
+- **Enforcement**: Search `server/Common/` or `lib/_shared/` first. Do not install unauthorized packages without whitelist approval.
 
 ### Rule: Prune Unwired Code
 - **Rule**: Aggressively delete dead code, unused files, and unused dependencies. Less code is better code.
@@ -29,17 +37,17 @@
 ### Rule: Trust Shared Tools
 - **Rule**: When using a shared utility, delete any surrounding guard clauses or boilerplate it already handles internally. Don't write manual checks around it.
 
-### Rule: Tests Must Come First
-- **Rule**: If a test fails, fix the code, not the test.
-- **Enforcement**: Never write tests and main code in the exact same prompt cycle.
+### Rule: Massively Overloaded Tests
+- **Rule**: If a test fails, fix the code, not the test. Never write tests and main code in the exact same prompt cycle.
+- **Enforcement**: Go beyond happy paths. Use property-based and mutation testing for core logic. Never assert raw booleans; print actual error HTTP bodies instead.
 
 ### Rule: Testing is Architecture
 - **Rule**: Tests verify behavior, not implementation. Do not test business logic through volatile UI layers.
 - **Enforcement**: Refactoring internal code should not break tests (Liskov substitution). Keep test-only APIs (e.g., DB seeders) strictly bounded to the test project.
 
-### Rule: Keep Files Small
+### Rule: Small Discrete Functions & Files
 - **Rule**: Files must NEVER exceed 400 lines. Split them to prevent AI confusion.
-- **Enforcement**: Reduce size by pulling logic into new files, not by deleting comments or whitespace.
+- **Enforcement**: Functions MUST NOT exceed 30 lines. Max Cyclomatic Complexity is 10. Reduce size by pulling logic into new files, not by deleting comments or whitespace.
 
 ### Rule: Use Strong Types
 - **Rule**: Use Enums, Unions, or Static Constants instead of plain strings for system identifiers.

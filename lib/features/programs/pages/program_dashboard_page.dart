@@ -74,7 +74,7 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Program Dashboard'),
+        title: const Text('Campaign Dashboard'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -152,7 +152,10 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 8,
+                    ),
                     label: Text(opt.label),
                     selected: selected,
                     onSelected: (_) {
@@ -197,7 +200,10 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                   ],
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   leading: ProgramStatusIcon(status: a.status),
                   title: Text(
                     a.storeName,
@@ -213,7 +219,10 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                       runSpacing: 4,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(4),

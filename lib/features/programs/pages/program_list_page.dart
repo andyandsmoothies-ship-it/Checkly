@@ -47,7 +47,7 @@ class _ProgramListPageState extends State<ProgramListPage> {
     } catch (e) {
       setState(() {
         _error =
-            'Could not load programs. Check your connection and try again.';
+            'Could not load campaigns. Check your connection and try again.';
         _loading = false;
       });
     }
@@ -58,7 +58,7 @@ class _ProgramListPageState extends State<ProgramListPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Programs'),
+        title: const Text('Campaigns'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -72,7 +72,7 @@ class _ProgramListPageState extends State<ProgramListPage> {
         capability: AppCapabilities.programsCreate,
         child: FloatingActionButton(
           key: const Key('create_program_fab'),
-          tooltip: 'New Program',
+          tooltip: 'New Campaign',
           onPressed: () async {
             await context.push('/programs/new');
             _load();
@@ -115,7 +115,7 @@ class _ProgramListPageState extends State<ProgramListPage> {
     if (_programs.isEmpty) {
       return Center(
         child: Text(
-          'No programs found.',
+          'No campaigns found.',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
@@ -149,14 +149,22 @@ class _ProgramListPageState extends State<ProgramListPage> {
               ],
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                  color: theme.colorScheme.primaryContainer.withValues(
+                    alpha: 0.5,
+                  ),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.campaign_outlined, color: theme.colorScheme.primary),
+                child: Icon(
+                  Icons.campaign_outlined,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               title: Text(
                 title,
@@ -172,7 +180,10 @@ class _ProgramListPageState extends State<ProgramListPage> {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.tertiaryContainer,
                         borderRadius: BorderRadius.circular(4),
@@ -186,7 +197,10 @@ class _ProgramListPageState extends State<ProgramListPage> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(4),

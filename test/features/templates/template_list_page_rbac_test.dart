@@ -133,7 +133,7 @@ void main() {
       expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
-    testWidgets('TC-07: Context menu admin sees all 4 items', (tester) async {
+    testWidgets('TC-07: Context menu admin sees all 3 items', (tester) async {
       arrangeAuthRole('admin');
       await tester.pumpWidget(createSubject());
       await tester.pumpAndSettle();
@@ -145,13 +145,12 @@ void main() {
       await tester.tap(find.byIcon(Icons.more_vert));
       await tester.pumpAndSettle();
 
-      expect(find.text('Quick Start'), findsOneWidget);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Duplicate'), findsOneWidget);
       expect(find.text('Delete'), findsOneWidget);
     });
 
-    testWidgets('TC-08: Context menu auditor sees only Quick Start', (
+    testWidgets('TC-08: Context menu auditor does not see context menu', (
       tester,
     ) async {
       arrangeAuthRole('auditor');
@@ -162,13 +161,7 @@ void main() {
       await tester.tap(find.text('QUALITY CONTROL'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.more_vert));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Quick Start'), findsOneWidget);
-      expect(find.text('Edit'), findsNothing);
-      expect(find.text('Duplicate'), findsNothing);
-      expect(find.text('Delete'), findsNothing);
+      expect(find.byIcon(Icons.more_vert), findsNothing);
     });
   });
 }

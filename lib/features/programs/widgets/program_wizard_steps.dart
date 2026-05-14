@@ -83,7 +83,7 @@ class _StepInfoState extends State<StepInfo> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Step 1 of 4: Program Info',
+              'Step 1 of 4: Campaign Info',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 20),
@@ -91,7 +91,7 @@ class _StepInfoState extends State<StepInfo> {
               key: const Key('program_title_field'),
               controller: _titleCtrl,
               decoration: const InputDecoration(
-                labelText: 'Program Title *',
+                labelText: 'Campaign Title *',
                 border: OutlineInputBorder(),
               ),
               validator: (v) =>

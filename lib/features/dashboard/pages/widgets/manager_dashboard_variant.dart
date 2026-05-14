@@ -57,15 +57,6 @@ class ManagerDashboardVariant extends StatelessWidget {
               color: AppColors.destructive.withValues(alpha: 0.10),
               iconColor: AppColors.destructive,
               onTap: () => context.go('/plans?sort=urgent'),
-            )
-          else
-            HeroCard(
-              icon: Icons.check_circle_outline,
-              title: 'All Clear — No Overdue Plans',
-              subtitle: '$contextLabel · ${state.storeName ?? ''}',
-              color: AppTheme.success.withValues(alpha: 0.10),
-              iconColor: AppTheme.success,
-              onTap: () => context.go('/plans'),
             ),
 
           const SizedBox(height: 16),

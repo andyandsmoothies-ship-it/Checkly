@@ -27,10 +27,7 @@ import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/_shared/database/dao/profile_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_dao.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:checkly/features/auth/manager/auth_manager.dart';
-import 'package:checkly/_shared/database/dao/profile_dao.dart';
-import 'package:checkly/_shared/database/dao/submission_dao.dart';
-import 'package:mocktail/mocktail.dart';
+
 // Fakes
 class FakeConnectivity implements ConnectivityService {
   @override
@@ -53,8 +50,16 @@ class FakeSyncApiFailingSubmissions implements SyncApi {
   }
 
   @override
-  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async =>
-      DeltaPullResult(serverTimestamp: DateTime.now(), hasNextPage: false, submissions: []);
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  }) async => DeltaPullResult(
+    serverTimestamp: DateTime.now(),
+    hasNextPage: false,
+    submissions: [],
+  );
 
   @override
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
@@ -66,8 +71,6 @@ class FakeSyncApiFailingSubmissions implements SyncApi {
 
   @override
   Future<List<dynamic>> pullProgramAssignments() async => [];
-
-
 }
 
 class FakeActionPlanApiSpy implements ActionPlanApi {
@@ -106,9 +109,10 @@ class FakeActionPlanApiSpy implements ActionPlanApi {
   Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
 }
 
-
 class MockAuthManager extends Mock implements AuthManager {}
+
 class MockProfileDao extends Mock implements ProfileDao {}
+
 class MockSubmissionDao extends Mock implements SubmissionDao {}
 
 void main() {

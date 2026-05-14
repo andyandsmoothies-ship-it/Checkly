@@ -4,8 +4,8 @@
 /// row type. [DashboardManager.watchActionRequired] maps the raw DAO stream
 /// into this type before the widget ever sees it.
 class PendingAssignmentVm {
-  final String firstId;
-  final int count;
+  final String id;
+  final String title;
 
-  const PendingAssignmentVm({required this.firstId, required this.count});
+  const PendingAssignmentVm({required this.id, required this.title});
 }

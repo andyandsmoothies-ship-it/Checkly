@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/widgets/permission_guard.dart';
 import '../manager/template_manager.dart';
+import '../../audit/pages/widgets/schedule_audit_sheet.dart';
 import 'widgets/criterion_row.dart';
 import 'widgets/overview_card.dart';
 import 'widgets/section_card.dart';
@@ -42,21 +43,43 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Template Detail')),
-      bottomNavigationBar: PermissionGuard(
-        capability: AppCapabilities.submissionsCreate,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () => context.push(
-                  '/stores/select?templateId=${widget.templateId}',
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            children: [
+              PermissionGuard(
+                capability: AppCapabilities.submissionsCreate,
+                child: FilledButton.icon(
+                  onPressed: () => context.push(
+                    '/stores/select?templateId=${widget.templateId}',
+                  ),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Start Now'),
                 ),
-                icon: const Icon(Icons.play_arrow),
-                label: const Text('START AUDIT'),
               ),
-            ),
+              PermissionGuard(
+                capability: AppCapabilities.submissionsCreate,
+                child: FilledButton.tonalIcon(
+                  onPressed: () => showScheduleSheet(context),
+                  icon: const Icon(Icons.person_add),
+                  label: const Text('Assign'),
+                ),
+              ),
+              PermissionGuard(
+                capability: AppCapabilities.programsCreate,
+                child: FilledButton.tonalIcon(
+                  onPressed: () => context.push(
+                    '/programs/new?templateId=${widget.templateId}',
+                  ),
+                  icon: const Icon(Icons.campaign),
+                  label: const Text('Create Campaign'),
+                ),
+              ),
+            ],
           ),
         ),
       ),

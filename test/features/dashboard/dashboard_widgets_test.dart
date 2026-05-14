@@ -76,7 +76,7 @@ void main() {
         expect(overlineText, findsOneWidget);
 
         // VC-02: TITLE (headlineMedium, 22px, serif)
-        final titleText = find.text('Store Overview');
+        final titleText = find.text('Platform Overview');
         final textWidget = tester.widget<Text>(titleText);
         expect(textWidget.style?.fontSize, 22);
       },

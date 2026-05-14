@@ -321,8 +321,15 @@ public static class CreateSubmission
             // Program Bridge: transition assignment status and write dedicated audit entry.
             if (linkedAssignment is not null)
             {
-                if (linkedAssignment.Status == "pending" || linkedAssignment.Status == "needs_revision")
+                if (!isDraft && !isScheduled)
+                {
+                    linkedAssignment.Status = "submitted";
+                    submission.ReviewStatus = "approved";
+                }
+                else if (linkedAssignment.Status == "pending" || linkedAssignment.Status == "needs_revision")
+                {
                     linkedAssignment.Status = "in_progress";
+                }
 
                 AuditLogger.Log(db, user, "program_submission_created", "Submission", submission.Id,
                     message: $"SM created Program Submission for ProgramAssignment {linkedAssignment.Id}.",

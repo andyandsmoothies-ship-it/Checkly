@@ -59,8 +59,11 @@ class ProgramAssignmentDetailDto {
         createdAt: DateTime.parse(json['createdAt'] as String),
         evidence: json['evidence'] != null
             ? (json['evidence'] as List<dynamic>)
-                .map((e) => ProgramEvidenceDto.fromJson(e as Map<String, dynamic>))
-                .toList()
+                  .map(
+                    (e) =>
+                        ProgramEvidenceDto.fromJson(e as Map<String, dynamic>),
+                  )
+                  .toList()
             : const [],
       );
 }
