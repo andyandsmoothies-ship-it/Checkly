@@ -103,7 +103,7 @@ Send each slice to the right workflow:
 > 3. `## Executive Summary`
 > 3. `## Decision Matrix`
 > 4. `## Risk Assessment`
-> 5. `## Visual & Functional Context`: (Mapped UI Screens and Use Cases)
+> 5. `## Visual & Functional Context`: (Mapped UI Screens, Use Cases, and explicit Truncation/Overflow Routing tables for lists)
 > 6. `## System Context`: (Offline/Online, RBAC, API Contracts)
 > 7. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan)
 > 8. `## Data Context`: (Database Migrations, Schema)

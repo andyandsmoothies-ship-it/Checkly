@@ -362,7 +362,8 @@ try
         await db.Database.ExecuteSqlRawAsync("""
             INSERT INTO role_capabilities (id, role, capability, created_at)
             VALUES
-                (gen_random_uuid(), 'admin', 'programs:assignments_list', now())
+                (gen_random_uuid(), 'admin', 'programs:assignments_list', now()),
+                (gen_random_uuid(), 'area_manager', 'programs:assignments_list', now())
             ON CONFLICT (role, capability) DO NOTHING;
             """);
 

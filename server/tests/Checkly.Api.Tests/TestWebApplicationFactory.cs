@@ -130,6 +130,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                        (gen_random_uuid(), 'admin',         'programs:create',             now()),
                        (gen_random_uuid(), 'admin',         'programs:list',               now()),
                        (gen_random_uuid(), 'admin',         'programs:assignments_list',   now()),
+                       (gen_random_uuid(), 'area_manager',  'programs:assignments_list',   now()),
                        (gen_random_uuid(), 'admin',         'programs:review',             now()),
                        (gen_random_uuid(), 'admin',         'programs:manage',             now()),
                        (gen_random_uuid(), 'store_manager', 'programs:assignments_my',     now()),

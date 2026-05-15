@@ -46,8 +46,9 @@ description: Architect's Strategic Research Workflow for System Architecture.
 > **Payload Schema:** Your generated `research_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` MUST INCLUDE: 
 > 1. `[ORIGIN_IDEA]`: A strictly preserved, 1:1 summary of the user's original business goal/idea from the prompt. This anchors all future workflows.
 > 2. `<latent_space_scratchpad>`: Before writing your final plan, use this block to explicitly state your internal reasoning, debate architectural tradeoffs, and explore edge cases to artificially expand your test-time compute.
-> 3. `E2E Workflow Map`
+> 3. `E2E Workflow Map`: MUST include ASCII state-machine diagrams for all interactions to prevent dead ends.
 > 4. `Comparative Decision Matrix`
+> 4.5 `UI Component Routing Table`: Map overflow limits and downstream routes for all proposed lists/widgets.
 > 5. Strict `<forensic_evidence>` tags (proof of executed commands).
 > 
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:

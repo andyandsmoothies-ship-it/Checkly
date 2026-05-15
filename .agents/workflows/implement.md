@@ -79,7 +79,7 @@ Review from 6 angles:
 | **Test Verification**| IF modifying business logic -> You MUST verify failing tests exist for your slice BEFORE coding. If missing, HALT and instruct user to run `@[/tdd]`. Do not write tests yourself. |
 | **Diff Check** | `git diff --name-only`. Revert unplanned. |
 | **Arch Boundaries**| MANDATORY: Verify UI/presentation files do not directly import DB/API layers. |
-| **Orphaned Stub Check** | MANDATORY: Execute `grep_search` to ensure absolutely NO `fail('Implement...')` or placeholder stubs remain from QA in the active slice. |
+| **Orphaned Stub Check** | MANDATORY: Execute `grep_search` to ensure absolutely NO `fail('Implement...')` or placeholder stubs (e.g., `onPressed: () {}`) remain from QA or UI building in the active slice. |
 | **Anti-Collapse Gate**| IF any modified file >400 lines: STRICTLY PROHIBITED from handoff. You MUST halt and extract components. |
 | **Handoff Trap** | IF Context Limit Approaching: Create `handoff.md` -> YIELD. |
 

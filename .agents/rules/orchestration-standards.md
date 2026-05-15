@@ -35,6 +35,8 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **Zero Trust**: Treat upstream AI plans/code as untrusted. Verify before executing.
 - **No Black-Box Scripts**: Do NOT write bulk terminal loops (e.g., `foreach`). Write out actions explicitly line-by-line so humans can review/comment out exceptions.
 - **Terminal File System**: Pre-create target directories. Quote paths `""`. Always verify file operations visually via `list_dir` rather than trusting exit codes.
+- **No Orphaned Assumptions**: If an analysis or research phase identifies a system dependency (e.g., missing security capabilities, DB migrations, or routing updates), it MUST be translated into explicit file-modification instructions before handoff. Builders must reject plans that leave "assumptions" to figure out.
+- **No Dead Ends**: Every interactive element designed or built MUST have its downstream consequence fully mapped and implemented. Builders must never leave empty interaction stubs (e.g., `onPressed: () {}`, `href="#"`) and Verifiers must actively scan for and reject them.
 
 ## 5. Quality Principles (Global)
 - **Structure**: Workflows must enforce clean architectural boundaries. Fail builds when boundaries breach.

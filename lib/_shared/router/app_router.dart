@@ -40,6 +40,7 @@ import '../../features/programs/pages/program_list_page.dart';
 import '../../features/programs/pages/program_dashboard_page.dart';
 import '../../features/programs/pages/program_create_wizard_page.dart';
 import '../../features/programs/pages/program_assignment_list_page.dart';
+import '../../features/programs/pages/area_campaign_list_page.dart';
 
 final _di = GetIt.instance;
 
@@ -164,6 +165,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/programs/assignments',
       builder: (context, state) => const ProgramAssignmentListPage(),
+    ),
+    GoRoute(
+      path: '/programs/area-campaigns',
+      builder: (context, state) => const AreaCampaignListPage(),
     ),
     GoRoute(
       path: '/programs/:assignmentId',

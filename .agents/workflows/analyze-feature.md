@@ -114,8 +114,8 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Test Contracts` (ID, Exact Text, State Matrix, Why it fails first). **CRITICAL:** Every boundary constraint MUST be an explicit row.
 > - `## Test Fixture & Payloads` (Explicit setup requirements like "Seeded Admin" and raw JSON Request/Response examples for API slices).
 > - `## Tools & Commands` (Skills and test commands)
-> - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files.
-> - `## Concept Diagram`: A simple text flowchart (like `[User] --> [Click] --> [Save]`) to explain the idea.
+> - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files. **For UI components, you MUST include a Markdown table mapping Component -> Truncation Limit -> Overflow Action -> Required New Route. Never leave routing ambiguous.**
+> - `## Concept Diagram`: A simple text flowchart (like `[User] --> [Click] --> [Save]`) to explain the idea. **For UI changes, this MUST include routing/state transitions so there are no dead ends.**
 > - `## Execution Slices` (Micro-Specs): Group the work using the `use-case-slicing` skill methodology. **CRITICAL:** Apply the 'Maximum Thickness' rule. To prevent AI context overflow, if a plan spans both backend APIs and new frontend UI, YOU MUST split it horizontally (e.g., `Phase A: Backend API`, `Phase B: Frontend UI`). Keep the blast radius under 400 lines per phase. For each slice, you MUST output the Micro-Spec format (Plain English Summary, Value Delivered, Entry/Exit State, Scope, Acceptance Criteria). Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
 > - `<command_logs>`: A list of terminal commands you ran.
 > - `## Handoff Block`: A short summary for the next AI agent. You MUST include the exact `@[/...]` routing command (like `@[/tdd]`) for EVERY step, with the absolute file path.

@@ -30,7 +30,7 @@ description: Pre-PR quality gate — dynamically enforces project gotchas and ve
 
 | Vector | Execution Contract |
 |---|---|
-| **Core Audits** | Run `grep_search` on `GREP_CHECKABLE` and `DIFF_CHECKABLE` rules against modified files. Score PASS/FAIL. |
+| **Core Audits** | Run `grep_search` on `GREP_CHECKABLE` and `DIFF_CHECKABLE` rules against modified files. You MUST scan for dead UX stubs (`onPressed: () {}`, `href="#"`) and BLOCK if found. Score PASS/FAIL. |
 | **Secret Scan (🔴)**| MANDATORY: `grep_search` modified files for `sk_test`, `sk_live`, `password=`, `Bearer`, or API keys. IF `.env` exists in git diff → BLOCK. |
 | **Compile/Format** | **Detect Stack:** Identify the tech stack (e.g., `package.json`, `.csproj`, `pubspec.yaml`, `go.mod`). **Execute:** Run the native compiler and formatter. BLOCK on fail. |
 | **Test Matrix** | **Detect Stack:** Identify test runner. **Execute:** Run the native test suite (e.g., `dotnet test`, `jest`, `go test`). BLOCK on fail. |
