@@ -44,6 +44,12 @@ class SubmissionDto {
   final bool? isWeighted;
   final String? scoringMode;
 
+  /// Transient field — computed by the server based on user role + entity status.
+  /// Null when loaded from the local Drift cache (offline).
+  /// [ActionGuard] uses this list to show/hide action buttons.
+  /// Never persisted to Drift.
+  final List<String>? allowedActions;
+
   const SubmissionDto({
     required this.id,
     this.templateId,
@@ -73,6 +79,7 @@ class SubmissionDto {
     this.rawMaxPoints,
     this.isWeighted,
     this.scoringMode,
+    this.allowedActions,
   });
 
   /// Whether this audit has been voided.
@@ -131,6 +138,7 @@ class SubmissionDto {
     rawMaxPoints: (json['rawMaxPoints'] as num?)?.toDouble(),
     isWeighted: json['isWeighted'] as bool?,
     scoringMode: json['scoringMode'] as String?,
+    allowedActions: (json['allowedActions'] as List?)?.cast<String>(),
   );
 
   /// Returns a copy of this DTO with [status] overridden.
@@ -164,5 +172,6 @@ class SubmissionDto {
     rawMaxPoints: rawMaxPoints,
     isWeighted: isWeighted,
     scoringMode: scoringMode,
+    allowedActions: allowedActions,
   );
 }

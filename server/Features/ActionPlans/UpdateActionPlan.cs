@@ -196,7 +196,7 @@ public static class UpdateActionPlan
             if (notif is not null)
             {
                 db.Notifications.Add(notif);
-                
+
                 var outboxMsg = new OutboxMessage
                 {
                     Id = Guid.NewGuid(),

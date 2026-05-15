@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/constants/submission_actions.dart';
 import '../../../../_shared/exceptions/app_error.dart';
 import '../../../../_shared/services/error_display_service.dart';
 import '../../../../_shared/services/policy_manager.dart';
@@ -279,9 +280,15 @@ class _SubmissionRowState extends State<SubmissionRow> {
                       if (value == 'void') Future.microtask(_voidAudit);
                     },
                     itemBuilder: (_) {
-                      final canVoid = _di<PolicyManager>().can(
-                        AppCapabilities.submissionsReview,
-                      );
+                      // Hybrid PBAC check: use server-computed allowedActions
+                      // when online; fall back to JWT capability when offline.
+                      final canVoid = sub.allowedActions != null
+                          ? sub.allowedActions!.contains(
+                              SubmissionActions.voidAction,
+                            )
+                          : _di<PolicyManager>().can(
+                              AppCapabilities.submissionsReview,
+                            );
                       return [
                         const PopupMenuItem(
                           value: 'resume',

@@ -42,9 +42,12 @@ class _AdminActiveCampaignsWidgetState
     try {
       final result = await _api.getPrograms(page: 1);
       final items = result['items'] as List<dynamic>? ?? [];
-      
+
       // Filter for active campaigns and take top 3
-      final activeItems = items.where((p) => p['status'] != 'completed' && p['status'] != 'archived').take(3).toList();
+      final activeItems = items
+          .where((p) => p['status'] != 'completed' && p['status'] != 'archived')
+          .take(3)
+          .toList();
 
       if (!mounted) return;
       setState(() {
@@ -132,7 +135,8 @@ class _AdminActiveCampaignsWidgetState
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.5),
+                                    color: theme.colorScheme.tertiaryContainer
+                                        .withValues(alpha: 0.5),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
@@ -145,7 +149,9 @@ class _AdminActiveCampaignsWidgetState
                                 Expanded(
                                   child: Text(
                                     title,
-                                    style: const TextStyle(fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -168,7 +174,9 @@ class _AdminActiveCampaignsWidgetState
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    color: theme
+                                        .colorScheme
+                                        .surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
@@ -194,7 +202,9 @@ class _AdminActiveCampaignsWidgetState
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.5,
+              ),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
@@ -214,10 +224,15 @@ class _AdminActiveCampaignsWidgetState
             icon: const Icon(Icons.add),
             label: const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
-              child: Text('NEW CAMPAIGN', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(
+                'NEW CAMPAIGN',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
             style: FilledButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         ),

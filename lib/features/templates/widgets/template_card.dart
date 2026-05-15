@@ -110,139 +110,141 @@ class TemplateCard extends StatelessWidget {
               // Context menu
               if (canEdit || canDelete)
                 PopupMenuButton<String>(
-                tooltip: '',
-                icon: Icon(
-                  Icons.more_vert,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                onSelected: (action) {
-                  switch (action) {
-                    case 'edit':
-                      context.push('/templates/edit/${template.id}');
-                    case 'duplicate':
-                      () async {
-                        try {
-                          final cloned = await GetIt.instance<TemplateManager>()
-                              .duplicateTemplate(template.id);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "'${cloned.title}' created as draft",
+                  tooltip: '',
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onSelected: (action) {
+                    switch (action) {
+                      case 'edit':
+                        context.push('/templates/edit/${template.id}');
+                      case 'duplicate':
+                        () async {
+                          try {
+                            final cloned =
+                                await GetIt.instance<TemplateManager>()
+                                    .duplicateTemplate(template.id);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "'${cloned.title}' created as draft",
+                                  ),
                                 ),
+                              );
+                            }
+                          } on DioException catch (e) {
+                            if (context.mounted) {
+                              GetIt.instance<ErrorDisplayService>().show(
+                                AppError.fromDioException(e),
+                              );
+                            }
+                          } catch (_) {
+                            if (context.mounted) {
+                              GetIt.instance<ErrorDisplayService>().show(
+                                const AppError(
+                                  code: 'unknown',
+                                  message:
+                                      'Could not duplicate template. Please try again.',
+                                ),
+                              );
+                            }
+                          }
+                        }();
+                      case 'delete':
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Delete Template'),
+                            content: Text(
+                              'Delete "${template.title}"? This cannot be undone.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: const Text('Cancel'),
                               ),
-                            );
-                          }
-                        } on DioException catch (e) {
-                          if (context.mounted) {
-                            GetIt.instance<ErrorDisplayService>().show(
-                              AppError.fromDioException(e),
-                            );
-                          }
-                        } catch (_) {
-                          if (context.mounted) {
-                            GetIt.instance<ErrorDisplayService>().show(
-                              const AppError(
-                                code: 'unknown',
-                                message:
-                                    'Could not duplicate template. Please try again.',
+                              FilledButton(
+                                onPressed: () async {
+                                  Navigator.pop(ctx);
+                                  try {
+                                    await GetIt.instance<TemplateManager>()
+                                        .deleteTemplate(template.id);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Template deleted'),
+                                        ),
+                                      );
+                                    }
+                                  } on DioException catch (e) {
+                                    if (context.mounted) {
+                                      GetIt.instance<ErrorDisplayService>()
+                                          .show(AppError.fromDioException(e));
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      GetIt.instance<ErrorDisplayService>().show(
+                                        const AppError(
+                                          code: 'unknown',
+                                          message:
+                                              'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                                child: const Text('Delete'),
                               ),
-                            );
-                          }
-                        }
-                      }();
-                    case 'delete':
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text('Delete Template'),
-                          content: Text(
-                            'Delete "${template.title}"? This cannot be undone.',
+                            ],
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: const Text('Cancel'),
-                            ),
-                            FilledButton(
-                              onPressed: () async {
-                                Navigator.pop(ctx);
-                                try {
-                                  await GetIt.instance<TemplateManager>()
-                                      .deleteTemplate(template.id);
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Template deleted'),
-                                      ),
-                                    );
-                                  }
-                                } on DioException catch (e) {
-                                  if (context.mounted) {
-                                    GetIt.instance<ErrorDisplayService>().show(
-                                      AppError.fromDioException(e),
-                                    );
-                                  }
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    GetIt.instance<ErrorDisplayService>().show(
-                                      const AppError(
-                                        code: 'unknown',
-                                        message:
-                                            'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                              child: const Text('Delete'),
-                            ),
-                          ],
+                        );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    if (canEdit) ...[
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: ListTile(
+                          leading: Icon(Icons.edit),
+                          title: Text('Edit'),
+                          dense: true,
                         ),
-                      );
-                  }
-                },
-                itemBuilder: (context) => [
-                  if (canEdit) ...[
-                    const PopupMenuItem(
-                      value: 'edit',
-                      child: ListTile(
-                        leading: Icon(Icons.edit),
-                        title: Text('Edit'),
-                        dense: true,
                       ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'duplicate',
-                      child: ListTile(
-                        leading: Icon(Icons.copy),
-                        title: Text('Duplicate'),
-                        dense: true,
+                      const PopupMenuItem(
+                        value: 'duplicate',
+                        child: ListTile(
+                          leading: Icon(Icons.copy),
+                          title: Text('Duplicate'),
+                          dense: true,
+                        ),
                       ),
-                    ),
+                    ],
+                    if (canDelete)
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Builder(
+                          builder: (ctx) {
+                            final errorColor = Theme.of(ctx).colorScheme.error;
+                            return ListTile(
+                              leading: Icon(
+                                Icons.delete_outline,
+                                color: errorColor,
+                              ),
+                              title: Text(
+                                'Delete',
+                                style: TextStyle(color: errorColor),
+                              ),
+                              dense: true,
+                            );
+                          },
+                        ),
+                      ),
                   ],
-                  if (canDelete)
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Builder(
-                        builder: (ctx) {
-                          final errorColor = Theme.of(ctx).colorScheme.error;
-                          return ListTile(
-                            leading: Icon(
-                              Icons.delete_outline,
-                              color: errorColor,
-                            ),
-                            title: Text(
-                              'Delete',
-                              style: TextStyle(color: errorColor),
-                            ),
-                            dense: true,
-                          );
-                        },
-                      ),
-                    ),
-                ],
-              ),
+                ),
             ],
           ),
         ),

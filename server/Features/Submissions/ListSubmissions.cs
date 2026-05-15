@@ -17,6 +17,7 @@ public static class ListSubmissions
     public static async Task<IResult> HandleAsync(
         ClaimsPrincipal user,
         AppDbContext db,
+        PbacDictionaryCache pbacCache,
         HttpContext httpContext,
         CancellationToken ct)
     {
@@ -40,11 +41,62 @@ public static class ListSubmissions
         if ((long)(page - 1) * pageSize >= total)
             return TypedResults.Ok(new PagedResult<SubmissionDto>([], total, page, pageSize));
 
-        var submissions = await query
+        // --- Compute AllowedActions flags ---
+        // RULE: Evaluate BEFORE the .Select() lambda — EF cannot translate PbacDictionaryCache calls.
+        var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
+        var capabilities = pbacCache.GetCapabilities(role);
+        _ = Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var callerId);
+
+        var canFinalize = capabilities.Contains(AppCapabilities.SubmissionsReview);
+        var canCreate = capabilities.Contains(AppCapabilities.SubmissionsCreate);
+
+        var rows = await query
             .OrderByDescending(s => s.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(s => new SubmissionDto(
+            .Select(s => new
+            {
+                s.Id,
+                s.TemplateId,
+                s.TemplateTitle,
+                s.TemplateType,
+                s.DisplayNoun,
+                s.StoreId,
+                s.StoreName,
+                s.AuditorId,
+                s.AuditorName,
+                s.Status,
+                s.TotalScore,
+                s.SectionScores,
+                s.Notes,
+                s.CreatedAt,
+                s.CompletedAt,
+                s.ScheduledAt,
+                s.TemplateVersion,
+                s.RawEarnedPoints,
+                s.RawMaxPoints,
+                s.IsWeighted,
+                s.ScoringMode
+            })
+            .ToListAsync(ct);
+
+        // Post-query in-memory mapping: AllowedActions is computed from pre-evaluated bool flags.
+        // This is a single DB round-trip — no N+1.
+        var submissions = rows.Select(s =>
+        {
+            var isOwner = s.AuditorId == callerId;
+            var actions = new List<string> { SubmissionActions.View };
+
+            if (canCreate && isOwner && (s.Status == "draft" || s.Status == "scheduled"))
+                actions.Add(SubmissionActions.Edit);
+
+            if (canFinalize && s.Status == "completed")
+                actions.Add(SubmissionActions.Finalize);
+
+            if (canFinalize && s.Status != "approved" && s.Status != "rejected")
+                actions.Add(SubmissionActions.Void);
+
+            return new SubmissionDto(
                 s.Id, s.TemplateId, s.TemplateTitle, s.TemplateType, s.DisplayNoun,
                 s.StoreId, s.StoreName, s.AuditorId,
                 s.AuditorName, s.Status, s.TotalScore,
@@ -52,8 +104,9 @@ public static class ListSubmissions
                 s.CreatedAt, s.CompletedAt, s.ScheduledAt,
                 s.TemplateVersion,
                 s.RawEarnedPoints, s.RawMaxPoints, s.IsWeighted,
-                s.ScoringMode))
-            .ToListAsync(ct);
+                s.ScoringMode,
+                AllowedActions: actions);
+        }).ToList();
 
         return TypedResults.Ok(new PagedResult<SubmissionDto>(submissions, total, page, pageSize));
     }

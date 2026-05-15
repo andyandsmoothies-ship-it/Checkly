@@ -113,10 +113,10 @@ public static class SyncSubmissions
         // Cursor logic
         if (cursorUpdatedAt.HasValue && cursorId.HasValue)
         {
-            query = query.Where(s => s.UpdatedAt > cursorUpdatedAt.Value || 
+            query = query.Where(s => s.UpdatedAt > cursorUpdatedAt.Value ||
                                     (s.UpdatedAt == cursorUpdatedAt.Value && s.Id > cursorId.Value));
         }
-        else 
+        else
         {
             // ── Rule 6: Coalesce null since to MinValue (prevent unbounded scans) ─
             var sinceEffective = since ?? DateTimeOffset.MinValue;

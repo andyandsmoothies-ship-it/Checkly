@@ -28,8 +28,8 @@ public static class Login
             if (user is null)
             {
                 return TypedResults.Problem(
-                    "Invalid email or password.", 
-                    statusCode: 401, 
+                    "Invalid email or password.",
+                    statusCode: 401,
                     extensions: new Dictionary<string, object?> { { "code", "invalid_credentials" } });
             }
 
@@ -45,8 +45,8 @@ public static class Login
 
             if (!result.Succeeded)
                 return TypedResults.Problem(
-                    "Invalid email or password.", 
-                    statusCode: 401, 
+                    "Invalid email or password.",
+                    statusCode: 401,
                     extensions: new Dictionary<string, object?> { { "code", "invalid_credentials" } });
 
             // Get role from user_roles table

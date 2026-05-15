@@ -53,7 +53,8 @@ public sealed record SubmissionDto(
     decimal? RawEarnedPoints = null,
     decimal? RawMaxPoints = null,
     bool? IsWeighted = null,
-    string? ScoringMode = null);
+    string? ScoringMode = null,
+    List<string>? AllowedActions = null);
 
 public sealed record SubmissionDetailDto(
     Guid Id,
@@ -79,7 +80,8 @@ public sealed record SubmissionDetailDto(
     decimal? RawEarnedPoints = null,
     decimal? RawMaxPoints = null,
     bool? IsWeighted = null,
-    string? ScoringMode = null);
+    string? ScoringMode = null,
+    List<string>? AllowedActions = null);
 
 public sealed record AnswerDto(
     Guid Id,

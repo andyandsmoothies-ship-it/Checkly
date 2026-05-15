@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/widgets/permission_guard.dart';
 
 // ============================================================

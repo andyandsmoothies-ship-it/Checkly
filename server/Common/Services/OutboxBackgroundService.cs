@@ -79,9 +79,9 @@ public class OutboxBackgroundService(
     }
 
     private async Task ProcessMessageWithRetryAsync(
-        IServiceScope scope, 
-        AppDbContext db, 
-        OutboxMessage message, 
+        IServiceScope scope,
+        AppDbContext db,
+        OutboxMessage message,
         CancellationToken stoppingToken)
     {
         try
@@ -93,9 +93,9 @@ public class OutboxBackgroundService(
                 {
                     // Basic placeholder for dispatch logic - this will be fully wired in Slice 2
                     var fcmService = scope.ServiceProvider.GetRequiredService<IFcmDispatchService>();
-                    
+
                     using var doc = JsonDocument.Parse(message.Payload);
-                    if (doc.RootElement.TryGetProperty("UserId", out var userIdElement) && 
+                    if (doc.RootElement.TryGetProperty("UserId", out var userIdElement) &&
                         userIdElement.TryGetGuid(out var userId))
                     {
                         await fcmService.DispatchSyncNeededAsync(userId);

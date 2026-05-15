@@ -20,9 +20,7 @@ class ProgramAssignmentListPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pending Campaigns'),
-      ),
+      appBar: AppBar(title: const Text('Pending Campaigns')),
       body: StreamBuilder<List<PendingAssignmentVm>?>(
         stream: manager.watchActionRequired(),
         builder: (context, snapshot) {

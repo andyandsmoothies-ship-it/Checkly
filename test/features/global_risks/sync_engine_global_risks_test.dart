@@ -32,6 +32,7 @@ import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/_shared/database/dao/profile_dao.dart';
 import 'package:checkly/_shared/database/dao/submission_dao.dart';
 import 'package:mocktail/mocktail.dart';
+
 class FakeConnectivity implements ConnectivityService {
   @override
   bool isOnline = true;
@@ -108,8 +109,17 @@ class FakeSyncApi implements SyncApi {
   bool throw409 = false;
 
   @override
-  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async {
-    return DeltaPullResult(serverTimestamp: DateTime.now(), hasNextPage: false, submissions: []);
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  }) async {
+    return DeltaPullResult(
+      serverTimestamp: DateTime.now(),
+      hasNextPage: false,
+      submissions: [],
+    );
   }
 
   @override
@@ -141,13 +151,13 @@ class FakeSyncApi implements SyncApi {
 
   @override
   Future<List<dynamic>> pullProgramAssignments() async => [];
-
 }
 
 class MockAuthManager extends Mock implements AuthManager {}
-class MockProfileDao extends Mock implements ProfileDao {}
-class MockSubmissionDao extends Mock implements SubmissionDao {}
 
+class MockProfileDao extends Mock implements ProfileDao {}
+
+class MockSubmissionDao extends Mock implements SubmissionDao {}
 
 void main() {
   late AppDatabase testDb;

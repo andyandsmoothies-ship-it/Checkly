@@ -60,7 +60,12 @@ class FailingApi implements SyncApi {
   }
 
   @override
-  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async {
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  }) async {
     return DeltaPullResult(serverTimestamp: DateTime.now().toUtc());
   }
 
@@ -71,8 +76,6 @@ class FailingApi implements SyncApi {
 
   @override
   Future<List<dynamic>> pullProgramAssignments() async => [];
-
-
 }
 
 class _ConflictRiskApi extends FailingApi {
@@ -181,10 +184,10 @@ class _FakeActionPlanOutboxDao implements ActionPlanOutboxDao {
 
 // ─── Tests ────────────────────────────────────────────────────────────────
 
-
-
 class MockAuthManager extends Mock implements AuthManager {}
+
 class MockProfileDao extends Mock implements ProfileDao {}
+
 class MockSubmissionDao extends Mock implements SubmissionDao {}
 
 void main() {
@@ -227,16 +230,15 @@ void main() {
           syncMetaDao: SyncMetaDao(db),
           connectivity: connectivity,
           scheduleRetry: (_) {},
-            authManager: MockAuthManager(),
-            profileDao: MockProfileDao(),
-            submissionDao: MockSubmissionDao(),
+          authManager: MockAuthManager(),
+          profileDao: MockProfileDao(),
+          submissionDao: MockSubmissionDao(),
         ),
         ActionPlanSyncModule(
           api: _FakeActionPlanApi(),
           outboxDao: _FakeActionPlanOutboxDao(),
           connectivity: connectivity,
           scheduleRetry: (_) {},
-
         ),
       ],
     );

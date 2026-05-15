@@ -10,7 +10,7 @@ public class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage
     {
         builder.ToTable("outbox_messages");
         builder.HasKey(x => x.Id);
-        
+
         builder.Property(x => x.Id).HasColumnName("id");
         builder.Property(x => x.Type).HasColumnName("type").IsRequired().HasMaxLength(255);
         builder.Property(x => x.Payload).HasColumnName("payload").IsRequired().HasColumnType("jsonb");

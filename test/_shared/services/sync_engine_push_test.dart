@@ -53,8 +53,16 @@ class FakeSyncApi implements SyncApi {
   }
 
   @override
-  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async =>
-      DeltaPullResult(serverTimestamp: DateTime.now(), hasNextPage: false, submissions: []);
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  }) async => DeltaPullResult(
+    serverTimestamp: DateTime.now(),
+    hasNextPage: false,
+    submissions: [],
+  );
 
   @override
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
@@ -103,9 +111,10 @@ class FakeActionPlanApi implements ActionPlanApi {
   Future<ActionPlanDto?> fetchActionPlan(String id) async => null;
 }
 
-
 class MockAuthManager extends Mock implements AuthManager {}
+
 class MockProfileDao extends Mock implements ProfileDao {}
+
 class MockSubmissionDao extends Mock implements SubmissionDao {}
 
 void main() {
@@ -153,7 +162,7 @@ void main() {
             outboxDao: actionPlanOutboxDao,
             connectivity: connectivity,
             scheduleRetry: (_) {},
-            ),
+          ),
         ],
       );
 

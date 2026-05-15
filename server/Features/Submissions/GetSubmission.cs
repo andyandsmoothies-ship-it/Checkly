@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Checkly.Api.Common;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ public static class GetSubmission
         Guid id,
         ClaimsPrincipal user,
         AppDbContext db,
+        PbacDictionaryCache pbacCache,
         CancellationToken ct)
     {
         var submission = await db.Submissions
@@ -35,6 +37,29 @@ public static class GetSubmission
         if (!hasAccess)
             return TypedResults.Forbid();
 
+        // --- Compute AllowedActions ---
+        // RULE: Extract role + capabilities BEFORE any mapping. PbacDictionaryCache
+        // cannot be called inside a LINQ/EF expression tree.
+        var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
+        var capabilities = pbacCache.GetCapabilities(role);
+
+        _ = Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var callerId);
+        var isOwner = submission.AuditorId == callerId;
+
+        var canFinalize = capabilities.Contains(AppCapabilities.SubmissionsReview);
+        var canEdit = capabilities.Contains(AppCapabilities.SubmissionsCreate) && isOwner;
+
+        var allowedActions = new List<string> { SubmissionActions.View };
+
+        if (canEdit && (submission.Status == "draft" || submission.Status == "scheduled"))
+            allowedActions.Add(SubmissionActions.Edit);
+
+        if (canFinalize && submission.Status == "completed")
+            allowedActions.Add(SubmissionActions.Finalize);
+
+        if (canFinalize && submission.Status != "approved" && submission.Status != "rejected")
+            allowedActions.Add(SubmissionActions.Void);
+
         var dto = new SubmissionDetailDto(
             submission.Id, submission.TemplateId, submission.TemplateTitle, submission.TemplateType, submission.DisplayNoun,
             submission.StoreId, submission.StoreName, submission.AuditorId,
@@ -51,7 +76,8 @@ public static class GetSubmission
             submission.TemplateSnapshot,
             submission.TemplateVersion,
             submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted,
-            submission.ScoringMode);
+            submission.ScoringMode,
+            AllowedActions: allowedActions);
 
         return TypedResults.Ok(dto);
     }

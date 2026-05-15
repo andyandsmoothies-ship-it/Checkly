@@ -99,9 +99,18 @@ class FakeSyncApi implements SyncApi {
   }
 
   @override
-  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId}) async {
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  }) async {
     pullLog.add(cursorUpdatedAt?.toIso8601String() ?? 'null');
-    return DeltaPullResult(serverTimestamp: serverTimestamp, hasNextPage: false, submissions: []);
+    return DeltaPullResult(
+      serverTimestamp: serverTimestamp,
+      hasNextPage: false,
+      submissions: [],
+    );
   }
 
   @override
@@ -112,8 +121,6 @@ class FakeSyncApi implements SyncApi {
 
   @override
   Future<List<dynamic>> pullProgramAssignments() async => [];
-
-
 }
 
 /// Fake outbox (in-memory) for testing FIFO ordering and removal.
@@ -146,7 +153,9 @@ PendingSubmission _makePending(String key, DateTime createdAt) =>
     PendingSubmission(idempotencyKey: key, createdAt: createdAt, payload: '{}');
 
 class MockAuthManager extends Mock implements AuthManager {}
+
 class MockProfileDao extends Mock implements ProfileDao {}
+
 class MockSubmissionDao extends Mock implements SubmissionDao {}
 
 void main() {

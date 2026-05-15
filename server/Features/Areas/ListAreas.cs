@@ -31,11 +31,12 @@ public static class ListAreas
         var areaRows = await areaQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(a => new { 
-                a.Id, 
-                a.Name, 
-                a.Description, 
-                StoreCount = a.Stores.Count(s => s.IsActive == true), 
+            .Select(a => new
+            {
+                a.Id,
+                a.Name,
+                a.Description,
+                StoreCount = a.Stores.Count(s => s.IsActive == true),
                 a.CreatedAt,
                 ManagerName = db.Profiles
                     .Where(p => p.AreaId == a.Id && db.AppUserRoles.Any(r => r.UserId == p.Id && r.Role == "area_manager"))

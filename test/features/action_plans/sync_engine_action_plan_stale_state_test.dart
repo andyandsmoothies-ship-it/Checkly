@@ -51,8 +51,16 @@ class FakeSyncApi implements SyncApi {
   @override
   Future<void> pushSubmission(PendingSubmission submission) async {}
   @override
-  Future<DeltaPullResult> pullDeltas({DateTime? cursorUpdatedAt, String? cursorId, String? storeId, String? areaId,}) async =>
-      DeltaPullResult(serverTimestamp: DateTime.now(), hasNextPage: false, submissions: []);
+  Future<DeltaPullResult> pullDeltas({
+    DateTime? cursorUpdatedAt,
+    String? cursorId,
+    String? storeId,
+    String? areaId,
+  }) async => DeltaPullResult(
+    serverTimestamp: DateTime.now(),
+    hasNextPage: false,
+    submissions: [],
+  );
   @override
   Future<List<dynamic>> pullGlobalRisks(DateTime? since) async => [];
   @override
@@ -60,8 +68,6 @@ class FakeSyncApi implements SyncApi {
 
   @override
   Future<List<dynamic>> pullProgramAssignments() async => [];
-
-
 }
 
 class FakeAuthCheck implements AuthCheck {
@@ -147,9 +153,10 @@ class MockDio implements Dio {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-
 class MockAuthManager extends Mock implements AuthManager {}
+
 class MockProfileDao extends Mock implements ProfileDao {}
+
 class MockSubmissionDao extends Mock implements SubmissionDao {}
 
 void main() {
