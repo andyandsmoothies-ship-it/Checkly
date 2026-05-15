@@ -55,4 +55,15 @@ class ProgramOutboxDao {
       _db.cachedProgramAssignments,
     )..where((r) => r.id.equals(id))).getSingleOrNull();
   }
+
+  // ── Store lookup ──────────────────────────────────────────────────────────
+
+  /// Returns the ID of the SM's primary store from the local cache.
+  ///
+  /// A Store Manager is always assigned to exactly one store, so the first
+  /// row is sufficient. Returns an empty string when the cache is empty.
+  Future<String> getPrimaryStoreId() async {
+    final rows = await (_db.select(_db.cachedStores)..limit(1)).get();
+    return rows.isNotEmpty ? rows.first.id : '';
+  }
 }

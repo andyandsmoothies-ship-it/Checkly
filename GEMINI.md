@@ -14,6 +14,10 @@
 - **Rule**: Research the code before editing. Never change code you haven't read.
 - **Enforcement**: Use `grep_search` and `view_file`. Always check `GEMINI.md` in subfolders for local rules before editing files there.
 
+### Rule: Prove It With Code (No Hallucinations)
+- **Rule**: Never answer questions about how a function works, what a file contains, or what tasks are done based on memory or outdated chat history.
+- **Enforcement**: When answering questions about the codebase, you MUST provide concrete evidence (e.g., a real code snippet, exact line numbers, or file paths) that you just freshly pulled using your search/read tools to prove your answer reflects the *current* live state of the project.
+
 ### Rule: Do Not Fix Unrelated Code
 - **Rule**: Only touch what you have to. Do not clean up unrelated code or "improve" adjacent logic.
 - **Enforcement**: Match surrounding style perfectly. Preserve quote marks, spacing, and dead code exactly as they are.
@@ -88,6 +92,8 @@
   - **Fix:** Avoid manual fakes (e.g., `class FakeDao extends RealDao`) which require manual signature rewrites. Use `mocktail` (`class MockDao extends Mock implements RealDao {}`). Whenever you modify a core service, entity, or database DAO, you MUST run the global `flutter test` or `dotnet test` suite before committing to instantly catch drifted interfaces across the entire project.
 - **Gotcha: Hardcoded Role Filtering in UI Lists**
   - **Fix:** Do not hardcode role string checks (e.g., `u['role'] == 'auditor'`) in the frontend to filter dropdowns or UI lists, especially when migrating to PBAC. If the UI arbitrarily excludes roles like `area_manager`, dropdowns will appear empty and lead to silent null-reference validation errors. Always prefer backend-driven capability lists or PBAC-aware filtering.
+- **Gotcha: Hybrid Entity-Driven UI (HATEOAS) for Actions**
+  - **Fix:** Never hardcode UI button visibility or tap gestures based on the user's role on the frontend. The backend MUST compute an `allowedActions` string array (e.g., `["edit", "view_details", "void"]`) on its DTOs. This array is built by combining PBAC capabilities (from JWT) with the entity's current status. The Flutter frontend must wrap actionable widgets in an `ActionGuard` that checks this array to enable/disable interactions.
 
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.

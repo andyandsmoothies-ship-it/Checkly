@@ -59,6 +59,14 @@ public static class ProgramEndpoints
             .WithName("GetProgramSummary")
             .RequireCapability(AppCapabilities.ProgramsAssignmentsList);
 
+        // ── Slice CM05: Area Manager Campaign Reporting ────────────────────────
+
+        // GET /api/programs/area-progress — AM views campaign completion for their assigned stores
+        // NOTE: Must be declared BEFORE /{id} catch-all to prevent interception.
+        group.MapGet("/area-progress", GetAreaCampaignProgress.HandleAsync)
+            .WithName("GetAreaCampaignProgress")
+            .RequireCapability(AppCapabilities.ProgramsAssignmentsList);
+
         // ── Slice 6: CRUD Parity ───────────────────────────────────────────────
 
         // PUT /api/programs/{id} — Admin updates mutable fields on an active program

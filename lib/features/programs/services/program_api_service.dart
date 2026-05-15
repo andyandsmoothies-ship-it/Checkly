@@ -129,6 +129,40 @@ class ProgramSummaryResponse {
       );
 }
 
+/// DTO for Area Manager Campaign Progress
+class AreaCampaignProgressDto {
+  final String programId;
+  final String title;
+  final DateTime deadline;
+  final int totalStores;
+  final int completedStores;
+  final int completionRate;
+  final List<String> allowedActions;
+
+  const AreaCampaignProgressDto({
+    required this.programId,
+    required this.title,
+    required this.deadline,
+    required this.totalStores,
+    required this.completedStores,
+    required this.completionRate,
+    this.allowedActions = const [],
+  });
+
+  factory AreaCampaignProgressDto.fromJson(Map<String, dynamic> json) =>
+      AreaCampaignProgressDto(
+        programId: json['programId'] as String,
+        title: json['title'] as String,
+        deadline: DateTime.parse(json['deadline'] as String),
+        totalStores: json['totalStores'] as int,
+        completedStores: json['completedStores'] as int,
+        completionRate: json['completionRate'] as int,
+        allowedActions: json['allowedActions'] != null
+            ? List<String>.from(json['allowedActions'] as List)
+            : const [],
+      );
+}
+
 /// Service wrapping Dio to interact with the Programs backend API.
 ///
 /// Designed for HQ (admin) use: online-only, no offline caching.
@@ -198,5 +232,14 @@ class ProgramApiService {
       },
     );
     return response.data!;
+  }
+
+  /// Returns campaign progress aggregated for the Area Manager's assigned stores.
+  /// GET /api/programs/area-progress
+  Future<List<AreaCampaignProgressDto>> getAreaCampaignProgress() async {
+    final response = await _dio.get<List<dynamic>>('/programs/area-progress');
+    return response.data!
+        .map((e) => AreaCampaignProgressDto.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

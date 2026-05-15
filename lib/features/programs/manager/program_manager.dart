@@ -56,4 +56,9 @@ class ProgramManager extends ChangeNotifier {
     final row = await _outboxDao.getCachedAssignment(assignmentId);
     return row == null ? null : ProgramAssignmentDto.fromDb(row);
   }
+
+  /// Returns the ID of the SM's primary store from the local cache.
+  ///
+  /// Delegates to [ProgramOutboxDao] — the page must NOT access the DB directly.
+  Future<String> getPrimaryStoreId() => _outboxDao.getPrimaryStoreId();
 }

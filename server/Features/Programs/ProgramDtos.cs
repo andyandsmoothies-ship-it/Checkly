@@ -97,5 +97,22 @@ public record UpdateProgramRequest(
     DateTimeOffset Deadline,
     string Category);
 
+// ── Slice CM05: Area Manager Campaign Reporting ──────────────────────────────
 
-
+/// <summary>
+/// Per-campaign progress row for GET /api/programs/area-progress.
+/// Represents a single Program's completion status across all stores
+/// assigned to the requesting Area Manager.
+/// CompletionRate is a 0–100 integer percentage.
+/// AllowedActions is server-computed per PBAC02 hybrid entity-driven UI.
+/// </summary>
+public record AreaCampaignProgressDto(
+    Guid ProgramId,
+    string Title,
+    string Category,
+    DateTimeOffset Deadline,
+    string Status,
+    int TotalStores,
+    int CompletedStores,
+    int CompletionRate,
+    List<string> AllowedActions);

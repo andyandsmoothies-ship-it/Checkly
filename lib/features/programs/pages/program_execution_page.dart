@@ -3,7 +3,6 @@ import 'package:get_it/get_it.dart';
 
 import 'package:go_router/go_router.dart';
 
-import '../../../_shared/database/database_service.dart';
 import '../../programs/manager/program_manager.dart';
 import '../model/program_assignment_dto.dart';
 
@@ -48,15 +47,8 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
     final assignment = _assignment;
     if (assignment == null || !mounted) return;
 
-    // Get primary store from CachedStores (store manager has 1 store)
-    String storeId = '';
-    try {
-      final db = GetIt.I<DatabaseService>().db;
-      final stores = await db.select(db.cachedStores).get();
-      if (stores.isNotEmpty) {
-        storeId = stores.first.id;
-      }
-    } catch (_) {}
+    // Get primary store via manager — pages must NOT access the DB directly.
+    final storeId = await _manager.getPrimaryStoreId();
 
     if (!mounted) return;
 

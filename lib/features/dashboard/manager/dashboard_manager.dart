@@ -14,6 +14,7 @@ import '../../../_shared/database/dao/program_outbox_dao.dart';
 import '../../audit/manager/history_manager.dart';
 import '../../action_plans/manager/action_plan_manager.dart';
 import '../../programs/model/pending_assignment_vm.dart';
+import '../../programs/services/program_api_service.dart';
 import 'dashboard_queries.dart';
 import '../../../_shared/constants/user_persona.dart';
 
@@ -61,6 +62,7 @@ class ManagerDashboardState extends DashboardState {
   final double storeAvgScore;
   final DateTime? nearestDeadline;
   final List<SubmissionDto> recentSubmissions;
+  final List<AreaCampaignProgressDto> areaCampaigns;
 
   ManagerDashboardState({
     required this.storeId,
@@ -70,6 +72,7 @@ class ManagerDashboardState extends DashboardState {
     required this.storeAvgScore,
     this.nearestDeadline,
     required this.recentSubmissions,
+    this.areaCampaigns = const [],
   });
 }
 
@@ -188,7 +191,7 @@ class DashboardManager extends ChangeNotifier {
           _state = await _loadAuditorState(queries);
         case UserPersona.storeManager:
         case UserPersona.areaManager:
-          _state = await _loadManagerState(queries);
+          _state = await _loadManagerState(queries, persona);
         case UserPersona.admin:
           _state = await _loadAdminState(queries);
       }
@@ -226,7 +229,10 @@ class DashboardManager extends ChangeNotifier {
     );
   }
 
-  Future<DashboardState> _loadManagerState(DashboardQueries queries) async {
+  Future<DashboardState> _loadManagerState(
+    DashboardQueries queries,
+    UserPersona persona,
+  ) async {
     // Get storeId from the cached store profile.
     // Store managers have exactly one store in the local cache.
     final stores = await (_db.select(_db.cachedStores)..limit(1)).get();
@@ -255,6 +261,16 @@ class DashboardManager extends ChangeNotifier {
       final deadline = await queries.getNearestDeadline();
       final recent = await _getMergedRecentSubmissions(queries, limit: 10);
 
+      List<AreaCampaignProgressDto> campaigns = const [];
+      if (persona == UserPersona.areaManager &&
+          _di.isRegistered<ProgramApiService>()) {
+        try {
+          campaigns = await _di<ProgramApiService>().getAreaCampaignProgress();
+        } catch (_) {
+          // If it fails, fallback to empty so the rest of the dashboard loads
+        }
+      }
+
       return ManagerDashboardState(
         storeId: null,
         storeName: 'Syncing...',
@@ -263,6 +279,7 @@ class DashboardManager extends ChangeNotifier {
         storeAvgScore: results[2] as double,
         nearestDeadline: deadline,
         recentSubmissions: recent,
+        areaCampaigns: campaigns,
       );
     }
 
@@ -278,6 +295,16 @@ class DashboardManager extends ChangeNotifier {
     final deadline = await queries.getNearestDeadline();
     final recent = await _getMergedRecentSubmissions(queries, limit: 10);
 
+    List<AreaCampaignProgressDto> campaigns = const [];
+    if (persona == UserPersona.areaManager &&
+        _di.isRegistered<ProgramApiService>()) {
+      try {
+        campaigns = await _di<ProgramApiService>().getAreaCampaignProgress();
+      } catch (_) {
+        // If it fails, fallback to empty so the rest of the dashboard loads
+      }
+    }
+
     return ManagerDashboardState(
       storeId: storeId,
       storeName: store.name,
@@ -286,6 +313,7 @@ class DashboardManager extends ChangeNotifier {
       storeAvgScore: results[2] as double,
       nearestDeadline: deadline,
       recentSubmissions: recent,
+      areaCampaigns: campaigns,
     );
   }
 

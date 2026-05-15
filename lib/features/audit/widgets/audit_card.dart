@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/utils/score_utils.dart';
+import '../../../../_shared/widgets/action_guard.dart';
+import '../../../../_shared/constants/submission_actions.dart';
+import '../../../../_shared/constants/app_capabilities.dart';
 import '../model/submission_dto.dart';
 import '../utils/category_utils.dart';
 import '../utils/score_formatter.dart';
@@ -156,41 +159,51 @@ class AuditCard extends StatelessWidget {
 
                 // Action: Start / Resume button OR status badge
                 if ((isScheduled || isDraft) && onStartAudit != null) ...[
-                  FilledButton(
-                    onPressed: onStartAudit,
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                  ActionGuard(
+                    actions: submission.allowedActions,
+                    requiredAction: SubmissionActions.edit,
+                    fallbackCapability: AppCapabilities.submissionsCreate,
+                    child: FilledButton(
+                      onPressed: onStartAudit,
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        minimumSize: const Size(64, 44),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      minimumSize: const Size(64, 44),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      isDraft ? 'Resume' : 'Start',
-                      style: AppFonts.displayStyle(
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.fontSize,
-                        fontWeight: FontWeight.w600,
+                      child: Text(
+                        isDraft ? 'Resume' : 'Start',
+                        style: AppFonts.displayStyle(
+                          fontSize: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.fontSize,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
                   // Admin-only void button
                   if (onVoidAudit != null) ...[
                     const SizedBox(width: 4),
-                    IconButton.filledTonal(
-                      onPressed: onVoidAudit,
-                      tooltip: 'Void Audit',
-                      style: IconButton.styleFrom(
-                        backgroundColor: theme.colorScheme.error.withValues(
-                          alpha: 0.1,
+                    ActionGuard(
+                      actions: submission.allowedActions,
+                      requiredAction: SubmissionActions.voidAction,
+                      fallbackCapability: AppCapabilities.submissionsReview,
+                      child: IconButton.filledTonal(
+                        onPressed: onVoidAudit,
+                        tooltip: 'Void Audit',
+                        style: IconButton.styleFrom(
+                          backgroundColor: theme.colorScheme.error.withValues(
+                            alpha: 0.1,
+                          ),
                         ),
-                      ),
-                      icon: Icon(
-                        Icons.cancel_outlined,
-                        size: 18,
-                        color: theme.colorScheme.error,
+                        icon: Icon(
+                          Icons.cancel_outlined,
+                          size: 18,
+                          color: theme.colorScheme.error,
+                        ),
                       ),
                     ),
                   ],
