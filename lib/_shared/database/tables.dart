@@ -127,6 +127,7 @@ class CachedActionPlans extends Table {
   TextColumn get verifierName => text().nullable()();
   DateTimeColumn get evidenceSubmittedAt => dateTime().nullable()();
   TextColumn get evidenceSubmittedByName => text().nullable()();
+  TextColumn get cachedAllowedActions => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 

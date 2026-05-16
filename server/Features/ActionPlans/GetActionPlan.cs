@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,10 +21,12 @@ public static class GetActionPlan
         Guid id,
         ClaimsPrincipal user,
         AppDbContext db,
+        [Microsoft.AspNetCore.Mvc.FromServices] PbacDictionaryCache pbacCache,
         CancellationToken ct)
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
+        var callerCapabilities = pbacCache.GetCapabilities(role);
 
         var plan = await db.ActionPlans
             .AsNoTracking()
@@ -53,6 +56,6 @@ public static class GetActionPlan
                 return TypedResults.NotFound(); // 404 > 403 to avoid IDOR enumeration
         }
 
-        return TypedResults.Ok(CreateActionPlan.ToDto(plan));
+        return TypedResults.Ok(CreateActionPlan.ToDto(plan, callerCapabilities));
     }
 }

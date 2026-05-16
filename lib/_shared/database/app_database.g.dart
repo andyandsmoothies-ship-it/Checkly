@@ -4161,6 +4161,17 @@ class $CachedActionPlansTable extends CachedActionPlans
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _cachedAllowedActionsMeta =
+      const VerificationMeta('cachedAllowedActions');
+  @override
+  late final GeneratedColumn<String> cachedAllowedActions =
+      GeneratedColumn<String>(
+        'cached_allowed_actions',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -4204,6 +4215,7 @@ class $CachedActionPlansTable extends CachedActionPlans
     verifierName,
     evidenceSubmittedAt,
     evidenceSubmittedByName,
+    cachedAllowedActions,
     createdAt,
     updatedAt,
   ];
@@ -4366,6 +4378,15 @@ class $CachedActionPlansTable extends CachedActionPlans
         ),
       );
     }
+    if (data.containsKey('cached_allowed_actions')) {
+      context.handle(
+        _cachedAllowedActionsMeta,
+        cachedAllowedActions.isAcceptableOrUnknown(
+          data['cached_allowed_actions']!,
+          _cachedAllowedActionsMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -4467,6 +4488,10 @@ class $CachedActionPlansTable extends CachedActionPlans
         DriftSqlType.string,
         data['${effectivePrefix}evidence_submitted_by_name'],
       ),
+      cachedAllowedActions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cached_allowed_actions'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4505,6 +4530,7 @@ class CachedActionPlan extends DataClass
   final String? verifierName;
   final DateTime? evidenceSubmittedAt;
   final String? evidenceSubmittedByName;
+  final String? cachedAllowedActions;
   final DateTime createdAt;
   final DateTime updatedAt;
   const CachedActionPlan({
@@ -4527,6 +4553,7 @@ class CachedActionPlan extends DataClass
     this.verifierName,
     this.evidenceSubmittedAt,
     this.evidenceSubmittedByName,
+    this.cachedAllowedActions,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -4584,6 +4611,9 @@ class CachedActionPlan extends DataClass
         evidenceSubmittedByName,
       );
     }
+    if (!nullToAbsent || cachedAllowedActions != null) {
+      map['cached_allowed_actions'] = Variable<String>(cachedAllowedActions);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -4640,6 +4670,9 @@ class CachedActionPlan extends DataClass
       evidenceSubmittedByName: evidenceSubmittedByName == null && nullToAbsent
           ? const Value.absent()
           : Value(evidenceSubmittedByName),
+      cachedAllowedActions: cachedAllowedActions == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cachedAllowedActions),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -4674,6 +4707,9 @@ class CachedActionPlan extends DataClass
       evidenceSubmittedByName: serializer.fromJson<String?>(
         json['evidenceSubmittedByName'],
       ),
+      cachedAllowedActions: serializer.fromJson<String?>(
+        json['cachedAllowedActions'],
+      ),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -4703,6 +4739,7 @@ class CachedActionPlan extends DataClass
       'evidenceSubmittedByName': serializer.toJson<String?>(
         evidenceSubmittedByName,
       ),
+      'cachedAllowedActions': serializer.toJson<String?>(cachedAllowedActions),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -4728,6 +4765,7 @@ class CachedActionPlan extends DataClass
     Value<String?> verifierName = const Value.absent(),
     Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
     Value<String?> evidenceSubmittedByName = const Value.absent(),
+    Value<String?> cachedAllowedActions = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => CachedActionPlan(
@@ -4762,6 +4800,9 @@ class CachedActionPlan extends DataClass
     evidenceSubmittedByName: evidenceSubmittedByName.present
         ? evidenceSubmittedByName.value
         : this.evidenceSubmittedByName,
+    cachedAllowedActions: cachedAllowedActions.present
+        ? cachedAllowedActions.value
+        : this.cachedAllowedActions,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -4808,6 +4849,9 @@ class CachedActionPlan extends DataClass
       evidenceSubmittedByName: data.evidenceSubmittedByName.present
           ? data.evidenceSubmittedByName.value
           : this.evidenceSubmittedByName,
+      cachedAllowedActions: data.cachedAllowedActions.present
+          ? data.cachedAllowedActions.value
+          : this.cachedAllowedActions,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -4835,6 +4879,7 @@ class CachedActionPlan extends DataClass
           ..write('verifierName: $verifierName, ')
           ..write('evidenceSubmittedAt: $evidenceSubmittedAt, ')
           ..write('evidenceSubmittedByName: $evidenceSubmittedByName, ')
+          ..write('cachedAllowedActions: $cachedAllowedActions, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -4862,6 +4907,7 @@ class CachedActionPlan extends DataClass
     verifierName,
     evidenceSubmittedAt,
     evidenceSubmittedByName,
+    cachedAllowedActions,
     createdAt,
     updatedAt,
   ]);
@@ -4888,6 +4934,7 @@ class CachedActionPlan extends DataClass
           other.verifierName == this.verifierName &&
           other.evidenceSubmittedAt == this.evidenceSubmittedAt &&
           other.evidenceSubmittedByName == this.evidenceSubmittedByName &&
+          other.cachedAllowedActions == this.cachedAllowedActions &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -4912,6 +4959,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
   final Value<String?> verifierName;
   final Value<DateTime?> evidenceSubmittedAt;
   final Value<String?> evidenceSubmittedByName;
+  final Value<String?> cachedAllowedActions;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -4935,6 +4983,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.verifierName = const Value.absent(),
     this.evidenceSubmittedAt = const Value.absent(),
     this.evidenceSubmittedByName = const Value.absent(),
+    this.cachedAllowedActions = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4959,6 +5008,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     this.verifierName = const Value.absent(),
     this.evidenceSubmittedAt = const Value.absent(),
     this.evidenceSubmittedByName = const Value.absent(),
+    this.cachedAllowedActions = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -4987,6 +5037,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Expression<String>? verifierName,
     Expression<DateTime>? evidenceSubmittedAt,
     Expression<String>? evidenceSubmittedByName,
+    Expression<String>? cachedAllowedActions,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -5013,6 +5064,8 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
         'evidence_submitted_at': evidenceSubmittedAt,
       if (evidenceSubmittedByName != null)
         'evidence_submitted_by_name': evidenceSubmittedByName,
+      if (cachedAllowedActions != null)
+        'cached_allowed_actions': cachedAllowedActions,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -5039,6 +5092,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
     Value<String?>? verifierName,
     Value<DateTime?>? evidenceSubmittedAt,
     Value<String?>? evidenceSubmittedByName,
+    Value<String?>? cachedAllowedActions,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -5064,6 +5118,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
       evidenceSubmittedAt: evidenceSubmittedAt ?? this.evidenceSubmittedAt,
       evidenceSubmittedByName:
           evidenceSubmittedByName ?? this.evidenceSubmittedByName,
+      cachedAllowedActions: cachedAllowedActions ?? this.cachedAllowedActions,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -5134,6 +5189,11 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
         evidenceSubmittedByName.value,
       );
     }
+    if (cachedAllowedActions.present) {
+      map['cached_allowed_actions'] = Variable<String>(
+        cachedAllowedActions.value,
+      );
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -5168,6 +5228,7 @@ class CachedActionPlansCompanion extends UpdateCompanion<CachedActionPlan> {
           ..write('verifierName: $verifierName, ')
           ..write('evidenceSubmittedAt: $evidenceSubmittedAt, ')
           ..write('evidenceSubmittedByName: $evidenceSubmittedByName, ')
+          ..write('cachedAllowedActions: $cachedAllowedActions, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -10816,19 +10877,8 @@ class $SyncMetaTable extends SyncMeta
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _lastCursorIdMeta = const VerificationMeta(
-    'lastCursorId',
-  );
   @override
-  late final GeneratedColumn<String> lastCursorId = GeneratedColumn<String>(
-    'last_cursor_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [entityType, lastSyncAt, lastCursorId];
+  List<GeneratedColumn> get $columns => [entityType, lastSyncAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -10860,15 +10910,6 @@ class $SyncMetaTable extends SyncMeta
     } else if (isInserting) {
       context.missing(_lastSyncAtMeta);
     }
-    if (data.containsKey('last_cursor_id')) {
-      context.handle(
-        _lastCursorIdMeta,
-        lastCursorId.isAcceptableOrUnknown(
-          data['last_cursor_id']!,
-          _lastCursorIdMeta,
-        ),
-      );
-    }
     return context;
   }
 
@@ -10886,10 +10927,6 @@ class $SyncMetaTable extends SyncMeta
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_sync_at'],
       )!,
-      lastCursorId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_cursor_id'],
-      ),
     );
   }
 
@@ -10902,20 +10939,12 @@ class $SyncMetaTable extends SyncMeta
 class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
   final String entityType;
   final DateTime lastSyncAt;
-  final String? lastCursorId;
-  const SyncMetaData({
-    required this.entityType,
-    required this.lastSyncAt,
-    this.lastCursorId,
-  });
+  const SyncMetaData({required this.entityType, required this.lastSyncAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['entity_type'] = Variable<String>(entityType);
     map['last_sync_at'] = Variable<DateTime>(lastSyncAt);
-    if (!nullToAbsent || lastCursorId != null) {
-      map['last_cursor_id'] = Variable<String>(lastCursorId);
-    }
     return map;
   }
 
@@ -10923,9 +10952,6 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
     return SyncMetaCompanion(
       entityType: Value(entityType),
       lastSyncAt: Value(lastSyncAt),
-      lastCursorId: lastCursorId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastCursorId),
     );
   }
 
@@ -10937,7 +10963,6 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
     return SyncMetaData(
       entityType: serializer.fromJson<String>(json['entityType']),
       lastSyncAt: serializer.fromJson<DateTime>(json['lastSyncAt']),
-      lastCursorId: serializer.fromJson<String?>(json['lastCursorId']),
     );
   }
   @override
@@ -10946,19 +10971,14 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
     return <String, dynamic>{
       'entityType': serializer.toJson<String>(entityType),
       'lastSyncAt': serializer.toJson<DateTime>(lastSyncAt),
-      'lastCursorId': serializer.toJson<String?>(lastCursorId),
     };
   }
 
-  SyncMetaData copyWith({
-    String? entityType,
-    DateTime? lastSyncAt,
-    Value<String?> lastCursorId = const Value.absent(),
-  }) => SyncMetaData(
-    entityType: entityType ?? this.entityType,
-    lastSyncAt: lastSyncAt ?? this.lastSyncAt,
-    lastCursorId: lastCursorId.present ? lastCursorId.value : this.lastCursorId,
-  );
+  SyncMetaData copyWith({String? entityType, DateTime? lastSyncAt}) =>
+      SyncMetaData(
+        entityType: entityType ?? this.entityType,
+        lastSyncAt: lastSyncAt ?? this.lastSyncAt,
+      );
   SyncMetaData copyWithCompanion(SyncMetaCompanion data) {
     return SyncMetaData(
       entityType: data.entityType.present
@@ -10967,9 +10987,6 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
       lastSyncAt: data.lastSyncAt.present
           ? data.lastSyncAt.value
           : this.lastSyncAt,
-      lastCursorId: data.lastCursorId.present
-          ? data.lastCursorId.value
-          : this.lastCursorId,
     );
   }
 
@@ -10977,51 +10994,44 @@ class SyncMetaData extends DataClass implements Insertable<SyncMetaData> {
   String toString() {
     return (StringBuffer('SyncMetaData(')
           ..write('entityType: $entityType, ')
-          ..write('lastSyncAt: $lastSyncAt, ')
-          ..write('lastCursorId: $lastCursorId')
+          ..write('lastSyncAt: $lastSyncAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(entityType, lastSyncAt, lastCursorId);
+  int get hashCode => Object.hash(entityType, lastSyncAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is SyncMetaData &&
           other.entityType == this.entityType &&
-          other.lastSyncAt == this.lastSyncAt &&
-          other.lastCursorId == this.lastCursorId);
+          other.lastSyncAt == this.lastSyncAt);
 }
 
 class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
   final Value<String> entityType;
   final Value<DateTime> lastSyncAt;
-  final Value<String?> lastCursorId;
   final Value<int> rowid;
   const SyncMetaCompanion({
     this.entityType = const Value.absent(),
     this.lastSyncAt = const Value.absent(),
-    this.lastCursorId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SyncMetaCompanion.insert({
     required String entityType,
     required DateTime lastSyncAt,
-    this.lastCursorId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : entityType = Value(entityType),
        lastSyncAt = Value(lastSyncAt);
   static Insertable<SyncMetaData> custom({
     Expression<String>? entityType,
     Expression<DateTime>? lastSyncAt,
-    Expression<String>? lastCursorId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (entityType != null) 'entity_type': entityType,
       if (lastSyncAt != null) 'last_sync_at': lastSyncAt,
-      if (lastCursorId != null) 'last_cursor_id': lastCursorId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -11029,13 +11039,11 @@ class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
   SyncMetaCompanion copyWith({
     Value<String>? entityType,
     Value<DateTime>? lastSyncAt,
-    Value<String?>? lastCursorId,
     Value<int>? rowid,
   }) {
     return SyncMetaCompanion(
       entityType: entityType ?? this.entityType,
       lastSyncAt: lastSyncAt ?? this.lastSyncAt,
-      lastCursorId: lastCursorId ?? this.lastCursorId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -11049,9 +11057,6 @@ class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
     if (lastSyncAt.present) {
       map['last_sync_at'] = Variable<DateTime>(lastSyncAt.value);
     }
-    if (lastCursorId.present) {
-      map['last_cursor_id'] = Variable<String>(lastCursorId.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -11063,7 +11068,6 @@ class SyncMetaCompanion extends UpdateCompanion<SyncMetaData> {
     return (StringBuffer('SyncMetaCompanion(')
           ..write('entityType: $entityType, ')
           ..write('lastSyncAt: $lastSyncAt, ')
-          ..write('lastCursorId: $lastCursorId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -13769,6 +13773,7 @@ typedef $$CachedActionPlansTableCreateCompanionBuilder =
       Value<String?> verifierName,
       Value<DateTime?> evidenceSubmittedAt,
       Value<String?> evidenceSubmittedByName,
+      Value<String?> cachedAllowedActions,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -13794,6 +13799,7 @@ typedef $$CachedActionPlansTableUpdateCompanionBuilder =
       Value<String?> verifierName,
       Value<DateTime?> evidenceSubmittedAt,
       Value<String?> evidenceSubmittedByName,
+      Value<String?> cachedAllowedActions,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -13900,6 +13906,11 @@ class $$CachedActionPlansTableFilterComposer
 
   ColumnFilters<String> get evidenceSubmittedByName => $composableBuilder(
     column: $table.evidenceSubmittedByName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cachedAllowedActions => $composableBuilder(
+    column: $table.cachedAllowedActions,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14018,6 +14029,11 @@ class $$CachedActionPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get cachedAllowedActions => $composableBuilder(
+    column: $table.cachedAllowedActions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -14117,6 +14133,11 @@ class $$CachedActionPlansTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get cachedAllowedActions => $composableBuilder(
+    column: $table.cachedAllowedActions,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -14183,6 +14204,7 @@ class $$CachedActionPlansTableTableManager
                 Value<String?> verifierName = const Value.absent(),
                 Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
                 Value<String?> evidenceSubmittedByName = const Value.absent(),
+                Value<String?> cachedAllowedActions = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -14206,6 +14228,7 @@ class $$CachedActionPlansTableTableManager
                 verifierName: verifierName,
                 evidenceSubmittedAt: evidenceSubmittedAt,
                 evidenceSubmittedByName: evidenceSubmittedByName,
+                cachedAllowedActions: cachedAllowedActions,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -14231,6 +14254,7 @@ class $$CachedActionPlansTableTableManager
                 Value<String?> verifierName = const Value.absent(),
                 Value<DateTime?> evidenceSubmittedAt = const Value.absent(),
                 Value<String?> evidenceSubmittedByName = const Value.absent(),
+                Value<String?> cachedAllowedActions = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -14254,6 +14278,7 @@ class $$CachedActionPlansTableTableManager
                 verifierName: verifierName,
                 evidenceSubmittedAt: evidenceSubmittedAt,
                 evidenceSubmittedByName: evidenceSubmittedByName,
+                cachedAllowedActions: cachedAllowedActions,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -17609,14 +17634,12 @@ typedef $$SyncMetaTableCreateCompanionBuilder =
     SyncMetaCompanion Function({
       required String entityType,
       required DateTime lastSyncAt,
-      Value<String?> lastCursorId,
       Value<int> rowid,
     });
 typedef $$SyncMetaTableUpdateCompanionBuilder =
     SyncMetaCompanion Function({
       Value<String> entityType,
       Value<DateTime> lastSyncAt,
-      Value<String?> lastCursorId,
       Value<int> rowid,
     });
 
@@ -17636,11 +17659,6 @@ class $$SyncMetaTableFilterComposer
 
   ColumnFilters<DateTime> get lastSyncAt => $composableBuilder(
     column: $table.lastSyncAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastCursorId => $composableBuilder(
-    column: $table.lastCursorId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -17663,11 +17681,6 @@ class $$SyncMetaTableOrderingComposer
     column: $table.lastSyncAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<String> get lastCursorId => $composableBuilder(
-    column: $table.lastCursorId,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$SyncMetaTableAnnotationComposer
@@ -17686,11 +17699,6 @@ class $$SyncMetaTableAnnotationComposer
 
   GeneratedColumn<DateTime> get lastSyncAt => $composableBuilder(
     column: $table.lastSyncAt,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastCursorId => $composableBuilder(
-    column: $table.lastCursorId,
     builder: (column) => column,
   );
 }
@@ -17728,24 +17736,20 @@ class $$SyncMetaTableTableManager
               ({
                 Value<String> entityType = const Value.absent(),
                 Value<DateTime> lastSyncAt = const Value.absent(),
-                Value<String?> lastCursorId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SyncMetaCompanion(
                 entityType: entityType,
                 lastSyncAt: lastSyncAt,
-                lastCursorId: lastCursorId,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String entityType,
                 required DateTime lastSyncAt,
-                Value<String?> lastCursorId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SyncMetaCompanion.insert(
                 entityType: entityType,
                 lastSyncAt: lastSyncAt,
-                lastCursorId: lastCursorId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

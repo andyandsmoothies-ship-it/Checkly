@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'package:checkly/_shared/constants/action_plan_actions.dart';
 import '../model/action_plan_dto.dart';
+import 'action_plan_action_guard.dart';
 
 /// Role-aware action bar for the Action Plan detail page.
 ///
-/// All branching logic (status × role × busy) is encapsulated here.
-/// Callbacks are wired by the page to its existing private methods.
-///
-/// Returns a visible widget for actionable states; returns null-equivalent
-/// (SizedBox.shrink) for states where no action is available. The PAGE
-/// wraps this in its _buildActionBar() method which returns nullable
-/// Widget?, returning null when this widget would show nothing.
+/// Encapsulates the UI logic for actionable states. The buttons are guarded
+/// by [ActionPlanActionGuard] using PBAC actions provided by the server.
 class ActionPlanActionBar extends StatelessWidget {
   final ActionPlanDto plan;
   final bool busy;
-  final bool canSubmitEvidence;
-  final bool canVerify;
   final VoidCallback onSubmitEvidence;
   final VoidCallback onVerify;
   final VoidCallback onReject;
@@ -24,8 +19,6 @@ class ActionPlanActionBar extends StatelessWidget {
     super.key,
     required this.plan,
     required this.busy,
-    required this.canSubmitEvidence,
-    required this.canVerify,
     required this.onSubmitEvidence,
     required this.onVerify,
     required this.onReject,
@@ -47,21 +40,10 @@ class ActionPlanActionBar extends StatelessWidget {
     final status = plan.status;
 
     if (status == 'open') {
-      if (!canVerify) {
-        if (canSubmitEvidence) {
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: FilledButton.icon(
-                onPressed: onSubmitEvidence,
-                icon: const Icon(Icons.upload_file),
-                label: const Text('Submit Evidence'),
-              ),
-            ),
-          );
-        }
-      } else {
-        return SafeArea(
+      return ActionPlanActionGuard(
+        plan: plan,
+        requiredAction: ActionPlanActions.submitEvidence,
+        fallback: SafeArea(
           child: Container(
             color: theme.colorScheme.surfaceContainerHighest,
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
@@ -74,25 +56,55 @@ class ActionPlanActionBar extends StatelessWidget {
               ),
             ),
           ),
-        );
-      }
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: FilledButton.icon(
+              onPressed: onSubmitEvidence,
+              icon: const Icon(Icons.upload_file),
+              label: const Text('Submit Evidence'),
+            ),
+          ),
+        ),
+      );
     }
 
     if (status == 'pending_verify') {
-      if (canVerify) {
-        return SafeArea(
+      return ActionPlanActionGuard(
+        plan: plan,
+        requiredAction: ActionPlanActions.verifyClose,
+        fallback: SafeArea(
+          child: Container(
+            color: theme.colorScheme.surfaceContainerHighest,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            child: Text(
+              'Awaiting Auditor Verification.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+        child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Row(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.error,
-                      side: BorderSide(color: theme.colorScheme.error),
+                ActionPlanActionGuard(
+                  plan: plan,
+                  requiredAction: ActionPlanActions.rejectEvidence,
+                  child: Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: theme.colorScheme.error,
+                        side: BorderSide(color: theme.colorScheme.error),
+                      ),
+                      onPressed: onReject,
+                      child: const Text('Reject'),
                     ),
-                    onPressed: onReject,
-                    child: const Text('Reject'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -107,23 +119,8 @@ class ActionPlanActionBar extends StatelessWidget {
               ],
             ),
           ),
-        );
-      } else {
-        return SafeArea(
-          child: Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            child: Text(
-              'Awaiting Auditor Verification.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        );
-      }
+        ),
+      );
     }
 
     // No action available for this role/status combo (e.g. closed plan)

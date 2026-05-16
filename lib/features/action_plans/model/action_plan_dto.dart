@@ -1,3 +1,11 @@
+import '../../../_shared/constants/action_plan_actions.dart';
+
+List<String>? _parseAllowedActions(dynamic value) {
+  if (value == null) return null;
+  if (value is! List) return null;
+  return value.whereType<String>().toList();
+}
+
 /// DTO for an action plan.
 ///
 /// Mirrors the backend ActionPlanDto from server/Features/ActionPlans/Dtos.cs.
@@ -10,6 +18,7 @@ class ActionPlanDto {
   final String? storeName;
   final String? storeId;
   final String? storeManagerName;
+  final String? sourceTitle;
   final String? rootCause;
   final String? correctionPlan;
   final String? evidencePhotoUrl;
@@ -21,6 +30,8 @@ class ActionPlanDto {
   final DateTime? deadline;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<String>? allowedActions;
+  final String? syncStatus;
 
   const ActionPlanDto({
     required this.id,
@@ -31,6 +42,7 @@ class ActionPlanDto {
     this.storeName,
     this.storeId,
     this.storeManagerName,
+    this.sourceTitle,
     this.rootCause,
     this.correctionPlan,
     this.evidencePhotoUrl,
@@ -42,6 +54,8 @@ class ActionPlanDto {
     this.deadline,
     required this.createdAt,
     required this.updatedAt,
+    this.allowedActions,
+    this.syncStatus,
   });
 
   factory ActionPlanDto.fromJson(Map<String, dynamic> json) => ActionPlanDto(
@@ -53,6 +67,7 @@ class ActionPlanDto {
     storeName: json['storeName'] as String?,
     storeId: json['storeId'] as String?,
     storeManagerName: json['storeManagerName'] as String?,
+    sourceTitle: json['sourceTitle'] as String?,
     rootCause: json['rootCause'] as String?,
     correctionPlan: json['correctionPlan'] as String?,
     evidencePhotoUrl: json['evidencePhotoUrl'] as String?,
@@ -70,5 +85,55 @@ class ActionPlanDto {
         : null,
     createdAt: DateTime.parse(json['createdAt'] as String),
     updatedAt: DateTime.parse(json['updatedAt'] as String),
+    allowedActions: _parseAllowedActions(json['allowedActions']),
   );
+
+  factory ActionPlanDto.offline({
+    required String id,
+    required String criteriaLabel,
+    required String groupTitle,
+    String status = 'open',
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    final now = DateTime.now().toUtc();
+    return ActionPlanDto(
+      id: id,
+      status: status,
+      criteriaLabel: criteriaLabel,
+      groupTitle: groupTitle,
+      createdAt: createdAt ?? now,
+      updatedAt: updatedAt ?? now,
+      allowedActions: const [
+        ActionPlanActions.view,
+        ActionPlanActions.edit,
+        ActionPlanActions.delete,
+      ],
+      syncStatus: 'pending',
+    );
+  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'submissionId': submissionId,
+    'status': status,
+    'criteriaLabel': criteriaLabel,
+    'groupTitle': groupTitle,
+    'storeName': storeName,
+    'storeId': storeId,
+    'storeManagerName': storeManagerName,
+    'sourceTitle': sourceTitle,
+    'rootCause': rootCause,
+    'correctionPlan': correctionPlan,
+    'evidencePhotoUrl': evidencePhotoUrl,
+    'evidenceNote': evidenceNote,
+    'closedAt': closedAt?.toIso8601String(),
+    'verifierName': verifierName,
+    'evidenceSubmittedAt': evidenceSubmittedAt?.toIso8601String(),
+    'evidenceSubmittedByName': evidenceSubmittedByName,
+    'deadline': deadline?.toIso8601String(),
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+    'allowedActions': allowedActions,
+    'syncStatus': syncStatus,
+  };
 }

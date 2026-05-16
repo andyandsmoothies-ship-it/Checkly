@@ -391,6 +391,21 @@ try
 
         // Reload cache so admin programs:manage row is immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
+
+        // Action Plans Module: Seed action_plans:write and action_plans:verify (idempotent)
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT INTO role_capabilities (id, role, capability, created_at)
+            VALUES
+                (gen_random_uuid(), 'store_manager', 'action_plans:write', now()),
+                (gen_random_uuid(), 'admin', 'action_plans:write', now()),
+                (gen_random_uuid(), 'auditor', 'action_plans:verify', now()),
+                (gen_random_uuid(), 'area_manager', 'action_plans:verify', now()),
+                (gen_random_uuid(), 'admin', 'action_plans:verify', now())
+            ON CONFLICT (role, capability) DO NOTHING;
+            """);
+
+        // Reload cache so new action_plans row is immediately visible in-memory
+        await pbacCache.InitializeAsync(app.Services);
     }
 
     // Diagnostic endpoint — only available in Development/Test environments,

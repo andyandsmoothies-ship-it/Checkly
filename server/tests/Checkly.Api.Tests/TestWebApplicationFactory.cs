@@ -136,7 +136,12 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                        (gen_random_uuid(), 'store_manager', 'programs:assignments_my',     now()),
                        (gen_random_uuid(), 'store_manager', 'programs:execute',            now()),
                        (gen_random_uuid(), 'area_manager',  'programs:assignments_my',     now()),
-                       (gen_random_uuid(), 'area_manager',  'programs:execute',            now())
+                       (gen_random_uuid(), 'area_manager',  'programs:execute',            now()),
+                       (gen_random_uuid(), 'store_manager', 'action_plans:write',          now()),
+                       (gen_random_uuid(), 'admin',         'action_plans:write',          now()),
+                       (gen_random_uuid(), 'auditor',       'action_plans:verify',         now()),
+                       (gen_random_uuid(), 'area_manager',  'action_plans:verify',         now()),
+                       (gen_random_uuid(), 'admin',         'action_plans:verify',         now())
                 ON CONFLICT (role, capability) DO NOTHING;
                 """);
 

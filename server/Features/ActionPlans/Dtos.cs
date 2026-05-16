@@ -29,6 +29,7 @@ public sealed record ActionPlanDto(
     string? StoreName,
     Guid? StoreManagerId,
     string? StoreManagerName,
+    string? SourceTitle,
     string CriteriaLabel,
     string GroupTitle,
     string? PlanDescription,
@@ -43,7 +44,8 @@ public sealed record ActionPlanDto(
     DateTimeOffset? EvidenceSubmittedAt,
     string? EvidenceSubmittedByName,
     DateTimeOffset CreatedAt,
-    DateTimeOffset UpdatedAt);
+    DateTimeOffset UpdatedAt,
+    IReadOnlyList<string> AllowedActions);
 public sealed record AddCommentRequest(string Body);
 
 public sealed record CommentDto(

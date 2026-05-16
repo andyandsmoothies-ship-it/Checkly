@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 28;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -208,6 +208,13 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(
           pendingSubmissions,
           pendingSubmissions.programAssignmentId,
+        );
+      }
+      if (from < 28) {
+        // v28: PBAC UI Phase B - persist Action Plan allowedActions offline.
+        await m.addColumn(
+          cachedActionPlans,
+          cachedActionPlans.cachedAllowedActions,
         );
       }
     },

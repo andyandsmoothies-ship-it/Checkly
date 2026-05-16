@@ -13,7 +13,7 @@ description: Easy-to-read analysis workflow for standard features and bugs.
 
 | Step | Instructions |
 |---|---|
-| **Task Tracking** | Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the template below before doing anything else. List only the implementation plan in the Artifact Inventory. |
+| **Task Tracking** | Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the template below before doing anything else.|
 | **Check Epic Rules** | If this task is part of a larger Epic, read the Epic's plan first. Your job is to create exact database schemas, file paths, and code changes that match the Epic, without changing the main rules. |
 
 ```markdown
@@ -38,14 +38,15 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | Step | Instructions |
 |---|---|
 | **Interrogation Gate**| **MANDATORY**: Before writing a plan, cross-reference the user's request against the codebase. If terminology is sloppy or contradicts existing code, **STOP** and ask the user to clarify. |
+| **Constraint Extraction** | **MANDATORY**: Read the Input Lineage documents specifically looking for 'Constraints', 'Rules', or 'Decisions'. Write these in your latent space scratchpad so you do not forget them. |
 | **Search First** | Always use `grep_search` to find the exact line numbers needed, then use `view_file` to read only those specific chunks. Do not read full files blindly to save memory. |
 | **Check Setup** | Read config files (like `.csproj` or `pubspec.yaml`) to understand the project setup. |
-| **Learn the Code** | Search the current code to learn how it works before you start planning. |
+| **Learn the Code** | Search current code to learn how it works before you start planning. |
 | **Check Ideas** | If the user provides an idea or document, check if it works by searching the code. Do not use ideas that do not fit the current code. |
 | **Out of Scope (YAGNI)**| Write down what you will NOT build. If a step breaks a main rule, stop and ask the user. Do not silently skip it. |
 | **Spot Check**| Search the code to double-check at least one main idea in your plan before finishing. |
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Do you know the main goal? (2) Did you write down what is out of scope? (3) Did you double-check the code?
+> **MANDATORY @@SCAN**: Print this checklist directly into your chat response before proceeding. (1) Do you know the main goal? (2) Did you write down what is out of scope? (3) Did you double-check the code?
 
 ## Phase 2: Check Impacts & States
 
@@ -65,17 +66,20 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 
 | Step | Instructions |
 |---|---|
-| **Acceptance Criteria** | You must write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
+| **Constraint Traceability** | **MANDATORY**: Review your scratchpad. Did you miss any constraints from the input document? Every constraint MUST be explicitly covered by an Acceptance Criteria or Test Contract. |
+| **Acceptance Criteria** | Write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
 | **Tools Needed** | Write down which skills the Builder will need. Write down the commands to test the code (like `flutter test` or `dotnet test`). |
-| **Slicing Strategy** | **MANDATORY**: You MUST load and apply the `use-case-slicing` skill. Use the 'Maximum Thickness' exception to split heavy slices horizontally. Every slice must define an 'Entry State Required' and 'Exit State Guaranteed'. Output slices as 'Micro-Specs'. |
-| **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `docs/architecture/` folder. Do not print the whole plan in the chat. Make it easy for a human to read. |
-| **Clear Goals** | The plan must have clear steps (like 'Write X test -> Check it fails -> Write Y code -> Check it passes'). |
+| **Slicing Strategy** | **MANDATORY**: Load and apply the `use-case-slicing` skill. Use the 'Maximum Thickness' exception to split heavy slices horizontally. Every slice must define an 'Entry State Required' and 'Exit State Guaranteed'. Output slices as 'Micro-Specs'. |
+| **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `docs/architecture/` folder. |
+| **Clear Goals** | The plan must have clear steps. |
+
+> **MANDATORY @@SCAN**: Print this checklist directly into your chat response before proceeding. (1) Did you explicitly extract all constraints from the input document into your scratchpad? (2) Is every constraint mapped to a Test Contract?
 
 ## Phase 4: Pick Next Route
 
 > [!CAUTION]
 > **Too Big?** If the task has unknown rules, new complex states, or needs more than 1 new database table, STOP. Tell the user to use `/analyze-epic` instead.
-> **Logic Bypass?** If a slice creates or modifies Business Logic (e.g., Managers, Services, state math), You MUST route to `/tdd` first.
+> **Logic Bypass?** If a slice creates or modifies Business Logic (e.g. Services, state math), You MUST route to `/tdd` first.
 
 | Signal Check | Route 2: Direct Build (`/implement`) | Route 1: Logic/Standard (`/tdd`) | Route 3: Integration/High-Risk (`/atdd`) |
 |---|---|---|---|
@@ -111,12 +115,13 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Executive Summary & Out of Scope`
 > - `## System Context` (Offline/Online, APIs, RBAC, Logs)
 > - `## Lifecycle Context` (4-State Matrix: Success, Error, Empty, Loading)
+> - `## Constraint Traceability`: A simple markdown table mapping EVERY constraint from the input document (e.g., "Must fail closed") to its corresponding Test Contract ID (e.g., "AP-PBAC-12"). This forces you to prove you didn't miss anything.
 > - `## Test Contracts` (ID, Exact Text, State Matrix, Why it fails first). **CRITICAL:** Every boundary constraint MUST be an explicit row.
 > - `## Test Fixture & Payloads` (Explicit setup requirements like "Seeded Admin" and raw JSON Request/Response examples for API slices).
 > - `## Tools & Commands` (Skills and test commands)
 > - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files. **For UI components, you MUST include a Markdown table mapping Component -> Truncation Limit -> Overflow Action -> Required New Route. Never leave routing ambiguous.**
-> - `## Concept Diagram`: A simple text flowchart (like `[User] --> [Click] --> [Save]`) to explain the idea. **For UI changes, this MUST include routing/state transitions so there are no dead ends.**
-> - `## Execution Slices` (Micro-Specs): Group the work using the `use-case-slicing` skill methodology. **CRITICAL:** Apply the 'Maximum Thickness' rule. To prevent AI context overflow, if a plan spans both backend APIs and new frontend UI, YOU MUST split it horizontally (e.g., `Phase A: Backend API`, `Phase B: Frontend UI`). Keep the blast radius under 400 lines per phase. For each slice, you MUST output the Micro-Spec format (Plain English Summary, Value Delivered, Entry/Exit State, Scope, Acceptance Criteria). Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
+> - `## Concept Diagram`: Simple text flowchart to explain the idea. **For UI changes, include routing/state transitions so there are no dead ends.**
+> - `## Execution Slices` (Micro-Specs): Group the work using the `use-case-slicing` skill methodology. **CRITICAL:** Apply the 'Maximum Thickness' rule to prevent AI context overflow. **A single phase should ideally represent ONE complete vertical slice of the Happy Path.** However, if that slice requires modifying **more than 5 files** or touching highly complex shared files **>400 lines**, you MUST split it horizontally into sub-phases (e.g., `Phase B1: Data Layer`, `Phase B2: Offline Logic`). Always separate the Happy Path (Slice 1) from Error/Edge Cases (Slice 2). For each slice, you MUST output the Micro-Spec format (Plain English Summary, Value Delivered, Entry/Exit State, Scope, Acceptance Criteria). Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
 > - `<command_logs>`: A list of terminal commands you ran.
 > - `## Handoff Block`: A short summary for the next AI agent. You MUST include the exact `@[/...]` routing command (like `@[/tdd]`) for EVERY step, with the absolute file path.
 >

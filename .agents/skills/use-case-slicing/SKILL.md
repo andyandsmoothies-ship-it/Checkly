@@ -13,7 +13,7 @@ A "Use-Case Slice" is a slice of a use case that provides clear value to stakeho
 
 ### Rule 1: Slices MUST be Vertical (End-to-End)
 - A slice is **more** than just requirements. It generally cuts completely through every tier of the architecture.
-- **Exception for AI Context Limits (Maximum Thickness):** If a vertical slice is too heavy (e.g., requires touching >3 files or complex DB relationships), you MUST split it horizontally (e.g., "Data Layer Slice" first, then "API Endpoint Slice") to protect the AI's context window.
+- **Exception for AI Context Limits (Maximum Thickness):** A single phase should ideally represent ONE complete vertical slice of the Happy Path. However, if a vertical slice is too heavy (e.g., requires modifying **more than 5 files** or touching highly complex shared files **>400 lines**), you MUST split it horizontally into sub-phases (e.g., `Phase B1: Data Layer Slice`, then `Phase B2: API Endpoint Slice`) to protect the AI's context window.
 - Otherwise, for a standard slice to be valid, it MUST include:
   1. **Requirements** (The specific interaction being tested)
   2. **Design** (The architectural elements involved)

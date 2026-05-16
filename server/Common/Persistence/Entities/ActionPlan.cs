@@ -33,6 +33,7 @@ public sealed class ActionPlan
     public string? VerifierName { get; set; }
     public DateTimeOffset? EvidenceSubmittedAt { get; set; }
     public string? EvidenceSubmittedByName { get; set; }
+    public string? SourceTitle { get; set; }
 
     // Navigation properties
     public Answer? Answer { get; set; }

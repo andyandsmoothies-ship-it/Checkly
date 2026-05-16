@@ -40,12 +40,7 @@ class _ShellTab {
       route: '/activity',
       requiredCapability: AppCapabilities.submissionsList,
     ),
-    _ShellTab(
-      icon: Icons.fact_check,
-      label: 'PLANS',
-      route: '/plans',
-      requiredCapability: AppCapabilities.programsList,
-    ),
+    _ShellTab(icon: Icons.fact_check, label: 'PLANS', route: '/plans'),
     _ShellTab(
       icon: Icons.description_outlined,
       label: 'TEMPLATES',

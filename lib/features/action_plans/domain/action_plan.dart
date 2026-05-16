@@ -1,5 +1,6 @@
 import '../model/action_plan_dto.dart';
 import '../manager/action_plan_api.dart';
+import '../../../_shared/constants/action_plan_actions.dart';
 
 class ActionPlan {
   final ActionPlanDto dto;
@@ -51,6 +52,7 @@ class ActionPlan {
       storeName: dto.storeName,
       storeId: dto.storeId,
       storeManagerName: dto.storeManagerName,
+      sourceTitle: dto.sourceTitle,
       rootCause: dto.rootCause,
       correctionPlan: correctionPlan,
       evidencePhotoUrl: photoPath ?? dto.evidencePhotoUrl,
@@ -63,6 +65,8 @@ class ActionPlan {
       createdAt: dto.createdAt,
       updatedAt: DateTime.now(),
       submissionId: dto.submissionId,
+      allowedActions: const [ActionPlanActions.view],
+      syncStatus: dto.syncStatus,
     );
 
     return ActionPlan(optimisticDto);
@@ -81,6 +85,7 @@ class ActionPlan {
       storeName: dto.storeName,
       storeId: dto.storeId,
       storeManagerName: dto.storeManagerName,
+      sourceTitle: dto.sourceTitle,
       rootCause: dto.rootCause,
       correctionPlan: dto.correctionPlan,
       evidencePhotoUrl: dto.evidencePhotoUrl,
@@ -93,6 +98,8 @@ class ActionPlan {
       createdAt: dto.createdAt,
       updatedAt: DateTime.now(),
       submissionId: dto.submissionId,
+      allowedActions: const [ActionPlanActions.view],
+      syncStatus: dto.syncStatus,
     );
 
     return ActionPlan(optimisticDto);
@@ -111,6 +118,7 @@ class ActionPlan {
       storeName: dto.storeName,
       storeId: dto.storeId,
       storeManagerName: dto.storeManagerName,
+      sourceTitle: dto.sourceTitle,
       rootCause: dto.rootCause,
       correctionPlan: dto.correctionPlan,
       evidencePhotoUrl: null,
@@ -123,6 +131,11 @@ class ActionPlan {
       createdAt: dto.createdAt,
       updatedAt: DateTime.now(),
       submissionId: dto.submissionId,
+      allowedActions: const [
+        ActionPlanActions.view,
+        ActionPlanActions.submitEvidence,
+      ],
+      syncStatus: dto.syncStatus,
     );
 
     return ActionPlan(optimisticDto);

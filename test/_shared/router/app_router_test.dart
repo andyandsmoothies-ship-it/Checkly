@@ -95,31 +95,34 @@ void main() {
     },
   );
 
-  group('shellActiveIndexFromLocation — only Home/Profile/Inbox visible', () {
-    const caps = <String>{}; // no optional caps
+  group(
+    'shellActiveIndexFromLocation — only Home/Plans/Profile/Inbox visible',
+    () {
+      const caps = <String>{}; // no optional caps
 
-    // Visible tabs: Home(0) Profile(1) Inbox(2)
-    test('/home → 0', () {
-      expect(shellActiveIndexFromLocation('/home', caps), equals(0));
-    });
+      // Visible tabs: Home(0) Plans(1) Profile(2) Inbox(3)
+      test('/home → 0', () {
+        expect(shellActiveIndexFromLocation('/home', caps), equals(0));
+      });
 
-    test('/profile → 1', () {
-      expect(shellActiveIndexFromLocation('/profile', caps), equals(1));
-    });
+      test('/profile → 2', () {
+        expect(shellActiveIndexFromLocation('/profile', caps), equals(2));
+      });
 
-    test('/inbox → 2', () {
-      expect(shellActiveIndexFromLocation('/inbox', caps), equals(2));
-    });
+      test('/inbox → 3', () {
+        expect(shellActiveIndexFromLocation('/inbox', caps), equals(3));
+      });
 
-    // /activity is hidden — location matches no visible tab → clamp to 0.
-    test('/activity → 0 when Activity tab is hidden (clamp to Home)', () {
-      expect(
-        shellActiveIndexFromLocation('/activity', caps),
-        equals(0),
-        reason:
-            'When Activity tab is hidden, navigating to /activity must '
-            'not produce a wrong index — clamped to 0 (Home)',
-      );
-    });
-  });
+      // /activity is hidden — location matches no visible tab → clamp to 0.
+      test('/activity → 0 when Activity tab is hidden (clamp to Home)', () {
+        expect(
+          shellActiveIndexFromLocation('/activity', caps),
+          equals(0),
+          reason:
+              'When Activity tab is hidden, navigating to /activity must '
+              'not produce a wrong index — clamped to 0 (Home)',
+        );
+      });
+    },
+  );
 }

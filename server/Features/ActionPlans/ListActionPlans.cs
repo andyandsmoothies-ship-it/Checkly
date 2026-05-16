@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Checkly.Api.Common;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,10 +19,12 @@ public static class ListActionPlans
         ClaimsPrincipal user,
         AppDbContext db,
         HttpContext httpContext,
+        [Microsoft.AspNetCore.Mvc.FromServices] PbacDictionaryCache pbacCache,
         CancellationToken ct)
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
+        var callerCapabilities = pbacCache.GetCapabilities(role);
 
         var query = db.ActionPlans.AsNoTracking().AsQueryable();
 
@@ -39,10 +42,17 @@ public static class ListActionPlans
             else if (role == "area_manager")
             {
                 // AM sees all plans for stores assigned via junction.
-                var assignedStoreIds = db.ProfileStoreAssignments
+                // If the AM has no store assignments (e.g. a new hire or global oversight role),
+                // they fall through to unfiltered visibility — same read-level as admin.
+                // Their allowedActions are still restricted by capabilities (no write by default).
+                var assignedStoreIds = await db.ProfileStoreAssignments
                     .Where(a => a.ProfileId == userId)
-                    .Select(a => a.StoreId);
-                query = query.Where(ap => ap.StoreId != null && assignedStoreIds.Contains(ap.StoreId.Value));
+                    .Select(a => a.StoreId)
+                    .ToListAsync(ct);
+
+                if (assignedStoreIds.Count > 0)
+                    query = query.Where(ap => ap.StoreId != null && assignedStoreIds.Contains(ap.StoreId.Value));
+                // else: no filter — AM sees all plans
             }
             else if (role == "auditor")
             {
@@ -69,12 +79,14 @@ public static class ListActionPlans
         if ((long)(page - 1) * pageSize >= total)
             return TypedResults.Ok(new PagedResult<ActionPlanDto>([], total, page, pageSize));
 
-        var plans = await query
+        // Materialize first, then map in-memory to avoid translating capability logic into SQL (N+1 guard).
+        var rawPlans = await query
             .OrderByDescending(ap => ap.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(ap => CreateActionPlan.ToDto(ap))
             .ToListAsync(ct);
+
+        var plans = rawPlans.ConvertAll(ap => CreateActionPlan.ToDto(ap, callerCapabilities));
 
         return TypedResults.Ok(new PagedResult<ActionPlanDto>(plans, total, page, pageSize));
     }

@@ -208,9 +208,9 @@ public static class UpdateActionPlan
             }
         }
 
-        // Commit Action Plan, Notification, and OutboxMessage atomically
         await db.SaveChangesAsync(ct);
 
-        return TypedResults.Ok(CreateActionPlan.ToDto(plan));
+        var callerCapabilities = cache.GetCapabilities(user.FindFirstValue(ClaimTypes.Role) ?? "");
+        return TypedResults.Ok(CreateActionPlan.ToDto(plan, callerCapabilities));
     }
 }

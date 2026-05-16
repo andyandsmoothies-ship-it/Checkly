@@ -9,6 +9,7 @@ import '../domain/action_plan.dart';
 import '../model/action_plan_dto.dart';
 import '../model/stale_conflict.dart';
 import 'action_plan_api.dart';
+import 'action_plan_cache_mapper.dart';
 export 'action_plan_api.dart';
 
 part 'action_plan_manager_transitions.dart';
@@ -130,29 +131,7 @@ class ActionPlanManager extends ChangeNotifier {
           await db.batch((batch) {
             batch.insertAll(
               db.cachedActionPlans,
-              remote.map(
-                (plan) => CachedActionPlansCompanion.insert(
-                  id: plan.id,
-                  submissionId: Value(plan.submissionId),
-                  criteriaLabel: plan.criteriaLabel,
-                  groupTitle: plan.groupTitle,
-                  status: Value(plan.status),
-                  storeName: Value(plan.storeName),
-                  storeId: Value(plan.storeId),
-                  storeManagerName: Value(plan.storeManagerName),
-                  rootCause: Value(plan.rootCause),
-                  correctionPlan: Value(plan.correctionPlan),
-                  evidencePhotoUrl: Value(plan.evidencePhotoUrl),
-                  evidenceNote: Value(plan.evidenceNote),
-                  closedAt: Value(plan.closedAt),
-                  verifierName: Value(plan.verifierName),
-                  evidenceSubmittedAt: Value(plan.evidenceSubmittedAt),
-                  evidenceSubmittedByName: Value(plan.evidenceSubmittedByName),
-                  deadline: Value(plan.deadline),
-                  createdAt: plan.createdAt,
-                  updatedAt: plan.updatedAt,
-                ),
-              ),
+              remote.map(ActionPlanCacheMapper.toCompanion),
               mode: InsertMode.insertOrReplace,
             );
           });
@@ -172,31 +151,7 @@ class ActionPlanManager extends ChangeNotifier {
               )) // Bounded to 500 for mobile performance safety (Gotcha #14)
               .get();
 
-      actionPlans.value = rows
-          .map(
-            (row) => ActionPlanDto(
-              id: row.id,
-              submissionId: row.submissionId,
-              status: row.status,
-              criteriaLabel: row.criteriaLabel,
-              groupTitle: row.groupTitle,
-              storeName: row.storeName,
-              storeId: row.storeId,
-              storeManagerName: row.storeManagerName,
-              rootCause: row.rootCause,
-              correctionPlan: row.correctionPlan,
-              evidencePhotoUrl: row.evidencePhotoUrl,
-              evidenceNote: row.evidenceNote,
-              closedAt: row.closedAt,
-              verifierName: row.verifierName,
-              evidenceSubmittedAt: row.evidenceSubmittedAt,
-              evidenceSubmittedByName: row.evidenceSubmittedByName,
-              deadline: row.deadline,
-              createdAt: row.createdAt,
-              updatedAt: row.updatedAt,
-            ),
-          )
-          .toList();
+      actionPlans.value = rows.map(ActionPlanCacheMapper.fromRow).toList();
     } catch (_) {
       error = 'Failed to load action plans';
     } finally {
