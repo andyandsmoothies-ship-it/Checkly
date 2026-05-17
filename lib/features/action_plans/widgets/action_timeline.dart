@@ -57,9 +57,9 @@ class ActionTimeline extends StatelessWidget {
     steps.addAll([
       TimelineStep(
         title: 'Identified',
-        subtitle: plan.storeManagerName != null
-            ? "by ${plan.storeManagerName} · ${fmt(plan.createdAt)}"
-            : null,
+        subtitle: plan.sourceTitle != null
+            ? "${plan.sourceTitle} · ${fmt(plan.createdAt)}"
+            : fmt(plan.createdAt),
         status: s1,
       ),
       TimelineStep(

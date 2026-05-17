@@ -92,6 +92,12 @@ class ActionPlanDetailList extends StatelessWidget {
               label: 'Section',
               value: plan.groupTitle,
             ),
+            if (plan.sourceTitle != null)
+              InfoRow(
+                icon: Icons.assignment_outlined,
+                label: 'Source',
+                value: plan.sourceTitle!,
+              ),
             if (plan.storeName != null)
               InfoRow(
                 icon: Icons.store,
@@ -117,15 +123,20 @@ class ActionPlanDetailList extends StatelessWidget {
         const SizedBox(height: 16),
 
         // ── Root Cause ──
-        if (plan.rootCause != null &&
-            plan.rootCause!.isNotEmpty &&
-            plan.rootCause != 'SYSTEM_VOID') ...[
-          SectionHeader(title: 'Root Cause'),
+        if (plan.rootCause != 'SYSTEM_VOID') ...[
+          const SectionHeader(title: 'Root Cause'),
           FlatBlock(
             child: Text(
-              plan.rootCause!,
+              (plan.rootCause != null && plan.rootCause!.isNotEmpty)
+                  ? plan.rootCause!
+                  : 'No root cause identified.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                color: (plan.rootCause != null && plan.rootCause!.isNotEmpty)
+                    ? theme.colorScheme.onSurface.withValues(alpha: 0.8)
+                    : theme.colorScheme.onSurfaceVariant,
+                fontStyle: (plan.rootCause != null && plan.rootCause!.isNotEmpty)
+                    ? FontStyle.normal
+                    : FontStyle.italic,
               ),
             ),
           ),
@@ -133,13 +144,20 @@ class ActionPlanDetailList extends StatelessWidget {
         ],
 
         // ── Correction Plan ──
-        if (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty) ...[
-          SectionHeader(title: 'Correction Plan'),
+        if (plan.rootCause != 'SYSTEM_VOID') ...[
+          const SectionHeader(title: 'Correction Plan'),
           FlatBlock(
             child: Text(
-              plan.correctionPlan!,
+              (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty)
+                  ? plan.correctionPlan!
+                  : 'No specific correction steps prescribed.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                color: (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty)
+                    ? theme.colorScheme.onSurface.withValues(alpha: 0.8)
+                    : theme.colorScheme.onSurfaceVariant,
+                fontStyle: (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty)
+                    ? FontStyle.normal
+                    : FontStyle.italic,
               ),
             ),
           ),

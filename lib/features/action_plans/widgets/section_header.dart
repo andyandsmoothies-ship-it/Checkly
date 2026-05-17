@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../_shared/theme/app_fonts.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -7,13 +6,14 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
-        style: AppFonts.serifStyle(
-          fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
-          color: Theme.of(context).colorScheme.onSurface,
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: theme.colorScheme.onSurface,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

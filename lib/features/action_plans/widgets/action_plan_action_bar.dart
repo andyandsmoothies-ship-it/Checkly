@@ -45,15 +45,27 @@ class ActionPlanActionBar extends StatelessWidget {
         requiredAction: ActionPlanActions.submitEvidence,
         fallback: SafeArea(
           child: Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            child: Text(
-              'Waiting for Store Manager to submit evidence.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest,
+              border: Border(
+                top: BorderSide(color: theme.colorScheme.outlineVariant),
               ),
+            ),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.schedule, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text(
+                  'Waiting for Store Manager to submit evidence.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -76,15 +88,27 @@ class ActionPlanActionBar extends StatelessWidget {
         requiredAction: ActionPlanActions.verifyClose,
         fallback: SafeArea(
           child: Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            child: Text(
-              'Awaiting Auditor Verification.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest,
+              border: Border(
+                top: BorderSide(color: theme.colorScheme.outlineVariant),
               ),
+            ),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.hourglass_empty, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text(
+                  'Awaiting Auditor Verification.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

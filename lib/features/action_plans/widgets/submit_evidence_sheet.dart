@@ -156,20 +156,15 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: () {
-                      if (_isSubmitting) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Submission running in background'),
-                          ),
-                        );
-                      }
-                      if (_isDirty || _computedDirty) {
-                        Navigator.maybePop(context);
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    },
+                    onPressed: _isSubmitting
+                        ? null
+                        : () {
+                            if (_isDirty || _computedDirty) {
+                              Navigator.maybePop(context);
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
                   ),
                 ],
               ),
@@ -272,7 +267,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                 maxLines: 3,
                 onChanged: (_) => _markDirty(),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Required' : null,
+                    v == null || v.trim().isEmpty ? 'Please describe the action taken.' : null,
               ),
               const SizedBox(height: 16),
               // H1 Fix: spinner lives inside the button; modal stays open during the call
