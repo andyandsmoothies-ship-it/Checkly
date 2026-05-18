@@ -31,5 +31,6 @@ public class SubmissionSectionScoreConfiguration : IEntityTypeConfiguration<Subm
         // Performance indexes
         e.HasIndex(x => x.SubmissionId);
         e.HasIndex(x => new { x.StoreId, x.SectionTitle });
+        e.HasIndex(x => x.CreatedAt);
     }
 }

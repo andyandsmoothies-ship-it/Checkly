@@ -8,7 +8,7 @@ import 'action_timeline.dart';
 import 'flat_block.dart';
 import 'info_card.dart';
 import 'info_row.dart';
-import 'section_header.dart';
+import '../../../_shared/widgets/section_header.dart';
 import 'stale_conflict_banner.dart';
 
 class ActionPlanDetailList extends StatelessWidget {
@@ -124,7 +124,7 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Root Cause ──
         if (plan.rootCause != 'SYSTEM_VOID') ...[
-          const SectionHeader(title: 'Root Cause'),
+          const SectionHeader('Root Cause', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
           FlatBlock(
             child: Text(
               (plan.rootCause != null && plan.rootCause!.isNotEmpty)
@@ -134,7 +134,8 @@ class ActionPlanDetailList extends StatelessWidget {
                 color: (plan.rootCause != null && plan.rootCause!.isNotEmpty)
                     ? theme.colorScheme.onSurface.withValues(alpha: 0.8)
                     : theme.colorScheme.onSurfaceVariant,
-                fontStyle: (plan.rootCause != null && plan.rootCause!.isNotEmpty)
+                fontStyle:
+                    (plan.rootCause != null && plan.rootCause!.isNotEmpty)
                     ? FontStyle.normal
                     : FontStyle.italic,
               ),
@@ -145,17 +146,21 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Correction Plan ──
         if (plan.rootCause != 'SYSTEM_VOID') ...[
-          const SectionHeader(title: 'Correction Plan'),
+          const SectionHeader('Correction Plan', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
           FlatBlock(
             child: Text(
               (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty)
                   ? plan.correctionPlan!
                   : 'No specific correction steps prescribed.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty)
+                color:
+                    (plan.correctionPlan != null &&
+                        plan.correctionPlan!.isNotEmpty)
                     ? theme.colorScheme.onSurface.withValues(alpha: 0.8)
                     : theme.colorScheme.onSurfaceVariant,
-                fontStyle: (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty)
+                fontStyle:
+                    (plan.correctionPlan != null &&
+                        plan.correctionPlan!.isNotEmpty)
                     ? FontStyle.normal
                     : FontStyle.italic,
               ),
@@ -166,7 +171,7 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Evidence ──
         if (plan.evidenceNote != null || plan.evidencePhotoUrl != null) ...[
-          SectionHeader(title: 'Evidence'),
+          const SectionHeader('Evidence', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
           FlatBlock(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +208,7 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Verifier ──
         if (plan.verifierName != null) ...[
-          SectionHeader(title: 'Verified By'),
+          const SectionHeader('Verified By', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
           FlatBlock(
             child: Row(
               children: [

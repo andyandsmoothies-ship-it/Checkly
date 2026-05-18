@@ -27,3 +27,9 @@
 ## State & Payload Gotchas
 - **Gotcha 23: Direct Store Assignment UI**: The backend API allows sending an array of `assignedStoreIds` for Area Managers. 
   - **Fix:** The UI MUST provide a Multi-Store Picker component when editing an Area Manager. The Virtual Area dropdown is only a macro shortcut, and should be explicitly labeled to avoid confusing users who expect 1-to-1 hierarchy.
+
+## Testing Gotchas
+- **Gotcha 24: Widget Testing Lazy Lists**: Flutter's `ListView` and `CustomScrollView` are lazy. Widgets off-screen do not exist in the widget tree.
+  - **Fix:** You MUST use `tester.drag` or `tester.scrollUntilVisible` to bring hidden elements into view before asserting their existence.
+- **Gotcha 25: UI Library Constraints in Tests**: Third-party UI constraints (e.g., `fl_chart` requiring >= 3 categories for a RadarChart) apply even in tests.
+  - **Fix:** Test mock data MUST respect these constraints. Do not bypass manager guards by injecting faulty mock data directly into widgets.

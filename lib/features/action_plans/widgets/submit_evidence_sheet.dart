@@ -266,8 +266,9 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
                 ),
                 maxLines: 3,
                 onChanged: (_) => _markDirty(),
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Please describe the action taken.' : null,
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Please describe the action taken.'
+                    : null,
               ),
               const SizedBox(height: 16),
               // H1 Fix: spinner lives inside the button; modal stays open during the call

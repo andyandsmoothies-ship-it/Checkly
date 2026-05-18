@@ -6,6 +6,11 @@ description: Acceptance Test-Driven Development — defines acceptance tests BEF
 
 # Workflow: /atdd
 
+> [!TIP]
+> **Acceptance Tests vs Unit Tests**
+> - Use this workflow (**Acceptance Testing / ATDD**) early in the process to define **WHAT** the system must do at the business level before an implementation plan is finalized.
+> - Use Unit Testing (**TDD**) later in the process to test **HOW** the logic works based on a specific implementation plan, right before the code is built.
+
 > [!NOTE]
 > This is ATDD (Acceptance Test-Driven Development). Goal: Define WHAT the feature must do at the acceptance level. Target Persona: **Sentinel** (QA).
 

@@ -273,7 +273,9 @@ void configureDependencies() {
   di.registerLazySingleton<AnalyticsApiService>(
     () => AnalyticsApiService(di<Dio>()),
   );
-  di.registerLazySingleton<AnalyticsManager>(() => AnalyticsManager());
+  di.registerLazySingleton<AnalyticsManager>(
+    () => AnalyticsManager(apiService: di<AnalyticsApiService>()),
+  );
 
   // ---------- Store Dashboard ----------
   di.registerLazySingleton<StoreDashboardManager>(

@@ -25,7 +25,12 @@ public static class GetAnalytics
         var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
         var userIdStr = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if ((role == "store_manager" || role == "area_manager") && Guid.TryParse(userIdStr, out var callerId))
+        // Admins have global visibility. Other roles must be strictly scoped.
+        if (role == "admin")
+        {
+            // Bypass tenancy checks (global scope)
+        }
+        else if ((role == "store_manager" || role == "area_manager") && Guid.TryParse(userIdStr, out var callerId))
         {
             var profile = await db.Profiles
                 .AsNoTracking()
@@ -62,6 +67,11 @@ public static class GetAnalytics
                 // Force scope to the manager's own area — override query param.
                 areaIdStr = profile.AreaId.Value.ToString();
             }
+        }
+        else
+        {
+            // Failsafe: Any new or unknown role (e.g. auditor) gets no data unless explicitly bypassed above.
+            return TypedResults.Forbid();
         }
         // ──────────────────────────────────────────────────────────────────────
 
@@ -186,9 +196,57 @@ public static class GetAnalytics
                 x.Count))
             .ToList();
 
+        // ── Slice 2: Insights & Radar (Area Benchmark Integration) ──
+        List<ActionableInsight>? insights = null;
+        RadarData? radarData = null;
+        bool insightsStale = false;
+
+        Guid? resolvedAreaId = null;
+        if (!string.IsNullOrEmpty(areaIdStr) && Guid.TryParse(areaIdStr, out var aId))
+            resolvedAreaId = aId;
+        else if (storeIdParsed)
+        {
+            var store = await db.Stores.AsNoTracking().FirstOrDefaultAsync(st => st.Id == sid, ct);
+            resolvedAreaId = store?.AreaId;
+        }
+
+        if (resolvedAreaId.HasValue)
+        {
+            var snapshot = await db.AreaBenchmarkSnapshots
+                .AsNoTracking()
+                .FirstOrDefaultAsync(b => b.AreaId == resolvedAreaId.Value, ct);
+
+            if (snapshot is not null)
+            {
+                insightsStale = snapshot.LastCalculatedAt < DateTimeOffset.UtcNow.AddHours(-2);
+
+                var storeCategoryAverages = sectionBreakdown.ToDictionary(s => s.Section, s => s.AvgScore);
+                
+                var areaCategoryAverages = string.IsNullOrEmpty(snapshot.CategoryAverages)
+                    ? new Dictionary<string, double>()
+                    : System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, double>>(snapshot.CategoryAverages) ?? new Dictionary<string, double>();
+
+                var generatorResult = InsightGeneratorService.Generate(
+                    liveScore: avgScore,
+                    areaAvgScore: (double)snapshot.OverallAvgScore,
+                    stdDeviation: (double)snapshot.StdDeviation,
+                    totalAudits: totalAudits,
+                    storeCategoryAverages: storeCategoryAverages,
+                    areaCategoryAverages: areaCategoryAverages,
+                    overdueAPs: overdueAPs
+                );
+
+                insights = generatorResult.Insights;
+                radarData = generatorResult.RadarData;
+            }
+        }
+
         return TypedResults.Ok(new AnalyticsResponse(
             new AnalyticsKpis(totalAudits, scoredCount, totalSurveys, avgScore, openAPs, overdueAPs, completionRate),
             trend,
-            sectionBreakdown));
+            sectionBreakdown,
+            insights,
+            radarData,
+            insightsStale));
     }
 }

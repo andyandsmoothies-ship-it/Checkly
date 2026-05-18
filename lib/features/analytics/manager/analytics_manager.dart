@@ -1,57 +1,41 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
 
 import '../../../_shared/database/app_database.dart';
 import '../../../_shared/database/database_service.dart';
 import '../widgets/trend_chart.dart';
 import '../widgets/category_heatmap.dart';
+import '../services/analytics_api_service.dart';
+import 'analytics_data.dart';
+import 'analytics_drift_loader.dart';
 
 final _di = GetIt.instance;
 
-/// Holds the fully-computed analytics snapshot after a [load] call.
-class AnalyticsData {
-  final int totalAudits;
-  final double avgScore;
-  final int openAPs;
-  final int overdueAPs;
-  final double completionRate;
-  final List<TrendPoint> trend;
-  final List<CategoryScore> categoryScores;
-  final List<String> storeNames;
-  final List<String> templateTypes;
-  final List<String> areaNames;
-  final List<String> auditorNames;
-
-  const AnalyticsData({
-    required this.totalAudits,
-    required this.avgScore,
-    required this.openAPs,
-    required this.overdueAPs,
-    required this.completionRate,
-    required this.trend,
-    required this.categoryScores,
-    required this.storeNames,
-    required this.templateTypes,
-    required this.areaNames,
-    required this.auditorNames,
-  });
-}
-
 /// PFA Manager for the Analytics page.
 ///
-/// Wraps all direct [AppDatabase] queries from the old [AnalyticsPage]
-/// into a proper Manager layer. The UI simply calls [load()] and observes
-/// [isLoading], [error], and [data].
+/// Wraps all direct [AppDatabase] queries and API calls into a proper
+/// Manager layer. The UI simply calls [load()] and observes [isLoading],
+/// [error], and [data].
+///
+/// Data classes ([AnalyticsData], [ActionableInsight], [RadarData]) live
+/// in `analytics_data.dart`. The offline Drift loader lives in
+/// `analytics_drift_loader.dart`.
 class AnalyticsManager extends ChangeNotifier {
   final AppDatabase _db;
+  late final AnalyticsApiService _api;
 
-  AnalyticsManager({AppDatabase? db}) : _db = db ?? _di<DatabaseService>().db;
+  AnalyticsManager({AppDatabase? db, AnalyticsApiService? apiService})
+    : _db = db ?? _di<DatabaseService>().db {
+    _api = apiService ?? _di<AnalyticsApiService>();
+  }
 
   // ---------- State ----------
   bool isLoading = false;
   String? error;
   AnalyticsData? data;
+  bool isOffline = false;
 
   // ---------- Active Filters ----------
   String? selectedStore;
@@ -71,16 +55,50 @@ class AnalyticsManager extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final allSubs =
-          await (_db.select(_db.cachedSubmissions)
-                ..limit(1000)) // Bounded for memory safety (Gotcha #14)
-              .get();
-      var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
+      final allStores = await (_db.select(_db.cachedStores)..limit(1000)).get();
+      String? storeId;
+      if (selectedStore != null) {
+        try {
+          storeId = allStores.firstWhere((s) => s.name == selectedStore).id;
+        } catch (_) {}
+      }
+      String? areaId;
+      if (selectedArea != null) {
+        try {
+          areaId = allStores
+              .firstWhere((s) => s.areaName == selectedArea)
+              .areaId;
+        } catch (_) {}
+      }
 
-      final allStores =
-          await (_db.select(_db.cachedStores)
-                ..limit(1000)) // Bounded for memory safety (Gotcha #14)
-              .get();
+      String? startDate;
+      String? endDate;
+      final now = DateTime.now();
+      if (dateRange == 'custom' && customDateRange != null) {
+        startDate = customDateRange!.start.toIso8601String();
+        endDate = customDateRange!.end
+            .add(const Duration(days: 1))
+            .toIso8601String();
+      } else if (dateRange != 'all') {
+        final days = int.parse(dateRange);
+        startDate = now.subtract(Duration(days: days)).toIso8601String();
+        endDate = now.toIso8601String();
+      }
+
+      final json = await _api.getAnalytics(
+        storeId: storeId,
+        areaId: areaId,
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      isOffline = false;
+
+      // Extract filter list values from Drift (must populate for UI)
+      final allSubs = await (_db.select(
+        _db.cachedSubmissions,
+      )..limit(1000)).get();
+      var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
       final areaNames =
           allStores
               .map((s) => s.areaName)
@@ -89,30 +107,16 @@ class AnalyticsManager extends ChangeNotifier {
               .toSet()
               .toList()
             ..sort();
-
       final filteredStores = selectedArea != null
           ? allStores.where((s) => s.areaName == selectedArea).toList()
           : allStores;
-
       var storeNames = filteredStores.map((s) => s.name).toSet().toList()
         ..sort();
-
-      // Reset store if it's no longer valid after area change
-      if (selectedStore != null && !storeNames.contains(selectedStore)) {
-        selectedStore = null;
-      }
-
-      final templates =
-          await (_db.select(_db.cachedTemplates)
-                ..limit(500)) // Bounded for memory safety (Gotcha #14)
-              .get();
+      final templates = await (_db.select(
+        _db.cachedTemplates,
+      )..limit(500)).get();
       final templateTypes = templates.map((t) => t.type).toSet().toList()
         ..sort();
-      final templateTypeMap = <String, String>{};
-      for (final t in templates) {
-        templateTypeMap[t.id] = t.type;
-      }
-
       final auditorNames =
           subs
               .map((s) => s.auditorName)
@@ -122,137 +126,73 @@ class AnalyticsManager extends ChangeNotifier {
               .toList()
             ..sort();
 
-      // ── Apply filters ──
-      if (selectedArea != null) {
-        final areaStoreNames = filteredStores.map((s) => s.name).toSet();
-        subs = subs.where((s) => areaStoreNames.contains(s.storeName)).toList();
-      }
-      if (selectedStore != null) {
-        subs = subs.where((s) => s.storeName == selectedStore).toList();
-      }
-      if (selectedType != null) {
-        final typeTemplateIds = templates
-            .where((t) => t.type == selectedType)
-            .map((t) => t.id)
-            .toSet();
-        subs = subs
-            .where((s) => typeTemplateIds.contains(s.templateId))
-            .toList();
-      }
-      if (selectedAuditor != null) {
-        subs = subs.where((s) => s.auditorName == selectedAuditor).toList();
-      }
-      if (selectedStatus != null) {
-        subs = subs.where((s) => s.status == selectedStatus).toList();
-      }
-      if (selectedReviewStatus != null) {
-        subs = subs
-            .where((s) => s.reviewStatus == selectedReviewStatus)
-            .toList();
-      }
-
-      final now = DateTime.now();
-      if (dateRange == 'custom' && customDateRange != null) {
-        subs = subs
-            .where(
-              (s) =>
-                  s.createdAt.isAfter(customDateRange!.start) &&
-                  s.createdAt.isBefore(
-                    customDateRange!.end.add(const Duration(days: 1)),
-                  ),
-            )
-            .toList();
-      } else if (dateRange != 'all') {
-        final days = int.parse(dateRange);
-        final cutoff = now.subtract(Duration(days: days));
-        subs = subs.where((s) => s.createdAt.isAfter(cutoff)).toList();
-      }
-
-      // ── KPIs ──
-      final totalAudits = subs.length;
-      final scored = subs.where((s) => s.totalScore != null).toList();
-      final avgScore = scored.isNotEmpty
-          ? scored.map((s) => s.totalScore!).reduce((a, b) => a + b) /
-                scored.length
-          : 0.0;
-
-      final completed = subs.where((s) => s.status == 'completed').toList();
-      final completionRate = totalAudits > 0
-          ? completed.length / totalAudits * 100
-          : 0.0;
-
-      final aps =
-          await (_db.select(_db.cachedActionPlans)
-                ..limit(1000)) // Bounded for memory safety (Gotcha #14)
-              .get();
-      final openAPs = aps.where((ap) => ap.status == 'open').length;
-      final overdueAPs = aps
-          .where(
-            (ap) =>
-                ap.status == 'open' &&
-                ap.deadline != null &&
-                ap.deadline!.isBefore(now),
-          )
-          .length;
-
-      // ── 6-month trend ──
-      final sixMonthsAgo = now.subtract(const Duration(days: 180));
-      final recentSubs = subs
-          .where(
-            (s) => s.totalScore != null && s.createdAt.isAfter(sixMonthsAgo),
+      final trendList = (json['trend'] as List<dynamic>?) ?? [];
+      final trend = trendList
+          .map(
+            (e) => TrendPoint(
+              e['month'] as String,
+              (e['avgScore'] as num).toDouble(),
+              e['count'] as int,
+            ),
           )
           .toList();
 
-      final grouped = <String, List<double>>{};
-      for (final s in recentSubs) {
-        final key =
-            '${s.createdAt.year}-${s.createdAt.month.toString().padLeft(2, '0')}';
-        grouped.putIfAbsent(key, () => []).add(s.totalScore!);
-      }
+      final catList = (json['categoryScores'] as List<dynamic>?) ?? [];
+      final categoryScores = catList
+          .map(
+            (e) => CategoryScore(
+              name: e['name'] as String,
+              avgScore: (e['avgScore'] as num).toDouble(),
+              auditCount: e['auditCount'] as int,
+            ),
+          )
+          .toList();
 
-      final monthKeys = List.generate(6, (i) {
-        final d = DateTime(now.year, now.month - i);
-        return '${d.year}-${d.month.toString().padLeft(2, '0')}';
-      }).reversed.toList();
+      // Parse insights and radarData from the API response. radarData is only
+      // accepted when it has at least 3 categories (enough to draw a polygon).
+      final insightsList = (json['insights'] as List<dynamic>?) ?? [];
+      final insights = insightsList
+          .map((e) => ActionableInsight.fromJson(e as Map<String, dynamic>))
+          .toList();
 
-      final trend = monthKeys.map((key) {
-        final scores = grouped[key];
-        if (scores != null && scores.isNotEmpty) {
-          final avg = scores.reduce((a, b) => a + b) / scores.length;
-          return TrendPoint(key, avg, scores.length);
-        }
-        return TrendPoint(key, 0, 0);
-      }).toList();
-
-      // ── Category heatmap ──
-      final catScores = <String, List<double>>{};
-      for (final s in subs) {
-        final type = templateTypeMap[s.templateId];
-        if (type != null && s.totalScore != null) {
-          catScores.putIfAbsent(type, () => []).add(s.totalScore!);
+      RadarData? radarData;
+      final radarJson = json['radarData'] as Map<String, dynamic>?;
+      if (radarJson != null) {
+        final candidate = RadarData.fromJson(radarJson);
+        if (candidate.categories.length >= 3) {
+          radarData = candidate;
         }
       }
-      final categoryScores = catScores.entries.map((e) {
-        final avg = e.value.reduce((a, b) => a + b) / e.value.length;
-        return CategoryScore(
-          name: e.key,
-          avgScore: avg,
-          auditCount: e.value.length,
-        );
-      }).toList();
+      // ──────────────────────────────────────────────────────────────────────
 
       data = AnalyticsData(
-        totalAudits: totalAudits,
-        avgScore: avgScore,
-        openAPs: openAPs,
-        overdueAPs: overdueAPs,
-        completionRate: completionRate,
+        totalAudits: json['totalAudits'] ?? 0,
+        avgScore: (json['avgScore'] as num?)?.toDouble() ?? 0.0,
+        openAPs: json['openAPs'] ?? 0,
+        overdueAPs: json['overdueAPs'] ?? 0,
+        completionRate: (json['completionRate'] as num?)?.toDouble() ?? 0.0,
         trend: trend,
         categoryScores: categoryScores,
         storeNames: storeNames,
         templateTypes: templateTypes,
         areaNames: areaNames,
         auditorNames: auditorNames,
+        insights: insights,
+        radarData: radarData,
+        insightsStale: json['insightsStale'] ?? false,
+      );
+    } on DioException catch (_) {
+      isOffline = true;
+      data = await loadFromDrift(
+        db: _db,
+        selectedArea: selectedArea,
+        selectedStore: selectedStore,
+        selectedType: selectedType,
+        selectedAuditor: selectedAuditor,
+        selectedStatus: selectedStatus,
+        selectedReviewStatus: selectedReviewStatus,
+        dateRange: dateRange,
+        customDateRange: customDateRange,
       );
     } catch (e) {
       error = 'Failed to load analytics';

@@ -84,10 +84,10 @@ Workflow: /analyze-epic | Track: C
 | **Slice Work** | Load the `use-case-slicing` skill. Break the Epic into smaller slices (like UI to Database). If it is Backend-Only, slice by technical steps. Add these slices to the end of your Epic Plan. |
 | **Plan Routes** | Create a list of routes for each slice (e.g., `Slice N | Track A/B | Route Path`). |
 
-### Routing Guide
-Send each slice to the right workflow:
-- **Visuals/Simple UI:** Route to -> `[/analyze-feature]` -> `[/implement]`
-- **Logic/State/API:** Route to -> `[/analyze-feature]` -> `[/tdd]` -> `[/implement]`
+### Handoff Guide
+Define the phase sequence for each slice:
+- **Visuals/Simple UI:** Feature Analysis Phase -> Implementation Phase
+- **Logic/State/API:** Feature Analysis Phase -> Test-Driven Development (TDD) Phase -> Implementation Phase
 
 - **Order of Work**: For each slice, explain when it should run:
     - `[BLOCKING]`: Must run FIRST and ALONE (other slices need it).
@@ -116,8 +116,8 @@ Send each slice to the right workflow:
 > **Handoff Block:** Add `## Handoff Block` at the end containing:
 > 1. Final Epic decision and file path.
 > 2. List of Slices and when they run. (If there is only 1 phase, do not name it "Slice 1").
-> 3. **Next Steps**: A 1-2 sentence summary for the next agent.
-> 4. Exact next workflow command using the `{Absolute_Path}`.
+> 3. **Next Steps**: A short summary for the next agent.
+> 4. **Handoff Roadmap**: Explicitly list the **Phase Intent** for EVERY slice in order. Use generic, professional terminology (e.g., "Hand off to Feature Analysis", "Hand off to Implementation"). You MUST include a short note explaining the 2-step loop: "For each slice, first complete the Feature Analysis phase to plan it, and then proceed to the Implementation phase to build it." Tell the user to execute the phases ONE AT A TIME.
 >
 > **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
 > 

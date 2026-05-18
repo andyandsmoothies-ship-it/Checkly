@@ -44,3 +44,7 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query pa
 ## Data Model Gotchas
 - **Gotcha: Deprecated AreaId Authorization**: The system has migrated from an Area-based hierarchy to **Pure Direct Store Assignment**. The `AreaId` field on `Profile` is deprecated for authorization purposes. 
   - **Fix:** NEVER use `AreaId` checks (e.g., in `OwnershipScopeFilter` or `ResourceAccessGuard`) to determine if an Area Manager has access to a store. ALWAYS query the `ProfileStoreAssignment` junction table or verify `StoreId` exists in the user's `AssignedStoreIds` list.
+
+## Testing Gotchas
+- **Gotcha: Test Data Isolation for Boundary Conditions**: If testing a boundary condition for a child entity (e.g., Store audit count < 3), its parent entity (e.g., Area) MUST explicitly fall *outside* that boundary condition (Area audit count > 3). If both the parent and child trigger the boundary, the test may silently pass for the wrong reason (False Positive), masking logic regressions where the wrong scope was passed.
+  - **Fix:** Always explicitly isolate variables. Seed parent entities with sufficient data to bypass guards, so you strictly test the child guard logic.

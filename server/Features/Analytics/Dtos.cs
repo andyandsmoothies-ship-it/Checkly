@@ -21,7 +21,21 @@ public sealed record SectionScore(
     double AvgScore,
     int Count);
 
+public sealed record ActionableInsight(
+    string Id,
+    string Type,
+    string Title,
+    string Description);
+
+public sealed record RadarData(
+    List<string> Categories,
+    List<double> StoreScores,
+    List<double> AreaScores);
+
 public sealed record AnalyticsResponse(
     AnalyticsKpis Kpis,
     List<TrendPoint> Trend,
-    List<SectionScore> SectionBreakdown);
+    List<SectionScore> SectionBreakdown,
+    List<ActionableInsight>? Insights = null,
+    RadarData? RadarData = null,
+    bool InsightsStale = false);

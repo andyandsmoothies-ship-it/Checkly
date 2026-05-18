@@ -309,93 +309,32 @@ try
         var pbacCache = app.Services.GetRequiredService<PbacDictionaryCache>();
         await pbacCache.InitializeAsync(app.Services);
 
-        // Slice 2: Seed submissions:list capability for all roles (idempotent — ON CONFLICT DO NOTHING)
+        // Combine all PBAC capability seeding into a single batched command to reduce database round-trips
         await db.Database.ExecuteSqlRawAsync("""
             INSERT INTO role_capabilities (id, role, capability, created_at)
             VALUES
+                -- Submissions Module
                 (gen_random_uuid(), 'admin',         'submissions:list', now()),
                 (gen_random_uuid(), 'auditor',       'submissions:list', now()),
                 (gen_random_uuid(), 'store_manager', 'submissions:list', now()),
-                (gen_random_uuid(), 'area_manager',  'submissions:list', now())
-            ON CONFLICT (role, capability) DO NOTHING;
-            """);
-
-        // Reload cache so the new submissions:list rows are immediately visible in-memory
-        await pbacCache.InitializeAsync(app.Services);
-
-        // GlobalRisks Slice 2: Seed global_risks:manage for admin only (idempotent)
-        await db.Database.ExecuteSqlRawAsync("""
-            INSERT INTO role_capabilities (id, role, capability, created_at)
-            VALUES
-                (gen_random_uuid(), 'admin', 'global_risks:manage', now())
-            ON CONFLICT (role, capability) DO NOTHING;
-            """);
-
-        // Reload cache so new global_risks:manage row is immediately visible in-memory
-        await pbacCache.InitializeAsync(app.Services);
-
-        // Programs Module Slice 1: Seed programs:create and programs:list for admin only (idempotent)
-        await db.Database.ExecuteSqlRawAsync("""
-            INSERT INTO role_capabilities (id, role, capability, created_at)
-            VALUES
+                (gen_random_uuid(), 'area_manager',  'submissions:list', now()),
+                
+                -- Global Risks Module
+                (gen_random_uuid(), 'admin', 'global_risks:manage', now()),
+                
+                -- Programs Module
                 (gen_random_uuid(), 'admin', 'programs:create', now()),
-                (gen_random_uuid(), 'admin', 'programs:list',   now())
-            ON CONFLICT (role, capability) DO NOTHING;
-            """);
-
-        // Reload cache so new programs:* rows are immediately visible in-memory
-        await pbacCache.InitializeAsync(app.Services);
-
-        // Programs Module Slice 2A / PBAC execution: Seed store_manager and area_manager assignment access + execution (idempotent)
-        await db.Database.ExecuteSqlRawAsync("""
-            INSERT INTO role_capabilities (id, role, capability, created_at)
-            VALUES
+                (gen_random_uuid(), 'admin', 'programs:list',   now()),
                 (gen_random_uuid(), 'store_manager', 'programs:assignments_my', now()),
                 (gen_random_uuid(), 'store_manager', 'programs:execute', now()),
                 (gen_random_uuid(), 'area_manager',  'programs:assignments_my', now()),
-                (gen_random_uuid(), 'area_manager',  'programs:execute', now())
-            ON CONFLICT (role, capability) DO NOTHING;
-            """);
-
-        await pbacCache.InitializeAsync(app.Services);
-        // Programs Module Slice 3: Seed programs:assignments_list for admin (HQ review) (idempotent)
-        await db.Database.ExecuteSqlRawAsync("""
-            INSERT INTO role_capabilities (id, role, capability, created_at)
-            VALUES
+                (gen_random_uuid(), 'area_manager',  'programs:execute', now()),
                 (gen_random_uuid(), 'admin', 'programs:assignments_list', now()),
-                (gen_random_uuid(), 'area_manager', 'programs:assignments_list', now())
-            ON CONFLICT (role, capability) DO NOTHING;
-            """);
-
-        // Reload cache so admin programs:assignments_list row is immediately visible in-memory
-        await pbacCache.InitializeAsync(app.Services);
-
-        // Programs Module Slice 4: Seed programs:review for admin (reject/verify) (idempotent)
-        await db.Database.ExecuteSqlRawAsync("""
-            INSERT INTO role_capabilities (id, role, capability, created_at)
-            VALUES
-                (gen_random_uuid(), 'admin', 'programs:review', now())
-            ON CONFLICT (role, capability) DO NOTHING;
-            """);
-
-        // Reload cache so admin programs:review row is immediately visible in-memory
-        await pbacCache.InitializeAsync(app.Services);
-
-        // Programs Module Slice 6: Seed programs:manage for admin (update + archive) (idempotent)
-        await db.Database.ExecuteSqlRawAsync("""
-            INSERT INTO role_capabilities (id, role, capability, created_at)
-            VALUES
-                (gen_random_uuid(), 'admin', 'programs:manage', now())
-            ON CONFLICT (role, capability) DO NOTHING;
-            """);
-
-        // Reload cache so admin programs:manage row is immediately visible in-memory
-        await pbacCache.InitializeAsync(app.Services);
-
-        // Action Plans Module: Seed action_plans:write and action_plans:verify (idempotent)
-        await db.Database.ExecuteSqlRawAsync("""
-            INSERT INTO role_capabilities (id, role, capability, created_at)
-            VALUES
+                (gen_random_uuid(), 'area_manager', 'programs:assignments_list', now()),
+                (gen_random_uuid(), 'admin', 'programs:review', now()),
+                (gen_random_uuid(), 'admin', 'programs:manage', now()),
+                
+                -- Action Plans Module
                 (gen_random_uuid(), 'store_manager', 'action_plans:write', now()),
                 (gen_random_uuid(), 'admin', 'action_plans:write', now()),
                 (gen_random_uuid(), 'auditor', 'action_plans:verify', now()),
@@ -404,7 +343,7 @@ try
             ON CONFLICT (role, capability) DO NOTHING;
             """);
 
-        // Reload cache so new action_plans row is immediately visible in-memory
+        // Reload cache ONCE so all seeded capabilities are immediately visible in-memory
         await pbacCache.InitializeAsync(app.Services);
     }
 

@@ -19,6 +19,7 @@ description: The Core Builder Implementation Workflow
 ```markdown
 # Task: [Name]
 Workflow: /implement | Track: [A / B1 / B2 / C]
+*(Note: Track A = Direct Implementation (Tests Written AFTER code). Track B/C = ATDD/TDD (Tests Written BEFORE code). Skipping tests entirely is PROHIBITED unless explicitly stated.)*
 
 ## Input Lineage
 - **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`

@@ -91,18 +91,18 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 ## 🚦 Handoff
 
 > [!IMPORTANT]
-> **Action:** Print the exact routing commands below for the user. Match each step to its correct route.
+> **Action:** State the exact next Phase for the user. Match each step to its correct route.
 > 
-> **Step-by-Step Rule:** Tell the user to run these commands **ONE AT A TIME**. Do not run them all at once.
+> **Step-by-Step Rule:** Tell the user to execute these phases **ONE AT A TIME**. Do not execute them all at once.
 >
 > **Route 1: Logic/Standard (Unit Tests First)**
-> @[/tdd] Execute tests for [Slice N / The Feature]: {Absolute_Path_to_plan}
+> Next Phase: **Test-Driven Development (TDD)** for [Slice N / The Feature]. Input: `{Absolute_Path_to_plan}`
 >
 > **Route 2: Visuals/Simple (Direct Build)**
-> @[/implement] Execute build for [Slice N / The Feature]: {Absolute_Path_to_plan}
+> Next Phase: **Implementation** for [Slice N / The Feature]. Input: `{Absolute_Path_to_plan}`
 >
 > **Route 3: Network/Auth/DB (Acceptance Tests First)**
-> @[/atdd] Execute specs for [Slice N / The Feature]: {Absolute_Path_to_plan}
+> Next Phase: **Acceptance Test-Driven Development (ATDD)** for [Slice N / The Feature]. Input: `{Absolute_Path_to_plan}`
 >
 > **Concurrency:** State which slices must wait for others to finish.
 
@@ -123,7 +123,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Concept Diagram`: Simple text flowchart to explain the idea. **For UI changes, include routing/state transitions so there are no dead ends.**
 > - `## Execution Slices` (Micro-Specs): Group the work using the `use-case-slicing` skill methodology. **CRITICAL:** Apply the 'Maximum Thickness' rule to prevent AI context overflow. **A single phase should ideally represent ONE complete vertical slice of the Happy Path.** However, if that slice requires modifying **more than 5 files** or touching highly complex shared files **>400 lines**, you MUST split it horizontally into sub-phases (e.g., `Phase B1: Data Layer`, `Phase B2: Offline Logic`). Always separate the Happy Path (Slice 1) from Error/Edge Cases (Slice 2). For each slice, you MUST output the Micro-Spec format (Plain English Summary, Value Delivered, Entry/Exit State, Scope, Acceptance Criteria). Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
 > - `<command_logs>`: A list of terminal commands you ran.
-> - `## Handoff Block`: A short summary for the next AI agent. You MUST include the exact `@[/...]` routing command (like `@[/tdd]`) for EVERY step, with the absolute file path.
+> - `## Handoff Block`: A short summary for the next AI agent. You MUST list the exact **Target Phase** (e.g., `Implementation Phase`, `TDD Phase`) for **EVERY single step/slice** in order, with the absolute file path. Tell the user to execute them ONE AT A TIME.
 >
 > **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
 > 

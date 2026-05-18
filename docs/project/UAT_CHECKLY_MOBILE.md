@@ -268,6 +268,16 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 14C.9 | Clear All Filters | Tap "Clear" in filter sheet | All filters reset. Full dataset restored. | [ ] |
 | 14C.10 | Exclude Rejected | Auditor has an audit rejected by Admin | That audit's score completely removed from KPI average. | [ ] |
 
+### 14D: Actionable Insights & Radar (Slice 3)
+
+| ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
+|----|-----------|-----------------|-----------------|:---------:|
+| 14D.1 | Actionable Insights Visible | Go to Analytics page | InsightCard is rendered with a list of insights (if any are returned). | [ ] |
+| 14D.2 | Radar Chart Visible | Go to Analytics page | InsightsRadarChart is rendered (if at least 3 categories exist). | [ ] |
+| 14D.3 | Stale Data Banner | Turn off area benchmark background job (or set stale flag) | Yellow stale data warning banner appears at the top of the Analytics page. | [ ] |
+| 14D.4 | Empty Radar State | View an area with only 1 or 2 audit categories | Radar chart is hidden (replaced with generic empty state or removed). | [ ] |
+| 14D.5 | Empty Insights State | View analytics for an area with no audits | InsightCard displays a friendly empty state message. | [ ] |
+
 ## Module 15: User Groups & Template Access Control
 **Focus**: Group-based template visibility, membership management. **NEW in v3.0.**
 

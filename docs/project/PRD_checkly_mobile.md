@@ -321,6 +321,7 @@ server/
 | **Batch 8** | Enterprise Dashboard & Fleet Analytics — Role-aware command center (Auditor/Manager/Admin), Drift SQLite aggregations, contextual stat cards, hierarchical drilldowns | ✅ Done |
 | **Batch 9** | PBAC UI Capabilities — Dynamic role tabs, PermissionGuard, backend capability syncing | ✅ Done |
 | **Batch 10** | Error UX & Observability — RFC 9457 Problem Details, actionable snackbar queues, and deterministic styling | ✅ Done |
+| **Batch 11** | Analytics Insight Rewire — Radar charts, heuristic Actionable Insights generator, Area Benchmark snapshots, offline-first syncing, and dynamic bounds enforcement | ✅ Done |
 
 ### Future Phases
 

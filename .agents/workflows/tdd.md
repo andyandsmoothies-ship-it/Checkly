@@ -6,6 +6,11 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 # Workflow: /tdd
 
+> [!TIP]
+> **Unit Tests vs Acceptance Tests**
+> - Use this workflow (**Unit Testing / TDD**) later in the process to test **HOW** the code works based on a specific implementation plan, right before the code is built.
+> - Use Acceptance Testing (**ATDD**) early in the process to define **WHAT** the system must do at the business level before an implementation plan is finalized.
+
 > [!NOTE]
 > This is the **Test-Driven Development (TDD)** workflow. The QA Agent (@Sentinel) uses this to write failing unit tests based on a plan. The Builder Agent (@Forge) should never run this workflow.
 

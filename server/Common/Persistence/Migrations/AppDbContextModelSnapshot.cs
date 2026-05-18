@@ -360,6 +360,44 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("areas", (string)null);
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.AreaBenchmarkSnapshot", b =>
+                {
+                    b.Property<Guid>("AreaId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("area_id");
+
+                    b.Property<string>("CategoryAverages")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("category_avgs");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateTimeOffset>("LastCalculatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_calc_at");
+
+                    b.Property<decimal>("OverallAvgScore")
+                        .HasColumnType("numeric")
+                        .HasColumnName("overall_avg");
+
+                    b.Property<decimal>("StdDeviation")
+                        .HasColumnType("numeric")
+                        .HasColumnName("std_deviation");
+
+                    b.Property<int>("TotalAuditCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("total_audits");
+
+                    b.HasKey("AreaId");
+
+                    b.ToTable("area_benchmark_snapshots", (string)null);
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1323,6 +1361,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("SubmissionId");
 
                     b.HasIndex("StoreId", "SectionTitle");
@@ -1814,6 +1854,17 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Criterion");
 
                     b.Navigation("Submission");
+                });
+
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.AreaBenchmarkSnapshot", b =>
+                {
+                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Area", "Area")
+                        .WithOne()
+                        .HasForeignKey("Checkly.Api.Common.Persistence.Entities.AreaBenchmarkSnapshot", "AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>

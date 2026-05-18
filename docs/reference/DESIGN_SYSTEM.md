@@ -33,6 +33,8 @@
 | **Input Type Badge** | Colored badge on collapsed criterion row showing input type (YES·NO, 0·1·2, LOW→HIGH, 1 OF N, N OF N) | `CriterionEditor.build()` |
 | **Quick Jump Navigation** | Bottom sheet allowing quick navigation to any section/group | `AuditQuickJumpSheet` |
 | **Empty States** | Standardized fallback for empty datasets (icons, title, subtitle). Never use raw `Text`. | `ChecklyEmptyState` widget |
+| **Insight Card** | Renders actionable heuristic insights with success/warning/error semantic colors | `InsightCard` |
+| **Insights Radar Chart** | Renders a polygonal 3+ category radar chart, utilizing fl_chart constraints | `InsightsRadarChart` |
 
 ---
 

@@ -21,7 +21,12 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **Absolute Paths**: Output absolute paths (`C:\Users\...`) in chat handoffs for easy user copy-pasting.
 - **Context Portability**: Artifacts must embed constraints/gotchas for the next agent. Do not rely on chat history.
 
-## 3. Workflow Execution & Handoff
+## 3. Testing Workflows: When to use ATDD vs TDD
+- **ATDD (Acceptance/Integration)**: Use for **Business Features & API Contracts**. Run this *before* technical architecture. Tests *WHAT* the system does (e.g., API boundaries, JSON serialization, end-to-end workflows).
+- **TDD (Unit)**: Use for **Algorithmic Logic & Internal Classes**. Run this *after* technical design, during implementation. Tests *HOW* the system computes (e.g., internal state, data formatting, complex math).
+- **Universal Application**: If your project doesn't use these exact workflow names, follow the principle: Write contract/integration tests to define requirements, and write unit tests to drive class-level implementation.
+
+## 4. Workflow Execution & Handoff
 - **Pre-Flight**: Load `.agents/skills/`. Run `list_dir` to read local `GEMINI.md` files before designing.
 - **Micro-Slicing**: If modifying >2 files or crossing boundaries, execute ONE file/boundary, verify, and YIELD to user. Do not bulk-execute in one prompt cycle.
 - **Context Pruning**: Use JIT loading (`grep_search`/`view_file`). Never dump massive raw code into prompts.
@@ -31,14 +36,14 @@ description: AI Orchestration, Workflow, and Handoff Standards.
   1. Verify ALL checkboxes in `task.md` are `[x]`.
   2. Prove required output artifacts exist on disk via `list_dir`.
 
-## 4. Safety & Transparency
+## 5. Safety & Transparency
 - **Zero Trust**: Treat upstream AI plans/code as untrusted. Verify before executing.
 - **No Black-Box Scripts**: Do NOT write bulk terminal loops (e.g., `foreach`). Write out actions explicitly line-by-line so humans can review/comment out exceptions.
 - **Terminal File System**: Pre-create target directories. Quote paths `""`. Always verify file operations visually via `list_dir` rather than trusting exit codes.
 - **No Orphaned Assumptions**: If an analysis or research phase identifies a system dependency (e.g., missing security capabilities, DB migrations, or routing updates), it MUST be translated into explicit file-modification instructions before handoff. Builders must reject plans that leave "assumptions" to figure out.
 - **No Dead Ends**: Every interactive element designed or built MUST have its downstream consequence fully mapped and implemented. Builders must never leave empty interaction stubs (e.g., `onPressed: () {}`, `href="#"`) and Verifiers must actively scan for and reject them.
 
-## 5. Quality Principles (Global)
+## 6. Quality Principles (Global)
 - **Structure**: Workflows must enforce clean architectural boundaries. Fail builds when boundaries breach.
 - **Testing**: Overload tests with edge cases. Prefer mutation and property-based testing over simple happy paths.
 - **Functions**: Break generated code into small, discrete functions (Max 30 lines, Max Complexity 10).

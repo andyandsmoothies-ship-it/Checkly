@@ -10,19 +10,19 @@
 
 ## Table Overview
 
-The Checkly database contains **29 tables** organized into 3 categories:
+The Checkly database contains **30 tables** organized into 3 categories:
 
 > **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`, `global_risks`, `submission_risks`, `program_assignments`, `program_evidence`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| **Business Domain** | 21 tables | Core audit & programs workflow data |
+| **Business Domain** | 22 tables | Core audit & programs workflow data |
 | **ASP.NET Identity** | 7 tables | Authentication & identity infrastructure |
 | **EF Core Internal** | 1 table | Migration tracking |
 
 ---
 
-## Business Domain Tables (21)
+## Business Domain Tables (22)
 
 ### `profiles`
 **Rows**: 7 | **Soft Delete**: No (ban via `AspNetUsers.LockoutEnd`)
@@ -377,6 +377,25 @@ Pre-computed KPIs per store, refreshed with 30-day rolling metrics whenever a su
 | `updated_at` | timestamptz | Last snapshot refresh |
 
 **Cascade**: Deletes when parent store is deleted.
+
+---
+
+### `area_benchmark_snapshots`
+**Rows**: 1 per area | **Upserted** via scheduled background worker
+
+Pre-computed area-level benchmark snapshot (averages, standard deviations, radar categories). Avoids expensive real-time aggregations across thousands of audits when generating insights.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `area_id` | UUID (PK, FK → areas) | Area identity (1:1 relationship) |
+| `category_averages` | jsonb | Breakdown of category scores (for Radar chart) |
+| `overall_avg_score` | decimal | Area-wide average score |
+| `std_deviation` | decimal | Standard deviation (for dynamic variance bands) |
+| `total_audit_count` | integer | Total audits included in calculation |
+| `last_calculated_at` | timestamptz | When the metrics were last aggregated |
+| `created_at` | timestamptz | Row creation |
+
+**Cascade**: Deletes when parent area is deleted.
 
 ---
 

@@ -55,7 +55,11 @@ class ActionPlanActionBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.schedule, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                Icon(
+                  Icons.schedule,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Waiting for Store Manager to submit evidence.',
@@ -98,7 +102,11 @@ class ActionPlanActionBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.hourglass_empty, size: 20, color: theme.colorScheme.onSurfaceVariant),
+                Icon(
+                  Icons.hourglass_empty,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Awaiting Auditor Verification.',

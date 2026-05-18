@@ -39,6 +39,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ProgramAssignment> ProgramAssignments => Set<ProgramAssignment>();
     public DbSet<ProfileStoreAssignment> ProfileStoreAssignments => Set<ProfileStoreAssignment>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<AreaBenchmarkSnapshot> AreaBenchmarkSnapshots => Set<AreaBenchmarkSnapshot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

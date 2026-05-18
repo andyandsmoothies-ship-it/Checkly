@@ -1,19 +1,42 @@
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/features/analytics/manager/analytics_manager.dart';
+import 'package:checkly/features/analytics/services/analytics_api_service.dart';
+import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockAnalyticsApiService extends Mock implements AnalyticsApiService {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late AppDatabase db;
   late AnalyticsManager manager;
+  late MockAnalyticsApiService mockApi;
 
   setUp(() async {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     await db.customStatement('SELECT 1'); // force lazy init
 
-    manager = AnalyticsManager(db: db);
+    mockApi = MockAnalyticsApiService();
+
+    // Default fallback to offline so existing tests pass
+    when(
+      () => mockApi.getAnalytics(
+        storeId: any(named: 'storeId'),
+        areaId: any(named: 'areaId'),
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenThrow(
+      DioException(
+        type: DioExceptionType.connectionError,
+        requestOptions: RequestOptions(path: ''),
+      ),
+    );
+
+    manager = AnalyticsManager(db: db, apiService: mockApi);
   });
 
   tearDown(() async {
@@ -225,4 +248,101 @@ void main() {
     expect(manager.data!.totalAudits, 1);
     expect(manager.data!.avgScore, 100.0);
   });
+
+  test(
+    'AR-01: AnalyticsManager online path - calls API and maps response',
+    () async {
+      when(
+        () => mockApi.getAnalytics(
+          storeId: any(named: 'storeId'),
+          areaId: any(named: 'areaId'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'totalAudits': 14,
+          'avgScore': 85.5,
+          'openAPs': 3,
+          'overdueAPs': 1,
+          'completionRate': 92.5,
+          'trend': [
+            {'month': '2026-01', 'avgScore': 82.0, 'count': 4},
+            {'month': '2026-02', 'avgScore': 85.5, 'count': 5},
+          ],
+          'categoryScores': [
+            {'name': 'Safety', 'avgScore': 78.0, 'auditCount': 6},
+          ],
+          'insightsStale': false,
+          'insights': [
+            {
+              'id': '1',
+              'type': 'warning',
+              'title': 'Score dropped',
+              'description': 'Recent audit score dropped significantly',
+            }
+          ],
+          'radarData': {
+            'categories': ['A', 'B', 'C'],
+            'storeScores': [90.0, 80.0, 70.0],
+            'areaScores': [85.0, 75.0, 65.0]
+          },
+        },
+      );
+
+      await manager.load();
+
+      expect(manager.isOffline, false);
+      expect(manager.data, isNotNull);
+      final data = manager.data!;
+
+      expect(data.totalAudits, 14);
+      expect(data.avgScore, 85.5);
+      expect(data.openAPs, 3);
+      expect(data.overdueAPs, 1);
+      expect(data.completionRate, 92.5);
+      expect(data.trend.length, 2);
+      expect(data.categoryScores.length, 1);
+      expect(data.insightsStale, false);
+      expect(data.insights.length, 1);
+      expect(data.insights[0].type, 'warning');
+      expect(data.insights[0].title, 'Score dropped');
+      expect(data.insights[0].description, 'Recent audit score dropped significantly');
+      expect(data.radarData, isNotNull);
+      expect(data.radarData!.categories, ['A', 'B', 'C']);
+      expect(data.radarData!.storeValues, [90.0, 80.0, 70.0]);
+      expect(data.radarData!.regionalValues, [85.0, 75.0, 65.0]);
+    },
+  );
+
+  test(
+    'AR-02: AnalyticsManager offline path - DioException triggers Drift fallback',
+    () async {
+      final now = DateTime.now();
+      await db
+          .into(db.cachedSubmissions)
+          .insert(
+            CachedSubmissionsCompanion.insert(
+              id: 'sub1',
+              templateId: const Value('t1'),
+              storeId: const Value('s1'),
+              storeName: const Value('Store A'),
+              auditorId: const Value('u1'),
+              status: 'completed',
+              totalScore: const Value(100.0),
+              createdAt: now,
+            ),
+          );
+
+      // The setUp block already configures the mock to throw DioException.
+      await manager.load();
+
+      expect(manager.isOffline, true);
+      expect(manager.data, isNotNull);
+      final data = manager.data!;
+
+      expect(data.totalAudits, 1);
+      expect(data.avgScore, 100.0);
+    },
+  );
 }
