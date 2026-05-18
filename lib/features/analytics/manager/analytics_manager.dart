@@ -165,12 +165,13 @@ class AnalyticsManager extends ChangeNotifier {
       }
       // ──────────────────────────────────────────────────────────────────────
 
+      final kpis = (json['kpis'] as Map<String, dynamic>?) ?? {};
       data = AnalyticsData(
-        totalAudits: json['totalAudits'] ?? 0,
-        avgScore: (json['avgScore'] as num?)?.toDouble() ?? 0.0,
-        openAPs: json['openAPs'] ?? 0,
-        overdueAPs: json['overdueAPs'] ?? 0,
-        completionRate: (json['completionRate'] as num?)?.toDouble() ?? 0.0,
+        totalAudits: kpis['totalAudits'] ?? 0,
+        avgScore: (kpis['avgScore'] as num?)?.toDouble() ?? 0.0,
+        openAPs: kpis['openAPs'] ?? 0,
+        overdueAPs: kpis['overdueAPs'] ?? 0,
+        completionRate: (kpis['completionRate'] as num?)?.toDouble() ?? 0.0,
         trend: trend,
         categoryScores: categoryScores,
         storeNames: storeNames,

@@ -21,6 +21,9 @@ public static class GetAnalytics
         var type = httpContext.Request.Query["type"].FirstOrDefault();
         var scoringModeFilter = httpContext.Request.Query["scoringMode"].FirstOrDefault();
 
+        // Pre-declared for AM tenancy: populated in the area_manager block below, consumed after query init.
+        List<Guid> amAssignedStoreIds = [];
+
         // ── WARN-SEC-05: Enforce role-based data tenancy ──────────────────────
         var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
         var userIdStr = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -53,19 +56,22 @@ public static class GetAnalytics
             }
             else // area_manager
             {
-                var areaIdStrRaw = httpContext.Request.Query["areaId"].FirstOrDefault();
+                // Scope to stores assigned via ProfileStoreAssignment junction.
+                // profile.AreaId is intentionally NULL for AMs — they are assigned
+                // per-store via the junction table, not per-area on the profile row.
+                // This matches the canonical pattern in ListActionPlans.cs:42-55.
+                amAssignedStoreIds = await db.ProfileStoreAssignments
+                    .Where(a => a.ProfileId == callerId)
+                    .Select(a => a.StoreId)
+                    .ToListAsync(ct);
 
-                if (profile?.AreaId is null)
-                    return TypedResults.Forbid();
-
-                // If the caller explicitly requested a different area, return 403.
-                if (!string.IsNullOrEmpty(areaIdStrRaw) &&
-                    Guid.TryParse(areaIdStrRaw, out var requestedArea) &&
-                    requestedArea != profile.AreaId.Value)
-                    return TypedResults.Forbid();
-
-                // Force scope to the manager's own area — override query param.
-                areaIdStr = profile.AreaId.Value.ToString();
+                if (amAssignedStoreIds.Count > 0)
+                {
+                    // Overwrite any caller-supplied storeId/areaId to prevent IDOR.
+                    storeId = null;
+                    areaIdStr = null;
+                }
+                // else: AM has no assignments — global read (no filter applied).
             }
         }
         else
@@ -77,6 +83,10 @@ public static class GetAnalytics
 
         var query = db.Submissions.AsNoTracking()
             .Where(s => s.Status == "completed" && s.ReviewStatus != "rejected");
+
+        // AM store-scope: apply after query is declared (IDs were resolved in the tenancy block above).
+        if (amAssignedStoreIds.Count > 0)
+            query = query.Where(s => s.StoreId.HasValue && amAssignedStoreIds.Contains(s.StoreId.Value));
 
         // Pre-declare sid so it is reusable by the section score filter block below (C-01).
         var sid = Guid.Empty;

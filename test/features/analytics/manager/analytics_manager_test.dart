@@ -261,11 +261,13 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => {
-          'totalAudits': 14,
-          'avgScore': 85.5,
-          'openAPs': 3,
-          'overdueAPs': 1,
-          'completionRate': 92.5,
+          'kpis': {
+            'totalAudits': 14,
+            'avgScore': 85.5,
+            'openAPs': 3,
+            'overdueAPs': 1,
+            'completionRate': 92.5,
+          },
           'trend': [
             {'month': '2026-01', 'avgScore': 82.0, 'count': 4},
             {'month': '2026-02', 'avgScore': 85.5, 'count': 5},
@@ -280,12 +282,12 @@ void main() {
               'type': 'warning',
               'title': 'Score dropped',
               'description': 'Recent audit score dropped significantly',
-            }
+            },
           ],
           'radarData': {
             'categories': ['A', 'B', 'C'],
             'storeScores': [90.0, 80.0, 70.0],
-            'areaScores': [85.0, 75.0, 65.0]
+            'areaScores': [85.0, 75.0, 65.0],
           },
         },
       );
@@ -307,7 +309,10 @@ void main() {
       expect(data.insights.length, 1);
       expect(data.insights[0].type, 'warning');
       expect(data.insights[0].title, 'Score dropped');
-      expect(data.insights[0].description, 'Recent audit score dropped significantly');
+      expect(
+        data.insights[0].description,
+        'Recent audit score dropped significantly',
+      );
       expect(data.radarData, isNotNull);
       expect(data.radarData!.categories, ['A', 'B', 'C']);
       expect(data.radarData!.storeValues, [90.0, 80.0, 70.0]);
