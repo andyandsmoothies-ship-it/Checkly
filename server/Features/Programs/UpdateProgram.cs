@@ -43,7 +43,7 @@ public static class UpdateProgram
             return TypedResults.NotFound(new { error = "Program not found." });
 
         // Guard: cannot update a cancelled program
-        if (program.Status == "cancelled")
+        if (program.Status == ProgramStatus.Cancelled)
             return TypedResults.BadRequest(new { error = "Cannot update a cancelled program." });
 
         var before = $"Title='{program.Title}', Deadline={program.Deadline:O}, Category='{program.Category}'";

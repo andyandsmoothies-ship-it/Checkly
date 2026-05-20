@@ -1,5 +1,8 @@
 using System.Security.Claims;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
+using Checkly.Api.Features.ActionPlans;
+using Checkly.Api.Features.Submissions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Stores;
@@ -24,7 +27,7 @@ public static class GetStoreDashboard
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
         // Auditors are forbidden — they use the audit form, not the store dashboard
-        if (role == "auditor")
+        if (role == AppRoles.Auditor)
             return TypedResults.Forbid();
 
         var store = await db.Stores
@@ -35,7 +38,7 @@ public static class GetStoreDashboard
             return TypedResults.NotFound(new { error = "Store not found" });
 
         // Role-scoped IDOR guard for store_manager and area_manager
-        if (role is "store_manager" or "area_manager")
+        if (role is AppRoles.StoreManager or AppRoles.AreaManager)
         {
             if (!Guid.TryParse(userId, out var userGuid))
                 return TypedResults.Forbid();
@@ -47,10 +50,10 @@ public static class GetStoreDashboard
             if (profile is null)
                 return TypedResults.Forbid();
 
-            if (role == "store_manager" && profile.StoreId != id)
+            if (role == AppRoles.StoreManager && profile.StoreId != id)
                 return TypedResults.Forbid();
 
-            if (role == "area_manager")
+            if (role == AppRoles.AreaManager)
             {
                 var isAssigned = await db.ProfileStoreAssignments
                     .AnyAsync(a => a.ProfileId == userGuid && a.StoreId == id, ct);
@@ -60,7 +63,7 @@ public static class GetStoreDashboard
 
         var submissions = await db.Submissions
             .AsNoTracking()
-            .Where(s => s.StoreId == id && s.Status == "completed" && s.ReviewStatus != "rejected")
+            .Where(s => s.StoreId == id && s.Status == SubmissionStatus.Completed && s.ReviewStatus != ReviewStatus.Rejected)
             .OrderByDescending(s => s.CreatedAt)
             .Take(20)
             .Select(s => new
@@ -79,7 +82,7 @@ public static class GetStoreDashboard
             : 0.0;
 
         var openAPs = await db.ActionPlans
-            .CountAsync(ap => ap.StoreId == id && ap.Status == "open", ct);
+            .CountAsync(ap => ap.StoreId == id && ap.Status == ActionPlanStatus.Open, ct);
 
         // Fetch pre-computed snapshot (may not exist yet)
         var snapshot = await db.StoreAnalyticsSnapshots

@@ -87,13 +87,13 @@ public static class ListSubmissions
             var isOwner = s.AuditorId == callerId;
             var actions = new List<string> { SubmissionActions.View };
 
-            if (canCreate && isOwner && (s.Status == "draft" || s.Status == "scheduled"))
+            if (canCreate && isOwner && (s.Status == SubmissionStatus.Draft || s.Status == SubmissionStatus.Scheduled))
                 actions.Add(SubmissionActions.Edit);
 
-            if (canFinalize && s.Status == "completed")
+            if (canFinalize && s.Status == SubmissionStatus.Completed)
                 actions.Add(SubmissionActions.Finalize);
 
-            if (canFinalize && s.Status != "approved" && s.Status != "rejected")
+            if (canFinalize && s.Status != ReviewStatus.Approved && s.Status != ReviewStatus.Rejected)
                 actions.Add(SubmissionActions.Void);
 
             return new SubmissionDto(

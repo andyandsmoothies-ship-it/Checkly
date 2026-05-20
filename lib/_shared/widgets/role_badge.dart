@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_roles.dart';
+
 enum RoleBadgeSize { small, medium }
 
 /// A unified badge for displaying user roles across the application.
@@ -15,20 +17,20 @@ class RoleBadge extends StatelessWidget {
 
   static Color _getRoleColor(String role, ThemeData theme) {
     return switch (role) {
-      'admin' => theme.colorScheme.tertiary,
-      'auditor' => theme.colorScheme.primary,
-      'store_manager' => theme.colorScheme.secondary,
-      'area_manager' => theme.colorScheme.onSurfaceVariant,
+      AppRoles.admin => theme.colorScheme.tertiary,
+      AppRoles.auditor => theme.colorScheme.primary,
+      AppRoles.storeManager => theme.colorScheme.secondary,
+      AppRoles.areaManager => theme.colorScheme.onSurfaceVariant,
       _ => theme.colorScheme.onSurfaceVariant,
     };
   }
 
   static String _getRoleLabel(String role) {
     return switch (role) {
-      'admin' => 'Admin',
-      'auditor' => 'Auditor',
-      'store_manager' => 'Store Mgr',
-      'area_manager' => 'Area Mgr',
+      AppRoles.admin => 'Admin',
+      AppRoles.auditor => 'Auditor',
+      AppRoles.storeManager => 'Store Mgr',
+      AppRoles.areaManager => 'Area Mgr',
       _ => role,
     };
   }

@@ -115,14 +115,20 @@ class SyncApiAdapter implements SyncApi {
     final data = response.data;
     if (data == null) {
       return DeltaPullResult(
-        serverTimestamp: cursorUpdatedAt ?? DateTime.now(),
+        // SA-3: Never fall back to device clock. A device with a future-dated clock
+        // (e.g., 2029) would set the cursor years ahead, causing permanent empty pulls.
+        // Use the previous cursor unchanged, or a known safe floor as last resort.
+        serverTimestamp: cursorUpdatedAt ?? DateTime.utc(2020),
       );
     }
 
     final items = data['items'] as List<dynamic>? ?? [];
     final hasNextPage = data['hasNextPage'] as bool? ?? false;
 
-    DateTime nextTimestamp = cursorUpdatedAt ?? DateTime.now();
+    // SA-3: Start from previous cursor. If no cursor exists (first sync) and the
+    // response is empty, use a safe floor (2020) instead of device clock.
+    // Device clock may be years ahead on NTP-unsynchronised field devices.
+    DateTime nextTimestamp = cursorUpdatedAt ?? DateTime.utc(2020);
     if (items.isNotEmpty) {
       final lastItem = items.last as Map<String, dynamic>;
       if (lastItem['updatedAt'] != null) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/constants/app_capabilities.dart';
+import '../../../../_shared/constants/app_roles.dart';
 import '../../../../_shared/constants/capability_dictionary.dart';
 import '../manager/role_manager.dart';
 import '../model/role_dto.dart';
@@ -113,7 +114,7 @@ class OnlineCapabilityGrid extends StatelessWidget {
 
                         // Action lock guard
                         final isSelfLock =
-                            role == 'admin' &&
+                            role == AppRoles.admin &&
                             cap == AppCapabilities.adminAccess;
                         final isEnabled =
                             canManage &&

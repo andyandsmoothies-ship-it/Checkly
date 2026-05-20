@@ -198,14 +198,5 @@ class TemplateManager extends ChangeNotifier {
     notifyListeners();
     return cloned;
   }
-
-  // ---------- Delete group ----------
-  Future<void> deleteGroup(String templateId, String groupId) async {
-    await _api.deleteGroup(templateId, groupId);
-  }
-
-  // ---------- Delete criterion ----------
-  Future<void> deleteCriterion(String templateId, String criterionId) async {
-    await _api.deleteCriterion(templateId, criterionId);
-  }
 }
+

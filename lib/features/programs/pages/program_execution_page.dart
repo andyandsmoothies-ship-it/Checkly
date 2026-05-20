@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../programs/manager/program_manager.dart';
 import '../model/program_assignment_dto.dart';
+import '../model/assignment_status.dart';
 
 /// Full-screen page where the Store Manager submits evidence for one
 /// program assignment.
@@ -118,7 +119,7 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_assignment!.status == 'needs_revision') ...[
+                  if (_assignment!.status == AssignmentStatus.needsRevision) ...[
                     Container(
                       padding: const EdgeInsets.all(16),
                       margin: const EdgeInsets.only(bottom: 24),

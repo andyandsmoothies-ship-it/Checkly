@@ -265,22 +265,15 @@ class OutboxDao {
   /// Count of submissions that are still recoverable (not yet uploaded).
   /// Statuses covered: 'pending', 'submission_synced', 'photos_pending'.
   /// Sign-out MUST be blocked while this count > 0.
+  ///
+  /// SA-6: Single `IN` query replaces the previous 3-loop approach.
   Future<int> syncableCount() async {
-    const recoverableStatuses = [
-      'pending',
-      'submission_synced',
-      'photos_pending',
-    ];
-    int total = 0;
-    for (final status in recoverableStatuses) {
-      final countExp = countAll();
-      final query = _db.selectOnly(_db.pendingSubmissions)
-        ..addColumns([countExp])
-        ..where(_db.pendingSubmissions.syncStatus.equals(status));
-      final n = await query.map((row) => row.read(countExp)).getSingle() ?? 0;
-      total += n;
-    }
-    return total;
+    const recoverableStatuses = ['pending', 'submission_synced', 'photos_pending'];
+    final countExp = countAll();
+    final query = _db.selectOnly(_db.pendingSubmissions)
+      ..addColumns([countExp])
+      ..where(_db.pendingSubmissions.syncStatus.isIn(recoverableStatuses));
+    return await query.map((row) => row.read(countExp)).getSingle() ?? 0;
   }
 
   /// Count of permanently-failed submissions ('exhausted').

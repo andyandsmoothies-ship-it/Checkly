@@ -36,7 +36,7 @@ public static class GetSurveyResults
         var query = db.Answers
             .AsNoTracking()
             .Where(a => a.Submission!.TemplateId == templateId
-                     && a.Submission.Status == "completed"
+                     && a.Submission.Status == SubmissionStatus.Completed
                      && a.Value != null
                      && a.Value != "");
 

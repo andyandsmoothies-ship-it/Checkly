@@ -24,7 +24,7 @@ public static class GetProgramPhoto
             return TypedResults.BadRequest();
 
         // Prevent Path Traversal
-        if (fileName.Contains("..") || fileName.Contains('/') || fileName.Contains('\\'))
+        if (PathValidator.IsTraversal(fileName))
             return TypedResults.BadRequest();
 
         // IDOR: Look up assignment to verify ownership

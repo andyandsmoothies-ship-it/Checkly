@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../services/program_api_service.dart';
+import '../manager/program_manager.dart';
+import '../services/program_api_service.dart'; // DTOs only
+import '../model/assignment_status.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import 'widgets/program_bar_chart.dart';
 import 'widgets/program_evidence_viewer_dialog.dart';
@@ -22,7 +24,7 @@ class ProgramDashboardPage extends StatefulWidget {
 }
 
 class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
-  final _api = GetIt.instance<ProgramApiService>();
+  final _manager = GetIt.instance<ProgramManager>();
 
   bool _loading = true;
   String? _error;
@@ -51,8 +53,8 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
       _error = null;
     });
     try {
-      final summaryRes = await _api.getProgramSummary(widget.programId);
-      final response = await _api.getProgramAssignments(
+      final summaryRes = await _manager.getDashboardSummary(widget.programId);
+      final response = await _manager.getDashboardAssignments(
         widget.programId,
         status: _statusFilter,
       );
@@ -244,7 +246,7 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                     ),
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: a.status == 'submitted' && a.evidence.isNotEmpty
+                  onTap: a.status == AssignmentStatus.submitted && a.evidence.isNotEmpty
                       ? () => _showEvidence(context, a)
                       : null,
                 ),

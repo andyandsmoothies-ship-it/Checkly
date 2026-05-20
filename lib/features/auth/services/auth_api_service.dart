@@ -45,4 +45,22 @@ class AuthApiService {
     final response = await _dio.get('/sync/profile');
     return response.data as Map<String, dynamic>;
   }
+
+  /// POST /users/me/device-tokens — registers the device's FCM token with the server.
+  ///
+  /// CRIT-02: This method was entirely missing. Without it, the backend stores table
+  /// `user_device_tokens` is always empty and push notifications can never be delivered.
+  /// Call this from the auth manager immediately after a successful login, passing the
+  /// FCM token obtained from `firebase_messaging`.
+  ///
+  /// [platform] must be "android" or "ios".
+  Future<void> registerDeviceToken({
+    required String token,
+    required String platform,
+  }) async {
+    await _dio.post(
+      '/users/me/device-tokens',
+      data: {'token': token, 'platform': platform},
+    );
+  }
 }

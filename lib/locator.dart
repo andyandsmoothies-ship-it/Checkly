@@ -211,14 +211,15 @@ void configureDependencies() {
     ),
   );
 
-  // ---------- Programs (Slice 2C) ----------
-  di.registerLazySingleton<ProgramManager>(
-    () => ProgramManager(outboxDao: di<ProgramOutboxDao>()),
-  );
-
-  // ---------- Programs API (Slice 3 — HQ Review) ----------
+  // ---------- Programs (Slice 2C + HQ Review) ----------
   di.registerLazySingleton<ProgramApiService>(
     () => ProgramApiService(di<Dio>()),
+  );
+  di.registerLazySingleton<ProgramManager>(
+    () => ProgramManager(
+      outboxDao: di<ProgramOutboxDao>(),
+      api: di<ProgramApiService>(),
+    ),
   );
 
   // ---------- Notifications (Slice 6) ----------

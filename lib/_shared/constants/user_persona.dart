@@ -1,3 +1,5 @@
+import 'app_roles.dart';
+
 /// Strongly-typed user persona enum.
 /// Replaces raw role string switches throughout structural layout code.
 ///
@@ -16,9 +18,9 @@ enum UserPersona {
   /// Defaults to [UserPersona.admin] for null or unknown roles — same
   /// fail-safe as the previous `role ?? 'admin'` fallback.
   static UserPersona fromRole(String? role) => switch (role) {
-    'auditor' => UserPersona.auditor,
-    'store_manager' => UserPersona.storeManager,
-    'area_manager' => UserPersona.areaManager,
+    AppRoles.auditor => UserPersona.auditor,
+    AppRoles.storeManager => UserPersona.storeManager,
+    AppRoles.areaManager => UserPersona.areaManager,
     _ => UserPersona.admin,
   };
 }

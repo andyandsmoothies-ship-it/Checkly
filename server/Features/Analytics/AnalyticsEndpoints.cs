@@ -11,7 +11,8 @@ public static class AnalyticsEndpoints
             .RequireAuthorization();
 
         group.MapGet("/my-stats", GetMyStats.HandleAsync)
-            .WithName("GetMyStats");
+            .WithName("GetMyStats")
+            .RequireCapability(AppCapabilities.AnalyticsMyStats);
 
         group.MapGet("/top-failures", GetTopFailures.HandleAsync)
             .WithName("GetTopFailures")

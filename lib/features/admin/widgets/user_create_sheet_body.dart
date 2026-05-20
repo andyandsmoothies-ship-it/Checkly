@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../_shared/constants/app_roles.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/widgets/unsaved_changes_guard.dart';
 import 'shared/store_picker.dart';
@@ -157,18 +158,18 @@ class UserCreateSheetBody extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'auditor', child: Text('Auditor')),
+                  DropdownMenuItem(value: AppRoles.auditor, child: Text('Auditor')),
                   DropdownMenuItem(
-                    value: 'store_manager',
+                    value: AppRoles.storeManager,
                     child: Text('Store Manager'),
                   ),
                   DropdownMenuItem(
-                    value: 'area_manager',
+                    value: AppRoles.areaManager,
                     child: Text('Area Manager'),
                   ),
-                  DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                  DropdownMenuItem(value: AppRoles.admin, child: Text('Admin')),
                 ],
-                onChanged: (v) => onRoleChanged(v ?? 'auditor'),
+                onChanged: (v) => onRoleChanged(v ?? AppRoles.auditor),
               ),
 
               // ── Store Picker ─────────────────────────────────────────────

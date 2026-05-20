@@ -5,71 +5,17 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/notifications/manager/notification_manager.dart';
 import '../../features/notifications/model/notification_dto.dart';
-import '../constants/app_capabilities.dart';
 import '../services/sync_engine.dart';
 import '../theme/app_theme.dart';
 import '../../features/auth/manager/auth_manager.dart';
+import 'nav_item.dart';
+import 'shell_tab.dart';
 
 final _di = GetIt.instance;
 
-/// Tab definition for the bottom shell navigation.
+/// SC-4: MainShell with bottom navigation (2–6 tabs based on capabilities).
+/// Tab definitions → shell_tab.dart. Nav item widget → nav_item.dart.
 ///
-/// [requiredCapability] — if null, the tab is always visible.
-/// If set, the tab is shown only when the user's capabilities contain it.
-class _ShellTab {
-  final IconData icon;
-  final String label;
-  final String route;
-  final String? requiredCapability;
-
-  const _ShellTab({
-    required this.icon,
-    required this.label,
-    required this.route,
-    this.requiredCapability,
-  });
-
-  /// Ordered list of all shell tabs.
-  /// Tabs without [requiredCapability] are always visible.
-  /// Tabs with [requiredCapability] are hidden when the user lacks it.
-  static const all = [
-    _ShellTab(icon: Icons.grid_view, label: 'HOME', route: '/home'),
-    _ShellTab(
-      icon: Icons.assignment,
-      label: 'ACTIVITY',
-      route: '/activity',
-      requiredCapability: AppCapabilities.submissionsList,
-    ),
-    _ShellTab(icon: Icons.fact_check, label: 'PLANS', route: '/plans'),
-    _ShellTab(
-      icon: Icons.description_outlined,
-      label: 'TEMPLATES',
-      route: '/templates',
-      requiredCapability: AppCapabilities.templatesCreate,
-    ),
-    _ShellTab(icon: Icons.account_circle, label: 'PROFILE', route: '/profile'),
-    _ShellTab(icon: Icons.inbox_outlined, label: 'INBOX', route: '/inbox'),
-  ];
-}
-
-/// Returns the visual active-tab index for [location] given the user's [caps].
-///
-/// The index is the 0-based position within the *visible* tab list (tabs whose
-/// [_ShellTab.requiredCapability] is satisfied by [caps]). This matches what
-/// the shell renders and what the user sees highlighted.
-///
-/// Returns 0 (Home) if no visible tab matches [location].
-@visibleForTesting
-int shellActiveIndexFromLocation(String location, Set<String> caps) {
-  final visible = _ShellTab.all.where((tab) {
-    return tab.requiredCapability == null ||
-        caps.contains(tab.requiredCapability);
-  }).toList();
-  final idx = visible.indexWhere((tab) => location.startsWith(tab.route));
-  return idx < 0 ? 0 : idx;
-}
-
-/// Main shell with dynamic bottom navigation (2–6 tabs based on capabilities).
 /// Capability-gated tabs are hidden entirely when the user lacks the required cap.
 /// The active tab highlight is computed from the visible tab list — not fixed positions —
 /// so the correct tab is highlighted even when optional tabs are hidden.
@@ -221,7 +167,7 @@ class MainShell extends StatelessWidget {
               valueListenable: _di<AuthManager>().capabilities,
               builder: (context, caps, _) {
                 // Filter the full tab list to only those the user can access.
-                final visibleTabs = _ShellTab.all.where((tab) {
+                final visibleTabs = ShellTab.all.where((tab) {
                   return tab.requiredCapability == null ||
                       caps.contains(tab.requiredCapability);
                 }).toList();
@@ -257,7 +203,7 @@ class MainShell extends StatelessWidget {
   /// Builds a single nav item. INBOX gets a nested badge-count listener.
   Widget _buildNavItem(
     BuildContext context, {
-    required _ShellTab tab,
+    required ShellTab tab,
     required bool isActive,
   }) {
     if (tab.route == '/inbox') {
@@ -265,7 +211,7 @@ class MainShell extends StatelessWidget {
         valueListenable: _di<NotificationManager>().notifications,
         builder: (context, items, _) {
           final unread = items.where((n) => !n.isRead).length;
-          return _NavItem(
+          return NavItem(
             icon: tab.icon,
             label: tab.label,
             isActive: isActive,
@@ -276,87 +222,11 @@ class MainShell extends StatelessWidget {
       );
     }
 
-    return _NavItem(
+    return NavItem(
       icon: tab.icon,
       label: tab.label,
       isActive: isActive,
       onTap: () => context.go(tab.route),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-  final int badgeCount;
-
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-    this.badgeCount = 0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isActive
-        ? Theme.of(context).colorScheme.onSurface
-        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4);
-
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Icon(icon, size: 24, color: color),
-              if (badgeCount > 0)
-                Positioned(
-                  top: -4,
-                  right: -6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.error,
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 14,
-                    ),
-                    child: Text(
-                      badgeCount > 99 ? '99+' : '$badgeCount',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onError,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: color,
-              letterSpacing: -0.5,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

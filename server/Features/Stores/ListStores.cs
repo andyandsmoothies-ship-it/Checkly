@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Checkly.Api.Common;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +29,6 @@ public static class ListStores
         var query = db.Stores.AsQueryable();
 
         // Default: only active stores (unless includeInactive or assignable_as filter)
-        // Default: only active stores (unless includeInactive or assignable_as filter)
         if (string.IsNullOrEmpty(assignableAs) && !string.Equals(includeInactive, "true", StringComparison.OrdinalIgnoreCase))
             query = query.Where(s => s.IsActive == true);
 
@@ -38,7 +38,7 @@ public static class ListStores
 
 
         // Smart filter: only stores assignable to a specific role
-        if (assignableAs == "store_manager" || assignableAs == "area_manager")
+        if (assignableAs == AppRoles.StoreManager || assignableAs == AppRoles.AreaManager)
         {
             // Only active stores
             query = query.Where(s => s.IsActive == true);
@@ -47,24 +47,24 @@ public static class ListStores
             if (Guid.TryParse(exceptUser, out var parsed))
                 exceptUserId = parsed;
 
-            if (assignableAs == "store_manager")
+            if (assignableAs == AppRoles.StoreManager)
             {
                 // Exclude stores that already have a store_manager
                 // Subquery: store IDs that have an active store_manager (excluding except_user)
                 var takenStoreIds = db.Profiles
                     .Join(db.AppUserRoles, p => p.Id, r => r.UserId, (p, r) => new { p.StoreId, r.Role, p.Id })
-                    .Where(x => x.Role == "store_manager" && x.StoreId != null)
+                    .Where(x => x.Role == AppRoles.StoreManager && x.StoreId != null)
                     .Where(x => exceptUserId == null || x.Id != exceptUserId)
                     .Select(x => x.StoreId);
 
                 query = query.Where(s => !takenStoreIds.Contains(s.Id));
             }
-            else if (assignableAs == "area_manager")
+            else if (assignableAs == AppRoles.AreaManager)
             {
                 // Subquery: store IDs that have an active area_manager via ProfileStoreAssignments (excluding except_user)
                 var takenStoreIds = db.ProfileStoreAssignments
                     .Join(db.AppUserRoles, a => a.ProfileId, r => r.UserId, (a, r) => new { a.StoreId, r.Role, a.ProfileId })
-                    .Where(x => x.Role == "area_manager")
+                    .Where(x => x.Role == AppRoles.AreaManager)
                     .Where(x => exceptUserId == null || x.ProfileId != exceptUserId)
                     .Select(x => x.StoreId);
 
@@ -80,7 +80,7 @@ public static class ListStores
         var role = user.FindFirstValue(ClaimTypes.Role) ?? "";
         var userIdStr = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (role is "store_manager" or "area_manager")
+        if (role is AppRoles.StoreManager or AppRoles.AreaManager)
         {
             if (Guid.TryParse(userIdStr, out var userGuid))
             {
@@ -90,11 +90,11 @@ public static class ListStores
 
                 if (profile is not null)
                 {
-                    if (role == "store_manager" && profile.StoreId.HasValue)
+                    if (role == AppRoles.StoreManager && profile.StoreId.HasValue)
                     {
                         query = query.Where(s => s.Id == profile.StoreId.Value);
                     }
-                    else if (role == "area_manager")
+                    else if (role == AppRoles.AreaManager)
                     {
                         var assignedStoreSubquery = db.ProfileStoreAssignments
                             .Where(a => a.ProfileId == userGuid)
@@ -110,7 +110,7 @@ public static class ListStores
         var smLookup = db.Profiles
             .Join(db.AppUserRoles, p => p.Id, r => r.UserId,
                   (p, r) => new { p.StoreId, p.FullName, r.Role })
-            .Where(x => x.Role == "store_manager" && x.StoreId != null);
+            .Where(x => x.Role == AppRoles.StoreManager && x.StoreId != null);
 
         // Subquery: AM name per store
         var amLookup = db.ProfileStoreAssignments
@@ -118,7 +118,7 @@ public static class ListStores
                   (a, p) => new { a.StoreId, a.ProfileId, p.FullName })
             .Join(db.AppUserRoles, x => x.ProfileId, r => r.UserId,
                   (x, r) => new { x.StoreId, x.FullName, r.Role })
-            .Where(x => x.Role == "area_manager");
+            .Where(x => x.Role == AppRoles.AreaManager);
 
         // Pagination (defaults: page 1, 50 items, max 200)
         var page = int.TryParse(httpContext.Request.Query["page"], out var pg) ? Math.Max(1, pg) : 1;
@@ -137,6 +137,7 @@ public static class ListStores
             .Select(s => new StoreDto(
                 s.Id, s.Name, s.Address,
                 smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
+                amLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt,
                 // SL-1: Structured address fields
                 s.Address2 != null ? s.Address2.Province : null,

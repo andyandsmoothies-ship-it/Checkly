@@ -24,7 +24,7 @@ public static class GetPhoto
             return TypedResults.BadRequest();
 
         // Prevent Path Traversal (e.g. ../../appsettings)
-        if (fileName.Contains("..") || fileName.Contains('/') || fileName.Contains('\\'))
+        if (PathValidator.IsTraversal(fileName))
             return TypedResults.BadRequest();
 
         // IDOR: Look up submission to verify ownership.

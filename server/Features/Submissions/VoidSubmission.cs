@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Services;
+using Checkly.Api.Features.ActionPlans;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -28,7 +30,7 @@ public static class VoidSubmission
     {
         // ── 1. Auth Guard: admin-only ────────────────────────────────────────
         var callerRole = user.FindFirstValue(ClaimTypes.Role) ?? "";
-        if (callerRole != "admin")
+        if (callerRole != AppRoles.Admin)
             return TypedResults.Forbid();
 
         // ── 2. Validate command ──────────────────────────────────────────────
@@ -44,7 +46,7 @@ public static class VoidSubmission
 
         // ── 4. State Guards ──────────────────────────────────────────────────
         // Rule 1: Idempotent queue draining — already voided → return success silently.
-        if (submission.Status == "voided")
+        if (submission.Status == SubmissionStatus.Voided)
             return TypedResults.NoContent();
 
         // Rule: Only non-draft/non-scheduled audits may be voided.
@@ -65,7 +67,7 @@ public static class VoidSubmission
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
             // Mutate submission entity
-            submission.Status = "voided";
+            submission.Status = SubmissionStatus.Voided;
             submission.VoidReason = command.VoidReason;
             submission.VoidedAt = DateTimeOffset.UtcNow;
             submission.UpdatedAt = DateTimeOffset.UtcNow;
@@ -84,9 +86,9 @@ public static class VoidSubmission
 
             // Rule 3: Cascade Action Plans via ExecuteUpdateAsync (bulk, no entity loading)
             await db.ActionPlans
-                .Where(ap => ap.SubmissionId == id && ap.Status != "closed")
+                .Where(ap => ap.SubmissionId == id && ap.Status != ActionPlanStatus.Closed)
                 .ExecuteUpdateAsync(s => s
-                    .SetProperty(ap => ap.Status, "closed")
+                    .SetProperty(ap => ap.Status, ActionPlanStatus.Closed)
                     .SetProperty(ap => ap.RootCause, "SYSTEM_VOID")
                     .SetProperty(ap => ap.UpdatedAt, DateTimeOffset.UtcNow),
                     ct);

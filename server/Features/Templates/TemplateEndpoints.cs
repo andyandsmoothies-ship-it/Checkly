@@ -69,19 +69,6 @@ public static class TemplateEndpoints
         group.MapPut("/{id}/assignments", UpdateAssignments.HandleAsync)
             .WithName("UpdateTemplateAssignments")
             .RequireCapability(AppCapabilities.TemplatesUpdate);
-
-        // Delta sync endpoint
-        var syncGroup = app.MapGroup("/api/sync")
-            .WithTags("Sync")
-            .RequireAuthorization();
-
-        syncGroup.MapGet("/templates", SyncTemplates.HandleAsync)
-            .WithName("SyncTemplates");
-
-        syncGroup.MapGet("/submissions", Checkly.Api.Features.Submissions.SyncSubmissions.HandleAsync)
-            .WithName("SyncSubmissions");
-
-        syncGroup.MapGet("/profile", Checkly.Api.Features.Auth.SyncProfile.HandleAsync)
-            .WithName("SyncProfile");
     }
 }
+

@@ -33,13 +33,13 @@ public static class VerifyProgramAssignment
 
         // TC6: Cannot verify an already-verified assignment
         // Only 'submitted' or 'needs_revision' are valid transition sources.
-        if (assignment.Status == "verified")
+        if (assignment.Status == AssignmentStatus.Verified)
             return TypedResults.BadRequest(new { error = "Assignment is already verified." });
 
-        if (assignment.Status != "submitted" && assignment.Status != "needs_revision")
+        if (assignment.Status != AssignmentStatus.Submitted && assignment.Status != AssignmentStatus.NeedsRevision)
             return TypedResults.BadRequest(new { error = $"Cannot verify an assignment with status '{assignment.Status}'." });
 
-        assignment.Status = "verified";
+        assignment.Status = AssignmentStatus.Verified;
         assignment.VerifiedAt = DateTimeOffset.UtcNow;  // GapAC2
         assignment.UpdatedAt = DateTimeOffset.UtcNow;
 

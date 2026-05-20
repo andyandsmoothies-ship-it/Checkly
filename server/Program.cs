@@ -15,6 +15,7 @@ using Checkly.Api.Features.Analytics;
 using Checkly.Api.Features.UserGroups;
 using Checkly.Api.Features.Templates;
 using Checkly.Api.Features.Programs;
+using Checkly.Api.Features.Sync;
 using Checkly.Api.Features.GlobalRisks;
 using Checkly.Api.Features.Reference;
 using Checkly.Api.Common.Scoring;
@@ -379,6 +380,7 @@ try
     app.MapHealthChecks("/health");
     app.MapAuthEndpoints();
     app.MapTemplateEndpoints();
+    app.MapSyncEndpoints();
     app.MapStoreEndpoints();
     app.MapSubmissionEndpoints()
         .RequireRateLimiting("SyncPolicy")

@@ -18,9 +18,7 @@ public static class PhotoEndpoints
         group.MapGet("/{submissionId}/{fileName}", GetPhoto.HandleAsync)
             .WithName("GetPhoto");
 
-        group.MapPost("/programs/evidence/{photoLocalKey}", UploadProgramPhoto.HandleAsync)
-            .WithName("UploadProgramPhoto")
-            .DisableAntiforgery();
+
 
         group.MapGet("/programs/evidence/{assignmentId}/{fileName}", GetProgramPhoto.HandleAsync)
             .WithName("GetProgramPhoto");

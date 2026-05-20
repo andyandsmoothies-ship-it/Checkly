@@ -24,6 +24,8 @@
 
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -44,10 +46,16 @@ import 'package:checkly/_shared/services/connectivity_service.dart';
 import 'package:drift/native.dart';
 
 class _FakeConnectivity implements ConnectivityService {
+  // Never-closing broadcast stream: prevents SyncEngine from starting its
+  // 30-second poll-fallback timer (which would leak past widget disposal).
+  final _ctrl = StreamController<bool>.broadcast();
+
   @override
   bool get isOnline => false;
   @override
-  Stream<bool> get onConnectivityChanged => const Stream.empty();
+  Stream<bool> get onConnectivityChanged => _ctrl.stream;
+
+  void close() => _ctrl.close();
 }
 
 class _AlwaysAuth implements AuthCheck {
@@ -84,6 +92,9 @@ const _auditorUser = UserSession(
 
 // ── DI Setup ──────────────────────────────────────────────────────────────────
 
+// Tracks the last _FakeConnectivity created so tearDown can close its stream.
+_FakeConnectivity? _lastFakeConnectivity;
+
 _MockAuthManager _registerDi({UserSession? user}) {
   final mockAuth = _MockAuthManager();
   final mockTheme = _MockThemeManager();
@@ -117,14 +128,18 @@ _MockAuthManager _registerDi({UserSession? user}) {
   when(() => mockOutboxDao.exhaustedCount()).thenAnswer((_) async => 0);
   di.registerSingleton<OutboxDao>(mockOutboxDao);
 
+  final fakeConnectivity = _FakeConnectivity();
   di.registerSingleton<SyncEngine>(
     SyncEngine(
-      connectivity: _FakeConnectivity(),
+      connectivity: fakeConnectivity,
       auth: _AlwaysAuth(),
       outboxDao: mockOutboxDao,
       modules: [],
+      maxReconnectJitterMs: 0,
     ),
   );
+  // Track the connectivity instance so tearDown can close its stream.
+  _lastFakeConnectivity = fakeConnectivity;
 
   return mockAuth;
 }
@@ -155,8 +170,20 @@ Future<void> pumpProfilePage(WidgetTester tester) async {
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 void main() {
-  setUp(() => GetIt.instance.reset());
-  tearDown(() => GetIt.instance.reset());
+  setUp(() {
+    _lastFakeConnectivity = null;
+    GetIt.instance.reset();
+  });
+  tearDown(() {
+    // Close the connectivity stream BEFORE resetting GetIt.
+    // This prevents onDone from firing after SyncEngine is gone.
+    _lastFakeConnectivity?.close();
+    _lastFakeConnectivity = null;
+    if (GetIt.instance.isRegistered<SyncEngine>()) {
+      GetIt.instance<SyncEngine>().dispose();
+    }
+    GetIt.instance.reset();
+  });
 
   // ─── Contract 1: Stats Row Absent ─────────────────────────────────────────
 

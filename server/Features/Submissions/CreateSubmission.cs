@@ -6,6 +6,7 @@ using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
+using Checkly.Api.Features.Programs;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -71,7 +72,7 @@ public static class CreateSubmission
                 return bridgeError;
 
             // Guard: Cannot create a new submission for an already-submitted assignment.
-            if (assignment!.Status == "submitted" || assignment.Status == "verified")
+            if (assignment!.Status == AssignmentStatus.Submitted || assignment.Status == AssignmentStatus.Verified)
                 return TypedResults.BadRequest(new { error = $"Assignment is already in status '{assignment.Status}' and cannot be re-submitted." });
 
             linkedAssignment = assignment;
@@ -92,8 +93,8 @@ public static class CreateSubmission
             return TypedResults.BadRequest(new { error = $"Invalid status: '{request.Status}'. Must be draft, scheduled, or completed." });
         }
 
-        var isDraft = requestedStatus == "draft";
-        var isScheduled = requestedStatus == "scheduled";
+        var isDraft = requestedStatus == SubmissionStatus.Draft;
+        var isScheduled = requestedStatus == SubmissionStatus.Scheduled;
 
         // Idempotency check
         if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
@@ -104,6 +105,11 @@ public static class CreateSubmission
 
             if (existing is not null)
             {
+                // SA-1: Idempotency match must belong to the calling user.
+                // Prevents any authenticated user from reading another user's submission via key collision.
+                if (existing.AuditorId != callerId)
+                    return TypedResults.Conflict(new { error = "Idempotency key belongs to a different caller." });
+
                 return TypedResults.Ok(new SubmissionDto(
                     existing.Id, existing.TemplateId, existing.TemplateTitle, existing.TemplateType, existing.DisplayNoun,
                     existing.StoreId, existing.StoreName, existing.AuditorId,
@@ -323,12 +329,12 @@ public static class CreateSubmission
             {
                 if (!isDraft && !isScheduled)
                 {
-                    linkedAssignment.Status = "submitted";
-                    submission.ReviewStatus = "approved";
+                    linkedAssignment.Status = AssignmentStatus.Submitted;
+                    submission.ReviewStatus = ReviewStatus.Approved;
                 }
-                else if (linkedAssignment.Status == "pending" || linkedAssignment.Status == "needs_revision")
+                else if (linkedAssignment.Status == AssignmentStatus.Pending || linkedAssignment.Status == AssignmentStatus.NeedsRevision)
                 {
-                    linkedAssignment.Status = "in_progress";
+                    linkedAssignment.Status = AssignmentStatus.InProgress;
                 }
 
                 AuditLogger.Log(db, user, "program_submission_created", "Submission", submission.Id,

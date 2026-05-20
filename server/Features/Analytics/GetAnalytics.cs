@@ -21,6 +21,16 @@ public static class GetAnalytics
         var type = httpContext.Request.Query["type"].FirstOrDefault();
         var scoringModeFilter = httpContext.Request.Query["scoringMode"].FirstOrDefault();
 
+        // OBS-2: Read date range filter params sent by Flutter analytics_api_service.dart.
+        // Without these, "Last 30 days" in the UI silently returns all-time data in online mode.
+        DateTimeOffset? startDateFilter = null;
+        DateTimeOffset? endDateFilter = null;
+        if (DateTimeOffset.TryParse(httpContext.Request.Query["startDate"].FirstOrDefault(), out var parsedStart))
+            startDateFilter = parsedStart;
+        if (DateTimeOffset.TryParse(httpContext.Request.Query["endDate"].FirstOrDefault(), out var parsedEnd))
+            endDateFilter = parsedEnd;
+
+
         // Pre-declared for AM tenancy: populated in the area_manager block below, consumed after query init.
         List<Guid> amAssignedStoreIds = [];
 
@@ -98,7 +108,9 @@ public static class GetAnalytics
         if (!string.IsNullOrEmpty(province))
         {
             storeSubquery = db.Stores.AsNoTracking()
-                .Where(st => st.Address2 != null && st.Address2.Province == province)
+                // OBS-6: Exclude deactivated stores from province analytics.
+                // IsActive is bool? — use == true to treat null as inactive.
+                .Where(st => st.Address2 != null && st.Address2.Province == province && st.IsActive == true)
                 .Select(st => st.Id);
             query = query.Where(s => s.StoreId.HasValue && storeSubquery.Contains(s.StoreId.Value));
         }
@@ -115,6 +127,12 @@ public static class GetAnalytics
         // Scoring mode filter (new)
         if (!string.IsNullOrEmpty(scoringModeFilter))
             query = query.Where(s => s.ScoringMode == scoringModeFilter);
+
+        // OBS-2: Apply date range filter. Both bounds are optional and independent.
+        if (startDateFilter.HasValue)
+            query = query.Where(s => s.CreatedAt >= startDateFilter.Value);
+        if (endDateFilter.HasValue)
+            query = query.Where(s => s.CreatedAt <= endDateFilter.Value);
 
         // ── KPIs (SQL scalar queries — zero rows loaded into memory) ──
         var totalAudits = await query.CountAsync(ct);

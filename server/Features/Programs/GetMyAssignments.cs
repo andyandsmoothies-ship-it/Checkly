@@ -56,8 +56,8 @@ public static class GetMyAssignments
                 a.Program.Category,
                 a.Program.Deadline,
                 // Compute overdue in projection — not stored in DB
-                a.Status == "pending" && a.Program.Deadline < DateTimeOffset.UtcNow
-                    ? "overdue"
+                a.Status == AssignmentStatus.Pending && a.Program.Deadline < DateTimeOffset.UtcNow
+                    ? AssignmentStatus.Overdue
                     : a.Status,
                 a.CreatedAt,
                 a.Program.TemplateId))

@@ -1,3 +1,4 @@
+using Checkly.Api.Common.Auth;
 using Checkly.Api.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,14 +20,14 @@ public static class GetStore
         var smLookup = db.Profiles
             .Join(db.AppUserRoles, p => p.Id, r => r.UserId,
                   (p, r) => new { p.StoreId, p.FullName, r.Role })
-            .Where(x => x.Role == "store_manager" && x.StoreId != null);
+            .Where(x => x.Role == AppRoles.StoreManager && x.StoreId != null);
 
         var amLookup = db.ProfileStoreAssignments
             .Join(db.Profiles, a => a.ProfileId, p => p.Id,
                   (a, p) => new { a.StoreId, a.ProfileId, p.FullName })
             .Join(db.AppUserRoles, x => x.ProfileId, r => r.UserId,
                   (x, r) => new { x.StoreId, x.FullName, r.Role })
-            .Where(x => x.Role == "area_manager");
+            .Where(x => x.Role == AppRoles.AreaManager);
 
         var store = await db.Stores
             .AsNoTracking()
@@ -34,6 +35,7 @@ public static class GetStore
             .Select(s => new StoreDto(
                 s.Id, s.Name, s.Address,
                 smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
+                amLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
                 s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt,
                 // SL-1: Structured address fields
                 s.Address2 != null ? s.Address2.Province : null,

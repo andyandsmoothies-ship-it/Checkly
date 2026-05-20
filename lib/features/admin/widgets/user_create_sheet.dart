@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+import '../../../_shared/constants/app_roles.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../locator.dart';
 import '../../../_shared/exceptions/app_error.dart';
@@ -51,7 +52,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
   final emailCtrl = TextEditingController();
   final passCtrl = TextEditingController();
 
-  String selectedRole = 'auditor';
+  String selectedRole = AppRoles.auditor;
   String? selectedStoreId;
   final List<String> _selectedStoreIds = [];
   List<Map<String, dynamic>> assignableStores = [];
@@ -77,9 +78,9 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
     try {
       final String? assignableAs = showAssignedStores
           ? null
-          : (role == 'store_manager'
-                ? 'store_manager'
-                : (role == 'area_manager' ? 'area_manager' : null));
+          : (role == AppRoles.storeManager
+                ? AppRoles.storeManager
+                : (role == AppRoles.areaManager ? AppRoles.areaManager : null));
       final stores = await widget.loadStores(assignableAs: assignableAs);
       if (mounted) setState(() => assignableStores = stores);
     } catch (e) {
@@ -131,7 +132,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
         role: selectedRole,
         storeId: selectedStoreId,
         assignedStoreIds:
-            selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty
+            selectedRole == AppRoles.areaManager && _selectedStoreIds.isNotEmpty
             ? _selectedStoreIds
             : null,
         forceReassign: forceReassign,
@@ -213,19 +214,19 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
       onEmailErrorClear: (_) => setState(() => emailError = null),
       onPasswordErrorClear: (_) => setState(() => passwordError = null),
       onRoleChanged: (v) async {
-        if ((v == 'store_manager' || v == 'area_manager') &&
+        if ((v == AppRoles.storeManager || v == AppRoles.areaManager) &&
             selectedRole != v) {
           await _loadStores(v);
         }
         if (mounted) {
           setState(() {
             selectedRole = v;
-            if (v == 'admin' || v == 'auditor') {
+            if (v == AppRoles.admin || v == AppRoles.auditor) {
               selectedStoreId = null;
               _selectedStoreIds.clear();
-            } else if (v == 'store_manager') {
+            } else if (v == AppRoles.storeManager) {
               _selectedStoreIds.clear();
-            } else if (v == 'area_manager') {
+            } else if (v == AppRoles.areaManager) {
               selectedStoreId = null;
             }
           });

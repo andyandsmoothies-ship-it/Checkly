@@ -39,6 +39,9 @@ class StoreDashboardManager extends ChangeNotifier {
 
   // ---------- Load ----------
   /// Loads all store-scoped data. Call on page init and on refresh.
+  ///
+  /// OBS-8: All aggregates (avgScore, openAPs) computed in SQL.
+  /// Only the 10 most-recent audit rows are loaded into memory.
   Future<void> load(String storeId) async {
     isLoading = true;
     error = null;
@@ -49,45 +52,51 @@ class StoreDashboardManager extends ChangeNotifier {
       final store =
           await (_db.select(_db.cachedStores)
                 ..where((s) => s.id.equals(storeId))
-                ..limit(1)) // Bounded for memory safety (Gotcha #14)
+                ..limit(1))
               .getSingleOrNull();
       final storeName = store?.name ?? 'Unknown Store';
 
-      // Submissions for this store
-      final storeSubs =
+      // ── Recent audits: SQL LIMIT 10 — no 1000-row load ──────────────────
+      final recentAudits =
           await (_db.select(_db.cachedSubmissions)
                 ..where((s) => s.storeId.equals(storeId))
                 ..where((s) => s.reviewStatus.equals('rejected').not())
                 ..orderBy([(s) => OrderingTerm.desc(s.createdAt)])
-                ..limit(1000)) // Bounded to 1000 (Gotcha #14)
+                ..limit(10))
               .get();
 
-      final recentAudits = storeSubs.take(10).toList();
-
-      final scored = storeSubs.where((s) => s.totalScore != null).toList();
-      final avgScore = scored.isNotEmpty
-          ? scored.map((s) => s.totalScore!).reduce((a, b) => a + b) /
-                scored.length
-          : 0.0;
-
-      // Open APs for this store via submission subquery
-      final openAPsQuery = _db.select(_db.cachedActionPlans)
-        ..where((ap) => ap.status.equals('open'))
+      // ── Average score: SQL avg() — no row hydration ──────────────────────
+      final avgExp = _db.cachedSubmissions.totalScore.avg();
+      final avgQuery = _db.selectOnly(_db.cachedSubmissions)
+        ..addColumns([avgExp])
+        ..where(_db.cachedSubmissions.storeId.equals(storeId))
         ..where(
-          (ap) => ap.submissionId.isInQuery(
+          _db.cachedSubmissions.reviewStatus
+              .equals('rejected')
+              .not(),
+        );
+      final avgScore =
+          await avgQuery.map((r) => r.read(avgExp)).getSingle() ?? 0.0;
+
+      // ── Open APs: SQL COUNT via subquery — no row hydration ──────────────
+      final countExp = countAll();
+      final openAPsQuery = _db.selectOnly(_db.cachedActionPlans)
+        ..addColumns([countExp])
+        ..where(_db.cachedActionPlans.status.equals('open'))
+        ..where(
+          _db.cachedActionPlans.submissionId.isInQuery(
             _db.selectOnly(_db.cachedSubmissions)
               ..addColumns([_db.cachedSubmissions.id])
               ..where(_db.cachedSubmissions.storeId.equals(storeId)),
           ),
-        )
-        ..limit(1000); // Bounded for memory safety (Gotcha #14)
-
-      final openAPList = await openAPsQuery.get();
+        );
+      final openAPs =
+          await openAPsQuery.map((r) => r.read(countExp)).getSingle() ?? 0;
 
       data = StoreDashboardData(
         storeName: storeName,
         avgScore: avgScore,
-        openAPs: openAPList.length,
+        openAPs: openAPs,
         recentAudits: recentAudits,
       );
     } catch (e) {

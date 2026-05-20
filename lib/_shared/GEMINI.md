@@ -1,7 +1,5 @@
 # Shared Flutter Rules & Gotchas
 
-# Shared Flutter Rules & Gotchas
-
 > [!IMPORTANT]
 > **Drift OOM — Every DAO Query Must Be Bounded**
 > **Problem:** Unbounded `.select().get()` loads entire tables, causing Out-Of-Memory.

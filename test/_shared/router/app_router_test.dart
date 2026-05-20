@@ -22,7 +22,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:checkly/_shared/router/main_shell.dart';
+import 'package:checkly/_shared/router/shell_tab.dart';
 import 'package:checkly/_shared/constants/app_capabilities.dart';
 
 /// Full caps set: user has all optional tab capabilities.

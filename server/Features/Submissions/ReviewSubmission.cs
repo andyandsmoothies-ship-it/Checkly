@@ -61,15 +61,15 @@ public static class ReviewSubmission
         // Notify the auditor
         if (submission.AuditorId.HasValue)
         {
-            var notifType = request.Status == "approved"
+            var notifType = request.Status == ReviewStatus.Approved
                 ? "audit_approved"
-                : request.Status == "rejected"
+                : request.Status == ReviewStatus.Rejected
                     ? "audit_rejected"
                     : "audit_flagged";
 
-            var notifTitle = request.Status == "approved"
+            var notifTitle = request.Status == ReviewStatus.Approved
                 ? "Audit approved"
-                : request.Status == "rejected"
+                : request.Status == ReviewStatus.Rejected
                     ? "Audit rejected"
                     : "Audit flagged for review";
 

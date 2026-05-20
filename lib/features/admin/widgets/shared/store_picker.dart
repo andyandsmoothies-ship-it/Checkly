@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../_shared/constants/app_roles.dart';
 import '../dropdown_card.dart';
 
 /// A shared presentation widget for selecting stores.
@@ -32,7 +33,7 @@ class StorePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedRole != 'store_manager' && selectedRole != 'area_manager') {
+    if (selectedRole != AppRoles.storeManager && selectedRole != AppRoles.areaManager) {
       return const SizedBox.shrink();
     }
 
@@ -41,7 +42,7 @@ class StorePicker extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // ── Store picker (store_manager only) ──────────────────────────
-        if (selectedRole == 'store_manager') ...[
+        if (selectedRole == AppRoles.storeManager) ...[
           const SizedBox(height: 12),
           DropdownCard(
             icon: Icons.store_outlined,
@@ -63,7 +64,7 @@ class StorePicker extends StatelessWidget {
         ],
 
         // ── Direct Store Assignments (area_manager only) ──────────────────────────
-        if (selectedRole == 'area_manager') ...[
+        if (selectedRole == AppRoles.areaManager) ...[
           const SizedBox(height: 12),
           SwitchListTile(
             title: const Text('Show assigned stores'),

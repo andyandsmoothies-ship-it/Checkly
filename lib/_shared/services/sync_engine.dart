@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 
 import 'connectivity_service.dart';
 import 'sync_state.dart';
@@ -26,6 +29,10 @@ class SyncEngine {
   final List<SyncModule> _modules;
   final OutboxDao? _outboxDao;
 
+  /// SA-4: Max jitter in milliseconds added before reconnect-triggered sync.
+  /// Set to 0 in tests so sync fires immediately without needing a long delay.
+  final int _maxReconnectJitterMs;
+
   StreamSubscription<bool>? _connectivitySub;
 
   SyncState _state = SyncState.idle;
@@ -37,9 +44,11 @@ class SyncEngine {
     required AuthCheck auth,
     required List<SyncModule> modules,
     OutboxDao? outboxDao,
+    int maxReconnectJitterMs = 10000,
   }) : _connectivity = connectivity,
        _auth = auth,
        _outboxDao = outboxDao,
+       _maxReconnectJitterMs = maxReconnectJitterMs,
        _modules = List.unmodifiable(
          [...modules]..sort((a, b) => a.priority.compareTo(b.priority)),
        ) {
@@ -49,16 +58,40 @@ class SyncEngine {
     }
 
     // Listen to connectivity changes
-    _connectivitySub = _connectivity.onConnectivityChanged.listen((isOnline) {
-      if (isOnline) {
-        // Going online → trigger sync
-        _state = SyncState.idle;
-        requestSync();
-      } else {
-        // Going offline → set state immediately
-        _state = SyncState.offline;
-      }
-    });
+    _connectivitySub = _connectivity.onConnectivityChanged.listen(
+      (isOnline) {
+        if (isOnline) {
+          // Going online → trigger sync.
+          // SA-4: Add jitter (0–maxReconnectJitterMs) to prevent thundering herd
+          // when many devices reconnect simultaneously. Tests inject 0 to disable.
+          _state = SyncState.idle;
+          final jitterMs = _maxReconnectJitterMs > 0
+              ? Random().nextInt(_maxReconnectJitterMs)
+              : 0;
+          Future.delayed(Duration(milliseconds: jitterMs), requestSync);
+        } else {
+          // Going offline → set state immediately
+          _state = SyncState.offline;
+        }
+      },
+      onError: (Object error) {
+        // SA-2: The stream emitted a platform error (OS/plugin exception).
+        // The subscription stays alive after onError (cancelOnError defaults to false).
+        // Log and continue — the subscription may recover on its own.
+        // ignore: avoid_print
+        debugPrint('[SyncEngine] connectivity stream error: $error');
+      },
+      onDone: () {
+        // SA-2: The stream closed permanently (plugin restart, OS battery kill).
+        // Without a fallback, the engine never sees another connectivity event.
+        // Activate a periodic poll so the engine is not frozen indefinitely.
+        // ignore: avoid_print
+        debugPrint(
+          '[SyncEngine] connectivity stream closed. Activating poll fallback.',
+        );
+        _startConnectivityPollFallback();
+      },
+    );
 
     // Initial sync is driven by the App widget or explicit calls, not the constructor.
   }
@@ -145,6 +178,20 @@ class SyncEngine {
 
   /// Returns the count of exhausted items.
   Future<int> exhaustedCount() => _outboxDao!.exhaustedCount();
+
+  // SA-2: Fallback poll when the connectivity stream closes permanently.
+  // Fires every 30 seconds and re-checks connectivity via the cached native value.
+  // Low-cost: no network I/O, just reads a native boolean from ConnectivityService.
+  void _startConnectivityPollFallback() {
+    _retryTimer?.cancel();
+    _retryTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      final isOnline = _connectivity.isOnline;
+      if (isOnline && _state != SyncState.syncing) {
+        _state = SyncState.idle;
+        requestSync();
+      }
+    });
+  }
 
   /// Dispose the connectivity listener.
   void dispose() {

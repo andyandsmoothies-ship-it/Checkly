@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Checkly.Api.Features.ActionPlans;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkly.Api.Features.Submissions;
@@ -21,7 +22,7 @@ public static class StoreAnalyticsUpdater
         // Recalculate 30-day metrics from live data
         var query = db.Submissions
             .Where(s => s.StoreId == storeIdVal
-                && s.Status == "completed"
+                && s.Status == SubmissionStatus.Completed
                 && s.CompletedAt >= thirtyDaysAgo
                 && s.TotalScore.HasValue);
 
@@ -30,10 +31,10 @@ public static class StoreAnalyticsUpdater
         var avgScore = Math.Round(avgScoreRaw, 1);
 
         var openAPs = await db.ActionPlans
-            .CountAsync(ap => ap.StoreId == storeIdVal && ap.Status == "open", ct);
+            .CountAsync(ap => ap.StoreId == storeIdVal && ap.Status == ActionPlanStatus.Open, ct);
         var overdueAPs = await db.ActionPlans
             .CountAsync(ap => ap.StoreId == storeIdVal
-                && ap.Status == "open"
+                && ap.Status == ActionPlanStatus.Open
                 && ap.Deadline.HasValue
                 && ap.Deadline < now, ct);
 

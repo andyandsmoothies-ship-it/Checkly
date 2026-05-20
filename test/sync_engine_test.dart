@@ -190,6 +190,8 @@ void main() {
       connectivity: connectivity,
       auth: auth,
       modules: [coreModule],
+      maxReconnectJitterMs:
+          0, // SA-4: disable jitter so tests are deterministic
     );
   });
 

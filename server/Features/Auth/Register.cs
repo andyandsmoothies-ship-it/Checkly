@@ -22,6 +22,8 @@ public static class Register
         TokenService tokenService)
     {
         private static readonly HashSet<string> ValidRoles = ["admin", "auditor", "store_manager", "area_manager"];
+        // CRIT-01: Only auditors may self-register without an admin JWT.
+        private static readonly HashSet<string> AnonymousAllowedRoles = ["auditor"];
 
         public async Task<IResult> ExecuteAsync(Request request, HttpContext httpContext, CancellationToken ct)
         {
@@ -31,8 +33,10 @@ public static class Register
                 return TypedResults.BadRequest(new { error = $"Invalid role. Must be one of: {string.Join(", ", ValidRoles)}" });
             }
 
-            // Admin role creation requires an existing admin JWT
-            if (request.Role == "admin")
+            // CRIT-01: Only auditors may self-register anonymously.
+            // All other roles (admin, store_manager, area_manager) require an existing admin JWT.
+
+            if (!AnonymousAllowedRoles.Contains(request.Role))
             {
                 var callerRole = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
                 if (callerRole != "admin")

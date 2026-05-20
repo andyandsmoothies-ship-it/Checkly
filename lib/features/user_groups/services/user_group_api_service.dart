@@ -43,4 +43,16 @@ class UserGroupApiService {
     );
     return UserGroupDto.fromJson(res.data!);
   }
+
+  /// PUT /user-groups/{id}/members — replaces the full member list of a group.
+  ///
+  /// CRIT-03: This method was entirely missing. The write path for group member management
+  /// was a dead end — changes made in the UI could not be persisted to the server.
+  /// Sends a full replacement list of profile IDs; the backend reconciles adds/removes.
+  Future<void> updateGroupMembers(String groupId, List<String> profileIds) async {
+    await _dio.put(
+      '/user-groups/$groupId/members',
+      data: {'profileIds': profileIds},
+    );
+  }
 }

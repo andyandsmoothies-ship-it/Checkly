@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
-using Checkly.Api.Common.Reference;
 using Checkly.Api.Common.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,13 +42,9 @@ public static class UpdateStore
         if (request.IsActive.HasValue)
             store.IsActive = request.IsActive.Value;
 
-        // SL-1: Province validation
-        if (request.Province is not null && !VietnamLocations.IsValidProvince(request.Province))
-            return Results.BadRequest(new { error = $"Province '{request.Province}' is not a valid Vietnam administrative province." });
-
-        // SL-1: Street length validation
-        if (request.Street?.Length > 200)
-            return Results.BadRequest(new { error = "Street must not exceed 200 characters" });
+        // SL-1: Province + street validation (shared rule with CreateStore)
+        var addressError = StoreAddressValidator.Validate(request.Province, request.Street);
+        if (addressError is not null) return addressError;
 
         // SL-1: Patch Address2 when any address field is provided
         if (request.Province is not null || request.District is not null

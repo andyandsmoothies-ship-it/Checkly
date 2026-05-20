@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/auth/model/auth_state.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
-import 'package:checkly/_shared/router/app_router.dart';
+import 'package:checkly/_shared/router/auth_redirect.dart';
 import 'package:checkly/_shared/services/policy_manager.dart';
 
 class _StubAuthManager extends ChangeNotifier implements AuthManager {

@@ -61,7 +61,6 @@ public sealed class ReminderService : BackgroundService
 
                         await SendDeadlineReminders(db, tickCt);
                         await SendOverdueEscalations(db, tickCt);
-                        await SendScheduleReminders(db, tickCt);
 
                         // Only run retention cleanup once per 24 hours
                         if (DateTimeOffset.UtcNow - _lastCleanupAt >= TimeSpan.FromHours(24))
@@ -256,15 +255,6 @@ public sealed class ReminderService : BackgroundService
         }
     }
 
-    /// <summary>
-    /// S7: Placeholder for scheduled audit reminders.
-    /// Actual scheduled audits feature requires a ScheduledAudit entity — deferred.
-    /// </summary>
-    private Task SendScheduleReminders(AppDbContext db, CancellationToken ct)
-    {
-        _logger.LogDebug("S7: Schedule reminders — no scheduled audits entity yet");
-        return Task.CompletedTask;
-    }
 
     /// <summary>
     /// Hard-deletes notifications and system logs older than 90 days.

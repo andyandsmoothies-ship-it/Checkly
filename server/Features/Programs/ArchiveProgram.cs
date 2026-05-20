@@ -34,10 +34,10 @@ public static class ArchiveProgram
             return TypedResults.NotFound(new { error = "Program not found." });
 
         // Guard: cannot archive an already-cancelled program (idempotency guard)
-        if (program.Status == "cancelled")
+        if (program.Status == ProgramStatus.Cancelled)
             return TypedResults.BadRequest(new { error = "Program is already cancelled." });
 
-        program.Status = "cancelled";
+        program.Status = ProgramStatus.Cancelled;
         program.UpdatedAt = DateTimeOffset.UtcNow;
 
         AuditLogger.Log(db, user, "program_archived", "Program", program.Id,

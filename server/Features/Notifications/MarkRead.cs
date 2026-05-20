@@ -11,12 +11,17 @@ namespace Checkly.Api.Features.Notifications;
 /// </summary>
 public static class MarkRead
 {
+    private static readonly string _logCategory =
+        typeof(MarkRead).FullName ?? nameof(MarkRead);
+
     public static async Task<IResult> HandleAsync(
         Guid id,
         ClaimsPrincipal user,
         AppDbContext db,
+        ILoggerFactory loggerFactory,
         CancellationToken ct)
     {
+        var logger = loggerFactory.CreateLogger(_logCategory);
         var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         // F4 Fix: Combined ownership + existence filter.
@@ -25,10 +30,19 @@ public static class MarkRead
             .FirstOrDefaultAsync(n => n.Id == id && n.UserId == callerId, ct);
 
         if (notification is null)
+        {
+            logger.LogWarning(
+                "MarkRead: notification {NotificationId} not found or not owned by caller {CallerId}",
+                id, callerId);
             return TypedResults.NotFound();
+        }
 
         notification.ReadAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync(ct);
+
+        logger.LogInformation(
+            "MarkRead: notification {NotificationId} marked read by {CallerId}",
+            id, callerId);
 
         return TypedResults.NoContent();
     }

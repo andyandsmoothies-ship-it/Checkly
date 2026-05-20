@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../auth/manager/auth_manager.dart';
+import '../../../_shared/constants/app_roles.dart';
 import '../../../_shared/constants/user_persona.dart';
 import '../widgets/sign_out_tile.dart';
 import '../widgets/profile_header.dart';
@@ -21,7 +22,7 @@ class ProfilePage extends StatelessWidget {
 
     final displayName = user?.fullName ?? user?.email ?? 'user@checkly.app';
     final email = user?.email ?? 'user@checkly.app';
-    final role = user?.role ?? 'auditor';
+    final role = user?.role ?? AppRoles.auditor;
     final persona = UserPersona.fromRole(user?.role);
     final initials = getInitials(user?.fullName ?? email);
 

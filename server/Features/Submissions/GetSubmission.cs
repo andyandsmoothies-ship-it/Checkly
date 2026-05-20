@@ -51,13 +51,13 @@ public static class GetSubmission
 
         var allowedActions = new List<string> { SubmissionActions.View };
 
-        if (canEdit && (submission.Status == "draft" || submission.Status == "scheduled"))
+        if (canEdit && (submission.Status == SubmissionStatus.Draft || submission.Status == SubmissionStatus.Scheduled))
             allowedActions.Add(SubmissionActions.Edit);
 
-        if (canFinalize && submission.Status == "completed")
+        if (canFinalize && submission.Status == SubmissionStatus.Completed)
             allowedActions.Add(SubmissionActions.Finalize);
 
-        if (canFinalize && submission.Status != "approved" && submission.Status != "rejected")
+        if (canFinalize && submission.Status != ReviewStatus.Approved && submission.Status != ReviewStatus.Rejected)
             allowedActions.Add(SubmissionActions.Void);
 
         var dto = new SubmissionDetailDto(

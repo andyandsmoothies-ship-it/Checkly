@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../_shared/database/dao/program_outbox_dao.dart';
 import '../model/program_assignment_dto.dart';
+import '../services/program_api_service.dart';
 
 // ============================================================
 // ProgramManager — offline-first assignment reader + evidence writer
@@ -16,9 +17,13 @@ import '../model/program_assignment_dto.dart';
 /// - Submission writing has been migrated to standard audit forms (Slice 4).
 class ProgramManager extends ChangeNotifier {
   final ProgramOutboxDao _outboxDao;
+  final ProgramApiService _api;
 
-  ProgramManager({required ProgramOutboxDao outboxDao})
-    : _outboxDao = outboxDao;
+  ProgramManager({
+    required ProgramOutboxDao outboxDao,
+    required ProgramApiService api,
+  }) : _outboxDao = outboxDao,
+       _api = api;
 
   // ---------- State ----------
 
@@ -61,4 +66,17 @@ class ProgramManager extends ChangeNotifier {
   ///
   /// Delegates to [ProgramOutboxDao] — the page must NOT access the DB directly.
   Future<String> getPrimaryStoreId() => _outboxDao.getPrimaryStoreId();
+
+  // ---------- HQ / Online Queries ----------
+
+  /// Loads live assignment details for the dashboard (HQ-only, online).
+  Future<AssignmentDetailPagedResponse> getDashboardAssignments(
+    String programId, {
+    String? status,
+    int page = 1,
+  }) => _api.getProgramAssignments(programId, status: status, page: page);
+
+  /// Loads live aggregated summary for the dashboard (HQ-only, online).
+  Future<ProgramSummaryResponse> getDashboardSummary(String programId) =>
+      _api.getProgramSummary(programId);
 }

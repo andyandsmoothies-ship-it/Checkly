@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 import '../../../locator.dart';
+import '../../../_shared/constants/app_roles.dart';
 import '../../../_shared/exceptions/app_error.dart';
 import '../../../_shared/services/error_display_service.dart';
 import 'user_edit_sheet_body.dart';
@@ -78,7 +79,7 @@ class _UserEditSheetState extends State<UserEditSheet> {
     }
 
     // Pre-load stores if the user is already a store_manager or area_manager
-    if (selectedRole == 'store_manager' || selectedRole == 'area_manager') {
+    if (selectedRole == AppRoles.storeManager || selectedRole == AppRoles.areaManager) {
       _loadStores(selectedRole!);
     }
   }
@@ -96,12 +97,12 @@ class _UserEditSheetState extends State<UserEditSheet> {
     try {
       final String? assignableAs = showAssignedStores
           ? null
-          : (role == 'store_manager'
-                ? 'store_manager'
-                : (role == 'area_manager' ? 'area_manager' : null));
+          : (role == AppRoles.storeManager
+                ? AppRoles.storeManager
+                : (role == AppRoles.areaManager ? AppRoles.areaManager : null));
       final stores = await widget.loadStores(
         assignableAs: assignableAs,
-        exceptUser: role == 'store_manager'
+        exceptUser: role == AppRoles.storeManager
             ? widget.user['id'] as String
             : null,
       );
@@ -143,19 +144,19 @@ class _UserEditSheetState extends State<UserEditSheet> {
       onRoleChanged: (v) async {
         _markDirty();
         // Lazy-load stores on the first switch to a role that needs them
-        if ((v == 'store_manager' || v == 'area_manager') &&
+        if ((v == AppRoles.storeManager || v == AppRoles.areaManager) &&
             selectedRole != v) {
           await _loadStores(v!); // error-handled, shows SnackBar on failure
         }
         if (mounted) {
           setState(() {
             selectedRole = v;
-            if (v == 'admin' || v == 'auditor') {
+            if (v == AppRoles.admin || v == AppRoles.auditor) {
               selectedStoreId = null;
               _selectedStoreIds.clear();
-            } else if (v == 'store_manager') {
+            } else if (v == AppRoles.storeManager) {
               _selectedStoreIds.clear();
-            } else if (v == 'area_manager') {
+            } else if (v == AppRoles.areaManager) {
               selectedStoreId = null;
             }
           });
@@ -187,7 +188,7 @@ class _UserEditSheetState extends State<UserEditSheet> {
         role: selectedRole,
         storeId: selectedStoreId,
         assignedStoreIds:
-            selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty
+            selectedRole == AppRoles.areaManager && _selectedStoreIds.isNotEmpty
             ? _selectedStoreIds
             : null,
       ),
