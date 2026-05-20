@@ -12,11 +12,11 @@ using Checkly.Api.Features.Stores;
 using Checkly.Api.Features.Submissions;
 using Checkly.Api.Features.Admin;
 using Checkly.Api.Features.Analytics;
-using Checkly.Api.Features.Areas;
 using Checkly.Api.Features.UserGroups;
 using Checkly.Api.Features.Templates;
 using Checkly.Api.Features.Programs;
 using Checkly.Api.Features.GlobalRisks;
+using Checkly.Api.Features.Reference;
 using Checkly.Api.Common.Scoring;
 using Checkly.Api.Common.Services;
 using Checkly.Api.Common.Exceptions;
@@ -391,11 +391,11 @@ try
     app.MapAdminEndpoints();
     app.MapGlobalRiskEndpoints();
     app.MapAnalyticsEndpoints();
-    app.MapAreaEndpoints();
     app.MapUserGroupEndpoints();
     app.MapProgramEndpoints();
     app.MapSystemEndpoints();
     app.MapUserEndpoints();
+    app.MapReferenceEndpoints();
 
     app.Run();
 }

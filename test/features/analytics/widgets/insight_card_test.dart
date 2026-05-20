@@ -7,9 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   Widget buildTestWidget(ActionableInsight insight) {
     return MaterialApp(
-      home: Scaffold(
-        body: InsightCard(insight: insight),
-      ),
+      home: Scaffold(body: InsightCard(insight: insight)),
     );
   }
 
@@ -26,7 +24,7 @@ void main() {
     expect(find.text('Warning Title'), findsOneWidget);
     expect(find.text('Warning description text'), findsOneWidget);
     expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
-    
+
     // The container border
     final container = tester.widget<Container>(find.byType(Container).first);
     expect(container.color, AppTheme.warning);
@@ -45,7 +43,7 @@ void main() {
     expect(find.text('Positive Title'), findsOneWidget);
     expect(find.text('Positive description text'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
-    
+
     final container = tester.widget<Container>(find.byType(Container).first);
     expect(container.color, AppTheme.success);
   });
@@ -63,9 +61,8 @@ void main() {
     expect(find.text('Info Title'), findsOneWidget);
     expect(find.text('Info description text'), findsOneWidget);
     expect(find.byIcon(Icons.info_outline), findsOneWidget);
-    
+
     final container = tester.widget<Container>(find.byType(Container).first);
     expect(container.color, AppTheme.info);
   });
-
 }

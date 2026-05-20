@@ -66,26 +66,13 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         return (_factory.CreateAuthenticatedClient(token), userId);
     }
 
-    private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string namePrefix, Guid? areaId = null)
+    private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string namePrefix)
     {
         var name = $"{namePrefix} {Guid.NewGuid()}";
-        var payload = areaId.HasValue
-            ? (object)new { name, areaId }
-            : new { name };
+        var payload = new { name };
         var response = await adminClient.PostAsJsonAsync("/api/stores", payload);
         Assert.True(response.IsSuccessStatusCode,
             $"Setup: could not create store '{name}'. {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        return Guid.Parse(json.GetProperty("id").GetString()!);
-    }
-
-    private async Task<Guid> CreateAreaAsync(HttpClient adminClient, string namePrefix)
-    {
-        var name = $"{namePrefix} {Guid.NewGuid()}";
-        var response = await adminClient.PostAsJsonAsync("/api/areas",
-            new { name, description = "Test area" });
-        Assert.True(response.IsSuccessStatusCode,
-            $"Setup: could not create area '{name}'. {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         return Guid.Parse(json.GetProperty("id").GetString()!);
     }
@@ -337,73 +324,9 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         Assert.True(json.TryGetProperty("sectionBreakdown", out _), "Must have 'sectionBreakdown'");
     }
 
-    /// <summary>
-    /// AC-S2.2: GET /api/analytics?areaId=X scopes results to that area's stores.
-    /// [Source: analysis §7 — "AM scoped to their profile.area_id"]
-    /// </summary>
-    [Fact]
-    public async Task GetAnalytics_With_AreaId_Returns_Scoped_Results()
-    {
-        // Arrange
-        var adminClient = await CreateAdminClientAsync("s2b");
-        var areaId = await CreateAreaAsync(adminClient, "S2 Area");
-        var inAreaStoreId = await CreateStoreAsync(adminClient, "S2 In-Area", areaId);
-        var outAreaStoreId = await CreateStoreAsync(adminClient, "S2 Out-Area");
-        var (templateId, criteriaIds) = await CreateTemplateWithSectionsAsync(adminClient);
-        var (auditorClient, _) = await CreateRoleClientAsync("s2-aud@test.test", "auditor");
-
-        var sectionScores = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            ["Section A"] = new { score = 90.0, maxScore = 100.0 },
-            ["Section B"] = new { score = 45.0, maxScore = 50.0 }
-        });
-
-        // Create submission IN area
-        await CreateAndFinalizeAsync(
-            auditorClient, templateId, inAreaStoreId, sectionScores, 100.0m, criteriaIds);
-
-        // Create submission OUTSIDE area
-        await CreateAndFinalizeAsync(
-            auditorClient, templateId, outAreaStoreId, sectionScores, 100.0m, criteriaIds);
-
-        // Act — filter by area
-        var response = await adminClient.GetAsync($"/api/analytics?areaId={areaId}");
-
-        // Assert — only the in-area submission should be counted
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var total = json.GetProperty("kpis").GetProperty("totalAudits").GetInt32();
-        Assert.Equal(1, total); // Business assertion: only 1 in-area audit
-    }
-
     // ═══════════════════════════════════════════════════
     // S3: AM Leaderboard + Store Dashboard + RBAC
     // ═══════════════════════════════════════════════════
-
-    /// <summary>
-    /// AC-S3.1: AM can access area-leaderboard for their area.
-    /// [Source: analysis §4.2 — "AM-scoped store comparison"]
-    /// Expected RED: Route /api/analytics/area-leaderboard does not exist.
-    /// </summary>
-    [Fact]
-    public async Task AM_Can_Access_Area_Leaderboard()
-    {
-        // Arrange
-        var adminClient = await CreateAdminClientAsync("s3a");
-        var areaId = await CreateAreaAsync(adminClient, "S3 LB Area");
-
-        // Create AM assigned to this area
-        var (amClient, amUserId) = await CreateRoleClientAsync("s3-am@test.test", "area_manager");
-        await adminClient.PutAsJsonAsync($"/api/admin/users/{amUserId}", new { areaId });
-
-        // Act
-        var response = await amClient.GetAsync($"/api/analytics/area-leaderboard?areaId={areaId}");
-
-        // Assert — RED: 404 (route missing), should be 200 when implemented
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.True(json.TryGetProperty("stores", out _), "Must contain 'stores' array");
-    }
 
     /// <summary>
     /// AC-S3.2: Store dashboard must include new snapshot fields.
@@ -429,25 +352,6 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
             "Must include 'lastAuditScore' from snapshot table");
         Assert.True(json.TryGetProperty("overdueActionPlans", out _),
             "Must include 'overdueActionPlans' from snapshot table");
-    }
-
-    /// <summary>
-    /// AC-S3.3: Auditors cannot access the area-leaderboard (admin/AM only).
-    /// [Source: analysis §7 — "admin, area_manager only"]
-    /// Expected RED: Route doesn't exist (404), but when implemented should be 403.
-    /// </summary>
-    [Fact]
-    public async Task Auditor_Cannot_Access_Area_Leaderboard()
-    {
-        // Arrange
-        var (auditorClient, _) = await CreateRoleClientAsync("s3-aud-lb@test.test", "auditor");
-
-        // Act
-        var response = await auditorClient.GetAsync(
-            "/api/analytics/area-leaderboard?areaId=" + Guid.NewGuid());
-
-        // Assert — must be 403 (not 200, not 404)
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
     // ═══════════════════════════════════════════════════

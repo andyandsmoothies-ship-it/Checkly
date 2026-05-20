@@ -19,14 +19,14 @@ description: The Core Builder Implementation Workflow
 ```markdown
 # Task: [Name]
 Workflow: /implement | Track: [A / B1 / B2 / C]
-*(Note: Track A = Direct Implementation (Tests Written AFTER code). Track B/C = ATDD/TDD (Tests Written BEFORE code). Skipping tests entirely is PROHIBITED unless explicitly stated.)*
+*(Note: Track A = Direct Implementation (Tests Written AFTER code). Track B/C = Acceptance/Unit Tests Written BEFORE code. Skipping tests entirely is PROHIBITED unless explicitly stated.)*
 
 ## Input Lineage
 - **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [ ] Slice [N]: [Name] (Read Tests -> Code -> Verify)

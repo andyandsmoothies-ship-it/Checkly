@@ -250,6 +250,40 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
                     onChanged: (_) => setState(() {}),
                   ),
                 ),
+                if (_manager.hasApprovalsTruncationWarning)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                    child: Material(
+                      color: Colors.amber.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              size: 18,
+                              color: Colors.amber.shade800,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Showing the latest 100 audits only. '
+                                'Use filters on the server to narrow results.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.amber.shade900,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,

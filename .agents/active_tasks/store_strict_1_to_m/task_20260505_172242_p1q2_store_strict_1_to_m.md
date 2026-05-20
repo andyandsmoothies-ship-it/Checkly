@@ -5,8 +5,8 @@ Workflow: /implement | Track: B2
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260505_165000_am_store_strict_1_to_m.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: Database & Backend Guards (Data Integrity)

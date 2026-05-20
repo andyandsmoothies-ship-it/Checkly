@@ -162,40 +162,32 @@ The Template Builder (`template_builder_page.dart`) includes a **unified inline 
 
 ## 7. Assignment Rules (SM / AM Constraints)
 
-These rules govern how users are assigned to stores and areas.
-
-### Valid Areas
-Areas are managed entities stored in the `areas` table with `id`, `name`, and `description` fields.
-
-> [!NOTE]
-> Areas are now managed dynamically via the Admin API (`/api/areas`). The previous hardcoded 5-area restriction has been removed.
+These rules govern how users are assigned to stores.
 
 ### 1 Store Manager per Store
 - Each store (`stores.id`) can have at most **1 user** with role `store_manager` assigned to it (`profiles.store_id`).
 - **Enforced at**: Edge Function (`createUser`), `admin_update_user` RPC, UI (store selector hides occupied stores).
 
-### 1 Area Manager per Area
-- Each area (managed entity in `areas` table) can have at most **1 user** with role `area_manager` assigned to it via FK (`profiles.area_id` → `areas.id`).
-- **Enforced at**: `RoleAssignmentGuard.FindExistingAreaManager` (Guid `areaId`), `PUT /api/admin/users/{id}`, UI (area selector hides occupied areas).
+### Store Assignment (Area Managers)
+- Each store (`stores.id`) can be assigned to at most **1 user** with role `area_manager` via the `profile_store_assignments` junction table.
+- A single Area Manager can be assigned to multiple stores (1-to-Many).
+- **Enforced at**: Unique index on `StoreId` in `ProfileStoreAssignmentConfiguration`, backend assignment endpoints, and UI store selectors.
 
 ### Technical References
-- **Edge Function**: [admin-api/index.ts](file:///c:/Users/HP/Documents/GitHub/checkly-smart/supabase/functions/admin-api/index.ts) — `createUser()` checks SM + AM conflicts before profile creation.
-- **RPC**: `admin_update_user` — checks SM + AM conflicts before profile update.
-- **UI (Users)**: [UserManagement.tsx](file:///c:/Users/HP/Documents/GitHub/checkly-smart/src/pages/admin/UserManagement.tsx) — selectors filter out occupied stores/areas.
-- **UI (Stores)**: [StoreManagement.tsx](file:///c:/Users/HP/Documents/GitHub/checkly-smart/src/pages/admin/StoreManagement.tsx) — area selector with 5 valid areas.
+- **Backend Endpoint**: `Features/Admin/UpdateUser.cs` — checks SM + AM conflicts before profile update.
+- **Auth Guard**: `Common/Auth/RoleAssignmentGuard.cs` — enforces the 1 SM per store limit.
+- **UI (Stores)**: `lib/features/admin/pages/store_management_page.dart` — assignment selectors.
 
 ### SM Transfer Protocol
 
 When replacing a Store Manager (SM), open action plans must be transferred atomically:
 
-- **Transfer RPC**: `transfer_store_manager(store_id, new_sm_id)` — atomic swap + AP transfer + audit log.
-- **Pre-check RPC**: `check_sm_open_aps(store_id)` — returns count of open APs for confirmation dialog.
+- **Transfer Endpoint**: `Features/Admin/TransferStoreManager.cs` — atomic swap + AP transfer + audit log.
 - **Guards** (defense-in-depth):
   - **Frontend** (UserManagement): Blocks role/store changes for active SMs; directs admin to Store Management.
   - **Frontend** (UserManagement): Blocks disabling active SM accounts.
-  - **RPC** (`admin_update_user`): Prevents changes to active SMs.
-  - **Edge Function** (`banUser`): Prevents banning active SMs.
-- **UI**: StoreManagement shows confirmation dialog with open AP count before transfer.
+  - **Backend** (`UpdateUser.cs`): Prevents changes to active SMs' stores via normal update.
+  - **Backend** (`BanUser.cs`): Prevents banning active SMs.
 
 ---
 

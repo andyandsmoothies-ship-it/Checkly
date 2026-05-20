@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../app_database.dart';
+import '../../constants/user_persona.dart';
 
 class ProfileSyncSnapshot {
   final String profileId;
@@ -41,7 +42,7 @@ class ProfileDao {
   }
 
   Future<List<String>> getAssignedStoreIdsForRole(String role) async {
-    if (role != 'area_manager') return const [];
+    if (UserPersona.fromRole(role) != UserPersona.areaManager) return const [];
     final row =
         await (_db.select(_db.cachedProfiles)
               ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])

@@ -5,8 +5,8 @@ Workflow: /implement | Track: C
 - **Source Input**: `C:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260502_112521_5badbf76_fix_sync_transactional_fracture.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 > [!NOTE]
 > **AI Decision:** Reused the existing red-phase executable spec from `C:\Users\HP\Documents\GitHub\Checkly\docs\qa\gates\executed_tests_20260502_113646_5badbf76_fix_sync_transactional_fracture.md`

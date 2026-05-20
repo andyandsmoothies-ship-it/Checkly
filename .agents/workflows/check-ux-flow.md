@@ -47,7 +47,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 | **Aggregation** | Group issues. Sort by severity. Extract Top 3 Impact Fixes. |
 | **Artifact Gen** | Create `ux_heuristic_eval_[scope].md` in the `{App Data Directory}\brain\{Conversation ID}\` directory. |
 | **Payload Schema**| `Summary` | `Scorecard (✅/⚠️/❌)` | `Sorted Findings` | `Top 3 Fix Priorities` | `Tradeoffs`. |
-| **Routing** | Output message: *"Route fixes through /analyze-feature -> /implement using this exact path: `{Absolute_Path_to_ux_heuristic_eval.md}`"* -> YIELD. |
+| **Routing** | Output message: *"Route fixes through Feature Analysis -> Implementation using this exact path: `{Absolute_Path_to_ux_heuristic_eval.md}`"* -> YIELD. |
 
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:

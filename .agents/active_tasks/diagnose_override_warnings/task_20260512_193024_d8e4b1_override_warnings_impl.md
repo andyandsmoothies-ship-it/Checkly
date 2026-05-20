@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `C:\Users\HP\Documents\GitHub\Checkly\docs\diagnostics\failure_report_20260512_193024_d8e4b1_override_warnings.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: Delete `pushProgramEvidence` and `pushProgramPhoto` from test files and the TODO from `checkly_lints` (Read Tests -> Code -> Verify)

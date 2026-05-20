@@ -5,7 +5,7 @@ Workflow: /implement | Track: B2
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260517_162900_SL1_area_benchmark.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (from /tdd)
 
 ## Active Slice

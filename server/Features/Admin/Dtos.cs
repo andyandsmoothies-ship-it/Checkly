@@ -10,8 +10,6 @@ public sealed record UserDto(
     string Role,
     Guid? StoreId,
     string? StoreName,
-    Guid? AreaId,
-    string? AreaName,
     bool IsLocked,
     DateTimeOffset CreatedAt,
     Guid[]? AssignedStoreIds = null);

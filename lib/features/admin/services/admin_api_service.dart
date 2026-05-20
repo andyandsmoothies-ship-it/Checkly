@@ -23,7 +23,14 @@ class AdminApiService {
     return list.cast<Map<String, dynamic>>();
   }
 
-  /// GET /users — search users by capability (accessible by non-admins if authenticated).
+  /// GET /users — search users by capability (authenticated users only).
+  ///
+  /// **Design decision (Audit #3):** This call sends no role or store scope
+  /// parameter because role-scoping is enforced by the backend via the caller's
+  /// JWT claims. The server filters `GET /users` based on the authenticated
+  /// user's own role before returning results. Adding a client-side role filter
+  /// would be redundant and fragile — the server is the authoritative source.
+  /// Accepted: backend enforcement is sufficient. No client change required.
   Future<List<Map<String, dynamic>>> searchUsersByCapability(
     String capability,
   ) async {
@@ -54,7 +61,6 @@ class AdminApiService {
     String? fullName,
     String? role,
     String? storeId,
-    String? areaId,
     List<String>? assignedStoreIds,
     bool forceReassign = false,
   }) async {
@@ -62,7 +68,6 @@ class AdminApiService {
     if (fullName != null && fullName.isNotEmpty) body['fullName'] = fullName;
     if (role != null) body['role'] = role;
     if (storeId != null) body['storeId'] = storeId;
-    if (areaId != null) body['areaId'] = areaId;
     if (assignedStoreIds != null) body['assignedStoreIds'] = assignedStoreIds;
     if (forceReassign) body['forceReassign'] = true;
 
@@ -74,7 +79,6 @@ class AdminApiService {
   Future<Map<String, dynamic>> banUser(
     String id, {
     required bool ban,
-    int durationDays = 36500,
   }) async {
     final response = await _dio.post(
       '/admin/users/$id/ban',
@@ -123,7 +127,6 @@ class AdminApiService {
     required String fullName,
     required String role,
     String? storeId,
-    String? areaId,
     List<String>? assignedStoreIds,
     bool forceReassign = false,
   }) async {
@@ -134,7 +137,6 @@ class AdminApiService {
       'role': role,
     };
     if (storeId != null) body['storeId'] = storeId;
-    if (areaId != null) body['areaId'] = areaId;
     if (assignedStoreIds != null) body['assignedStoreIds'] = assignedStoreIds;
     if (forceReassign) body['forceReassign'] = true;
 
@@ -148,40 +150,6 @@ class AdminApiService {
       '/admin/users/$userId/reset-password',
       data: {'newPassword': newPassword},
     );
-  }
-
-  // ── Area API ──
-
-  /// GET /areas — list all areas.
-  Future<List<Map<String, dynamic>>> getAreas() async {
-    final response = await _dio.get('/areas');
-    final data = response.data;
-    final list = (data is List) ? data : (data['items'] as List<dynamic>);
-    return list.cast<Map<String, dynamic>>();
-  }
-
-  /// POST /areas — create a new area (admin only).
-  Future<Map<String, dynamic>> createArea({
-    required String name,
-    String? description,
-  }) async {
-    final body = <String, dynamic>{'name': name};
-    if (description != null) body['description'] = description;
-    final response = await _dio.post('/areas', data: body);
-    return response.data as Map<String, dynamic>;
-  }
-
-  /// PUT /areas/{id} — update an area (admin only).
-  Future<Map<String, dynamic>> updateArea(
-    String id, {
-    String? name,
-    String? description,
-  }) async {
-    final body = <String, dynamic>{};
-    if (name != null) body['name'] = name;
-    if (description != null) body['description'] = description;
-    final response = await _dio.put('/areas/$id', data: body);
-    return response.data as Map<String, dynamic>;
   }
 
   // ── Role Capabilities API (PBAC Admin Slice 2) ──

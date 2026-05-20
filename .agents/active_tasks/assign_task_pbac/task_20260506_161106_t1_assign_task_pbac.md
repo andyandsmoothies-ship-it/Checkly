@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260506_161106_t1_assign_task_pbac.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: Refactor ChecklyFab PBAC (Read Tests -> Code -> Verify)

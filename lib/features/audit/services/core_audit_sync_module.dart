@@ -74,8 +74,11 @@ class CoreAuditSyncModule extends BaseSyncModule {
 
     bool hasNextPage = true;
     String? cursorId;
+    var page = 0;
+    const maxPages = 50; // Safety cap: 50 × server page size = 5,000 rows max.
 
-    while (hasNextPage) {
+    while (hasNextPage && page < maxPages) {
+      page++;
       final pullResult = await _api.pullDeltas(
         cursorUpdatedAt: _lastSyncTimestamp,
         cursorId: cursorId,

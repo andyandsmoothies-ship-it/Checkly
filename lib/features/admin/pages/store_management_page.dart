@@ -14,14 +14,12 @@ import '../../stores/model/store_dto.dart';
 import '../manager/admin_store_manager.dart';
 import 'widgets/store_card.dart';
 import 'widgets/store_form_sheet.dart';
-import 'widgets/store_filter_bar.dart';
 
 final _di = GetIt.instance;
 
 /// Admin: Store Management — list, create, edit, deactivate, transfer SM.
 class StoreManagementPage extends StatefulWidget {
-  final String? initialAreaId;
-  const StoreManagementPage({super.key, this.initialAreaId});
+  const StoreManagementPage({super.key});
 
   @override
   State<StoreManagementPage> createState() => _StoreManagementPageState();
@@ -29,17 +27,15 @@ class StoreManagementPage extends StatefulWidget {
 
 class _StoreManagementPageState extends State<StoreManagementPage> {
   late final AdminStoreManager _manager;
-  String? _selectedAreaId;
 
   @override
   void initState() {
     super.initState();
     _manager = _di<AdminStoreManager>();
-    _selectedAreaId = widget.initialAreaId;
-    _manager.load(areaId: _selectedAreaId);
+    _manager.load();
   }
 
-  Future<void> _loadData() => _manager.load(areaId: _selectedAreaId);
+  Future<void> _loadData() => _manager.load();
 
   // ─── Deactivate / Activate ───
 
@@ -92,8 +88,6 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     }
   }
 
-  // ─── Transfer SM ───
-
   // ─── Build ───
 
   @override
@@ -103,11 +97,8 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
       appBar: AppBar(title: const Text('Store Management')),
       floatingActionButton: canWrite
           ? FloatingActionButton(
-              onPressed: () => showStoreFormSheet(
-                context: context,
-                areas: _manager.areas,
-                onSaved: _loadData,
-              ),
+              onPressed: () =>
+                  showStoreFormSheet(context: context, onSaved: _loadData),
               shape: const CircleBorder(),
               child: const Icon(Icons.add),
             )
@@ -115,19 +106,7 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {
-          return Column(
-            children: [
-              StoreFilterBar(
-                areas: _manager.areas,
-                selectedAreaId: _selectedAreaId,
-                onChanged: (v) {
-                  setState(() => _selectedAreaId = v);
-                  _loadData();
-                },
-              ),
-              Expanded(child: _buildBody(canWrite)),
-            ],
-          );
+          return _buildBody(canWrite);
         },
       ),
     );
@@ -180,7 +159,6 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
                 ? () => showStoreFormSheet(
                     context: context,
                     store: store,
-                    areas: _manager.areas,
                     onSaved: _loadData,
                   )
                 : null,

@@ -89,7 +89,6 @@ void _registerDi({bool apiShouldThrow = false}) {
   when(
     () => storeSvc.getStores(
       search: any(named: 'search'),
-      areaId: any(named: 'areaId'),
       assignableAs: any(named: 'assignableAs'),
       exceptUser: any(named: 'exceptUser'),
       includeInactive: any(named: 'includeInactive'),

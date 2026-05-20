@@ -5,28 +5,33 @@ class StoreDto {
   final String name;
   final String? address;
 
-  final String? areaId;
-  final String? areaName;
   final String? managerName;
-  final String? areaManagerName;
   final double? gpsLat;
   final double? gpsLng;
   final bool? isActive;
   final DateTime createdAt;
+
+  // SL-1: Structured address fields
+  final String? addressProvince;
+  final String? addressDistrict;
+  final String? addressWard;
+  final String? addressStreet;
 
   const StoreDto({
     required this.id,
     required this.name,
     this.address,
 
-    this.areaId,
-    this.areaName,
     this.managerName,
-    this.areaManagerName,
     this.gpsLat,
     this.gpsLng,
     this.isActive,
     required this.createdAt,
+    // SL-1: Structured address fields
+    this.addressProvince,
+    this.addressDistrict,
+    this.addressWard,
+    this.addressStreet,
   });
 
   factory StoreDto.fromJson(Map<String, dynamic> json) => StoreDto(
@@ -34,13 +39,15 @@ class StoreDto {
     name: json['name'] as String,
     address: json['address'] as String?,
 
-    areaId: json['areaId'] as String?,
-    areaName: json['areaName'] as String?,
     managerName: json['managerName'] as String?,
-    areaManagerName: json['areaManagerName'] as String?,
     gpsLat: (json['gpsLat'] as num?)?.toDouble(),
     gpsLng: (json['gpsLng'] as num?)?.toDouble(),
     isActive: json['isActive'] as bool?,
     createdAt: DateTime.parse(json['createdAt'] as String),
+    // SL-1: Structured address fields
+    addressProvince: json['addressProvince'] as String?,
+    addressDistrict: json['addressDistrict'] as String?,
+    addressWard: json['addressWard'] as String?,
+    addressStreet: json['addressStreet'] as String?,
   );
 }

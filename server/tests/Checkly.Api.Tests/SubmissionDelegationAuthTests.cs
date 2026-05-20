@@ -117,13 +117,13 @@ public class SubmissionDelegationAuthTests : IClassFixture<TestWebApplicationFac
         using (var localScope = _fixture.Services.CreateScope())
         {
             var localDb = localScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
-            var newAreaId = Guid.NewGuid();
-            localDb.Areas.Add(new Common.Persistence.Entities.Area { Id = newAreaId, Name = "Test Area", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
 
-            var store = await localDb.Stores.FindAsync(storeId);
-            store!.AreaId = newAreaId;
-            var profile = await localDb.Profiles.FindAsync(areaManagerId);
-            profile!.AreaId = newAreaId;
+
+
+
+
+
+
             localDb.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = areaManagerId, StoreId = storeId });
             await localDb.SaveChangesAsync();
         }
@@ -177,15 +177,9 @@ public class SubmissionDelegationAuthTests : IClassFixture<TestWebApplicationFac
         {
             var localDb = localScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
 
-            var areaA = Guid.NewGuid();
-            var areaB = Guid.NewGuid();
-            localDb.Areas.Add(new Common.Persistence.Entities.Area { Id = areaA, Name = "Area A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            localDb.Areas.Add(new Common.Persistence.Entities.Area { Id = areaB, Name = "Area B", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-
-            var store = await localDb.Stores.FindAsync(storeId);
-            store!.AreaId = areaA; // Store is in Area A
-            var profile = await localDb.Profiles.FindAsync(areaManagerId);
-            profile!.AreaId = areaB; // Manager is in Area B
+            var differentStoreId = Guid.NewGuid();
+            localDb.Stores.Add(new Store { Id = differentStoreId, Name = "Different Store", IsActive = true });
+            localDb.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = areaManagerId, StoreId = differentStoreId });
             await localDb.SaveChangesAsync();
         }
 

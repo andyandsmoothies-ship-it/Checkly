@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import 'pending_submission.dart';
 import 'delta_pull_result.dart';
@@ -48,6 +49,9 @@ class SyncApiAdapter implements SyncApi {
 
   @override
   Future<void> pushSubmission(PendingSubmission submission) async {
+    // ignore: avoid_print
+    debugPrint('[SyncApi] pushSubmission key=${submission.idempotencyKey}');
+
     // Decode the stored JSON string and strip local file paths from photoUrl
     // fields so they never pollute the backend Postgres database.
     final payload = Map<String, dynamic>.from(
@@ -95,7 +99,6 @@ class SyncApiAdapter implements SyncApi {
     DateTime? cursorUpdatedAt,
     String? cursorId,
     String? storeId,
-    String? areaId,
   }) async {
     final params = <String, dynamic>{};
     if (cursorUpdatedAt != null) {
@@ -103,7 +106,6 @@ class SyncApiAdapter implements SyncApi {
     }
     if (cursorId != null) params['cursorId'] = cursorId;
     if (storeId != null) params['storeId'] = storeId;
-    if (areaId != null) params['areaId'] = areaId;
 
     final response = await _dio.get<Map<String, dynamic>>(
       '/sync/submissions',

@@ -7,7 +7,7 @@ Workflow: /implement | Track: B2 (Tests from QA exist, now implement)
 - **Test File**: `C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionAllowedActionsTests.cs`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (from /atdd — tests exist in SubmissionAllowedActionsTests.cs)
 
 ## Active Slice

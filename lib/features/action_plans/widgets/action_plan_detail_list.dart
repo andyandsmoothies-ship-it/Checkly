@@ -124,7 +124,11 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Root Cause ──
         if (plan.rootCause != 'SYSTEM_VOID') ...[
-          const SectionHeader('Root Cause', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
+          const SectionHeader(
+            'Root Cause',
+            variant: SectionHeaderVariant.sub,
+            padding: EdgeInsets.only(bottom: 8),
+          ),
           FlatBlock(
             child: Text(
               (plan.rootCause != null && plan.rootCause!.isNotEmpty)
@@ -146,7 +150,11 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Correction Plan ──
         if (plan.rootCause != 'SYSTEM_VOID') ...[
-          const SectionHeader('Correction Plan', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
+          const SectionHeader(
+            'Correction Plan',
+            variant: SectionHeaderVariant.sub,
+            padding: EdgeInsets.only(bottom: 8),
+          ),
           FlatBlock(
             child: Text(
               (plan.correctionPlan != null && plan.correctionPlan!.isNotEmpty)
@@ -171,7 +179,11 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Evidence ──
         if (plan.evidenceNote != null || plan.evidencePhotoUrl != null) ...[
-          const SectionHeader('Evidence', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
+          const SectionHeader(
+            'Evidence',
+            variant: SectionHeaderVariant.sub,
+            padding: EdgeInsets.only(bottom: 8),
+          ),
           FlatBlock(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,7 +220,11 @@ class ActionPlanDetailList extends StatelessWidget {
 
         // ── Verifier ──
         if (plan.verifierName != null) ...[
-          const SectionHeader('Verified By', variant: SectionHeaderVariant.sub, padding: EdgeInsets.only(bottom: 8)),
+          const SectionHeader(
+            'Verified By',
+            variant: SectionHeaderVariant.sub,
+            padding: EdgeInsets.only(bottom: 8),
+          ),
           FlatBlock(
             child: Row(
               children: [

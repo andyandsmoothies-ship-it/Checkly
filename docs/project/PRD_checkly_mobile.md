@@ -112,8 +112,8 @@
 | **Guided Template Wizard** | New templates start with a 4-option Blueprint Modal (Audit, Assessment, Survey, Checklist) that smart-configures scoring logic and UI constraints. |
 | **Templates** | CRUD with nested sections (groups) and criteria. **Soft-delete** (`IsActive = false`) |
 | **Groups / Criteria** | Managed within templates. **Soft-delete** — historical submissions retain answers linked to deactivated criteria |
-| **Stores** | CRUD with address, GPS coordinates, area assignment (FK to `areas`). **Soft-delete** (`IsActive = false`) |
-| **Users** | Create users, assign roles, link to stores/areas. **Ban** (LockoutEnd) instead of delete |
+| **Stores** | CRUD with address, GPS coordinates. **Soft-delete** (`IsActive = false`) |
+| **Users** | Create users, assign roles, link to stores (multiple stores for AMs). **Ban** (LockoutEnd) instead of delete |
 | **Submissions** | **Never delete** — core business record, status transitions only |
 | **Action Plans** | **Never delete** — workflow record with evidence, status transitions only |
 | **Notifications** | Hard-delete OK — auto-purged after 90-day retention |
@@ -142,20 +142,20 @@ Full ERD with column details: see [Architecture Decision](file:///C:/Users/HP/.g
 [USERS] ---receives---> [NOTIFICATIONS]
 ```
 
-### 4.2 Core Entities (9 tables)
+### 4.2 Core Entities
 
 | Entity | Rows (Supabase) | Key Fields |
 |--------|-----------------|------------|
-| `profiles` | 45 | full_name, email, store_id, area_id (FK → areas) |
+| `profiles` | 45 | full_name, email, store_id |
 | `user_roles` | 43 | user_id, role (enum: admin/auditor/SM/AM) |
-| `stores` | 37 | name, address, area_id (FK → areas), gps_lat/lng, is_active |
+| `profile_store_assignments` | dynamic | profile_id, store_id |
+| `stores` | 37 | name, address (Province, District, Ward, Street), gps_lat/lng, is_active |
 | `templates` | 16 | title, type, scoring_logic_config (JSONB), version |
 | `groups` | 107 | template_id, title, weight, order_index |
 | `criteria` | 98 | group_id, label, input_type, metadata (scale options), is_ccp, is_risk, points_weight |
 | `submissions` | 62 | template_id, store_id, auditor_id, total_score, status, GPS, snapshots |
 | `answers` | 55 | submission_id, criteria_id, value, numeric_value, photo_url |
 | `action_plans` | 55 | submission_id, answer_id, store_id, status, deadline |
-| `areas` | — | name, code (unique), is_active |
 | `notifications` | 163 | user_id, type, title, message, read_at |
 
 ### 4.3 Snapshot Fields
@@ -248,13 +248,12 @@ server/
 |--------|-----------------|:-----:|:-------:|:-------------:|:------------:|
 | Create/edit templates | `templates:create/update` | ✅ | ❌ | ❌ | ❌ |
 | Create/edit stores | `stores:write` | ✅ | ❌ | ❌ | ❌ |
-| Create/edit areas | `areas:write` | ✅ | ❌ | ❌ | ❌ |
 | Manage users | `users:manage` | ✅ | ❌ | ❌ | ❌ |
 | Manage roles | `admin:manage_roles` | ✅ | ❌ | ❌ | ❌ |
 | Manage global risks | `global_risks:manage`| ✅ | ❌ | ❌ | ❌ |
 | Execute audits (Start New) | `submissions:create` | ✅ | ✅ | ❌ | ❌ |
 | View own submissions | `submissions:list` | ✅ | ✅ | ❌ | ❌ |
-| View store's submissions | `submissions:list` | ✅ | ❌ | ✅ (own store) | ✅ (own area) |
+| View store's submissions | `submissions:list` | ✅ | ❌ | ✅ (assigned store) | ✅ (assigned stores) |
 | View all submissions | `submissions:list` | ✅ | ❌ | ❌ | ❌ |
 | Approve/reject audits | `submissions:review` | ✅ | ❌ | ❌ | ✅ |
 | Submit action plan evidence| `action_plans:write` | ❌ | ❌ | ✅ | ❌ |

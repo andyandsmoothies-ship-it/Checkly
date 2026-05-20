@@ -5,8 +5,8 @@ Workflow: /implement | Track: C
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260504_201500_q4m7s5u1_slice5_admin_ui.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 5: Admin UI — Virtual Area Picker (Read Tests -> Code -> Verify)

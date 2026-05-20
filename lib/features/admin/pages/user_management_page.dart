@@ -17,7 +17,7 @@ import '../widgets/user_management_list.dart';
 
 final _di = GetIt.instance;
 
-/// Admin: User Management — list, search, edit role/store/area, deactivate/reactivate.
+/// Admin: User Management — list, search, edit role/store, deactivate/reactivate.
 class UserManagementPage extends StatefulWidget {
   final String? initialSearch;
   const UserManagementPage({super.key, this.initialSearch});
@@ -95,7 +95,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
       isDismissible: false,
       builder: (_) => UserEditSheet(
         user: user,
-        areas: _manager.areas,
         loadStores: _manager.loadStores,
         onSave:
             ({
@@ -103,14 +102,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
               fullName,
               role,
               storeId,
-              areaId,
               assignedStoreIds,
             }) => _saveUser(
               userId,
               fullName: fullName,
               role: role,
               storeId: storeId,
-              areaId: areaId,
               assignedStoreIds: assignedStoreIds,
             ),
         onResetPassword: (sheetCtx, userId, userName) =>
@@ -129,7 +126,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
     String? fullName,
     String? role,
     String? storeId,
-    String? areaId,
     List<String>? assignedStoreIds,
   }) async {
     Navigator.of(context).pop(); // Close sheet first
@@ -140,7 +136,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
         fullName: fullName,
         role: role,
         storeId: storeId,
-        areaId: areaId,
         assignedStoreIds: assignedStoreIds,
       );
       if (mounted) {
@@ -175,7 +170,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
             fullName: fullName,
             role: role,
             storeId: storeId,
-            areaId: areaId,
             assignedStoreIds: assignedStoreIds,
             forceReassign: true,
           );
@@ -206,7 +200,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
       isScrollControlled: true,
       isDismissible: false,
       builder: (_) => UserCreateSheet(
-        areas: _manager.areas,
         loadStores: _manager.loadStores,
         onCreate:
             ({
@@ -215,7 +208,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
               required fullName,
               required role,
               storeId,
-              areaId,
               assignedStoreIds,
               forceReassign,
             }) => _manager.createUser(
@@ -224,7 +216,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
               fullName: fullName,
               role: role,
               storeId: storeId,
-              areaId: areaId,
               assignedStoreIds: assignedStoreIds,
               forceReassign: forceReassign ?? false,
             ),

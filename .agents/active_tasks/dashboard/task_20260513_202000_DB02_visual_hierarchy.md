@@ -5,7 +5,7 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260513_201500_DB02_visual_hierarchy.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (Track B1 - UI visual changes)
 
 ## Active Slice

@@ -17,8 +17,6 @@ import 'user_management_dialogs.dart';
 /// API call is delegated via [onCreate] — the sheet never imports [AdminApiService]
 /// directly, keeping it decoupled from the DI layer.
 class UserCreateSheet extends StatefulWidget {
-  final List<Map<String, dynamic>> areas;
-
   final Future<List<Map<String, dynamic>>> Function({
     String? assignableAs,
     String? exceptUser,
@@ -33,7 +31,6 @@ class UserCreateSheet extends StatefulWidget {
     required String fullName,
     required String role,
     String? storeId,
-    String? areaId,
     List<String>? assignedStoreIds,
     bool? forceReassign,
   })
@@ -41,7 +38,6 @@ class UserCreateSheet extends StatefulWidget {
 
   const UserCreateSheet({
     super.key,
-    required this.areas,
     required this.loadStores,
     required this.onCreate,
   });
@@ -134,7 +130,6 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
         fullName: name,
         role: selectedRole,
         storeId: selectedStoreId,
-        areaId: null, // Removed Area for AM
         assignedStoreIds:
             selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty
             ? _selectedStoreIds

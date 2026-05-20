@@ -23,7 +23,7 @@ public static class ListStores
         var assignableAs = httpContext.Request.Query["assignable_as"].FirstOrDefault();
         var exceptUser = httpContext.Request.Query["except_user"].FirstOrDefault();
         var includeInactive = httpContext.Request.Query["includeInactive"].FirstOrDefault();
-        var areaIdParam = httpContext.Request.Query["areaId"].FirstOrDefault();
+
 
         var query = db.Stores.AsQueryable();
 
@@ -33,13 +33,9 @@ public static class ListStores
             query = query.Where(s => s.IsActive == true);
 
         if (!string.IsNullOrEmpty(search))
-            query = query.Where(s =>
-                s.Name.Contains(search) ||
-                (s.Area != null && s.Area.Name.Contains(search)));
+            query = query.Where(s => s.Name.Contains(search));
 
-        // Filter by area
-        if (Guid.TryParse(areaIdParam, out var areaId))
-            query = query.Where(s => s.AreaId == areaId);
+
 
         // Smart filter: only stores assignable to a specific role
         if (assignableAs == "store_manager" || assignableAs == "area_manager")
@@ -139,11 +135,14 @@ public static class ListStores
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(s => new StoreDto(
-                s.Id, s.Name, s.Address, s.AreaId,
-                s.Area != null ? s.Area.Name : null,
+                s.Id, s.Name, s.Address,
                 smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
-                amLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
-                s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))
+                s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt,
+                // SL-1: Structured address fields
+                s.Address2 != null ? s.Address2.Province : null,
+                s.Address2 != null ? s.Address2.District : null,
+                s.Address2 != null ? s.Address2.Ward : null,
+                s.Address2 != null ? s.Address2.Street : null))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<StoreDto>(stores, total, page, pageSize));

@@ -68,19 +68,26 @@ class CachedStores extends Table {
   TextColumn get name => text()();
   TextColumn get address => text().nullable()();
 
-  TextColumn get areaId => text().nullable()();
-  TextColumn get areaName => text().nullable()();
   RealColumn get gpsLat => real().nullable()();
   RealColumn get gpsLng => real().nullable()();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 
+  // SL-1: Structured address fields (nullable — backfilled by server migration)
+  TextColumn get addressProvince => text().nullable()();
+  TextColumn get addressDistrict => text().nullable()();
+  TextColumn get addressWard => text().nullable()();
+  TextColumn get addressStreet => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
 
 /// Cached submission history — pull from API, cache locally.
+@TableIndex(name: 'idx_cached_submissions_store_id', columns: {#storeId})
+@TableIndex(name: 'idx_cached_submissions_status', columns: {#status})
+@TableIndex(name: 'idx_cached_submissions_completed_at', columns: {#completedAt})
 class CachedSubmissions extends Table {
   TextColumn get id => text()();
   TextColumn get templateId => text().nullable()();
@@ -107,6 +114,8 @@ class CachedSubmissions extends Table {
 }
 
 /// Cached action plans — delta synced.
+@TableIndex(name: 'idx_cached_action_plans_submission_id', columns: {#submissionId})
+@TableIndex(name: 'idx_cached_action_plans_status', columns: {#status})
 class CachedActionPlans extends Table {
   TextColumn get id => text()();
   TextColumn get submissionId => text().nullable()();

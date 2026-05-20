@@ -7,13 +7,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   Widget buildTestWidget(RadarData? radarData) {
     return MaterialApp(
-      home: Scaffold(
-        body: InsightsRadarChart(radarData: radarData),
-      ),
+      home: Scaffold(body: InsightsRadarChart(radarData: radarData)),
     );
   }
 
-  testWidgets('FL-05 InsightsRadarChart null data renders empty state', (tester) async {
+  testWidgets('FL-05 InsightsRadarChart null data renders empty state', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildTestWidget(null));
 
     expect(find.text('No regional data yet'), findsOneWidget);
@@ -21,7 +21,9 @@ void main() {
     expect(find.byType(RadarChart), findsNothing);
   });
 
-  testWidgets('FL-06 InsightsRadarChart valid data renders 2 polygons', (tester) async {
+  testWidgets('FL-06 InsightsRadarChart valid data renders 2 polygons', (
+    tester,
+  ) async {
     final data = RadarData(
       categories: ['A', 'B', 'C'],
       storeValues: [10.0, 20.0, 30.0],

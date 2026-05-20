@@ -1,3 +1,5 @@
+import '../../../_shared/constants/user_persona.dart';
+
 class ScheduleAuditFormLogic {
   static List<Map<String, dynamic>> filterAuditors({
     required String? selectedStoreId,
@@ -6,21 +8,15 @@ class ScheduleAuditFormLogic {
   }) {
     if (selectedStoreId == null) return List.from(allAuditors);
 
-    final store = allStores.firstWhere(
-      (s) => s['id'] == selectedStoreId,
-      orElse: () => <String, dynamic>{},
-    );
-    final storeAreaId = store['areaId'] as String?;
-
     return allAuditors.where((u) {
       final role = u['role'] as String?;
-      if (role == 'area_manager') {
+      if (UserPersona.fromRole(role) == UserPersona.areaManager) {
         final assignedStoreIds =
             (u['assignedStoreIds'] as List<dynamic>?)?.cast<String>() ??
             <String>[];
         return assignedStoreIds.contains(selectedStoreId);
       } else {
-        return u['areaId'] == storeAreaId || u['areaId'] == null;
+        return true;
       }
     }).toList();
   }
@@ -38,7 +34,7 @@ class ScheduleAuditFormLogic {
     );
 
     final role = auditor['role'] as String?;
-    if (role == 'area_manager') {
+    if (UserPersona.fromRole(role) == UserPersona.areaManager) {
       final assignedStoreIds =
           (auditor['assignedStoreIds'] as List<dynamic>?)?.cast<String>() ??
           <String>[];
@@ -46,12 +42,7 @@ class ScheduleAuditFormLogic {
           .where((s) => assignedStoreIds.contains(s['id']))
           .toList();
     } else {
-      final auditorAreaId = auditor['areaId'] as String?;
-      if (auditorAreaId != null) {
-        return allStores.where((s) => s['areaId'] == auditorAreaId).toList();
-      } else {
-        return List.from(allStores);
-      }
+      return List.from(allStores);
     }
   }
 }

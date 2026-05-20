@@ -6,7 +6,7 @@ Workflow: /implement | Track: B1 (Direct Build — Route 2 Visuals/Simple)
 - **Tests**: `C:\Users\HP\Documents\GitHub\Checkly\docs\qa\gates\executed_tests_20260510_184522_2ff13761_uicaps.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (from /tdd — TC-PBAC-01, TC-PBAC-04)
 
 ## Active Slice

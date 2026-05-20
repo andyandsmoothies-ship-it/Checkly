@@ -19,7 +19,6 @@ public static class CreateUser
         string FullName,
         string Role,
         Guid? StoreId = null,
-        Guid? AreaId = null,
         Guid[]? AssignedStoreIds = null,
         bool ForceReassign = false);
 
@@ -127,7 +126,6 @@ public static class CreateUser
                 FullName = request.FullName,
                 Email = request.Email,
                 StoreId = request.StoreId,
-                AreaId = request.AreaId,
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             };

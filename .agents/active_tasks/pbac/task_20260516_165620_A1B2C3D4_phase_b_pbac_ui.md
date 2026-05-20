@@ -6,7 +6,7 @@ Workflow: /implement | Track: B2
 - **Test Contract**: `C:\Users\HP\Documents\GitHub\Checkly\docs\qa\gates\pbac\executed_tests_20260516_164124_A1B2C3D4_phase_b_tdd.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (from /tdd)
 - [x] Pre-Flight: Loaded available governance rules and local GEMINI files
 

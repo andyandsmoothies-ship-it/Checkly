@@ -5,7 +5,7 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\analysis_epic_20260512_200100_SNC01_sync_submissions.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (Track B1 direct implementation)
 
 ## Active Slice

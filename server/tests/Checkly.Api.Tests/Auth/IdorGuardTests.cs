@@ -91,7 +91,7 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
-    public async Task IDOR_RS_02_AreaManager_CanReviewSubmissionInOwnArea()
+    public async Task IDOR_RS_02_AreaManager_CanReviewSubmissionInOwnAssignedStore()
     {
         // 1. Arrange
         var client = _factory.CreateClient();
@@ -103,12 +103,8 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var amProfile = await db.Profiles.FirstAsync(p => p.Id == amId);
 
-            var area = new Area { Id = Guid.NewGuid(), Name = $"Area Own {uid}" };
-            db.Areas.Add(area);
-
-            var store = new Store { Id = Guid.NewGuid(), Name = $"Store Own {uid}", AreaId = area.Id };
+            var store = new Store { Id = Guid.NewGuid(), Name = $"Store Own {uid}" };
             db.Stores.Add(store);
 
             db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amId, StoreId = store.Id });
@@ -142,7 +138,7 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
-    public async Task IDOR_RS_03_AreaManager_IsForbiddenFromReviewingCrossAreaSubmission()
+    public async Task IDOR_RS_03_AreaManager_IsForbiddenFromReviewingUnassignedStoreSubmission()
     {
         // 1. Arrange
         var client = _factory.CreateClient();
@@ -150,28 +146,23 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
         var (token, amId) = await _factory.RegisterUserAsync(
             client, $"am_cross_{uid}@checkly.com", "Password123!", "AM Cross", "area_manager");
 
-        Guid crossAreaSubmissionId;
+        Guid unassignedSubmissionId;
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var amProfile = await db.Profiles.FirstAsync(p => p.Id == amId);
 
-            var areaA = new Area { Id = Guid.NewGuid(), Name = $"Area A {uid}" };
-            var areaB = new Area { Id = Guid.NewGuid(), Name = $"Area B {uid}" };
-            db.Areas.AddRange(areaA, areaB);
+            // Submission is in store B — the area manager is assigned ONLY to store A
+            var storeA = new Store { Id = Guid.NewGuid(), Name = $"Store in A {uid}" };
+            db.Stores.Add(storeA);
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amId, StoreId = storeA.Id });
 
-            // Submission is in area B — the area manager is assigned to area A
-            var storeInA = new Store { Id = Guid.NewGuid(), Name = $"Store in A {uid}", AreaId = areaA.Id };
-            db.Stores.Add(storeInA);
-            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amId, StoreId = storeInA.Id });
-
-            var storeInB = new Store { Id = Guid.NewGuid(), Name = $"Store in B {uid}", AreaId = areaB.Id };
-            db.Stores.Add(storeInB);
+            var storeB = new Store { Id = Guid.NewGuid(), Name = $"Store in B {uid}" };
+            db.Stores.Add(storeB);
 
             var submission = new Submission
             {
                 Id = Guid.NewGuid(),
-                StoreId = storeInB.Id,
+                StoreId = storeB.Id,
                 Status = "completed",
                 CreatedAt = DateTimeOffset.UtcNow
             };
@@ -180,7 +171,7 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
             await CapabilityHelper.UpsertAsync(db, "area_manager", AppCapabilities.SubmissionsReview);
 
             await db.SaveChangesAsync();
-            crossAreaSubmissionId = submission.Id;
+            unassignedSubmissionId = submission.Id;
 
             var pbacCache = scope.ServiceProvider.GetRequiredService<PbacDictionaryCache>();
             await pbacCache.InitializeAsync(scope.ServiceProvider);
@@ -190,9 +181,9 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
 
         // 2. Act
         var response = await authenticatedClient.PutAsJsonAsync(
-            $"/api/submissions/{crossAreaSubmissionId}/review", new { status = "approved" });
+            $"/api/submissions/{unassignedSubmissionId}/review", new { status = "approved" });
 
-        // 3. Assert — IDOR guard must block cross-area access
+        // 3. Assert — IDOR guard must block access to unassigned stores
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 

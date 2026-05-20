@@ -1,7 +1,7 @@
 ---
 name: verification-loop
 description: >
-  7-phase .NET verification pipeline with structured PASS/FAIL reporting, post-implementation
+  7-phase Polyglot verification pipeline (supports .NET, Flutter, Node, etc.) with structured PASS/FAIL reporting, post-implementation
   blast radius analysis, hostile interrogation, and manual testing handoff.
   Ensures every change is build-verified, diagnostics-clean, anti-pattern-free,
   test-passing, security-scanned, format-compliant, and diff-reviewed before
@@ -15,9 +15,9 @@ description: >
 
 ## Core Principles
 
-1. **Build is the minimum bar** — Never mark a task complete without a green `dotnet build`. If it doesn't compile, nothing else matters. A broken build wastes every subsequent phase's time.
+1. **Build is the minimum bar** — Never mark a task complete without a green build. If it doesn't compile, nothing else matters. A broken build wastes every subsequent phase's time.
 
-2. **Automated checks before manual review** — Tools catch what humans miss. `get_diagnostics` finds nullability issues, `detect_antipatterns` catches `DateTime.Now` usage, and `dotnet test` proves behavior. Run all of these before eyeballing code.
+2. **Automated checks before manual review** — Tools catch what humans miss. Formatters, linters, and test suites prove behavior. Run all of these before eyeballing code.
 
 3. **Short-circuit on critical failures** — If the build fails, don't run tests. If tests fail, don't run formatting checks. Failing fast saves time and keeps the feedback loop tight. Fix the most fundamental issue first.
 
@@ -27,57 +27,45 @@ description: >
 
 ---
 
-## Part A: 7-Phase Automated Pipeline
+## Part A: 7-Phase Polyglot Automated Pipeline
 
-Execute phases in order. Short-circuit on CRITICAL failures (Phase 1 and Phase 4).
+Execute phases in order for the relevant ecosystem(s) you are modifying. Short-circuit on CRITICAL failures (Phase 1 and Phase 4).
 
 **Phase 1: Build (CRITICAL)**
-```
-dotnet build --no-restore
-```
+*   **.NET**: `dotnet build --no-restore`
+*   **Flutter**: Skip full APK/iOS builds. Rely on `flutter analyze` (Phase 2) and `flutter test` (Phase 4) to verify compilation.
 Status: PASS (0 errors) / FAIL (N errors)
 Short-circuit: If FAIL, stop all subsequent phases. Fix build errors first.
-Note: Capture warning count even on PASS — new warnings are tracked in Phase 2.
 
-**Phase 2: Diagnostics**
-```
-MCP: get_diagnostics(scope: "file", path: each changed file)
-MCP: get_diagnostics(scope: "project", path: changed project)
-```
+**Phase 2: Diagnostics & Linting**
+*   **.NET**: `dotnet format analyzers` (or use `get_diagnostics` MCP)
+*   **Flutter**: `flutter analyze`
 Status: PASS (0 new warnings) / WARN (N new warnings) / FAIL (new errors)
 Check: Compare against baseline — only flag NEW warnings introduced by the current changes.
-Common findings: CS8600 (null reference), CS8602 (dereference of nullable), CS0219 (unused variable).
 
 **Phase 3: Anti-pattern Scan**
-```
-MCP: detect_antipatterns(file: each changed file)
-```
+Use `grep_search` or MCP tools on changed files.
+*   **.NET Catches**: async void, `DateTime.Now`, missing `CancellationToken`.
+*   **Flutter Catches**: hardcoded colors, missing Semantic tags, leftover `print()`, empty `onPressed: () {}`.
 Status: PASS (0 anti-patterns) / WARN (N anti-patterns found)
-Catches: async void, sync-over-async, `new HttpClient()`, `DateTime.Now`, broad catch,
-logging string interpolation, missing CancellationToken, EF queries without AsNoTracking.
 
 **Phase 4: Tests (CRITICAL)**
-```
-dotnet test --no-build
-```
+*   **.NET**: `dotnet test`
+*   **Flutter**: `flutter test`
 Status: PASS (all green) / FAIL (N failures)
 Short-circuit: If FAIL, stop remaining phases. Fix failing tests before proceeding.
-Note: If no test project exists, status is SKIP with a recommendation to add tests.
 
 **Phase 5: Security Scan**
-```
-dotnet list package --vulnerable --include-transitive
-```
+*   **.NET**: `dotnet list package --vulnerable --include-transitive`
+*   **Flutter**: `flutter pub outdated` (check for critical security patches)
 Scan changed files for: hardcoded secrets, connection strings, API keys.
-Check: OWASP patterns in new code (SQL injection, XSS, missing auth attributes).
-Status: PASS / WARN (medium/low findings) / FAIL (critical/high vulnerabilities)
+Status: PASS / WARN / FAIL
 
 **Phase 6: Format Compliance**
-```
-dotnet format --verify-no-changes
-```
+*   **.NET**: `dotnet format --verify-no-changes`
+*   **Flutter**: `dart format --set-exit-if-changed .`
 Status: PASS (no changes needed) / FAIL (formatting violations found)
-Fix: Run `dotnet format` and include formatting changes in the commit.
+Fix: Run the formatter (e.g., `dotnet format` or `dart format .`) and include formatting changes.
 
 **Phase 7: Diff Review**
 ```

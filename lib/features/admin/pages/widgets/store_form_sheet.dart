@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:get_it/get_it.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/widgets/unsaved_changes_guard.dart';
-import '../../../../_shared/exceptions/app_error.dart';
-import '../../../../_shared/services/error_display_service.dart';
-import 'package:dio/dio.dart';
 import '../../../stores/model/store_dto.dart';
-import '../../../stores/services/store_api_service.dart';
+import 'store_form_body.dart';
+import 'store_form_save_logic.dart';
 
+/// Opens the [StoreFormSheet] as a modal bottom sheet.
+///
+/// SL-1: [areas] parameter removed — Province dropdown replaced Area dropdown.
 void showStoreFormSheet({
   required BuildContext context,
   StoreDto? store,
-  required List<Map<String, dynamic>> areas,
   required VoidCallback onSaved,
 }) {
   showModalBottomSheet(
@@ -22,354 +20,132 @@ void showStoreFormSheet({
     isScrollControlled: true,
     useRootNavigator: true,
     isDismissible: false,
-    builder: (ctx) =>
-        StoreFormSheet(store: store, areas: areas, onSaved: onSaved),
+    builder: (ctx) => StoreFormSheet(store: store, onSaved: onSaved),
   );
 }
 
 class StoreFormSheet extends StatefulWidget {
   final StoreDto? store;
-  final List<Map<String, dynamic>> areas;
   final VoidCallback onSaved;
 
-  const StoreFormSheet({
-    super.key,
-    this.store,
-    required this.areas,
-    required this.onSaved,
-  });
+  const StoreFormSheet({super.key, this.store, required this.onSaved});
 
   @override
   State<StoreFormSheet> createState() => _StoreFormSheetState();
 }
 
-class _StoreFormSheetState extends State<StoreFormSheet> {
-  late final TextEditingController _nameCtrl;
-  late final TextEditingController _addressCtrl;
-  late final TextEditingController _latCtrl;
-  late final TextEditingController _lngCtrl;
+class _StoreFormSheetState extends State<StoreFormSheet>
+    with StoreFormSaveLogic {
+  // ── Controllers ────────────────────────────────────────────────────────────
+  @override
+  late final TextEditingController nameCtrl;
+  @override
+  late final TextEditingController addressCtrl;
+  @override
+  late final TextEditingController latCtrl;
+  @override
+  late final TextEditingController lngCtrl;
+  @override
+  late final TextEditingController districtCtrl;
+  @override
+  late final TextEditingController wardCtrl;
+  @override
+  late final TextEditingController streetCtrl;
+
   late final MapController _mapCtrl;
 
-  String? _selectedAreaId;
-  LatLng? _markerPos;
-  bool _isDirty = false;
-  bool _isSaving = false;
+  // ── Mixin contract ─────────────────────────────────────────────────────────
+  @override
+  String? selectedProvince;
 
-  final _di = GetIt.instance;
+  @override
+  StoreDto? get storeToEdit => widget.store;
+
+  @override
+  VoidCallback get onSaved => widget.onSaved;
+
+  // ── Map state ──────────────────────────────────────────────────────────────
+  LatLng? _markerPos;
 
   @override
   void initState() {
     super.initState();
-    _nameCtrl = TextEditingController(text: widget.store?.name ?? '');
-    _addressCtrl = TextEditingController(text: widget.store?.address ?? '');
-    _latCtrl = TextEditingController(
+    nameCtrl = TextEditingController(text: widget.store?.name ?? '');
+    addressCtrl = TextEditingController(text: widget.store?.address ?? '');
+    latCtrl = TextEditingController(
       text: widget.store?.gpsLat?.toString() ?? '',
     );
-    _lngCtrl = TextEditingController(
+    lngCtrl = TextEditingController(
       text: widget.store?.gpsLng?.toString() ?? '',
     );
-    _selectedAreaId = widget.store?.areaId;
+    selectedProvince = widget.store?.addressProvince;
+    districtCtrl = TextEditingController(
+      text: widget.store?.addressDistrict ?? '',
+    );
+    wardCtrl = TextEditingController(text: widget.store?.addressWard ?? '');
+    streetCtrl = TextEditingController(
+      text: widget.store?.addressStreet ?? '',
+    );
+
     _mapCtrl = MapController();
 
-    final initLat = double.tryParse(_latCtrl.text);
-    final initLng = double.tryParse(_lngCtrl.text);
+    final initLat = double.tryParse(latCtrl.text);
+    final initLng = double.tryParse(lngCtrl.text);
     if (initLat != null && initLng != null) {
       _markerPos = LatLng(initLat, initLng);
     }
+
+    loadProvinces();
   }
 
   @override
   void dispose() {
-    _nameCtrl.dispose();
-    _addressCtrl.dispose();
-    _latCtrl.dispose();
-    _lngCtrl.dispose();
+    nameCtrl.dispose();
+    addressCtrl.dispose();
+    latCtrl.dispose();
+    lngCtrl.dispose();
+    districtCtrl.dispose();
+    wardCtrl.dispose();
+    streetCtrl.dispose();
     _mapCtrl.dispose();
     super.dispose();
   }
 
-  void _markDirty() {
-    if (!_isDirty) setState(() => _isDirty = true);
-  }
-
-  Future<void> _saveStore() async {
-    final name = _nameCtrl.text.trim();
-    if (name.isEmpty) {
-      _di<ErrorDisplayService>().show(
-        const AppError(
-          code: 'validation_error',
-          message: 'Store name is required',
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isSaving = true);
-
-    try {
-      if (widget.store?.id != null) {
-        await _di<StoreApiService>().updateStore(
-          widget.store!.id,
-          name: name,
-          address: _addressCtrl.text.trim().isNotEmpty
-              ? _addressCtrl.text.trim()
-              : null,
-          areaId: _selectedAreaId,
-          gpsLat: double.tryParse(_latCtrl.text.trim()),
-          gpsLng: double.tryParse(_lngCtrl.text.trim()),
-        );
-      } else {
-        await _di<StoreApiService>().createStore(
-          name: name,
-          address: _addressCtrl.text.trim().isNotEmpty
-              ? _addressCtrl.text.trim()
-              : null,
-          areaId: _selectedAreaId,
-          gpsLat: double.tryParse(_latCtrl.text.trim()),
-          gpsLng: double.tryParse(_lngCtrl.text.trim()),
-        );
-      }
-
-      if (mounted) {
-        _isDirty = false;
-        Navigator.of(context).pop();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.store?.id != null ? 'Store updated' : 'Store created',
-            ),
-            backgroundColor: AppTheme.success,
-          ),
-        );
-        widget.onSaved();
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isSaving = false);
-        if (e is DioException) {
-          _di<ErrorDisplayService>().show(AppError.fromDioException(e));
-        } else {
-          _di<ErrorDisplayService>().show(const AppError(code: 'unknown'));
-        }
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isEdit = widget.store != null;
-
     return UnsavedChangesGuard(
-      isDirty: _isDirty,
+      isDirty: isDirty,
       child: FractionallySizedBox(
         heightFactor: 0.92,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isEdit ? 'Edit Store' : 'Create Store',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.maybePop(context),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Name
-                TextField(
-                  controller: _nameCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Store Name *',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (_) => _markDirty(),
-                  enabled: !_isSaving,
-                ),
-                const SizedBox(height: 12),
-
-                // Address
-                TextField(
-                  controller: _addressCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Address',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (_) => _markDirty(),
-                  enabled: !_isSaving,
-                ),
-                const SizedBox(height: 12),
-
-                // Area dropdown
-                DropdownButtonFormField<String>(
-                  initialValue:
-                      widget.areas.any((a) => a['id'] == _selectedAreaId)
-                      ? _selectedAreaId
-                      : null,
-                  borderRadius: BorderRadius.circular(12),
-                  decoration: const InputDecoration(
-                    labelText: 'Area',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('— None —'),
-                    ),
-                    ...widget.areas.map(
-                      (a) => DropdownMenuItem(
-                        value: a['id'] as String,
-                        child: Text(a['name'] as String),
-                      ),
-                    ),
-                  ],
-                  onChanged: _isSaving
-                      ? null
-                      : (v) {
-                          setState(() => _selectedAreaId = v);
-                          _markDirty();
-                        },
-                ),
-                const SizedBox(height: 12),
-
-                // GPS fields (side by side)
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _latCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Latitude',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: true,
-                        ),
-                        enabled: !_isSaving,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: _lngCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Longitude',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: true,
-                        ),
-                        enabled: !_isSaving,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                // Interactive map
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    height: 220,
-                    child: IgnorePointer(
-                      ignoring: _isSaving,
-                      child: FlutterMap(
-                        mapController: _mapCtrl,
-                        options: MapOptions(
-                          initialCenter:
-                              _markerPos ?? const LatLng(15.0, 108.0),
-                          initialZoom: _markerPos != null ? 14.0 : 5.5,
-                          onTap: (tapPos, latlng) {
-                            setState(() {
-                              _markerPos = latlng;
-                              _latCtrl.text = latlng.latitude.toStringAsFixed(
-                                6,
-                              );
-                              _lngCtrl.text = latlng.longitude.toStringAsFixed(
-                                6,
-                              );
-                            });
-                            _markDirty();
-                          },
-                        ),
-                        children: [
-                          TileLayer(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.checkly.app',
-                          ),
-                          if (_markerPos != null)
-                            MarkerLayer(
-                              markers: [
-                                Marker(
-                                  point: _markerPos!,
-                                  width: 40,
-                                  height: 40,
-                                  child: Icon(
-                                    Icons.location_on,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    size: 40,
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Tap on the map to set store location',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Save button
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: _isSaving ? null : _saveStore,
-                    icon: _isSaving
-                        ? Container(
-                            width: 16,
-                            height: 16,
-                            padding: const EdgeInsets.all(2),
-                            child: const CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Icon(Icons.save),
-                    label: Text(
-                      _isSaving
-                          ? 'Saving...'
-                          : (isEdit ? 'Save Changes' : 'Create Store'),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
+        child: StoreFormBody(
+          isEdit: widget.store != null,
+          isSaving: isSaving,
+          provincesLoading: provincesLoading,
+          nameCtrl: nameCtrl,
+          addressCtrl: addressCtrl,
+          districtCtrl: districtCtrl,
+          wardCtrl: wardCtrl,
+          streetCtrl: streetCtrl,
+          latCtrl: latCtrl,
+          lngCtrl: lngCtrl,
+          provinces: provinces,
+          selectedProvince: selectedProvince,
+          markerPos: _markerPos,
+          mapController: _mapCtrl,
+          onMarkDirty: markDirty,
+          onProvinceChanged: (v) {
+            setState(() => selectedProvince = v);
+            markDirty();
+          },
+          onMapTap: (tapPos, latlng) {
+            setState(() {
+              _markerPos = latlng;
+              latCtrl.text = latlng.latitude.toStringAsFixed(6);
+              lngCtrl.text = latlng.longitude.toStringAsFixed(6);
+            });
+            markDirty();
+          },
+          onSave: saveStore,
         ),
       ),
     );

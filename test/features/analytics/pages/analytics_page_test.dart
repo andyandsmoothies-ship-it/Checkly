@@ -9,7 +9,7 @@ import 'package:mocktail/mocktail.dart';
 class MockAnalyticsManager extends Mock implements AnalyticsManager {
   @override
   void addListener(VoidCallback listener) {}
-  
+
   @override
   void removeListener(VoidCallback listener) {}
 }
@@ -25,7 +25,7 @@ void main() {
     when(() => mockManager.isOffline).thenReturn(false);
     when(() => mockManager.data).thenReturn(null);
     when(() => mockManager.load()).thenAnswer((_) async {});
-    when(() => mockManager.selectedArea).thenReturn(null);
+    when(() => mockManager.selectedProvince).thenReturn(null);
     when(() => mockManager.selectedStore).thenReturn(null);
     when(() => mockManager.selectedType).thenReturn(null);
     when(() => mockManager.selectedAuditor).thenReturn(null);
@@ -40,11 +40,7 @@ void main() {
   });
 
   Widget buildTestWidget() {
-    return const MaterialApp(
-      home: Scaffold(
-        body: AnalyticsPage(),
-      ),
-    );
+    return const MaterialApp(home: Scaffold(body: AnalyticsPage()));
   }
 
   testWidgets('FL-09 InsightsStale banner shows when stale', (tester) async {
@@ -57,7 +53,7 @@ void main() {
       trend: [],
       categoryScores: [],
       storeNames: [],
-      areaNames: [],
+      provinceNames: [],
       templateTypes: [],
       auditorNames: [],
       insightsStale: true,
@@ -67,7 +63,7 @@ void main() {
           type: 'info',
           title: 'Stale test',
           description: 'This is a stale insight',
-        )
+        ),
       ],
       radarData: null,
     );
@@ -75,12 +71,15 @@ void main() {
     when(() => mockManager.data).thenReturn(data);
 
     await tester.pumpWidget(buildTestWidget());
-    
+
     // Scroll down to the insights section
     await tester.drag(find.byType(ListView), const Offset(0, -1000));
     await tester.pumpAndSettle();
 
-    expect(find.text('⚠ Insights last updated over 2 hours ago'), findsOneWidget);
+    expect(
+      find.text('⚠ Insights last updated over 2 hours ago'),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('insights_stale_banner')), findsOneWidget);
   });
 
@@ -94,7 +93,7 @@ void main() {
       trend: [],
       categoryScores: [],
       storeNames: [],
-      areaNames: [],
+      provinceNames: [],
       templateTypes: [],
       auditorNames: [],
       insightsStale: false,
@@ -104,7 +103,7 @@ void main() {
           type: 'info',
           title: 'Should not show',
           description: 'Offline state',
-        )
+        ),
       ],
       radarData: null,
     );
@@ -114,7 +113,10 @@ void main() {
 
     await tester.pumpWidget(buildTestWidget());
 
-    expect(find.text('Insights require an internet connection.'), findsOneWidget);
+    expect(
+      find.text('Insights require an internet connection.'),
+      findsOneWidget,
+    );
     // Insights section is gated by !_manager.isOffline
     expect(find.text('Should not show'), findsNothing);
     expect(find.text('INSIGHTS'), findsNothing);

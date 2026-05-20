@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../app_database.dart';
 import '../../../features/stores/model/store_dto.dart';
+import '../../constants/user_persona.dart';
 
 /// DAO for cached store data.
 class StoreDao {
@@ -10,15 +11,23 @@ class StoreDao {
   StoreDao(this._db);
 
   /// Read all cached stores.
+  ///
+  /// Fail-closed: if the profile cache is empty (e.g., logout race), returns
+  /// an empty list immediately. This prevents a millisecond window where an
+  /// Area Manager could see the full unscoped store list.
   Future<List<StoreDto>> getAllStores() async {
     final profileRow =
         await (_db.select(_db.cachedProfiles)
               ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
               ..limit(1))
             .getSingleOrNull();
-    final isAreaManager = profileRow?.role == 'area_manager';
+
+    // Fail closed: no profile means we cannot determine scope — return nothing.
+    if (profileRow == null) return const [];
+
+    final isAreaManager = UserPersona.fromRole(profileRow.role) == UserPersona.areaManager;
     final overrideIds = _parseAssignedStoreOverrides(
-      profileRow?.assignedStoreOverrides,
+      profileRow.assignedStoreOverrides,
     );
 
     final query = _db.select(_db.cachedStores)
@@ -51,9 +60,10 @@ class StoreDao {
     id: row.id,
     name: row.name,
     address: row.address,
-
-    areaId: row.areaId,
-    areaName: row.areaName,
+    addressProvince: row.addressProvince,
+    addressDistrict: row.addressDistrict,
+    addressWard: row.addressWard,
+    addressStreet: row.addressStreet,
     gpsLat: row.gpsLat,
     gpsLng: row.gpsLng,
     isActive: row.isActive,
@@ -65,9 +75,10 @@ class StoreDao {
         id: dto.id,
         name: dto.name,
         address: Value(dto.address),
-
-        areaId: Value(dto.areaId),
-        areaName: Value(dto.areaName),
+        addressProvince: Value(dto.addressProvince),
+        addressDistrict: Value(dto.addressDistrict),
+        addressWard: Value(dto.addressWard),
+        addressStreet: Value(dto.addressStreet),
         gpsLat: Value(dto.gpsLat),
         gpsLng: Value(dto.gpsLng),
         isActive: Value(dto.isActive ?? true),

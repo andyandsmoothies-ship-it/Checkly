@@ -5,6 +5,7 @@ using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Checkly.Api.Tests;
 
@@ -23,23 +24,18 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
     }
 
     /// <summary>
-    /// Seeds two areas, two stores, and two action plans (one in each area).
+    /// Seeds two stores and two action plans.
     /// </summary>
-    private async Task<(Guid Area1Id, Guid Area2Id, Guid Store1Id, Guid Store2Id)> SeedTestDataAsync()
+    private async Task<(Guid Store1Id, Guid Store2Id)> SeedTestDataAsync()
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var area1Id = Guid.NewGuid();
-        var area2Id = Guid.NewGuid();
         var store1Id = Guid.NewGuid();
         var store2Id = Guid.NewGuid();
 
-        db.Areas.Add(new Area { Id = area1Id, Name = "Area 1", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-        db.Areas.Add(new Area { Id = area2Id, Name = "Area 2", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-
-        db.Stores.Add(new Store { Id = store1Id, Name = "Store 1", AreaId = area1Id, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-        db.Stores.Add(new Store { Id = store2Id, Name = "Store 2", AreaId = area2Id, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+        db.Stores.Add(new Store { Id = store1Id, Name = "Store 1", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+        db.Stores.Add(new Store { Id = store2Id, Name = "Store 2", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
 
         // Add one action plan for each store
         db.ActionPlans.Add(new ActionPlan
@@ -68,10 +64,10 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
 
         await db.SaveChangesAsync();
 
-        return (area1Id, area2Id, store1Id, store2Id);
+        return (store1Id, store2Id);
     }
 
-    private async Task<(HttpClient Client, Guid UserId)> CreateManagerClientAsync(string role, Guid? areaId = null, Guid? storeId = null)
+    private async Task<(HttpClient Client, Guid UserId)> CreateManagerClientAsync(string role, Guid? storeId = null)
     {
         var client = _factory.CreateClient();
         var email = $"{role}-{Guid.NewGuid():N}@test.com";
@@ -83,7 +79,6 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
         var profile = await db.Profiles.FindAsync(userId);
         if (profile != null)
         {
-            profile.AreaId = areaId;
             profile.StoreId = storeId;
             await db.SaveChangesAsync();
         }
@@ -99,8 +94,7 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
     public async Task AM_GetsList_ReturnsPlansForAssignedStores_RegardlessOfArea()
     {
         // Arrange
-        var (area1Id, area2Id, store1Id, store2Id) = await SeedTestDataAsync();
-        // Give AM no areaId so old logic fails
+        var (store1Id, store2Id) = await SeedTestDataAsync();
         var (client, userId) = await CreateManagerClientAsync("area_manager");
 
         // Assign both store1 and store2 via junction
@@ -116,7 +110,6 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
         var response = await client.GetAsync("/api/action-plans");
 
         // Assert - Expect both plans because they are in junction
-        // Fails currently: returns empty because profile.AreaId doesn't match store.AreaId
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var items = body.GetProperty("items").EnumerateArray().Select(x => x.GetProperty("storeId").GetString()).ToList();
@@ -130,9 +123,8 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
     public async Task AM_GetsList_ExcludesPlansFromStoresNotInJunction()
     {
         // Arrange
-        var (area1Id, area2Id, store1Id, store2Id) = await SeedTestDataAsync();
-        // Set areaId to match area1 so old logic would pass for store1
-        var (client, userId) = await CreateManagerClientAsync("area_manager", areaId: area1Id);
+        var (store1Id, store2Id) = await SeedTestDataAsync();
+        var (client, userId) = await CreateManagerClientAsync("area_manager");
 
         // DO NOT add store1 to junction, ONLY add store2
         using (var scope = _factory.Services.CreateScope())
@@ -146,7 +138,6 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
         var response = await client.GetAsync("/api/action-plans");
 
         // Assert - Expect ONLY store2's plan
-        // Fails currently: returns store1's plan because profile.AreaId == store1.AreaId
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         var items = body.GetProperty("items").EnumerateArray().Select(x => x.GetProperty("storeId").GetString()).ToList();
@@ -234,7 +225,7 @@ public class ListActionPlansTests : IClassFixture<TestWebApplicationFactory>
     public async Task SM_GetsList_ReturnsPlansForAssignedStore()
     {
         // Arrange
-        var (_, _, store1Id, store2Id) = await SeedTestDataAsync();
+        var (store1Id, store2Id) = await SeedTestDataAsync();
         var (client, _) = await CreateManagerClientAsync("store_manager", storeId: store1Id);
 
         // Act

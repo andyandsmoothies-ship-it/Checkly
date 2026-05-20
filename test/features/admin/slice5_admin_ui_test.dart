@@ -34,7 +34,6 @@ void main() {
           home: Scaffold(
             body: UserEditSheet(
               user: const {'id': 'u1', 'role': 'auditor', 'fullName': 'Test'},
-              areas: const [],
               loadStores: ({String? assignableAs, String? exceptUser}) async =>
                   [
                     {
@@ -49,7 +48,6 @@ void main() {
                     fullName,
                     role,
                     storeId,
-                    areaId,
                     assignedStoreIds,
                   }) async {
                     saveCalled = true;
@@ -90,7 +88,6 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UserCreateSheet(
-              areas: const [],
               loadStores: ({String? assignableAs, String? exceptUser}) async =>
                   [
                     {
@@ -106,7 +103,6 @@ void main() {
                     required fullName,
                     required role,
                     storeId,
-                    areaId,
                     assignedStoreIds,
                     forceReassign,
                   }) async {

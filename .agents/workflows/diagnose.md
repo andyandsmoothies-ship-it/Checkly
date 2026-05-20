@@ -69,7 +69,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | Step | Execution Contract |
 |---|---|
 | **Gotcha Protocol**| MANDATORY: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if a project-specific rule caused the bug. ELSE: State "No new gotcha". |
-| **Routing** | MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] @[/implement] docs/diagnostics/failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD. |
+| **Routing** | MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] Execute Build Phase: docs/diagnostics/failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD. |
 
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
@@ -80,7 +80,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 > 1. Final Diagnostic Verdict & Persistent path.
 > 2. The required fix and its blast radius.
 > 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
-> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] @[/implement] docs/diagnostics/failure_report.md`).
+> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] Execute Build Phase: docs/diagnostics/failure_report.md`).
 >
 > **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 > 

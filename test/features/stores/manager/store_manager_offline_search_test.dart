@@ -18,8 +18,6 @@ void main() {
   final storeZ = StoreDto(
     id: 's1',
     name: 'Zeta Store',
-    areaId: 'a1',
-    areaName: 'A',
     managerName: 'M',
     address: '1',
     createdAt: DateTime.now(),
@@ -27,8 +25,6 @@ void main() {
   final storeA = StoreDto(
     id: 's2',
     name: 'Alpha Store',
-    areaId: 'a1',
-    areaName: 'A',
     managerName: 'M',
     address: '1',
     createdAt: DateTime.now(),
@@ -36,8 +32,6 @@ void main() {
   final storeM = StoreDto(
     id: 's3',
     name: 'Mega Store',
-    areaId: 'a1',
-    areaName: 'A',
     managerName: 'M',
     address: '1',
     createdAt: DateTime.now(),

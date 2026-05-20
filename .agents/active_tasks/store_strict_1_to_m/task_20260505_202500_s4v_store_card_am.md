@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `C:\Users\HP\.gemini\antigravity\brain\eef298a3-3850-470a-813a-18963f073fec\visual_qa_report_store_card_am.md.resolved`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: Implement AM Name Display on Store Card

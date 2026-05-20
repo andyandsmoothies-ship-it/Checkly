@@ -16,7 +16,7 @@ void main() {
     required DateTime createdAt,
     String storeId = 's1',
     String storeName = 'Store A',
-    String areaName = 'North',
+    String addressProvince = 'North',
     String status = 'completed',
     String? reviewStatus,
     double? totalScore,
@@ -33,7 +33,7 @@ void main() {
           CachedStoresCompanion.insert(
             id: storeId,
             name: storeName,
-            areaName: Value(areaName),
+            addressProvince: Value(addressProvince),
             isActive: const Value(true),
             createdAt: now,
             updatedAt: now,
@@ -84,7 +84,7 @@ void main() {
   // ── Helper that calls loadFromDrift with all defaults ──────────────────────
 
   Future<dynamic> load({
-    String? selectedArea,
+    String? selectedProvince,
     String? selectedStore,
     String? selectedType,
     String? selectedAuditor,
@@ -92,71 +92,118 @@ void main() {
     String? selectedReviewStatus,
     String dateRange = 'all',
     DateTimeRange? customDateRange,
-  }) =>
-      loadFromDrift(
-        db: db,
-        selectedArea: selectedArea,
-        selectedStore: selectedStore,
-        selectedType: selectedType,
-        selectedAuditor: selectedAuditor,
-        selectedStatus: selectedStatus,
-        selectedReviewStatus: selectedReviewStatus,
-        dateRange: dateRange,
-        customDateRange: customDateRange,
-      );
+  }) => loadFromDrift(
+    db: db,
+    selectedProvince: selectedProvince,
+    selectedStore: selectedStore,
+    selectedType: selectedType,
+    selectedAuditor: selectedAuditor,
+    selectedStatus: selectedStatus,
+    selectedReviewStatus: selectedReviewStatus,
+    dateRange: dateRange,
+    customDateRange: customDateRange,
+  );
 
   // ── Date-range filters ─────────────────────────────────────────────────────
 
   group('Date-range filtering', () {
-    test('DL-01: dateRange=30 excludes submissions older than 30 days',
-        () async {
-      final now = DateTime.now();
-      await seedSubmission(id: 'recent', createdAt: now.subtract(const Duration(days: 5)));
-      await seedSubmission(id: 'old', createdAt: now.subtract(const Duration(days: 45)));
+    test(
+      'DL-01: dateRange=30 excludes submissions older than 30 days',
+      () async {
+        final now = DateTime.now();
+        await seedSubmission(
+          id: 'recent',
+          createdAt: now.subtract(const Duration(days: 5)),
+        );
+        await seedSubmission(
+          id: 'old',
+          createdAt: now.subtract(const Duration(days: 45)),
+        );
 
-      final data = await load(dateRange: '30');
+        final data = await load(dateRange: '30');
 
-      expect(data.totalAudits, 1, reason: 'Only the 5-day-old submission should match');
-    });
+        expect(
+          data.totalAudits,
+          1,
+          reason: 'Only the 5-day-old submission should match',
+        );
+      },
+    );
 
-    test('DL-02: dateRange=90 excludes submissions older than 90 days',
-        () async {
-      final now = DateTime.now();
-      await seedSubmission(id: 'r1', createdAt: now.subtract(const Duration(days: 60)));
-      await seedSubmission(id: 'r2', createdAt: now.subtract(const Duration(days: 100)));
+    test(
+      'DL-02: dateRange=90 excludes submissions older than 90 days',
+      () async {
+        final now = DateTime.now();
+        await seedSubmission(
+          id: 'r1',
+          createdAt: now.subtract(const Duration(days: 60)),
+        );
+        await seedSubmission(
+          id: 'r2',
+          createdAt: now.subtract(const Duration(days: 100)),
+        );
 
-      final data = await load(dateRange: '90');
+        final data = await load(dateRange: '90');
 
-      expect(data.totalAudits, 1, reason: 'Only the 60-day-old submission should match');
-    });
+        expect(
+          data.totalAudits,
+          1,
+          reason: 'Only the 60-day-old submission should match',
+        );
+      },
+    );
 
-    test('DL-03: dateRange=all returns every non-rejected submission', () async {
-      final now = DateTime.now();
-      await seedSubmission(id: 'a', createdAt: now.subtract(const Duration(days: 365)));
-      await seedSubmission(id: 'b', createdAt: now.subtract(const Duration(days: 1)));
+    test(
+      'DL-03: dateRange=all returns every non-rejected submission',
+      () async {
+        final now = DateTime.now();
+        await seedSubmission(
+          id: 'a',
+          createdAt: now.subtract(const Duration(days: 365)),
+        );
+        await seedSubmission(
+          id: 'b',
+          createdAt: now.subtract(const Duration(days: 1)),
+        );
 
-      final data = await load(dateRange: 'all');
+        final data = await load(dateRange: 'all');
 
-      expect(data.totalAudits, 2);
-    });
+        expect(data.totalAudits, 2);
+      },
+    );
 
-    test('DL-04: custom date range returns only submissions within range',
-        () async {
-      final now = DateTime.now();
-      final start = now.subtract(const Duration(days: 20));
-      final end = now.subtract(const Duration(days: 10));
+    test(
+      'DL-04: custom date range returns only submissions within range',
+      () async {
+        final now = DateTime.now();
+        final start = now.subtract(const Duration(days: 20));
+        final end = now.subtract(const Duration(days: 10));
 
-      await seedSubmission(id: 'inside', createdAt: now.subtract(const Duration(days: 15)));
-      await seedSubmission(id: 'before', createdAt: now.subtract(const Duration(days: 25)));
-      await seedSubmission(id: 'after', createdAt: now.subtract(const Duration(days: 5)));
+        await seedSubmission(
+          id: 'inside',
+          createdAt: now.subtract(const Duration(days: 15)),
+        );
+        await seedSubmission(
+          id: 'before',
+          createdAt: now.subtract(const Duration(days: 25)),
+        );
+        await seedSubmission(
+          id: 'after',
+          createdAt: now.subtract(const Duration(days: 5)),
+        );
 
-      final data = await load(
-        dateRange: 'custom',
-        customDateRange: DateTimeRange(start: start, end: end),
-      );
+        final data = await load(
+          dateRange: 'custom',
+          customDateRange: DateTimeRange(start: start, end: end),
+        );
 
-      expect(data.totalAudits, 1, reason: 'Only the submission inside the range should match');
-    });
+        expect(
+          data.totalAudits,
+          1,
+          reason: 'Only the submission inside the range should match',
+        );
+      },
+    );
   });
 
   // ── Review-status exclusion ────────────────────────────────────────────────
@@ -164,11 +211,19 @@ void main() {
   test('DL-05: rejected submissions are always excluded', () async {
     final now = DateTime.now();
     await seedSubmission(id: 'ok', createdAt: now, reviewStatus: 'approved');
-    await seedSubmission(id: 'rejected', createdAt: now, reviewStatus: 'rejected');
+    await seedSubmission(
+      id: 'rejected',
+      createdAt: now,
+      reviewStatus: 'rejected',
+    );
 
     final data = await load();
 
-    expect(data.totalAudits, 1, reason: 'Rejected submissions must be filtered out');
+    expect(
+      data.totalAudits,
+      1,
+      reason: 'Rejected submissions must be filtered out',
+    );
   });
 
   // ── Multi-filter chaining ──────────────────────────────────────────────────
@@ -183,7 +238,7 @@ void main() {
         createdAt: now.subtract(const Duration(days: 5)),
         storeId: 's1',
         storeName: 'Store A',
-        areaName: 'North',
+        addressProvince: 'North',
       );
       // North area, older than 30d → excluded by date
       await seedSubmission(
@@ -191,7 +246,7 @@ void main() {
         createdAt: now.subtract(const Duration(days: 60)),
         storeId: 's1',
         storeName: 'Store A',
-        areaName: 'North',
+        addressProvince: 'North',
       );
       // South area, within 30d → excluded by area filter
       await seedSubmission(
@@ -199,35 +254,74 @@ void main() {
         createdAt: now.subtract(const Duration(days: 5)),
         storeId: 's2',
         storeName: 'Store B',
-        areaName: 'South',
+        addressProvince: 'South',
       );
 
-      final data = await load(selectedArea: 'North', dateRange: '30');
+      final data = await load(selectedProvince: 'North', dateRange: '30');
 
-      expect(data.totalAudits, 1, reason: 'Only North + recent submission should survive both filters');
+      expect(
+        data.totalAudits,
+        1,
+        reason: 'Only North + recent submission should survive both filters',
+      );
     });
 
     test('DL-07: store + auditor filters chain correctly', () async {
       final now = DateTime.now();
 
-      await seedSubmission(id: 'match', createdAt: now, storeName: 'Store A', auditorName: 'Alice');
-      await seedSubmission(id: 'wrong-store', createdAt: now, storeId: 's2', storeName: 'Store B', auditorName: 'Alice');
-      await seedSubmission(id: 'wrong-auditor', createdAt: now, storeName: 'Store A', auditorName: 'Bob');
+      await seedSubmission(
+        id: 'match',
+        createdAt: now,
+        storeName: 'Store A',
+        auditorName: 'Alice',
+      );
+      await seedSubmission(
+        id: 'wrong-store',
+        createdAt: now,
+        storeId: 's2',
+        storeName: 'Store B',
+        auditorName: 'Alice',
+      );
+      await seedSubmission(
+        id: 'wrong-auditor',
+        createdAt: now,
+        storeName: 'Store A',
+        auditorName: 'Bob',
+      );
 
-      final data = await load(selectedStore: 'Store A', selectedAuditor: 'Alice');
+      final data = await load(
+        selectedStore: 'Store A',
+        selectedAuditor: 'Alice',
+      );
 
-      expect(data.totalAudits, 1, reason: 'Store A + Alice must both be satisfied');
+      expect(
+        data.totalAudits,
+        1,
+        reason: 'Store A + Alice must both be satisfied',
+      );
     });
 
     test('DL-08: status filter works in combination with date range', () async {
       final now = DateTime.now();
 
       // Completed, within 30d → match
-      await seedSubmission(id: 'c-recent', createdAt: now.subtract(const Duration(days: 5)), status: 'completed');
+      await seedSubmission(
+        id: 'c-recent',
+        createdAt: now.subtract(const Duration(days: 5)),
+        status: 'completed',
+      );
       // In-progress, within 30d → excluded by status
-      await seedSubmission(id: 'ip-recent', createdAt: now.subtract(const Duration(days: 3)), status: 'in_progress');
+      await seedSubmission(
+        id: 'ip-recent',
+        createdAt: now.subtract(const Duration(days: 3)),
+        status: 'in_progress',
+      );
       // Completed, old → excluded by date
-      await seedSubmission(id: 'c-old', createdAt: now.subtract(const Duration(days: 60)), status: 'completed');
+      await seedSubmission(
+        id: 'c-old',
+        createdAt: now.subtract(const Duration(days: 60)),
+        status: 'completed',
+      );
 
       final data = await load(selectedStatus: 'completed', dateRange: '30');
 

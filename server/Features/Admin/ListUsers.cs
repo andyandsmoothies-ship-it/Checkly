@@ -34,15 +34,12 @@ public static class ListUsers
                     from u in userJoin.DefaultIfEmpty()
                     join s in db.Stores.AsNoTracking() on p.StoreId equals s.Id into storeJoin
                     from s in storeJoin.DefaultIfEmpty()
-                    join a in db.Areas.AsNoTracking() on p.AreaId equals a.Id into areaJoin
-                    from a in areaJoin.DefaultIfEmpty()
                     select new
                     {
                         p,
                         r,
                         u,
                         s,
-                        a,
                         AssignedStoreIds = r.Role == "area_manager"
                             ? db.ProfileStoreAssignments.Where(psa => psa.ProfileId == p.Id).Select(psa => psa.StoreId).ToArray()
                             : null
@@ -74,8 +71,6 @@ public static class ListUsers
                 x.r.Role,
                 x.p.StoreId,
                 x.s != null ? x.s.Name : null,
-                x.p.AreaId,
-                x.a != null ? x.a.Name : null,
                 x.u != null && x.u.LockoutEnd != null && x.u.LockoutEnd > now,
                 x.p.CreatedAt,
                 x.AssignedStoreIds))

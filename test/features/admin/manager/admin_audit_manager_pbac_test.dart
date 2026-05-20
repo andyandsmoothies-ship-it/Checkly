@@ -54,8 +54,7 @@ TemplateDto _template({String id = 'tpl_1', String title = 'Template A'}) =>
 StoreDto _store({
   String id = 'store_1',
   String name = 'Store A',
-  String? areaId = 'area_1',
-}) => StoreDto(id: id, name: name, areaId: areaId, createdAt: DateTime(2024));
+}) => StoreDto(id: id, name: name, createdAt: DateTime(2024));
 
 void main() {
   late MockAdminApiService mockAdminApi;

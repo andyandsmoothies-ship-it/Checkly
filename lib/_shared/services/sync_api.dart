@@ -11,7 +11,6 @@ abstract class SyncApi {
     DateTime? cursorUpdatedAt,
     String? cursorId,
     String? storeId,
-    String? areaId,
   });
 
   /// Pull global risks delta from server since [since].

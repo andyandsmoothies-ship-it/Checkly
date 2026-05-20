@@ -57,7 +57,6 @@ class FakeSyncApi implements SyncApi {
     DateTime? cursorUpdatedAt,
     String? cursorId,
     String? storeId,
-    String? areaId,
   }) async => DeltaPullResult(
     serverTimestamp: DateTime.now(),
     hasNextPage: false,

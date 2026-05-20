@@ -320,84 +320,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Area", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("text")
-                        .HasColumnName("code");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("now()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UpdatedAt");
-
-                    b.ToTable("areas", (string)null);
-                });
-
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.AreaBenchmarkSnapshot", b =>
-                {
-                    b.Property<Guid>("AreaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("area_id");
-
-                    b.Property<string>("CategoryAverages")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("category_avgs");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<DateTimeOffset>("LastCalculatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_calc_at");
-
-                    b.Property<decimal>("OverallAvgScore")
-                        .HasColumnType("numeric")
-                        .HasColumnName("overall_avg");
-
-                    b.Property<decimal>("StdDeviation")
-                        .HasColumnType("numeric")
-                        .HasColumnName("std_deviation");
-
-                    b.Property<int>("TotalAuditCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("total_audits");
-
-                    b.HasKey("AreaId");
-
-                    b.ToTable("area_benchmark_snapshots", (string)null);
-                });
-
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>
                 {
                     b.Property<Guid>("Id")
@@ -786,10 +708,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid?>("AreaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("area_id");
-
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text")
                         .HasColumnName("avatar_url");
@@ -819,8 +737,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasDefaultValueSql("now()");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AreaId");
 
                     b.HasIndex("StoreId");
 
@@ -928,6 +844,45 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.ToTable("program_assignments", (string)null);
                 });
 
+            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ProvinceBenchmarkSnapshot", b =>
+                {
+                    b.Property<string>("Province")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("province");
+
+                    b.Property<string>("CategoryAverages")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("category_avgs");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateTimeOffset>("LastCalculatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_calc_at");
+
+                    b.Property<decimal>("OverallAvgScore")
+                        .HasColumnType("numeric")
+                        .HasColumnName("overall_avg");
+
+                    b.Property<decimal>("StdDeviation")
+                        .HasColumnType("numeric")
+                        .HasColumnName("std_deviation");
+
+                    b.Property<int>("TotalAuditCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("total_audits");
+
+                    b.HasKey("Province");
+
+                    b.ToTable("province_benchmark_snapshots", (string)null);
+                });
+
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.RoleCapability", b =>
                 {
                     b.Property<Guid>("Id")
@@ -978,10 +933,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("address");
 
-                    b.Property<Guid?>("AreaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("area_id");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -1014,8 +965,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasDefaultValueSql("now()");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AreaId");
 
                     b.HasIndex("IsActive")
                         .HasFilter("is_active = true");
@@ -1856,17 +1805,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Navigation("Submission");
                 });
 
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.AreaBenchmarkSnapshot", b =>
-                {
-                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Area", "Area")
-                        .WithOne()
-                        .HasForeignKey("Checkly.Api.Common.Persistence.Entities.AreaBenchmarkSnapshot", "AreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Area");
-                });
-
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>
                 {
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Template", "Template")
@@ -1909,17 +1847,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Profile", b =>
                 {
-                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Area", "Area")
-                        .WithMany("Profiles")
-                        .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Checkly.Api.Common.Persistence.Entities.Store", "Store")
                         .WithMany("Profiles")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Area");
 
                     b.Navigation("Store");
                 });
@@ -1964,12 +1895,37 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Store", b =>
                 {
-                    b.HasOne("Checkly.Api.Common.Persistence.Entities.Area", "Area")
-                        .WithMany("Stores")
-                        .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                    b.OwnsOne("Checkly.Api.Common.Persistence.Entities.StoreAddress", "Address2", b1 =>
+                        {
+                            b1.Property<Guid>("StoreId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
 
-                    b.Navigation("Area");
+                            b1.Property<string>("District")
+                                .HasColumnType("text")
+                                .HasColumnName("address_district");
+
+                            b1.Property<string>("Province")
+                                .HasColumnType("text")
+                                .HasColumnName("address_province");
+
+                            b1.Property<string>("Street")
+                                .HasColumnType("text")
+                                .HasColumnName("address_street");
+
+                            b1.Property<string>("Ward")
+                                .HasColumnType("text")
+                                .HasColumnName("address_ward");
+
+                            b1.HasKey("StoreId");
+
+                            b1.ToTable("stores");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StoreId");
+                        });
+
+                    b.Navigation("Address2");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.StoreAnalyticsSnapshot", b =>
@@ -2138,13 +2094,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Answer", b =>
                 {
                     b.Navigation("ActionPlans");
-                });
-
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.Area", b =>
-                {
-                    b.Navigation("Profiles");
-
-                    b.Navigation("Stores");
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>

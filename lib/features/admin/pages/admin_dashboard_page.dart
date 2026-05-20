@@ -102,7 +102,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             ? '—'
                             : '${_countsManager.templateCount}',
                         iconColor: AppTheme.info,
-                        onTap: () {},
+                        onTap: () => context.push('/templates'),
                       ),
                       StatRowData(
                         icon: Icons.hourglass_empty,
@@ -111,7 +111,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             ? '—'
                             : '${adminState?.openActionPlans ?? 0}',
                         iconColor: AppTheme.warning,
-                        onTap: () {},
+                        onTap: () => context.push('/plans'),
                       ),
                     ],
                   ),
@@ -165,15 +165,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           onTap: () => context.push('/admin/stores'),
         ),
       ),
-      (
-        cap: AppCapabilities.areasWrite,
-        item: _MenuItem(
-          icon: Icons.map_outlined,
-          title: 'Area Management',
-          subtitle: 'Manage geographic areas',
-          onTap: () => context.push('/admin/areas'),
-        ),
-      ),
+
       // Audit Approvals — ungated (admin:access implicit)
       (
         cap: null,

@@ -204,57 +204,43 @@ public sealed class ReminderService : BackgroundService
         var now = DateTimeOffset.UtcNow;
         var threshold = now.AddHours(-24);
 
-        var overdueAPs = await db.ActionPlans
-            .AsNoTracking()
-            .Where(ap => (ap.Status == "open" || ap.Status == "overdue")
-                && ap.Deadline.HasValue
-                && ap.Deadline.Value < threshold)
-            .Join(db.Submissions.AsNoTracking(),
-                ap => ap.SubmissionId,
-                s => s.Id,
-                (ap, s) => new { AP = ap, s.StoreId })
-            .Join(db.Stores.AsNoTracking(),
-                x => x.StoreId,
-                st => st.Id,
-                (x, st) => new { x.AP, st.AreaId })
-            .GroupJoin(
-                db.Notifications.AsNoTracking().Where(n => n.Type == "action_plan_overdue_escalation"),
-                x => "/action-plans/" + x.AP.Id.ToString(),
-                n => n.ActionUrl,
-                (x, notifs) => new { x.AP, x.AreaId, Notifs = notifs })
-            .SelectMany(
-                x => x.Notifs.DefaultIfEmpty(),
-                (x, n) => new { x.AP, x.AreaId, Notification = n })
-            .Where(x => x.Notification == null && x.AreaId != null)
-            .ToListAsync(ct);
+        var toEscalate = await (from ap in db.ActionPlans.AsNoTracking()
+                                 where (ap.Status == "open" || ap.Status == "overdue")
+                                       && ap.Deadline.HasValue
+                                       && ap.Deadline.Value < threshold
+                                 join s in db.Submissions.AsNoTracking() on ap.SubmissionId equals s.Id
+                                 join psa in db.ProfileStoreAssignments.AsNoTracking() on s.StoreId equals psa.StoreId
+                                 join p in db.Profiles.AsNoTracking() on psa.ProfileId equals p.Id
+                                 join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
+                                 where r.Role == "area_manager"
+                                 where !db.Notifications.Any(n => n.UserId == p.Id 
+                                                               && n.Type == "action_plan_overdue_escalation" 
+                                                               && n.ActionUrl == "/action-plans/" + ap.Id.ToString())
+                                 select new
+                                 {
+                                     AP = ap,
+                                     AreaManagerId = p.Id
+                                 }).ToListAsync(ct);
 
         var count = 0;
         var fcmTargets = new HashSet<Guid>();
-        foreach (var item in overdueAPs)
+        foreach (var item in toEscalate)
         {
-            var areaId = item.AreaId;
             var ap = item.AP;
+            var areaManagerId = item.AreaManagerId;
 
-            var areaManagerId = await (from p in db.Profiles.AsNoTracking()
-                                       join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
-                                       where p.AreaId == areaId && r.Role == "area_manager"
-                                       select p.Id).FirstOrDefaultAsync(ct);
-
-            if (areaManagerId != Guid.Empty)
+            db.Notifications.Add(new Notification
             {
-                db.Notifications.Add(new Notification
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = areaManagerId,
-                    Type = "action_plan_overdue_escalation",
-                    Title = "Action Plan Overdue",
-                    Message = $"Action plan for \"{ap.CriteriaLabel}\" at {ap.StoreName} is overdue.",
-                    ActionUrl = $"/action-plans/{ap.Id}",
-                    CreatedAt = now,
-                });
-                count++;
-                fcmTargets.Add(areaManagerId);
-            }
+                Id = Guid.NewGuid(),
+                UserId = areaManagerId,
+                Type = "action_plan_overdue_escalation",
+                Title = "Action Plan Overdue",
+                Message = $"Action plan for \"{ap.CriteriaLabel}\" at {ap.StoreName} is overdue.",
+                ActionUrl = $"/action-plans/{ap.Id}",
+                CreatedAt = now,
+            });
+            count++;
+            fcmTargets.Add(areaManagerId);
         }
 
         if (count > 0)

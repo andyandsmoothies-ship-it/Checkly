@@ -12,7 +12,7 @@ import 'analytics_data.dart';
 /// Receives active filter state as plain parameters (no manager coupling).
 Future<AnalyticsData> loadFromDrift({
   required AppDatabase db,
-  required String? selectedArea,
+  required String? selectedProvince,
   required String? selectedStore,
   required String? selectedType,
   required String? selectedAuditor,
@@ -31,17 +31,17 @@ Future<AnalyticsData> loadFromDrift({
       await (db.select(db.cachedStores)
             ..limit(1000)) // Bounded for memory safety (Gotcha #14)
           .get();
-  final areaNames =
+  final provinceNames =
       allStores
-          .map((s) => s.areaName)
+          .map((s) => s.addressProvince)
           .where((a) => a != null)
           .cast<String>()
           .toSet()
           .toList()
         ..sort();
 
-  final filteredStores = selectedArea != null
-      ? allStores.where((s) => s.areaName == selectedArea).toList()
+  final filteredStores = selectedProvince != null
+      ? allStores.where((s) => s.addressProvince == selectedProvince).toList()
       : allStores;
 
   var storeNames = filteredStores.map((s) => s.name).toSet().toList()..sort();
@@ -65,9 +65,9 @@ Future<AnalyticsData> loadFromDrift({
           .toList()
         ..sort();
 
-  if (selectedArea != null) {
-    final areaStoreNames = filteredStores.map((s) => s.name).toSet();
-    subs = subs.where((s) => areaStoreNames.contains(s.storeName)).toList();
+  if (selectedProvince != null) {
+    final provinceStoreNames = filteredStores.map((s) => s.name).toSet();
+    subs = subs.where((s) => provinceStoreNames.contains(s.storeName)).toList();
   }
   if (selectedStore != null) {
     subs = subs.where((s) => s.storeName == selectedStore).toList();
@@ -109,13 +109,13 @@ Future<AnalyticsData> loadFromDrift({
   final totalAudits = subs.length;
   final scored = subs.where((s) => s.totalScore != null).toList();
   final avgScore = scored.isNotEmpty
-      ? scored.map((s) => s.totalScore!).reduce((a, b) => a + b) /
-            scored.length
+      ? scored.map((s) => s.totalScore!).reduce((a, b) => a + b) / scored.length
       : 0.0;
 
   final completed = subs.where((s) => s.status == 'completed').toList();
-  final completionRate =
-      totalAudits > 0 ? completed.length / totalAudits * 100 : 0.0;
+  final completionRate = totalAudits > 0
+      ? completed.length / totalAudits * 100
+      : 0.0;
 
   final aps =
       await (db.select(db.cachedActionPlans)
@@ -166,7 +166,11 @@ Future<AnalyticsData> loadFromDrift({
   }
   final categoryScores = catScores.entries.map((e) {
     final avg = e.value.reduce((a, b) => a + b) / e.value.length;
-    return CategoryScore(name: e.key, avgScore: avg, auditCount: e.value.length);
+    return CategoryScore(
+      name: e.key,
+      avgScore: avg,
+      auditCount: e.value.length,
+    );
   }).toList();
 
   return AnalyticsData(
@@ -179,7 +183,7 @@ Future<AnalyticsData> loadFromDrift({
     categoryScores: categoryScores,
     storeNames: storeNames,
     templateTypes: templateTypes,
-    areaNames: areaNames,
+    provinceNames: provinceNames,
     auditorNames: auditorNames,
   );
 }

@@ -241,10 +241,7 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
                           ),
                         ),
                         subtitle: Text(
-                          [
-                            if (store.areaName != null) store.areaName,
-                            if (store.address != null) store.address,
-                          ].join(' • '),
+                          store.address ?? '',
                           style: AppFonts.displayStyle(
                             fontSize: Theme.of(
                               context,

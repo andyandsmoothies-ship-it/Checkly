@@ -6,8 +6,8 @@ Workflow: /implement | Track: B2
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\.agents\active_tasks\store_area_consolidation\atdd_handoff_slice4_profile_sync.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 4: Profile Sync — Flatten Payload (Mobile implementation)

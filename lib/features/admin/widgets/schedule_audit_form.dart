@@ -248,7 +248,7 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
                 (s) => (
                   id: s['id'] as String,
                   label: s['name'] as String,
-                  subtitle: s['areaName'] as String?,
+                  subtitle: null as String?,
                 ),
               )
               .toList(),

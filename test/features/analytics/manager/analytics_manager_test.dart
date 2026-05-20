@@ -25,7 +25,7 @@ void main() {
     when(
       () => mockApi.getAnalytics(
         storeId: any(named: 'storeId'),
-        areaId: any(named: 'areaId'),
+        province: any(named: 'province'),
         startDate: any(named: 'startDate'),
         endDate: any(named: 'endDate'),
       ),
@@ -83,8 +83,7 @@ void main() {
           CachedStoresCompanion.insert(
             id: 's1',
             name: 'Store A',
-            areaId: const Value('a1'),
-            areaName: const Value('North Area'),
+            addressProvince: const Value('North Area'),
             isActive: const Value(true),
             createdAt: now,
             updatedAt: now,
@@ -166,7 +165,7 @@ void main() {
     expect(data.overdueAPs, 1);
 
     expect(data.storeNames, ['Store A']);
-    expect(data.areaNames, ['North Area']);
+    expect(data.provinceNames, ['North Area']);
     expect(data.templateTypes, ['food_safety']);
     expect(data.auditorNames, ['Auditor John']);
 
@@ -185,7 +184,7 @@ void main() {
           CachedStoresCompanion.insert(
             id: 's1',
             name: 'Store A',
-            areaName: const Value('North'),
+            addressProvince: const Value('North'),
             isActive: const Value(true),
             createdAt: now,
             updatedAt: now,
@@ -197,7 +196,7 @@ void main() {
           CachedStoresCompanion.insert(
             id: 's2',
             name: 'Store B',
-            areaName: const Value('South'),
+            addressProvince: const Value('South'),
             isActive: const Value(true),
             createdAt: now,
             updatedAt: now,
@@ -234,14 +233,14 @@ void main() {
         );
 
     // Filter by area
-    manager.selectedArea = 'South';
+    manager.selectedProvince = 'South';
     await manager.load();
 
     expect(manager.data!.totalAudits, 1);
     expect(manager.data!.avgScore, 50.0);
 
     // Filter by store
-    manager.selectedArea = null;
+    manager.selectedProvince = null;
     manager.selectedStore = 'Store A';
     await manager.load();
 
@@ -255,7 +254,7 @@ void main() {
       when(
         () => mockApi.getAnalytics(
           storeId: any(named: 'storeId'),
-          areaId: any(named: 'areaId'),
+          province: any(named: 'province'),
           startDate: any(named: 'startDate'),
           endDate: any(named: 'endDate'),
         ),

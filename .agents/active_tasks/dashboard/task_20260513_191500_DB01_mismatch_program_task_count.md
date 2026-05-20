@@ -6,7 +6,7 @@ Workflow: /implement | Track: B1
 
 ## Upfront
 - [x] Pre-Requisite: Implementation Plan (from /analyze-feature or failure report)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: Action Required Banners (Read Tests -> Code -> Verify)

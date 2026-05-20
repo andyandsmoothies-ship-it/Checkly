@@ -5,7 +5,7 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\audit-code\implementation_plan_20260508_185858_4cf3f41a_audit-code-crit3.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests — N/A (architectural refactor, no logic change)
 
 ## Active Slice

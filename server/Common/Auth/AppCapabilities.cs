@@ -31,11 +31,11 @@ public static class AppCapabilities
     public const string TemplatesUpdate = "templates:update";
     public const string TemplatesDelete = "templates:delete";
     public const string StoresWrite = "stores:write";
-    public const string AreasWrite = "areas:write";
+
     public const string UsersManage = "users:manage";
     public const string AnalyticsAdmin = "analytics:admin";
     public const string AnalyticsView = "analytics:view";
-    public const string AnalyticsArea = "analytics:area";  // Seeded in Slice 2 migration
+
     public const string SubmissionsList = "submissions:list";
     public const string SubmissionsCreate = "submissions:create";
     public const string SubmissionsReview = "submissions:review";

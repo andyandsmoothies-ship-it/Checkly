@@ -103,9 +103,7 @@ class InsightsRadarChart extends StatelessWidget {
                     if (index < 0 || index >= radarData!.categories.length) {
                       return const RadarChartTitle(text: '');
                     }
-                    return RadarChartTitle(
-                      text: radarData!.categories[index],
-                    );
+                    return RadarChartTitle(text: radarData!.categories[index]);
                   },
                 ),
               ),

@@ -43,13 +43,13 @@ public class AreaBenchmarkWorker : BackgroundService
                 using var scope = _serviceProvider.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                await _lockManager.TryExecuteInLockAsync(db, "Checkly.AreaBenchmarkWorker", async (ct) =>
+                await _lockManager.TryExecuteInLockAsync(db, "Checkly.ProvinceBenchmarkWorker", async (ct) =>
                 {
                     var sw = Stopwatch.StartNew();
-                    await AreaBenchmarkCalculator.RunForAllAreasAsync(db, _logger, ct);
+                    await ProvinceBenchmarkCalculator.RunForAllProvincesAsync(db, _logger, ct);
                     sw.Stop();
 
-                    _logger.LogInformation("AreaBenchmarkCalculator processed all areas in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
+                    _logger.LogInformation("ProvinceBenchmarkCalculator processed all provinces in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
                 }, stoppingToken);
             }
             catch (OperationCanceledException)

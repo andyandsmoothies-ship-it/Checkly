@@ -12,7 +12,6 @@ public class SimpleUserDto
     public string? Email { get; set; }
     public string Role { get; set; } = string.Empty;
     public string? StoreId { get; set; }
-    public string? AreaId { get; set; }
 }
 
 public static class SearchUsers
@@ -62,8 +61,7 @@ public static class SearchUsers
                 FullName = x.p.FullName,
                 Email = x.p.Email,
                 Role = x.r.Role,
-                StoreId = x.p.StoreId != null ? x.p.StoreId.ToString() : null,
-                AreaId = x.p.AreaId != null ? x.p.AreaId.ToString() : null
+                StoreId = x.p.StoreId != null ? x.p.StoreId.ToString() : null
             })
             .ToListAsync(ct);
 

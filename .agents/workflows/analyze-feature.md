@@ -78,15 +78,15 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 ## Phase 4: Pick Next Route
 
 > [!CAUTION]
-> **Too Big?** If the task has unknown rules, new complex states, or needs more than 1 new database table, STOP. Tell the user to use `/analyze-epic` instead.
-> **Logic Bypass?** If a slice creates or modifies Business Logic (e.g. Services, state math), You MUST route to `/tdd` first.
+> **Too Big?** If the task has unknown rules, new complex states, or needs more than 1 new database table, STOP. Tell the user they need to run an Epic Analysis workflow instead.
+> **Logic Bypass?** If a slice creates or modifies Business Logic (e.g. Services, state math), you MUST require tests before coding.
 
-| Signal Check | Route 2: Direct Build (`/implement`) | Route 1: Logic/Standard (`/tdd`) | Route 3: Integration/High-Risk (`/atdd`) |
+| Signal Check | Route 1: Direct Build | Route 2: Unit Tests First | Route 3: Acceptance Tests First |
 |---|---|---|---|
 | **Type** | UI-Only (No network/auth) | Internal Logic / Data Math | Uses Network/Auth/Database |
 | **Clarity** | Very clear | Needs math or algorithms | Unclear or tricky |
 | **Pattern** | Uses existing pattern | Known code pattern | New pattern |
-| **Testing Risk**| Low (Visual changes) | Medium (Needs Unit Tests) | High (Needs Integration Tests) |
+| **Testing Risk**| Low (Visual changes) | Medium (Needs Unit Tests) | High (Needs Integration/E2E Tests) |
 
 ## 🚦 Handoff
 
@@ -95,14 +95,14 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > 
 > **Step-by-Step Rule:** Tell the user to execute these phases **ONE AT A TIME**. Do not execute them all at once.
 >
-> **Route 1: Logic/Standard (Unit Tests First)**
-> Next Phase: **Test-Driven Development (TDD)** for [Slice N / The Feature]. Input: `{Absolute_Path_to_plan}`
+> **Route 1: Direct Build (Visuals/Simple)**
+> Next Phase: **Build Phase** for [Slice N]. Input: `{Absolute_Path_to_plan}`
 >
-> **Route 2: Visuals/Simple (Direct Build)**
-> Next Phase: **Implementation** for [Slice N / The Feature]. Input: `{Absolute_Path_to_plan}`
+> **Route 2: Unit Tests First (Logic/Standard)**
+> Next Phase: **Write Unit Tests**, then **Build Phase** for [Slice N]. Input: `{Absolute_Path_to_plan}`
 >
-> **Route 3: Network/Auth/DB (Acceptance Tests First)**
-> Next Phase: **Acceptance Test-Driven Development (ATDD)** for [Slice N / The Feature]. Input: `{Absolute_Path_to_plan}`
+> **Route 3: Acceptance Tests First (Network/Auth/DB)**
+> Next Phase: **Write Acceptance Tests**, then **Build Phase** for [Slice N]. Input: `{Absolute_Path_to_plan}`
 >
 > **Concurrency:** State which slices must wait for others to finish.
 
@@ -123,7 +123,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 > - `## Concept Diagram`: Simple text flowchart to explain the idea. **For UI changes, include routing/state transitions so there are no dead ends.**
 > - `## Execution Slices` (Micro-Specs): Group the work using the `use-case-slicing` skill methodology. **CRITICAL:** Apply the 'Maximum Thickness' rule to prevent AI context overflow. **A single phase should ideally represent ONE complete vertical slice of the Happy Path.** However, if that slice requires modifying **more than 5 files** or touching highly complex shared files **>400 lines**, you MUST split it horizontally into sub-phases (e.g., `Phase B1: Data Layer`, `Phase B2: Offline Logic`). Always separate the Happy Path (Slice 1) from Error/Edge Cases (Slice 2). For each slice, you MUST output the Micro-Spec format (Plain English Summary, Value Delivered, Entry/Exit State, Scope, Acceptance Criteria). Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
 > - `<command_logs>`: A list of terminal commands you ran.
-> - `## Handoff Block`: A short summary for the next AI agent. You MUST list the exact **Target Phase** (e.g., `Implementation Phase`, `TDD Phase`) for **EVERY single step/slice** in order, with the absolute file path. Tell the user to execute them ONE AT A TIME.
+> - `## Handoff Block`: A short summary for the next AI agent. You MUST provide a short, concise list specifying the sequence of actions for **EVERY slice** based on its risk (e.g., `- **Slice 1**: Plan -> Write Acceptance Tests -> Build` or `- **Slice 2**: Plan -> Build`). Do not use project-specific workflow names (like `/tdd` or `/implement`), just generic actions. Tell the user to execute them ONE AT A TIME. Include the absolute file path to the plan.
 >
 > **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
 > 

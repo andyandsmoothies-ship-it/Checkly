@@ -50,7 +50,6 @@ import 'features/admin/services/admin_api_service.dart';
 import 'features/admin/manager/role_manager.dart';
 import 'features/admin/manager/admin_user_manager.dart';
 import 'features/admin/manager/admin_store_manager.dart';
-import 'features/admin/manager/admin_area_manager.dart';
 import 'features/admin/manager/admin_dashboard_manager.dart';
 import 'features/admin/manager/admin_audit_manager.dart';
 import 'features/admin/manager/admin_global_risk_manager.dart';
@@ -252,7 +251,6 @@ void configureDependencies() {
   );
   di.registerLazySingleton<AdminUserManager>(() => AdminUserManager());
   di.registerLazySingleton<AdminStoreManager>(() => AdminStoreManager());
-  di.registerLazySingleton<AdminAreaManager>(() => AdminAreaManager());
   di.registerLazySingleton<AdminDashboardManager>(
     () => AdminDashboardManager(),
   );

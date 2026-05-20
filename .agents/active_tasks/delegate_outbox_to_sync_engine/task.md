@@ -6,7 +6,7 @@ Workflow: /implement | Track: B2 (TDD — tests already RED)
 - **TDD Gate**: `c:\Users\HP\Documents\GitHub\Checkly\docs\qa\gates\executed_tests_20260503_113459_2c7e5b91-4fdb-45a7-a391-785cb62c7fe0_syncengine_outbox.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (from /tdd) — 8/8 RED confirmed
 
 ## Active Slice: Delegate Outbox Boundary (Single slice, 4 files)

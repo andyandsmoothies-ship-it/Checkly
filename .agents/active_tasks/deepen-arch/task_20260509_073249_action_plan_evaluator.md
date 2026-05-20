@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\deepen-arch\implementation_plan_20260509_action_plan_evaluator.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: ActionPlanEvaluator Caching (Read Tests -> Code -> Verify)

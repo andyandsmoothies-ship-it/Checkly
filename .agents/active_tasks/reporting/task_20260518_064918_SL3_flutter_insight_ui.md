@@ -5,7 +5,7 @@ Workflow: /implement | Track: A
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260518_064918_SL3_flutter_insight_ui.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Track A — No TDD required (pure UI + mechanical manager fix)
 
 ## Active Slice

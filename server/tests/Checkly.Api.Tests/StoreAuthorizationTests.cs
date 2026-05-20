@@ -30,22 +30,12 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
 
     // ─── Setup Helpers ────────────────────────────────────────────────────────
 
-    /// <summary>Creates an area and returns its Guid.</summary>
-    private async Task<Guid> CreateAreaAsync(HttpClient adminClient, string name)
-    {
-        var response = await adminClient.PostAsJsonAsync("/api/areas", new { name });
-        response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        return Guid.Parse(json.GetProperty("id").GetString()!);
-    }
-
-    /// <summary>Creates a store in the given area and returns its Guid.</summary>
-    private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string name, Guid? areaId = null)
+    /// <summary>Creates a store and returns its Guid.</summary>
+    private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string name)
     {
         var response = await adminClient.PostAsJsonAsync("/api/stores", new
         {
-            name,
-            areaId
+            name
         });
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
@@ -147,28 +137,22 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
     [Fact]
     public async Task GetStoreDashboard_AsAreaManager_NoJunction_ReturnsForbidden()
     {
-        // Arrange — admin creates two areas with one store each
+        // Arrange — admin creates a store
         var adminClnt = _factory.CreateClient();
         var bootstrapToken = await _factory.LoginBootstrapAdminAsync(adminClnt);
         var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
 
-        var areaA = await CreateAreaAsync(adminClient, $"Area North {_runId}");
-        var storeAId = await CreateStoreAsync(adminClient, $"AM Store A {_runId}", areaA);
+        var storeAId = await CreateStoreAsync(adminClient, $"AM Store A {_runId}");
 
-        // Arrange — register area_manager assigned to Area A
+        // Arrange — register area_manager
         var (amToken, amId) = await CreateUserWithRoleAsync(adminClient, UniqueEmail("am-idor"), "area_manager");
-
-        await adminClient.PutAsJsonAsync($"/api/admin/users/{amId}", new
-        {
-            areaId = areaA
-        });
 
         var amClient = _factory.CreateAuthenticatedClient(amToken);
 
-        // Act — AM tries to access a store in Area A, BUT has no junction row
+        // Act — AM tries to access a store, BUT has no junction row
         var response = await amClient.GetAsync($"/api/stores/{storeAId}/dashboard");
 
-        // Assert — IDOR prevention must return Forbidden (fails currently, returns 200)
+        // Assert — IDOR prevention must return Forbidden
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -223,23 +207,19 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
     [Fact]
     public async Task ListStores_AsAreaManager_ReturnsOnlyJunctionStores()
     {
-        // Arrange — create two areas, put 2 stores in area A, 1 in area B
+        // Arrange — create stores
         var adminClnt = _factory.CreateClient();
         var bootstrapToken = await _factory.LoginBootstrapAdminAsync(adminClnt);
         var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
 
-        var areaA = await CreateAreaAsync(adminClient, $"AM List North {_runId}");
-        var areaB = await CreateAreaAsync(adminClient, $"AM List South {_runId}");
+        var storeA1 = await CreateStoreAsync(adminClient, $"AM North Store1 {_runId}");
+        var storeA2 = await CreateStoreAsync(adminClient, $"AM North Store2 {_runId}");
+        var storeB1 = await CreateStoreAsync(adminClient, $"AM South Store1 {_runId}");
 
-        var storeA1 = await CreateStoreAsync(adminClient, $"AM North Store1 {_runId}", areaA);
-        var storeA2 = await CreateStoreAsync(adminClient, $"AM North Store2 {_runId}", areaA);
-        var storeB1 = await CreateStoreAsync(adminClient, $"AM South Store1 {_runId}", areaB);
-
-        // Arrange — register AM assigned to Area A
+        // Arrange — register AM
         var (amToken, amId) = await CreateUserWithRoleAsync(adminClient, UniqueEmail("am-list"), "area_manager");
-        await adminClient.PutAsJsonAsync($"/api/admin/users/{amId}", new { areaId = areaA });
 
-        // Insert junction rows for StoreA1 and StoreB1 (cross-area)
+        // Insert junction rows for StoreA1 and StoreB1
         using (var scope = _factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<Checkly.Api.Common.Persistence.AppDbContext>();
@@ -276,16 +256,13 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
     [Fact]
     public async Task ListStores_AsAuditor_ReturnsAllActiveStores()
     {
-        // Arrange — admin creates two stores in different areas
+        // Arrange — admin creates two stores
         var adminClnt = _factory.CreateClient();
         var bootstrapToken = await _factory.LoginBootstrapAdminAsync(adminClnt);
         var adminClient = _factory.CreateAuthenticatedClient(bootstrapToken);
 
-        var areaX = await CreateAreaAsync(adminClient, $"Aud List AreaX {_runId}");
-        var areaY = await CreateAreaAsync(adminClient, $"Aud List AreaY {_runId}");
-
-        var storeX = await CreateStoreAsync(adminClient, $"Aud StoreX {_runId}", areaX);
-        var storeY = await CreateStoreAsync(adminClient, $"Aud StoreY {_runId}", areaY);
+        var storeX = await CreateStoreAsync(adminClient, $"Aud StoreX {_runId}");
+        var storeY = await CreateStoreAsync(adminClient, $"Aud StoreY {_runId}");
 
         // Arrange — register auditor
         var (auditorToken, _) = await CreateUserWithRoleAsync(adminClient, UniqueEmail("auditor-list"), "auditor");

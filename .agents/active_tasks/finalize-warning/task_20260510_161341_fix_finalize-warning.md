@@ -5,8 +5,8 @@ Workflow: /implement | Track: A
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\diagnostics\failure_report_20260510_160300_finalize-warning.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: Add OrderBy to FinalizeSubmission queries.

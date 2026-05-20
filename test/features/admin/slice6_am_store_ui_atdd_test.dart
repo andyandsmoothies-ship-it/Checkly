@@ -15,7 +15,6 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UserCreateSheet(
-              areas: const [],
               loadStores: ({String? assignableAs, String? exceptUser}) async {
                 capturedAssignableAs = assignableAs;
                 loadCount++;
@@ -34,7 +33,6 @@ void main() {
                     required fullName,
                     required role,
                     storeId,
-                    areaId,
                     assignedStoreIds,
                     bool? forceReassign,
                   }) async {},
@@ -84,7 +82,6 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UserCreateSheet(
-              areas: const [],
               loadStores: ({String? assignableAs, String? exceptUser}) async {
                 return [
                   {'id': 'store_1', 'name': 'Store 1'},
@@ -97,7 +94,6 @@ void main() {
                     required fullName,
                     required role,
                     storeId,
-                    areaId,
                     assignedStoreIds,
                     bool? forceReassign,
                   }) async {
@@ -165,7 +161,6 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UserCreateSheet(
-              areas: const [],
               loadStores: ({String? assignableAs, String? exceptUser}) async {
                 return [
                   {'id': 'store_1', 'name': 'Store 1'},
@@ -178,7 +173,6 @@ void main() {
                     required fullName,
                     required role,
                     storeId,
-                    areaId,
                     assignedStoreIds,
                     bool? forceReassign,
                   }) async {
@@ -255,7 +249,6 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UserCreateSheet(
-              areas: const [],
               loadStores: ({String? assignableAs, String? exceptUser}) async {
                 return [
                   {'id': 'store_1', 'name': 'Store 1'},
@@ -268,7 +261,6 @@ void main() {
                     required fullName,
                     required role,
                     storeId,
-                    areaId,
                     assignedStoreIds,
                     bool? forceReassign,
                   }) async {

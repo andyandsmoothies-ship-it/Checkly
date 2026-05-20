@@ -17,7 +17,7 @@ public static class GetAnalytics
         CancellationToken ct)
     {
         var storeId = httpContext.Request.Query["storeId"].FirstOrDefault();
-        var areaIdStr = httpContext.Request.Query["areaId"].FirstOrDefault();
+        var province = httpContext.Request.Query["province"].FirstOrDefault();
         var type = httpContext.Request.Query["type"].FirstOrDefault();
         var scoringModeFilter = httpContext.Request.Query["scoringMode"].FirstOrDefault();
 
@@ -57,8 +57,7 @@ public static class GetAnalytics
             else // area_manager
             {
                 // Scope to stores assigned via ProfileStoreAssignment junction.
-                // profile.AreaId is intentionally NULL for AMs — they are assigned
-                // per-store via the junction table, not per-area on the profile row.
+                // AMs are assigned per-store via the junction table.
                 // This matches the canonical pattern in ListActionPlans.cs:42-55.
                 amAssignedStoreIds = await db.ProfileStoreAssignments
                     .Where(a => a.ProfileId == callerId)
@@ -67,9 +66,8 @@ public static class GetAnalytics
 
                 if (amAssignedStoreIds.Count > 0)
                 {
-                    // Overwrite any caller-supplied storeId/areaId to prevent IDOR.
+                    // Overwrite any caller-supplied storeId to prevent IDOR.
                     storeId = null;
-                    areaIdStr = null;
                 }
                 // else: AM has no assignments — global read (no filter applied).
             }
@@ -97,13 +95,14 @@ public static class GetAnalytics
         IQueryable<Guid>? storeSubquery = null;
         IQueryable<Guid>? templateSubquery = null;
 
-        if (!string.IsNullOrEmpty(areaIdStr) && Guid.TryParse(areaIdStr, out var areaIdParsed))
+        if (!string.IsNullOrEmpty(province))
         {
             storeSubquery = db.Stores.AsNoTracking()
-                .Where(st => st.AreaId == areaIdParsed)
+                .Where(st => st.Address2 != null && st.Address2.Province == province)
                 .Select(st => st.Id);
             query = query.Where(s => s.StoreId.HasValue && storeSubquery.Contains(s.StoreId.Value));
         }
+
 
         if (!string.IsNullOrEmpty(type))
         {
@@ -179,7 +178,7 @@ public static class GetAnalytics
         if (storeIdParsed)
             sectionScoreQuery = sectionScoreQuery.Where(ss => ss.StoreId == sid);
 
-        // Mirror areaId filter (re-use hoisted storeSubquery)
+        // Mirror store subquery filter (re-use hoisted storeSubquery)
         if (storeSubquery is not null)
             sectionScoreQuery = sectionScoreQuery.Where(ss => ss.StoreId.HasValue && storeSubquery.Contains(ss.StoreId.Value));
 
@@ -206,50 +205,9 @@ public static class GetAnalytics
                 x.Count))
             .ToList();
 
-        // ── Slice 2: Insights & Radar (Area Benchmark Integration) ──
-        List<ActionableInsight>? insights = null;
-        RadarData? radarData = null;
-        bool insightsStale = false;
-
-        Guid? resolvedAreaId = null;
-        if (!string.IsNullOrEmpty(areaIdStr) && Guid.TryParse(areaIdStr, out var aId))
-            resolvedAreaId = aId;
-        else if (storeIdParsed)
-        {
-            var store = await db.Stores.AsNoTracking().FirstOrDefaultAsync(st => st.Id == sid, ct);
-            resolvedAreaId = store?.AreaId;
-        }
-
-        if (resolvedAreaId.HasValue)
-        {
-            var snapshot = await db.AreaBenchmarkSnapshots
-                .AsNoTracking()
-                .FirstOrDefaultAsync(b => b.AreaId == resolvedAreaId.Value, ct);
-
-            if (snapshot is not null)
-            {
-                insightsStale = snapshot.LastCalculatedAt < DateTimeOffset.UtcNow.AddHours(-2);
-
-                var storeCategoryAverages = sectionBreakdown.ToDictionary(s => s.Section, s => s.AvgScore);
-                
-                var areaCategoryAverages = string.IsNullOrEmpty(snapshot.CategoryAverages)
-                    ? new Dictionary<string, double>()
-                    : System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, double>>(snapshot.CategoryAverages) ?? new Dictionary<string, double>();
-
-                var generatorResult = InsightGeneratorService.Generate(
-                    liveScore: avgScore,
-                    areaAvgScore: (double)snapshot.OverallAvgScore,
-                    stdDeviation: (double)snapshot.StdDeviation,
-                    totalAudits: totalAudits,
-                    storeCategoryAverages: storeCategoryAverages,
-                    areaCategoryAverages: areaCategoryAverages,
-                    overdueAPs: overdueAPs
-                );
-
-                insights = generatorResult.Insights;
-                radarData = generatorResult.RadarData;
-            }
-        }
+        // ── Slice 2: Insights & Radar (Province Benchmark Integration) ──
+        var (insights, radarData, insightsStale) = await GetAnalyticsInsightsResolver.ResolveAsync(
+            db, province, storeIdParsed, sid, sectionBreakdown, avgScore, totalAudits, overdueAPs, ct);
 
         return TypedResults.Ok(new AnalyticsResponse(
             new AnalyticsKpis(totalAudits, scoredCount, totalSurveys, avgScore, openAPs, overdueAPs, completionRate),

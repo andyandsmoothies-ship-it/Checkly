@@ -5,8 +5,8 @@ Workflow: /implement | Track: A
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260517_160000_SL0_analytics_rewire.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) - *Track A (Rewire, using existing drift tests + test update)*
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) - *Track A (Rewire, using existing drift tests + test update)*
 
 ## Active Slice
 - [x] Slice 0: AnalyticsManager API Rewire (Read Tests -> Code -> Verify)

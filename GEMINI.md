@@ -96,6 +96,8 @@
   - **Fix:** Never hardcode UI button visibility or tap gestures based on the user's role on the frontend. The backend MUST compute an `allowedActions` string array (e.g., `["edit", "view_details", "void"]`) on its DTOs. This array is built by combining PBAC capabilities (from JWT) with the entity's current status. The Flutter frontend must wrap actionable widgets in an `ActionGuard` that checks this array to enable/disable interactions.
 - **Gotcha: Silent DTO Contract Drift**
   - **Fix:** When building tests for client-side API mapping, DO NOT invent mock JSON based solely on local models. You MUST strictly reflect the actual backend DTO structure (e.g., matching exact property names). Use contract integration tests to verify JSON mapping and prevent silent failures where the frontend models drift from backend DTOs.
+- **Gotcha: Strict 1-to-M Store Assignment Unique Constraint**
+  - **Fix:** `ProfileStoreAssignmentConfiguration` places a unique index on `StoreId` (`e.HasIndex(x => x.StoreId).IsUnique()`), enforcing that a store can only be assigned to a single profile/manager. Do not write test cases or business logic that assume multiple profiles can be assigned to the same `StoreId` via `ProfileStoreAssignment`, as it will throw a Postgres 23505 duplicate key violation. Test multi-manager scenarios by utilizing separate stores.
 
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.

@@ -52,4 +52,4 @@ The core issue across the role-based dashboards is a **hardcoded outer shell** t
 2. **Remove Admin Double Header**: Delete the "Mission Control" headers from `AdminDashboardVariant` once the global title is dynamic.
 3. **Clarify Deadline Strings**: Update the relative time formatter used for "Next Action Plan Deadline" to be exact for deadlines that are imminent or overdue.
 
-**Routing**: Route fixes through `/analyze-feature -> /implement` using this exact path: `c:\Users\HP\Documents\GitHub\Checkly\.agents\active_tasks\dashboard\ux_heuristic_eval_dashboard_roles.md`
+**Routing**: Route fixes through `Feature Analysis -> Implementation` using this exact path: `c:\Users\HP\Documents\GitHub\Checkly\.agents\active_tasks\dashboard\ux_heuristic_eval_dashboard_roles.md`

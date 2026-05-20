@@ -60,7 +60,7 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 > **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing:
 > 1. Summary of the chosen interface and seams.
 > 2. **AI Agent Mission Brief** (A short TL;DR so the next agent knows exactly what to analyze).
-> 3. The exact next workflow command the user should run to perform a holistic vertical slice analysis: e.g., `@[/analyze-feature] {Absolute_Path_to_ADR}`.
+> 3. The exact next workflow command the user should run to perform a holistic vertical slice analysis: e.g., `Start Feature Analysis on: {Absolute_Path_to_ADR}`.
 
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:

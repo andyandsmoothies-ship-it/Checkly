@@ -16,10 +16,8 @@ class AppCapabilities {
   static const templatesUpdate = 'templates:update';
   static const templatesDelete = 'templates:delete';
   static const storesWrite = 'stores:write';
-  static const areasWrite = 'areas:write';
   static const usersManage = 'users:manage';
   static const analyticsAdmin = 'analytics:admin';
-  static const analyticsArea = 'analytics:area';
   static const submissionsList = 'submissions:list';
   static const adminManageRoles = 'admin:manage_roles';
   // Phase 3 PBAC additions
@@ -45,7 +43,6 @@ class AppCapabilities {
     templatesUpdate,
     templatesDelete,
     storesWrite,
-    areasWrite,
     usersManage,
     analyticsAdmin,
     adminManageRoles,

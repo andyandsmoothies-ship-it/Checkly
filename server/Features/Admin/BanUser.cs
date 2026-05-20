@@ -44,7 +44,6 @@ public static class BanUser
             if (profile != null)
             {
                 profile.StoreId = null;
-                profile.AreaId = null;
                 profile.UpdatedAt = DateTimeOffset.UtcNow;
             }
         }

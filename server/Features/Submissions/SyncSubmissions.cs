@@ -11,8 +11,8 @@ namespace Checkly.Api.Features.Submissions;
 /// Returns a keyset paginated, incremental list of submissions modified after a given timestamp.
 ///
 /// Security:
-///   - Non-admin callers MUST supply ?storeId or ?areaId. Unbounded syncs are rejected (400).
-///   - IDOR: the caller's identity is verified against the requested storeId/areaId.
+///   - Non-admin callers MUST supply ?storeId. Unbounded syncs are rejected (400).
+///   - IDOR: the caller's identity is verified against the requested storeId.
 ///   - Admin bypasses scope requirement and receives all matching records.
 ///
 /// Pagination: Keyset. ?limit=50. Hard cap at 200.
@@ -48,47 +48,42 @@ public static class SyncSubmissions
         DateTimeOffset? cursorUpdatedAt = null,
         Guid? cursorId = null,
         Guid? storeId = null,
-        Guid? areaId = null,
         int limit = 50)
     {
         var logger = loggerFactory.CreateLogger(typeof(SyncSubmissions));
         var isAdmin = user.IsInRole("admin");
 
-        // ── Rule 1: Scope guard — non-admins must provide storeId or areaId ──
-        if (!isAdmin && !storeId.HasValue && !areaId.HasValue)
+        var isAreaManager = user.IsInRole("area_manager");
+
+        // ── Rule 1: Scope guard — non-admins must provide storeId, or be resolvable ──
+        if (!isAdmin && !storeId.HasValue)
         {
-            var profileIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (profileIdClaim != null && Guid.TryParse(profileIdClaim, out var profileId))
+            if (user.IsInRole("store_manager"))
             {
-                var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == profileId, ct);
-                if (profile != null)
+                var profileIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (profileIdClaim != null && Guid.TryParse(profileIdClaim, out var profileId))
                 {
-                    if (user.IsInRole("store_manager"))
-                    {
-                        storeId = profile.StoreId;
-                    }
-                    else if (user.IsInRole("area_manager"))
-                    {
-                        areaId = profile.AreaId;
-                    }
+                    var profile = await db.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.Id == profileId, ct);
+                    storeId = profile?.StoreId;
                 }
             }
+            // area_manager: allowed to perform unbounded sync (no storeId required)
         }
 
-        if (!isAdmin && !storeId.HasValue && !areaId.HasValue)
+        // Non-admin, non-area_manager with no resolved storeId → reject
+        if (!isAdmin && !isAreaManager && !storeId.HasValue)
             return TypedResults.BadRequest(new
             {
-                error = "A storeId or areaId query parameter is required for non-admin callers."
+                error = "A storeId query parameter is required for non-admin callers."
             });
 
         // ── Rule 2: IDOR guard ───────────────────────────────────────────────
-        // Admin bypasses; others must own the requested scope.
-        if (!isAdmin)
+        // Admin bypasses. Area_manager unbounded sync (no storeId) bypasses IDOR.
+        // All other non-admins with an explicit storeId must pass the junction check.
+        if (!isAdmin && storeId.HasValue)
         {
-            // For store-scoped requests, run the access guard with a representative submission-like tuple.
-            // We pass the storeId directly (auditorId=null is safe — guard checks role-level).
             var hasAccess = await ResourceAccessGuard.CanAccessAsync(
-                user, new ResourceScope(StoreId: storeId, AreaId: areaId), db, ct);
+                user, new ResourceScope(StoreId: storeId), db, ct);
 
             if (!hasAccess)
                 return TypedResults.Forbid();
@@ -96,7 +91,7 @@ public static class SyncSubmissions
 
         if (!cursorUpdatedAt.HasValue || !cursorId.HasValue)
         {
-            logger.LogInformation("SyncSubmissions fallback to full-sync (no cursor provided). StoreId: {StoreId}, AreaId: {AreaId}, Since: {Since}", storeId, areaId, since);
+            logger.LogInformation("SyncSubmissions fallback to full-sync (no cursor provided). StoreId: {StoreId}, Since: {Since}", storeId, since);
         }
 
         // ── Clamp pagination params ──────────────────────────────────────────
@@ -107,9 +102,22 @@ public static class SyncSubmissions
 
         // Apply tenant scope filter (non-admin or admin who chose to scope)
         if (storeId.HasValue)
+        {
             query = query.Where(s => s.StoreId == storeId.Value);
-        else if (areaId.HasValue)
-            query = query.Where(s => s.Store != null && s.Store.AreaId == areaId.Value);
+        }
+        else if (isAreaManager)
+        {
+            // area_manager unbounded sync: scope strictly to assigned stores in junction table
+            if (!Guid.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var amUserId))
+                return TypedResults.Forbid();
+
+            var assignedStoreIds = await db.ProfileStoreAssignments
+                .Where(a => a.ProfileId == amUserId)
+                .Select(a => a.StoreId)
+                .ToListAsync(ct);
+
+            query = query.Where(s => s.StoreId.HasValue && assignedStoreIds.Contains(s.StoreId.Value));
+        }
 
         // Cursor logic
         if (cursorUpdatedAt.HasValue && cursorId.HasValue)

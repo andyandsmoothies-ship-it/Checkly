@@ -44,20 +44,6 @@ public class Slice3EndpointMigrationTests : IClassFixture<TestWebApplicationFact
     }
 
     [Fact]
-    public async Task Auditor_Cannot_CreateArea_Returns403()
-    {
-        var client = _factory.CreateClient();
-        var (auditorToken, _) = await _factory.RegisterUserAsync(
-            client, "sl3-area-auditor@test.test", "Aud123!@", "Area Auditor", "auditor");
-        var auditorClient = _factory.CreateAuthenticatedClient(auditorToken);
-
-        var response = await auditorClient.PostAsJsonAsync("/api/areas",
-            new { name = "Hacked Area" });
-
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-    }
-
-    [Fact]
     public async Task Auditor_Cannot_ListUserGroups_Returns403()
     {
         var client = _factory.CreateClient();
@@ -93,19 +79,5 @@ public class Slice3EndpointMigrationTests : IClassFixture<TestWebApplicationFact
         var response = await adminClient.GetAsync("/api/analytics/top-failures");
 
         Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task Auditor_Cannot_GetAreaLeaderboard_Returns403()
-    {
-        var client = _factory.CreateClient();
-        var (auditorToken, _) = await _factory.RegisterUserAsync(
-            client, "sl3-leaderboard-auditor@test.test", "Aud123!@", "LB Auditor", "auditor");
-        var auditorClient = _factory.CreateAuthenticatedClient(auditorToken);
-
-        var response = await auditorClient.GetAsync("/api/analytics/area-leaderboard");
-
-        // Fails with 403 on legacy `AreaManagerAccess`. 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 }

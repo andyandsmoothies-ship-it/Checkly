@@ -48,25 +48,21 @@ class AdminUserManager extends ChangeNotifier {
   bool isLoading = false;
   String? error;
   List<Map<String, dynamic>> users = [];
-  List<Map<String, dynamic>> areas = [];
 
   String? get currentUserId => _auth.currentUser?.userId;
 
   // ---------- READ ----------
 
-  /// Loads user list + areas in parallel. Replaces entire list on success.
+  /// Loads user list. Replaces entire list on success.
   Future<void> load({String? search}) async {
     isLoading = true;
     error = null;
     notifyListeners();
 
     try {
-      final usersFuture = _adminApi.getUsers(
+      users = await _adminApi.getUsers(
         search: search?.isEmpty == true ? null : search,
       );
-      final areasFuture = _adminApi.getAreas();
-      users = await usersFuture;
-      areas = await areasFuture;
     } catch (e) {
       error = e.toString();
     } finally {
@@ -130,7 +126,6 @@ class AdminUserManager extends ChangeNotifier {
     String? fullName,
     String? role,
     String? storeId,
-    String? areaId,
     List<String>? assignedStoreIds,
     bool forceReassign = false,
   }) async {
@@ -145,7 +140,6 @@ class AdminUserManager extends ChangeNotifier {
         fullName: fullName,
         role: role,
         storeId: storeId,
-        areaId: areaId,
         assignedStoreIds: assignedStoreIds,
         forceReassign: forceReassign,
       );
@@ -181,7 +175,6 @@ class AdminUserManager extends ChangeNotifier {
     required String fullName,
     required String role,
     String? storeId,
-    String? areaId,
     List<String>? assignedStoreIds,
     bool forceReassign = false,
   }) async {
@@ -191,7 +184,6 @@ class AdminUserManager extends ChangeNotifier {
       fullName: fullName,
       role: role,
       storeId: storeId,
-      areaId: areaId,
       assignedStoreIds: assignedStoreIds,
       forceReassign: forceReassign,
     );

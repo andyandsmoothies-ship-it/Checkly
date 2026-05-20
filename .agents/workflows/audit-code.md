@@ -64,7 +64,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 | Step | Execution Contract |
 |---|---|
 | **Verification** | Execute `list_dir` on brain directory -> Confirm report written securely. |
-| **Routing** | Output message: *"Pass audit report to Builder agent (@Forge) for /implement (Track B)."* -> YIELD. |
+| **Routing** | Output message: *"Pass audit report to Builder agent (@Forge) for implementation (Track B)."* -> YIELD. |
 
 > [!IMPORTANT]
 > **Script Verification Gate (MANDATORY)**:

@@ -23,27 +23,25 @@
 | ListStores | `Features/Stores/ListStores.cs` | Lists with optional `IsActive` filter |
 
 ### Deactivation Impact
-- **Blocked**: CreateSubmission, UpdateUser (assign), TransferStoreManager, CreateStore (in deactivated area)
+- **Blocked**: CreateSubmission, UpdateUser (assign), TransferStoreManager
 - **Unaffected**: Historical submissions, action plans, analytics, photos, profiles
 
 ---
 
-## Area
+## ProfileStoreAssignment
 
 | Consumer | File | Relationship |
 |----------|------|-------------|
-| Store | `Common/Persistence/Entities/Store.cs` | FK `AreaId` (SetNull on delete) |
-| Profile | `Common/Persistence/Entities/Profile.cs` | FK `AreaId` (SetNull on delete) — area managers |
-| CreateStore | `Features/Stores/CreateStore.cs` | Looks up area name, validates `IsActive` |
-| CreateSubmission | `Features/Submissions/CreateSubmission.cs` | Checks `area.IsActive` via store's AreaId |
-| GetSubmission | `Features/Submissions/GetSubmission.cs` | IDOR check via `IsUserArea` |
-| ListSubmissions | `Features/Submissions/ListSubmissions.cs` | AM scoping via area → stores |
-| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Role tenancy enforcement (IDOR protection) via `areaId` → store list |
-| UpdateUser | `Features/Admin/UpdateUser.cs` | Assigns AM to area |
+| Profile | `Common/Persistence/Entities/Profile.cs` | Navigation property |
+| Store | `Common/Persistence/Entities/Store.cs` | Navigation property |
+| ResourceAccessGuard | `Common/Auth/ResourceAccessGuard.cs` | PBAC base scope enforcement |
+| ListSubmissions | `Features/Submissions/ListSubmissions.cs` | AM scoping via assigned stores |
+| GetAnalytics | `Features/Analytics/GetAnalytics.cs` | Role tenancy enforcement (IDOR protection) via assigned stores |
+| UpdateUser | `Features/Admin/UpdateUser.cs` | Assigns AM to multiple stores |
 
 ### Deactivation Impact
-- **Blocked**: CreateStore (in this area), CreateSubmission (for stores in this area)
-- **Unaffected**: Existing stores (remain active), profiles, historical data
+- **Blocked**: Re-assigning to inactive stores.
+- **Unaffected**: Existing profiles, historical data
 
 ---
 
@@ -87,7 +85,7 @@
 
 | Consumer | File | Relationship |
 |----------|------|-------------|
-| ListSubmissions | `Features/Submissions/ListSubmissions.cs` | Paginated list with role-scoped filtering (admin→all, auditor→owns, SM→store, AM→area) |
+| ListSubmissions | `Features/Submissions/ListSubmissions.cs` | Paginated list with role-scoped filtering (admin→all, auditor→owns, SM→store, AM→assigned stores) |
 | GetSubmission | `Features/Submissions/GetSubmission.cs` | IDOR-guarded detail view |
 | FinalizeSubmission | `Features/Submissions/FinalizeSubmission.cs` | Draft→completed transition, score verification, answer + action plan creation. Evaluates `RowVersion` (`xmin`) for optimistic concurrency control. |
 | GetSurveyResults | `Features/Submissions/GetSurveyResults.cs` | Aggregates survey answers by criteria |
@@ -163,7 +161,7 @@
 | Name | Location | Purpose | Used By |
 |------|----------|---------|---------|
 | `SubmissionAccessGuard` | `Common/SubmissionAccessGuard.cs` | IDOR check (role → ownership) | GetSubmission, UploadPhoto, GetPhoto |
-| `RoleAssignmentGuard` | `Common/Auth/RoleAssignmentGuard.cs` | 1 SM per store, 1 AM per area | UpdateUser |
+| `RoleAssignmentGuard` | `Common/Auth/RoleAssignmentGuard.cs` | 1 SM per store | UpdateUser |
 | `AuditLogger` | `Common/Services/AuditLogger.cs` | Entity-level audit log | Template CRUD, SaveTemplateTree, FinalizeSubmission, Admin actions |
 | `TokenService` | `Common/Auth/TokenService.cs` | JWT generation | Login, Register |
 | `ScoringVerifier` | `Common/Scoring/ScoringVerifier.cs` | Score validation | CreateSubmission, FinalizeSubmission |

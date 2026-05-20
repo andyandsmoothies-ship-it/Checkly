@@ -27,7 +27,7 @@ public static class ResourceAccessGuard
             "admin" => true,
             "auditor" => scope.OwnerId == userId,
             "store_manager" => await IsUserStoreAsync(userId, scope.StoreId, db, ct),
-            "area_manager" => await IsUserAreaAsync(userId, scope.StoreId, scope.AreaId, db, ct),
+            "area_manager" => await IsUserAreaAsync(userId, scope.StoreId, db, ct),
             _ => false
         };
     }
@@ -39,28 +39,12 @@ public static class ResourceAccessGuard
         return profile?.StoreId == storeId;
     }
 
-    private static async Task<bool> IsUserAreaAsync(Guid userId, Guid? storeId, Guid? areaId, AppDbContext db, CancellationToken ct)
+    private static async Task<bool> IsUserAreaAsync(Guid userId, Guid? storeId, AppDbContext db, CancellationToken ct)
     {
-        if (storeId is null && areaId is null) return false;
+        if (storeId is null) return false;
 
-        if (storeId.HasValue)
-        {
-            return await db.ProfileStoreAssignments
-                .AnyAsync(a => a.ProfileId == userId && a.StoreId == storeId.Value, ct);
-        }
-
-        if (areaId.HasValue)
-        {
-            var areaStoreCount = await db.Stores.CountAsync(s => s.AreaId == areaId.Value, ct);
-            if (areaStoreCount == 0) return false;
-
-            var assignedAreaStoreCount = await db.ProfileStoreAssignments
-                .CountAsync(a => a.ProfileId == userId && a.Store != null && a.Store.AreaId == areaId.Value, ct);
-
-            return assignedAreaStoreCount == areaStoreCount;
-        }
-
-        return false;
+        return await db.ProfileStoreAssignments
+            .AnyAsync(a => a.ProfileId == userId && a.StoreId == storeId.Value, ct);
     }
 
     /// <summary>
@@ -93,7 +77,7 @@ public static class ResourceAccessGuard
             if (!Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
                 return false;
 
-            return await IsUserAreaAsync(userId, scope.StoreId, scope.AreaId, db, ct);
+            return await IsUserAreaAsync(userId, scope.StoreId, db, ct);
         }
 
         if (role == "store_manager")

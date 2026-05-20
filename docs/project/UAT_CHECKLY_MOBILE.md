@@ -17,7 +17,7 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 1.2 | Invalid Login | Enter wrong password → Tap Login | Shows "Invalid credentials" error. | [ ] |
 | 1.3 | Admin Role Limits | Login as Admin | Cannot execute audits. Sees all stores & templates. | [ ] |
 | 1.4 | Store Manager (SM) Access | Login as SM | Dashboard shows only their assigned store's data. | [ ] |
-| 1.5 | Area Manager (AM) Access | Login as AM | Dashboard shows only stores in their assigned Area. | [ ] |
+| 1.5 | Area Manager (AM) Access | Login as AM | Dashboard shows only their assigned stores. | [ ] |
 | 1.6 | Offline Login Fallback | Turn on Airplane mode → Force close → Open app | App bypasses login shell, restores last cached session. | [ ] |
 | 1.7 | JWT Expiry Handling | Wait for JWT expiry (or simulate) → Perform action | App seamlessly refreshes token via server. | [ ] |
 
@@ -33,14 +33,14 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 2.5 | Access Pending Redirect | Login as user with no role assigned | Redirected to Access Pending page, not Dashboard. | [ ] |
 | 2.6 | Admin Nav Items | Login as Admin → Open Admin Dashboard | Menu items (Users, Stores, Approvals, Areas, Roles, Programs, Global Risks) render dynamically based on user capabilities. All items navigate correctly. | [ ] |
 
-## Module 3: Store & Area Selector
-**Focus**: Selecting the audit context (Areas Entity).
+## Module 3: Store Selector
+**Focus**: Selecting the audit context and validating address fields.
 
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
-| 3.1 | Area Name Display | Open Store Selector | Stores display assigned **Area Name** (not area_code). | [ ] |
+| 3.1 | Address Display | Open Store Selector | Stores display their structured **Province** and **District** in subtitle. | [ ] |
 | 3.2 | Store Search | Type "Hà Nội" in search bar | Real-time filtering shows matching stores. | [ ] |
-| 3.3 | Null Area Handling | View a store with no assigned Area | Shows only Address. Does not crash or show "null". | [ ] |
+| 3.3 | Missing Address Handling | View a store with no Province | Shows fallback text or empty subtitle. Does not crash. | [ ] |
 
 ## Module 4: Template Selection & Initialization
 **Focus**: Template loading, caching, and scoring mode awareness.
@@ -204,19 +204,19 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
-| 13.1 | Area Manager Assignment | Assign 2 AMs to the same Area | System throws 409 Conflict. Rejected. | [ ] |
+| 13.1 | Area Manager Assignment | Assign 2 AMs to the same Store | System throws 409 Conflict. Rejected. | [ ] |
 | 13.2 | Store Manager Conflict | Assign SM to a store that already has one | Old SM is unassigned. New SM takes over. | [ ] |
 | 13.3 | Soft Delete Guarantee | Admin deactivates a Store | Historical audits for that store still render perfectly. | [ ] |
 | 13.4 | Action Trace Logging | Perform Admin action (e.g., Delete user) | Action written to System Logs with Trace ID. | [ ] |
 | 13.5 | User List | Admin → User Management | Shows paginated user list with name, email, role badge, status. | [ ] |
 | 13.6 | User Search | Type a name/email in search field | List filters in real-time. | [ ] |
 | 13.7 | Edit User Role | Tap user → Change role dropdown → Save | Role updates. Badge changes immediately. | [ ] |
-| 13.8 | Area/Store Assignment | Edit user → Select Area from dropdown → Save | Area dropdown loads dynamically from `GET /api/areas`. | [ ] |
+| 13.8 | Store Assignment | Edit user → Assign Store → Save | Assigned store saved and displayed in user details. | [ ] |
 | 13.9 | Ban/Unban User | Tap Ban toggle on a user | User status changes. Banned user cannot login. | [ ] |
 | 13.10 | Self-Ban Prevention | Admin views own user entry | Ban button is disabled/hidden for current user. | [ ] |
-| 13.11 | Store List | Admin → Store Management | Shows store list with name, area, active status. | [ ] |
-| 13.12 | Create Store | Tap FAB → Fill name, address, select area → Save | Store created. Appears in list. | [ ] |
-| 13.13 | Edit Store | Tap store → Modify name/address/area → Save | Store updated. Changes reflected immediately. | [ ] |
+| 13.11 | Store List | Admin → Store Management | Shows store list with name, province, active status. | [ ] |
+| 13.12 | Create Store | Tap FAB → Fill name, structured address → Save | Store created. Appears in list. | [ ] |
+| 13.13 | Edit Store | Tap store → Modify name/address → Save | Store updated. Changes reflected immediately. | [ ] |
 | 13.14 | Deactivate Store | Toggle IsActive off for a store | Store shows as inactive. Historical audits preserved. | [ ] |
 | 13.15 | Transfer Store Manager | Tap Transfer SM → Select new user → Confirm | New SM assigned. Old SM unassigned. | [ ] |
 | 13.16 | System Logs List | Admin → System Logs | Shows log entries with timestamp, level badge, category. | [ ] |
@@ -224,7 +224,6 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 13.18 | Log Detail View | Tap a log entry | Bottom sheet shows full log detail (trace ID, metadata). | [ ] |
 | 13.19 | Dirty State — Store Sheet | Open store edit → Type in Name → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
 | 13.20 | Dirty State — Store Clean | Open store edit (no changes) → Tap ✕ | Sheet closes immediately. No dialog. | [ ] |
-| 13.21 | Dirty State — Area Sheet | Open area edit → Type in Name → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
 | 13.22 | Dirty State — User Edit Sheet | Open user edit → Change role → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
 | 13.23 | Dirty State — User Create Sheet | Open create user → Type name/email → Tap ✕ | "Discard changes?" dialog appears. | [ ] |
 | 13.24 | isDismissible — Admin Sheets | Open any admin sheet → Tap outside the sheet | Sheet does NOT close (isDismissible: false). Must use ✕ button. | [ ] |
@@ -258,8 +257,8 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
 |----|-----------|-----------------|-----------------|:---------:|
 | 14C.1 | Filter Sheet Opens | Tap filter icon on Analytics page | Scrollable filter sheet slides up. | [ ] |
-| 14C.2 | Area Filter | Select an area → Apply | Analytics data scoped to selected area's stores. | [ ] |
-| 14C.3 | Area→Store Cascade | Select Area → Check store dropdown | Store dropdown auto-filters to only stores in that area. | [ ] |
+| 14C.2 | Province Filter | Select a province → Apply | Analytics data scoped to selected province's stores. | [ ] |
+| 14C.3 | Province→Store Cascade | Select Province → Check store dropdown | Store dropdown auto-filters to only stores in that province. | [ ] |
 | 14C.4 | Auditor Filter | Select specific auditor → Apply | Only that auditor's submissions shown. | [ ] |
 | 14C.5 | Status Filter | Select "Completed" → Apply | Only completed submissions included. | [ ] |
 | 14C.6 | Review Status Filter | Select "Approved" → Apply | Only approved submissions included. | [ ] |
@@ -274,9 +273,9 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 |----|-----------|-----------------|-----------------|:---------:|
 | 14D.1 | Actionable Insights Visible | Go to Analytics page | InsightCard is rendered with a list of insights (if any are returned). | [ ] |
 | 14D.2 | Radar Chart Visible | Go to Analytics page | InsightsRadarChart is rendered (if at least 3 categories exist). | [ ] |
-| 14D.3 | Stale Data Banner | Turn off area benchmark background job (or set stale flag) | Yellow stale data warning banner appears at the top of the Analytics page. | [ ] |
-| 14D.4 | Empty Radar State | View an area with only 1 or 2 audit categories | Radar chart is hidden (replaced with generic empty state or removed). | [ ] |
-| 14D.5 | Empty Insights State | View analytics for an area with no audits | InsightCard displays a friendly empty state message. | [ ] |
+| 14D.3 | Stale Data Banner | Turn off province benchmark background job (or set stale flag) | Yellow stale data warning banner appears at the top of the Analytics page. | [ ] |
+| 14D.4 | Empty Radar State | View a province with only 1 or 2 audit categories | Radar chart is hidden (replaced with generic empty state or removed). | [ ] |
+| 14D.5 | Empty Insights State | View analytics for a province with no audits | InsightCard displays a friendly empty state message. | [ ] |
 
 ## Module 15: User Groups & Template Access Control
 **Focus**: Group-based template visibility, membership management. **NEW in v3.0.**

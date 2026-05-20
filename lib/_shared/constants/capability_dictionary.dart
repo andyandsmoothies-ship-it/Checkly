@@ -35,11 +35,7 @@ class CapabilityDictionary {
       'group': 'Stores',
       'description': 'Create, edit, and manage stores.',
     },
-    AppCapabilities.areasWrite: {
-      'label': 'Manage Areas',
-      'group': 'Areas',
-      'description': 'Create, edit, and manage areas.',
-    },
+
     AppCapabilities.usersManage: {
       'label': 'Manage Users',
       'group': 'Users',
@@ -50,11 +46,7 @@ class CapabilityDictionary {
       'group': 'Analytics',
       'description': 'View organization-wide analytics and reports.',
     },
-    AppCapabilities.analyticsArea: {
-      'label': 'Area Analytics',
-      'group': 'Analytics',
-      'description': 'View area-level analytics and reports.',
-    },
+
     AppCapabilities.analyticsView: {
       'label': 'View Analytics',
       'group': 'Analytics',

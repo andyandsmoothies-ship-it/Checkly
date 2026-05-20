@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\diagnostics\failure_report_20260504_181952_q4m7_slice3_missing_dto.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) - Handled via previous tests and failure report.
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) - Handled via previous tests and failure report.
 
 ## Active Slice
 - [x] Slice 1: Backend DTOs and Endpoints

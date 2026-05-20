@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 28;
+  int get schemaVersion => 30;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -55,10 +55,6 @@ class AppDatabase extends _$AppDatabase {
       await _createVoidTriggers(customStatement);
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      if (from < 2) {
-        await m.addColumn(cachedStores, cachedStores.areaId);
-        await m.addColumn(cachedStores, cachedStores.areaName);
-      }
       if (from < 3) {
         await m.addColumn(cachedGroups, cachedGroups.minusPerFault);
       }
@@ -215,6 +211,32 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(
           cachedActionPlans,
           cachedActionPlans.cachedAllowedActions,
+        );
+      }
+      if (from < 29) {
+        // v29: SL-1 Store Structured Address — add 4 nullable address columns.
+        await m.addColumn(cachedStores, cachedStores.addressProvince);
+        await m.addColumn(cachedStores, cachedStores.addressDistrict);
+        await m.addColumn(cachedStores, cachedStores.addressWard);
+        await m.addColumn(cachedStores, cachedStores.addressStreet);
+      }
+      if (from < 30) {
+        // v30: Performance — add 5 missing indexes to prevent full-table scans
+        // on every app startup (GC) and analytics page load.
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_cached_submissions_store_id ON cached_submissions(store_id)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_cached_submissions_status ON cached_submissions(status)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_cached_submissions_completed_at ON cached_submissions(completed_at)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_cached_action_plans_submission_id ON cached_action_plans(submission_id)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_cached_action_plans_status ON cached_action_plans(status)',
         );
       }
     },

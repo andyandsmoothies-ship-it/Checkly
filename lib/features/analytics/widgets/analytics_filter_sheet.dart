@@ -28,15 +28,18 @@ class AnalyticsFilterSheet extends StatelessWidget {
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
-                initialValue: manager.selectedArea,
+                initialValue: manager.selectedProvince,
                 isExpanded: true,
                 decoration: const InputDecoration(
-                  labelText: 'Area',
+                  labelText: 'Province',
                   border: OutlineInputBorder(),
                 ),
                 items: [
-                  const DropdownMenuItem(value: null, child: Text('All Areas')),
-                  ...(manager.data?.areaNames ?? []).map(
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text('All Provinces'),
+                  ),
+                  ...(manager.data?.provinceNames ?? []).map(
                     (a) => DropdownMenuItem(
                       value: a,
                       child: Text(a, overflow: TextOverflow.ellipsis),
@@ -44,7 +47,7 @@ class AnalyticsFilterSheet extends StatelessWidget {
                   ),
                 ],
                 onChanged: (v) {
-                  manager.selectedArea = v;
+                  manager.selectedProvince = v;
                   manager.selectedStore = null; // cascade reset
                   Navigator.pop(context);
                   manager.load();

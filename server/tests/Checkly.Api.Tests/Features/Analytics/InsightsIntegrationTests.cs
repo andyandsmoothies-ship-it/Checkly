@@ -36,10 +36,10 @@ public class InsightsIntegrationTests : IClassFixture<TestWebApplicationFactory>
 
     /// <summary>
     /// Seeds:
-    ///   Area → Store → N Submissions (last 30d) → SubmissionSectionScores → StoreAnalyticsSnapshot → AreaBenchmarkSnapshot
+    ///   Store → N Submissions (last 30d) → SubmissionSectionScores → StoreAnalyticsSnapshot → AreaBenchmarkSnapshot
     /// Returns the seeded storeId.
     /// </summary>
-    private async Task<(Guid AreaId, Guid StoreId)> SeedFullScenarioAsync(
+    private async Task<(Guid _, Guid StoreId)> SeedFullScenarioAsync(
         int submissionCount,
         double storeAvgScore,
         double areaAvgScore,
@@ -56,19 +56,11 @@ public class InsightsIntegrationTests : IClassFixture<TestWebApplicationFactory>
         var areaId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
 
-        db.Areas.Add(new Area
-        {
-            Id = areaId,
-            Name = $"Test Area {areaId:N}",
-            CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow
-        });
-
         db.Stores.Add(new Store
         {
             Id = storeId,
-            AreaId = areaId,
             Name = $"Test Store {storeId:N}",
+            Address2 = new StoreAddress { Province = $"Test Province {storeId:N}" },
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow
         });
@@ -100,9 +92,9 @@ public class InsightsIntegrationTests : IClassFixture<TestWebApplicationFactory>
         var categoryAveragesJson = System.Text.Json.JsonSerializer.Serialize(
             new Dictionary<string, double> { [categoryName] = areaCategoryScore });
 
-        db.AreaBenchmarkSnapshots.Add(new AreaBenchmarkSnapshot
+        db.ProvinceBenchmarkSnapshots.Add(new ProvinceBenchmarkSnapshot
         {
-            AreaId = areaId,
+            Province = $"Test Province {storeId:N}",
             OverallAvgScore = (decimal)areaAvgScore,
             StdDeviation = (decimal)stdDev,
             TotalAuditCount = totalAuditCount,
@@ -126,7 +118,7 @@ public class InsightsIntegrationTests : IClassFixture<TestWebApplicationFactory>
         });
 
         await db.SaveChangesAsync();
-        return (areaId, storeId);
+        return (Guid.Empty, storeId);
     }
 
     private async Task<HttpClient> CreateStoreManagerClientAsync(Guid storeId)
@@ -225,11 +217,8 @@ public class InsightsIntegrationTests : IClassFixture<TestWebApplicationFactory>
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var areaId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
-
-        db.Areas.Add(new Area { Id = areaId, Name = $"No-Bench Area {areaId:N}", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-        db.Stores.Add(new Store { Id = storeId, AreaId = areaId, Name = $"No-Bench Store {storeId:N}", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+        db.Stores.Add(new Store { Id = storeId, Name = $"No-Bench Store {storeId:N}", Address2 = new StoreAddress { Province = $"No-Bench Province {storeId:N}" }, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
 
         for (int i = 0; i < 5; i++)
         {
@@ -278,11 +267,8 @@ public class InsightsIntegrationTests : IClassFixture<TestWebApplicationFactory>
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var areaId = Guid.NewGuid();
         var storeId = Guid.NewGuid();
-
-        db.Areas.Add(new Area { Id = areaId, Name = $"Radar Area {areaId:N}", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-        db.Stores.Add(new Store { Id = storeId, AreaId = areaId, Name = $"Radar Store {storeId:N}", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+        db.Stores.Add(new Store { Id = storeId, Name = $"Radar Store {storeId:N}", Address2 = new StoreAddress { Province = $"Radar Province {storeId:N}" }, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
 
         // 5 submissions
         var subIds = new List<Guid>();
@@ -332,9 +318,9 @@ public class InsightsIntegrationTests : IClassFixture<TestWebApplicationFactory>
             ["Service"] = 85.0
         });
 
-        db.AreaBenchmarkSnapshots.Add(new AreaBenchmarkSnapshot
+        db.ProvinceBenchmarkSnapshots.Add(new ProvinceBenchmarkSnapshot
         {
-            AreaId = areaId,
+            Province = $"Radar Province {storeId:N}",
             OverallAvgScore = 80m,
             StdDeviation = 10m,
             TotalAuditCount = 12,

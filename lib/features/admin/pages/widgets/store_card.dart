@@ -53,7 +53,6 @@ class StoreCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
 
-                  // Name + area
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,13 +65,6 @@ class StoreCard extends StatelessWidget {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (store.areaName != null)
-                          Text(
-                            store.areaName!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
                       ],
                     ),
                   ),
@@ -154,12 +146,9 @@ class StoreCard extends StatelessWidget {
               Builder(
                 builder: (context) {
                   final smText = store.managerName ?? 'Unassigned';
-                  final amText = store.areaManagerName ?? 'Unassigned';
-                  final isBothUnassigned =
-                      store.managerName == null &&
-                      store.areaManagerName == null;
+                  final isUnassigned = store.managerName == null;
 
-                  if (isBothUnassigned) {
+                  if (isUnassigned) {
                     return Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 6,
@@ -180,7 +169,7 @@ class StoreCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(
-                              'SM: Unassigned • AM: Unassigned',
+                              'SM: Unassigned',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: AppTheme.warningText,
                                 fontWeight: FontWeight.w600,
@@ -203,7 +192,7 @@ class StoreCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          'SM: $smText • AM: $amText',
+                          'SM: $smText',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),

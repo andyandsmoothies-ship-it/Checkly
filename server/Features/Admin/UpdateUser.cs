@@ -17,8 +17,6 @@ public static class UpdateUser
         string? FullName,
         string? Role,
         Guid? StoreId,
-        Guid? AreaId,
-        Guid? VirtualAreaId,
         Guid[]? AssignedStoreIds,
         bool ForceReassign = false);
 
@@ -105,30 +103,12 @@ public static class UpdateUser
             storeName = targetStore.Name;
         }
 
-        string? areaName = null;
-        if (request.AreaId.HasValue || request.VirtualAreaId.HasValue)
-        {
-            var resolvedAreaId = request.AreaId ?? request.VirtualAreaId;
-            var targetArea = await db.Areas.AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == resolvedAreaId!.Value, ct);
-            if (targetArea is null)
-                return TypedResults.BadRequest(new { error = "Area not found" });
-            areaName = targetArea?.Name;
-            profile.AreaId = resolvedAreaId;
-        }
+
 
         var targetStoreIds = new HashSet<Guid>();
         if (effectiveRole == "area_manager")
         {
-            if (request.VirtualAreaId.HasValue)
-            {
-                var virtualAreaStoreIds = await db.Stores
-                    .AsNoTracking()
-                    .Where(s => s.AreaId == request.VirtualAreaId.Value && s.IsActive == true)
-                    .Select(s => s.Id)
-                    .ToListAsync(ct);
-                targetStoreIds.UnionWith(virtualAreaStoreIds);
-            }
+
 
             if (request.AssignedStoreIds is not null)
             {
@@ -182,7 +162,7 @@ public static class UpdateUser
                 }
             }
 
-            if (request.VirtualAreaId.HasValue || request.AssignedStoreIds is not null)
+            if (request.AssignedStoreIds is not null)
             {
                 var existingAssignments = await db.ProfileStoreAssignments
                     .Where(a => a.ProfileId == id)
@@ -257,8 +237,6 @@ public static class UpdateUser
             role = userRole.Role,
             storeId = profile.StoreId,
             storeName,
-            areaId = profile.AreaId,
-            areaName,
             assignedStoreIds = effectiveRole == "area_manager" ? targetStoreIds.ToArray() : null,
             transferred = request.ForceReassign && previousManagerName != null,
             previousManagerName,

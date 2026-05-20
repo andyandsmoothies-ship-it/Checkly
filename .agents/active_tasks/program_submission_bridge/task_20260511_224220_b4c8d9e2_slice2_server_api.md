@@ -6,7 +6,7 @@ Workflow: /implement | Track: B2
 - **Tests**: `server/tests/Checkly.Api.Tests/Program_Slice2A_Tests.cs`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (from /atdd) — 10 RED tests in Program_Slice2A_Tests.cs
 
 ## Active Slice

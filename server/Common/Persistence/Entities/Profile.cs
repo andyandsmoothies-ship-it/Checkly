@@ -11,12 +11,10 @@ public sealed class Profile
     public string? Email { get; set; }
     public string? AvatarUrl { get; set; }
     public Guid? StoreId { get; set; }
-    public Guid? AreaId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 
     // Navigation properties
     public Store? Store { get; set; }
-    public Area? Area { get; set; }
     public ICollection<ProfileStoreAssignment> StoreAssignments { get; set; } = [];
 }

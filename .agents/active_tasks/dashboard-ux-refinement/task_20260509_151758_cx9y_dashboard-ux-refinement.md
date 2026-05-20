@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `C:\Users\HP\.gemini\antigravity\brain\493220d8-99f2-4839-9729-5c0dc0748efe\visual_qa_report_chunk2.md.resolved`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) -> N/A (Track B1)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) -> N/A (Track B1)
 
 ## Active Slice
 - [x] Slice 1: Implement UX Refinements (audit_card.dart & store_group.dart)

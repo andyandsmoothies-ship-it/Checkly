@@ -11,7 +11,6 @@ class UserEditSheetBody extends StatelessWidget {
   final TextEditingController fullNameCtrl;
   final String? selectedRole;
   final String? selectedStoreId;
-  final String? selectedAreaId;
   final List<String> selectedStoreIds;
   final List<Map<String, dynamic>> assignableStores;
   final bool isLoadingStores;
@@ -33,7 +32,6 @@ class UserEditSheetBody extends StatelessWidget {
     required this.fullNameCtrl,
     required this.selectedRole,
     required this.selectedStoreId,
-    required this.selectedAreaId,
     required this.selectedStoreIds,
     required this.assignableStores,
     required this.isLoadingStores,

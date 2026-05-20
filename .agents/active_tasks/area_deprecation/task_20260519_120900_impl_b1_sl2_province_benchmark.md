@@ -1,0 +1,31 @@
+# Task: SL-2 Phase B1 — Province Benchmark Data Layer
+Workflow: /implement | Track: B2 (Tests written FIRST by QA)
+
+## Input Lineage
+- **Source Input**: `C:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260519_075200_sl2_province_benchmark.md`
+- **TDD Tests**: `C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\ProvinceBenchmarkCalculatorTests.cs`
+
+## Upfront
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (`ProvinceBenchmarkCalculatorTests.cs` — RED, compiles only after prod code)
+
+## Active Slice (B1 — Server Data Layer)
+- [x] B1-1: [NEW] `ProvinceBenchmarkSnapshot.cs` entity
+- [x] B1-2: [NEW] `ProvinceBenchmarkSnapshotConfiguration.cs` EF config
+- [x] B1-3: [DEL] `AreaBenchmarkSnapshot.cs` entity
+- [x] B1-4: [DEL] `AreaBenchmarkSnapshotConfiguration.cs` config
+- [x] B1-5: [MOD] `AppDbContext.cs` — replace DbSet
+- [x] B1-6: [NEW] `ProvinceBenchmarkCalculator.cs`
+- [x] B1-7: [MOD] `AreaBenchmarkWorker.cs` — rename call + lock key
+- [x] B1-8: [NEW] EF Core migration `AddProvinceBenchmarkSnapshot`
+- [x] B1-9: Verify: `dotnet build server/` → 0 errors; `dotnet test` → GREEN
+
+## Wrap Up
+- [x] Phase 2: Self-Review
+- [x] Phase 3: Handoff → Terminate session
+
+## Artifacts
+| Status | File Path | Type |
+|---|---|---|
+| [NEW] | .agents/active_tasks/area_deprecation/walkthrough_20260519_120900_impl_b1_sl2_province_benchmark.md | Result |
+| [NEW] | docs/qa/gates/area_deprecation/executed_tests_20260519_120900_impl_b1_sl2_province_benchmark.md | Test Log |

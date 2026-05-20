@@ -7,6 +7,7 @@ import '../../stores/services/store_api_service.dart';
 import '../../templates/services/template_api_service.dart';
 import '../../auth/manager/auth_manager.dart';
 import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/constants/user_persona.dart';
 
 /// Schedule form data returned by [AdminAuditManager.loadScheduleData].
 class ScheduleFormData {
@@ -56,6 +57,9 @@ class AdminAuditManager extends ChangeNotifier {
   // ---------- Approvals State ----------
   bool isApprovalsLoading = false;
   String? approvalsError;
+  /// True when the approvals fetch returned exactly 100 rows — the hard cap.
+  /// The UI should show a visible warning banner when this is true.
+  bool hasApprovalsTruncationWarning = false;
   List<SubmissionDto> submissions = [];
 
   // ---------- Schedule Form Load ----------
@@ -80,7 +84,7 @@ class AdminAuditManager extends ChangeNotifier {
       final stores = results[1] as List<dynamic>;
       final users = results[2] as List<Map<String, dynamic>>;
 
-      // Determine current user's role and area for filtering
+      // Determine current user's role and assigned stores for filtering
       final currentUserId = _auth.currentUser?.userId;
       final currentUserRole = _auth.currentUser?.role ?? 'auditor';
       Map<String, dynamic>? currentUserRecord;
@@ -90,7 +94,9 @@ class AdminAuditManager extends ChangeNotifier {
           orElse: () => null,
         );
       }
-      final myAreaId = currentUserRecord?['areaId'] as String?;
+      final assignedStoreIds =
+          (currentUserRecord?['assignedStoreIds'] as List<dynamic>?)?.cast<String>() ??
+          <String>[];
 
       // Build template list
       final templateList = templates
@@ -102,13 +108,12 @@ class AdminAuditManager extends ChangeNotifier {
           )
           .toList();
 
-      // Build store list (with areaId for cross-filtering)
+      // Build store list
       var storeList = stores
           .map(
             (s) => <String, dynamic>{
               'id': (s is Map) ? s['id'] : s.id,
               'name': (s is Map) ? s['name'] : s.name,
-              'areaId': (s is Map) ? s['areaId'] : null,
             },
           )
           .toList();
@@ -117,15 +122,8 @@ class AdminAuditManager extends ChangeNotifier {
       var auditorList = users;
 
       // Role-based filtering for area_manager
-      if (currentUserRole == 'area_manager' && myAreaId != null) {
-        storeList = storeList.where((s) => s['areaId'] == myAreaId).toList();
-        auditorList = auditorList
-            .where((u) => u['areaId'] == myAreaId || u['areaId'] == null)
-            .toList();
-      } else if (currentUserRole == 'area_manager' && myAreaId == null) {
-        // Safety: AM with no area sees nothing
-        storeList = [];
-        auditorList = [];
+      if (UserPersona.fromRole(currentUserRole) == UserPersona.areaManager) {
+        storeList = storeList.where((s) => assignedStoreIds.contains(s['id'])).toList();
       }
 
       scheduleData = ScheduleFormData(
@@ -144,6 +142,10 @@ class AdminAuditManager extends ChangeNotifier {
   // ---------- Approvals Load ----------
 
   /// Fetches completed submissions for [AuditApprovalPage].
+  ///
+  /// Note: capped at 100 rows per server page. When exactly 100 rows are
+  /// returned, [hasApprovalsTruncationWarning] is set so the UI can show a
+  /// visible notice to the admin.
   Future<void> loadApprovals() async {
     isApprovalsLoading = true;
     approvalsError = null;
@@ -151,6 +153,7 @@ class AdminAuditManager extends ChangeNotifier {
 
     try {
       final subs = await _submissionApi.getSubmissions(pageSize: 100);
+      hasApprovalsTruncationWarning = subs.length >= 100;
       submissions = subs.where((s) => s.status == 'completed').toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {

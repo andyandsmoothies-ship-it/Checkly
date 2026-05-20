@@ -2271,26 +2271,6 @@ class $CachedStoresTable extends CachedStores
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _areaIdMeta = const VerificationMeta('areaId');
-  @override
-  late final GeneratedColumn<String> areaId = GeneratedColumn<String>(
-    'area_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _areaNameMeta = const VerificationMeta(
-    'areaName',
-  );
-  @override
-  late final GeneratedColumn<String> areaName = GeneratedColumn<String>(
-    'area_name',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _gpsLatMeta = const VerificationMeta('gpsLat');
   @override
   late final GeneratedColumn<double> gpsLat = GeneratedColumn<double>(
@@ -2346,18 +2326,64 @@ class $CachedStoresTable extends CachedStores
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _addressProvinceMeta = const VerificationMeta(
+    'addressProvince',
+  );
+  @override
+  late final GeneratedColumn<String> addressProvince = GeneratedColumn<String>(
+    'address_province',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _addressDistrictMeta = const VerificationMeta(
+    'addressDistrict',
+  );
+  @override
+  late final GeneratedColumn<String> addressDistrict = GeneratedColumn<String>(
+    'address_district',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _addressWardMeta = const VerificationMeta(
+    'addressWard',
+  );
+  @override
+  late final GeneratedColumn<String> addressWard = GeneratedColumn<String>(
+    'address_ward',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _addressStreetMeta = const VerificationMeta(
+    'addressStreet',
+  );
+  @override
+  late final GeneratedColumn<String> addressStreet = GeneratedColumn<String>(
+    'address_street',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     name,
     address,
-    areaId,
-    areaName,
     gpsLat,
     gpsLng,
     isActive,
     createdAt,
     updatedAt,
+    addressProvince,
+    addressDistrict,
+    addressWard,
+    addressStreet,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2388,18 +2414,6 @@ class $CachedStoresTable extends CachedStores
       context.handle(
         _addressMeta,
         address.isAcceptableOrUnknown(data['address']!, _addressMeta),
-      );
-    }
-    if (data.containsKey('area_id')) {
-      context.handle(
-        _areaIdMeta,
-        areaId.isAcceptableOrUnknown(data['area_id']!, _areaIdMeta),
-      );
-    }
-    if (data.containsKey('area_name')) {
-      context.handle(
-        _areaNameMeta,
-        areaName.isAcceptableOrUnknown(data['area_name']!, _areaNameMeta),
       );
     }
     if (data.containsKey('gps_lat')) {
@@ -2436,6 +2450,42 @@ class $CachedStoresTable extends CachedStores
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('address_province')) {
+      context.handle(
+        _addressProvinceMeta,
+        addressProvince.isAcceptableOrUnknown(
+          data['address_province']!,
+          _addressProvinceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('address_district')) {
+      context.handle(
+        _addressDistrictMeta,
+        addressDistrict.isAcceptableOrUnknown(
+          data['address_district']!,
+          _addressDistrictMeta,
+        ),
+      );
+    }
+    if (data.containsKey('address_ward')) {
+      context.handle(
+        _addressWardMeta,
+        addressWard.isAcceptableOrUnknown(
+          data['address_ward']!,
+          _addressWardMeta,
+        ),
+      );
+    }
+    if (data.containsKey('address_street')) {
+      context.handle(
+        _addressStreetMeta,
+        addressStreet.isAcceptableOrUnknown(
+          data['address_street']!,
+          _addressStreetMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -2457,14 +2507,6 @@ class $CachedStoresTable extends CachedStores
         DriftSqlType.string,
         data['${effectivePrefix}address'],
       ),
-      areaId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}area_id'],
-      ),
-      areaName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}area_name'],
-      ),
       gpsLat: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}gps_lat'],
@@ -2485,6 +2527,22 @@ class $CachedStoresTable extends CachedStores
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      addressProvince: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address_province'],
+      ),
+      addressDistrict: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address_district'],
+      ),
+      addressWard: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address_ward'],
+      ),
+      addressStreet: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address_street'],
+      ),
     );
   }
 
@@ -2498,24 +2556,28 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
   final String id;
   final String name;
   final String? address;
-  final String? areaId;
-  final String? areaName;
   final double? gpsLat;
   final double? gpsLng;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? addressProvince;
+  final String? addressDistrict;
+  final String? addressWard;
+  final String? addressStreet;
   const CachedStore({
     required this.id,
     required this.name,
     this.address,
-    this.areaId,
-    this.areaName,
     this.gpsLat,
     this.gpsLng,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
+    this.addressProvince,
+    this.addressDistrict,
+    this.addressWard,
+    this.addressStreet,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2524,12 +2586,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || address != null) {
       map['address'] = Variable<String>(address);
-    }
-    if (!nullToAbsent || areaId != null) {
-      map['area_id'] = Variable<String>(areaId);
-    }
-    if (!nullToAbsent || areaName != null) {
-      map['area_name'] = Variable<String>(areaName);
     }
     if (!nullToAbsent || gpsLat != null) {
       map['gps_lat'] = Variable<double>(gpsLat);
@@ -2540,6 +2596,18 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || addressProvince != null) {
+      map['address_province'] = Variable<String>(addressProvince);
+    }
+    if (!nullToAbsent || addressDistrict != null) {
+      map['address_district'] = Variable<String>(addressDistrict);
+    }
+    if (!nullToAbsent || addressWard != null) {
+      map['address_ward'] = Variable<String>(addressWard);
+    }
+    if (!nullToAbsent || addressStreet != null) {
+      map['address_street'] = Variable<String>(addressStreet);
+    }
     return map;
   }
 
@@ -2550,12 +2618,6 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       address: address == null && nullToAbsent
           ? const Value.absent()
           : Value(address),
-      areaId: areaId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(areaId),
-      areaName: areaName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(areaName),
       gpsLat: gpsLat == null && nullToAbsent
           ? const Value.absent()
           : Value(gpsLat),
@@ -2565,6 +2627,18 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       isActive: Value(isActive),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      addressProvince: addressProvince == null && nullToAbsent
+          ? const Value.absent()
+          : Value(addressProvince),
+      addressDistrict: addressDistrict == null && nullToAbsent
+          ? const Value.absent()
+          : Value(addressDistrict),
+      addressWard: addressWard == null && nullToAbsent
+          ? const Value.absent()
+          : Value(addressWard),
+      addressStreet: addressStreet == null && nullToAbsent
+          ? const Value.absent()
+          : Value(addressStreet),
     );
   }
 
@@ -2577,13 +2651,15 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       address: serializer.fromJson<String?>(json['address']),
-      areaId: serializer.fromJson<String?>(json['areaId']),
-      areaName: serializer.fromJson<String?>(json['areaName']),
       gpsLat: serializer.fromJson<double?>(json['gpsLat']),
       gpsLng: serializer.fromJson<double?>(json['gpsLng']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      addressProvince: serializer.fromJson<String?>(json['addressProvince']),
+      addressDistrict: serializer.fromJson<String?>(json['addressDistrict']),
+      addressWard: serializer.fromJson<String?>(json['addressWard']),
+      addressStreet: serializer.fromJson<String?>(json['addressStreet']),
     );
   }
   @override
@@ -2593,13 +2669,15 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'address': serializer.toJson<String?>(address),
-      'areaId': serializer.toJson<String?>(areaId),
-      'areaName': serializer.toJson<String?>(areaName),
       'gpsLat': serializer.toJson<double?>(gpsLat),
       'gpsLng': serializer.toJson<double?>(gpsLng),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'addressProvince': serializer.toJson<String?>(addressProvince),
+      'addressDistrict': serializer.toJson<String?>(addressDistrict),
+      'addressWard': serializer.toJson<String?>(addressWard),
+      'addressStreet': serializer.toJson<String?>(addressStreet),
     };
   }
 
@@ -2607,37 +2685,57 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     String? id,
     String? name,
     Value<String?> address = const Value.absent(),
-    Value<String?> areaId = const Value.absent(),
-    Value<String?> areaName = const Value.absent(),
     Value<double?> gpsLat = const Value.absent(),
     Value<double?> gpsLng = const Value.absent(),
     bool? isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
+    Value<String?> addressProvince = const Value.absent(),
+    Value<String?> addressDistrict = const Value.absent(),
+    Value<String?> addressWard = const Value.absent(),
+    Value<String?> addressStreet = const Value.absent(),
   }) => CachedStore(
     id: id ?? this.id,
     name: name ?? this.name,
     address: address.present ? address.value : this.address,
-    areaId: areaId.present ? areaId.value : this.areaId,
-    areaName: areaName.present ? areaName.value : this.areaName,
     gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
     gpsLng: gpsLng.present ? gpsLng.value : this.gpsLng,
     isActive: isActive ?? this.isActive,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    addressProvince: addressProvince.present
+        ? addressProvince.value
+        : this.addressProvince,
+    addressDistrict: addressDistrict.present
+        ? addressDistrict.value
+        : this.addressDistrict,
+    addressWard: addressWard.present ? addressWard.value : this.addressWard,
+    addressStreet: addressStreet.present
+        ? addressStreet.value
+        : this.addressStreet,
   );
   CachedStore copyWithCompanion(CachedStoresCompanion data) {
     return CachedStore(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       address: data.address.present ? data.address.value : this.address,
-      areaId: data.areaId.present ? data.areaId.value : this.areaId,
-      areaName: data.areaName.present ? data.areaName.value : this.areaName,
       gpsLat: data.gpsLat.present ? data.gpsLat.value : this.gpsLat,
       gpsLng: data.gpsLng.present ? data.gpsLng.value : this.gpsLng,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      addressProvince: data.addressProvince.present
+          ? data.addressProvince.value
+          : this.addressProvince,
+      addressDistrict: data.addressDistrict.present
+          ? data.addressDistrict.value
+          : this.addressDistrict,
+      addressWard: data.addressWard.present
+          ? data.addressWard.value
+          : this.addressWard,
+      addressStreet: data.addressStreet.present
+          ? data.addressStreet.value
+          : this.addressStreet,
     );
   }
 
@@ -2647,13 +2745,15 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
-          ..write('areaId: $areaId, ')
-          ..write('areaName: $areaName, ')
           ..write('gpsLat: $gpsLat, ')
           ..write('gpsLng: $gpsLng, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('addressProvince: $addressProvince, ')
+          ..write('addressDistrict: $addressDistrict, ')
+          ..write('addressWard: $addressWard, ')
+          ..write('addressStreet: $addressStreet')
           ..write(')'))
         .toString();
   }
@@ -2663,13 +2763,15 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
     id,
     name,
     address,
-    areaId,
-    areaName,
     gpsLat,
     gpsLng,
     isActive,
     createdAt,
     updatedAt,
+    addressProvince,
+    addressDistrict,
+    addressWard,
+    addressStreet,
   );
   @override
   bool operator ==(Object other) =>
@@ -2678,51 +2780,59 @@ class CachedStore extends DataClass implements Insertable<CachedStore> {
           other.id == this.id &&
           other.name == this.name &&
           other.address == this.address &&
-          other.areaId == this.areaId &&
-          other.areaName == this.areaName &&
           other.gpsLat == this.gpsLat &&
           other.gpsLng == this.gpsLng &&
           other.isActive == this.isActive &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.addressProvince == this.addressProvince &&
+          other.addressDistrict == this.addressDistrict &&
+          other.addressWard == this.addressWard &&
+          other.addressStreet == this.addressStreet);
 }
 
 class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
   final Value<String> id;
   final Value<String> name;
   final Value<String?> address;
-  final Value<String?> areaId;
-  final Value<String?> areaName;
   final Value<double?> gpsLat;
   final Value<double?> gpsLng;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<String?> addressProvince;
+  final Value<String?> addressDistrict;
+  final Value<String?> addressWard;
+  final Value<String?> addressStreet;
   final Value<int> rowid;
   const CachedStoresCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.address = const Value.absent(),
-    this.areaId = const Value.absent(),
-    this.areaName = const Value.absent(),
     this.gpsLat = const Value.absent(),
     this.gpsLng = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.addressProvince = const Value.absent(),
+    this.addressDistrict = const Value.absent(),
+    this.addressWard = const Value.absent(),
+    this.addressStreet = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedStoresCompanion.insert({
     required String id,
     required String name,
     this.address = const Value.absent(),
-    this.areaId = const Value.absent(),
-    this.areaName = const Value.absent(),
     this.gpsLat = const Value.absent(),
     this.gpsLng = const Value.absent(),
     this.isActive = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.addressProvince = const Value.absent(),
+    this.addressDistrict = const Value.absent(),
+    this.addressWard = const Value.absent(),
+    this.addressStreet = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -2732,26 +2842,30 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? address,
-    Expression<String>? areaId,
-    Expression<String>? areaName,
     Expression<double>? gpsLat,
     Expression<double>? gpsLng,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<String>? addressProvince,
+    Expression<String>? addressDistrict,
+    Expression<String>? addressWard,
+    Expression<String>? addressStreet,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (address != null) 'address': address,
-      if (areaId != null) 'area_id': areaId,
-      if (areaName != null) 'area_name': areaName,
       if (gpsLat != null) 'gps_lat': gpsLat,
       if (gpsLng != null) 'gps_lng': gpsLng,
       if (isActive != null) 'is_active': isActive,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (addressProvince != null) 'address_province': addressProvince,
+      if (addressDistrict != null) 'address_district': addressDistrict,
+      if (addressWard != null) 'address_ward': addressWard,
+      if (addressStreet != null) 'address_street': addressStreet,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2760,26 +2874,30 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     Value<String>? id,
     Value<String>? name,
     Value<String?>? address,
-    Value<String?>? areaId,
-    Value<String?>? areaName,
     Value<double?>? gpsLat,
     Value<double?>? gpsLng,
     Value<bool>? isActive,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<String?>? addressProvince,
+    Value<String?>? addressDistrict,
+    Value<String?>? addressWard,
+    Value<String?>? addressStreet,
     Value<int>? rowid,
   }) {
     return CachedStoresCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       address: address ?? this.address,
-      areaId: areaId ?? this.areaId,
-      areaName: areaName ?? this.areaName,
       gpsLat: gpsLat ?? this.gpsLat,
       gpsLng: gpsLng ?? this.gpsLng,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      addressProvince: addressProvince ?? this.addressProvince,
+      addressDistrict: addressDistrict ?? this.addressDistrict,
+      addressWard: addressWard ?? this.addressWard,
+      addressStreet: addressStreet ?? this.addressStreet,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2796,12 +2914,6 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     if (address.present) {
       map['address'] = Variable<String>(address.value);
     }
-    if (areaId.present) {
-      map['area_id'] = Variable<String>(areaId.value);
-    }
-    if (areaName.present) {
-      map['area_name'] = Variable<String>(areaName.value);
-    }
     if (gpsLat.present) {
       map['gps_lat'] = Variable<double>(gpsLat.value);
     }
@@ -2817,6 +2929,18 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (addressProvince.present) {
+      map['address_province'] = Variable<String>(addressProvince.value);
+    }
+    if (addressDistrict.present) {
+      map['address_district'] = Variable<String>(addressDistrict.value);
+    }
+    if (addressWard.present) {
+      map['address_ward'] = Variable<String>(addressWard.value);
+    }
+    if (addressStreet.present) {
+      map['address_street'] = Variable<String>(addressStreet.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2829,13 +2953,15 @@ class CachedStoresCompanion extends UpdateCompanion<CachedStore> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
-          ..write('areaId: $areaId, ')
-          ..write('areaName: $areaName, ')
           ..write('gpsLat: $gpsLat, ')
           ..write('gpsLng: $gpsLng, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('addressProvince: $addressProvince, ')
+          ..write('addressDistrict: $addressDistrict, ')
+          ..write('addressWard: $addressWard, ')
+          ..write('addressStreet: $addressStreet, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -11431,6 +11557,26 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $SubmissionRiskOutboxEntriesTable(this);
   late final $SyncMetaTable syncMeta = $SyncMetaTable(this);
   late final $DraftAnswersTable draftAnswers = $DraftAnswersTable(this);
+  late final Index idxCachedSubmissionsStoreId = Index(
+    'idx_cached_submissions_store_id',
+    'CREATE INDEX idx_cached_submissions_store_id ON cached_submissions (store_id)',
+  );
+  late final Index idxCachedSubmissionsStatus = Index(
+    'idx_cached_submissions_status',
+    'CREATE INDEX idx_cached_submissions_status ON cached_submissions (status)',
+  );
+  late final Index idxCachedSubmissionsCompletedAt = Index(
+    'idx_cached_submissions_completed_at',
+    'CREATE INDEX idx_cached_submissions_completed_at ON cached_submissions (completed_at)',
+  );
+  late final Index idxCachedActionPlansSubmissionId = Index(
+    'idx_cached_action_plans_submission_id',
+    'CREATE INDEX idx_cached_action_plans_submission_id ON cached_action_plans (submission_id)',
+  );
+  late final Index idxCachedActionPlansStatus = Index(
+    'idx_cached_action_plans_status',
+    'CREATE INDEX idx_cached_action_plans_status ON cached_action_plans (status)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -11454,6 +11600,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     submissionRiskOutboxEntries,
     syncMeta,
     draftAnswers,
+    idxCachedSubmissionsStoreId,
+    idxCachedSubmissionsStatus,
+    idxCachedSubmissionsCompletedAt,
+    idxCachedActionPlansSubmissionId,
+    idxCachedActionPlansStatus,
   ];
 }
 
@@ -12961,13 +13112,15 @@ typedef $$CachedStoresTableCreateCompanionBuilder =
       required String id,
       required String name,
       Value<String?> address,
-      Value<String?> areaId,
-      Value<String?> areaName,
       Value<double?> gpsLat,
       Value<double?> gpsLng,
       Value<bool> isActive,
       required DateTime createdAt,
       required DateTime updatedAt,
+      Value<String?> addressProvince,
+      Value<String?> addressDistrict,
+      Value<String?> addressWard,
+      Value<String?> addressStreet,
       Value<int> rowid,
     });
 typedef $$CachedStoresTableUpdateCompanionBuilder =
@@ -12975,13 +13128,15 @@ typedef $$CachedStoresTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> name,
       Value<String?> address,
-      Value<String?> areaId,
-      Value<String?> areaName,
       Value<double?> gpsLat,
       Value<double?> gpsLng,
       Value<bool> isActive,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
+      Value<String?> addressProvince,
+      Value<String?> addressDistrict,
+      Value<String?> addressWard,
+      Value<String?> addressStreet,
       Value<int> rowid,
     });
 
@@ -13009,16 +13164,6 @@ class $$CachedStoresTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get areaId => $composableBuilder(
-    column: $table.areaId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get areaName => $composableBuilder(
-    column: $table.areaName,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<double> get gpsLat => $composableBuilder(
     column: $table.gpsLat,
     builder: (column) => ColumnFilters(column),
@@ -13041,6 +13186,26 @@ class $$CachedStoresTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get addressProvince => $composableBuilder(
+    column: $table.addressProvince,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get addressDistrict => $composableBuilder(
+    column: $table.addressDistrict,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get addressWard => $composableBuilder(
+    column: $table.addressWard,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get addressStreet => $composableBuilder(
+    column: $table.addressStreet,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -13069,16 +13234,6 @@ class $$CachedStoresTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get areaId => $composableBuilder(
-    column: $table.areaId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get areaName => $composableBuilder(
-    column: $table.areaName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<double> get gpsLat => $composableBuilder(
     column: $table.gpsLat,
     builder: (column) => ColumnOrderings(column),
@@ -13103,6 +13258,26 @@ class $$CachedStoresTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get addressProvince => $composableBuilder(
+    column: $table.addressProvince,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get addressDistrict => $composableBuilder(
+    column: $table.addressDistrict,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get addressWard => $composableBuilder(
+    column: $table.addressWard,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get addressStreet => $composableBuilder(
+    column: $table.addressStreet,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedStoresTableAnnotationComposer
@@ -13123,12 +13298,6 @@ class $$CachedStoresTableAnnotationComposer
   GeneratedColumn<String> get address =>
       $composableBuilder(column: $table.address, builder: (column) => column);
 
-  GeneratedColumn<String> get areaId =>
-      $composableBuilder(column: $table.areaId, builder: (column) => column);
-
-  GeneratedColumn<String> get areaName =>
-      $composableBuilder(column: $table.areaName, builder: (column) => column);
-
   GeneratedColumn<double> get gpsLat =>
       $composableBuilder(column: $table.gpsLat, builder: (column) => column);
 
@@ -13143,6 +13312,26 @@ class $$CachedStoresTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get addressProvince => $composableBuilder(
+    column: $table.addressProvince,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get addressDistrict => $composableBuilder(
+    column: $table.addressDistrict,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get addressWard => $composableBuilder(
+    column: $table.addressWard,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get addressStreet => $composableBuilder(
+    column: $table.addressStreet,
+    builder: (column) => column,
+  );
 }
 
 class $$CachedStoresTableTableManager
@@ -13179,25 +13368,29 @@ class $$CachedStoresTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> address = const Value.absent(),
-                Value<String?> areaId = const Value.absent(),
-                Value<String?> areaName = const Value.absent(),
                 Value<double?> gpsLat = const Value.absent(),
                 Value<double?> gpsLng = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<String?> addressProvince = const Value.absent(),
+                Value<String?> addressDistrict = const Value.absent(),
+                Value<String?> addressWard = const Value.absent(),
+                Value<String?> addressStreet = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedStoresCompanion(
                 id: id,
                 name: name,
                 address: address,
-                areaId: areaId,
-                areaName: areaName,
                 gpsLat: gpsLat,
                 gpsLng: gpsLng,
                 isActive: isActive,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                addressProvince: addressProvince,
+                addressDistrict: addressDistrict,
+                addressWard: addressWard,
+                addressStreet: addressStreet,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -13205,25 +13398,29 @@ class $$CachedStoresTableTableManager
                 required String id,
                 required String name,
                 Value<String?> address = const Value.absent(),
-                Value<String?> areaId = const Value.absent(),
-                Value<String?> areaName = const Value.absent(),
                 Value<double?> gpsLat = const Value.absent(),
                 Value<double?> gpsLng = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<String?> addressProvince = const Value.absent(),
+                Value<String?> addressDistrict = const Value.absent(),
+                Value<String?> addressWard = const Value.absent(),
+                Value<String?> addressStreet = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedStoresCompanion.insert(
                 id: id,
                 name: name,
                 address: address,
-                areaId: areaId,
-                areaName: areaName,
                 gpsLat: gpsLat,
                 gpsLng: gpsLng,
                 isActive: isActive,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                addressProvince: addressProvince,
+                addressDistrict: addressDistrict,
+                addressWard: addressWard,
+                addressStreet: addressStreet,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

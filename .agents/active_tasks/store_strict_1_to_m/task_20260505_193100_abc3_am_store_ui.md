@@ -6,8 +6,8 @@ Workflow: /implement | Track: B2
 - **Tests Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\qa\contracts\test_contracts_20260505_185721_def2_am_store_ui_atdd.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [ ] Slice 1: UI Implementation (Admin Screens)

@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260513_235700_CMP01_action_bar.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) - N/A for Visuals/Simple UI track as per Route 2.
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) - N/A for Visuals/Simple UI track as per Route 2.
 
 ## Active Slice
 - [x] Slice 1: Update UI layout of TemplateDetailsPage and TemplateCard (Read Tests -> Code -> Verify)

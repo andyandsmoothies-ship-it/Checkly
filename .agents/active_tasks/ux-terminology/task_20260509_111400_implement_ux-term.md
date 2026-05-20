@@ -5,8 +5,8 @@ Workflow: /implement | Track: A
 - **Source Input**: `C:\Users\HP\Documents\GitHub\Checkly\docs\architecture\implementation_plan_20260509_110820_ux-term.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) -> N/A (UI visual changes only, Track A)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) -> N/A (UI visual changes only, Track A)
 
 ## Active Slice
 - [x] Slice 1: Execution Phase (Read Tests -> Code -> Verify)

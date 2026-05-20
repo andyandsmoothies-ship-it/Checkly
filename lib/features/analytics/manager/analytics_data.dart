@@ -45,8 +45,14 @@ class RadarData {
   factory RadarData.fromJson(Map<String, dynamic> radarJson) {
     return RadarData(
       categories: (radarJson['categories'] as List).cast<String>(),
-      storeValues: (radarJson['storeScores'] as List).cast<num>().map((e) => e.toDouble()).toList(),
-      regionalValues: (radarJson['areaScores'] as List).cast<num>().map((e) => e.toDouble()).toList(),
+      storeValues: (radarJson['storeScores'] as List)
+          .cast<num>()
+          .map((e) => e.toDouble())
+          .toList(),
+      regionalValues: (radarJson['areaScores'] as List)
+          .cast<num>()
+          .map((e) => e.toDouble())
+          .toList(),
     );
   }
 }
@@ -64,7 +70,7 @@ class AnalyticsData {
   final List<CategoryScore> categoryScores;
   final List<String> storeNames;
   final List<String> templateTypes;
-  final List<String> areaNames;
+  final List<String> provinceNames;
   final List<String> auditorNames;
   final List<ActionableInsight> insights;
   final RadarData? radarData;
@@ -80,7 +86,7 @@ class AnalyticsData {
     required this.categoryScores,
     required this.storeNames,
     required this.templateTypes,
-    required this.areaNames,
+    required this.provinceNames,
     required this.auditorNames,
     this.insights = const [],
     this.radarData,

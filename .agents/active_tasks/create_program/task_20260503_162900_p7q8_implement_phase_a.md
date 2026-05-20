@@ -6,7 +6,7 @@ Workflow: /implement | Track: B1
 - **TDD Gate**: `c:\Users\HP\Documents\GitHub\Checkly\docs\qa\gates\executed_tests_20260503_161000_p7q8_create_program_ui.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (from /tdd — RED confirmed at compile-time)
 
 ## Active Slice

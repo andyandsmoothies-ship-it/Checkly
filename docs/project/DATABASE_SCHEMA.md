@@ -36,11 +36,10 @@ User metadata linked 1:1 with `AspNetUsers`. Stores display name, email, and org
 | `email` | text | User's email (mirrors Identity) |
 | `avatar_url` | text? | Profile picture URL |
 | `store_id` | UUID? (FK → stores) | Assigned store (for Store Managers) |
-| `area_id` | UUID? (FK → areas) | Assigned area (for Area Managers) |
 | `created_at` | timestamptz | Record creation |
 | `updated_at` | timestamptz | Last modification |
 
-> **Key Relationships**: A Store Manager has `store_id` set. An Area Manager has `area_id` set. Admins and Auditors have both null (global access).
+> **Key Relationships**: A Store Manager has `store_id` set. An Area Manager is mapped to multiple stores via the `profile_store_assignments` junction table. Admins and Auditors have null `store_id` (global access).
 
 ---
 
@@ -81,8 +80,11 @@ Physical store locations where audits are conducted.
 |--------|------|---------|
 | `id` | UUID (PK) | Unique store ID |
 | `name` | text | Store name (e.g., "Cửa hàng Quận 1") |
-| `address` | text? | Street address |
-| `area_id` | UUID? (FK → areas) | Geographic region |
+| `address` | text? | Legacy street address |
+| `address_province` | text? | Structured address: Province |
+| `address_district` | text? | Structured address: District |
+| `address_ward` | text? | Structured address: Ward |
+| `address_street` | text? | Structured address: Street |
 | `gps_lat` | decimal? | Latitude for GPS verification |
 | `gps_lng` | decimal? | Longitude for GPS verification |
 | `is_active` | boolean | Soft delete flag (false = deactivated) |
@@ -91,21 +93,18 @@ Physical store locations where audits are conducted.
 
 ---
 
-### `areas`
-**Rows**: 0 | **Soft Delete**: `is_active = false`
+---
 
-Geographic regions for grouping stores and assigning Area Managers.
+### `profile_store_assignments`
+**Rows**: dynamic | **Junction table**
+
+Explicit junction table tracking which stores an Area Manager is assigned to. Replaces the legacy `area_id` model.
 
 | Column | Type | Purpose |
 |--------|------|---------|
-| `id` | UUID (PK) | Unique area ID |
-| `name` | text | Display name (e.g., "Miền Bắc") |
-| `description` | text? | Optional description of the area |
-| `is_active` | boolean | Soft delete flag |
+| `profile_id` | UUID (PK, FK → profiles) | The area manager |
+| `store_id` | UUID (PK, FK → stores) | The assigned store |
 | `created_at` | timestamptz | Record creation |
-| `updated_at` | timestamptz | Last update |
-
----
 
 ### `templates`
 **Rows**: 3 | **Soft Delete**: `is_active = false`
@@ -380,22 +379,20 @@ Pre-computed KPIs per store, refreshed with 30-day rolling metrics whenever a su
 
 ---
 
-### `area_benchmark_snapshots`
-**Rows**: 1 per area | **Upserted** via scheduled background worker
+### `province_benchmark_snapshots`
+**Rows**: 1 per province | **Upserted** via scheduled background worker
 
-Pre-computed area-level benchmark snapshot (averages, standard deviations, radar categories). Avoids expensive real-time aggregations across thousands of audits when generating insights.
+Pre-computed province-level benchmark snapshot (averages, standard deviations, radar categories). Avoids expensive real-time aggregations across thousands of audits when generating insights.
 
 | Column | Type | Purpose |
 |--------|------|---------|
-| `area_id` | UUID (PK, FK → areas) | Area identity (1:1 relationship) |
+| `province` | text (PK) | Province identity (e.g. "Hồ Chí Minh") |
 | `category_averages` | jsonb | Breakdown of category scores (for Radar chart) |
-| `overall_avg_score` | decimal | Area-wide average score |
+| `overall_avg_score` | decimal | Province-wide average score |
 | `std_deviation` | decimal | Standard deviation (for dynamic variance bands) |
 | `total_audit_count` | integer | Total audits included in calculation |
 | `last_calculated_at` | timestamptz | When the metrics were last aggregated |
 | `created_at` | timestamptz | Row creation |
-
-**Cascade**: Deletes when parent area is deleted.
 
 ---
 

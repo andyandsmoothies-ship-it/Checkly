@@ -6,8 +6,8 @@ Workflow: /implement | Track: B2
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\qa\contracts\test_contracts_20260504_173403_q4m7_slice3_admin_api.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 3: Admin API — Virtual Area Assignment & S10 Deletion (Read Tests -> Code -> Verify)

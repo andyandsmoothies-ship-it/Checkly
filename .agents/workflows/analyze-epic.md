@@ -77,7 +77,7 @@ Workflow: /analyze-epic | Track: C
 ## Phase 4: Break Down Work
 
 > [!CAUTION]
-> **Too Big:** Do not send an Epic directly to `/implement`. You must break it into smaller slices first.
+> **Too Big:** Do not send an Epic directly to be built. You must break it into smaller slices first.
 
 | Step | Instructions |
 |---|---|
@@ -85,9 +85,10 @@ Workflow: /analyze-epic | Track: C
 | **Plan Routes** | Create a list of routes for each slice (e.g., `Slice N | Track A/B | Route Path`). |
 
 ### Handoff Guide
-Define the phase sequence for each slice:
-- **Visuals/Simple UI:** Feature Analysis Phase -> Implementation Phase
-- **Logic/State/API:** Feature Analysis Phase -> Test-Driven Development (TDD) Phase -> Implementation Phase
+Define the phase sequence for each slice based on its risk:
+- **Visuals/Simple UI:** Plan -> Build
+- **Internal Logic/Algorithms:** Plan -> Write Unit Tests -> Build
+- **Network/Auth/Database:** Plan -> Write Acceptance Tests -> Build
 
 - **Order of Work**: For each slice, explain when it should run:
     - `[BLOCKING]`: Must run FIRST and ALONE (other slices need it).
@@ -117,7 +118,7 @@ Define the phase sequence for each slice:
 > 1. Final Epic decision and file path.
 > 2. List of Slices and when they run. (If there is only 1 phase, do not name it "Slice 1").
 > 3. **Next Steps**: A short summary for the next agent.
-> 4. **Handoff Roadmap**: Explicitly list the **Phase Intent** for EVERY slice in order. Use generic, professional terminology (e.g., "Hand off to Feature Analysis", "Hand off to Implementation"). You MUST include a short note explaining the 2-step loop: "For each slice, first complete the Feature Analysis phase to plan it, and then proceed to the Implementation phase to build it." Tell the user to execute the phases ONE AT A TIME.
+> 4. **Handoff Roadmap**: You MUST provide a short, concise list specifying the sequence of actions for **EVERY slice** based on its risk (e.g., `- **Slice 1**: Plan -> Write Acceptance Tests -> Build` or `- **Slice 2**: Plan -> Build`). Do not use project-specific workflow names (like `/tdd` or `/implement`), just generic actions. Tell the user to execute them ONE AT A TIME. Include the absolute file path to the epic plan.
 >
 > **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
 > 

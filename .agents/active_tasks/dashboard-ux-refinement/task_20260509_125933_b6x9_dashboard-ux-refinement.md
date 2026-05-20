@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `C:\Users\HP\.gemini\antigravity\brain\493220d8-99f2-4839-9729-5c0dc0748efe\implementation_plan.md.resolved`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) -> N/A (Pure UI)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) -> N/A (Pure UI)
 
 ## Active Slice
 - [x] Slice 1: Apply UX changes to Dashboard Widgets (Greeting, HeroCard, DeadlineBanner, SubmissionFeedSection, SubmissionRow)

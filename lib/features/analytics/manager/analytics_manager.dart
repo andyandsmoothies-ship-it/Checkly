@@ -40,14 +40,24 @@ class AnalyticsManager extends ChangeNotifier {
   // ---------- Active Filters ----------
   String? selectedStore;
   String? selectedType;
-  String? selectedArea;
+  String? selectedProvince;
   String? selectedAuditor;
   String? selectedStatus;
   String? selectedReviewStatus;
   String dateRange = 'all'; // all, 30, 90, 180, custom
   DateTimeRange? customDateRange;
 
-  // ---------- Load ----------
+  // ---------- Filter Setters ----------
+  /// Sets the date range and notifies listeners synchronously so chip
+  /// selected state updates in the same frame before [load()] begins.
+  void setDateRange(String range, {DateTimeRange? custom}) {
+    dateRange = range;
+    customDateRange = custom;
+    notifyListeners();
+    load();
+  }
+
+
   /// Runs all DB queries and computes KPIs. Call on page init and on filter changes.
   Future<void> load() async {
     isLoading = true;
@@ -62,14 +72,7 @@ class AnalyticsManager extends ChangeNotifier {
           storeId = allStores.firstWhere((s) => s.name == selectedStore).id;
         } catch (_) {}
       }
-      String? areaId;
-      if (selectedArea != null) {
-        try {
-          areaId = allStores
-              .firstWhere((s) => s.areaName == selectedArea)
-              .areaId;
-        } catch (_) {}
-      }
+      String? province = selectedProvince;
 
       String? startDate;
       String? endDate;
@@ -87,7 +90,7 @@ class AnalyticsManager extends ChangeNotifier {
 
       final json = await _api.getAnalytics(
         storeId: storeId,
-        areaId: areaId,
+        province: province,
         startDate: startDate,
         endDate: endDate,
       );
@@ -99,16 +102,18 @@ class AnalyticsManager extends ChangeNotifier {
         _db.cachedSubmissions,
       )..limit(1000)).get();
       var subs = allSubs.where((s) => s.reviewStatus != 'rejected').toList();
-      final areaNames =
+      final provinceNames =
           allStores
-              .map((s) => s.areaName)
+              .map((s) => s.addressProvince)
               .where((a) => a != null)
               .cast<String>()
               .toSet()
               .toList()
             ..sort();
-      final filteredStores = selectedArea != null
-          ? allStores.where((s) => s.areaName == selectedArea).toList()
+      final filteredStores = selectedProvince != null
+          ? allStores
+                .where((s) => s.addressProvince == selectedProvince)
+                .toList()
           : allStores;
       var storeNames = filteredStores.map((s) => s.name).toSet().toList()
         ..sort();
@@ -176,7 +181,7 @@ class AnalyticsManager extends ChangeNotifier {
         categoryScores: categoryScores,
         storeNames: storeNames,
         templateTypes: templateTypes,
-        areaNames: areaNames,
+        provinceNames: provinceNames,
         auditorNames: auditorNames,
         insights: insights,
         radarData: radarData,
@@ -186,7 +191,7 @@ class AnalyticsManager extends ChangeNotifier {
       isOffline = true;
       data = await loadFromDrift(
         db: _db,
-        selectedArea: selectedArea,
+        selectedProvince: selectedProvince,
         selectedStore: selectedStore,
         selectedType: selectedType,
         selectedAuditor: selectedAuditor,

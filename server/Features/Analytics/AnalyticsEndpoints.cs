@@ -10,11 +10,6 @@ public static class AnalyticsEndpoints
             .WithTags("Analytics")
             .RequireAuthorization();
 
-        // Specific routes BEFORE catch-all (Gotcha #3)
-        group.MapGet("/area-leaderboard", GetAreaLeaderboard.HandleAsync)
-            .WithName("GetAreaLeaderboard")
-            .RequireCapability(AppCapabilities.AnalyticsArea);
-
         group.MapGet("/my-stats", GetMyStats.HandleAsync)
             .WithName("GetMyStats");
 

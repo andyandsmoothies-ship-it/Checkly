@@ -40,7 +40,7 @@ void main() {
         // Act
         final result = await service.getAnalytics(
           storeId: 's1',
-          areaId: 'a1',
+          province: 'p1',
           startDate: '2026-01-01',
           endDate: '2026-01-31',
         );
@@ -58,7 +58,7 @@ void main() {
         final params = captured.first as Map<String, dynamic>;
 
         expect(params['storeId'], 's1');
-        expect(params['areaId'], 'a1');
+        expect(params['province'], 'p1');
         expect(params['startDate'], '2026-01-01');
         expect(params['endDate'], '2026-01-31');
       },
@@ -93,7 +93,7 @@ void main() {
 
       expect(params.keys.length, 1);
       expect(params['storeId'], 's1');
-      expect(params.containsKey('areaId'), isFalse);
+      expect(params.containsKey('province'), isFalse);
     });
   });
 }

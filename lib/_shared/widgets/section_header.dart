@@ -35,16 +35,16 @@ class SectionHeader extends StatelessWidget {
 
     final TextStyle? style = switch (variant) {
       SectionHeaderVariant.primary => theme.textTheme.labelSmall?.merge(
-          AppFonts.displayStyle(
-            fontWeight: FontWeight.w800,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
-            letterSpacing: 3,
-          ),
+        AppFonts.displayStyle(
+          fontWeight: FontWeight.w800,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
+          letterSpacing: 3,
         ),
+      ),
       SectionHeaderVariant.sub => theme.textTheme.titleMedium?.copyWith(
-          color: theme.colorScheme.onSurface,
-          fontWeight: FontWeight.w600,
-        ),
+        color: theme.colorScheme.onSurface,
+        fontWeight: FontWeight.w600,
+      ),
     };
 
     return Padding(

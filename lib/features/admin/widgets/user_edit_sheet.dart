@@ -14,7 +14,6 @@ import 'user_edit_sheet_body.dart';
 /// [_saveUser] and [_loadData] remain the single source of truth.
 class UserEditSheet extends StatefulWidget {
   final Map<String, dynamic> user;
-  final List<Map<String, dynamic>> areas;
 
   /// Returns all stores the page knows how to load. Called when role switches
   /// to store_manager.
@@ -31,7 +30,6 @@ class UserEditSheet extends StatefulWidget {
     String? fullName,
     String? role,
     String? storeId,
-    String? areaId,
     List<String>? assignedStoreIds,
   })
   onSave;
@@ -44,7 +42,6 @@ class UserEditSheet extends StatefulWidget {
   const UserEditSheet({
     super.key,
     required this.user,
-    required this.areas,
     required this.loadStores,
     required this.onSave,
     required this.onResetPassword,
@@ -58,7 +55,6 @@ class _UserEditSheetState extends State<UserEditSheet> {
   late final TextEditingController _fullNameCtrl;
   late String? selectedRole;
   String? selectedStoreId;
-  String? selectedAreaId;
   List<String> _selectedStoreIds = [];
   List<Map<String, dynamic>> assignableStores = [];
   bool _isLoadingStores = false;
@@ -74,7 +70,6 @@ class _UserEditSheetState extends State<UserEditSheet> {
     _fullNameCtrl.addListener(_markDirty);
     selectedRole = widget.user['role'] as String?;
     selectedStoreId = widget.user['storeId'] as String?;
-    selectedAreaId = widget.user['areaId'] as String?;
 
     if (widget.user['assignedStoreIds'] != null) {
       _selectedStoreIds = (widget.user['assignedStoreIds'] as List<dynamic>)
@@ -140,7 +135,6 @@ class _UserEditSheetState extends State<UserEditSheet> {
       fullNameCtrl: _fullNameCtrl,
       selectedRole: selectedRole,
       selectedStoreId: selectedStoreId,
-      selectedAreaId: selectedAreaId,
       selectedStoreIds: _selectedStoreIds,
       assignableStores: assignableStores,
       isLoadingStores: _isLoadingStores,
@@ -158,14 +152,11 @@ class _UserEditSheetState extends State<UserEditSheet> {
             selectedRole = v;
             if (v == 'admin' || v == 'auditor') {
               selectedStoreId = null;
-              selectedAreaId = null;
               _selectedStoreIds.clear();
             } else if (v == 'store_manager') {
-              selectedAreaId = null;
               _selectedStoreIds.clear();
             } else if (v == 'area_manager') {
               selectedStoreId = null;
-              selectedAreaId = null;
             }
           });
         }
@@ -195,7 +186,6 @@ class _UserEditSheetState extends State<UserEditSheet> {
             : _fullNameCtrl.text.trim(),
         role: selectedRole,
         storeId: selectedStoreId,
-        areaId: selectedAreaId,
         assignedStoreIds:
             selectedRole == 'area_manager' && _selectedStoreIds.isNotEmpty
             ? _selectedStoreIds

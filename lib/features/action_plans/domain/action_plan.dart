@@ -1,6 +1,7 @@
 import '../model/action_plan_dto.dart';
 import '../manager/action_plan_api.dart';
 import '../../../_shared/constants/action_plan_actions.dart';
+import '../../../_shared/constants/user_persona.dart';
 
 class ActionPlan {
   final ActionPlanDto dto;
@@ -17,10 +18,10 @@ class ActionPlan {
 
   void _assertRole(
     String currentRole,
-    List<String> allowedRoles,
+    List<UserPersona> allowedPersonas,
     String action,
   ) {
-    if (!allowedRoles.contains(currentRole)) {
+    if (!allowedPersonas.contains(UserPersona.fromRole(currentRole))) {
       throw RoleGuardException('Role "$currentRole" cannot $action');
     }
   }
@@ -41,7 +42,7 @@ class ActionPlan {
     String? photoPath,
   }) {
     _assertNotTerminal();
-    _assertRole(role, ['store_manager'], 'submit evidence');
+    _assertRole(role, [UserPersona.storeManager], 'submit evidence');
     _assertStatus('open', 'pending_verify');
 
     final optimisticDto = ActionPlanDto(
@@ -74,7 +75,7 @@ class ActionPlan {
 
   ActionPlan closePlan({required String role, required String verifierName}) {
     _assertNotTerminal();
-    _assertRole(role, ['auditor', 'admin', 'area_manager'], 'close plan');
+    _assertRole(role, [UserPersona.auditor, UserPersona.admin, UserPersona.areaManager], 'close plan');
     _assertStatus('pending_verify', 'closed');
 
     final optimisticDto = ActionPlanDto(
@@ -107,7 +108,7 @@ class ActionPlan {
 
   ActionPlan rejectEvidence({required String role, required String reason}) {
     _assertNotTerminal();
-    _assertRole(role, ['auditor', 'admin', 'area_manager'], 'reject evidence');
+    _assertRole(role, [UserPersona.auditor, UserPersona.admin, UserPersona.areaManager], 'reject evidence');
     _assertStatus('pending_verify', 'open');
 
     final optimisticDto = ActionPlanDto(

@@ -32,11 +32,14 @@ public static class GetStore
             .AsNoTracking()
             .Where(s => s.Id == id && s.IsActive == true)
             .Select(s => new StoreDto(
-                s.Id, s.Name, s.Address, s.AreaId,
-                s.Area != null ? s.Area.Name : null,
+                s.Id, s.Name, s.Address,
                 smLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
-                amLookup.Where(m => m.StoreId == s.Id).Select(m => m.FullName).FirstOrDefault(),
-                s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt))
+                s.GpsLat, s.GpsLng, s.IsActive, s.CreatedAt,
+                // SL-1: Structured address fields
+                s.Address2 != null ? s.Address2.Province : null,
+                s.Address2 != null ? s.Address2.District : null,
+                s.Address2 != null ? s.Address2.Ward : null,
+                s.Address2 != null ? s.Address2.Street : null))
             .FirstOrDefaultAsync(ct);
 
         return store is null

@@ -5,7 +5,7 @@ Workflow: /implement | Track: B1
 - **Source Input**: `C:\Users\HP\Documents\GitHub\Checkly\docs\qa\action_plan_ui_ux_master_report.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature) -> Inferred (Direct UI Execution)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis) -> Inferred (Direct UI Execution)
 - [x] Pre-Requisite: Failing Tests -> N/A (UI tweaks)
 
 ## Active Slice

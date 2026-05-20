@@ -25,7 +25,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ActionPlan> ActionPlans => Set<ActionPlan>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<SystemLog> SystemLogs => Set<SystemLog>();
-    public DbSet<Area> Areas => Set<Area>();
     public DbSet<UserGroup> UserGroups => Set<UserGroup>();
     public DbSet<UserGroupMember> UserGroupMembers => Set<UserGroupMember>();
     public DbSet<TemplateAssignment> TemplateAssignments => Set<TemplateAssignment>();
@@ -39,7 +38,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ProgramAssignment> ProgramAssignments => Set<ProgramAssignment>();
     public DbSet<ProfileStoreAssignment> ProfileStoreAssignments => Set<ProfileStoreAssignment>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
-    public DbSet<AreaBenchmarkSnapshot> AreaBenchmarkSnapshots => Set<AreaBenchmarkSnapshot>();
+    public DbSet<ProvinceBenchmarkSnapshot> ProvinceBenchmarkSnapshots => Set<ProvinceBenchmarkSnapshot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

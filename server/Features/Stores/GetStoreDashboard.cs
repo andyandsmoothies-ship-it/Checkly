@@ -88,7 +88,7 @@ public static class GetStoreDashboard
 
         return TypedResults.Ok(new
         {
-            store = new { store.Id, store.Name, store.Address, store.AreaId, store.IsActive },
+            store = new { store.Id, store.Name, store.Address, store.IsActive },
             avgScore,
             totalAudits = submissions.Count,
             openActionPlans = openAPs,

@@ -5,8 +5,8 @@ Workflow: /implement | Track: A
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\analysis_epic_20260512_200100_SNC01_sync_submissions.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) (We will adapt the tests as part of this slice since it's an API rewrite)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) (We will adapt the tests as part of this slice since it's an API rewrite)
 
 ## Active Slice
 - [x] Slice 1: Backend API Migration (Read Tests -> Code -> Verify)

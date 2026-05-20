@@ -24,7 +24,6 @@ import '../../features/admin/pages/user_management_page.dart';
 import '../../features/admin/pages/store_management_page.dart';
 import '../../features/admin/pages/system_logs_page.dart';
 import '../../features/admin/pages/schedule_audit_page.dart';
-import '../../features/admin/pages/area_management_page.dart';
 import '../../features/admin/pages/role_list_page.dart';
 import '../../features/admin/pages/role_detail_page.dart';
 import '../../features/analytics/pages/analytics_page.dart';
@@ -205,9 +204,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/admin/stores',
-      builder: (context, state) => StoreManagementPage(
-        initialAreaId: state.uri.queryParameters['areaId'],
-      ),
+      builder: (context, state) => const StoreManagementPage(),
     ),
     GoRoute(
       path: '/admin/logs',
@@ -217,10 +214,7 @@ final appRouter = GoRouter(
       path: '/admin/schedule',
       builder: (context, state) => const ScheduleAuditPage(),
     ),
-    GoRoute(
-      path: '/admin/areas',
-      builder: (context, state) => const AreaManagementPage(),
-    ),
+
     GoRoute(
       path: '/admin/roles',
       builder: (context, state) => const RoleListPage(),

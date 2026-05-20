@@ -26,13 +26,13 @@ class AnalyticsFilterChips extends StatelessWidget {
       child: Row(
         children: [
           // ── Active filter chips (dismissible) ──
-          if (manager.selectedArea != null)
+          if (manager.selectedProvince != null)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: InputChip(
-                label: Text('Area: ${manager.selectedArea}'),
+                label: Text('Province: ${manager.selectedProvince}'),
                 onDeleted: () {
-                  manager.selectedArea = null;
+                  manager.selectedProvince = null;
                   manager.selectedStore = null;
                   manager.load();
                 },
@@ -106,45 +106,30 @@ class AnalyticsFilterChips extends StatelessWidget {
           WarmChip(
             label: 'All Time',
             selected: manager.dateRange == 'all',
-            onTap: () {
-              manager.dateRange = 'all';
-              manager.customDateRange = null;
-              manager.load();
-            },
+            onTap: () => manager.setDateRange('all'),
           ),
           const SizedBox(width: 8),
           WarmChip(
             label: '30d',
             selected: manager.dateRange == '30',
-            onTap: () {
-              manager.dateRange = '30';
-              manager.customDateRange = null;
-              manager.load();
-            },
+            onTap: () => manager.setDateRange('30'),
           ),
           const SizedBox(width: 8),
           WarmChip(
             label: '90d',
             selected: manager.dateRange == '90',
-            onTap: () {
-              manager.dateRange = '90';
-              manager.customDateRange = null;
-              manager.load();
-            },
+            onTap: () => manager.setDateRange('90'),
           ),
           const SizedBox(width: 8),
           WarmChip(
             label: '6mo',
             selected: manager.dateRange == '180',
-            onTap: () {
-              manager.dateRange = '180';
-              manager.customDateRange = null;
-              manager.load();
-            },
+            onTap: () => manager.setDateRange('180'),
           ),
           const SizedBox(width: 8),
           WarmChip(
-            label: manager.dateRange == 'custom' && manager.customDateRange != null
+            label:
+                manager.dateRange == 'custom' && manager.customDateRange != null
                 ? '${manager.customDateRange!.start.day}/${manager.customDateRange!.start.month} – ${manager.customDateRange!.end.day}/${manager.customDateRange!.end.month}'
                 : 'Custom',
             selected: manager.dateRange == 'custom',

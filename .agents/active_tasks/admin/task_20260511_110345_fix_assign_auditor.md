@@ -6,7 +6,7 @@ Workflow: /implement | Track: B1
 
 ## Upfront
 - [x] Pre-Requisite: Implementation Plan (from /analyze-feature or /diagnose)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) -> Test is failing in theory due to strict contract, but we will adjust the test to match the backend contract and fix the code.
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) -> Test is failing in theory due to strict contract, but we will adjust the test to match the backend contract and fix the code.
 
 ## Active Slice
 - [x] Slice 1: Fix PBAC Capability String (Read Tests -> Code -> Verify)

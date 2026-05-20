@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `docs/diagnostics/failure_report_20260505_204300_adm1_admin_ui_test.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase)
 
 ## Active Slice
 - [x] Slice 1: Acknowledge and verify diagnostic fixes to slice5_admin_ui_test.dart

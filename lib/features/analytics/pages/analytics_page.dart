@@ -55,15 +55,13 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       initialDateRange: _manager.customDateRange,
     );
     if (picked != null) {
-      _manager.customDateRange = picked;
-      _manager.dateRange = 'custom';
-      _manager.load();
+      _manager.setDateRange('custom', custom: picked);
     }
   }
 
   int get _activeFilterCount {
     int count = 0;
-    if (_manager.selectedArea != null) count++;
+    if (_manager.selectedProvince != null) count++;
     if (_manager.selectedStore != null) count++;
     if (_manager.selectedType != null) count++;
     if (_manager.selectedAuditor != null) count++;

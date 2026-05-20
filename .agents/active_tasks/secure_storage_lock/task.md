@@ -5,8 +5,8 @@ Workflow: /implement | Track: B1
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\diagnostics\failure_report_20260503_133600_70e13ccc_secure_storage_lock.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
-- [x] Pre-Requisite: Failing Tests (from /atdd or /tdd) - *Note: Diagnosed bug in `clearAll`*
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
+- [x] Pre-Requisite: Failing Tests (from ATDD or TDD phase) - *Note: Diagnosed bug in `clearAll`*
 
 ## Active Slice
 - [x] Slice 1: Replace sequential deletes with `deleteAll()` in `SecureStorageService.clearAll()`

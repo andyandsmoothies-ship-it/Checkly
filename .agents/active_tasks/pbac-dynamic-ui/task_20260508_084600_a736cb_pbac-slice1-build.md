@@ -5,7 +5,7 @@ Workflow: /implement | Track: UI
 - **Source Input**: `c:\Users\HP\Documents\GitHub\Checkly\docs\architecture\pbac-dynamic-ui\implementation_plan_20260508_083700_a736cb_pbac-slice1.md`
 
 ## Upfront
-- [x] Pre-Requisite: Implementation Plan (from /analyze-feature)
+- [x] Pre-Requisite: Implementation Plan (from Feature Analysis)
 - [x] Pre-Requisite: Failing Tests (None required for these basic UI toggles)
 
 ## Active Slice

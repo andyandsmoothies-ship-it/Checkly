@@ -26,8 +26,6 @@ void main() {
     final mockStore = StoreDto(
       id: 's1',
       name: 'Store 1',
-      areaId: 'a1',
-      areaName: 'Area A',
       managerName: 'Manager M',
       address: '123 Main St',
       gpsLat: null,

@@ -60,14 +60,11 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
         using (var scope = _fixture.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
-            var areaA = Guid.NewGuid();
-            var areaB = Guid.NewGuid();
-            db.Areas.Add(new Area { Id = areaA, Name = "Area A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            db.Areas.Add(new Area { Id = areaB, Name = "Area B", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
 
-            db.Stores.Add(new Store { Id = storeId, AreaId = areaA, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            db.Stores.Add(new Store { Id = storeId, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
             // Profile has different AreaId to prove junction wins
-            db.Profiles.Add(new Profile { Id = userId, AreaId = areaB, FullName = "Area Mgr Diff", Email = "am_diff@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            db.Profiles.Add(new Profile { Id = userId, FullName = "Area Mgr Diff", Email = "am_diff@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
 
             // Add junction row
             db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = userId, StoreId = storeId });
@@ -98,12 +95,8 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
         using (var scope = _fixture.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
-            var areaA = Guid.NewGuid();
-            db.Areas.Add(new Area { Id = areaA, Name = "Area A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-
-            db.Stores.Add(new Store { Id = storeId, AreaId = areaA, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
-            // Profile has SAME AreaId
-            db.Profiles.Add(new Profile { Id = userId, AreaId = areaA, FullName = "Area Mgr Diff", Email = "am_diff2@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            db.Stores.Add(new Store { Id = storeId, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            db.Profiles.Add(new Profile { Id = userId, FullName = "Area Mgr Diff", Email = "am_diff2@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
 
             // NO junction row inserted
             await db.SaveChangesAsync();
@@ -226,6 +219,70 @@ public class SubmissionAccessGuardUnitTests : IClassFixture<TestWebApplicationFa
         var result = await AccessGuard.CanAccessAsync(user, scope, null!, default);
 
         // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task CanAccessAsync_AreaManager_ReturnsTrue_IfInJunction()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var storeId = Guid.NewGuid();
+
+        using (var scope = _fixture.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            db.Stores.Add(new Store { Id = storeId, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            db.Profiles.Add(new Profile { Id = userId, FullName = "Area Mgr Unit", Email = "am_unit@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            // Add junction row
+            db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = userId, StoreId = storeId });
+            await db.SaveChangesAsync();
+        }
+
+        var user = MakeUser("area_manager", userId);
+
+        // Act
+        bool result;
+        using (var actScope = _fixture.Services.CreateScope())
+        {
+            var db = actScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            result = await AccessGuard.CanAccessAsync(user, new ResourceScope(StoreId: storeId), db, default);
+        }
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task CanAccessAsync_AreaManager_ReturnsFalse_IfNotInJunction()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var storeId = Guid.NewGuid();
+
+        using (var scope = _fixture.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            db.Stores.Add(new Store { Id = storeId, Name = "Store A", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+            db.Profiles.Add(new Profile { Id = userId, FullName = "Area Mgr Unit2", Email = "am_unit2@test.com", CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow });
+
+            // NO junction row inserted
+            await db.SaveChangesAsync();
+        }
+
+        var user = MakeUser("area_manager", userId);
+
+        // Act
+        bool result;
+        using (var actScope = _fixture.Services.CreateScope())
+        {
+            var db = actScope.ServiceProvider.GetRequiredService<Common.Persistence.AppDbContext>();
+            result = await AccessGuard.CanAccessAsync(user, new ResourceScope(StoreId: storeId), db, default);
+        }
+
+        // Assert — Expect False because NO junction exists.
+        // Fails right now because current code allows access since AreaIds match.
         Assert.False(result);
     }
 }

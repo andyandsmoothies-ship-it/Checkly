@@ -14,14 +14,12 @@ class StoreApiService {
   /// [exceptUser] — userId to exclude from "occupied" check (for edit forms).
   Future<List<StoreDto>> getStores({
     String? search,
-    String? areaId,
     String? assignableAs,
     String? exceptUser,
     bool includeInactive = false,
   }) async {
     final params = <String, dynamic>{};
     if (search != null && search.isNotEmpty) params['search'] = search;
-    if (areaId != null) params['areaId'] = areaId;
     if (assignableAs != null) params['assignable_as'] = assignableAs;
     if (exceptUser != null) params['except_user'] = exceptUser;
     if (includeInactive) params['includeInactive'] = 'true';
@@ -44,15 +42,22 @@ class StoreApiService {
   Future<Map<String, dynamic>> createStore({
     required String name,
     String? address,
-    String? areaId,
     double? gpsLat,
     double? gpsLng,
+    // SL-1: Structured address fields
+    String? province,
+    String? district,
+    String? ward,
+    String? street,
   }) async {
     final body = <String, dynamic>{'name': name};
     if (address != null) body['address'] = address;
-    if (areaId != null) body['areaId'] = areaId;
     if (gpsLat != null) body['gpsLat'] = gpsLat;
     if (gpsLng != null) body['gpsLng'] = gpsLng;
+    if (province != null) body['province'] = province;
+    if (district != null) body['district'] = district;
+    if (ward != null) body['ward'] = ward;
+    if (street != null) body['street'] = street;
 
     final response = await _dio.post('/stores', data: body);
     return response.data as Map<String, dynamic>;
@@ -63,18 +68,25 @@ class StoreApiService {
     String id, {
     String? name,
     String? address,
-    String? areaId,
     double? gpsLat,
     double? gpsLng,
     bool? isActive,
+    // SL-1: Structured address fields
+    String? province,
+    String? district,
+    String? ward,
+    String? street,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
     if (address != null) body['address'] = address;
-    if (areaId != null) body['areaId'] = areaId;
     if (gpsLat != null) body['gpsLat'] = gpsLat;
     if (gpsLng != null) body['gpsLng'] = gpsLng;
     if (isActive != null) body['isActive'] = isActive;
+    if (province != null) body['province'] = province;
+    if (district != null) body['district'] = district;
+    if (ward != null) body['ward'] = ward;
+    if (street != null) body['street'] = street;
 
     final response = await _dio.put('/stores/$id', data: body);
     return response.data as Map<String, dynamic>;
@@ -83,5 +95,17 @@ class StoreApiService {
   /// DELETE /stores/{id} — soft-delete (sets IsActive = false).
   Future<void> deleteStore(String id) async {
     await _dio.delete('/stores/$id');
+  }
+
+  /// GET /reference/locations — returns the 63 official Vietnam province names.
+  /// SL-1: Used to populate the Province dropdown in [StoreFormSheet].
+  Future<List<String>> fetchProvinces() async {
+    final response = await _dio.get(
+      '/reference/locations',
+      options: Options(responseType: ResponseType.json),
+    );
+    final data = response.data;
+    if (data is List) return data.cast<String>();
+    return [];
   }
 }
