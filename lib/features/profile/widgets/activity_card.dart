@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../_shared/widgets/primitives/stroke_card.dart';
 
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../model/activity_item.dart';
@@ -28,33 +29,47 @@ class ActivityCard extends StatelessWidget {
     final color = _statusColor(context);
     final scoreStr = item.score != null ? item.score!.toStringAsFixed(1) : '';
 
-    return Card(
+    return StrokeCard(
       margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(_statusIcon(), color: color),
           ),
-          child: Icon(_statusIcon(), color: color),
-        ),
-        title: Text(
-          item.templateTitle,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          '${item.storeName} · ${formatDate(item.date)}',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  item.templateTitle,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${item.storeName} · ${formatDate(item.date)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        trailing: scoreStr.isNotEmpty
-            ? Text(
-                scoreStr,
-                style: TextStyle(color: color, fontWeight: FontWeight.w700),
-              )
-            : null,
+          if (scoreStr.isNotEmpty) ...[
+            const SizedBox(width: 12),
+            Text(
+              scoreStr,
+              style: TextStyle(color: color, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ],
       ),
     );
   }

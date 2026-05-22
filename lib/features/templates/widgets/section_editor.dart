@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
@@ -90,21 +91,15 @@ class SectionEditor extends StatelessWidget {
       );
     }
 
-    return Card(
+    return StrokeCard(
       margin: EdgeInsets.only(bottom: 12, left: isRoot ? 0 : 16),
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: hasErrors
-              ? theme.colorScheme.error
-              : isRoot
-              ? theme.cardTheme.shape != null
-                    ? Colors.transparent
-                    : Colors.transparent
-              : theme.colorScheme.primary.withValues(alpha: 0.3),
-          width: hasErrors ? 2 : (isRoot ? 0 : 2),
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
+      padding: EdgeInsets.zero,
+      borderColor: hasErrors
+          ? theme.colorScheme.error
+          : isRoot
+          ? null
+          : theme.colorScheme.primary.withValues(alpha: 0.3),
+      borderRadius: 12,
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(

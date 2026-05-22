@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/bubbly_button.dart';
 
 class WizardNavigationBar extends StatelessWidget {
   final int currentStep;
@@ -20,34 +22,43 @@ class WizardNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNextEnabled = !(isSaving || (currentStep == 3 && !templateIsValid));
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
         child: Row(
           children: [
             if (currentStep > 0)
-              OutlinedButton(
-                onPressed: isSaving ? null : onPrev,
-                child: const Text('Back'),
+              SizedBox(
+                width: 100,
+                height: 48,
+                child: BubblyButton(
+                  label: 'Back',
+                  color: AppColors.swan,
+                  textColor: AppColors.wolf,
+                  onPressed: isSaving ? null : onPrev,
+                ),
               ),
             const Spacer(),
-            FilledButton(
-              onPressed: (isSaving || (currentStep == 3 && !templateIsValid))
-                  ? null
-                  : () {
-                      if (currentStep == 3) {
-                        onSave();
-                      } else {
-                        onNext();
+            SizedBox(
+              width: 160,
+              height: 48,
+              child: BubblyButton(
+                label: currentStep == 3 ? 'Save' : 'Next',
+                isLoading: isSaving,
+                color: isNextEnabled ? AppColors.featherGreen : AppColors.swan,
+                textColor: isNextEnabled ? Colors.white : AppColors.wolf,
+                onPressed: isNextEnabled
+                    ? () {
+                        if (currentStep == 3) {
+                          onSave();
+                        } else {
+                          onNext();
+                        }
                       }
-                    },
-              child: isSaving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(currentStep == 3 ? 'Save Template' : 'Next'),
+                    : null,
+              ),
             ),
           ],
         ),

@@ -75,7 +75,11 @@ class ActionPlan {
 
   ActionPlan closePlan({required String role, required String verifierName}) {
     _assertNotTerminal();
-    _assertRole(role, [UserPersona.auditor, UserPersona.admin, UserPersona.areaManager], 'close plan');
+    _assertRole(role, [
+      UserPersona.auditor,
+      UserPersona.admin,
+      UserPersona.areaManager,
+    ], 'close plan');
     _assertStatus('pending_verify', 'closed');
 
     final optimisticDto = ActionPlanDto(
@@ -108,7 +112,11 @@ class ActionPlan {
 
   ActionPlan rejectEvidence({required String role, required String reason}) {
     _assertNotTerminal();
-    _assertRole(role, [UserPersona.auditor, UserPersona.admin, UserPersona.areaManager], 'reject evidence');
+    _assertRole(role, [
+      UserPersona.auditor,
+      UserPersona.admin,
+      UserPersona.areaManager,
+    ], 'reject evidence');
     _assertStatus('pending_verify', 'open');
 
     final optimisticDto = ActionPlanDto(

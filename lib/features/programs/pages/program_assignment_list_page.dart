@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/pill_chip.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../model/pending_assignment_vm.dart';
 
@@ -43,15 +46,12 @@ class ProgramAssignmentListPage extends StatelessWidget {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: vms.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final vm = vms[index];
-              return Card(
-                elevation: 0,
-                color: AppTheme.warning.withValues(alpha: 0.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              return StrokeCard(
+                padding: EdgeInsets.zero,
+                onTap: () => context.push('/programs/${vm.id}'),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -59,21 +59,31 @@ class ProgramAssignmentListPage extends StatelessWidget {
                   ),
                   leading: const Icon(
                     Icons.assignment_late_outlined,
-                    color: AppTheme.warning,
+                    color: AppColors.flamingo,
                   ),
                   title: Text(
                     vm.title,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: theme.textTheme.titleMedium?.merge(
+                      AppFonts.displayStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                   subtitle: const Padding(
-                    padding: EdgeInsets.only(top: 4),
-                    child: Text('Action Required · Tap to complete'),
+                    padding: EdgeInsets.only(top: 6),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        PillChip(
+                          label: 'ACTION REQUIRED',
+                          type: PillChipType.yellow,
+                        ),
+                      ],
+                    ),
                   ),
                   trailing: const Icon(
                     Icons.chevron_right,
-                    color: AppTheme.warning,
+                    color: AppColors.flamingo,
                   ),
-                  onTap: () => context.push('/programs/${vm.id}'),
                 ),
               );
             },

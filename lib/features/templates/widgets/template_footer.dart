@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/bubbly_button.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/theme/app_fonts.dart';
 
@@ -78,19 +80,18 @@ class TemplateFooter extends StatelessWidget {
             ],
             const Spacer(),
             // Save button — disabled when canSave is false (Rule 1)
-            FilledButton.icon(
-              onPressed: (saving || !canSave) ? null : onSave,
-              icon: saving
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.save),
-              label: Text(saving ? 'Saving...' : 'Save Template'),
+            SizedBox(
+              width: 180,
+              height: 48,
+              child: BubblyButton(
+                label: saving ? 'Saving...' : 'Save Template',
+                icon: saving
+                    ? null
+                    : const Icon(Icons.save, color: Colors.white, size: 18),
+                color: canSave ? AppColors.featherGreen : AppColors.swan,
+                isLoading: saving,
+                onPressed: (saving || !canSave) ? null : onSave,
+              ),
             ),
           ],
         ),

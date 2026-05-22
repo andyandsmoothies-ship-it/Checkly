@@ -9,6 +9,7 @@ import '../../admin/widgets/schedule_audit_form.dart';
 import '../../auth/manager/auth_manager.dart';
 
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/constants/user_persona.dart';
 import '../manager/dashboard_manager.dart';
 import 'widgets/admin_dashboard_variant.dart';
@@ -171,21 +172,20 @@ class Greeting extends StatelessWidget {
       children: [
         Text(
           personalizedGreeting.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.65),
-            letterSpacing: 1.2,
-            fontWeight: FontWeight.w700,
+          style: AppFonts.displayStyle(
+            fontSize: 11,
+            color: AppColors.wolf,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.5,
           ),
         ),
         const SizedBox(height: 6),
         Text(
           title,
-          style: AppFonts.serifStyle(
-            fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
-            color: Theme.of(context).colorScheme.onSurface,
-            fontWeight: FontWeight.w800,
+          style: AppFonts.displayStyle(
+            fontSize: 22,
+            color: AppColors.eel,
+            fontWeight: FontWeight.w900,
           ),
         ),
       ],

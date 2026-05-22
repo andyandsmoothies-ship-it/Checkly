@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 class AppFonts {
   AppFonts._();
 
-  /// Manrope — headings, labels, body text, all UI elements.
+  /// Nunito — headings, labels, body text, all UI elements.
   static TextStyle displayStyle({
     double? fontSize,
     FontWeight? fontWeight,
@@ -18,7 +18,7 @@ class AppFonts {
     double? height,
     TextDecoration? decoration,
   }) {
-    return GoogleFonts.manrope(
+    return GoogleFonts.nunito(
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
@@ -28,7 +28,7 @@ class AppFonts {
     );
   }
 
-  /// Lora — serif accent for hero numbers, greeting text, large scores.
+  /// Nunito — bold accent for hero numbers, greeting text, large scores.
   static TextStyle serifStyle({
     double? fontSize,
     FontWeight? fontWeight,
@@ -36,9 +36,9 @@ class AppFonts {
     double? letterSpacing,
     double? height,
   }) {
-    return GoogleFonts.lora(
+    return GoogleFonts.nunito(
       fontSize: fontSize,
-      fontWeight: fontWeight ?? FontWeight.w400,
+      fontWeight: fontWeight ?? FontWeight.w900,
       color: color,
       letterSpacing: letterSpacing,
       height: height,

@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../_shared/theme/app_fonts.dart';
-import '../../../../_shared/theme/app_theme.dart';
+import '../../../../_shared/theme/app_colors.dart';
+import '../../../../_shared/widgets/primitives/pill_chip.dart';
+import '../../../../_shared/widgets/primitives/stroke_card.dart';
 import '../../models/template_dto.dart';
 import 'rich_description.dart';
 import 'rule_badge.dart';
@@ -17,19 +18,12 @@ class OverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     // Parse scoring logic config
     final rules = _parseScoringRules(tree.scoringLogicConfig);
     final typeLabel = _typeLabel(tree.type);
 
-    return Container(
+    return StrokeCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.sageGray.withValues(alpha: 0.3)),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,34 +34,16 @@ class OverviewCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   tree.title,
-                  style: AppFonts.serifStyle(
-                    fontSize: Theme.of(
-                      context,
-                    ).textTheme.headlineSmall?.fontSize,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface,
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.eel,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  typeLabel,
-                  style: AppFonts.displayStyle(
-                    fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                    fontWeight: FontWeight.w700,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
+              PillChip(label: typeLabel, type: _chipType(tree.type)),
             ],
           ),
 
@@ -121,6 +97,15 @@ class OverviewCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  PillChipType _chipType(String type) {
+    return switch (type) {
+      'qc' => PillChipType.blue,
+      'training' => PillChipType.purple,
+      'general' => PillChipType.green,
+      _ => PillChipType.yellow,
+    };
   }
 
   String _typeLabel(String type) {

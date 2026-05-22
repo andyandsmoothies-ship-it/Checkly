@@ -33,7 +33,8 @@ class StorePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedRole != AppRoles.storeManager && selectedRole != AppRoles.areaManager) {
+    if (selectedRole != AppRoles.storeManager &&
+        selectedRole != AppRoles.areaManager) {
       return const SizedBox.shrink();
     }
 

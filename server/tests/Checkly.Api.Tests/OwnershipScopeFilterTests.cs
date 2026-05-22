@@ -31,7 +31,7 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
         var adminClient = _factory.CreateAuthenticatedClient(adminToken);
 
         // 1. Create a Store
-        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Owner Test Store" });
+        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Owner Test Store", Province = "Hà Nội" });
         storeResponse.EnsureSuccessStatusCode();
         var storeId = (await storeResponse.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 
@@ -119,7 +119,7 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
         var adminClient = _factory.CreateAuthenticatedClient(adminToken);
 
         // Create a Store and Template for the test
-        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Admin Test Store" });
+        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Admin Test Store", Province = "Hà Nội" });
         storeResponse.EnsureSuccessStatusCode();
         var storeId = (await storeResponse.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 
@@ -159,7 +159,7 @@ public class OwnershipScopeFilterTests : IClassFixture<TestWebApplicationFactory
         var adminToken = await _factory.LoginBootstrapAdminAsync(client);
         var adminClient = _factory.CreateAuthenticatedClient(adminToken);
 
-        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Unrelated Store" });
+        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Unrelated Store", Province = "Hà Nội" });
         storeResponse.EnsureSuccessStatusCode();
         var storeId = (await storeResponse.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 

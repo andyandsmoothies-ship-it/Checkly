@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/exceptions/app_error.dart';
 import '../../../_shared/services/error_display_service.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../../_shared/utils/date_format_utils.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
@@ -347,6 +348,10 @@ class _AuditFormPageState extends State<AuditFormPage> {
             floatingActionButton: FloatingActionButton.small(
               onPressed: () => _showQuickJump(manager, template),
               tooltip: 'Jump to section',
+              backgroundColor: AppColors.featherGreen,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: const CircleBorder(),
               child: const Icon(Icons.grid_view),
             ),
 

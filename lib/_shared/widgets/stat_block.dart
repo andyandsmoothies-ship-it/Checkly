@@ -4,13 +4,12 @@ import '../theme/app_fonts.dart';
 
 /// Asymmetric stat block — large accent-colored container with serif number.
 ///
-/// Matches the Apothecary reference: bottom-aligned content, configurable
-/// background colour and height.
+/// Refactored to use Swan borders on the compact variant and brand pastels as defaults.
 /// ```dart
 /// StatBlock(
 ///   value: '3',
 ///   label: 'Open Action Plans',
-///   color: AppColors.softPeach,
+///   color: AppColors.walkingFish,
 ///   height: 160,
 /// )
 /// StatBlock.compact(
@@ -31,19 +30,19 @@ class StatBlock extends StatelessWidget {
     super.key,
     required this.value,
     required this.label,
-    this.color = AppColors.softPeach,
+    this.color = AppColors.walkingFish,
     this.height = 160,
     this.uppercaseLabel = false,
     this.bordered = false,
   });
 
-  /// Compact bordered variant — white bg with sage border.
+  /// Compact bordered variant — polar bg with Swan border.
   const StatBlock.compact({
     super.key,
     required this.value,
     required this.label,
     this.height = 128,
-  }) : color = Colors.white,
+  }) : color = AppColors.polar,
        uppercaseLabel = true,
        bordered = true;
 
@@ -55,9 +54,7 @@ class StatBlock extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(16),
-        border: bordered
-            ? Border.all(color: AppColors.sageGray.withValues(alpha: 0.5))
-            : null,
+        border: bordered ? Border.all(color: AppColors.swan, width: 2) : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,20 +64,20 @@ class StatBlock extends StatelessWidget {
             value,
             style: AppFonts.serifStyle(
               fontSize: height > 140 ? 36 : 24,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: AppColors.eel,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: height > 140 ? 8 : 4),
           Text(
             uppercaseLabel ? label.toUpperCase() : label,
             style: AppFonts.displayStyle(
               fontSize: uppercaseLabel ? 10 : 14,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface.withValues(
-                alpha: uppercaseLabel ? 0.6 : 0.8,
-              ),
-              letterSpacing: uppercaseLabel ? -0.5 : 0,
+              fontWeight: FontWeight.w700,
+              color: AppColors.wolf,
+              letterSpacing: uppercaseLabel ? 1.0 : 0,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

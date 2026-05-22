@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../model/action_plan_dto.dart';
 import 'action_plan_card.dart';
 
@@ -30,28 +29,29 @@ class StoreGroup extends StatelessWidget {
           children: [
             Text(
               storeName.toUpperCase(),
-              style: AppFonts.displayStyle(
-                fontSize: Theme.of(context).textTheme.labelSmall?.fontSize,
-                fontWeight: FontWeight.w700,
-                // WCAG: raised from 0.4 → 0.85 for clear section header hierarchy
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.85),
-                letterSpacing: 1.5,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                color: AppColors.wolf,
+                letterSpacing: 2,
               ),
             ),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                color: AppColors.seaSponge,
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.turtle, width: 2),
               ),
               child: Text(
                 '${plans.length}',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.primary,
+                style: const TextStyle(
+                  fontFamily: 'Nunito',
+                  color: AppColors.macaw,
                   fontWeight: FontWeight.bold,
+                  fontSize: 12,
                 ),
               ),
             ),

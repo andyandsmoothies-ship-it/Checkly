@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 /// Data for a single category cell in the heatmap.
 class CategoryScore {
@@ -27,15 +28,13 @@ class CategoryHeatmap extends StatelessWidget {
     final theme = Theme.of(context);
 
     if (categories.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Center(
-            child: Text(
-              'No category data yet',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+      return StrokeCard(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: Text(
+            'No category data yet',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -48,38 +47,35 @@ class CategoryHeatmap extends StatelessWidget {
       items.add(const CategoryScore(name: '', avgScore: 0, auditCount: 0));
     }
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Category Scores',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+    return StrokeCard(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Category Scores',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Build 2-column rows
+          for (int i = 0; i < items.length; i += 2)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Expanded(child: _HeatCell(score: items[i])),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: i + 1 < items.length && items[i + 1].name.isNotEmpty
+                        ? _HeatCell(score: items[i + 1])
+                        : const SizedBox.shrink(),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            // Build 2-column rows
-            for (int i = 0; i < items.length; i += 2)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Expanded(child: _HeatCell(score: items[i])),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child:
-                          i + 1 < items.length && items[i + 1].name.isNotEmpty
-                          ? _HeatCell(score: items[i + 1])
-                          : const SizedBox.shrink(),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

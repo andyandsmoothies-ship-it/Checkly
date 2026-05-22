@@ -6,6 +6,7 @@ import '../../../../_shared/theme/app_theme.dart';
 import '../../../audit/model/submission_dto.dart';
 import '../../../../_shared/constants/review_status.dart';
 import '../../../audit/utils/score_formatter.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
 void showAuditReviewSheet({
   required BuildContext context,
@@ -179,32 +180,36 @@ class AuditReviewSheet extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: BubblyButton(
+                    label: 'Reject',
+                    color: theme.colorScheme.error,
+                    icon: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                       onReject();
                     },
-                    icon: const Icon(Icons.close, size: 18),
-                    label: const Text('Reject'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.error,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+                    height: 40,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: FilledButton.icon(
+                  child: BubblyButton(
+                    label: 'Approve',
+                    color: AppTheme.success,
+                    icon: const Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                       onApprove();
                     },
-                    icon: const Icon(Icons.check, size: 18),
-                    label: const Text('Approve'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppTheme.success,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+                    height: 40,
                   ),
                 ),
               ],

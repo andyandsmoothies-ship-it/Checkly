@@ -8,10 +8,22 @@ import '../widgets/sign_out_tile.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/settings_section_group.dart';
 import '../widgets/profile_capabilities_section.dart';
+import '../widgets/profile_workspace_section.dart';
 
 final _di = GetIt.instance;
 
-/// Profile page — role-aware sectioned settings, theme toggle, sign out.
+/// Profile page — 4-zone premium layout.
+///
+/// Zones (always in this order):
+///   1. IDENTITY — [ProfileIdentityCard] with gradient, avatar, name, email, badge.
+///   2. MY WORKSPACE — [ProfileWorkspaceSection] (hidden entirely for Auditors).
+///   3. SETTINGS — Theme toggle only.
+///   4. MY ACCOUNT — [ProfileCapabilitiesSection] ExpansionTile.
+///   5. Sign Out + version footer.
+///
+/// ACTIVITY zone removed (was duplicating the bottom nav ACTIVITY/INBOX tabs — Nielsen H8).
+/// Templates tile visibility is REACTIVE — driven by [AuthManager.capabilities],
+/// not by [UserPersona], per PBAC rules.
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -24,85 +36,87 @@ class ProfilePage extends StatelessWidget {
     final email = user?.email ?? 'user@checkly.app';
     final role = user?.role ?? AppRoles.auditor;
     final persona = UserPersona.fromRole(user?.role);
-    final initials = getInitials(user?.fullName ?? email);
+    final initials = _getInitials(user?.fullName ?? email);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile'), centerTitle: true),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-        children: [
-          // ── Identity Header (horizontal) ──
-          ProfileHeader(initials: initials, email: displayName, role: role),
-          const SizedBox(height: 24),
-
-          // ── Management Section ──
-          SettingsSectionGroup(items: _managementItems(context, persona)),
-          const SizedBox(height: 12),
-
-          // ── General Section (Activity + Notifications + Theme) ──
-          SettingsSectionGroup(
-            items: [
-              MenuItemData(
-                icon: Icons.history,
-                label: 'My Activity',
-                description: 'View your recent actions',
-                route: '/activity',
+      body: ValueListenableBuilder<Set<String>>(
+        valueListenable: auth.capabilities,
+        builder: (context, caps, _) {
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+            children: [
+              // ── Zone 1: IDENTITY ──
+              ProfileIdentityCard(
+                initials: initials,
+                displayName: displayName,
+                email: email,
+                role: role,
               ),
-              MenuItemData(
-                icon: Icons.notifications_outlined,
-                label: 'Notifications',
-                description: 'View all notifications',
-                route: '/activity',
+
+              // ── Zone 2: MY WORKSPACE (hidden for Auditors) ──
+              ProfileWorkspaceSection(persona: persona, caps: caps),
+
+              // ── Zone 3: SETTINGS ──
+              SettingsSectionGroup(
+                sectionLabel: 'SETTINGS',
+                items: const [],
+                themeToggle: true,
               ),
+
+              // ── Zone 5: MY ACCOUNT ──
+              _buildMyAccountZone(context),
+
+              const SizedBox(height: 24),
+
+              // ── Sign Out ──
+              const SignOutTile(),
+              const SizedBox(height: 16),
+
+              // ── Version footer ──
+              Center(
+                child: Text(
+                  'Checkly v1.0.0',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
-            themeToggle: true,
-          ),
-          const SizedBox(height: 12),
-
-          // ── Support Section ──
-          SettingsSectionGroup(
-            items: [
-              MenuItemData(
-                icon: Icons.menu_book_outlined,
-                label: 'Documentation',
-                description: 'Guides and user manuals',
-              ),
-              MenuItemData(
-                icon: Icons.help_outline,
-                label: 'Help',
-                description: 'Get support and learn more',
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // ── PBAC Capabilities Section ──
-          const ProfileCapabilitiesSection(),
-          const SizedBox(height: 24),
-
-          // ── Sign Out ──
-          const SignOutTile(),
-          const SizedBox(height: 16),
-
-          // ── Version ──
-          Center(
-            child: Text(
-              'Checkly v1.0.0',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
+          );
+        },
       ),
     );
   }
 
+  Widget _buildMyAccountZone(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20, bottom: 6, left: 4),
+          child: Text(
+            'MY ACCOUNT',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: cs.primary,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        const ProfileCapabilitiesSection(),
+      ],
+    );
+  }
+
   @visibleForTesting
-  String getInitials(String input) {
+  String getInitials(String input) => _getInitials(input);
+
+  static String _getInitials(String input) {
     if (input.contains('@')) {
       final local = input.split('@').first;
       return local.length >= 2
@@ -120,43 +134,5 @@ class ProfilePage extends StatelessWidget {
           : name.toUpperCase();
     }
     return '??';
-  }
-
-  List<MenuItemData> _managementItems(
-    BuildContext context,
-    UserPersona persona,
-  ) {
-    final items = <MenuItemData>[];
-    if (persona == UserPersona.admin) {
-      items.add(
-        MenuItemData(
-          icon: Icons.admin_panel_settings,
-          label: 'Admin Dashboard',
-          description: 'Manage users and approvals',
-          route: '/admin/dashboard',
-        ),
-      );
-    }
-    if (persona == UserPersona.areaManager) {
-      items.add(
-        MenuItemData(
-          icon: Icons.map_outlined,
-          label: 'My Region',
-          description: 'View stores in your area',
-          route: '/analytics',
-        ),
-      );
-    }
-    if (persona == UserPersona.storeManager) {
-      items.add(
-        MenuItemData(
-          icon: Icons.store,
-          label: 'My Store',
-          description: 'View your store details',
-          route: '/analytics',
-        ),
-      );
-    }
-    return items;
   }
 }

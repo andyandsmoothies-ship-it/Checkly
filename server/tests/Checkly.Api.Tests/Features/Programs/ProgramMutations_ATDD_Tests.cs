@@ -38,7 +38,7 @@ public class ProgramMutations_ATDD_Tests : IClassFixture<TestWebApplicationFacto
             .GetProperty("id").GetGuid();
 
         var storeResp = await adminClient.PostAsJsonAsync("/api/stores",
-            new { name = $"Store-{Guid.NewGuid()}" });
+            new { name = $"Store-{Guid.NewGuid()}", province = "Hà Nội" });
         storeResp.EnsureSuccessStatusCode();
         var storeId = (await storeResp.Content.ReadFromJsonAsync<JsonElement>())
             .GetProperty("id").GetGuid();

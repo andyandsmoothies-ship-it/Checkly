@@ -160,9 +160,10 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
 
           if (_manager.error != null && _manager.actionPlans.value.isEmpty) {
             return ChecklyEmptyState(
-              icon: Icons.error_outline,
-              title: 'Failed to load',
-              subtitle: _manager.error!,
+              emoji: '🔌',
+              title: "Let's get reconnected!",
+              subtitle:
+                  'We had trouble reaching the server. Please check your network connection.',
               actionButton: FilledButton.icon(
                 onPressed: _manager.loadActionPlans,
                 icon: const Icon(Icons.refresh),
@@ -244,13 +245,15 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
               Expanded(
                 child: _filtered.isEmpty
                     ? ChecklyEmptyState(
-                        icon: Icons.assignment_outlined,
+                        emoji: _filter == 'all'
+                            ? '📋'
+                            : (_filter == 'closed' ? '✅' : '🎯'),
                         title: _filter == 'all'
-                            ? 'No action plans yet'
-                            : 'No ${_filterLabel(_filter)} action plans',
+                            ? 'All clear here!'
+                            : 'No ${_filterLabel(_filter)} plans found',
                         subtitle: _filter == 'all'
-                            ? 'Action plans will appear here when audits flag issues.'
-                            : 'Try changing the filter to see more.',
+                            ? 'Action plans appear when audits flag improvements. Start an audit to check in!'
+                            : 'Try changing your status filters to discover other plans.',
                         actionButton:
                             _filter == 'all' && _countByStatus('all') == 0
                             ? FilledButton.icon(

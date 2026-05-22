@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 
 import '../../stores/manager/store_manager.dart';
 import '../../stores/model/store_dto.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 /// Multi-select store picker for the Create Program wizard.
 ///
@@ -123,7 +125,13 @@ class _ProgramStoreSelectorPageState extends State<ProgramStoreSelectorPage> {
           TextButton(
             key: const Key('store_selector_done_button'),
             onPressed: _done,
-            child: const Text('Done'),
+            child: Text(
+              'Done',
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
           ),
         ],
       ),
@@ -156,26 +164,53 @@ class _ProgramStoreSelectorPageState extends State<ProgramStoreSelectorPage> {
           padding: const EdgeInsets.all(12),
           child: TextField(
             controller: _searchController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Search stores...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.search),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: AppColors.swan, width: 2),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(
+                  color: AppColors.featherGreen,
+                  width: 2,
+                ),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             onChanged: _onSearchChanged,
           ),
         ),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: _stores.length,
             itemBuilder: (context, i) {
               final store = _stores[i];
               final isSelected = _selectedIds.contains(store.id);
-              return CheckboxListTile(
-                key: Key('store_item_${store.id}'),
-                title: Text(store.name),
-                subtitle: store.address != null ? Text(store.address!) : null,
-                value: isSelected,
-                onChanged: (_) => _toggleStore(store.id),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: StrokeCard(
+                  color: isSelected ? AppColors.walkingFish : null,
+                  padding: EdgeInsets.zero,
+                  child: CheckboxListTile(
+                    key: Key('store_item_${store.id}'),
+                    title: Text(
+                      store.name,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    subtitle: store.address != null
+                        ? Text(store.address!)
+                        : null,
+                    value: isSelected,
+                    activeColor: AppColors.featherGreen,
+                    onChanged: (_) => _toggleStore(store.id),
+                  ),
+                ),
               );
             },
           ),

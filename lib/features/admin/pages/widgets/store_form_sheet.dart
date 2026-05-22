@@ -83,9 +83,7 @@ class _StoreFormSheetState extends State<StoreFormSheet>
       text: widget.store?.addressDistrict ?? '',
     );
     wardCtrl = TextEditingController(text: widget.store?.addressWard ?? '');
-    streetCtrl = TextEditingController(
-      text: widget.store?.addressStreet ?? '',
-    );
+    streetCtrl = TextEditingController(text: widget.store?.addressStreet ?? '');
 
     _mapCtrl = MapController();
 

@@ -51,17 +51,15 @@ public static class CreateStore
             IsActive = true,
             CreatedAt = now,
             UpdatedAt = now,
-            // SL-1: Structured address — TC-SL1-08
-            Address2 = request.Province is not null || request.District is not null
-                        || request.Ward is not null || request.Street is not null
-                ? new StoreAddress
-                {
-                    Province = request.Province?.Trim(),
-                    District = request.District?.Trim(),
-                    Ward = request.Ward?.Trim(),
-                    Street = request.Street?.Trim(),
-                }
-                : null,
+            // Province required — Address2 is always populated after validation
+            Address2 = new StoreAddress
+            {
+                Province = request.Province!.Trim(),
+                District = request.District?.Trim(),
+                Ward = request.Ward?.Trim(),
+                Street = request.Street?.Trim(),
+            },
+
         };
 
         db.Stores.Add(store);

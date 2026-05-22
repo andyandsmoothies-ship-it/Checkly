@@ -6,6 +6,7 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 # Orchestration Standards
 
 ## 1. Artifacts & Naming
+- **Immutable Artifacts (Read-Only)**: NEVER update, overwrite, or append to an existing workflow artifact (research, task, analysis, audit, etc.) created by a previous agent or workflow. ALWAYS create a BRAND NEW file with a fresh timestamp and ID. Treat all past artifacts as strictly read-only historical context.
 - **[ShortID]**: Use the first 8 chars of session ID (or random 8-char hex).
 - **Topic Folders**: Group artifacts by Epic/Issue ID (e.g., `F-123_auth`). Extract and reuse this folder name for all downstream agents.
 - **Dynamic File Naming**: Prevent collisions using `[type]_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` (e.g., `task_...`, `walkthrough_...`, `implementation_plan_...`).

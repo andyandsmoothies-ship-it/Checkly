@@ -302,9 +302,9 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
   Widget _buildList(List<SubmissionDto> items, {bool showActions = false}) {
     if (items.isEmpty) {
       return const ChecklyEmptyState(
-        icon: Icons.inbox_outlined,
-        title: 'No audits here',
-        subtitle: 'This queue is clear.',
+        emoji: '🎉',
+        title: 'You are all caught up!',
+        subtitle: 'All submitted audits have been reviewed successfully.',
       );
     }
 

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/primitives/primitives.dart';
+
 /// A reusable guard that prevents accidental back-navigation when a form
 /// has unsaved changes. Wraps its child in [PopScope] and shows a
 /// confirmation dialog when [isDirty] is true and the user tries to pop.
+///
+/// The visual confirmation modal is rendered as a [BubblyDialog] while
+/// the [PopScope] navigation logic is preserved exactly.
 ///
 /// Usage:
 /// ```dart
@@ -40,7 +45,7 @@ class UnsavedChangesGuard extends StatelessWidget {
         if (didPop) return;
         final discard = await showDialog<bool>(
           context: context,
-          builder: (_) => AlertDialog(
+          builder: (_) => BubblyDialog(
             title: Text(title ?? 'Discard changes?'),
             content: Text(
               message ?? 'You have unsaved changes that will be lost.',

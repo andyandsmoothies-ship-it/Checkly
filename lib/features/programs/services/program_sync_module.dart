@@ -1,30 +1,47 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:flutter/foundation.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/sync_module.dart';
 import '../../../_shared/services/sync_api.dart';
 import '../../../_shared/database/dao/program_outbox_dao.dart';
 import '../../../_shared/database/dao/sync_meta_dao.dart';
 import '../../../_shared/database/app_database.dart' as db;
+import '../../../features/auth/manager/auth_manager.dart';
 
 class ProgramSyncModule extends BaseSyncModule {
   final SyncApi _api;
   final ProgramOutboxDao _outboxDao;
   final SyncMetaDao _syncMetaDao;
+  final AuthManager _auth;
 
   ProgramSyncModule({
     required SyncApi api,
     required ProgramOutboxDao outboxDao,
     required SyncMetaDao syncMetaDao,
+    required AuthManager auth,
     required super.scheduleRetry,
   }) : _api = api,
        _outboxDao = outboxDao,
-       _syncMetaDao = syncMetaDao;
+       _syncMetaDao = syncMetaDao,
+       _auth = auth;
 
   @override
   int get priority => 30;
 
   @override
   Future<void> executePull() async {
+    // Predictive Skip (SA-PBAC): Only Store Managers hold programs:assignments_my.
+    // Skipping the call for other roles prevents a guaranteed 403 on the backend,
+    // eliminates the wasted network request, and keeps server logs anomaly-clean.
+    if (!_auth.capabilities.value.contains(
+      AppCapabilities.programsAssignmentsMy,
+    )) {
+      debugPrint(
+        '[ProgramSync] Skipping assignments pull: capability not held.',
+      );
+      return;
+    }
     await _pullProgramAssignments();
   }
 

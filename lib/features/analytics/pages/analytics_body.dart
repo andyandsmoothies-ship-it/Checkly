@@ -78,16 +78,17 @@ class AnalyticsBody extends StatelessWidget {
           // ── Empty states ──
           if (totalAudits == 0 && activeFilterCount > 0)
             const ChecklyEmptyState(
-              icon: Icons.search_off,
-              title: 'No Match',
+              emoji: '🔍',
+              title: "Let's widen the search!",
               subtitle:
-                  'No audits match your current filters. Clear filters to see more.',
+                  'No audits match your current filters. Try clearing some filters to explore more data.',
             )
           else if (totalAudits == 0)
             const ChecklyEmptyState(
-              icon: Icons.analytics_outlined,
-              title: 'No analytics yet',
-              subtitle: 'Complete your first audit to generate insights.',
+              emoji: '📊',
+              title: 'Your insights dashboard is waiting!',
+              subtitle:
+                  'Complete your very first audit to unlock beautiful analytics and performance trends.',
             )
           else ...[
             // ── KPI Grid ──

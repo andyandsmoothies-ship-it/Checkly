@@ -60,7 +60,7 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
             await CapabilityHelper.UpsertAsync(db, "admin", AppCapabilities.SubmissionsReview);
 
             // Seed a submission owned by the auditor
-            var store = new Store { Id = Guid.NewGuid(), Name = $"Store IDOR 1 {uid}" };
+            var store = new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = Guid.NewGuid(), Name = $"Store IDOR 1 {uid}" };
             db.Stores.Add(store);
             var submission = new Submission
             {
@@ -104,7 +104,7 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            var store = new Store { Id = Guid.NewGuid(), Name = $"Store Own {uid}" };
+            var store = new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = Guid.NewGuid(), Name = $"Store Own {uid}" };
             db.Stores.Add(store);
 
             db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amId, StoreId = store.Id });
@@ -152,11 +152,11 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             // Submission is in store B — the area manager is assigned ONLY to store A
-            var storeA = new Store { Id = Guid.NewGuid(), Name = $"Store in A {uid}" };
+            var storeA = new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = Guid.NewGuid(), Name = $"Store in A {uid}" };
             db.Stores.Add(storeA);
             db.ProfileStoreAssignments.Add(new ProfileStoreAssignment { ProfileId = amId, StoreId = storeA.Id });
 
-            var storeB = new Store { Id = Guid.NewGuid(), Name = $"Store in B {uid}" };
+            var storeB = new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = Guid.NewGuid(), Name = $"Store in B {uid}" };
             db.Stores.Add(storeB);
 
             var submission = new Submission
@@ -201,7 +201,7 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            var store = new Store { Id = Guid.NewGuid(), Name = $"Store AP {uid}" };
+            var store = new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = Guid.NewGuid(), Name = $"Store AP {uid}" };
             db.Stores.Add(store);
 
             // Submission is owned by this auditor — the guard must resolve this link
@@ -261,8 +261,8 @@ public class IdorGuardTests : IClassFixture<TestWebApplicationFactory>
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var smProfile = await db.Profiles.FirstAsync(p => p.Id == smId);
 
-            var storeA = new Store { Id = Guid.NewGuid(), Name = $"Store A {uid}" };
-            var storeB = new Store { Id = Guid.NewGuid(), Name = $"Store B {uid}" };
+            var storeA = new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = Guid.NewGuid(), Name = $"Store A {uid}" };
+            var storeB = new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = Guid.NewGuid(), Name = $"Store B {uid}" };
             smProfile.StoreId = storeA.Id;
             db.Stores.AddRange(storeA, storeB);
 

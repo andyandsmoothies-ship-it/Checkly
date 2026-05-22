@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:checkly/_shared/constants/action_plan_actions.dart';
+import 'package:checkly/_shared/theme/app_colors.dart';
+import 'package:checkly/_shared/widgets/primitives/bubbly_button.dart';
 import '../model/action_plan_dto.dart';
 import 'action_plan_action_guard.dart';
 
@@ -76,10 +78,19 @@ class ActionPlanActionBar extends StatelessWidget {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: FilledButton.icon(
-              onPressed: onSubmitEvidence,
-              icon: const Icon(Icons.upload_file),
-              label: const Text('Submit Evidence'),
+            child: SizedBox(
+              height: 50,
+              width: double.infinity,
+              child: BubblyButton(
+                label: 'Submit Evidence',
+                icon: const Icon(
+                  Icons.upload_file,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                color: AppColors.featherGreen,
+                onPressed: onSubmitEvidence,
+              ),
             ),
           ),
         ),
@@ -129,23 +140,31 @@ class ActionPlanActionBar extends StatelessWidget {
                   plan: plan,
                   requiredAction: ActionPlanActions.rejectEvidence,
                   child: Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: theme.colorScheme.error,
-                        side: BorderSide(color: theme.colorScheme.error),
+                    child: SizedBox(
+                      height: 50,
+                      child: BubblyButton(
+                        label: 'Reject',
+                        color: AppColors.destructive,
+                        onPressed: onReject,
                       ),
-                      onPressed: onReject,
-                      child: const Text('Reject'),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 2,
-                  child: FilledButton.icon(
-                    onPressed: onVerify,
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Verify & Close'),
+                  child: SizedBox(
+                    height: 50,
+                    child: BubblyButton(
+                      label: 'Verify & Close',
+                      icon: const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      color: AppColors.featherGreen,
+                      onPressed: onVerify,
+                    ),
                   ),
                 ),
               ],

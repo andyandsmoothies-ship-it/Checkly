@@ -35,7 +35,8 @@ public class StoreAuthorizationTests : IClassFixture<TestWebApplicationFactory>
     {
         var response = await adminClient.PostAsJsonAsync("/api/stores", new
         {
-            name
+            name,
+            province = "Hà Nội"
         });
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();

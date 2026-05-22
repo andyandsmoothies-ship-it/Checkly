@@ -43,7 +43,7 @@ public class Analytics_AM_Scope_Tests : IClassFixture<TestWebApplicationFactory>
 
     private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string name)
     {
-        var resp = await adminClient.PostAsJsonAsync("/api/stores", new { name });
+        var resp = await adminClient.PostAsJsonAsync("/api/stores", new { name, province = "Hà Nội" });
         if (!resp.IsSuccessStatusCode)
             Assert.Fail($"Setup: store creation failed. {resp.StatusCode}: {await resp.Content.ReadAsStringAsync()}");
         var json = await resp.Content.ReadFromJsonAsync<JsonElement>();

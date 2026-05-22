@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../manager/role_manager.dart';
 import '../model/role_dto.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 class OnlineRoleList extends StatelessWidget {
   final RoleManager manager;
@@ -66,7 +67,10 @@ class OnlineRoleList extends StatelessWidget {
                       separatorBuilder: (_, _) => const SizedBox(height: 8),
                       itemBuilder: (context, i) {
                         final role = roles[i];
-                        return Card(
+                        return StrokeCard(
+                          padding: EdgeInsets.zero,
+                          onTap: () =>
+                              context.push('/admin/roles/${role.role}'),
                           child: ListTile(
                             leading: Container(
                               padding: const EdgeInsets.all(8),
@@ -92,8 +96,6 @@ class OnlineRoleList extends StatelessWidget {
                               '${role.capabilities.length}$totalStr capabilities assigned',
                             ),
                             trailing: const Icon(Icons.chevron_right),
-                            onTap: () =>
-                                context.push('/admin/roles/${role.role}'),
                           ),
                         );
                       },

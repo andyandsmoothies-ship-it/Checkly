@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../_shared/exceptions/app_error.dart';
 import '../../../_shared/services/error_display_service.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../templates/managers/template_manager.dart';
 import '../pages/program_store_selector_page.dart';
 import '../services/program_api_service.dart';
@@ -188,6 +189,7 @@ class _StepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -201,8 +203,8 @@ class _StepIndicator extends StatelessWidget {
             height: 8,
             decoration: BoxDecoration(
               color: active
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outlineVariant,
+                  ? AppColors.featherGreen
+                  : (isLight ? AppColors.swan : AppColors.charcoal),
               borderRadius: BorderRadius.circular(4),
             ),
           );
@@ -226,22 +228,44 @@ class _WizardActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: SizedBox(
           width: double.infinity,
-          height: 48,
+          height: 50.0,
           child: ElevatedButton(
             key: const Key('issue_program_button'),
             onPressed: canIssue && !isSubmitting ? onIssue : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.featherGreen,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: isLight
+                  ? AppColors.swan
+                  : AppColors.charcoal,
+              disabledForegroundColor: isLight
+                  ? AppColors.wolf
+                  : AppColors.hare,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 4,
+            ),
             child: isSubmitting
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
                   )
-                : const Text('Issue Campaign'),
+                : const Text(
+                    'Issue Campaign',
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                  ),
           ),
         ),
       ),

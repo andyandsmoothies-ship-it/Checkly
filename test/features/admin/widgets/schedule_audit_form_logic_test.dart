@@ -80,19 +80,19 @@ void main() {
 
   group('ScheduleAuditFormLogic.filterAuditors()', () {
     // FA-01
-    test(
-      'FA-01: selectedStoreId null returns all auditors unfiltered',
-      () {
-        final result = ScheduleAuditFormLogic.filterAuditors(
-          selectedStoreId: null,
-          allAuditors: allAuditors,
-          allStores: allStores,
-        );
+    test('FA-01: selectedStoreId null returns all auditors unfiltered', () {
+      final result = ScheduleAuditFormLogic.filterAuditors(
+        selectedStoreId: null,
+        allAuditors: allAuditors,
+        allStores: allStores,
+      );
 
-        expect(result.length, 3);
-        expect(result.map((u) => u['id']), containsAll(['user-auditor', 'user-am-a', 'user-am-b']));
-      },
-    );
+      expect(result.length, 3);
+      expect(
+        result.map((u) => u['id']),
+        containsAll(['user-auditor', 'user-am-a', 'user-am-b']),
+      );
+    });
 
     // FA-02
     test(
@@ -142,18 +142,15 @@ void main() {
     );
 
     // FA-05
-    test(
-      'FA-05: empty allAuditors list returns empty list',
-      () {
-        final result = ScheduleAuditFormLogic.filterAuditors(
-          selectedStoreId: 'store-A',
-          allAuditors: [],
-          allStores: allStores,
-        );
+    test('FA-05: empty allAuditors list returns empty list', () {
+      final result = ScheduleAuditFormLogic.filterAuditors(
+        selectedStoreId: 'store-A',
+        allAuditors: [],
+        allStores: allStores,
+      );
 
-        expect(result, isEmpty);
-      },
-    );
+      expect(result, isEmpty);
+    });
 
     // FA-06
     test(
@@ -189,13 +186,17 @@ void main() {
       () {
         final result = ScheduleAuditFormLogic.filterAuditors(
           selectedStoreId: 'store-A',
-          allAuditors: allAuditors, // auditor + am-a (in A,C) + am-b (in B only)
+          allAuditors:
+              allAuditors, // auditor + am-a (in A,C) + am-b (in B only)
           allStores: allStores,
         );
 
         // auditor → passes; am-a → passes (in A); am-b → excluded
         expect(result.length, 2);
-        expect(result.map((u) => u['id']), containsAll(['user-auditor', 'user-am-a']));
+        expect(
+          result.map((u) => u['id']),
+          containsAll(['user-auditor', 'user-am-a']),
+        );
         expect(result.map((u) => u['id']), isNot(contains('user-am-b')));
       },
     );
@@ -207,19 +208,19 @@ void main() {
 
   group('ScheduleAuditFormLogic.filterStores()', () {
     // FS-01
-    test(
-      'FS-01: selectedAuditorId null returns all stores unfiltered',
-      () {
-        final result = ScheduleAuditFormLogic.filterStores(
-          selectedAuditorId: null,
-          allStores: allStores,
-          allAuditors: allAuditors,
-        );
+    test('FS-01: selectedAuditorId null returns all stores unfiltered', () {
+      final result = ScheduleAuditFormLogic.filterStores(
+        selectedAuditorId: null,
+        allStores: allStores,
+        allAuditors: allAuditors,
+      );
 
-        expect(result.length, 3);
-        expect(result.map((s) => s['id']), containsAll(['store-A', 'store-B', 'store-C']));
-      },
-    );
+      expect(result.length, 3);
+      expect(
+        result.map((s) => s['id']),
+        containsAll(['store-A', 'store-B', 'store-C']),
+      );
+    });
 
     // FS-02
     test(
@@ -238,18 +239,15 @@ void main() {
     );
 
     // FS-03
-    test(
-      'FS-03: non-area_manager auditor returns all stores',
-      () {
-        final result = ScheduleAuditFormLogic.filterStores(
-          selectedAuditorId: 'user-auditor',
-          allStores: allStores,
-          allAuditors: [Map<String, dynamic>.from(auditorUser)],
-        );
+    test('FS-03: non-area_manager auditor returns all stores', () {
+      final result = ScheduleAuditFormLogic.filterStores(
+        selectedAuditorId: 'user-auditor',
+        allStores: allStores,
+        allAuditors: [Map<String, dynamic>.from(auditorUser)],
+      );
 
-        expect(result.length, 3);
-      },
-    );
+      expect(result.length, 3);
+    });
 
     // FS-04
     test(
@@ -266,18 +264,15 @@ void main() {
     );
 
     // FS-05
-    test(
-      'FS-05: empty allStores list returns empty list',
-      () {
-        final result = ScheduleAuditFormLogic.filterStores(
-          selectedAuditorId: 'user-auditor',
-          allStores: [],
-          allAuditors: [Map<String, dynamic>.from(auditorUser)],
-        );
+    test('FS-05: empty allStores list returns empty list', () {
+      final result = ScheduleAuditFormLogic.filterStores(
+        selectedAuditorId: 'user-auditor',
+        allStores: [],
+        allAuditors: [Map<String, dynamic>.from(auditorUser)],
+      );
 
-        expect(result, isEmpty);
-      },
-    );
+      expect(result, isEmpty);
+    });
 
     // FS-06
     test(

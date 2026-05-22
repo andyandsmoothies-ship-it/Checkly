@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/primitives/stroke_card.dart';
 
 /// A selection card that opens a searchable modal bottom sheet.
 ///
@@ -66,7 +67,8 @@ class DropdownCard extends StatelessWidget {
     final theme = Theme.of(context);
     final hasValue = value != null && _selectedLabel != null;
 
-    return Card(
+    return StrokeCard(
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _openPicker(context),
         borderRadius: BorderRadius.circular(16),

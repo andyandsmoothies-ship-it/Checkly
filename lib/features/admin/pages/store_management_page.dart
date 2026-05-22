@@ -140,9 +140,10 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
     }
     if (_manager.stores.isEmpty) {
       return const ChecklyEmptyState(
-        icon: Icons.storefront_outlined,
-        title: 'No stores yet',
-        subtitle: 'Tap + to create your first store.',
+        emoji: '🏪',
+        title: 'Ready for your first store?',
+        subtitle:
+            'Tap the circular + button to create a new location and start auditing!',
       );
     }
 

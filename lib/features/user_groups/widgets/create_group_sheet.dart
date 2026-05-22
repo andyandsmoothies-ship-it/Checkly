@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:checkly/_shared/theme/app_colors.dart';
+import 'package:checkly/_shared/widgets/primitives/bubbly_button.dart';
 import '../../../_shared/exceptions/app_error.dart';
 import '../../../_shared/services/error_display_service.dart';
 import '../manager/user_group_manager.dart';
@@ -79,15 +81,14 @@ class _CreateGroupSheetState extends State<CreateGroupSheet> {
               maxLines: 2,
             ),
             const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _isSaving ? null : _submit,
-              child: _isSaving
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Create Group'),
+            SizedBox(
+              height: 50,
+              child: BubblyButton(
+                label: 'Create Group',
+                color: AppColors.featherGreen,
+                isLoading: _isSaving,
+                onPressed: _isSaving ? null : _submit,
+              ),
             ),
           ],
         ),

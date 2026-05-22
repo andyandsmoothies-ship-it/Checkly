@@ -69,7 +69,7 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
     private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string namePrefix)
     {
         var name = $"{namePrefix} {Guid.NewGuid()}";
-        var payload = new { name };
+        var payload = new { name, province = "Hà Nội" };
         var response = await adminClient.PostAsJsonAsync("/api/stores", payload);
         Assert.True(response.IsSuccessStatusCode,
             $"Setup: could not create store '{name}'. {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");

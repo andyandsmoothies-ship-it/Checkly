@@ -7,7 +7,6 @@ import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/widgets/compact_status_panel.dart';
 import '../../manager/dashboard_manager.dart';
 import 'submission_feed_section.dart';
-import 'admin_active_campaigns_widget.dart';
 
 /// Command Center for Admins — global platform view.
 class AdminDashboardVariant extends StatelessWidget {
@@ -64,10 +63,6 @@ class AdminDashboardVariant extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 32),
-          const AdminActiveCampaignsWidget(),
-
-          const SizedBox(height: 32),
           SubmissionFeedSection(
             submissions: state.recentSubmissions,
             context: context,

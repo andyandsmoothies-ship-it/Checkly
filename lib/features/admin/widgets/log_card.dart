@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'level_badge.dart';
+import '../../../../_shared/widgets/primitives/stroke_card.dart';
 
 class LogCard extends StatelessWidget {
   final Map<String, dynamic> log;
@@ -17,11 +18,12 @@ class LogCard extends StatelessWidget {
     final message = log['message'] as String? ?? '';
     final createdAt = log['createdAt'] as String?;
 
-    return Card(
+    return StrokeCard(
       margin: const EdgeInsets.only(bottom: 6),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(

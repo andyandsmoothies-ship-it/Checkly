@@ -268,7 +268,11 @@ class OutboxDao {
   ///
   /// SA-6: Single `IN` query replaces the previous 3-loop approach.
   Future<int> syncableCount() async {
-    const recoverableStatuses = ['pending', 'submission_synced', 'photos_pending'];
+    const recoverableStatuses = [
+      'pending',
+      'submission_synced',
+      'photos_pending',
+    ];
     final countExp = countAll();
     final query = _db.selectOnly(_db.pendingSubmissions)
       ..addColumns([countExp])

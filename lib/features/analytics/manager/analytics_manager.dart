@@ -57,7 +57,6 @@ class AnalyticsManager extends ChangeNotifier {
     load();
   }
 
-
   /// Runs all DB queries and computes KPIs. Call on page init and on filter changes.
   Future<void> load() async {
     isLoading = true;

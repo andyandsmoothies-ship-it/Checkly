@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../_shared/widgets/primitives/pill_chip.dart';
 
 class TypeBadge extends StatelessWidget {
   final String type;
@@ -7,20 +8,19 @@ class TypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        type.toUpperCase(),
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
+    final t = type.toLowerCase();
+    PillChipType chipType;
+
+    if (t == 'qc') {
+      chipType = PillChipType.green;
+    } else if (t == 'training') {
+      chipType = PillChipType.blue;
+    } else if (t == 'general') {
+      chipType = PillChipType.purple;
+    } else {
+      chipType = PillChipType.yellow;
+    }
+
+    return PillChip(label: type.toUpperCase(), type: chipType);
   }
 }

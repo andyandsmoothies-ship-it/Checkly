@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:checkly/_shared/widgets/primitives/stroke_card.dart';
 
 import '../../../_shared/services/scoring_mode.dart';
 import '../models/editable_criterion.dart';
@@ -183,44 +184,40 @@ class _WizardStepReviewState extends State<WizardStepReview> {
         // V6 validation badge (blocking errors — red)
         if (!isV6Valid) ReviewValidationBanner(errors: v6Errors),
 
-        // Summary card
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _ReviewRow(
-                  icon: Icons.title,
-                  label: 'Title',
-                  value: widget.title.isEmpty ? '(no title)' : widget.title,
-                ),
-                const Divider(height: 20),
-                _ReviewRow(
-                  icon: Icons.category_outlined,
-                  label: 'Type',
-                  value: widget.type.toUpperCase(),
-                ),
-                const Divider(height: 20),
-                _ReviewRow(
-                  icon: Icons.score_outlined,
-                  label: 'Mode',
-                  value: _modeLabel,
-                ),
-                const Divider(height: 20),
-                _ReviewRow(
-                  icon: Icons.folder_outlined,
-                  label: 'Sections',
-                  value: '${widget.sections.length} section(s)',
-                ),
-                const Divider(height: 20),
-                _ReviewRow(
-                  icon: Icons.checklist,
-                  label: 'Criteria',
-                  value: '$_totalCriteria total',
-                ),
-              ],
-            ),
+        StrokeCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ReviewRow(
+                icon: Icons.title,
+                label: 'Title',
+                value: widget.title.isEmpty ? '(no title)' : widget.title,
+              ),
+              const Divider(height: 20),
+              _ReviewRow(
+                icon: Icons.category_outlined,
+                label: 'Type',
+                value: widget.type.toUpperCase(),
+              ),
+              const Divider(height: 20),
+              _ReviewRow(
+                icon: Icons.score_outlined,
+                label: 'Mode',
+                value: _modeLabel,
+              ),
+              const Divider(height: 20),
+              _ReviewRow(
+                icon: Icons.folder_outlined,
+                label: 'Sections',
+                value: '${widget.sections.length} section(s)',
+              ),
+              const Divider(height: 20),
+              _ReviewRow(
+                icon: Icons.checklist,
+                label: 'Criteria',
+                value: '$_totalCriteria total',
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 16),

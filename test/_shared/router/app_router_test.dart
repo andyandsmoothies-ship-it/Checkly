@@ -1,23 +1,21 @@
-/// Test Plan (Sentinel — Detroit Style)
-/// ======================================
 /// Target: shellActiveIndexFromLocation (visible tab index mapping)
 ///
 /// Observable contract: The bottom nav's active tab index must correctly
 /// reflect the current router location, relative to the VISIBLE tab list
 /// (which varies by the user's capabilities).
 ///
-/// The new function replaces shellIndexFromLocation (which returned fixed
-/// positions 0-5). The new function is capability-aware: if ACTIVITY is
-/// hidden because the user lacks submissionsList, the visible tab list
-/// shifts and /plans maps to visual index 1, not 2.
+/// After removing TEMPLATES from ShellTab.all, visible tabs for full caps:
+///   HOME(0) | ACTIVITY(1) | PLANS(2) | PROFILE(3) | INBOX(4)
+///
+/// /templates and /admin/* have no shell tab.
+/// The router fallback anchors both on the PROFILE tab.
 ///
 /// Contracts tested:
-///   - Full caps: /activity → 1, /plans → 2, /templates → 3
+///   - Full caps: /activity → 1, /plans → 2, /profile → 3, /inbox → 4
+///   - /templates and /admin/* → PROFILE index (fallback)
 ///   - No submissionsList cap: /plans → 1 (ACTIVITY tab hidden, shifts left)
-///   - No submissionsList + no programsList: /templates → 1
 ///   - /home → always 0 (Home is always first and always visible)
 ///   - /inbox → last visible tab (always visible)
-///   - /admin/* → 0 (no admin tab exists; falls back to Home highlight)
 
 library;
 
@@ -46,27 +44,34 @@ void main() {
       expect(shellActiveIndexFromLocation('/plans', _fullCaps), equals(2));
     });
 
-    test('/templates → visual index 3 (Templates tab)', () {
-      expect(shellActiveIndexFromLocation('/templates', _fullCaps), equals(3));
-    });
-
-    test('/profile → visual index 4 (Profile tab)', () {
-      expect(shellActiveIndexFromLocation('/profile', _fullCaps), equals(4));
-    });
-
-    test('/inbox → visual index 5 (Inbox tab)', () {
-      expect(shellActiveIndexFromLocation('/inbox', _fullCaps), equals(5));
-    });
-
-    // /admin/* has no shell tab — must clamp to 0 (Home highlighted, not Profile).
     test(
-      '/admin/* → visual index 0 (no shell tab for admin; fallback to Home)',
+      '/templates → visual index 3 (fallback: no Templates tab, anchors PROFILE)',
+      () {
+        expect(
+          shellActiveIndexFromLocation('/templates', _fullCaps),
+          equals(3),
+        );
+      },
+    );
+
+    test('/profile → visual index 3 (Profile tab)', () {
+      expect(shellActiveIndexFromLocation('/profile', _fullCaps), equals(3));
+    });
+
+    test('/inbox → visual index 4 (Inbox tab)', () {
+      expect(shellActiveIndexFromLocation('/inbox', _fullCaps), equals(4));
+    });
+
+    // /admin/* has no shell tab — anchors on PROFILE tab via fallback.
+    test(
+      '/admin/* → visual index 3 (PROFILE tab — anchored by router fallback)',
       () {
         expect(
           shellActiveIndexFromLocation('/admin/dashboard', _fullCaps),
-          equals(0),
+          equals(3),
           reason:
-              '/admin/* routes have no shell tab; active index clamps to Home (0)',
+              '/admin/* routes have no shell tab; router fallback anchors '
+              'user on PROFILE tab (index 3) to preserve navigation context',
         );
       },
     );
@@ -80,7 +85,7 @@ void main() {
         AppCapabilities.templatesCreate,
       };
 
-      // Visible tabs: Home(0) Plans(1) Templates(2) Profile(3) Inbox(4)
+      // Visible tabs: Home(0) Plans(1) Profile(2) Inbox(3)
       test('/home → 0', () {
         expect(shellActiveIndexFromLocation('/home', caps), equals(0));
       });
@@ -89,7 +94,7 @@ void main() {
         expect(shellActiveIndexFromLocation('/plans', caps), equals(1));
       });
 
-      test('/templates → 2', () {
+      test('/templates → 2 (fallback to PROFILE; no Templates tab)', () {
         expect(shellActiveIndexFromLocation('/templates', caps), equals(2));
       });
     },

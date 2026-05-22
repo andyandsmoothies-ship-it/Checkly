@@ -30,9 +30,7 @@ class AdminStoreManager extends ChangeNotifier {
     notifyListeners();
 
     try {
-      stores = await _storeApi.getStores(
-        includeInactive: true,
-      );
+      stores = await _storeApi.getStores(includeInactive: true);
     } catch (e) {
       error = e.toString();
     } finally {

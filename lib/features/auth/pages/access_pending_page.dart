@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/primitives/primitives.dart';
 import '../../auth/manager/auth_manager.dart';
 
 final _di = GetIt.instance;
@@ -13,10 +15,10 @@ class AccessPendingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final auth = _di<AuthManager>();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -24,48 +26,49 @@ class AccessPendingPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Hourglass container with high-contrast, flat borders
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppTheme.warning.withValues(alpha: 0.1),
+                    color: AppColors.canary,
                     shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.bee, width: 2),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.hourglass_top_rounded,
                     size: 64,
-                    color: AppTheme.warning,
+                    color: AppColors.fox,
                   ),
                 ),
                 const SizedBox(height: 24),
                 Text(
                   'Access Pending',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  style: AppFonts.displayStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.eel,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 Text(
                   'Your account has been created, but you don\'t have a role assigned yet.\n\n'
                   'Please contact your administrator to get access.',
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    height: 1.5,
+                  style: AppFonts.displayStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.wolf,
                   ),
                 ),
                 const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () async {
-                      await auth.logout();
-                    },
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Sign Out'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                  ),
+                BubblyButton(
+                  onPressed: () async {
+                    await auth.logout();
+                  },
+                  color: AppColors.polar,
+                  textColor: AppColors.eel,
+                  icon: const Icon(Icons.logout, color: AppColors.eel),
+                  label: 'Sign Out',
                 ),
               ],
             ),

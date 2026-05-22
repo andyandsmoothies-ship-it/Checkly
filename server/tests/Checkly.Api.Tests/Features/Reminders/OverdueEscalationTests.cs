@@ -41,7 +41,7 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager", "area_manager");
 
-        db.Stores.Add(new Store { Id = storeId, Name = "Overdue Store", IsActive = true });
+        db.Stores.Add(new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = storeId, Name = "Overdue Store", IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
 
         db.Submissions.Add(new Submission
@@ -104,7 +104,7 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager", "area_manager");
 
-        db.Stores.Add(new Store { Id = storeId, Name = "Dup Store", IsActive = true });
+        db.Stores.Add(new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = storeId, Name = "Dup Store", IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
 
         db.Submissions.Add(new Submission
@@ -176,7 +176,7 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var submissionId = Guid.NewGuid();
         var apId = Guid.NewGuid();
 
-        db.Stores.Add(new Store { Id = storeId, Name = "Orphan Store", IsActive = true });
+        db.Stores.Add(new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = storeId, Name = "Orphan Store", IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
 
         db.Submissions.Add(new Submission
@@ -231,7 +231,7 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var amReg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager", "area_manager");
 
-        db.Stores.Add(new Store { Id = storeId, Name = "Closed Store", IsActive = true });
+        db.Stores.Add(new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = storeId, Name = "Closed Store", IsActive = true });
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
 
         db.Submissions.Add(new Submission
@@ -299,8 +299,8 @@ public class OverdueEscalationTests : IClassFixture<TestWebApplicationFactory>
         var am2Reg = await _factory.RegisterUserAsync(_factory.CreateClient(),
             $"am2_{Guid.NewGuid()}@test.com", "Aa1234567@", "Area Manager Two", "area_manager");
 
-        db.Stores.Add(new Store { Id = store1Id, Name = "Store One", IsActive = true });
-        db.Stores.Add(new Store { Id = store2Id, Name = "Store Two", IsActive = true });
+        db.Stores.Add(new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = store1Id, Name = "Store One", IsActive = true });
+        db.Stores.Add(new Store { Address2 = new Checkly.Api.Common.Persistence.Entities.StoreAddress { Province = "Unknown" }, Id = store2Id, Name = "Store Two", IsActive = true });
         
         db.Templates.Add(new Template { Id = Guid.NewGuid(), Title = "Template", Version = 1, IsActive = true });
 

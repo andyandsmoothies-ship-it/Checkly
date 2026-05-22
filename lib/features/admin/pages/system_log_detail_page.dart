@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../widgets/level_badge.dart';
 import 'system_pivot_logs_page.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
 /// Full-page detail view for a single system log entry.
 /// Supports "Quick Pivot" navigation — tap 🔍 to filter list by TraceId or UserEmail.
@@ -105,14 +106,14 @@ class SystemLogDetailPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Container(
-              width: double.infinity,
+            StrokeCard(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+              child: SelectableText(
+                message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontFamily: 'monospace',
+                ),
               ),
-              child: SelectableText(message, style: theme.textTheme.bodyMedium),
             ),
           ],
 

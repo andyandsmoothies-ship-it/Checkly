@@ -158,7 +158,10 @@ class UserCreateSheetBody extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 items: const [
-                  DropdownMenuItem(value: AppRoles.auditor, child: Text('Auditor')),
+                  DropdownMenuItem(
+                    value: AppRoles.auditor,
+                    child: Text('Auditor'),
+                  ),
                   DropdownMenuItem(
                     value: AppRoles.storeManager,
                     child: Text('Store Manager'),

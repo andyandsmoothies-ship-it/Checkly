@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/primitives/stroke_card.dart';
 
 /// A compact KPI summary card used in [ProgramDashboardPage].
 ///
@@ -22,20 +23,8 @@ class ProgramKpiCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Expanded(
-      child: Container(
+      child: StrokeCard(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: theme.colorScheme.outlineVariant),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
         child: Column(
           children: [
             Container(

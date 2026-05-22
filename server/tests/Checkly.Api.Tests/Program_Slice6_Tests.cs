@@ -48,7 +48,7 @@ public class Program_Slice6_Tests : IClassFixture<TestWebApplicationFactory>
 
     private async Task<Guid> CreateStoreAsync(HttpClient adminClient, string name)
     {
-        var response = await adminClient.PostAsJsonAsync("/api/stores", new { name });
+        var response = await adminClient.PostAsJsonAsync("/api/stores", new { name, province = "Hà Nội" });
         Assert.True(response.IsSuccessStatusCode, "Setup: Could not create store");
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
         return Guid.Parse(json.GetProperty("id").GetString()!);

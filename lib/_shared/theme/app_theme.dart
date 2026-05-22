@@ -53,80 +53,93 @@ class AppTheme {
     final baseTextTheme = ThemeData(
       brightness: colorScheme.brightness,
     ).textTheme;
-    final textTheme = GoogleFonts.manropeTextTheme(baseTextTheme);
+    final textTheme = GoogleFonts.nunitoTextTheme(baseTextTheme);
+    final isLight = colorScheme.brightness == Brightness.light;
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       textTheme: textTheme,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: isLight ? AppColors.snow : colorScheme.surface,
 
-      // AppBar
+      // AppBar — flat white with 2px Swan bottom border
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: colorScheme.surface,
+        backgroundColor: isLight ? AppColors.snow : colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
+        shape: Border(
+          bottom: BorderSide(
+            color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
+            width: 2,
+          ),
+        ),
         titleTextStyle: textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
           color: colorScheme.onSurface,
         ),
       ),
 
-      // Cards — Premium soft analytical styling
+      // Cards — flat with 2px Swan border, zero elevation
       cardTheme: CardThemeData(
-        elevation: 1,
-        shadowColor: colorScheme.shadow.withValues(alpha: 0.2),
+        elevation: 0,
         margin: EdgeInsets.zero,
-        color: colorScheme.brightness == Brightness.light
-            ? Colors.white
-            : colorScheme.surfaceContainerHighest,
+        color: isLight ? AppColors.snow : colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide.none,
+          side: BorderSide(
+            color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
+            width: 2,
+          ),
         ),
       ),
 
-      // Buttons
+      // Buttons — Rounded, bold styles
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
           textStyle: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ),
 
-      // Input fields
+      // Input fields — Flat, thick Swan borders, focused to Macaw Blue
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: colorScheme.surfaceContainerHighest.withAlpha(60),
+        fillColor: isLight
+            ? AppColors.snow
+            : colorScheme.surfaceContainerHighest.withAlpha(60),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
+            width: 2,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: AppColors.sageGray.withValues(alpha: 0.5),
+            color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
+            width: 2,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.macaw, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.error),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.cardinal, width: 2),
         ),
       ),
 
@@ -137,14 +150,20 @@ class AppTheme {
         shape: const CircleBorder(),
       ),
 
-      // Chip — warm oatmeal accents
+      // Chip — filled pastels/neutrals with solid borders
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.oatmeal.withValues(alpha: 0.5),
-        selectedColor: colorScheme.primary.withValues(alpha: 0.15),
-        labelStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+        backgroundColor: isLight ? AppColors.polar : AppColors.charcoal,
+        selectedColor: colorScheme.primary.withAlpha(40),
+        labelStyle: textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: AppColors.sageGray.withValues(alpha: 0.3)),
+          side: BorderSide(
+            color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
+            width: 2,
+          ),
         ),
       ),
 
@@ -155,12 +174,40 @@ class AppTheme {
         indicatorColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.all(
           textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
             fontSize: 10,
             letterSpacing: -0.5,
           ),
         ),
       ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: _SlideRightToLeftTransitionsBuilder(),
+          TargetPlatform.iOS: _SlideRightToLeftTransitionsBuilder(),
+        },
+      ),
+    );
+  }
+}
+
+/// Custom global right-to-left slide transitions builder for a premium, gamified feel.
+class _SlideRightToLeftTransitionsBuilder extends PageTransitionsBuilder {
+  const _SlideRightToLeftTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return SlideTransition(
+      position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
+          .animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
+          ),
+      child: child,
     );
   }
 }

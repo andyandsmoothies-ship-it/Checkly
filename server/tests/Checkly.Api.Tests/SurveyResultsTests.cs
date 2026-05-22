@@ -49,7 +49,7 @@ public class SurveyResultsTests : IClassFixture<TestWebApplicationFactory>
 
     private async Task<Guid> CreateStoreAsync(HttpClient admin, string name)
     {
-        var r = await admin.PostAsJsonAsync("/api/stores", new { name });
+        var r = await admin.PostAsJsonAsync("/api/stores", new { name, province = "Hà Nội" });
         var j = await r.Content.ReadFromJsonAsync<JsonElement>();
         return Guid.Parse(j.GetProperty("id").GetString()!);
     }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 /// Speed-dial FAB matching the PWA's FloatingActionMenu.
 /// Tapping the "+" opens a popup menu with role-gated actions.
 ///
@@ -7,6 +9,8 @@ import 'package:flutter/material.dart';
 /// wrapped in an outer Scaffold with `extendBody: true` and a 96px bottom nav.
 /// This inner FAB MUST have `Padding(bottom: 80)` or it renders behind the
 /// nav bar and becomes invisible. Do NOT remove this padding.
+///
+/// Refactored to use FeatherGreen fill and brand-themed popup menu styling.
 class ChecklyFab extends StatelessWidget {
   final bool canAssignTask;
   final bool canCreateSubmission;
@@ -26,7 +30,7 @@ class ChecklyFab extends StatelessWidget {
     final RenderBox overlay =
         Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
     final Offset offset = button.localToGlobal(
-      Offset(0, -8), // slightly above
+      const Offset(0, -8),
       ancestor: overlay,
     );
 
@@ -39,10 +43,10 @@ class ChecklyFab extends StatelessWidget {
           value: 'new',
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.assignment_outlined,
                 size: 20,
-                color: theme.colorScheme.primary,
+                color: AppColors.featherGreen,
               ),
               const SizedBox(width: 12),
               Column(
@@ -51,13 +55,14 @@ class ChecklyFab extends StatelessWidget {
                   Text(
                     'Start New Audit',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.eel,
                     ),
                   ),
                   Text(
                     'Self-performed audit',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: AppColors.wolf,
                     ),
                   ),
                 ],
@@ -73,10 +78,10 @@ class ChecklyFab extends StatelessWidget {
           value: 'assign',
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.person_add_outlined,
                 size: 20,
-                color: theme.colorScheme.primary,
+                color: AppColors.macaw,
               ),
               const SizedBox(width: 12),
               Column(
@@ -85,13 +90,14 @@ class ChecklyFab extends StatelessWidget {
                   Text(
                     'Assign Task',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.eel,
                     ),
                   ),
                   Text(
                     'Delegate to auditor',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: AppColors.wolf,
                     ),
                   ),
                 ],
@@ -116,7 +122,12 @@ class ChecklyFab extends StatelessWidget {
         Offset.zero & overlay.size,
       ),
       items: items,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColors.swan, width: 2),
+      ),
+      elevation: 0,
     ).then((value) {
       if (value == 'new') onNewAudit();
       if (value == 'assign') onAssignTask?.call();
@@ -130,16 +141,14 @@ class ChecklyFab extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 80),
       child: FloatingActionButton(
         onPressed: () => _showMenu(context),
-        backgroundColor: theme.colorScheme.primary,
+        backgroundColor: AppColors.featherGreen,
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
-        elevation: 8,
+        elevation: 0,
         child: const Icon(Icons.add, size: 28),
       ),
     );

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
 /// Hero banner card — draws attention to a primary action.
+///
+/// Refactored to wrap inside StrokeCard for 2px Swan border, zero elevation,
+/// and uses brand display fonts.
 class HeroCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -25,67 +30,47 @@ class HeroCard extends StatelessWidget {
     final theme = Theme.of(context);
     final ic = iconColor ?? theme.colorScheme.primary;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+    return StrokeCard(
+      onTap: onTap,
+      color: color,
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: ic.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: ic, size: 24),
           ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: ic.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppFonts.displayStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.eel,
+                  ),
                 ),
-                child: Icon(icon, color: ic, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppFonts.serifStyle(
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.titleMedium?.fontSize,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppFonts.displayStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.wolf,
+                  ),
                 ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.3),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+          const Icon(Icons.chevron_right, color: AppColors.hare),
+        ],
       ),
     );
   }

@@ -97,19 +97,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
         user: user,
         loadStores: _manager.loadStores,
         onSave:
-            ({
-              required userId,
-              fullName,
-              role,
-              storeId,
-              assignedStoreIds,
-            }) => _saveUser(
-              userId,
-              fullName: fullName,
-              role: role,
-              storeId: storeId,
-              assignedStoreIds: assignedStoreIds,
-            ),
+            ({required userId, fullName, role, storeId, assignedStoreIds}) =>
+                _saveUser(
+                  userId,
+                  fullName: fullName,
+                  role: role,
+                  storeId: storeId,
+                  assignedStoreIds: assignedStoreIds,
+                ),
         onResetPassword: (sheetCtx, userId, userName) =>
             UserManagementDialogs.showResetPasswordDialog(
               sheetCtx: sheetCtx,

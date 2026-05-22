@@ -17,7 +17,10 @@ internal static class StoreAddressValidator
     /// </summary>
     internal static IResult? Validate(string? province, string? street)
     {
-        if (province is not null && !VietnamLocations.IsValidProvince(province))
+        if (string.IsNullOrWhiteSpace(province))
+            return Results.BadRequest(new { error = "Province is required" });
+
+        if (!VietnamLocations.IsValidProvince(province))
             return Results.BadRequest(new { error = $"Province '{province}' is not a valid Vietnam administrative province." });
 
         if (street?.Length > 200)
@@ -26,3 +29,4 @@ internal static class StoreAddressValidator
         return null; // null = all valid
     }
 }
+

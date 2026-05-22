@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../_shared/theme/app_colors.dart';
+import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 import 'theme_toggle_tile.dart';
 
 class MenuItemData {
@@ -18,37 +21,43 @@ class MenuItemData {
   });
 }
 
+/// SettingsSectionGroup refactored to use [StrokeCard] with zero padding,
+/// brand pastel indicators, and Nunito display fonts.
 class SettingsSectionGroup extends StatelessWidget {
   final List<MenuItemData> items;
   final bool themeToggle;
+  final String? sectionLabel;
 
   const SettingsSectionGroup({
     super.key,
     required this.items,
     this.themeToggle = false,
+    this.sectionLabel,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final hasContent = items.isNotEmpty || themeToggle;
     if (!hasContent) return const SizedBox.shrink();
 
-    return Card(
-      child: Column(
-        children: [
-          for (int i = 0; i < items.length; i++) ...[
-            _MenuTile(data: items[i]),
-            if (i < items.length - 1 || themeToggle)
-              Divider(
-                height: 1,
-                indent: 56,
-                color: theme.colorScheme.outlineVariant,
-              ),
-          ],
-          if (themeToggle) const ThemeToggleTile(),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (sectionLabel != null) _SectionLabel(label: sectionLabel!),
+        StrokeCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (int i = 0; i < items.length; i++) ...[
+                _MenuTile(data: items[i]),
+                if (i < items.length - 1 || themeToggle)
+                  const Divider(height: 1, indent: 56, color: AppColors.swan),
+              ],
+              if (themeToggle) const ThemeToggleTile(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -60,23 +69,25 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return ListTile(
-      leading: Icon(data.icon, color: theme.colorScheme.primary),
+      leading: Icon(data.icon, color: AppColors.featherGreen),
       title: Text(
         data.label,
-        style: const TextStyle(fontWeight: FontWeight.w500),
+        style: AppFonts.displayStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: AppColors.eel,
+        ),
       ),
       subtitle: Text(
         data.description,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
+        style: AppFonts.displayStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: AppColors.wolf,
         ),
       ),
-      trailing: Icon(
-        Icons.chevron_right,
-        color: theme.colorScheme.onSurfaceVariant,
-      ),
+      trailing: const Icon(Icons.chevron_right, color: AppColors.hare),
       onTap: () {
         HapticFeedback.lightImpact();
         if (data.route != null) {
@@ -87,6 +98,30 @@ class _MenuTile extends StatelessWidget {
           ).showSnackBar(const SnackBar(content: Text('Coming soon')));
         }
       },
+    );
+  }
+}
+
+/// Renders a small-caps section label above a [SettingsSectionGroup] card.
+/// Font: labelSmall, letterSpacing 1.5, fontWeight w600, primary color.
+class _SectionLabel extends StatelessWidget {
+  final String label;
+
+  const _SectionLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 6, left: 4),
+      child: Text(
+        label.toUpperCase(),
+        style: AppFonts.displayStyle(
+          fontSize: 11,
+          color: AppColors.wolf,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 1.5,
+        ),
+      ),
     );
   }
 }

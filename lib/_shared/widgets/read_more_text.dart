@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
+/// Truncated text with an animated "Read more / Show less" toggle.
+///
+/// Refactored to use [AppColors.featherGreen] for the toggle link with bold Nunito weight.
 class ReadMoreText extends StatefulWidget {
   final String text;
   final int trimLines;
@@ -55,7 +60,7 @@ class _ReadMoreTextState extends State<ReadMoreText> {
                   ? TextOverflow.visible
                   : TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             InkWell(
               onTap: () {
                 setState(() {
@@ -67,8 +72,8 @@ class _ReadMoreTextState extends State<ReadMoreText> {
                 child: Text(
                   _isExpanded ? 'Show less' : 'Read more',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w600,
+                    color: AppColors.featherGreen,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),

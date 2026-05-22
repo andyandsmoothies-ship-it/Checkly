@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
 import '../theme/app_fonts.dart';
-import '../theme/app_theme.dart';
+import '../widgets/primitives/primitives.dart';
 
 /// A core struct for the dense analytical rows.
 class StatRowData {
@@ -9,18 +10,20 @@ class StatRowData {
   final String label;
   final String value;
   final Color iconColor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   StatRowData({
     required this.icon,
     required this.label,
     required this.value,
     required this.iconColor,
-    required this.onTap,
+    this.onTap,
   });
 }
 
 /// A concise, data-dense status panel that presents KPIs in horizontal rows.
+///
+/// Refactored to use [StrokeCard] and [AppColors.swan] dividers for gamified aesthetic.
 class CompactStatusPanel extends StatelessWidget {
   final List<StatRowData> metrics;
 
@@ -30,7 +33,8 @@ class CompactStatusPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     if (metrics.isEmpty) return const SizedBox.shrink();
 
-    return Card(
+    return StrokeCard(
+      padding: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
@@ -45,61 +49,14 @@ class CompactStatusPanel extends StatelessWidget {
               children: [
                 Material(
                   color: Colors.transparent,
-                  child: InkWell(
-                    onTap: item.onTap,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(item.icon, size: 20, color: item.iconColor),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(
-                              item.label,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withValues(alpha: 0.8),
-                                  ),
-                            ),
-                          ),
-                          Text(
-                            item.value,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.merge(
-                                  AppFonts.serifStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
-                                  ),
-                                ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 16,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.3),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  child: _buildRow(context, item),
                 ),
                 if (!isLast)
-                  Divider(
+                  const Divider(
                     height: 1,
                     thickness: 1,
                     indent: 54,
-                    color: AppTheme.sageGray.withValues(alpha: 0.15),
+                    color: AppColors.swan,
                   ),
               ],
             );
@@ -107,5 +64,46 @@ class CompactStatusPanel extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Builds the inner row for a single metric.
+  /// When [item.onTap] is null the row is informational-only:
+  /// - no ripple / InkWell gesture
+  /// - no trailing chevron icon
+  Widget _buildRow(BuildContext context, StatRowData item) {
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      child: Row(
+        children: [
+          Icon(item.icon, size: 20, color: item.iconColor),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              item.label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.eel,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            item.value,
+            style: AppFonts.displayStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: AppColors.eel,
+            ),
+          ),
+          if (item.onTap != null) ...[
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, size: 16, color: AppColors.hare),
+          ],
+        ],
+      ),
+    );
+
+    if (item.onTap == null) return content;
+    return InkWell(onTap: item.onTap, child: content);
   }
 }

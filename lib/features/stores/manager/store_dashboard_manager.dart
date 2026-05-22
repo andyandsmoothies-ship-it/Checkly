@@ -70,11 +70,7 @@ class StoreDashboardManager extends ChangeNotifier {
       final avgQuery = _db.selectOnly(_db.cachedSubmissions)
         ..addColumns([avgExp])
         ..where(_db.cachedSubmissions.storeId.equals(storeId))
-        ..where(
-          _db.cachedSubmissions.reviewStatus
-              .equals('rejected')
-              .not(),
-        );
+        ..where(_db.cachedSubmissions.reviewStatus.equals('rejected').not());
       final avgScore =
           await avgQuery.map((r) => r.read(avgExp)).getSingle() ?? 0.0;
 

@@ -25,7 +25,7 @@ public class Slice3EndpointMigrationTests : IClassFixture<TestWebApplicationFact
         var auditorClient = _factory.CreateAuthenticatedClient(auditorToken);
 
         var response = await auditorClient.PostAsJsonAsync("/api/stores",
-            new { name = "Hacked Store" });
+            new { name = "Hacked Store", province = "Hà Nội" });
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -38,7 +38,7 @@ public class Slice3EndpointMigrationTests : IClassFixture<TestWebApplicationFact
         var adminClient = _factory.CreateAuthenticatedClient(adminToken);
 
         var response = await adminClient.PostAsJsonAsync("/api/stores",
-            new { name = $"Slice3 Store {Guid.NewGuid():N}" });
+            new { name = $"Slice3 Store {Guid.NewGuid():N}", province = "Hà Nội" });
 
         Assert.NotEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }

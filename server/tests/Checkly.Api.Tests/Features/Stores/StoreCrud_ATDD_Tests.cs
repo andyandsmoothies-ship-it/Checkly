@@ -71,7 +71,7 @@ public class StoreCrud_ATDD_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var anonClient = _factory.CreateClient();
-        var payload = new { name = "Ghost Store" };
+        var payload = new { name = "Ghost Store", province = "Hà Nội" };
 
         // Act
         var response = await anonClient.PostAsJsonAsync("/api/stores", payload);
@@ -87,13 +87,13 @@ public class StoreCrud_ATDD_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var adminClient = await CreateAdminClientAsync();
-        var createResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Original {Guid.NewGuid()}" });
+        var createResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Original {Guid.NewGuid()}", province = "Hà Nội" });
         createResp.EnsureSuccessStatusCode();
         var storeId = (await createResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 
         // Act
         var updatedName = $"Updated {Guid.NewGuid()}";
-        var response = await adminClient.PutAsJsonAsync($"/api/stores/{storeId}", new { name = updatedName });
+        var response = await adminClient.PutAsJsonAsync($"/api/stores/{storeId}", new { name = updatedName, province = "Hà Nội" });
 
         // Assert
         var body = await response.Content.ReadAsStringAsync();
@@ -124,7 +124,7 @@ public class StoreCrud_ATDD_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var adminClient = await CreateAdminClientAsync();
-        var createResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Delete Me {Guid.NewGuid()}" });
+        var createResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Delete Me {Guid.NewGuid()}", province = "Hà Nội" });
         createResp.EnsureSuccessStatusCode();
         var storeId = (await createResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 
@@ -159,7 +159,7 @@ public class StoreCrud_ATDD_Tests : IClassFixture<TestWebApplicationFactory>
     {
         // Arrange
         var adminClient = await CreateAdminClientAsync();
-        var createResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Dashboard Store {Guid.NewGuid()}" });
+        var createResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Dashboard Store {Guid.NewGuid()}", province = "Hà Nội" });
         createResp.EnsureSuccessStatusCode();
         var storeId = (await createResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 
@@ -176,7 +176,7 @@ public class StoreCrud_ATDD_Tests : IClassFixture<TestWebApplicationFactory>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var json = JsonDocument.Parse(body);
-        Assert.True(json.RootElement.TryGetProperty("storeId", out _), "Dashboard must contain 'storeId'.");
+        Assert.True(json.RootElement.TryGetProperty("store", out _), "Dashboard must contain 'store'.");
     }
 
     [Fact]

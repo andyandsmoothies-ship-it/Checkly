@@ -26,7 +26,7 @@ public class SubmissionStatusFilteringTests : IClassFixture<TestWebApplicationFa
         var adminClient = _factory.CreateAuthenticatedClient(adminToken);
 
         // 1. Create a Store
-        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Test Store" });
+        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Test Store", Province = "Hà Nội" });
         storeResponse.EnsureSuccessStatusCode();
         var storeJson = await storeResponse.Content.ReadFromJsonAsync<JsonElement>();
         var storeId = storeJson.GetProperty("id").GetGuid();

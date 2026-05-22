@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 /// Lookup helpers for input type display.
 IconData inputTypeIcon(String type) => switch (type) {
@@ -140,99 +141,78 @@ class InputTypeBottomSheet extends StatelessWidget {
 
                   return Opacity(
                     opacity: isDisabled ? 0.45 : 1.0,
-                    child: Card(
-                      elevation: 0,
+                    child: StrokeCard(
                       margin: EdgeInsets.zero,
                       color: isSelected
                           ? theme.colorScheme.primaryContainer.withValues(
                               alpha: 0.4,
                             )
                           : null,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: isSelected
-                            ? BorderSide(
-                                color: theme.colorScheme.primary,
-                                width: 1.5,
-                              )
-                            : BorderSide(
-                                color: theme.colorScheme.outlineVariant,
-                              ),
+                      borderColor: isSelected
+                          ? theme.colorScheme.primary
+                          : null,
+                      borderRadius: 12,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
                       ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: isDisabled
-                            ? null
-                            : () => Navigator.pop(context, t.value),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
+                      onTap: isDisabled
+                          ? null
+                          : () => Navigator.pop(context, t.value),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Icon(
+                              t.icon,
+                              size: 24,
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Icon(
-                                  t.icon,
-                                  size: 24,
-                                  color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      t.title,
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      t.desc,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: theme.colorScheme.onSurface,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      isDisabled
-                                          ? 'Not available in ${_modeLabel(scoringMode)} mode.'
-                                          : t.helper,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: theme
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                            fontStyle: FontStyle.italic,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (isSelected)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 12,
-                                    top: 2,
-                                  ),
-                                  child: Icon(
-                                    Icons.check_circle,
-                                    color: theme.colorScheme.primary,
-                                    size: 24,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  t.title,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                            ],
+                                const SizedBox(height: 4),
+                                Text(
+                                  t.desc,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  isDisabled
+                                      ? 'Not available in ${_modeLabel(scoringMode)} mode.'
+                                      : t.helper,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                          if (isSelected)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12, top: 2),
+                              child: Icon(
+                                Icons.check_circle,
+                                color: theme.colorScheme.primary,
+                                size: 24,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   );

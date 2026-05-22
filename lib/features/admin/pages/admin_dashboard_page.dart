@@ -11,6 +11,7 @@ import '../../../_shared/widgets/section_header.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../manager/admin_dashboard_manager.dart';
 import '../../../_shared/widgets/compact_status_panel.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 final _di = GetIt.instance;
 
@@ -86,14 +87,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         label: 'USERS',
                         value: isLoading ? '—' : '${_countsManager.userCount}',
                         iconColor: theme.colorScheme.primary,
-                        onTap: () => context.push('/admin/users'),
                       ),
                       StatRowData(
                         icon: Icons.store,
                         label: 'STORES',
                         value: isLoading ? '—' : '${_countsManager.storeCount}',
                         iconColor: AppTheme.success,
-                        onTap: () => context.push('/admin/stores'),
                       ),
                       StatRowData(
                         icon: Icons.description,
@@ -102,7 +101,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             ? '—'
                             : '${_countsManager.templateCount}',
                         iconColor: AppTheme.info,
-                        onTap: () => context.push('/templates'),
                       ),
                       StatRowData(
                         icon: Icons.hourglass_empty,
@@ -111,16 +109,29 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             ? '—'
                             : '${adminState?.openActionPlans ?? 0}',
                         iconColor: AppTheme.warning,
-                        onTap: () => context.push('/plans'),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  // Menu items — only show items the current user has access to
-                  Card(
+                  // ── Group 1: Core Management ──
+                  const SectionHeader('CORE'),
+                  const SizedBox(height: 8),
+                  StrokeCard(
+                    padding: EdgeInsets.zero,
                     child: Column(
-                      children: _buildMenuItems(context, theme, pm),
+                      children: _buildCoreMenuItems(context, theme, pm),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ── Group 2: Operations ──
+                  const SectionHeader('OPERATIONS'),
+                  const SizedBox(height: 8),
+                  StrokeCard(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      children: _buildOperationsMenuItems(context, theme, pm),
                     ),
                   ),
                 ],
@@ -132,9 +143,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  /// Builds the visible menu items for the current user.
-  /// Dividers are inserted only between adjacent visible items.
-  List<Widget> _buildMenuItems(
+  /// Builds Core management items: User, Store, Role Management, User Groups.
+  List<Widget> _buildCoreMenuItems(
     BuildContext context,
     ThemeData theme,
     PolicyManager pm,
@@ -144,8 +154,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       indent: 56,
       color: theme.colorScheme.outlineVariant,
     );
-
-    // Each entry: (capability | null for ungated, _MenuItem)
     final gated = <({String? cap, _MenuItem item})>[
       (
         cap: AppCapabilities.usersManage,
@@ -165,8 +173,40 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           onTap: () => context.push('/admin/stores'),
         ),
       ),
+      (
+        cap: AppCapabilities.adminManageRoles,
+        item: _MenuItem(
+          icon: Icons.manage_accounts,
+          title: 'Role Management',
+          subtitle: 'Manage role capabilities',
+          onTap: () => context.push('/admin/roles'),
+        ),
+      ),
+      (
+        cap: null,
+        item: _MenuItem(
+          icon: Icons.group_work_outlined,
+          title: 'User Groups',
+          subtitle: 'Manage user group assignments',
+          onTap: () => context.push('/admin/user-groups'),
+        ),
+      ),
+    ];
+    return _interleave(gated, divider, pm);
+  }
 
-      // Audit Approvals — ungated (admin:access implicit)
+  /// Builds Operations items: Approvals, Schedule, Analytics, Logs, Risk.
+  List<Widget> _buildOperationsMenuItems(
+    BuildContext context,
+    ThemeData theme,
+    PolicyManager pm,
+  ) {
+    final divider = Divider(
+      height: 1,
+      indent: 56,
+      color: theme.colorScheme.outlineVariant,
+    );
+    final gated = <({String? cap, _MenuItem item})>[
       (
         cap: null,
         item: _MenuItem(
@@ -176,27 +216,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           onTap: () => context.push('/admin/approvals'),
         ),
       ),
-      // System Logs — ungated (Item 4 deferred per plan)
-      (
-        cap: null,
-        item: _MenuItem(
-          icon: Icons.warning_amber,
-          title: 'System Logs',
-          subtitle: 'Monitor application events',
-          onTap: () => context.push('/admin/logs'),
-        ),
-      ),
-      // Analytics — ungated (admin:access implicit)
-      (
-        cap: null,
-        item: _MenuItem(
-          icon: Icons.bar_chart,
-          title: 'Analytics',
-          subtitle: 'View performance data',
-          onTap: () => context.push('/analytics'),
-        ),
-      ),
-      // Schedule Audit — ungated (Item 3 handled in its own page)
       (
         cap: null,
         item: _MenuItem(
@@ -207,22 +226,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         ),
       ),
       (
-        cap: AppCapabilities.adminManageRoles,
+        cap: null,
         item: _MenuItem(
-          icon: Icons.manage_accounts,
-          title: 'Role Management',
-          subtitle: 'Manage role capabilities',
-          onTap: () => context.push('/admin/roles'),
+          icon: Icons.bar_chart,
+          title: 'Analytics',
+          subtitle: 'View performance data',
+          onTap: () => context.push('/analytics'),
         ),
       ),
-      // User Groups — ungated (admin:access implicit)
       (
         cap: null,
         item: _MenuItem(
-          icon: Icons.group_work_outlined,
-          title: 'User Groups',
-          subtitle: 'Manage user group assignments',
-          onTap: () => context.push('/admin/user-groups'),
+          icon: Icons.warning_amber,
+          title: 'System Logs',
+          subtitle: 'Monitor application events',
+          onTap: () => context.push('/admin/logs'),
         ),
       ),
       (
@@ -235,14 +253,19 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         ),
       ),
     ];
+    return _interleave(gated, divider, pm);
+  }
 
-    // Filter to only visible items
+  /// Filters gated items by capability and interleaves dividers.
+  List<Widget> _interleave(
+    List<({String? cap, _MenuItem item})> gated,
+    Divider divider,
+    PolicyManager pm,
+  ) {
     final visible = gated
         .where((e) => e.cap == null || pm.can(e.cap!))
         .map((e) => e.item)
         .toList();
-
-    // Interleave dividers between items
     final widgets = <Widget>[];
     for (var i = 0; i < visible.length; i++) {
       widgets.add(visible[i]);

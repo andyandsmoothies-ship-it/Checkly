@@ -33,3 +33,8 @@
   - **Fix:** You MUST use `tester.drag` or `tester.scrollUntilVisible` to bring hidden elements into view before asserting their existence.
 - **Gotcha 25: UI Library Constraints in Tests**: Third-party UI constraints (e.g., `fl_chart` requiring >= 3 categories for a RadarChart) apply even in tests.
   - **Fix:** Test mock data MUST respect these constraints. Do not bypass manager guards by injecting faulty mock data directly into widgets.
+
+## Primitives & Reskin Gotchas
+- **Gotcha 26: BubblyButton Constraints**: Always wrap `BubblyButton` in layout constraints or specify container boundaries, as it defaults to `width: double.infinity` to align with the core grid.
+- **Gotcha 27: QuestProgressBar Scale Clamp**: Value parameter is clamped internally. Do not write manual clamping layers outside it.
+- **Gotcha 28: PillChip and PastelAvatar Theme Preservation**: These primitives utilize predefined color maps instead of arbitrary gray or dark presets to maintain the gamified, vibrant aesthetic. Do not inject custom style overrides that bypass the predefined enums or theme classes.

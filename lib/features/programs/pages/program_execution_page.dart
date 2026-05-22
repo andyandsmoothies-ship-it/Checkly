@@ -6,6 +6,10 @@ import 'package:go_router/go_router.dart';
 import '../../programs/manager/program_manager.dart';
 import '../model/program_assignment_dto.dart';
 import '../model/assignment_status.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/pill_chip.dart';
+import '../../../_shared/widgets/primitives/bubbly_button.dart';
 
 /// Full-screen page where the Store Manager submits evidence for one
 /// program assignment.
@@ -119,20 +123,17 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_assignment!.status == AssignmentStatus.needsRevision) ...[
-                    Container(
-                      padding: const EdgeInsets.all(16),
+                  if (_assignment!.status ==
+                      AssignmentStatus.needsRevision) ...[
+                    StrokeCard(
+                      color: AppColors.walkingFish,
                       margin: const EdgeInsets.only(bottom: 24),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.errorContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.warning_amber_rounded,
-                            color: theme.colorScheme.onErrorContainer,
+                            color: AppColors.flamingo,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -142,7 +143,7 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
                                 Text(
                                   'Needs Revision',
                                   style: theme.textTheme.titleSmall?.copyWith(
-                                    color: theme.colorScheme.onErrorContainer,
+                                    color: AppColors.flamingo,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -151,7 +152,7 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
                                   _assignment!.rejectionComment ??
                                       'Please review and resubmit.',
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onErrorContainer,
+                                    color: AppColors.flamingo,
                                   ),
                                 ),
                               ],
@@ -168,29 +169,33 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
                     ),
                   ),
                   if (_assignment!.category.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Chip(
-                      label: Text(_assignment!.category),
-                      visualDensity: VisualDensity.compact,
+                    const SizedBox(height: 8),
+                    PillChip(
+                      label: _assignment!.category.toUpperCase(),
+                      type: PillChipType.blue,
                     ),
                   ],
                   const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: FilledButton.icon(
-                      onPressed: _handleStartAudit,
-                      icon: const Icon(Icons.play_arrow),
-                      label: Text(
-                        _assignment!.activeSubmissionId != null &&
-                                _assignment!.activeSubmissionId!.isNotEmpty
-                            ? 'Resume Audit'
-                            : 'Start Audit',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                  BubblyButton(
+                    onPressed: _handleStartAudit,
+                    color: AppColors.featherGreen,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.play_arrow, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Text(
+                          _assignment!.activeSubmissionId != null &&
+                                  _assignment!.activeSubmissionId!.isNotEmpty
+                              ? 'Resume Audit'
+                              : 'Start Audit',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],

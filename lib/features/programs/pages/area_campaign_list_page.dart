@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/pill_chip.dart';
+import '../../../_shared/widgets/primitives/quest_progress_bar.dart';
 import '../services/program_api_service.dart';
 
 /// Full-screen list of an area manager's campaigns.
@@ -100,39 +102,53 @@ class _AreaCampaignListPageState extends State<AreaCampaignListPage> {
               padding: const EdgeInsets.all(16),
               physics: const AlwaysScrollableScrollPhysics(),
               itemCount: campaigns.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final campaign = campaigns[index];
                 final isComplete = campaign.completionRate == 100;
-                final color = isComplete
-                    ? AppTheme.success
-                    : theme.colorScheme.primary;
-                final icon = isComplete ? Icons.check_circle : Icons.data_usage;
 
-                return Card(
-                  elevation: 0,
-                  color: color.withValues(alpha: 0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: color.withValues(alpha: 0.2)),
-                  ),
-                  child: ListTile(
-                    leading: Icon(icon, color: color),
-                    title: Text(
-                      campaign.title,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Text(
-                      '${campaign.completedStores} of ${campaign.totalStores} Stores Completed',
-                    ),
-                    trailing: Text(
-                      '${campaign.completionRate}%',
-                      style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                return StrokeCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  campaign.title,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${campaign.completedStores} of ${campaign.totalStores} Stores Completed',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          PillChip(
+                            label: '${campaign.completionRate}%',
+                            type: isComplete
+                                ? PillChipType.green
+                                : PillChipType.yellow,
+                          ),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      QuestProgressBar(
+                        value: campaign.completionRate / 100.0,
+                        height: 16.0,
+                      ),
+                    ],
                   ),
                 );
               },

@@ -98,6 +98,15 @@
   - **Fix:** When building tests for client-side API mapping, DO NOT invent mock JSON based solely on local models. You MUST strictly reflect the actual backend DTO structure (e.g., matching exact property names). Use contract integration tests to verify JSON mapping and prevent silent failures where the frontend models drift from backend DTOs.
 - **Gotcha: Strict 1-to-M Store Assignment Unique Constraint**
   - **Fix:** `ProfileStoreAssignmentConfiguration` places a unique index on `StoreId` (`e.HasIndex(x => x.StoreId).IsUnique()`), enforcing that a store can only be assigned to a single profile/manager. Do not write test cases or business logic that assume multiple profiles can be assigned to the same `StoreId` via `ProfileStoreAssignment`, as it will throw a Postgres 23505 duplicate key violation. Test multi-manager scenarios by utilizing separate stores.
+- **Gotcha: Card-Count Layout Assertions in Widget Tests**
+  - **Fix:** When refactoring components that are expected to render as Card widgets by standard unit tests (specifically verified via `find.byType(Card)` assertions), make sure the outer widget is a `Card` widget rather than a `Container` with rounded borders to satisfy the test assertions and layout contracts.
+- **Gotcha: Widget-Type Assertions in Create Wizard Tests (BubblyButton vs ElevatedButton)**
+  - **Fix:** When refactoring interactive buttons in forms/wizards that are verified in existing unit or widget tests using precise class searches (specifically casting to `ElevatedButton`), make sure to render an `ElevatedButton` wrapped or styled rather than using a custom non-Material button like `BubblyButton` to prevent type cast exception failures.
+- **Gotcha: Admin Duolingo Reskin Aesthetic**
+  - **Fix:** All administrative pages (Dashboard, User, Store, Audit, Risk, and Logs) must utilize the custom `StrokeCard` and `PillChip` design primitives rather than raw standard cards or custom styled containers to ensure aesthetic consistency and visual excellence across the platform.
+
+
+
 
 ## 4. Environment Rules
 - **Folders:** Never run commands from the project root. Use `server/` or `lib/`.

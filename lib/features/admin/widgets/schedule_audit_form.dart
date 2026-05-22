@@ -5,7 +5,6 @@ import 'package:get_it/get_it.dart';
 import '../../../_shared/exceptions/app_error.dart';
 import '../../../_shared/services/error_display_service.dart';
 
-import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../../audit/model/create_submission_request.dart';
 import '../../audit/services/submission_api_service.dart';
@@ -13,6 +12,7 @@ import '../manager/admin_audit_manager.dart';
 import '../widgets/dropdown_card.dart';
 import 'schedule_audit_date_picker.dart';
 import 'schedule_audit_form_logic.dart';
+import '../../../_shared/widgets/primitives/primitives.dart';
 
 final _di = GetIt.instance;
 
@@ -286,32 +286,12 @@ class _ScheduleAuditFormState extends State<ScheduleAuditForm> {
         ),
         const SizedBox(height: 32),
 
-        // Submit button
-        FilledButton.icon(
+        BubblyButton(
           onPressed: _isSubmitting ? null : _submit,
-          icon: _isSubmitting
-              ? SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                )
-              : const Icon(Icons.send),
-          label: Text(
-            _isSubmitting ? 'Scheduling...' : 'Schedule Audit',
-            style: AppFonts.displayStyle(
-              fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          style: FilledButton.styleFrom(
-            minimumSize: const Size(double.infinity, 52),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
+          isLoading: _isSubmitting,
+          icon: const Icon(Icons.send, color: Colors.white, size: 18),
+          label: 'Schedule Audit',
+          height: 52,
         ),
       ],
     );

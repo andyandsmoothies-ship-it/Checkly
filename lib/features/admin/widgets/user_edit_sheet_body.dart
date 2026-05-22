@@ -108,7 +108,10 @@ class UserEditSheetBody extends StatelessWidget {
                 ),
                 items: const [
                   DropdownMenuItem(value: AppRoles.admin, child: Text('Admin')),
-                  DropdownMenuItem(value: AppRoles.auditor, child: Text('Auditor')),
+                  DropdownMenuItem(
+                    value: AppRoles.auditor,
+                    child: Text('Auditor'),
+                  ),
                   DropdownMenuItem(
                     value: AppRoles.storeManager,
                     child: Text('Store Manager'),

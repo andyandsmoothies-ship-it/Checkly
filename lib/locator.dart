@@ -183,6 +183,7 @@ void configureDependencies() {
       api: SyncApiAdapter(di<Dio>()),
       outboxDao: di<ProgramOutboxDao>(),
       syncMetaDao: di<SyncMetaDao>(),
+      auth: di<AuthManager>(),
       scheduleRetry: (delay) => di<SyncEngine>().requestSync(),
     ),
   );

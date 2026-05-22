@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 class AnalyticsKpiCard extends StatelessWidget {
   final IconData icon;
@@ -23,58 +24,46 @@ class AnalyticsKpiCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: (MediaQuery.sizeOf(context).width - 40) / 2,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: StrokeCard(
+        onTap: onTap,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Icon(icon, color: accentColor, size: 18),
-                    const Spacer(),
-                    if (tooltip != null)
-                      Tooltip(
-                        message: tooltip!,
-                        triggerMode: TooltipTriggerMode.tap,
-                        child: Icon(
-                          Icons.info_outline,
-                          size: 14,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.3),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  value,
-                  style: AppFonts.serifStyle(
-                    fontSize: Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.fontSize,
-                    color: Theme.of(context).colorScheme.onSurface,
+                Icon(icon, color: accentColor, size: 18),
+                const Spacer(),
+                if (tooltip != null)
+                  Tooltip(
+                    message: tooltip!,
+                    triggerMode: TooltipTriggerMode.tap,
+                    child: Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.3),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
               ],
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: AppFonts.serifStyle(
+                fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
       ),
     );

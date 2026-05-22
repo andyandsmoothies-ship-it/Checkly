@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:checkly/_shared/theme/app_colors.dart';
+import 'package:checkly/_shared/widgets/primitives/bubbly_button.dart';
 
 /// Wizard Step 5 (Done): Post-save success screen.
 ///
@@ -150,16 +152,22 @@ class _WizardStepSuccessState extends State<WizardStepSuccess>
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: widget.onViewTemplate,
-                icon: const Icon(Icons.visibility_outlined),
-                label: const Text('View Template'),
+              SizedBox(
+                height: 50,
+                child: BubblyButton(
+                  label: 'View Template',
+                  color: AppColors.featherGreen,
+                  onPressed: widget.onViewTemplate,
+                ),
               ),
               const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: widget.onOpenBuilder,
-                icon: const Icon(Icons.edit_outlined),
-                label: const Text('Advanced Edit (Template Builder)'),
+              SizedBox(
+                height: 50,
+                child: BubblyButton(
+                  label: 'Advanced Edit (Template Builder)',
+                  color: AppColors.macaw,
+                  onPressed: widget.onOpenBuilder,
+                ),
               ),
               const SizedBox(height: 12),
               TextButton(

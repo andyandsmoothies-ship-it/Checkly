@@ -76,10 +76,7 @@ class AdminApiService {
   }
 
   /// POST /admin/users/{id}/ban — ban/unban a user.
-  Future<Map<String, dynamic>> banUser(
-    String id, {
-    required bool ban,
-  }) async {
+  Future<Map<String, dynamic>> banUser(String id, {required bool ban}) async {
     final response = await _dio.post(
       '/admin/users/$id/ban',
       data: {'isBanned': ban},

@@ -267,9 +267,9 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
     }
     if (_logs.isEmpty) {
       return const ChecklyEmptyState(
-        icon: Icons.receipt_long_outlined,
-        title: 'No logs found',
-        subtitle: 'Try adjusting your filters or date range.',
+        emoji: '🪵',
+        title: 'The logs are nice and quiet!',
+        subtitle: 'No system logs matched your search or filters at this time.',
       );
     }
 

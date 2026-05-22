@@ -7,31 +7,63 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
+  // ── Core Brand Colors ──
+  static const featherGreen = Color(0xFF58CC02);
+  static const maskGreen = Color(0xFF89E219);
+  static const eel = Color(0xFF4B4B4B);
+  static const snow = Color(0xFFFFFFFF);
+
+  // ── Secondary Semantic Colors ──
+  static const macaw = Color(0xFF1CB0F6);
+  static const cardinal = Color(0xFFFF4B4B);
+  static const bee = Color(0xFFFFC800);
+  static const fox = Color(0xFFFF9600);
+  static const beetle = Color(0xFFCE82FF);
+  static const humpback = Color(0xFF2B70C9);
+
+  // ── Neutral Scale ──
+  static const swan = Color(0xFFE5E5E5);
+  static const polar = Color(0xFFF7F7F7);
+  static const hare = Color(0xFFAFAFAF);
+  static const wolf = Color(0xFF777777);
+
+  // ── Illustration Pastel Palette ──
+  // Greens
+  static const seaSponge = Color(0xFFD7FFB8);
+  static const turtle = Color(0xFFA5ED6E);
+  // Blues
+  static const iguana = Color(0xFFDDF4FF);
+  static const beluga = Color(0xFFBBF2FF);
+  static const blueJay = Color(0xFF84D8FF);
+  // Reds/Pinks
+  static const walkingFish = Color(0xFFFFDFE0);
+  static const flamingo = Color(0xFFFFB2B2);
+  // Yellows
+  static const canary = Color(0xFFFFF5D3);
+  static const duck = Color(0xFFFBE56D);
+  // Purples
+  static const starfish = Color(0xFFFFAADE);
+
   // ── Brand ──
-  static const primarySeed = Color(0xFF4CAE4F); // Muted Green
+  static const primarySeed =
+      featherGreen; // Muted Green reskinned to Feather Green
 
   // ── Semantic ──
-  static const destructive = Color(0xFFEF4444);
-  static const success = Color(0xFF16A34A);
-  static const successContainer = Color(
-    0xFFE8F5E9,
-  ); // Light green tint for success banners
-  static const warning = Color(0xFFF59E0B);
-  static const warningContainer = Color(
-    0xFFFEEAD1,
-  ); // Warm amber tint for stat card bg
-  static const warningText = Color(
-    0xFFB45309,
-  ); // High contrast warning text for badges
-  static const info = Color(0xFF0EA5E9);
+  static const destructive = cardinal;
+  static const success = featherGreen;
+  static const successContainer = seaSponge; // Light green tint reskinned
+  static const warning = bee;
+  static const warningContainer = canary; // Warm amber tint reskinned
+  static const warningText = fox; // High contrast warning text reskinned
+  static const info = macaw;
 
-  // ── Apothecary Palette ──
-  static const oatmeal = Color(0xFFE8E2D6);
-  static const softPeach = Color(0xFFF5E6DA);
-  static const sageGray = Color(0xFFD1D9D1);
-  static const warmCream = Color(0xFFF9F7F2);
-  static const charcoal = Color(0xFF2D312E);
-  static const deepForest = Color(0xFF151D15);
+  // ── Apothecary Palette mappings for backward compatibility ──
+  static const oatmeal = swan;
+  static const softPeach = walkingFish;
+  static const sageGray = swan;
+  static const warmCream = polar;
+  static const charcoal = eel;
+  static const deepForest = eel;
 }
 
 /// Blueprint scoring-mode brand accents.

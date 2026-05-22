@@ -57,6 +57,7 @@ class AdminAuditManager extends ChangeNotifier {
   // ---------- Approvals State ----------
   bool isApprovalsLoading = false;
   String? approvalsError;
+
   /// True when the approvals fetch returned exactly 100 rows — the hard cap.
   /// The UI should show a visible warning banner when this is true.
   bool hasApprovalsTruncationWarning = false;
@@ -95,7 +96,8 @@ class AdminAuditManager extends ChangeNotifier {
         );
       }
       final assignedStoreIds =
-          (currentUserRecord?['assignedStoreIds'] as List<dynamic>?)?.cast<String>() ??
+          (currentUserRecord?['assignedStoreIds'] as List<dynamic>?)
+              ?.cast<String>() ??
           <String>[];
 
       // Build template list
@@ -123,7 +125,9 @@ class AdminAuditManager extends ChangeNotifier {
 
       // Role-based filtering for area_manager
       if (UserPersona.fromRole(currentUserRole) == UserPersona.areaManager) {
-        storeList = storeList.where((s) => assignedStoreIds.contains(s['id'])).toList();
+        storeList = storeList
+            .where((s) => assignedStoreIds.contains(s['id']))
+            .toList();
       }
 
       scheduleData = ScheduleFormData(

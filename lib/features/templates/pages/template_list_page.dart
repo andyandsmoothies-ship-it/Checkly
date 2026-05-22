@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../_shared/constants/app_capabilities.dart';
-import '../../../_shared/widgets/permission_guard.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/widgets/permission_guard.dart';
 import '../../../_shared/widgets/warm_chip.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/bubbly_button.dart';
 import '../manager/template_manager.dart';
 import '../models/template_dto.dart';
 import '../widgets/template_card.dart';
@@ -68,22 +70,54 @@ class _TemplateListPageState extends State<TemplateListPage> {
     final result = await showMenu<String>(
       context: context,
       position: position,
-      items: const [
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColors.swan, width: 2),
+      ),
+      items: [
         PopupMenuItem(
           value: 'classic',
           child: ListTile(
-            leading: Icon(Icons.build_outlined),
-            title: Text('Classic Builder'),
-            subtitle: Text('Full control over every detail'),
+            leading: const Icon(Icons.build_outlined, color: AppColors.macaw),
+            title: const Text(
+              'Classic Builder',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w900,
+                color: AppColors.eel,
+              ),
+            ),
+            subtitle: const Text(
+              'Full control over every detail',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.bold,
+                color: AppColors.wolf,
+              ),
+            ),
             dense: true,
           ),
         ),
         PopupMenuItem(
           value: 'wizard',
           child: ListTile(
-            leading: Icon(Icons.auto_fix_high),
-            title: Text('Guided Creation'),
-            subtitle: Text('Step-by-step for quick setup'),
+            leading: const Icon(Icons.auto_fix_high, color: AppColors.fox),
+            title: const Text(
+              'Guided Creation',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w900,
+                color: AppColors.eel,
+              ),
+            ),
+            subtitle: const Text(
+              'Step-by-step for quick setup',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.bold,
+                color: AppColors.wolf,
+              ),
+            ),
             dense: true,
           ),
         ),
@@ -156,24 +190,38 @@ class _TemplateListPageState extends State<TemplateListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final manager = _di<TemplateManager>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Templates')),
+      appBar: AppBar(
+        title: const Text(
+          'Templates',
+          style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w900),
+        ),
+      ),
       floatingActionButton: PermissionGuard(
         capability: AppCapabilities.templatesCreate,
         child: Padding(
           padding: const EdgeInsets.only(bottom: 80),
           child: Builder(
             builder: (context) {
-              final theme = Theme.of(context);
               return FloatingActionButton(
                 onPressed: () => _showCreateMenu(context),
-                shape: const CircleBorder(),
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                elevation: 4,
-                child: const Icon(Icons.add),
+                shape: CircleBorder(
+                  side: BorderSide(
+                    color:
+                        Color.lerp(
+                          AppColors.featherGreen,
+                          Colors.black,
+                          0.25,
+                        ) ??
+                        AppColors.featherGreen,
+                    width: 2,
+                  ),
+                ),
+                backgroundColor: AppColors.featherGreen,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                child: const Icon(Icons.add, size: 28),
               );
             },
           ),
@@ -191,17 +239,30 @@ class _TemplateListPageState extends State<TemplateListPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.error_outline,
                     size: 48,
-                    color: theme.colorScheme.error,
+                    color: AppColors.cardinal,
                   ),
                   const SizedBox(height: 12),
-                  Text(manager.error!, style: theme.textTheme.bodyLarge),
+                  Text(
+                    manager.error!,
+                    style: const TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.eel,
+                    ),
+                  ),
                   const SizedBox(height: 16),
-                  FilledButton.tonal(
-                    onPressed: () => manager.loadTemplates(),
-                    child: const Text('Retry'),
+                  SizedBox(
+                    width: 140,
+                    height: 44,
+                    child: BubblyButton(
+                      label: 'Retry',
+                      color: AppColors.cardinal,
+                      height: 40,
+                      onPressed: () => manager.loadTemplates(),
+                    ),
                   ),
                 ],
               ),
@@ -214,10 +275,40 @@ class _TemplateListPageState extends State<TemplateListPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                 child: TextField(
-                  decoration: const InputDecoration(
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.eel,
+                  ),
+                  decoration: InputDecoration(
                     hintText: 'Search templates...',
-                    prefixIcon: Icon(Icons.search),
+                    hintStyle: const TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.wolf,
+                    ),
+                    prefixIcon: const Icon(Icons.search, color: AppColors.wolf),
                     isDense: true,
+                    fillColor: Colors.white,
+                    filled: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(
+                        color: AppColors.swan,
+                        width: 2,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(
+                        color: AppColors.macaw,
+                        width: 2,
+                      ),
+                    ),
                   ),
                   onChanged: (v) => setState(() => _search = v),
                 ),

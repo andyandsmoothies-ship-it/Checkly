@@ -9,6 +9,8 @@ import '../../../../_shared/exceptions/app_error.dart';
 import '../../../../_shared/services/error_display_service.dart';
 import '../../../../_shared/services/policy_manager.dart';
 import '../../../../_shared/theme/app_colors.dart';
+import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../../../audit/model/submission_dto.dart';
 import '../../../audit/pages/audit_preview_sheet.dart';
@@ -176,217 +178,164 @@ class _SubmissionRowState extends State<SubmissionRow> {
 
     final semanticColor = score != null
         ? (score >= 80
-              ? AppColors.success
+              ? AppColors.featherGreen
               : score >= 60
-              ? AppColors.warning
-              : AppColors.destructive)
-        : theme.colorScheme.onSurfaceVariant;
+              ? AppColors.fox
+              : AppColors.cardinal)
+        : AppColors.wolf;
 
-    return Container(
+    return StrokeCard(
       margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: isDraft
-              ? _resumeDraft
-              : () {
-                  if (sub.id.startsWith('local_outbox_')) {
-                    ScaffoldMessenger.of(widget.context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'This audit is syncing. Please wait a moment.',
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-                  showModalBottomSheet(
-                    context: widget.context,
-                    isScrollControlled: true,
-                    useSafeArea: true,
-                    useRootNavigator: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      onTap: isDraft
+          ? _resumeDraft
+          : () {
+              if (sub.id.startsWith('local_outbox_')) {
+                ScaffoldMessenger.of(widget.context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'This audit is syncing. Please wait a moment.',
                     ),
-                    builder: (_) => AuditPreviewSheet(submissionId: sub.id),
-                  );
-                },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        sub.templateTitle ?? 'Audit',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        () {
-                          final isOverdue = sub.isOverdue;
-                          final isScheduled =
-                              sub.status == 'scheduled' && !isOverdue;
-                          if (isScheduled || isOverdue) {
-                            return '${sub.storeName ?? 'Unknown'} · Scheduled ${formatDate(sub.scheduledAt ?? sub.createdAt)}';
-                          }
-                          if (sub.status == 'draft') {
-                            return '${sub.storeName ?? 'Unknown'} · Started ${formatDate(sub.createdAt)}';
-                          }
-                          return '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.completedAt ?? sub.createdAt)}';
-                        }(),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
                   ),
+                );
+                return;
+              }
+              showModalBottomSheet(
+                context: widget.context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                useRootNavigator: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                // Right side: for drafts show actions menu; otherwise score badge
-                if (isDraft)
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      size: 20,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    onSelected: (value) {
-                      if (value == 'resume') Future.microtask(_resumeDraft);
-                      if (value == 'discard') Future.microtask(_discardDraft);
-                      if (value == 'void') Future.microtask(_voidAudit);
-                    },
-                    itemBuilder: (_) {
-                      // Hybrid PBAC check: use server-computed allowedActions
-                      // when online; fall back to JWT capability when offline.
-                      final canVoid = sub.allowedActions != null
-                          ? sub.allowedActions!.contains(
-                              SubmissionActions.voidAction,
-                            )
-                          : _di<PolicyManager>().can(
-                              AppCapabilities.submissionsReview,
-                            );
-                      return [
-                        const PopupMenuItem(
-                          value: 'resume',
-                          child: Row(
-                            children: [
-                              Icon(Icons.play_circle_outline, size: 18),
-                              SizedBox(width: 8),
-                              Text('Resume Audit'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'discard',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete_outline, size: 18),
-                              SizedBox(width: 8),
-                              Text('Discard Draft'),
-                            ],
-                          ),
-                        ),
-                        if (canVoid)
-                          const PopupMenuItem(
-                            value: 'void',
-                            child: Row(
-                              children: [
-                                Icon(Icons.block, size: 18),
-                                SizedBox(width: 8),
-                                Text('Void Audit'),
-                              ],
-                            ),
-                          ),
-                      ];
-                    },
-                  )
-                else if (scoreText.isNotEmpty)
-                  scoreText == '—'
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'SURVEY',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        )
-                      : Text(
-                          scoreText,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: semanticColor,
-                          ),
-                        )
-                else
-                  Builder(
-                    builder: (_) {
-                      final isOverdue = sub.isOverdue;
-                      final label = isOverdue
-                          ? 'EXPIRED'
-                          : sub.status.toUpperCase();
-                      final bgColor = isOverdue
-                          ? theme.colorScheme.errorContainer
-                          : theme.colorScheme.tertiary.withValues(alpha: 0.1);
-                      final textColor = isOverdue
-                          ? theme.colorScheme.onErrorContainer
-                          : theme.colorScheme.tertiary;
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          label,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: textColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    },
+                builder: (_) => AuditPreviewSheet(submissionId: sub.id),
+              );
+            },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  sub.templateTitle ?? 'Audit',
+                  style: AppFonts.displayStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.eel,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  () {
+                    final isOverdue = sub.isOverdue;
+                    final isScheduled = sub.status == 'scheduled' && !isOverdue;
+                    if (isScheduled || isOverdue) {
+                      return '${sub.storeName ?? 'Unknown'} · Scheduled ${formatDate(sub.scheduledAt ?? sub.createdAt)}';
+                    }
+                    if (sub.status == 'draft') {
+                      return '${sub.storeName ?? 'Unknown'} · Started ${formatDate(sub.createdAt)}';
+                    }
+                    return '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.completedAt ?? sub.createdAt)}';
+                  }(),
+                  style: AppFonts.displayStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.wolf,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
-        ),
+          // Right side: for drafts show actions menu; otherwise score badge
+          if (isDraft)
+            PopupMenuButton<String>(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: AppColors.swan, width: 2),
+              ),
+              icon: Icon(
+                Icons.more_vert,
+                size: 20,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              onSelected: (value) {
+                if (value == 'resume') Future.microtask(_resumeDraft);
+                if (value == 'discard') Future.microtask(_discardDraft);
+                if (value == 'void') Future.microtask(_voidAudit);
+              },
+              itemBuilder: (_) {
+                // Hybrid PBAC check: use server-computed allowedActions
+                // when online; fall back to JWT capability when offline.
+                final canVoid = sub.allowedActions != null
+                    ? sub.allowedActions!.contains(SubmissionActions.voidAction)
+                    : _di<PolicyManager>().can(
+                        AppCapabilities.submissionsReview,
+                      );
+                return [
+                  const PopupMenuItem(
+                    value: 'resume',
+                    child: Row(
+                      children: [
+                        Icon(Icons.play_circle_outline, size: 18),
+                        SizedBox(width: 8),
+                        Text('Resume Audit'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'discard',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline, size: 18),
+                        SizedBox(width: 8),
+                        Text('Discard Draft'),
+                      ],
+                    ),
+                  ),
+                  if (canVoid)
+                    const PopupMenuItem(
+                      value: 'void',
+                      child: Row(
+                        children: [
+                          Icon(Icons.block, size: 18),
+                          SizedBox(width: 8),
+                          Text('Void Audit'),
+                        ],
+                      ),
+                    ),
+                ];
+              },
+            )
+          else if (scoreText.isNotEmpty)
+            scoreText == '—'
+                ? const PillChip(label: 'SURVEY', type: PillChipType.purple)
+                : Text(
+                    scoreText,
+                    style: AppFonts.displayStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: semanticColor,
+                    ),
+                  )
+          else
+            Builder(
+              builder: (_) {
+                final isOverdue = sub.isOverdue;
+                final label = isOverdue ? 'EXPIRED' : sub.status.toUpperCase();
+                final chipType = isOverdue
+                    ? PillChipType.red
+                    : PillChipType.yellow;
+                return PillChip(label: label, type: chipType);
+              },
+            ),
+        ],
       ),
     );
   }

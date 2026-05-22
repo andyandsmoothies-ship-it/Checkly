@@ -8,6 +8,9 @@ import '../theme/app_colors.dart';
 /// - action_plans_page.dart
 /// - template_list_page.dart
 ///
+/// Refactored to use a bubbly selected style (FeatherGreen fill + Snow text)
+/// and a flat Swan-bordered unselected style.
+///
 /// ```dart
 /// WarmChip(
 ///   label: 'Published',
@@ -32,25 +35,30 @@ class WarmChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final text = count != null ? '$label ($count)' : label;
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected
-              ? theme.colorScheme.primary
-              : AppColors.oatmeal.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(20),
+          color: selected ? AppColors.featherGreen : Colors.white,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: selected ? AppColors.featherGreen : AppColors.swan,
+            width: 2,
+          ),
         ),
         child: Text(
           text,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: selected ? theme.colorScheme.onPrimary : AppColors.charcoal,
-            fontWeight: FontWeight.w600,
+          style: TextStyle(
+            fontFamily: 'Nunito',
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: selected ? Colors.white : AppColors.eel,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

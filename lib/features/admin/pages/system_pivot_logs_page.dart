@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../widgets/level_badge.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
 final _di = GetIt.instance;
 
@@ -103,46 +104,44 @@ class _CompactLogCard extends StatelessWidget {
     final message = log['message'] as String? ?? '';
     final createdAt = log['createdAt'] as String?;
 
-    return Card(
+    return StrokeCard(
       margin: const EdgeInsets.only(bottom: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            LevelBadge(level: level),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          LevelBadge(level: level),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  action,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (message.isNotEmpty)
                   Text(
-                    action,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    message,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (message.isNotEmpty)
-                    Text(
-                      message,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                if (createdAt != null)
+                  Text(
+                    _fmtTime(createdAt),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.outline,
                     ),
-                  if (createdAt != null)
-                    Text(
-                      _fmtTime(createdAt),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
-                    ),
-                ],
-              ),
+                  ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -5,6 +5,9 @@ import '../manager/program_manager.dart';
 import '../services/program_api_service.dart'; // DTOs only
 import '../model/assignment_status.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/widgets/warm_chip.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/pill_chip.dart';
 import 'widgets/program_bar_chart.dart';
 import 'widgets/program_evidence_viewer_dialog.dart';
 import 'widgets/program_kpi_card.dart';
@@ -153,14 +156,10 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                 final selected = _statusFilter == opt.value;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 8,
-                    ),
-                    label: Text(opt.label),
+                  child: WarmChip(
+                    label: opt.label,
                     selected: selected,
-                    onSelected: (_) {
+                    onTap: () {
                       setState(() => _statusFilter = opt.value);
                       _load();
                     },
@@ -187,20 +186,14 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
           else
             ...List.generate(_assignments.length, (i) {
               final a = _assignments[i];
-              return Container(
+              return StrokeCard(
                 margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: theme.colorScheme.outlineVariant),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
+                padding: EdgeInsets.zero,
+                onTap:
+                    a.status == AssignmentStatus.submitted &&
+                        a.evidence.isNotEmpty
+                    ? () => _showEvidence(context, a)
+                    : null,
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -220,21 +213,9 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                       spacing: 8,
                       runSpacing: 4,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            a.status.toUpperCase(),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                        PillChip(
+                          label: a.status.toUpperCase(),
+                          type: _getPillType(a.status),
                         ),
                         Text(
                           '${a.evidence.length} evidence item(s)',
@@ -246,9 +227,6 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
                     ),
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: a.status == AssignmentStatus.submitted && a.evidence.isNotEmpty
-                      ? () => _showEvidence(context, a)
-                      : null,
                 ),
               );
             }),
@@ -265,5 +243,21 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
       context: context,
       builder: (_) => ProgramEvidenceViewerDialog(assignment: assignment),
     );
+  }
+
+  PillChipType _getPillType(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return PillChipType.yellow;
+      case 'submitted':
+        return PillChipType.blue;
+      case 'needs_revision':
+        return PillChipType.red;
+      case 'verified':
+        return PillChipType.green;
+      case 'overdue':
+      default:
+        return PillChipType.purple;
+    }
   }
 }

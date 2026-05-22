@@ -24,13 +24,12 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
         e.HasIndex(x => x.IsActive).HasFilter("is_active = true");
         e.HasIndex(x => x.UpdatedAt); // For offline delta sync
 
-        // SL-1: Structured address — OwnsOne maps to flat columns in stores table.
-        // GOTCHA: Must use OwnsOne (NOT ComplexProperty). Explicit HasColumnName required
-        // per server/Common/GEMINI.md — EF will NOT auto-map to snake_case.
-        // IsRequired(false) suppresses EF20606: optional dependent without identifying property.
+        // Province required — Province.IsRequired() inside the lambda suppresses
+        // EF OptionalDependentWithoutIdentifyingPropertyWarning (Province is the identifying field).
+        // Province is NOT NULL in DB — see migration MakeStoreAddressProvinceRequired.
         e.OwnsOne(x => x.Address2, a =>
         {
-            a.Property(p => p.Province).HasColumnName("address_province");
+            a.Property(p => p.Province).HasColumnName("address_province").IsRequired();
             a.Property(p => p.District).HasColumnName("address_district");
             a.Property(p => p.Ward).HasColumnName("address_ward");
             a.Property(p => p.Street).HasColumnName("address_street");
@@ -38,3 +37,4 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
         });
     }
 }
+

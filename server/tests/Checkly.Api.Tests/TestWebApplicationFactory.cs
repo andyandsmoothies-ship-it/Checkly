@@ -186,6 +186,9 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             var parts = email.Split('@');
             email = $"{parts[0]}-{Guid.NewGuid():N}@{parts[1]}";
         }
+        // Auto-elevate: non-auditor roles require an admin JWT per CRIT-01 in Register.cs
+        if (adminToken is null && role != "auditor")
+            adminToken = await LoginBootstrapAdminAsync(client);
 
         for (int i = 0; i < 5; i++)
         {

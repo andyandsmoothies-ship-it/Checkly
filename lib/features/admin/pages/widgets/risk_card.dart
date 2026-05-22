@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
 class RiskCard extends StatelessWidget {
   final Map<String, dynamic> risk;
@@ -15,11 +16,12 @@ class RiskCard extends StatelessWidget {
     final description = risk['description'] as String? ?? '';
     final isActive = risk['isActive'] as bool? ?? true;
 
-    return Card(
+    return StrokeCard(
       margin: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -62,23 +64,7 @@ class RiskCard extends StatelessWidget {
                           ),
                         ),
                         if (!isActive)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'INACTIVE',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onErrorContainer,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
+                          PillChip(label: 'Inactive', type: PillChipType.red),
                       ],
                     ),
                     if (description.isNotEmpty) ...[

@@ -199,4 +199,3 @@ class TemplateManager extends ChangeNotifier {
     return cloned;
   }
 }
-

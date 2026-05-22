@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:checkly/_shared/theme/app_colors.dart';
+import 'package:checkly/_shared/widgets/primitives/bubbly_button.dart';
 import '../../../../_shared/exceptions/app_error.dart';
 import '../../../../_shared/services/error_display_service.dart';
 
@@ -116,39 +118,42 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () {
-                final lines = ctrl.text
-                    .split('\n')
-                    .map((l) => l.trim())
-                    .where((l) => l.isNotEmpty)
-                    .toList();
-                final capped = lines.length > 20;
-                final toAdd = lines.take(20).toList();
-                setState(() {
-                  for (final label in toAdd) {
-                    final c = EditableCriterion(
-                      inputType: _defaultInputType,
-                      points: '10',
+            SizedBox(
+              height: 48,
+              child: BubblyButton(
+                label: 'Add Criteria',
+                color: AppColors.featherGreen,
+                onPressed: () {
+                  final lines = ctrl.text
+                      .split('\n')
+                      .map((l) => l.trim())
+                      .where((l) => l.isNotEmpty)
+                      .toList();
+                  final capped = lines.length > 20;
+                  final toAdd = lines.take(20).toList();
+                  setState(() {
+                    for (final label in toAdd) {
+                      final c = EditableCriterion(
+                        inputType: _defaultInputType,
+                        points: '10',
+                      );
+                      c.labelCtrl.text = label;
+                      section.criteria.add(c);
+                    }
+                  });
+                  widget.onChanged();
+                  Navigator.pop(ctx);
+                  if (capped && mounted) {
+                    GetIt.instance<ErrorDisplayService>().show(
+                      const AppError(
+                        code: 'validation_error',
+                        message:
+                            'Maximum 20 criteria per batch. Additional lines were ignored.',
+                      ),
                     );
-                    c.labelCtrl.text = label;
-                    section.criteria.add(c);
                   }
-                });
-                widget.onChanged();
-                Navigator.pop(ctx);
-                if (capped && mounted) {
-                  GetIt.instance<ErrorDisplayService>().show(
-                    const AppError(
-                      code: 'validation_error',
-                      message:
-                          'Maximum 20 criteria per batch. Additional lines were ignored.',
-                    ),
-                  );
-                }
-              },
-              child: const Text('Add Criteria'),
+                },
+              ),
             ),
           ],
         ),

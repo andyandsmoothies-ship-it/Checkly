@@ -5,6 +5,7 @@ import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../audit/model/submission_dto.dart';
 import '../../../audit/utils/score_formatter.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
 import '../../../../_shared/constants/review_status.dart';
 
@@ -47,173 +48,175 @@ class ReviewCard extends StatelessWidget {
               : theme.colorScheme.error)
         : theme.colorScheme.onSurfaceVariant;
 
-    return Card(
+    return StrokeCard(
       margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.all(14),
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  // Score badge
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: scoreColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: scoreColor.withValues(alpha: 0.2),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        scoreStr,
-                        style: AppFonts.serifStyle(
-                          fontSize: theme.textTheme.bodyMedium?.fontSize,
-                          fontWeight: FontWeight.w700,
-                          color: scoreColor,
-                        ),
-                      ),
+              // Score badge
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: scoreColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: scoreColor.withValues(alpha: 0.2)),
+                ),
+                child: Center(
+                  child: Text(
+                    scoreStr,
+                    style: AppFonts.serifStyle(
+                      fontSize: theme.textTheme.bodyMedium?.fontSize,
+                      fontWeight: FontWeight.w700,
+                      color: scoreColor,
                     ),
                   ),
-                  const SizedBox(width: 12),
-
-                  // Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.storeName ?? 'Unknown Store',
-                          style: AppFonts.displayStyle(
-                            fontSize: Theme.of(
-                              context,
-                            ).textTheme.titleSmall?.fontSize,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          item.templateTitle ?? 'Audit',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Chevron
-                  Icon(
-                    Icons.chevron_right,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ],
+                ),
               ),
+              const SizedBox(width: 12),
 
-              // Metadata row
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 13,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      item.auditorName ?? '—',
+              // Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.storeName ?? 'Unknown Store',
+                      style: AppFonts.displayStyle(
+                        fontSize: Theme.of(
+                          context,
+                        ).textTheme.titleSmall?.fontSize,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      item.templateTitle ?? 'Audit',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Icon(
-                    Icons.calendar_today,
-                    size: 13,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    DateFormat('dd/MM/yyyy').format(item.createdAt),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
-              // Review metadata for approved/rejected
-              if (item.reviewStatus != null) ...[
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(
-                      item.reviewStatus == ReviewStatus.approved
-                          ? Icons.check_circle_outline
-                          : Icons.cancel_outlined,
-                      size: 13,
+              // Chevron
+              Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+
+          // Metadata row
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(
+                Icons.person_outline,
+                size: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  item.auditorName ?? '—',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(
+                Icons.calendar_today,
+                size: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                DateFormat('dd/MM/yyyy').format(item.createdAt),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+
+          // Review metadata for approved/rejected
+          if (item.reviewStatus != null) ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  item.reviewStatus == ReviewStatus.approved
+                      ? Icons.check_circle_outline
+                      : Icons.cancel_outlined,
+                  size: 13,
+                  color: item.reviewStatus == ReviewStatus.approved
+                      ? AppTheme.success
+                      : theme.colorScheme.error,
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    '${item.reviewStatus == ReviewStatus.approved ? "Approved" : "Rejected"}'
+                    '${item.approverName != null ? " by ${item.approverName}" : ""}'
+                    '${item.approvedAt != null ? " • ${DateFormat("dd/MM HH:mm").format(item.approvedAt!)}" : ""}',
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: item.reviewStatus == ReviewStatus.approved
                           ? AppTheme.success
                           : theme.colorScheme.error,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        '${item.reviewStatus == ReviewStatus.approved ? "Approved" : "Rejected"}'
-                        '${item.approverName != null ? " by ${item.approverName}" : ""}'
-                        '${item.approvedAt != null ? " • ${DateFormat("dd/MM HH:mm").format(item.approvedAt!)}" : ""}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: item.reviewStatus == ReviewStatus.approved
-                              ? AppTheme.success
-                              : theme.colorScheme.error,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
+            ),
+          ],
 
-              // Actions for pending
-              if (showActions) ...[
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: onReject,
-                      icon: const Icon(Icons.close, size: 16),
-                      label: const Text('Reject'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: theme.colorScheme.error,
-                      ),
+          // Actions for pending
+          if (showActions) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: BubblyButton(
+                    label: 'Reject',
+                    color: theme.colorScheme.error,
+                    icon: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: Colors.white,
                     ),
-                    const SizedBox(width: 8),
-                    FilledButton.icon(
-                      onPressed: onApprove,
-                      icon: const Icon(Icons.check, size: 16),
-                      label: const Text('Approve'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppTheme.success,
-                      ),
+                    onPressed: onReject,
+                    height: 40,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: BubblyButton(
+                    label: 'Approve',
+                    color: AppTheme.success,
+                    icon: const Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Colors.white,
                     ),
-                  ],
+                    onPressed: onApprove,
+                    height: 40,
+                  ),
                 ),
               ],
-            ],
-          ),
-        ),
+            ),
+          ],
+        ],
       ),
     );
   }

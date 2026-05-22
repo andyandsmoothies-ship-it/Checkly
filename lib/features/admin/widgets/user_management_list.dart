@@ -58,9 +58,10 @@ class UserManagementList extends StatelessWidget {
 
     if (filtered.isEmpty) {
       return const ChecklyEmptyState(
-        icon: Icons.group_off,
-        title: 'No users found',
-        subtitle: 'Try adjusting your search or role filter.',
+        emoji: '👥',
+        title: "Let's find some team members!",
+        subtitle:
+            'Try adjusting your search or selection filter to find users.',
       );
     }
 

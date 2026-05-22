@@ -7,6 +7,9 @@ import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/permission_guard.dart';
 import '../../../_shared/theme/app_fonts.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/pill_chip.dart';
 
 /// HQ-facing list of all programs.
 ///
@@ -73,6 +76,10 @@ class _ProgramListPageState extends State<ProgramListPage> {
         child: FloatingActionButton(
           key: const Key('create_program_fab'),
           tooltip: 'New Campaign',
+          backgroundColor: AppColors.featherGreen,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: const CircleBorder(),
           onPressed: () async {
             await context.push('/programs/new');
             _load();
@@ -135,19 +142,11 @@ class _ProgramListPageState extends State<ProgramListPage> {
           final category = p['category'] as String? ?? '';
           final status = p['status'] as String? ?? '';
           final total = p['totalAssigned'] as int? ?? 0;
-          return Container(
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: theme.colorScheme.outlineVariant),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          return StrokeCard(
+            padding: EdgeInsets.zero,
+            onTap: canReview
+                ? () => context.push('/programs/review/$id')
+                : null,
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -179,39 +178,15 @@ class _ProgramListPageState extends State<ProgramListPage> {
                   runSpacing: 4,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.tertiaryContainer,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        category.toUpperCase(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onTertiaryContainer,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    PillChip(
+                      label: category.toUpperCase(),
+                      type: PillChipType.blue,
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        status.toUpperCase(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    PillChip(
+                      label: status.toUpperCase(),
+                      type: status.toLowerCase() == 'active'
+                          ? PillChipType.green
+                          : PillChipType.purple,
                     ),
                     Text(
                       '$total stores',
@@ -223,9 +198,6 @@ class _ProgramListPageState extends State<ProgramListPage> {
                 ),
               ),
               trailing: canReview ? const Icon(Icons.chevron_right) : null,
-              onTap: canReview
-                  ? () => context.push('/programs/review/$id')
-                  : null,
             ),
           );
         },

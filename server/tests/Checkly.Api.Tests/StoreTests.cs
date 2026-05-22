@@ -33,7 +33,7 @@ public class StoreTests : IClassFixture<TestWebApplicationFactory>
     public async Task GetStore_ActiveStore_ReturnsOk()
     {
         var admin = await AdminClientAsync();
-        var createResp = await admin.PostAsJsonAsync("/api/stores", new { name = $"Get Active {_runId}" });
+        var createResp = await admin.PostAsJsonAsync("/api/stores", new { name = $"Get Active {_runId}", province = "Hà Nội" });
         createResp.EnsureSuccessStatusCode();
         var storeId = (await createResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString();
 
@@ -54,7 +54,7 @@ public class StoreTests : IClassFixture<TestWebApplicationFactory>
         var admin = await AdminClientAsync();
 
         // Create store then deactivate it via UpdateStore
-        var createResp = await admin.PostAsJsonAsync("/api/stores", new { name = $"Get Inactive {_runId}" });
+        var createResp = await admin.PostAsJsonAsync("/api/stores", new { name = $"Get Inactive {_runId}", province = "Hà Nội" });
         createResp.EnsureSuccessStatusCode();
         var stored = await createResp.Content.ReadFromJsonAsync<JsonElement>();
         var storeId = stored.GetProperty("id").GetString();
@@ -63,7 +63,8 @@ public class StoreTests : IClassFixture<TestWebApplicationFactory>
         await admin.PutAsJsonAsync($"/api/stores/{storeId}", new
         {
             name = $"Get Inactive {_runId}",
-            isActive = false
+            isActive = false,
+            province = "Hà Nội"
         });
 
         // Act — try to GET the deactivated store

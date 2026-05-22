@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../_shared/theme/app_theme.dart';
 import '../../../stores/model/store_dto.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
 class StoreCard extends StatelessWidget {
   final StoreDto store;
@@ -20,11 +21,12 @@ class StoreCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isActive = store.isActive ?? true;
 
-    return Card(
+    return StrokeCard(
       margin: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onEdit,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         mouseCursor: onEdit == null
             ? SystemMouseCursors.basic
             : SystemMouseCursors.click,
@@ -70,24 +72,9 @@ class StoreCard extends StatelessWidget {
                   ),
 
                   // Status badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isActive
-                          ? AppTheme.success.withValues(alpha: 0.15)
-                          : Colors.grey.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      isActive ? 'Active' : 'Inactive',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: isActive ? AppTheme.success : Colors.grey,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                  PillChip(
+                    label: isActive ? 'Active' : 'Inactive',
+                    type: isActive ? PillChipType.green : PillChipType.red,
                   ),
 
                   // 3-dot menu — hidden in read-only mode

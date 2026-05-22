@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:checkly/_shared/widgets/primitives/stroke_card.dart';
 
 import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/theme/app_theme.dart';
@@ -51,7 +52,7 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
+    return StrokeCard(
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: Column(

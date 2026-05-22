@@ -25,7 +25,8 @@ class StoreDao {
     // Fail closed: no profile means we cannot determine scope — return nothing.
     if (profileRow == null) return const [];
 
-    final isAreaManager = UserPersona.fromRole(profileRow.role) == UserPersona.areaManager;
+    final isAreaManager =
+        UserPersona.fromRole(profileRow.role) == UserPersona.areaManager;
     final overrideIds = _parseAssignedStoreOverrides(
       profileRow.assignedStoreOverrides,
     );

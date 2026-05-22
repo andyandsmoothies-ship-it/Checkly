@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 
+import '../../../_shared/widgets/primitives/stroke_card.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../model/action_plan_dto.dart';
 
@@ -85,26 +86,23 @@ class ActionTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 0,
+    return StrokeCard(
       color: theme.colorScheme.surfaceContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Progress',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Progress',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 12),
-            for (int i = 0; i < steps.length; i++) ...[
-              _TimelineRow(step: steps[i], isLast: i == steps.length - 1),
-            ],
+          ),
+          const SizedBox(height: 12),
+          for (int i = 0; i < steps.length; i++) ...[
+            _TimelineRow(step: steps[i], isLast: i == steps.length - 1),
           ],
-        ),
+        ],
       ),
     );
   }

@@ -3,7 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/permission_guard.dart';
+import '../../../_shared/widgets/primitives/bubbly_button.dart';
 import '../manager/template_manager.dart';
 import '../../audit/pages/widgets/schedule_audit_sheet.dart';
 import 'widgets/criterion_row.dart';
@@ -47,36 +49,63 @@ class _TemplateDetailPageState extends State<TemplateDetailPage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: 12,
+            runSpacing: 12,
             alignment: WrapAlignment.center,
             children: [
               PermissionGuard(
                 capability: AppCapabilities.submissionsCreate,
-                child: FilledButton.icon(
-                  onPressed: () => context.push(
-                    '/stores/select?templateId=${widget.templateId}',
+                child: SizedBox(
+                  width: 140,
+                  height: 48,
+                  child: BubblyButton(
+                    label: 'Start Now',
+                    icon: const Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    color: AppColors.featherGreen,
+                    onPressed: () => context.push(
+                      '/stores/select?templateId=${widget.templateId}',
+                    ),
                   ),
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Start Now'),
                 ),
               ),
               PermissionGuard(
                 capability: AppCapabilities.submissionsCreate,
-                child: FilledButton.tonalIcon(
-                  onPressed: () => showScheduleSheet(context),
-                  icon: const Icon(Icons.person_add),
-                  label: const Text('Assign'),
+                child: SizedBox(
+                  width: 120,
+                  height: 48,
+                  child: BubblyButton(
+                    label: 'Assign',
+                    icon: const Icon(
+                      Icons.person_add,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    color: AppColors.macaw,
+                    onPressed: () => showScheduleSheet(context),
+                  ),
                 ),
               ),
               PermissionGuard(
                 capability: AppCapabilities.programsCreate,
-                child: FilledButton.tonalIcon(
-                  onPressed: () => context.push(
-                    '/programs/new?templateId=${widget.templateId}',
+                child: SizedBox(
+                  width: 180,
+                  height: 48,
+                  child: BubblyButton(
+                    label: 'Create Campaign',
+                    icon: const Icon(
+                      Icons.campaign,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    color: AppColors.fox,
+                    onPressed: () => context.push(
+                      '/programs/new?templateId=${widget.templateId}',
+                    ),
                   ),
-                  icon: const Icon(Icons.campaign),
-                  label: const Text('Create Campaign'),
                 ),
               ),
             ],

@@ -64,12 +64,13 @@ mixin StoreFormSaveLogic<T extends StatefulWidget> on State<T> {
     setState(() => isSaving = true);
 
     final province = selectedProvince;
-    final district =
-        districtCtrl.text.trim().isNotEmpty ? districtCtrl.text.trim() : null;
-    final ward =
-        wardCtrl.text.trim().isNotEmpty ? wardCtrl.text.trim() : null;
-    final street =
-        streetCtrl.text.trim().isNotEmpty ? streetCtrl.text.trim() : null;
+    final district = districtCtrl.text.trim().isNotEmpty
+        ? districtCtrl.text.trim()
+        : null;
+    final ward = wardCtrl.text.trim().isNotEmpty ? wardCtrl.text.trim() : null;
+    final street = streetCtrl.text.trim().isNotEmpty
+        ? streetCtrl.text.trim()
+        : null;
 
     try {
       if (storeToEdit?.id != null) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../_shared/constants/capability_dictionary.dart';
+import '../../../../_shared/theme/app_colors.dart';
+import '../../../../_shared/theme/app_fonts.dart';
 import '../../auth/manager/auth_manager.dart';
 
 class ProfileCapabilitiesSection extends StatelessWidget {
@@ -10,21 +12,33 @@ class ProfileCapabilitiesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authManager = GetIt.instance<AuthManager>();
-    final colorScheme = Theme.of(context).colorScheme;
 
     return ValueListenableBuilder<Set<String>>(
       valueListenable: authManager.capabilities,
       builder: (context, capabilities, child) {
         if (capabilities.isEmpty) {
           return ExpansionTile(
-            leading: const Icon(Icons.verified_user_outlined),
-            title: const Text('My Capabilities'),
+            leading: const Icon(
+              Icons.verified_user_outlined,
+              color: AppColors.featherGreen,
+            ),
+            title: Text(
+              'My Capabilities',
+              style: AppFonts.displayStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.eel,
+              ),
+            ),
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'No capabilities assigned.',
-                  style: TextStyle(color: colorScheme.onSurfaceVariant),
+                  style: AppFonts.displayStyle(
+                    fontSize: 13,
+                    color: AppColors.wolf,
+                  ),
                 ),
               ),
             ],
@@ -41,8 +55,18 @@ class ProfileCapabilitiesSection extends StatelessWidget {
         final sortedGroups = groups.keys.toList()..sort();
 
         return ExpansionTile(
-          leading: const Icon(Icons.verified_user_outlined),
-          title: const Text('My Capabilities'),
+          leading: const Icon(
+            Icons.verified_user_outlined,
+            color: AppColors.featherGreen,
+          ),
+          title: Text(
+            'My Capabilities',
+            style: AppFonts.displayStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: AppColors.eel,
+            ),
+          ),
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -59,18 +83,19 @@ class ProfileCapabilitiesSection extends StatelessWidget {
                         children: [
                           Text(
                             group.toUpperCase(),
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: AppFonts.displayStyle(
+                              fontSize: 11,
+                              color: AppColors.wolf,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.5,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
                             children: groupCaps
-                                .map((cap) => _buildChip(cap, colorScheme))
+                                .map((cap) => _buildChip(cap))
                                 .toList(),
                           ),
                         ],
@@ -86,15 +111,17 @@ class ProfileCapabilitiesSection extends StatelessWidget {
     );
   }
 
-  Widget _buildChip(String capability, ColorScheme colorScheme) {
+  Widget _buildChip(String capability) {
     return Chip(
       label: Text(CapabilityDictionary.getLabel(capability)),
-      backgroundColor: colorScheme.surfaceContainerHighest,
-      labelStyle: TextStyle(
-        color: colorScheme.onSurfaceVariant,
-        fontWeight: FontWeight.w500,
+      backgroundColor: AppColors.swan.withValues(alpha: 0.4),
+      labelStyle: AppFonts.displayStyle(
+        fontSize: 12,
+        color: AppColors.eel,
+        fontWeight: FontWeight.w700,
       ),
-      side: BorderSide.none,
+      side: const BorderSide(color: AppColors.swan, width: 2),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }
 }

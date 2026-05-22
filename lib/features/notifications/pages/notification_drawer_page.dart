@@ -3,6 +3,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:checkly/_shared/theme/app_colors.dart';
+import 'package:checkly/_shared/widgets/primitives/stroke_card.dart';
 import '../manager/notification_manager.dart';
 import '../model/notification_dto.dart';
 
@@ -185,30 +187,41 @@ class _NotificationTile extends StatelessWidget {
     final theme = Theme.of(context);
     final isRead = notification.isRead;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 4),
-      color: isRead
-          ? null
-          : theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final cardColor = isRead
+        ? (isLight ? Colors.white : Colors.transparent)
+        : (isLight
+              ? AppColors.iguana
+              : theme.colorScheme.primaryContainer.withValues(alpha: 0.15));
+
+    return StrokeCard(
+      margin: const EdgeInsets.only(bottom: 8),
+      color: cardColor,
+      onTap: onTap,
       child: ListTile(
-        onTap: onTap,
+        contentPadding: EdgeInsets.zero,
         leading: CircleAvatar(
           radius: 18,
           backgroundColor: isRead
-              ? theme.colorScheme.surfaceContainerHighest
-              : theme.colorScheme.primary,
+              ? (isLight
+                    ? AppColors.swan
+                    : theme.colorScheme.surfaceContainerHighest)
+              : AppColors.featherGreen,
           child: Icon(
             Icons.notifications,
             size: 18,
             color: isRead
-                ? theme.colorScheme.onSurfaceVariant
-                : theme.colorScheme.onPrimary,
+                ? (isLight
+                      ? AppColors.wolf
+                      : theme.colorScheme.onSurfaceVariant)
+                : Colors.white,
           ),
         ),
         title: Text(
           notification.message ?? 'Notification',
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: isRead ? FontWeight.normal : FontWeight.w600,
+            fontWeight: isRead ? FontWeight.normal : FontWeight.w800,
+            fontFamily: 'Nunito',
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -217,14 +230,15 @@ class _NotificationTile extends StatelessWidget {
           _formatTime(notification.createdAt),
           style: theme.textTheme.labelSmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
+            fontFamily: 'Nunito',
           ),
         ),
         trailing: !isRead
             ? Container(
                 width: 8,
                 height: 8,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
+                decoration: const BoxDecoration(
+                  color: AppColors.featherGreen,
                   shape: BoxShape.circle,
                 ),
               )

@@ -6,6 +6,7 @@ import '../../../../_shared/constants/capability_dictionary.dart';
 import '../manager/role_manager.dart';
 import '../model/role_dto.dart';
 import '../services/admin_api_service.dart';
+import '../../../../_shared/widgets/primitives/stroke_card.dart';
 
 class OnlineCapabilityGrid extends StatelessWidget {
   final String role;
@@ -131,64 +132,75 @@ class OnlineCapabilityGrid extends StatelessWidget {
                             : (meta?.description ??
                                   CapabilityDictionary.getDescription(cap));
 
-                        return CheckboxListTile(
-                          key: ValueKey(cap),
-                          value: isAssigned || isImplicitlyGranted,
-                          enabled: isEnabled,
-                          title: Row(
-                            children: [
-                              Expanded(child: Text(titleText)),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  cap,
-                                  style: Theme.of(context).textTheme.labelSmall
-                                      ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                      ),
-                                ),
-                              ),
-                            ],
+                        return StrokeCard(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
                           ),
-                          subtitle: Text(
-                            subtitleText,
-                            style: TextStyle(
-                              color: isSelfLock
-                                  ? Theme.of(context).colorScheme.error
-                                  : (isAssigned
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant),
-                            ),
-                          ),
-                          secondary: mutatingCapability == cap
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                          padding: EdgeInsets.zero,
+                          child: CheckboxListTile(
+                            key: ValueKey(cap),
+                            value: isAssigned || isImplicitlyGranted,
+                            enabled: isEnabled,
+                            title: Row(
+                              children: [
+                                Expanded(child: Text(titleText)),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
                                   ),
-                                )
-                              : null,
-                          onChanged: isEnabled
-                              ? (_) => onToggle(
-                                  capability: cap,
-                                  currentlyAssigned: isAssigned,
-                                )
-                              : null,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainerHighest,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    cap,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            subtitle: Text(
+                              subtitleText,
+                              style: TextStyle(
+                                color: isSelfLock
+                                    ? Theme.of(context).colorScheme.error
+                                    : (isAssigned
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant),
+                              ),
+                            ),
+                            secondary: mutatingCapability == cap
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : null,
+                            onChanged: isEnabled
+                                ? (_) => onToggle(
+                                    capability: cap,
+                                    currentlyAssigned: isAssigned,
+                                  )
+                                : null,
+                          ),
                         );
                       },
                     );

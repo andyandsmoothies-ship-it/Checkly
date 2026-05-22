@@ -77,9 +77,7 @@ class TemplateApiService {
     return TemplateDto.fromJson(response.data as Map<String, dynamic>);
   }
 
-
   // ── Batch Tree Save ──────────────────────────────────────────
-
 
   /// PUT /templates/{id}/tree — atomic upsert of full template tree.
   /// Returns the updated TemplateTreeDto.

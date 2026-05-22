@@ -42,7 +42,7 @@ public class Program_Slice5_Tests : IClassFixture<TestWebApplicationFactory>
         var storeIds = new List<Guid>();
         for (int i = 0; i < numStores; i++)
         {
-            var storeResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Store-{Guid.NewGuid()}" });
+            var storeResp = await adminClient.PostAsJsonAsync("/api/stores", new { name = $"Store-{Guid.NewGuid()}", province = "Hà Nội" });
             storeIds.Add((await storeResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid());
         }
 

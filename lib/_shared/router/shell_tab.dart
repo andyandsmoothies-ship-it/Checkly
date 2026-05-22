@@ -31,12 +31,6 @@ class ShellTab {
       requiredCapability: AppCapabilities.submissionsList,
     ),
     ShellTab(icon: Icons.fact_check, label: 'PLANS', route: '/plans'),
-    ShellTab(
-      icon: Icons.description_outlined,
-      label: 'TEMPLATES',
-      route: '/templates',
-      requiredCapability: AppCapabilities.templatesCreate,
-    ),
     ShellTab(icon: Icons.account_circle, label: 'PROFILE', route: '/profile'),
     ShellTab(icon: Icons.inbox_outlined, label: 'INBOX', route: '/inbox'),
   ];
@@ -56,6 +50,14 @@ int shellActiveIndexFromLocation(String location, Set<String> caps) {
     return tab.requiredCapability == null ||
         caps.contains(tab.requiredCapability);
   }).toList();
+
+  // /templates and /admin/* have no shell tab.
+  // Anchor the user on the PROFILE tab to preserve navigation context.
+  if (location.startsWith('/templates') || location.startsWith('/admin')) {
+    final profileIdx = visible.indexWhere((tab) => tab.route == '/profile');
+    return profileIdx < 0 ? 0 : profileIdx;
+  }
+
   final idx = visible.indexWhere((tab) => location.startsWith(tab.route));
   return idx < 0 ? 0 : idx;
 }

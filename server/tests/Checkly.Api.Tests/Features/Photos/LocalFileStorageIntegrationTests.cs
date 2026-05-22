@@ -44,7 +44,7 @@ public class LocalFileStorageIntegrationTests : IClassFixture<TestWebApplication
         var adminToken = await _factory.LoginBootstrapAdminAsync(client);
         var adminClient = _factory.CreateAuthenticatedClient(adminToken);
 
-        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Photo Test Store" });
+        var storeResponse = await adminClient.PostAsJsonAsync("/api/stores", new { Name = "Photo Test Store", Province = "Hà Nội" });
         var storeId = (await storeResponse.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
 
         var templateResponse = await adminClient.PostAsJsonAsync("/api/templates", new { Title = "Photo Test Template", Type = "audit" });

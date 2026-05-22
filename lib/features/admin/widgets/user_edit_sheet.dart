@@ -79,7 +79,8 @@ class _UserEditSheetState extends State<UserEditSheet> {
     }
 
     // Pre-load stores if the user is already a store_manager or area_manager
-    if (selectedRole == AppRoles.storeManager || selectedRole == AppRoles.areaManager) {
+    if (selectedRole == AppRoles.storeManager ||
+        selectedRole == AppRoles.areaManager) {
       _loadStores(selectedRole!);
     }
   }

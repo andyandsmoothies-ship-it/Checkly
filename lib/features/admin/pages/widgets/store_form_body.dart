@@ -71,9 +71,9 @@ class StoreFormBody extends StatelessWidget {
               children: [
                 Text(
                   isEdit ? 'Edit Store' : 'Create Store',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
