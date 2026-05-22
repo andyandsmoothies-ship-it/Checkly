@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import '../model/submission_detail_dto.dart';
 import '../utils/score_formatter.dart';
 import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/pill_chip.dart';
 
 class HeaderCard extends StatelessWidget {
   final SubmissionDetailDto detail;
@@ -27,7 +30,7 @@ class HeaderCard extends StatelessWidget {
       isWeighted: detail.isWeighted,
     );
 
-    return Card(
+    return StrokeCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -105,34 +108,11 @@ class HeaderCard extends StatelessWidget {
   }
 
   Widget _statusBadge(ThemeData theme, bool isVoided) {
-    final String label;
-    final Color bg;
-    final Color fg;
-
     if (isVoided) {
-      label = 'VOIDED';
-      bg = theme.colorScheme.surfaceContainerHighest;
-      fg = theme.colorScheme.onSurfaceVariant;
+      return const PillChip(label: 'VOIDED', type: PillChipType.red);
     } else {
-      label = 'COMPLETED';
-      bg = AppTheme.success.withAlpha(30);
-      fg = AppTheme.success;
+      return const PillChip(label: 'COMPLETED', type: PillChipType.green);
     }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: fg,
-        ),
-      ),
-    );
   }
 
   Color _scoreColor(double? score, ThemeData theme) {
@@ -168,7 +148,7 @@ class MetaRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final effectiveColor = color ?? theme.colorScheme.onSurfaceVariant;
+    final effectiveColor = color ?? AppColors.wolf;
 
     return Padding(
       padding: const EdgeInsets.only(top: 4),
@@ -179,7 +159,10 @@ class MetaRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(color: effectiveColor),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: effectiveColor,
+                fontWeight: FontWeight.w600,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),

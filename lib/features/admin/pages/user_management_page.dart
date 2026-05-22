@@ -226,14 +226,18 @@ class _UserManagementPageState extends State<UserManagementPage> {
   Widget build(BuildContext context) {
     final canManage = _di<PolicyManager>().can(AppCapabilities.usersManage);
     return Scaffold(
-      appBar: AppBar(title: const Text('User Management')),
-      floatingActionButton: canManage
-          ? FloatingActionButton(
+      appBar: AppBar(
+        title: const Text('User Management'),
+        actions: [
+          if (canManage)
+            IconButton(
+              icon: const Icon(Icons.person_add),
               onPressed: _showCreateUserSheet,
-              shape: const CircleBorder(),
-              child: const Icon(Icons.person_add),
-            )
-          : null,
+              tooltip: 'Add User',
+            ),
+        ],
+      ),
+      floatingActionButton: null,
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {

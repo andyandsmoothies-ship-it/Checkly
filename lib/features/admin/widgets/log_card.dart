@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'level_badge.dart';
-import '../../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 
+/// Card displaying structured system audit log entries.
+/// Refactored to utilize the [UniversalListCard] primitive.
 class LogCard extends StatelessWidget {
   final Map<String, dynamic> log;
   final VoidCallback onTap;
@@ -18,77 +20,47 @@ class LogCard extends StatelessWidget {
     final message = log['message'] as String? ?? '';
     final createdAt = log['createdAt'] as String?;
 
-    return StrokeCard(
+    return UniversalListCard(
       margin: const EdgeInsets.only(bottom: 6),
-      padding: EdgeInsets.zero,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              LevelBadge(level: level),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Action + category
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            action,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          category,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Message (truncated)
-                    if (message.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        message,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    // Timestamp
-                    if (createdAt != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatTime(createdAt),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.outline,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                size: 18,
+      onTap: onTap,
+      leading: LevelBadge(level: level),
+      title: action,
+      subtitleWidget: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 2),
+          Text(
+            category,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          if (message.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              message,
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
-            ],
-          ),
-        ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          if (createdAt != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              _formatTime(createdAt),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
+            ),
+          ],
+        ],
+      ),
+      trailing: Icon(
+        Icons.chevron_right,
+        size: 18,
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
   }

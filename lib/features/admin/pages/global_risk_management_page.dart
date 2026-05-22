@@ -73,15 +73,19 @@ class _GlobalRiskManagementPageState extends State<GlobalRiskManagementPage> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Global Risk Management')),
-      floatingActionButton: canManage
-          ? FloatingActionButton(
+      appBar: AppBar(
+        title: const Text('Global Risk Management'),
+        actions: [
+          if (canManage)
+            IconButton(
+              icon: const Icon(Icons.add),
               onPressed: () =>
                   showRiskFormSheet(context: context, onSaved: _loadData),
-              shape: const CircleBorder(),
-              child: const Icon(Icons.add),
-            )
-          : null,
+              tooltip: 'Add Risk',
+            ),
+        ],
+      ),
+      floatingActionButton: null,
       body: Column(
         children: [
           // Search bar

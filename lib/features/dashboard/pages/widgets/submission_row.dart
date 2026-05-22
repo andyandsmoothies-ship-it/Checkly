@@ -20,6 +20,7 @@ import '../../../auth/manager/auth_manager.dart';
 import '../../manager/dashboard_manager.dart';
 
 /// Single submission row in the feed.
+/// Standardized to utilize the [UniversalListCard] primitive.
 @visibleForTesting
 class SubmissionRow extends StatefulWidget {
   final SubmissionDto submission;
@@ -184,9 +185,8 @@ class _SubmissionRowState extends State<SubmissionRow> {
               : AppColors.cardinal)
         : AppColors.wolf;
 
-    return StrokeCard(
+    return UniversalListCard(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       onTap: isDraft
           ? _resumeDraft
           : () {
@@ -211,51 +211,31 @@ class _SubmissionRowState extends State<SubmissionRow> {
                 builder: (_) => AuditPreviewSheet(submissionId: sub.id),
               );
             },
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  sub.templateTitle ?? 'Audit',
-                  style: AppFonts.displayStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.eel,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  () {
-                    final isOverdue = sub.isOverdue;
-                    final isScheduled = sub.status == 'scheduled' && !isOverdue;
-                    if (isScheduled || isOverdue) {
-                      return '${sub.storeName ?? 'Unknown'} · Scheduled ${formatDate(sub.scheduledAt ?? sub.createdAt)}';
-                    }
-                    if (sub.status == 'draft') {
-                      return '${sub.storeName ?? 'Unknown'} · Started ${formatDate(sub.createdAt)}';
-                    }
-                    return '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.completedAt ?? sub.createdAt)}';
-                  }(),
-                  style: AppFonts.displayStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.wolf,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+      title: sub.templateTitle ?? 'Audit',
+      subtitleWidget: Padding(
+        padding: const EdgeInsets.only(top: 4.0),
+        child: Text(
+          () {
+            final isOverdue = sub.isOverdue;
+            final isScheduled = sub.status == 'scheduled' && !isOverdue;
+            if (isScheduled || isOverdue) {
+              return '${sub.storeName ?? 'Unknown'} · Scheduled ${formatDate(sub.scheduledAt ?? sub.createdAt)}';
+            }
+            if (sub.status == 'draft') {
+              return '${sub.storeName ?? 'Unknown'} · Started ${formatDate(sub.createdAt)}';
+            }
+            return '${sub.storeName ?? 'Unknown'} · ${timeAgo(sub.completedAt ?? sub.createdAt)}';
+          }(),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: AppColors.wolf,
+            fontWeight: FontWeight.w600,
           ),
-          // Right side: for drafts show actions menu; otherwise score badge
-          if (isDraft)
-            PopupMenuButton<String>(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      trailing: isDraft
+          ? PopupMenuButton<String>(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: const BorderSide(color: AppColors.swan, width: 2),
@@ -313,30 +293,32 @@ class _SubmissionRowState extends State<SubmissionRow> {
                 ];
               },
             )
-          else if (scoreText.isNotEmpty)
-            scoreText == '—'
-                ? const PillChip(label: 'SURVEY', type: PillChipType.purple)
-                : Text(
-                    scoreText,
-                    style: AppFonts.displayStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: semanticColor,
-                    ),
-                  )
-          else
-            Builder(
-              builder: (_) {
-                final isOverdue = sub.isOverdue;
-                final label = isOverdue ? 'EXPIRED' : sub.status.toUpperCase();
-                final chipType = isOverdue
-                    ? PillChipType.red
-                    : PillChipType.yellow;
-                return PillChip(label: label, type: chipType);
-              },
-            ),
-        ],
-      ),
+          : (scoreText.isNotEmpty
+                ? (scoreText == '—'
+                      ? const PillChip(
+                          label: 'SURVEY',
+                          type: PillChipType.purple,
+                        )
+                      : Text(
+                          scoreText,
+                          style: AppFonts.displayStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: semanticColor,
+                          ),
+                        ))
+                : Builder(
+                    builder: (_) {
+                      final isOverdue = sub.isOverdue;
+                      final label = isOverdue
+                          ? 'EXPIRED'
+                          : sub.status.toUpperCase();
+                      final chipType = isOverdue
+                          ? PillChipType.red
+                          : PillChipType.yellow;
+                      return PillChip(label: label, type: chipType);
+                    },
+                  )),
     );
   }
 }

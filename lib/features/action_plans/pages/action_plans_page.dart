@@ -5,7 +5,8 @@ import '../../../_shared/widgets/warm_chip.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
-import '../widgets/store_group.dart';
+import '../../../_shared/widgets/primitives/primitives.dart';
+import '../widgets/action_plan_card.dart';
 
 final _di = GetIt.instance;
 
@@ -269,11 +270,24 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           children: _grouped.entries
                               .map(
-                                (entry) => StoreGroup(
+                                (entry) => UniversalStoreGroup(
                                   storeName: entry.key,
-                                  plans: entry.value,
-                                  onTap: (plan) =>
-                                      context.push('/plans/${plan.id}'),
+                                  count: entry.value.length,
+                                  children: entry.value
+                                      .map(
+                                        (plan) => Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 8.0,
+                                          ),
+                                          child: ActionPlanCard(
+                                            plan: plan,
+                                            onTap: () => context.push(
+                                              '/plans/${plan.id}',
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
                                 ),
                               )
                               .toList(),

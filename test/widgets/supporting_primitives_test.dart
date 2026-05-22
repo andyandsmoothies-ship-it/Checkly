@@ -218,4 +218,86 @@ void main() {
       },
     );
   });
+
+  group('UniversalListCard Widget Tests', () {
+    testWidgets('ULC-01: Renders title and subtitle correctly', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: UniversalListCard(
+              title: 'Card Title',
+              subtitle: 'Card Subtitle',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Card Title'), findsOneWidget);
+      expect(find.text('Card Subtitle'), findsOneWidget);
+    });
+
+    testWidgets('ULC-02: Left side slot has 44x44 constraint size', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: UniversalListCard(
+              title: 'Sized Left Slot',
+              leading: SizedBox(width: 20, height: 20),
+            ),
+          ),
+        ),
+      );
+
+      final leadingSizedBox = find.byWidgetPredicate(
+        (widget) =>
+            widget is SizedBox && widget.width == 44 && widget.height == 44,
+      );
+      expect(leadingSizedBox, findsOneWidget);
+    });
+
+    testWidgets('ULC-03: Renders badges and trailing widget correctly', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: UniversalListCard(
+              title: 'Card with Badges',
+              badges: [Text('Badge 1'), Text('Badge 2')],
+              trailing: Icon(Icons.arrow_forward),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Badge 1'), findsOneWidget);
+      expect(find.text('Badge 2'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_forward), findsOneWidget);
+    });
+
+    testWidgets('ULC-04: Tap triggers onTap callback', (
+      WidgetTester tester,
+    ) async {
+      bool tapped = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: UniversalListCard(
+              title: 'Tap Card',
+              onTap: () => tapped = true,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Tap Card'));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
+  });
 }

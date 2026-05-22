@@ -5,82 +5,21 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/exceptions/app_error.dart';
 import '../../../../_shared/services/error_display_service.dart';
-
 import '../../../../_shared/constants/app_capabilities.dart';
 import '../../../../_shared/services/policy_manager.dart';
 import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
-import '../../../../_shared/widgets/primitives/stroke_card.dart';
-import '../../../../_shared/widgets/primitives/pill_chip.dart';
-import '../../../../_shared/widgets/primitives/bubbly_dialog.dart';
-import '../../../../_shared/widgets/primitives/bubbly_button.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 import '../manager/template_manager.dart';
 import '../models/template_dto.dart';
 import 'type_badge.dart';
 
+/// Card widget representing an audit template.
+/// Refactored to utilize the [UniversalListCard] primitive.
 class TemplateCard extends StatelessWidget {
   final TemplateDto template;
 
   const TemplateCard({super.key, required this.template});
-
-  Widget _buildLeadingIcon() {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: AppColors.seaSponge,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.turtle, width: 2),
-      ),
-      child: const Icon(Icons.assignment, color: AppColors.macaw),
-    );
-  }
-
-  Widget _buildTemplateInfo(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          template.title,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontFamily: 'Nunito',
-            fontWeight: FontWeight.w900,
-            color: AppColors.eel,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            TypeBadge(type: template.type),
-            if (!template.isActive) ...[
-              const SizedBox(width: 8),
-              const PillChip(label: 'DRAFT', type: PillChipType.yellow),
-            ],
-            const SizedBox(width: 8),
-            Text(
-              'v${template.version}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontFamily: 'Nunito',
-                fontWeight: FontWeight.bold,
-                color: AppColors.wolf,
-              ),
-            ),
-          ],
-        ),
-        // Updated time
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: Text(
-            'Updated ${timeAgo(template.updatedAt)}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontFamily: 'Nunito',
-              color: AppColors.wolf,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Future<void> _handleDuplicate(BuildContext context) async {
     try {
@@ -157,8 +96,7 @@ class TemplateCard extends StatelessWidget {
                     GetIt.instance<ErrorDisplayService>().show(
                       const AppError(
                         code: 'unknown',
-                        message:
-                            'We hit a snag removing this item. If it remains stuck on your screen, please restart the app.',
+                        message: 'Could not delete template. Please try again.',
                       ),
                     );
                   }
@@ -250,19 +188,57 @@ class TemplateCard extends StatelessWidget {
     final canEdit = policy.can(AppCapabilities.templatesUpdate);
     final canDelete = policy.can(AppCapabilities.templatesDelete);
 
-    return StrokeCard(
+    return UniversalListCard(
       margin: const EdgeInsets.only(bottom: 12),
       onTap: () => context.push('/templates/${template.id}'),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          _buildLeadingIcon(),
-          const SizedBox(width: 16),
-          Expanded(child: _buildTemplateInfo(theme)),
-          if (canEdit || canDelete)
-            _buildContextMenu(context, canEdit, canDelete),
-        ],
+      leading: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: AppColors.seaSponge,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.turtle, width: 2),
+        ),
+        child: const Icon(Icons.assignment, color: AppColors.macaw, size: 20),
       ),
+      title: template.title,
+      subtitleWidget: Padding(
+        padding: const EdgeInsets.only(top: 4.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                TypeBadge(type: template.type),
+                if (!template.isActive) ...[
+                  const SizedBox(width: 8),
+                  const PillChip(label: 'DRAFT', type: PillChipType.yellow),
+                ],
+                const SizedBox(width: 8),
+                Text(
+                  'v${template.version}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.wolf,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Updated ${timeAgo(template.updatedAt)}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontFamily: 'Nunito',
+                color: AppColors.wolf,
+              ),
+            ),
+          ],
+        ),
+      ),
+      trailing: (canEdit || canDelete)
+          ? _buildContextMenu(context, canEdit, canDelete)
+          : null,
     );
   }
 }

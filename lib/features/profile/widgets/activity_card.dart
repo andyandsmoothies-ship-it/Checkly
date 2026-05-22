@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../_shared/widgets/primitives/stroke_card.dart';
 
+import '../../../../_shared/widgets/primitives/primitives.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../model/activity_item.dart';
 
+/// Card showing recent user activity.
+/// Refactored to utilize the [UniversalListCard] primitive.
 class ActivityCard extends StatelessWidget {
   final ActivityItem item;
 
@@ -25,52 +27,33 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final color = _statusColor(context);
     final scoreStr = item.score != null ? item.score!.toStringAsFixed(1) : '';
 
-    return StrokeCard(
+    return UniversalListCard(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(_statusIcon(), color: color),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  item.templateTitle,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${item.storeName} · ${formatDate(item.date)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (scoreStr.isNotEmpty) ...[
-            const SizedBox(width: 12),
-            Text(
-              scoreStr,
-              style: TextStyle(color: color, fontWeight: FontWeight.w700),
-            ),
-          ],
-        ],
+      leading: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(_statusIcon(), color: color, size: 20),
       ),
+      title: item.templateTitle,
+      subtitle: '${item.storeName} · ${formatDate(item.date)}',
+      trailing: scoreStr.isNotEmpty
+          ? Text(
+              scoreStr,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Nunito',
+                fontSize: 14,
+              ),
+            )
+          : null,
     );
   }
 }

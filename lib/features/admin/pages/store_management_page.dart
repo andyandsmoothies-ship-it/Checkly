@@ -94,15 +94,19 @@ class _StoreManagementPageState extends State<StoreManagementPage> {
   Widget build(BuildContext context) {
     final canWrite = _di<PolicyManager>().can(AppCapabilities.storesWrite);
     return Scaffold(
-      appBar: AppBar(title: const Text('Store Management')),
-      floatingActionButton: canWrite
-          ? FloatingActionButton(
+      appBar: AppBar(
+        title: const Text('Store Management'),
+        actions: [
+          if (canWrite)
+            IconButton(
+              icon: const Icon(Icons.add),
               onPressed: () =>
                   showStoreFormSheet(context: context, onSaved: _loadData),
-              shape: const CircleBorder(),
-              child: const Icon(Icons.add),
-            )
-          : null,
+              tooltip: 'Add Store',
+            ),
+        ],
+      ),
+      floatingActionButton: null,
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {

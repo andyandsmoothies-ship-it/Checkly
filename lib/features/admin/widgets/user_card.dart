@@ -4,10 +4,11 @@ import 'package:get_it/get_it.dart';
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/role_badge.dart';
-import '../../../_shared/widgets/primitives/stroke_card.dart';
-import '../../../_shared/widgets/primitives/pastel_avatar.dart';
+import '../../../_shared/theme/app_colors.dart';
+import '../../../_shared/widgets/primitives/primitives.dart';
 
-/// Reusable card widget for displaying a user in the admin user list.
+/// Reusable card widget for displaying a user in the administrative lists.
+/// Leverages the unified [UniversalListCard] primitive structure.
 class UserCard extends StatelessWidget {
   final Map<String, dynamic> user;
   final bool isSelf;
@@ -35,117 +36,40 @@ class UserCard extends StatelessWidget {
       AppCapabilities.usersManage,
     );
 
-    return StrokeCard(
+    return UniversalListCard(
+      title: fullName,
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          // Avatar
-          PastelAvatar(name: fullName, role: role, size: 44.0),
-          const SizedBox(width: 12),
-
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        fullName,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+      onTap: onEdit,
+      leading: PastelAvatar(name: fullName, role: role, size: 44.0),
+      subtitle: email,
+      subtitleWidget: user['storeName'] != null
+          ? Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.store, size: 13, color: AppColors.wolf),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      user['storeName'] as String,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.wolf,
+                        fontWeight: FontWeight.w600,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    if (isSelf) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'You',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  email,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: [
-                    RoleBadge(role: role),
-                    if (isLocked)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Inactive',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.error,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                // Assignment info
-                if (user['storeName'] != null) ...[
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.store,
-                        size: 13,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          user['storeName'] as String,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
                   ),
                 ],
-              ],
-            ),
-          ),
-
-          // 3-dot menu — hidden when user lacks users:manage
-          if (canManage)
-            PopupMenuButton<String>(
+              ),
+            )
+          : null,
+      badges: [
+        RoleBadge(role: role),
+        if (isLocked) const PillChip(label: 'Inactive', type: PillChipType.red),
+        if (isSelf) const PillChip(label: 'You', type: PillChipType.blue),
+      ],
+      trailing: canManage
+          ? PopupMenuButton<String>(
               icon: Icon(
                 Icons.more_vert,
                 color: theme.colorScheme.onSurfaceVariant,
@@ -170,9 +94,8 @@ class UserCard extends StatelessWidget {
                     child: Text(isLocked ? 'Activate User' : 'Deactivate User'),
                   ),
               ],
-            ),
-        ],
-      ),
+            )
+          : null,
     );
   }
 }
