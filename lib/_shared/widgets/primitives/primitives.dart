@@ -5,3 +5,4 @@ export 'pill_chip.dart';
 export 'pastel_avatar.dart';
 export 'bubbly_switch.dart';
 export 'bubbly_dialog.dart';
+export 'bouncy_checkbox.dart';

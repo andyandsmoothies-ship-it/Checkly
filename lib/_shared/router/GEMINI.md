@@ -12,4 +12,10 @@
   - **Problem:** Guarding `state.matchedLocation.startsWith('/admin')` with a granular capability (e.g., `admin:manage_roles`) causes the **Group Policy Trap**: a valid admin with `stores:write` but not `manage_roles` is permanently locked out of the Admin Console.
   - **Fix:** `authRedirect()` MUST check only `PolicyManager.can('admin:access')` at the router level. Granular capability checks belong **inside the specific admin page widget** using `PermissionGuard`.
   - **Rule:** `admin:access` is the UI-Signal gate for the router prefix. It is the ONLY capability permitted in the `/admin` guard block.
+- **Gotcha: Implicitly Animated Widget Configuration vs Interpolated Value in Widget Tests**
+  - **Problem:** Asserting the value on implicit animations (e.g., `tester.widget<AnimatedScale>(finder).scale`) immediately after starting an animation returns the target property value configuration, not the intermediate animated value.
+  - **Fix:** Search for the underlying transition render widgets (`ScaleTransition` and `SlideTransition` descendants) and assert their `.scale.value` or `.position.value` instead.
 
+- **Gotcha: Elastic Animation Overshoot during Transitions**
+  - **Problem:** Elastic curves (like `ElasticOutCurve`) overshoot their target values during spring transitions. Linear boundary assertions (like `lessThan(target)`) will fail due to this overshoot.
+  - **Fix:** Use non-linear or boundary assertions like `isNot(equals(start))` and `isNot(equals(target))` to test the transition state safely.

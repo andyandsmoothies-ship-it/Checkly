@@ -106,8 +106,12 @@
   - **Fix:** All administrative pages (Dashboard, User, Store, Audit, Risk, and Logs) must utilize the custom `StrokeCard` and `PillChip` design primitives rather than raw standard cards or custom styled containers to ensure aesthetic consistency and visual excellence across the platform.
 - **Gotcha: TextFormField length-limiting validation testing**
   - **Fix:** In Flutter widget testing, when a `TextFormField` has `maxLength` specified, `tester.enterText()` will be constrained by the input formatter and cannot enter text longer than `maxLength`. To test validation logic asserting text exceeds this maximum limit, you must set the text value directly on the `TextEditingController` (e.g. `field.controller!.text = 'a' * 201`), then call `tester.pump()` to trigger the validation check on submission.
-
-
+- **Gotcha: Asynchronous Timer pending in widget tests**
+  - **Fix:** Stateful widgets that instantiate delayed futures or Timers for staggered entrance animations (such as BouncyListWrapper or StaggeredListItem) must store references to their underlying timers/controllers and explicitly call `.cancel()` inside `dispose()`. This guarantees that all active timers are discarded when the widget tree is torn down at the end of a test run, preventing the framework from throwing a "A Timer is still pending even after the widget tree was disposed" exception.
+- **Gotcha: Public State Naming for Animation Testing**
+  - **Fix:** When implementing custom animated widgets whose internal controller states or animation status needs to be verified during widget testing (e.g. `isAnimating`), name the `State` class publicly (e.g. `class ChecklyEmptyStateState extends State<ChecklyEmptyState>` instead of using a private `_` prefix). This allows the widget testing framework to access it directly via `tester.state<ChecklyEmptyStateState>(find.byType(ChecklyEmptyState))`.
+- **Gotcha: Reduced Motion Compliance**
+  - **Fix:** All highly active micro-animations (such as bouncy button squashes, list cascades, empty state jiggles, and elastic checkbox pops) must explicitly verify and respect reduced motion settings via `MediaQuery.disableAnimationsOf(context)`. If active, transitions must immediately snap to target boundaries without delay, curve interpolation, or ticker activity, to avoid triggering motion sensitivity issues for accessibility users.
 
 
 ## 4. Environment Rules

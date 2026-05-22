@@ -64,6 +64,15 @@ class _BubblyButtonState extends State<BubblyButton> {
               : (isLight ? AppColors.wolf : AppColors.hare)),
     );
 
+    final disableAnimations = MediaQuery.disableAnimationsOf(context);
+    final positionDuration = disableAnimations
+        ? Duration.zero
+        : const Duration(milliseconds: 50);
+    final scaleDuration = disableAnimations
+        ? Duration.zero
+        : const Duration(milliseconds: 100);
+    final scaleCurve = _isPressed ? Curves.easeOut : Curves.easeOutBack;
+
     return GestureDetector(
       onTapDown: isEnabled
           ? (_) {
@@ -98,42 +107,47 @@ class _BubblyButtonState extends State<BubblyButton> {
             ),
             // The Interactive Button Face Layer
             AnimatedPositioned(
-              duration: const Duration(milliseconds: 50),
+              duration: positionDuration,
               left: 0,
               right: 0,
               top: _isPressed ? 4 : 0,
               bottom: _isPressed ? 0 : 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: baseColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: widget.isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+              child: AnimatedScale(
+                scale: _isPressed ? 0.95 : 1.0,
+                duration: scaleDuration,
+                curve: scaleCurve,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: baseColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: widget.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (widget.icon != null) ...[
-                              widget.icon!,
-                              const SizedBox(width: 8),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (widget.icon != null) ...[
+                                widget.icon!,
+                                const SizedBox(width: 8),
+                              ],
+                              if (widget.child != null)
+                                widget.child!
+                              else if (widget.label != null)
+                                Text(widget.label!, style: textStyle),
                             ],
-                            if (widget.child != null)
-                              widget.child!
-                            else if (widget.label != null)
-                              Text(widget.label!, style: textStyle),
-                          ],
-                        ),
+                          ),
+                  ),
                 ),
               ),
             ),
