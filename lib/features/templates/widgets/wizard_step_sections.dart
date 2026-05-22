@@ -192,7 +192,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
       children: [
         // Section pill navigation
         if (sectionCount > 1)
-          _WizardSectionPillNav(
+          WizardSectionPillNav(
             sections: widget.sections,
             currentIdx: currentIdx,
             onSectionChanged: widget.onSectionChanged,
@@ -203,9 +203,9 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
             children: [
-              _WizardModeBanner(scoringMode: widget.scoringMode),
+              WizardModeBanner(scoringMode: widget.scoringMode),
               // Section progress header with recursive count (Change 3)
-              _WizardSectionProgressHeader(
+              WizardSectionProgressHeader(
                 sectionTitle: section.titleCtrl.text,
                 currentIdx: currentIdx,
                 sectionCount: sectionCount,
@@ -284,7 +284,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
 
               // Suggested criteria chips — visible when using root criteria path
               if (!hasSubSections)
-                _WizardSuggestedCriteria(
+                WizardSuggestedCriteria(
                   scoringMode: widget.scoringMode,
                   sectionTitle: section.titleCtrl.text,
                   section: section,

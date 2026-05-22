@@ -12,6 +12,7 @@ import '../manager/template_manager.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../models/validation_result.dart';
+import '../utils/template_payload_mapper.dart';
 import '../widgets/ghost_add_button.dart';
 import '../widgets/advanced_settings_card.dart';
 import '../widgets/metadata_form_card.dart';
@@ -20,6 +21,8 @@ import '../widgets/template_footer.dart';
 import 'widgets/builder_validation_banner.dart';
 
 part 'template_builder_page_logic.dart';
+part 'template_builder_page_validation.dart';
+part 'template_builder_page_mutations.dart';
 
 final _di = GetIt.instance;
 

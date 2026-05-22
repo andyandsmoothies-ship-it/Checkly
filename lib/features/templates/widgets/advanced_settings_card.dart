@@ -48,6 +48,201 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
   bool get _isSurvey => widget.scoringMode == 'survey';
   bool get _isChecklist => widget.scoringMode == 'checklist';
 
+  Widget _buildSchedulingGroup(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Action Plan Deadline
+        Row(
+          children: [
+            const Expanded(flex: 3, child: Text('Action Plan Deadline')),
+            SizedBox(
+              width: 60,
+              child: TextFormField(
+                controller: widget.deadlineCtrl,
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 10,
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                onEditingComplete: () {
+                  final v = int.tryParse(widget.deadlineCtrl.text) ?? 7;
+                  widget.deadlineCtrl.text = v.clamp(1, 90).toString();
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text('days'),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 12),
+          child: Text(
+            'Number of days to resolve each action plan (1–90).',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+
+        // Deadline Reminder
+        Row(
+          children: [
+            const Expanded(flex: 3, child: Text('Deadline\nReminder')),
+            const Text('before  '),
+            SizedBox(
+              width: 60,
+              child: TextFormField(
+                controller: widget.reminderCtrl,
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 10,
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                onEditingComplete: () {
+                  final v = int.tryParse(widget.reminderCtrl.text) ?? 2;
+                  widget.reminderCtrl.text = v.clamp(1, 30).toString();
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text('days'),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            'Reminder days before deadline (1–30).',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWarningBanner(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: AppColors.warningContainer,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppTheme.warning.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, size: 18, color: AppTheme.warning),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'These settings affect how audits are scored. Change with care.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.warning),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScoringToggles(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Weighted Density — hidden for Checklist
+        if (!_isChecklist)
+          ExpandableSettingTile(
+            title: 'Weighted Density',
+            description:
+                'Each section contributes to the total based on its '
+                'assigned weight (must sum to 100%).',
+            value: widget.weightedDensity,
+            onChanged: widget.onDensityChanged,
+          ),
+
+        ExpandableSettingTile(
+          title: 'CCP Override',
+          description:
+              'Any criteria marked CCP that fails will zero out '
+              'its entire section.',
+          value: widget.ccpOverride,
+          onChanged: widget.onCcpChanged,
+        ),
+        ExpandableSettingTile(
+          title: 'RISK Override',
+          description:
+              'Any criteria marked RISK that fails will zero out '
+              'the entire audit.',
+          value: widget.riskOverride,
+          onChanged: widget.onRiskChanged,
+        ),
+
+        // Progressive Repeat — hidden for Checklist/Accumulation
+        if (!_isChecklist && widget.scoringMode != 'accumulation')
+          ExpandableSettingTile(
+            title: 'Progressive Repeat Penalty',
+            description:
+                'OFF: deduction = repeats × rate. '
+                'ON: deduction = repeats² × rate (harsher for more repeats).',
+            value: widget.progressiveRepeat,
+            onChanged: widget.onProgressiveChanged,
+          ),
+
+        SwitchListTile(
+          title: const Text('Require Confirmation'),
+          value: widget.confirmRequired,
+          onChanged: widget.onConfirmChanged,
+          contentPadding: EdgeInsets.zero,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSurveyBanner(ThemeData theme, BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(top: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, size: 18, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Survey mode — responses are collected without scoring.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -92,219 +287,17 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // ── GROUP 1: SCHEDULING ──
-
-                    // Action Plan Deadline
-                    Row(
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text('Action Plan Deadline'),
-                        ),
-                        SizedBox(
-                          width: 60,
-                          child: TextFormField(
-                            controller: widget.deadlineCtrl,
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 10,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            onEditingComplete: () {
-                              final v =
-                                  int.tryParse(widget.deadlineCtrl.text) ?? 7;
-                              widget.deadlineCtrl.text = v
-                                  .clamp(1, 90)
-                                  .toString();
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text('days'),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, bottom: 12),
-                      child: Text(
-                        'Number of days to resolve each action plan (1–90).',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-
-                    // Deadline Reminder
-                    Row(
-                      children: [
-                        const Expanded(
-                          flex: 3,
-                          child: Text('Deadline\nReminder'),
-                        ),
-                        const Text('before  '),
-                        SizedBox(
-                          width: 60,
-                          child: TextFormField(
-                            controller: widget.reminderCtrl,
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 10,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            onEditingComplete: () {
-                              final v =
-                                  int.tryParse(widget.reminderCtrl.text) ?? 2;
-                              widget.reminderCtrl.text = v
-                                  .clamp(1, 30)
-                                  .toString();
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text('days'),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        'Reminder days before deadline (1–30).',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
+                    _buildSchedulingGroup(context),
 
                     // ── GROUP 2: SCORING TOGGLES (mode-aware) ──
                     if (!_isSurvey) ...[
                       const Divider(height: 24),
-
-                      // Amber warning banner
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: AppColors.warningContainer,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: AppTheme.warning.withValues(alpha: 0.4),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              size: 18,
-                              color: AppTheme.warning,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'These settings affect how audits are scored. Change with care.',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: AppTheme.warning),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Weighted Density — hidden for Checklist
-                      if (!_isChecklist)
-                        ExpandableSettingTile(
-                          title: 'Weighted Density',
-                          description:
-                              'Each section contributes to the total based on its '
-                              'assigned weight (must sum to 100%).',
-                          value: widget.weightedDensity,
-                          onChanged: widget.onDensityChanged,
-                        ),
-
-                      ExpandableSettingTile(
-                        title: 'CCP Override',
-                        description:
-                            'Any criteria marked CCP that fails will zero out '
-                            'its entire section.',
-                        value: widget.ccpOverride,
-                        onChanged: widget.onCcpChanged,
-                      ),
-                      ExpandableSettingTile(
-                        title: 'RISK Override',
-                        description:
-                            'Any criteria marked RISK that fails will zero out '
-                            'the entire audit.',
-                        value: widget.riskOverride,
-                        onChanged: widget.onRiskChanged,
-                      ),
-
-                      // Progressive Repeat — hidden for Checklist/Accumulation
-                      if (!_isChecklist && widget.scoringMode != 'accumulation')
-                        ExpandableSettingTile(
-                          title: 'Progressive Repeat Penalty',
-                          description:
-                              'OFF: deduction = repeats × rate. '
-                              'ON: deduction = repeats² × rate (harsher for more repeats).',
-                          value: widget.progressiveRepeat,
-                          onChanged: widget.onProgressiveChanged,
-                        ),
-
-                      SwitchListTile(
-                        title: const Text('Require Confirmation'),
-                        value: widget.confirmRequired,
-                        onChanged: widget.onConfirmChanged,
-                        contentPadding: EdgeInsets.zero,
-                      ),
+                      _buildWarningBanner(context),
+                      _buildScoringToggles(context),
                     ],
 
                     // Survey mode info banner
-                    if (_isSurvey)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(top: 12),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer.withValues(
-                            alpha: 0.3,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: theme.colorScheme.primary.withValues(
-                              alpha: 0.2,
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              size: 18,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Survey mode — responses are collected without scoring.',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: theme.colorScheme.primary,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    if (_isSurvey) _buildSurveyBanner(theme, context),
                   ],
                 ),
               ),

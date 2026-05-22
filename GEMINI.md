@@ -104,6 +104,8 @@
   - **Fix:** When refactoring interactive buttons in forms/wizards that are verified in existing unit or widget tests using precise class searches (specifically casting to `ElevatedButton`), make sure to render an `ElevatedButton` wrapped or styled rather than using a custom non-Material button like `BubblyButton` to prevent type cast exception failures.
 - **Gotcha: Admin Duolingo Reskin Aesthetic**
   - **Fix:** All administrative pages (Dashboard, User, Store, Audit, Risk, and Logs) must utilize the custom `StrokeCard` and `PillChip` design primitives rather than raw standard cards or custom styled containers to ensure aesthetic consistency and visual excellence across the platform.
+- **Gotcha: TextFormField length-limiting validation testing**
+  - **Fix:** In Flutter widget testing, when a `TextFormField` has `maxLength` specified, `tester.enterText()` will be constrained by the input formatter and cannot enter text longer than `maxLength`. To test validation logic asserting text exceeds this maximum limit, you must set the text value directly on the `TextEditingController` (e.g. `field.controller!.text = 'a' * 201`), then call `tester.pump()` to trigger the validation check on submission.
 
 
 

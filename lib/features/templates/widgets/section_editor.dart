@@ -109,7 +109,7 @@ class SectionEditor extends StatelessWidget {
             horizontal: 16,
             vertical: 8,
           ),
-          title: _SectionEditorHeader(
+          title: SectionEditorHeader(
             section: section,
             index: index,
             isRoot: isRoot,
@@ -128,10 +128,10 @@ class SectionEditor extends StatelessWidget {
           ),
           children: [
             // Section-level error messages
-            if (hasErrors) _SectionErrorMessages(errors: sectionErrors),
+            if (hasErrors) SectionErrorMessages(errors: sectionErrors),
 
             // Criteria list
-            _SectionCriteriaList(
+            SectionCriteriaList(
               section: section,
               sKey: sKey,
               errors: errors,
@@ -146,7 +146,7 @@ class SectionEditor extends StatelessWidget {
             ),
 
             if (isRoot)
-              _SectionSubSections(
+              SectionSubSections(
                 section: section,
                 sKey: sKey,
                 depth: depth,
@@ -178,9 +178,9 @@ class SectionEditor extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Section-level error messages
-          if (hasErrors) _SectionErrorMessages(errors: sectionErrors),
+          if (hasErrors) SectionErrorMessages(errors: sectionErrors),
           // Criteria list
-          _SectionCriteriaList(
+          SectionCriteriaList(
             section: section,
             sKey: sKey,
             errors: errors,
@@ -193,7 +193,7 @@ class SectionEditor extends StatelessWidget {
             onChanged: onChanged,
             onAddCriterion: onAddCriterion,
           ),
-          _SectionSubSections(
+          SectionSubSections(
             section: section,
             sKey: sKey,
             depth: depth,

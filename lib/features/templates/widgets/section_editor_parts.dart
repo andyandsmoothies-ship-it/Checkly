@@ -1,6 +1,6 @@
 part of 'section_editor.dart';
 
-class _SectionEditorHeader extends StatelessWidget {
+class SectionEditorHeader extends StatelessWidget {
   final EditableGroup section;
   final int index;
   final bool isRoot;
@@ -9,7 +9,8 @@ class _SectionEditorHeader extends StatelessWidget {
   final int critCount;
   final VoidCallback onChanged;
 
-  const _SectionEditorHeader({
+  const SectionEditorHeader({
+    super.key,
     required this.section,
     required this.index,
     required this.isRoot,
@@ -139,10 +140,10 @@ class _SectionEditorHeader extends StatelessWidget {
   }
 }
 
-class _SectionErrorMessages extends StatelessWidget {
+class SectionErrorMessages extends StatelessWidget {
   final List<String> errors;
 
-  const _SectionErrorMessages({required this.errors});
+  const SectionErrorMessages({super.key, required this.errors});
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +183,7 @@ class _SectionErrorMessages extends StatelessWidget {
   }
 }
 
-class _SectionCriteriaList extends StatelessWidget {
+class SectionCriteriaList extends StatelessWidget {
   final EditableGroup section;
   final String sKey;
   final ValidationErrors? errors;
@@ -195,7 +196,8 @@ class _SectionCriteriaList extends StatelessWidget {
   final VoidCallback onChanged;
   final ValueChanged<String> onAddCriterion;
 
-  const _SectionCriteriaList({
+  const SectionCriteriaList({
+    super.key,
     required this.section,
     required this.sKey,
     this.errors,
@@ -244,7 +246,7 @@ class _SectionCriteriaList extends StatelessWidget {
   }
 }
 
-class _SectionSubSections extends StatelessWidget {
+class SectionSubSections extends StatelessWidget {
   final EditableGroup section;
   final String sKey;
   final int depth;
@@ -254,7 +256,8 @@ class _SectionSubSections extends StatelessWidget {
   final ValueChanged<int>? onRemoveSubSection;
   final VoidCallback onChanged;
 
-  const _SectionSubSections({
+  const SectionSubSections({
+    super.key,
     required this.section,
     required this.sKey,
     required this.depth,

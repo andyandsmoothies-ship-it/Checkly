@@ -49,82 +49,15 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(
-          'Build your structure',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Start by defining the main sections of your template. Add custom sections or tap suggestions below.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        _buildHeader(theme),
         const SizedBox(height: 24),
 
         // Q2: empty state — shows when user hasn't added any sections yet
         if (widget.sections.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.view_agenda_outlined,
-                    size: 64,
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'No sections yet',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Sections are the main topics of your audit.\nAdd one above or pick from the suggestions below.',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
+          _buildEmptyState(theme)
         // Sections List (when non-empty)
         else
-          ...widget.sections.asMap().entries.map((e) {
-            final i = e.key;
-            final section = e.value;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: section.titleCtrl,
-                      onChanged: (_) => widget.onChanged(),
-                      decoration: InputDecoration(
-                        labelText: 'Section ${i + 1}',
-                        prefixIcon: const Icon(Icons.drag_indicator),
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => _removeSection(i),
-                    tooltip: 'Remove section',
-                  ),
-                ],
-              ),
-            );
-          }),
+          ..._buildSectionsList(),
 
         const SizedBox(height: 8),
         Align(
@@ -138,7 +71,102 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
 
         const Divider(height: 32),
 
-        // Suggestions Block
+        _buildSuggestionsBlock(theme, suggestions),
+
+        const SizedBox(height: 24),
+        _buildTipBanner(theme),
+      ],
+    );
+  }
+
+  Widget _buildHeader(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Build your structure',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Start by defining the main sections of your template. Add custom sections or tap suggestions below.',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(
+              Icons.view_agenda_outlined,
+              size: 64,
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No sections yet',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Sections are the main topics of your audit.\nAdd one above or pick from the suggestions below.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildSectionsList() {
+    return widget.sections.asMap().entries.map((e) {
+      final i = e.key;
+      final section = e.value;
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: section.titleCtrl,
+                onChanged: (_) => widget.onChanged(),
+                decoration: InputDecoration(
+                  labelText: 'Section ${i + 1}',
+                  prefixIcon: const Icon(Icons.drag_indicator),
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => _removeSection(i),
+              tooltip: 'Remove section',
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+  Widget _buildSuggestionsBlock(ThemeData theme, List<String> suggestions) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           'Suggested sections for this type:',
           style: theme.textTheme.titleSmall?.copyWith(
@@ -170,35 +198,35 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
             );
           }).toList(),
         ),
+      ],
+    );
+  }
 
-        const SizedBox(height: 24),
-        // Expert tip banner
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildTipBanner(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.lightbulb_outline,
+            size: 18,
+            color: theme.colorScheme.onPrimaryContainer,
           ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.lightbulb_outline,
-                size: 18,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Tip: A typical audit has 3–5 sections. You can add the specific questions (criteria) in the next step.',
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onPrimaryContainer,
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Tip: A typical audit has 3–5 sections. You can add the specific questions (criteria) in the next step.',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

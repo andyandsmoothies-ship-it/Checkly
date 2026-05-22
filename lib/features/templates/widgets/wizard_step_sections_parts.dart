@@ -1,9 +1,9 @@
 part of 'wizard_step_sections.dart';
 
-class _WizardModeBanner extends StatelessWidget {
+class WizardModeBanner extends StatelessWidget {
   final String scoringMode;
 
-  const _WizardModeBanner({required this.scoringMode});
+  const WizardModeBanner({super.key, required this.scoringMode});
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +52,13 @@ class _WizardModeBanner extends StatelessWidget {
   }
 }
 
-class _WizardSectionPillNav extends StatelessWidget {
+class WizardSectionPillNav extends StatelessWidget {
   final List<EditableGroup> sections;
   final int currentIdx;
   final ValueChanged<int> onSectionChanged;
 
-  const _WizardSectionPillNav({
+  const WizardSectionPillNav({
+    super.key,
     required this.sections,
     required this.currentIdx,
     required this.onSectionChanged,
@@ -92,13 +93,14 @@ class _WizardSectionPillNav extends StatelessWidget {
   }
 }
 
-class _WizardSectionProgressHeader extends StatelessWidget {
+class WizardSectionProgressHeader extends StatelessWidget {
   final String sectionTitle;
   final int currentIdx;
   final int sectionCount;
   final String countLabel;
 
-  const _WizardSectionProgressHeader({
+  const WizardSectionProgressHeader({
+    super.key,
     required this.sectionTitle,
     required this.currentIdx,
     required this.sectionCount,
@@ -143,13 +145,14 @@ class _WizardSectionProgressHeader extends StatelessWidget {
   }
 }
 
-class _WizardSuggestedCriteria extends StatelessWidget {
+class WizardSuggestedCriteria extends StatelessWidget {
   final String scoringMode;
   final String sectionTitle;
   final EditableGroup section;
   final void Function(StarterCriterion) onCriterionSelected;
 
-  const _WizardSuggestedCriteria({
+  const WizardSuggestedCriteria({
+    super.key,
     required this.scoringMode,
     required this.sectionTitle,
     required this.section,
