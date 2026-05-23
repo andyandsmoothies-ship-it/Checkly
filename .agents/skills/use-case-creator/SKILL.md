@@ -112,5 +112,11 @@ ALWAYS output the final Use Case using the following structured Markdown templat
 
 ### Writing Patterns & Tips
 - **Be Imperative and Active**: Use active voice. "The System verifies the token", not "The token is verified."
+- **Use EARS Notation for Rules**: When writing business rules or acceptance criteria, use EARS notation: `WHEN [trigger] THE System SHALL [action]` for nominal paths, and `IF [error condition] THEN THE System SHALL [action]` for error paths.
+- **Audit for the 4 Requirement Bugs**: Before finalizing, review for:
+  1. **Wrong Level of Detail**: Avoid thesis statements ("The system shall have auth") or implementation recipes ("The system shall use JWT").
+  2. **Ambiguity**: Ensure observable outcomes are pinned down.
+  3. **Inconsistency**: Ensure no two rules clash under the same conditions.
+  4. **Incompleteness**: Verify all input combinations and edge cases are covered.
 - **Avoid Implementation Details**: Say "The System authenticates the user", not "The System checks the JWT in the Postgres database." Use Cases should survive database migrations.
 - **Tell the Whole Story**: Ensure every extension explicitly states how it resolves (success, failure, or resuming the basic scenario).

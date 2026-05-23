@@ -25,7 +25,13 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **3. Data Context (Schema)**: Map the rough data model, entities, and mock JSON needed to populate the visual context.
 - [ ] **Traceability Check**: MANDATORY: Does every Use Case have a mapped UI screen? Does every UI screen have a data schema? If no, fix it before slicing.
 - [ ] **Use-Case Slicing**: Apply Use-Case 3.0 slicing. Break the large use case into smaller, logical, deliverable slices. Each slice must include its Functional, Visual, and Data context.
-- [ ] **Testability Check (Binary Truth)**: For each slice, define plain-English Test Cases (Rules). MANDATORY: Acceptance criteria must be strictly binary.
+- [ ] **Testability Check (EARS Notation & Bug Hunt)**: For each slice, define plain-English Acceptance Criteria. 
+  - MANDATORY: Use **EARS notation** (e.g., "WHEN [nominal trigger], THE System SHALL [response]" or "IF [error condition], THEN THE System SHALL [response]").
+  - **Audit for the 4 Requirement Bugs**: 
+    1. **Wrong Level of Detail**: Are these observable behaviors, or just thesis statements/implementation recipes?
+    2. **Ambiguity**: Are there words that could be interpreted in multiple ways?
+    3. **Inconsistency**: Do any two rules clash in a specific scenario?
+    4. **Incompleteness**: Are there input combinations (or missing error paths) where the system's behavior is unspecified?
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Are all 3 Contexts mapped and traced? (2) Are Use Cases sliced?
 
