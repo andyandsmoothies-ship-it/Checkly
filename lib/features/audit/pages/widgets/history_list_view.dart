@@ -122,9 +122,9 @@ class HistoryListView extends StatelessWidget {
     try {
       await manager.voidAudit(submission.id, reason);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Audit voided.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Audit voided.')));
       }
     } on DioException catch (e) {
       if (context.mounted) {
@@ -156,7 +156,8 @@ class HistoryListView extends StatelessWidget {
           _di<ErrorDisplayService>().show(
             const AppError(
               code: 'validation_error',
-              message: 'Cannot resume — draft is missing template or store data.',
+              message:
+                  'Cannot resume — draft is missing template or store data.',
             ),
           );
         }
@@ -164,8 +165,7 @@ class HistoryListView extends StatelessWidget {
       }
       if (context.mounted) {
         final isLocalOnly = submission.id.startsWith('local_draft_');
-        final subParam =
-            isLocalOnly ? '' : '&submissionId=${submission.id}';
+        final subParam = isLocalOnly ? '' : '&submissionId=${submission.id}';
         context.push(
           '/audit?templateId=$tId&storeId=$sId&autoResume=true$subParam',
         );
@@ -209,8 +209,7 @@ class HistoryListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final manager = _di<HistoryManager>();
-    final canVoid =
-        _di<PolicyManager>().can(AppCapabilities.submissionsReview);
+    final canVoid = _di<PolicyManager>().can(AppCapabilities.submissionsReview);
 
     if (isEmpty) {
       return Center(
@@ -248,9 +247,9 @@ class HistoryListView extends StatelessWidget {
                               s.status == 'draft')
                           ? () => _onStartAudit(context, manager, s)
                           : null,
-                      onVoidAudit: (canVoid &&
-                              (s.status == 'draft' ||
-                                  s.status == 'scheduled'))
+                      onVoidAudit:
+                          (canVoid &&
+                              (s.status == 'draft' || s.status == 'scheduled'))
                           ? () => _onVoidAudit(context, manager, s)
                           : null,
                       onPreviewAudit:

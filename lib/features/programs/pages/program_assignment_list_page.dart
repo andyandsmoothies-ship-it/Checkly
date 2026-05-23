@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/theme/app_fonts.dart';
-import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/universal_list_card.dart';
 import '../../../_shared/widgets/primitives/pill_chip.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../model/pending_assignment_vm.dart';
 
@@ -33,13 +34,11 @@ class ProgramAssignmentListPage extends StatelessWidget {
 
           final vms = snapshot.data;
           if (vms == null || vms.isEmpty) {
-            return Center(
-              child: Text(
-                'No pending campaigns at this time.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
+            return const ChecklyEmptyState(
+              icon: Icons.assignment_turned_in_outlined,
+              title: 'All Caught Up!',
+              subtitle: 'No pending campaigns at this time.',
+              emoji: '🎉',
             );
           }
 
@@ -49,41 +48,22 @@ class ProgramAssignmentListPage extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final vm = vms[index];
-              return StrokeCard(
-                padding: EdgeInsets.zero,
+              return UniversalListCard(
+                title: vm.title,
+                titleStyle: theme.textTheme.titleMedium?.merge(
+                  AppFonts.displayStyle(fontWeight: FontWeight.w700),
+                ),
                 onTap: () => context.push('/programs/${vm.id}'),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  leading: const Icon(
-                    Icons.assignment_late_outlined,
-                    color: AppColors.flamingo,
-                  ),
-                  title: Text(
-                    vm.title,
-                    style: theme.textTheme.titleMedium?.merge(
-                      AppFonts.displayStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  subtitle: const Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: [
-                        PillChip(
-                          label: 'ACTION REQUIRED',
-                          type: PillChipType.yellow,
-                        ),
-                      ],
-                    ),
-                  ),
-                  trailing: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.flamingo,
-                  ),
+                leading: const Icon(
+                  Icons.assignment_late_outlined,
+                  color: AppColors.flamingo,
+                ),
+                badges: const [
+                  PillChip(label: 'ACTION REQUIRED', type: PillChipType.yellow),
+                ],
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.flamingo,
                 ),
               );
             },

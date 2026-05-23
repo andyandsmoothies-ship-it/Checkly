@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:checkly/_shared/theme/app_fonts.dart';
 import '../../templates/models/template_dto.dart';
 import '../manager/audit_manager.dart';
 import 'audit_criterion_row.dart';
@@ -41,8 +42,10 @@ class AuditSectionCard extends StatelessWidget {
             Expanded(
               child: Text(
                 group.title,
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: AppFonts.displayStyle(
+                  fontSize: depth == 0 ? 15 : 13,
                   fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ),

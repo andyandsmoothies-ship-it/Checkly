@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/universal_list_card.dart';
 import '../../../_shared/widgets/primitives/pill_chip.dart';
 import '../../../_shared/widgets/primitives/quest_progress_bar.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../services/program_api_service.dart';
 
 /// Full-screen list of an area manager's campaigns.
@@ -62,14 +63,12 @@ class _AreaCampaignListPageState extends State<AreaCampaignListPage> {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.7,
-                    child: Center(
-                      child: Text(
-                        'Failed to load campaigns.\nPull to refresh.',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.error,
-                        ),
-                      ),
+                    child: const ChecklyEmptyState(
+                      icon: Icons.cloud_off,
+                      title: 'Unable to Load Campaigns',
+                      subtitle:
+                          'Failed to load campaigns. Please pull to refresh.',
+                      emoji: '⚠️',
                     ),
                   ),
                 ],
@@ -83,15 +82,11 @@ class _AreaCampaignListPageState extends State<AreaCampaignListPage> {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.7,
-                    child: Center(
-                      child: Text(
-                        'No area campaigns at this time.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.6,
-                          ),
-                        ),
-                      ),
+                    child: const ChecklyEmptyState(
+                      icon: Icons.campaign_outlined,
+                      title: 'No Campaigns Found',
+                      subtitle: 'No area campaigns at this time.',
+                      emoji: '📂',
                     ),
                   ),
                 ],
@@ -107,48 +102,23 @@ class _AreaCampaignListPageState extends State<AreaCampaignListPage> {
                 final campaign = campaigns[index];
                 final isComplete = campaign.completionRate == 100;
 
-                return StrokeCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  campaign.title,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${campaign.completedStores} of ${campaign.totalStores} Stores Completed',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          PillChip(
-                            label: '${campaign.completionRate}%',
-                            type: isComplete
-                                ? PillChipType.green
-                                : PillChipType.yellow,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      QuestProgressBar(
-                        value: campaign.completionRate / 100.0,
-                        height: 16.0,
-                      ),
-                    ],
+                return UniversalListCard(
+                  title: campaign.title,
+                  titleStyle: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  subtitle:
+                      '${campaign.completedStores} of ${campaign.totalStores} Stores Completed',
+                  subtitleWidget: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: QuestProgressBar(
+                      value: campaign.completionRate / 100.0,
+                      height: 16.0,
+                    ),
+                  ),
+                  trailing: PillChip(
+                    label: '${campaign.completionRate}%',
+                    type: isComplete ? PillChipType.green : PillChipType.yellow,
                   ),
                 );
               },

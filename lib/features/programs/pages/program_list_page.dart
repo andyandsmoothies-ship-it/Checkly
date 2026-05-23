@@ -8,8 +8,9 @@ import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/permission_guard.dart';
 import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_colors.dart';
-import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../../../_shared/widgets/primitives/universal_list_card.dart';
 import '../../../_shared/widgets/primitives/pill_chip.dart';
+import '../../../_shared/widgets/checkly_empty_state.dart';
 
 /// HQ-facing list of all programs.
 ///
@@ -99,33 +100,26 @@ class _ProgramListPageState extends State<ProgramListPage> {
       return const Center(child: CircularProgressIndicator());
     }
     if (_error != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.cloud_off, size: 48, color: theme.colorScheme.error),
-              const SizedBox(height: 16),
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(onPressed: _load, child: const Text('Try Again')),
-            ],
-          ),
+      return ChecklyEmptyState(
+        icon: Icons.cloud_off,
+        title: 'Unable to Load Campaigns',
+        subtitle: _error!,
+        emoji: '⚠️',
+        actionButton: ElevatedButton(
+          onPressed: _load,
+          child: const Text('Try Again'),
         ),
       );
     }
     if (_programs.isEmpty) {
-      return Center(
-        child: Text(
-          'No campaigns found.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
+      return ChecklyEmptyState(
+        icon: Icons.campaign_outlined,
+        title: 'No Campaigns Found',
+        subtitle: 'There are no active or scheduled campaigns at this time.',
+        emoji: '📂',
+        actionButton: ElevatedButton(
+          onPressed: _load,
+          child: const Text('Refresh'),
         ),
       );
     }
@@ -142,63 +136,46 @@ class _ProgramListPageState extends State<ProgramListPage> {
           final category = p['category'] as String? ?? '';
           final status = p['status'] as String? ?? '';
           final total = p['totalAssigned'] as int? ?? 0;
-          return StrokeCard(
-            padding: EdgeInsets.zero,
+          return UniversalListCard(
+            title: title,
+            titleStyle: theme.textTheme.titleMedium?.merge(
+              AppFonts.displayStyle(fontWeight: FontWeight.w700),
+            ),
             onTap: canReview
                 ? () => context.push('/programs/review/$id')
                 : null,
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withValues(
-                    alpha: 0.5,
-                  ),
-                  shape: BoxShape.circle,
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer.withValues(
+                  alpha: 0.5,
                 ),
-                child: Icon(
-                  Icons.campaign_outlined,
-                  color: theme.colorScheme.primary,
-                ),
+                shape: BoxShape.circle,
               ),
-              title: Text(
-                title,
-                style: theme.textTheme.titleMedium?.merge(
-                  AppFonts.displayStyle(fontWeight: FontWeight.w700),
-                ),
+              child: Icon(
+                Icons.campaign_outlined,
+                color: theme.colorScheme.primary,
               ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    PillChip(
-                      label: category.toUpperCase(),
-                      type: PillChipType.blue,
-                    ),
-                    PillChip(
-                      label: status.toUpperCase(),
-                      type: status.toLowerCase() == 'active'
-                          ? PillChipType.green
-                          : PillChipType.purple,
-                    ),
-                    Text(
-                      '$total stores',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              trailing: canReview ? const Icon(Icons.chevron_right) : null,
             ),
+            badges: [
+              PillChip(label: category.toUpperCase(), type: PillChipType.blue),
+              PillChip(
+                label: status.toUpperCase(),
+                type: status.toLowerCase() == 'active'
+                    ? PillChipType.green
+                    : PillChipType.purple,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 2, top: 4),
+                child: Text(
+                  '$total stores',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+            trailing: canReview ? const Icon(Icons.chevron_right) : null,
           );
         },
       ),

@@ -50,10 +50,7 @@ class UniversalStoreGroup extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            PillChip(
-              label: '$count',
-              type: PillChipType.blue,
-            ),
+            PillChip(label: '$count', type: PillChipType.blue),
           ],
         ),
         children: children,
