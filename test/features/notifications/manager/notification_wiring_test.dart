@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'package:checkly/features/notifications/manager/notification_sync_manager.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
-import 'package:checkly/_shared/theme/theme_manager.dart';
 import 'package:checkly/main.dart';
 
 class MockNotificationSyncManager extends Mock
@@ -13,21 +12,16 @@ class MockNotificationSyncManager extends Mock
 
 class MockAuthManager extends Mock implements AuthManager {}
 
-class MockThemeManager extends Mock implements ThemeManager {}
-
 void main() {
   late MockNotificationSyncManager mockSyncManager;
   late MockAuthManager mockAuthManager;
-  late MockThemeManager mockThemeManager;
 
   setUp(() {
     mockSyncManager = MockNotificationSyncManager();
     mockAuthManager = MockAuthManager();
-    mockThemeManager = MockThemeManager();
 
     GetIt.instance.registerSingleton<NotificationSyncManager>(mockSyncManager);
     GetIt.instance.registerSingleton<AuthManager>(mockAuthManager);
-    GetIt.instance.registerSingleton<ThemeManager>(mockThemeManager);
   });
 
   tearDown(() {
@@ -42,10 +36,6 @@ void main() {
       when(
         () => mockAuthManager.refreshCapabilities(),
       ).thenAnswer((_) async {});
-      when(() => mockThemeManager.themeMode).thenReturn(ThemeMode.light);
-      // Note: ThemeManager extends ChangeNotifier, so mock needs addListener
-      when(() => mockThemeManager.addListener(any())).thenReturn(null);
-      when(() => mockThemeManager.removeListener(any())).thenReturn(null);
 
       // Act
       await tester.pumpWidget(const ChecklyApp());

@@ -37,18 +37,6 @@ class AppTheme {
     return _buildTheme(colorScheme);
   }
 
-  // ---------- Dark Theme ----------
-  static ThemeData get dark {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primarySeed,
-      brightness: Brightness.dark,
-      error: AppColors.destructive,
-      surface: AppColors.deepForest,
-    );
-
-    return _buildTheme(colorScheme);
-  }
-
   static ThemeData _buildTheme(ColorScheme colorScheme) {
     final baseTextTheme = ThemeData(
       brightness: colorScheme.brightness,

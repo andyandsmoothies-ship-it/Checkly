@@ -38,7 +38,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
 import 'package:checkly/features/profile/pages/profile_page.dart';
-import 'package:checkly/_shared/theme/theme_manager.dart';
 import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
@@ -71,8 +70,6 @@ class _AlwaysAuth implements AuthCheck {
 
 class _MockAuthManager extends Mock implements AuthManager {}
 
-class _MockThemeManager extends Mock implements ThemeManager {}
-
 class _MockDatabaseService extends Mock implements DatabaseService {}
 
 class _MockOutboxDao extends Mock implements OutboxDao {}
@@ -100,7 +97,6 @@ _FakeConnectivity? _lastFakeConnectivity;
 
 _MockAuthManager _registerDi({UserSession? user}) {
   final mockAuth = _MockAuthManager();
-  final mockTheme = _MockThemeManager();
 
   // AuthManager stubs
   when(() => mockAuth.currentUser).thenReturn(user ?? _auditorUser);
@@ -111,15 +107,8 @@ _MockAuthManager _registerDi({UserSession? user}) {
   when(() => mockAuth.addListener(any())).thenReturn(null);
   when(() => mockAuth.removeListener(any())).thenReturn(null);
 
-  // ThemeManager stubs — ListenableBuilder calls addListener/removeListener
-  when(() => mockTheme.themeMode).thenReturn(ThemeMode.light);
-  when(() => mockTheme.toggleTheme()).thenAnswer((_) async {});
-  when(() => mockTheme.addListener(any())).thenReturn(null);
-  when(() => mockTheme.removeListener(any())).thenReturn(null);
-
   final di = GetIt.instance;
   di.registerSingleton<AuthManager>(mockAuth);
-  di.registerSingleton<ThemeManager>(mockTheme);
 
   final mockDbService = _MockDatabaseService();
   final testDb = AppDatabase.forTesting(NativeDatabase.memory());
@@ -345,61 +334,6 @@ void main() {
           reason:
               'At least 2 Card widgets (Management + General sections) must exist.',
         );
-      },
-    );
-  });
-
-  // ─── Contract: Dark Mode Compatibility ────────────────────────────────────
-
-  group('ProfilePage — Dark Mode Compatibility', () {
-    testWidgets(
-      'ProfilePage_EmailText_UsesOnSurfaceVariant — email field color must adapt to theme brightness',
-      (tester) async {
-        // ADR Note: ProfileIdentityCard ALWAYS renders two Text widgets when
-        // fullName is null: (1) displayName field (onSurface) and (2) email
-        // field (onSurfaceVariant). _adminUser has no fullName so
-        // 'admin@test.com' appears in BOTH fields. We assert the EMAIL field
-        // specifically, which uses onSurfaceVariant (not hardcoded charcoal).
-        final darkTheme = AppTheme.dark;
-        _registerDi(user: _adminUser);
-
-        // We use a custom pump here to inject the DARK theme specifically
-        await tester.pumpWidget(
-          MaterialApp.router(
-            theme: darkTheme,
-            routerConfig: GoRouter(
-              initialLocation: '/profile',
-              routes: [
-                GoRoute(
-                  path: '/profile',
-                  builder: (context, state) => const ProfilePage(),
-                ),
-              ],
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-
-        // Both displayName and email fields render 'admin@test.com' when fullName is null.
-        // Find all matching Text widgets and verify the email-specific one
-        // uses onSurfaceVariant (not hardcoded charcoal).
-        final emailTexts = tester.widgetList<Text>(find.text('admin@test.com'));
-        expect(
-          emailTexts.isNotEmpty,
-          isTrue,
-          reason: 'At least one Text widget with email must render.',
-        );
-
-        // The email field text (second occurrence) uses onSurfaceVariant.
-        // Assert that NO widget uses the hardcoded charcoal color.
-        for (final textWidget in emailTexts) {
-          expect(
-            textWidget.style?.color,
-            isNot(AppTheme.charcoal),
-            reason:
-                'Email text must not use hardcoded AppTheme.charcoal in dark mode.',
-          );
-        }
       },
     );
   });

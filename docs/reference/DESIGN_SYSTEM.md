@@ -58,13 +58,13 @@ tailwind.config.ts ← Token-to-utility mappings (colors, typography, z-index, b
 
 ### Semantic Palette
 
-| Token | Purpose | Light | Dark |
-|-------|---------|-------|------|
-| `primary` | Brand, CTAs, links | `hsl(221 83% 53%)` | `hsl(217 91% 65%)` |
-| `destructive` | Errors, deletions, overdue | `hsl(0 84% 60%)` | `hsl(0 60% 55%)` |
-| `success` | Passed, completed, in-range | `hsl(142 76% 36%)` | `hsl(142 50% 45%)` |
-| `warning` | Caution, pending, faults | `hsl(38 92% 50%)` | `hsl(38 70% 55%)` |
-| `info` | Informational, draft status | `hsl(199 89% 48%)` | `hsl(199 89% 58%)` |
+| Token | Purpose | Light |
+|-------|---------|-------|
+| `primary` | Brand, CTAs, links | `hsl(221 83% 53%)` |
+| `destructive` | Errors, deletions, overdue | `hsl(0 84% 60%)` |
+| `success` | Passed, completed, in-range | `hsl(142 76% 36%)` |
+| `warning` | Caution, pending, faults | `hsl(38 92% 50%)` |
+| `info` | Informational, draft status | `hsl(199 89% 48%)` |
 
 ### Shade Scales (50–900)
 
@@ -184,17 +184,6 @@ const scoreColor = score >= 90
 </div>
 ```
 
-### Dark Mode
-
-Uses `[data-theme="dark"]` selector (not Tailwind `dark:` class). Token swapping handles most cases automatically. Use explicit dark mode only for opacity/transparency adjustments:
-
-```tsx
-// Prefer: automatic via tokens (no dark: prefix needed)
-<div className="bg-destructive/10 text-destructive" />
-
-// Only when needed: explicit dark mode for opacity
-<div className="bg-warning/5 dark:bg-warning/10" />
-```
 
 ### Glass Effects
 

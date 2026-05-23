@@ -16,6 +16,7 @@ description: SRE Hostile Architecture Review — Hunts for distributed systems f
 |---|---|
 | **Trigger** | Execute when a new feature implies concurrency, sync, caching, background workers, or complex state across microservices/clients. |
 | **Task Tracking** | MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation phase. |
+| **Label the Pattern** | Explicitly label the core System Design Pattern of the component being audited. A News Feed has different failure modes than a Payment Ledger. You cannot audit what you haven't labeled. |
 | **System Boundary** | Extract the target system (e.g., "Offline Sync", "Auth Cache", "Message Queue"). Identify exactly what fails if the network drops by 50% or latency spikes to 5000ms. |
 
 ## Phase 2: The Brutal Interrogation (The 4 Critics)

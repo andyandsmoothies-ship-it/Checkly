@@ -20,7 +20,7 @@ class UniversalStoreGroup extends StatelessWidget {
     required this.storeName,
     required this.count,
     required this.children,
-    this.initiallyExpanded = true,
+    this.initiallyExpanded = false,
     this.tilePadding = const EdgeInsets.symmetric(vertical: 8),
   });
 

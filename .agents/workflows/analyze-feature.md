@@ -42,6 +42,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **Search First** | Always use `grep_search` to find the exact line numbers needed, then use `view_file` to read only those specific chunks. Do not read full files blindly to save memory. |
 | **Check Setup** | Read config files (like `.csproj` or `pubspec.yaml`) to understand the project setup. |
 | **Learn the Code** | Search current code to learn how it works before you start planning. |
+| **Label the Pattern** | Before jumping straight into a solution, explicitly label the pattern of the problem (e.g., is this a State Machine? A Queue? A Caching problem?). Understanding the kind of problem you are solving makes the architecture simpler and trade-offs clearer. |
 | **Check Ideas** | If the user provides an idea or document, check if it works by searching the code. Do not use ideas that do not fit the current code. |
 | **Out of Scope (YAGNI)**| Write down what you will NOT build. If a step breaks a main rule, stop and ask the user. Do not silently skip it. |
 | **Spot Check**| Search the code to double-check at least one main idea in your plan before finishing. |

@@ -32,7 +32,7 @@ class ReviewValidationBanner extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        initiallyExpanded: true,
+        initiallyExpanded: false,
         children: errors
             .map(
               (e) => ListTile(

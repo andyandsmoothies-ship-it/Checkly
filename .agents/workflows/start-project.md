@@ -15,6 +15,7 @@ description: Guided workflow to initialize a brand new project, pick a tech stac
 |---|---|
 | **Skill Load** | MANDATORY: Load `.agents/skills/ecosystem-advisor/SKILL.md`. |
 | **Interrogation** | Ask the user the 6 strict business priority questions (Budget, Audience, Maintenance, Scale, Laws, Team Skill). Do NOT proceed until answered. |
+| **Pattern Recognition**| MANDATORY: Before recommending any tools, explicitly label the System Design Pattern (e.g., Ledger, State Machine, Pub/Sub, Feed). The pattern dictates the required tools. |
 | **Selection** | Output the recommended Tech Stack (Frontend, Backend, DB, Infra) along with Tradeoffs and Risks. |
 | **Approval** | Yield to the user. Do they accept this stack, or want to pivot? |
 

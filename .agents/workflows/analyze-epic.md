@@ -40,6 +40,7 @@ Workflow: /analyze-epic | Track: C
 |---|---|
 | **Interrogation Gate**| **MANDATORY**: Before writing a plan, cross-reference the user's request against the codebase. If terminology is sloppy or contradicts existing code, **STOP** and ask the user to clarify. |
 | **Check the Goal** | Before proposing a technical plan, ask: Does this actually solve the user's original problem? If the plan is too complex and forgets the main goal, stop and fix it. |
+| **Label the Pattern** | Before proposing architecture boxes, explicitly label the System Design Pattern this feature represents (e.g., Ledger, State Machine, Pub/Sub, News Feed). Recognizing the pattern first makes trade-offs sharper and prevents using the wrong tools for the domain. |
 | **Check Ideas** | If the user provides a document or idea, check if it works with the current code. Check if it breaks Clean Architecture or causes bad side effects. Reject impossible or dangerous ideas. |
 | **Load Skills & Shaping** | Load the `shaping` skill and architecture skills (like `clean-architecture`). Use the Fit Check matrix from the shaping skill to map requirements against possible shapes (options) before committing to a plan. |
 | **Traceability Check** | MANDATORY: Does every backend/API capability have a frontend UI mapped to it? (Visual Context). Do not propose APIs without UIs. |

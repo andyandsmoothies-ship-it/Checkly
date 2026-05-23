@@ -11,7 +11,7 @@ class TypeSection extends StatelessWidget {
     super.key,
     required this.label,
     required this.count,
-    this.initiallyExpanded = true,
+    this.initiallyExpanded = false,
     required this.children,
   });
 

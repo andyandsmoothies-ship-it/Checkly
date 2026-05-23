@@ -40,6 +40,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 | **The Feedback Loop**| **MANDATORY**: Before guessing, construct a fast, deterministic pass/fail signal. Use a failing test, a `curl` script, or a throwaway harness. PROHIBITED: Hypothesizing without a reproducible loop. |
 | **Log Extraction** | **Script-First**: Check if `.agents/scripts/collect_logs.py` exists. Execute it to aggregate trace logs into `docs/diagnostics/`. |
 | **Origin Trace** | MANDATORY: Trace data flows to their origin (the Write-Path). PROHIBITED: Stopping at the Read-Path symptom. |
+| **Pattern Identification** | Explicitly identify the System Design Pattern where the failure occurred (e.g., "This is a Two-Phase Commit failure" or "This is a Cache Stampede"). Diagnosing the pattern reveals the root cause much faster than reading logs blindly. |
 | **Formal Reasoning**| MANDATORY: 1. Generate 3-5 *falsifiable* Hypotheses ("If X is the cause, then changing Y will prove it"). 2. Log them strictly to the `task_` file. |
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Did you build a fast, deterministic feedback loop (curl/test)? (2) Did you trace back to the Write-Path origin? (3) Are 3-5 falsifiable hypotheses explicitly written in the `task_` file?

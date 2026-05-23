@@ -6,7 +6,6 @@ import '../../../_shared/constants/app_roles.dart';
 import '../../../_shared/constants/user_persona.dart';
 import '../widgets/sign_out_tile.dart';
 import '../widgets/profile_header.dart';
-import '../widgets/settings_section_group.dart';
 import '../widgets/profile_capabilities_section.dart';
 import '../widgets/profile_workspace_section.dart';
 
@@ -56,13 +55,6 @@ class ProfilePage extends StatelessWidget {
 
               // ── Zone 2: MY WORKSPACE (hidden for Auditors) ──
               ProfileWorkspaceSection(persona: persona, caps: caps),
-
-              // ── Zone 3: SETTINGS ──
-              SettingsSectionGroup(
-                sectionLabel: 'SETTINGS',
-                items: const [],
-                themeToggle: true,
-              ),
 
               // ── Zone 5: MY ACCOUNT ──
               _buildMyAccountZone(context),

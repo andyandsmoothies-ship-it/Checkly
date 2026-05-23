@@ -39,6 +39,7 @@ List the constraints and user needs. Be exhaustive.
 
 ### 2. Shapes (S)
 Sketch out 1-3 alternative mechanisms. Each part must be a **mechanism** (how it works), not just an intent.
+*Crucial*: Before drawing any boxes or listing mechanisms, **label the pattern** (e.g., Ledger, State Machine, Pub/Sub). Once the pattern is clear, the architecture gets simpler and trade-offs become sharper.
 
 ### 3. Fit Check
 Map R to S. If a requirement is ❌, the shape is incomplete. Resume shaping or accept the gap.

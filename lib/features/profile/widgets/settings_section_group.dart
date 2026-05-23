@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../_shared/theme/app_colors.dart';
 import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/widgets/primitives/primitives.dart';
-import 'theme_toggle_tile.dart';
 
 class MenuItemData {
   final IconData icon;
@@ -25,19 +24,17 @@ class MenuItemData {
 /// brand pastel indicators, and Nunito display fonts.
 class SettingsSectionGroup extends StatelessWidget {
   final List<MenuItemData> items;
-  final bool themeToggle;
   final String? sectionLabel;
 
   const SettingsSectionGroup({
     super.key,
     required this.items,
-    this.themeToggle = false,
     this.sectionLabel,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasContent = items.isNotEmpty || themeToggle;
+    final hasContent = items.isNotEmpty;
     if (!hasContent) return const SizedBox.shrink();
 
     return Column(
@@ -50,10 +47,9 @@ class SettingsSectionGroup extends StatelessWidget {
             children: [
               for (int i = 0; i < items.length; i++) ...[
                 _MenuTile(data: items[i]),
-                if (i < items.length - 1 || themeToggle)
+                if (i < items.length - 1)
                   const Divider(height: 1, indent: 56, color: AppColors.swan),
               ],
-              if (themeToggle) const ThemeToggleTile(),
             ],
           ),
         ),
