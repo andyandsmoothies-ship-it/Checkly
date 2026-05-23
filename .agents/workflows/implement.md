@@ -53,6 +53,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Test Ingestion** | Read unit test files created by QA for the ACTIVE SLICE ONLY. |
 | **Cheap Verify** | Run `flutter analyze` or `dotnet build --no-restore`. Fix before complete. |
 | **Strict TDD (Legacy)**| IF altering legacy boundaries -> MANDATORY: Update legacy test FIRST (turn RED) -> THEN write PROD code (turn GREEN). |
+| **Behavior-Driven** | MANDATORY: The upstream tests are your living documentation. Build exactly the behavior specified by the tests. Do not add speculative internal logic that is not proven by a test. |
 | **Immutable Mock Guard**| PROHIBITED: Changing existing ATDD Tests to make code pass. Adapt code to existing contract. |
 | **Red/Green Loop**| Turn RED test GREEN -> Refactor. Do NOT modify test files. |
 | **Refactor Safety**| `grep_search` 4 ways: 1) Direct calls, 2) Types, 3) Strings, 4) Test Mocks. |

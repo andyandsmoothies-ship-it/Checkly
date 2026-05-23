@@ -7,9 +7,9 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 # Workflow: /tdd
 
 > [!TIP]
-> **Unit Tests vs Acceptance Tests**
-> - Use this workflow (**Unit Testing / TDD**) later in the process to test **HOW** the code works based on a specific implementation plan, right before the code is built.
-> - Use Acceptance Testing (**ATDD**) early in the process to define **WHAT** the system must do at the business level before an implementation plan is finalized.
+> **The Two Loops of TDD (Inner vs Outer)**
+> - True Test-Driven Development consists of two loops. This workflow handles the **Inner Loop** (Programmer-level TDD), testing **HOW** the code works.
+> - Use the `/atdd` workflow for the **Outer Loop** (Customer-level TDD / BDD), defining **WHAT** the system must do at the business level before an implementation plan is finalized. BDD is just a reframing of this outer loop to focus on *behavior*.
 
 > [!NOTE]
 > This is the **Test-Driven Development (TDD)** workflow. The QA Agent (@Sentinel) uses this to write failing unit tests based on a plan. The Builder Agent (@Forge) should never run this workflow.
@@ -61,6 +61,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 - **Scroll Before Tap (Flutter)**: Always use `await tester.ensureVisible(finder)` before tapping items inside a scrolling list.
 - **Use Keys (Flutter)**: Use `find.byKey()` instead of searching for text on buttons or important structure.
 - **No Double Underscores (Dart)**: Do not use `(_, __)` for empty parameters. This causes warning errors. Use real names or a single `_`.
+- **Test Behavior, Not Just Mechanics**: Avoid the AI trap where tests are "too granular to communicate intent or too coarse to catch regression." Tests must act as design tools that prove a specific business behavior, not just blindly chase code coverage.
 - **New Files Only**: Create 1 new test file for 1 feature slice. Do not add tests to massive, generic test files (like `UserServiceTests.cs`). Create a specific new file (like `UserService_Password_Tests.cs`).
 - **Cover All States**: Your tests must cover:
   1. **Happy Path**: Success - 200 OK, UI renders correctly.

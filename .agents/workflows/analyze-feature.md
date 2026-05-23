@@ -70,7 +70,7 @@ Workflow: /analyze-feature | Track: [A / B1 / B2]
 | **Constraint Traceability** | **MANDATORY**: Review your scratchpad. Did you miss any constraints from the input document? Every constraint MUST be explicitly covered by an Acceptance Criteria or Test Contract. |
 | **Acceptance Criteria** | Write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
 | **Tools Needed** | Write down which skills the Builder will need. Write down the commands to test the code (like `flutter test` or `dotnet test`). |
-| **Slicing Strategy** | **MANDATORY**: Load and apply the `use-case-slicing` skill. Use the 'Maximum Thickness' exception to split heavy slices horizontally. Every slice must define an 'Entry State Required' and 'Exit State Guaranteed'. Output slices as 'Micro-Specs'. |
+| **Slicing Strategy** | **MANDATORY**: Load and apply the `use-case-slicing` skill. Slice outside-in by focusing on *observable behavior*, not just internal technical steps. Every slice must define an 'Entry State Required' and 'Exit State Guaranteed'. Output slices as 'Micro-Specs'. |
 | **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `docs/architecture/` folder. |
 | **Clear Goals** | The plan must have clear steps. |
 

@@ -18,6 +18,8 @@ Recent longitudinal studies (2020-2025) confirm these findings at scale: project
 
 **Core principle**: A TDD "test" is a **specification**, not a test. It's an example of how you expect to use the code you're about to write. You write the spec first (RED), kluge together just enough code to satisfy it (GREEN), then refactor until the code is high quality. The spec drives the design — hence "test-driven **design**."
 
+**The TDD/BDD Connection**: Behaviour-Driven Development (BDD) was originally coined simply as a vocabulary shift for TDD to get people to stop focusing on "testing" and start focusing on "specifying behavior." True TDD consists of an **Outer Loop** (Customer/Acceptance tests defined via BDD/Gherkin) and an **Inner Loop** (Programmer-level unit tests). The outer loop acts as living documentation, while the inner loop acts as a design tool for code structure. Do not collapse the two, or you will write tests that are "too granular to communicate intent or too coarse to catch regression."
+
 **Wishful Amnesia**: When writing a spec, forget how the system works internally. Ask: "What does the consumer need?" — not "What can the system do?" This consumer-first perspective is what makes specs survive refactors.
 
 **Write Assertions First**: Before writing any setup code or mocks, write the final `expect()` or `Assert()`. This forces you to define the exact outcome you want. Once the assertion is clear, work backward to set up the state.

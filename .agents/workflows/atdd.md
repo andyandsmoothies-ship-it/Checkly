@@ -7,9 +7,10 @@ description: Acceptance Test-Driven Development — defines acceptance tests BEF
 # Workflow: /atdd
 
 > [!TIP]
-> **Acceptance Tests vs Unit Tests**
-> - Use this workflow (**Acceptance Testing / ATDD**) early in the process to define **WHAT** the system must do at the business level before an implementation plan is finalized.
-> - Use Unit Testing (**TDD**) later in the process to test **HOW** the logic works based on a specific implementation plan, right before the code is built.
+> **The Two Loops of TDD (Inner vs Outer)**
+> - True Test-Driven Development consists of two loops. This workflow handles the **Outer Loop** (Acceptance TDD / BDD), defining **WHAT** the system must do at the business level before an implementation plan is finalized.
+> - Use the `/tdd` workflow for the **Inner Loop** (Programmer-level TDD), testing **HOW** the logic works based on a specific implementation plan. 
+> - *Note: BDD was originally created as a vocabulary shift for TDD to get people to focus on "behavior" rather than "testing". Keep that focus here.*
 
 > [!NOTE]
 > This is ATDD (Acceptance Test-Driven Development). Goal: Define WHAT the feature must do at the acceptance level. Target Persona: **Sentinel** (QA).
