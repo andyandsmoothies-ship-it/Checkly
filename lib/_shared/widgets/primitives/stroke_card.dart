@@ -93,6 +93,7 @@ class _StrokeCardState extends State<StrokeCard> {
       margin: widget.margin ?? EdgeInsets.zero,
       color: cardColor,
       shape: cardShape,
+      clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: widget.padding ?? const EdgeInsets.all(16.0),
         child: widget.child,

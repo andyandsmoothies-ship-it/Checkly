@@ -112,7 +112,7 @@ class AuditQuickJumpSheet extends StatelessWidget {
                       '$answered / $total done',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isComplete
-                            ? AppTheme.success
+                            ? const Color(0xFF2E7D32)
                             : theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),

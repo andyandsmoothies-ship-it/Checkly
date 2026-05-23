@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-
+import '../../../../_shared/theme/app_colors.dart';
+import '../../../../_shared/theme/app_fonts.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 import '../../../../_shared/constants/app_capabilities.dart';
 import '../../../../_shared/constants/app_roles.dart';
 import '../../../../_shared/constants/capability_dictionary.dart';
 import '../manager/role_manager.dart';
 import '../model/role_dto.dart';
 import '../services/admin_api_service.dart';
-import '../../../../_shared/widgets/primitives/stroke_card.dart';
 
 class OnlineCapabilityGrid extends StatelessWidget {
   final String role;
@@ -30,6 +31,8 @@ class OnlineCapabilityGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ValueListenableBuilder<Map<String, CapabilityMeta>?>(
       valueListenable: manager.catalogMeta,
       builder: (context, catalogMeta, _) {
@@ -76,7 +79,7 @@ class OnlineCapabilityGrid extends StatelessWidget {
                     }
 
                     return ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                       itemCount: items.length,
                       itemBuilder: (context, i) {
                         final item = items[i];
@@ -84,16 +87,23 @@ class OnlineCapabilityGrid extends StatelessWidget {
                         if (item.startsWith('__HEADER__')) {
                           final groupName = item.substring(10);
                           return Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                            child: Text(
-                              groupName.toUpperCase(),
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    fontWeight: FontWeight.bold,
+                            padding: const EdgeInsets.only(top: 16, bottom: 8),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    groupName.toUpperCase(),
+                                    style: AppFonts.displayStyle(
+                                      fontSize: theme.textTheme.labelSmall?.fontSize,
+                                      fontWeight: FontWeight.w900,
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                                      letterSpacing: 3,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
+                                ),
+                              ],
                             ),
                           );
                         }
@@ -133,18 +143,27 @@ class OnlineCapabilityGrid extends StatelessWidget {
                                   CapabilityDictionary.getDescription(cap));
 
                         return StrokeCard(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 4,
-                          ),
+                          margin: const EdgeInsets.only(bottom: 8),
                           padding: EdgeInsets.zero,
                           child: CheckboxListTile(
                             key: ValueKey(cap),
                             value: isAssigned || isImplicitlyGranted,
                             enabled: isEnabled,
+                            activeColor: AppColors.featherGreen,
+                            checkboxShape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
                             title: Row(
                               children: [
-                                Expanded(child: Text(titleText)),
+                                Expanded(
+                                  child: Text(
+                                    titleText,
+                                    style: AppFonts.displayStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: theme.textTheme.bodyMedium?.fontSize,
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -152,37 +171,29 @@ class OnlineCapabilityGrid extends StatelessWidget {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.surfaceContainerHighest,
+                                    color: theme.colorScheme.surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
                                     cap,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant,
-                                        ),
+                                    style: AppFonts.displayStyle(
+                                      fontSize: theme.textTheme.labelSmall?.fontSize,
+                                      fontWeight: FontWeight.w700,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             subtitle: Text(
                               subtitleText,
-                              style: TextStyle(
+                              style: AppFonts.displayStyle(
+                                fontSize: theme.textTheme.bodySmall?.fontSize,
                                 color: isSelfLock
-                                    ? Theme.of(context).colorScheme.error
+                                    ? theme.colorScheme.error
                                     : (isAssigned
-                                          ? Theme.of(
-                                              context,
-                                            ).colorScheme.primary
-                                          : Theme.of(
-                                              context,
-                                            ).colorScheme.onSurfaceVariant),
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.onSurfaceVariant),
                               ),
                             ),
                             secondary: mutatingCapability == cap

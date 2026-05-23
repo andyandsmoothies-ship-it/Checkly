@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../_shared/theme/app_theme.dart';
+import '../../../../_shared/widgets/primitives/primitives.dart';
 import '../../../programs/model/pending_assignment_vm.dart';
 import '../../manager/dashboard_manager.dart';
 
@@ -50,31 +51,22 @@ class ActionRequiredWidget extends StatelessWidget {
               ),
             ),
             ...displayVms.map(
-              (vm) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Card(
-                  elevation: 0,
-                  color: AppTheme.warning.withValues(alpha: 0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.assignment_late_outlined,
-                      color: AppTheme.warning,
-                    ),
-                    title: Text(
-                      vm.title,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: const Text('Action Required · Tap to complete'),
-                    trailing: const Icon(
-                      Icons.chevron_right,
-                      color: AppTheme.warning,
-                    ),
-                    onTap: () => context.push('/programs/${vm.id}'),
-                  ),
+              (vm) => UniversalListCard(
+                margin: const EdgeInsets.only(bottom: 8),
+                color: AppTheme.warning.withValues(alpha: 0.1),
+                borderColor: AppTheme.warning.withValues(alpha: 0.3),
+                leading: const Icon(
+                  Icons.assignment_late_outlined,
+                  color: AppTheme.warning,
+                  size: 20,
                 ),
+                title: vm.title,
+                subtitle: 'Action Required · Tap to complete',
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: AppTheme.warning,
+                ),
+                onTap: () => context.push('/programs/${vm.id}'),
               ),
             ),
             if (hasMore) ...[

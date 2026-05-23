@@ -34,7 +34,10 @@ class AuditSectionCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
+        shape: const RoundedRectangleBorder(side: BorderSide.none),
+        collapsedShape: const RoundedRectangleBorder(side: BorderSide.none),
         initiallyExpanded: false,
         tilePadding: const EdgeInsets.symmetric(horizontal: 16),
         title: Row(

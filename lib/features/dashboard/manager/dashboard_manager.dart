@@ -254,7 +254,7 @@ class DashboardManager extends ChangeNotifier {
 
       final results = await Future.wait([
         queries.getMyOpenApCount(), // Personal open APs
-        Future.value(0), // No "store" overdue yet
+        queries.getGlobalOverdueApCount(), // All overdue APs in scope
         queries.getMyAvgScore(), // Personal avg score
       ]);
 
@@ -287,9 +287,15 @@ class DashboardManager extends ChangeNotifier {
     final storeId = store.id;
 
     final results = await Future.wait([
-      queries.getOpenApCountForStore(storeId),
-      queries.getOverdueApCountForStore(storeId),
-      queries.getAvgScoreForStore(storeId),
+      persona == UserPersona.areaManager
+          ? queries.getMyOpenApCount()
+          : queries.getOpenApCountForStore(storeId),
+      persona == UserPersona.areaManager
+          ? queries.getGlobalOverdueApCount()
+          : queries.getOverdueApCountForStore(storeId),
+      persona == UserPersona.areaManager
+          ? queries.getMyAvgScore()
+          : queries.getAvgScoreForStore(storeId),
     ]);
 
     final deadline = await queries.getNearestDeadline();
