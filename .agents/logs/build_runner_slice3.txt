@@ -1,0 +1,29 @@
+  0s compiling builders/jit
+  1s compiling builders/jit
+  2s compiling builders/jit
+  3s compiling builders/jit
+  4s compiling builders/jit
+  5s compiling builders/jit
+  6s compiling builders/jit
+  7s compiling builders/jit
+  9s compiling builders/jit
+  10s compiling builders/jit
+  11s compiling builders/jit
+  12s compiling builders/jit
+  13s compiling builders/jit
+Running build hooks...Running build hooks...  0s drift_dev on 1712 inputs; lib/_shared/constants/app_capabilities.dart
+  13s drift_dev on 1712 inputs: 1 output; spent 11s sdk, 1s analyzing; lib/_shared/constants/capability_dictionary.dart
+  18s drift_dev on 1712 inputs: 5 output; spent 11s sdk, 4s reading, 2s analyzing; lib/_shared/database/dao/action_plan_outbox_dao.dart
+  20s drift_dev on 1712 inputs: 9 output; spent 11s sdk, 5s reading, 3s analyzing; lib/_shared/database/dao/policy_dao.dart
+  21s drift_dev on 1712 inputs: 20 output; spent 11s sdk, 6s reading, 3s analyzing; lib/_shared/exceptions/error_dictionary.dart
+  63s drift_dev on 1712 inputs: 22 output; spent 34s reading, 13s analyzing, 11s sdk, 4s resolving; lib/_shared/router/main_shell.dart
+  65s drift_dev on 1712 inputs: 333 output; spent 35s reading, 14s analyzing, 11s sdk, 4s resolving; test/_shared/database/dao/submission_risk_outbox_dao_hardening_test.dart
+  68s drift_dev on 1712 inputs: 334 output; spent 37s reading, 15s analyzing, 11s sdk, 4s resolving; test/_shared/services/app_lifecycle_manager_test.dart
+  74s drift_dev on 1712 inputs: 430 output, 3 no-op; spent 38s reading, 20s analyzing, 11s sdk, 4s resolving; lib/_shared/database/dao/action_plan_outbox_dao.dart
+  77s drift_dev on 1712 inputs: 444 output, 3 no-op; spent 38s reading, 23s analyzing, 11s sdk, 4s resolving; lib/_shared/exceptions/app_error.dart
+  79s drift_dev on 1712 inputs: 4 skipped, 807 output, 54 no-op; spent 38s reading, 23s analyzing, 11s sdk, 4s resolving, 2s building; lib/_shared/database/app_database.dart.types.temp.dart
+  79s drift_dev on 1712 inputs: 428 skipped, 807 output, 477 no-op; spent 38s reading, 24s analyzing, 11s sdk, 4s resolving, 2s building
+  0s source_gen:combining_builder on 856 inputs; lib/_shared/constants/app_capabilities.dart
+  0s source_gen:combining_builder on 856 inputs: 342 skipped, 1 output, 342 no-op; test/architecture/oversized_ui_split_test.dart.types.temp.dart
+  1s source_gen:combining_builder on 856 inputs: 428 skipped, 1 output, 427 no-op
+  Built with build_runner/jit in 107s; wrote 808 outputs.

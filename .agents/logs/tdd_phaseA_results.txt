@@ -1,0 +1,70 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart                                                                                                00:01 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart                                                                                                00:01 +0 -1: loading C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart [E]                                                                                         
+  Failed to load "C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart":
+  Compilation failed for testPath=C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart: test/widgets/permission_guard_disabled_test.dart:65:13: Error: No named parameter with the name 'showAsDisabled'.
+              showAsDisabled: showAsDisabled,
+              ^^^^^^^^^^^^^^
+  lib/_shared/widgets/permission_guard.dart:25:9: Context: Found this candidate, but the arguments don't match.
+    const PermissionGuard({
+          ^^^^^^^^^^^^^^^
+  .
+
+To run this test again: C:\Users\HP\flutter\bin\cache\dart-sdk\bin\dart.exe test C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart -p vm --plain-name "loading C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart"
+  Error: The Dart compiler exited unexpectedly.
+  package:flutter_tools/src/base/common.dart 34:3  throwToolExit
+  package:flutter_tools/src/compile.dart 939:11    DefaultResidentCompiler._compile.<fn>
+  dart:async/zone_root.dart 48:47                  _rootRunUnary
+  dart:async/zone.dart 733:19                      _CustomZone.runUnary
+  dart:async/future_impl.dart 948:45               Future._propagateToListeners.handleValueCallback
+  dart:async/future_impl.dart 977:13               Future._propagateToListeners
+  dart:async/future_impl.dart 862:9                Future._propagateToListeners
+  dart:async/future_impl.dart 720:5                Future._completeWithValue
+  dart:async/future_impl.dart 804:7                Future._asyncCompleteWithValue.<fn>
+  dart:async/zone_root.dart 35:13                  _rootRun
+  dart:async/zone.dart 726:19                      _CustomZone.run
+  dart:async/zone.dart 625:7                       _CustomZone.runGuarded
+  dart:async/zone.dart 666:23                      _CustomZone.bindCallbackGuarded.<fn>
+  dart:async/schedule_microtask.dart 40:35         _microtaskLoop
+  dart:async/schedule_microtask.dart 49:5          _startMicrotaskLoop
+  dart:isolate-patch/isolate_patch.dart 127:13     _runPendingImmediateCallback
+  dart:isolate-patch/isolate_patch.dart 194:5      _RawReceivePort._handleMessage
+  
+00:03 +0 -1: loading C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart                                                                               00:03 +0 -1: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04a: LoadScheduleData_CallsBackend_WithSubmissionsExecuteCapability          00:03 +0 -2: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04a: LoadScheduleData_CallsBackend_WithSubmissionsExecuteCapability [E]      
+  No matching calls. All calls: MockAdminApiService.searchUsersByCapability(submissions:create)
+  (If you called `verify(...).called(0);`, please instead use `verifyNever(...);`.)
+  package:matcher                                                        fail
+  package:mocktail/src/mocktail.dart 728:7                               _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18                              _makeVerify.<fn>
+  test\features\admin\manager\admin_audit_manager_pbac_test.dart 131:13  main.<fn>
+  
+
+To run this test again: C:\Users\HP\flutter\bin\cache\dart-sdk\bin\dart.exe test C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart -p vm --plain-name "TC-PBAC-04a: LoadScheduleData_CallsBackend_WithSubmissionsExecuteCapability"
+00:03 +0 -2: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04b: LoadScheduleData_DoesNotCallBackend_WithSubmissionsCreateCapability     00:03 +0 -3: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04b: LoadScheduleData_DoesNotCallBackend_WithSubmissionsCreateCapability [E] 
+  Unexpected calls: MockAdminApiService.searchUsersByCapability(submissions:create)
+  package:matcher                                                        fail
+  package:mocktail/src/mocktail.dart 734:7                               _VerifyCall._checkWith
+  package:mocktail/src/mocktail.dart 519:18                              _makeVerify.<fn>
+  test\features\admin\manager\admin_audit_manager_pbac_test.dart 150:18  main.<fn>
+  
+
+To run this test again: C:\Users\HP\flutter\bin\cache\dart-sdk\bin\dart.exe test C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart -p vm --plain-name "TC-PBAC-04b: LoadScheduleData_DoesNotCallBackend_WithSubmissionsCreateCapability"
+00:03 +0 -3: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04c: LoadScheduleData_PopulatesAllAuditors_DirectlyFromApiResult             00:03 +0 -4: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04c: LoadScheduleData_PopulatesAllAuditors_DirectlyFromApiResult [E]         
+  Expected: not null
+    Actual: <null>
+  
+  package:matcher                                                       expect
+  package:flutter_test/src/widget_tester.dart 473:18                    expect
+  test\features\admin\manager\admin_audit_manager_pbac_test.dart 184:7  main.<fn>
+  
+
+To run this test again: C:\Users\HP\flutter\bin\cache\dart-sdk\bin\dart.exe test C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart -p vm --plain-name "TC-PBAC-04c: LoadScheduleData_PopulatesAllAuditors_DirectlyFromApiResult"
+00:03 +0 -4: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04d: LoadScheduleData_EmptyApiResult_AllAuditorsIsEmpty                      00:03 +0 -5: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04d: LoadScheduleData_EmptyApiResult_AllAuditorsIsEmpty [E]                  
+  Expected: not null
+    Actual: <null>
+  
+  package:matcher                                                       expect
+  package:flutter_test/src/widget_tester.dart 473:18                    expect
+  test\features\admin\manager\admin_audit_manager_pbac_test.dart 210:7  main.<fn>
+  
+
+To run this test again: C:\Users\HP\flutter\bin\cache\dart-sdk\bin\dart.exe test C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart -p vm --plain-name "TC-PBAC-04d: LoadScheduleData_EmptyApiResult_AllAuditorsIsEmpty"
+00:03 +0 -5: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04e: LoadScheduleData_ApiThrows_SetsScheduleError                            00:03 +1 -5: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04e: LoadScheduleData_ApiThrows_SetsScheduleError                            00:03 +1 -5: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04f: LoadScheduleData_AfterCompletion_SetsIsScheduleLoadingFalse             00:03 +2 -5: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/admin_audit_manager_pbac_test.dart: TC-PBAC-04f: LoadScheduleData_AfterCompletion_SetsIsScheduleLoadingFalse             00:03 +2 -5: Some tests failed.                                                                                                                                                                        

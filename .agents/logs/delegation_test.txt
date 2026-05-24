@@ -1,0 +1,2 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+ok dotnet test: 5 tests passed, 0 warnings in 2 projects (6.7 s)

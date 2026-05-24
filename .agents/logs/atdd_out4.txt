@@ -1,0 +1,85 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:05.79]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted [FAIL]
+[xUnit.net 00:00:06.01]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_08_Normal_Audit_Path_Unchanged [FAIL]
+[xUnit.net 00:00:06.21]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_04_IDOR_SM_Cannot_Use_Other_Store_Assignment [FAIL]
+[xUnit.net 00:00:06.30]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_12_Admin_Bypasses_Store_IDOR_Check [FAIL]
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted [641 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 162
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_08_Normal_Audit_Path_Unchanged [215 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   OK
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_08_Normal_Audit_Path_Unchanged() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 306
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_04_IDOR_SM_Cannot_Use_Other_Store_Assignment [201 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Forbidden
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_04_IDOR_SM_Cannot_Use_Other_Store_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 210
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_12_Admin_Bypasses_Store_IDOR_Check [84 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_12_Admin_Bypasses_Store_IDOR_Check() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 391
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:06.66]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_01_SM_Creates_Draft_For_Valid_Assignment [FAIL]
+[xUnit.net 00:00:06.85]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment [FAIL]
+[xUnit.net 00:00:07.23]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_05_Template_Mismatch_Returns_400 [FAIL]
+[xUnit.net 00:00:07.41]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_11_Cannot_Create_Submission_For_Verified_Assignment [FAIL]
+[xUnit.net 00:00:07.59]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_10_Double_Tap_Guard_Returns_200 [FAIL]
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_01_SM_Creates_Draft_For_Valid_Assignment [184 ms]
+  Error Message:
+   Failed: NotFound - {"error":"ProgramAssignment not found"}
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_01_SM_Creates_Draft_For_Valid_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 104
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment [185 ms]
+  Error Message:
+   Failed: NotFound - {"error":"ProgramAssignment not found"}
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 134
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_05_Template_Mismatch_Returns_400 [188 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_05_Template_Mismatch_Returns_400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 237
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_11_Cannot_Create_Submission_For_Verified_Assignment [185 ms]
+  Error Message:
+   System.NullReferenceException : Object reference not set to an instance of an object.
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_11_Cannot_Create_Submission_For_Verified_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 349
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_10_Double_Tap_Guard_Returns_200 [177 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_10_Double_Tap_Guard_Returns_200() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 329
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     9, Passed:     4, Skipped:     0, Total:    13, Duration: 7 s - Checkly.Api.Tests.dll (net10.0)

@@ -1,0 +1,3 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/widgets/notification_bell_lifecycle_test.dart
+00:00 +0: NotificationBell crashes when loadNotifications is called during build of a sibling/child
+00:00 +1: All tests passed!

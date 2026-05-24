@@ -1,0 +1,8 @@
+Analyzing lib...
+
+  error - features\audit\manager\audit_manager.dart:284:24 - The argument type 'Value<double>' can't be assigned to the parameter type 'double'.  - argument_type_not_assignable
+   info - _shared\database\app_database.dart:6:8 - The imported package 'path' isn't a dependency of the importing package. Try adding a dependency for 'path' in the 'pubspec.yaml' file. - depend_on_referenced_packages
+   info - features\audit\model\submission_dto.dart:2:1 - Dangling library doc comment. Add a 'library' directive after the library comment. - dangling_library_doc_comments
+   info - features\templates\model\template_dto.dart:2:1 - Dangling library doc comment. Add a 'library' directive after the library comment. - dangling_library_doc_comments
+
+4 issues found.

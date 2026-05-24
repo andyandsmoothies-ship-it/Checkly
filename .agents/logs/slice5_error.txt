@@ -1,0 +1,54 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:01 +1: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserCreateSheet sends assignedStoreIds for area_manager
+
+Warning: A call to tap() with finder "Found 1 widget with text "Create User": [
+  Text("Create User", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(409.0, 578.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#d586a relayoutBoundary=up26
+The hit test result at that offset is: HitTestResult(_RenderInkFeatures#9122d@Offset(409.0, 578.0), RenderPhysicalModel#71350@Offset(409.0, 578.0), RenderSemanticsAnnotations#97efe@Offset(409.0, 578.0), RenderRepaintBoundary#66ed8@Offset(409.0, 578.0), RenderIgnorePointer#5578c@Offset(409.0, 578.0), RenderAnimatedOpacity#bd43b@Offset(409.0, 578.0), RenderAnimatedOpacity#7433d@Offset(409.0, 578.0), _RenderColoredBox#dc3b7@Offset(409.0, 578.0), RenderAnimatedOpacity#322cb@Offset(409.0, 578.0), RenderIgnorePointer#f4ac3@Offset(409.0, 578.0), RenderAnimatedOpacity#96d17@Offset(409.0, 578.0), RenderRepaintBoundary#01f23@Offset(409.0, 578.0), RenderSemanticsAnnotations#bd9e2@Offset(409.0, 578.0), RenderOffstage#61d00@Offset(409.0, 578.0), RenderSemanticsAnnotations#eb35e@Offset(409.0, 578.0), _RenderTheater#81889@Offset(409.0, 578.0), RenderAbsorbPointer#ba289@Offset(409.0, 578.0), RenderPointerListener#04532@Offset(409.0, 578.0), RenderSemanticsAnnotations#049b5@Offset(409.0, 578.0), RenderCustomPaint#92c8d@Offset(409.0, 578.0), RenderSemanticsAnnotations#b42ef@Offset(409.0, 578.0), RenderSemanticsAnnotations#51fff@Offset(409.0, 578.0), RenderSemanticsAnnotations#c85e5@Offset(409.0, 578.0), RenderTapRegionSurface#3d87d@Offset(409.0, 578.0), RenderSemanticsAnnotations#ee665@Offset(409.0, 578.0), RenderSemanticsAnnotations#60ef8@Offset(409.0, 578.0), HitTestEntry<HitTestTarget>#9423e(_ReusableRenderView#2e647), HitTestEntry<HitTestTarget>#60ce0(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2158:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1942:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1075:7)
+#3      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart:101:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: true
+  Actual: <false>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart:104:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart line 104
+The test description was:
+  UserCreateSheet sends assignedStoreIds for area_manager
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +1 -1: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserCreateSheet sends assignedStoreIds for area_manager [E]
+  Test failed. See exception logs above.
+  The test description was: UserCreateSheet sends assignedStoreIds for area_manager
+  
+00:01 +1 -1: Slice 5 - TC-5.3, TC-5.4, TC-5.5: ScheduleAuditForm AM Filtering TC-5.3: Selected store filters AM list by assignedStoreIds
+00:02 +2 -1: Slice 5 - TC-5.3, TC-5.4, TC-5.5: ScheduleAuditForm AM Filtering TC-5.4: Auditor list excludes AM if they are not assigned to selected store
+00:02 +3 -1: Slice 5 - TC-5.3, TC-5.4, TC-5.5: ScheduleAuditForm AM Filtering TC-5.5: Non-AM auditors keep prior fallback behavior (no assignment list required)
+00:02 +4 -1: (tearDownAll)
+00:02 +4 -1: Some tests failed.

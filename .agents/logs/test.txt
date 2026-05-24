@@ -1,0 +1,848 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart
+00:00 +0: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S1: SM submits evidence → status = pending_verify
+00:00 +1: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S2: Auditor closes plan → status = closed
+00:00 +2: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S3: Auditor rejects evidence → status = open
+00:00 +3: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S4: SM cannot close plan — throws RoleGuardException
+00:00 +4: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S5: Auditor cannot submit evidence — throws RoleGuardException
+00:00 +5: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S6: Closed is terminal — any transition throws
+00:00 +6: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S7: Open plan past deadline is overdue
+00:00 +7: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S7b: Closed plan past deadline is NOT overdue
+00:00 +8: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: S8: Allowed transitions per status
+00:00 +9: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: Pull Engine AP_PULL_01: Manager_LoadActionPlans_WhenOnline_FetchesAndStoresAndReads
+00:00 +10: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: Pull Engine AP_PULL_01: Manager_LoadActionPlans_WhenOnline_FetchesAndStoresAndReads
+00:00 +11: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: Pull Engine AP_PULL_01: Manager_LoadActionPlans_WhenOnline_FetchesAndStoresAndReads
+00:00 +12: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: Pull Engine AP_PULL_01: Manager_LoadActionPlans_WhenOnline_FetchesAndStoresAndReads
+00:00 +13: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: Pull Engine AP_PULL_01: Manager_LoadActionPlans_WhenOnline_FetchesAndStoresAndReads
+00:00 +14: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: Pull Engine AP_PULL_02: Manager_LoadActionPlans_WhenOffline_ReadsFromCacheOnly
+00:00 +15: C:/Users/HP/Documents/GitHub/Checkly/test/action_plan_manager_test.dart: Pull Engine AP_PULL_03: Manager_LoadActionPlans_WhenNetworkFails_GracefullyReadsCache
+00:00 +16: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/action_plan_outbox_dao_stale_test.dart: ActionPlanOutboxDao Stale Conflict Tests (Slice 3) FL-DAO-SC-01: ActionPlanOutboxDao_markStaleConflict_UpdatesSyncStatusToStaleConflict
+00:00 +17: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/action_plan_outbox_dao_stale_test.dart: ActionPlanOutboxDao Stale Conflict Tests (Slice 3) FL-DAO-SC-02: ActionPlanOutboxDao_getStaleConflictForPlan_ReturnsRowWhenStatusIsStaleConflict
+00:00 +18: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/action_plan_outbox_dao_stale_test.dart: ActionPlanOutboxDao Stale Conflict Tests (Slice 3) FL-DAO-SC-03: ActionPlanOutboxDao_getStaleConflictForPlan_ReturnsNullWhenNoPendingRow
+00:00 +19: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests submitEvidence() throws RoleGuardException if role is not store_manager
+00:00 +20: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests submitEvidence() throws InvalidTransitionException if status is not open
+00:00 +21: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests submitEvidence() throws InvalidTransitionException if status is closed
+00:00 +22: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests closePlan() throws RoleGuardException if role is store_manager
+00:00 +23: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests closePlan() throws InvalidTransitionException if status is not pending_verify
+00:00 +24: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests rejectEvidence() throws RoleGuardException if role is store_manager
+00:00 +25: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests rejectEvidence() throws InvalidTransitionException if status is not pending_verify
+00:00 +26: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests submitEvidence() returns a new ActionPlan with status = pending_verify
+00:00 +27: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests closePlan() returns a new ActionPlan with status = closed and verifierName set
+00:00 +28: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/domain/action_plan_entity_test.dart: ActionPlan Entity Tests rejectEvidence() returns a new ActionPlan with status = open and evidence cleared
+00:01 +29: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: (setUpAll)
+00:01 +29: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — submitEvidence (store_manager) S1: succeeds online and updates status to pending_verify
+00:01 +30: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — submitEvidence (store_manager) S2: enqueues to outbox when offline without calling API
+00:01 +31: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — submitEvidence (store_manager) S3: throws RoleGuardException if role is not store_manager
+00:01 +32: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — submitEvidence (store_manager) S4: throws InvalidTransitionException if plan is not open
+00:01 +33: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — closePlan (auditor/admin) S5: succeeds for auditor when pending_verify
+00:01 +34: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — closePlan (auditor/admin) S6: throws RoleGuardException if role is store_manager
+00:01 +35: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — rejectEvidence (auditor/admin) S7: succeeds for admin when pending_verify
+00:01 +36: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — isOverdue S8: returns true if open and past deadline
+00:01 +37: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: ActionPlanManager State Machine & Rules — isOverdue returns false if not open even if past deadline
+00:01 +38: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_test.dart: (tearDownAll)
+00:01 +38: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: (setUpAll)
+00:01 +38: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-01: submitEvidence asserts store_manager role and open status
+00:01 +39: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-02: submitEvidence online delegates to API and updates memory
+00:01 +40: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-03: submitEvidence offline writes to OutboxDao and patches UI optimism
+00:01 +41: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-04: closePlan asserts auditor/admin role and pending_verify status
+00:01 +42: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-05: closePlan calls API with verifierName and updates status
+00:01 +43: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-06: rejectEvidence asserts auditor/admin role and pending_verify status
+00:01 +44: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-07: rejectEvidence clears evidence and returns to open status
+00:01 +45: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: ActionPlanManager Transitions TC-10-08: Transitions throw on terminal plan status
+00:01 +46: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/manager/action_plan_manager_transitions_test.dart: (tearDownAll)
+00:02 +46: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/pages/action_plan_detail_page_pbac_test.dart: C4: detail page renders Submit Evidence button if allowedAction is present
+00:03 +47: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/pages/action_plan_detail_page_pbac_test.dart: C4: detail page renders Submit Evidence button if allowedAction is present
+00:03 +48: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/pages/action_plan_detail_page_pbac_test.dart: C4: detail page renders Submit Evidence button if allowedAction is present
+00:03 +49: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/pages/action_plan_detail_page_pbac_test.dart: C4: detail page renders Submit Evidence button if allowedAction is present
+00:03 +50: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/pages/action_plan_detail_page_pbac_test.dart: C4: detail page renders Submit Evidence button if allowedAction is present
+00:03 +51: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/pages/action_plan_detail_page_pbac_test.dart: C4: detail page renders Verify and Reject buttons if allowedActions are present
+00:03 +52: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/pages/action_plan_detail_page_pbac_test.dart: C4: detail page hides buttons if allowedActions are empty
+00:03 +53: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders child when action is allowed
+00:03 +54: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders child when action is allowed
+00:03 +55: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders child when action is allowed
+00:03 +56: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders child when action is allowed
+00:03 +57: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders child when action is allowed
+00:03 +58: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders child when action is allowed
+00:03 +59: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders child when action is allowed
+00:04 +60: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/role_manager_capability_meta_test.dart: RoleManager — PBAC Slice 2: Catalog Metadata loadCatalog populates both catalog and catalogMeta from getCapabilityCatalogFull
+00:04 +61: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard hides child when action is missing
+00:04 +62: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard hides child when allowedActions is null
+00:04 +63: C:/Users/HP/Documents/GitHub/Checkly/test/features/action_plans/widgets/action_plan_action_guard_test.dart: C1: ActionPlanActionGuard renders custom fallback when action is missing
+00:04 +64: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/role_manager_test.dart: RoleManager State & Commands — loadRoles updates roles on success
+00:04 +65: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/role_manager_test.dart: RoleManager State & Commands — loadRoles sets error and clears roles on failure
+00:04 +66: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/role_manager_test.dart: RoleManager State & Commands — loadCatalog updates catalog quietly
+00:04 +67: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/role_manager_test.dart: RoleManager State & Commands — grantCommand executes grant and reloads roles
+00:04 +68: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/manager/role_manager_test.dart: RoleManager State & Commands — revokeCommand executes revoke and reloads roles
+00:04 +69: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/admin_dashboard_page_test.dart: AdminDashboard — Load Counts AdminDashboard_LoadCounts_ShowsSnackBarOnApiFailure — SnackBar visible when API throws
+00:05 +70: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/admin_dashboard_page_test.dart: AdminDashboard — Load Counts AdminDashboard_LoadCounts_ShowsSnackBarOnApiFailure — SnackBar visible when API throws
+00:06 +71: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/audit_approval_page_test.dart: AuditApprovalPage — Loading State AuditApproval_Loading_ShowsProgressIndicator — CircularProgressIndicator visible while manager is loading
+00:06 +72: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/audit_approval_page_test.dart: AuditApprovalPage — Loading State AuditApproval_Loading_ShowsProgressIndicator — CircularProgressIndicator visible while manager is loading
+00:07 +73: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:07 +74: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:07 +75: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:07 +76: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:07 +77: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:07 +78: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:08 +79: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:08 +80: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/audit_approval_page_test.dart: AuditApprovalPage — Happy Path AuditApproval_HappyPath_SearchFiltersResults — Typing a search query filters the visible list
+00:08 +81: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-02: RoleDetailPage_WhenConnectionDrops_HidesCheckboxes
+00:08 +82: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:08 +83: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:08 +84: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +85: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +86: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +87: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +88: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +89: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +90: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +91: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +92: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +93: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +94: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +95: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +96: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +97: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +98: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +99: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +100: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +101: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +102: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +103: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +104: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +105: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +106: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +107: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:09 +108: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:10 +109: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:10 +110: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:10 +111: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:10 +112: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserEditSheet sends assignedStoreIds for area_manager
+00:10 +113: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice6_am_store_ui_atdd_test.dart: Slice 6 - Phase 2 UI: AM Store Transfer ATDD Toggle "Show assigned stores" removes assignableAs filter
+00:10 +114: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice6_am_store_ui_atdd_test.dart: Slice 6 - Phase 2 UI: AM Store Transfer ATDD Toggle "Show assigned stores" removes assignableAs filter
+00:10 +115: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice6_am_store_ui_atdd_test.dart: Slice 6 - Phase 2 UI: AM Store Transfer ATDD Toggle "Show assigned stores" removes assignableAs filter
+00:10 +116: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserCreateSheet sends assignedStoreIds for area_manager
+00:11 +117: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserCreateSheet sends assignedStoreIds for area_manager
+00:11 +118: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice5_admin_ui_test.dart: Slice 5 - TC-5.1 & TC-5.2: Store Assignments for AM UserCreateSheet sends assignedStoreIds for area_manager
+00:11 +119: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/pages/analytics_page_test.dart: FL-09 InsightsStale banner shows when stale
+00:11 +120: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/pages/analytics_page_test.dart: FL-09 InsightsStale banner shows when stale
+00:12 +121: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/pages/analytics_page_test.dart: FL-09 InsightsStale banner shows when stale
+00:12 +122: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice6_am_store_ui_atdd_test.dart: Slice 6 - Phase 2 UI: AM Store Transfer ATDD Confirming Transfer submits with forceReassign = true
+00:12 +123: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice6_am_store_ui_atdd_test.dart: Slice 6 - Phase 2 UI: AM Store Transfer ATDD Confirming Transfer submits with forceReassign = true
+00:12 +124: C:/Users/HP/Documents/GitHub/Checkly/test/features/admin/slice6_am_store_ui_atdd_test.dart: Slice 6 - Phase 2 UI: AM Store Transfer ATDD Confirming Transfer submits with forceReassign = true
+00:12 +125: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/widgets/insights_radar_chart_test.dart: FL-05 InsightsRadarChart null data renders empty state
+00:12 +126: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/widgets/insights_radar_chart_test.dart: FL-05 InsightsRadarChart null data renders empty state
+00:13 +127: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/widgets/insights_radar_chart_test.dart: FL-05 InsightsRadarChart null data renders empty state
+00:13 +128: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/widgets/insight_card_test.dart: FL-01 InsightCard renders warning type
+00:13 +129: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/widgets/insight_card_test.dart: FL-01 InsightCard renders warning type
+00:13 +130: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:13 +131: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:13 +132: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:13 +133: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +134: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +135: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +136: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +137: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +138: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +139: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +140: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: AuditCriterionRow displays F:X in red for numeric input in accumulation mode
+00:14 +141: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_online_path_test.dart: AuditManager_Submit_OnlinePath_WritesOutboxInstead
+00:14 +142: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_online_path_test.dart: AuditManager_Submit_OnlinePath_WritesOutboxInstead
+00:14 +143: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_online_path_test.dart: AuditManager_Submit_OnlinePath_WritesOutboxInstead
+00:14 +144: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_online_path_test.dart: AuditManager_Submit_OnlinePath_WritesOutboxInstead
+00:14 +145: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_online_path_test.dart: AuditManager_Submit_OnlinePath_WritesOutboxInstead
+00:14 +146: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: Non-Scored Criteria Badges displays PASS/FAIL for pass_fail type INSIDE badge
+00:14 +147: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: Non-Scored Criteria Badges displays selected label for scale type without badge
+00:14 +148: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_criterion_row_rendering_test.dart: Non-Scored Criteria Badges displays scale label AND points badge in accumulation mode
+00:14 +149: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_scoring_mode_test.dart: (setUpAll)
+00:14 +149: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_scoring_mode_test.dart: AuditManager.scoringMode returns accumulation when template is configured for maturity assessment
+00:14 +150: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_scoring_mode_test.dart: AuditManager.scoringMode defaults to penalty when no template is loaded
+00:14 +151: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_scoring_mode_test.dart: (tearDownAll)
+00:15 +151: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: (setUpAll)
+00:15 +151: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: startAudit pre-populates answers for ALL criteria across all groups
+00:15 +152: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: startAudit liveScore is 100 after startAudit with unanswered template
+00:15 +153: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: startAudit calls DraftService.loadDraft once
+00:15 +154: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: setAnswer setting non_conform reduces liveScore
+00:15 +155: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: setAnswer setCcp on a non_conform answer drops score to 0
+00:15 +156: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: setAnswer setAnswer triggers DraftService.scheduleSave
+00:15 +157: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: restoreDraft merges draft answer values into live answer map
+00:15 +158: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: restoreDraft discardDraft clears the pending draft and hasDraft → false
+00:15 +159: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: submitAudit inserts to OutboxDao and marks wasQueuedOffline when offline
+00:15 +160: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: submitAudit inserts to outbox and marks wasQueuedOffline=false when online
+00:15 +161: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/audit_manager_test.dart: (tearDownAll)
+00:15 +161: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_draft_test.dart: AuditManagerDraft TC-12-01: scheduleDraftSaveLogic saves to DraftService and sets saved time
+00:15 +162: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_draft_test.dart: AuditManagerDraft TC-12-02: restoreDraftLogic restores valid answers and notes from pendingDraft
+00:15 +163: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_draft_test.dart: AuditManagerDraft TC-12-03: restoreDraftLogic silently skips corrupted answer formats
+00:15 +164: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_draft_test.dart: AuditManagerDraft TC-12-04: discardDraftLogic deletes draft key and nullifies pending draft
+00:15 +165: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_draft_test.dart: AuditManagerDraft TC-12-05: forceSaveLogic bypasses debounce and completes immediately
+00:16 +166: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_submit_test.dart: (setUpAll)
+00:16 +166: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_submit_test.dart: AuditManagerSubmit Transitions TC-11-01: submitAudit drops concurrent calls silently (mutex)
+00:16 +167: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_submit_test.dart: AuditManagerSubmit Transitions TC-11-02: submitAudit sets error if answers are empty
+00:16 +168: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_submit_test.dart: AuditManagerSubmit Transitions TC-11-03: submitAudit inserts atomic submission and deletes draft
+00:16 +169: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_submit_test.dart: AuditManagerSubmit Transitions TC-11-04: submitAudit sets _wasQueuedOffline=true if offline
+00:16 +170: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_submit_test.dart: AuditManagerSubmit Transitions TC-11-05: submitAudit sets error string on internal failure
+00:16 +171: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/audit_manager_submit_test.dart: (tearDownAll)
+00:16 +171: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/history_manager_gc_test.dart: HistoryManager - searchCloudArchive (AC5) AC5a — SearchCloudArchive_ReturnsResults_SetsHasArchivedRecordsTrue: API returns old submissions → hasArchivedRecords becomes true
+00:16 +172: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/history_manager_gc_test.dart: HistoryManager - searchCloudArchive (AC5) AC5b — SearchCloudArchive_ReturnsEmpty_SetsHasArchivedRecordsFalse: API returns empty list → hasArchivedRecords is false
+00:16 +173: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/history_manager_gc_test.dart: HistoryManager - searchCloudArchive (AC5) AC5c — SearchCloudArchive_NetworkFailure_SetsErrorButBannerPersists: API throws → error state is set, hasArchivedRecords unchanged
+00:17 +174: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/manager/history_manager_local_overrides_test.dart: HistoryManager_LoadHistory_HydratesLocalDraftAndOutboxMetadataWithoutManagerDbAccess
+00:17 +175: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/model/submission_dto_test.dart: SubmissionDto Void Status SubmissionDto parses voidReason and voidedAt correctly
+00:18 +176: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: (setUpAll)
+00:18 +176: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:18 +177: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:18 +178: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:18 +179: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:18 +180: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:18 +181: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:18 +182: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:19 +183: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:19 +184: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: AuditFormPage._onSubmit calculates missingRequired based on individual and global config
+00:19 +185: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/pages/audit_form_page_required_test.dart: (tearDownAll)
+00:19 +185: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-01: ScoreFormatter_Accumulation_WithRawFields_ShowsPoints
+00:19 +186: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-02: ScoreFormatter_Accumulation_NullRawFields_FallsBackToPercent
+00:19 +187: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-03: ScoreFormatter_Checklist_ShowsOutOf100
+00:19 +188: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-04: ScoreFormatter_Penalty_ShowsPercent
+00:19 +189: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-05: ScoreFormatter_Survey_ReturnsDash
+00:19 +190: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-06: ScoreFormatter_NullMode_FallsBackToPercent
+00:19 +191: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-07: ScoreFormatter_NullTotalScore_ReturnsDash
+00:19 +192: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-08: ScoreFormatter_Accumulation_ZeroPoints_ShowsZeroOutOf
+00:19 +193: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-09: ScoreFormatter_Checklist_WholeNumber_NoDecimal
+00:19 +194: C:/Users/HP/Documents/GitHub/Checkly/test/features/audit/utils/score_formatter_test.dart: ScoreFormatter.format() Tests TC-S2-10: ScoreFormatter_Penalty_OneDecimalPlace
+00:19 +195: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_capability_sync_test.dart: (setUpAll)
+00:20 +195: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_capability_sync_test.dart: AuthManager — Capability Sync (ATDD Slice 4) AT-01: login() populates capabilities from API
+00:20 +196: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_capability_sync_test.dart: AuthManager — Capability Sync (ATDD Slice 4) AT-02: tryAutoLogin() restores capabilities from Drift and triggers background refresh
+00:20 +197: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_capability_sync_test.dart: AuthManager — Capability Sync (ATDD Slice 4) AT-03: logout() clears capabilities from Drift and memory
+00:20 +198: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_capability_sync_test.dart: AuthManager — Capability Sync (ATDD Slice 4) AT-04: login() succeeds even if capability fetch fails (fail-open)
+[PBAC] Capability sync failed (non-fatal): Exception: Server down
+00:20 +199: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_capability_sync_test.dart: (tearDownAll)
+00:20 +199: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_refresh_capabilities_test.dart: (setUpAll)
+00:20 +199: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_refresh_capabilities_test.dart: AuthManager — PBAC Slice 1: Capability Refresh — refreshCapabilities fetches fresh caps and updates cache when authenticated
+00:20 +200: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_refresh_capabilities_test.dart: AuthManager — PBAC Slice 1: Capability Refresh — refreshCapabilities is blocked by 5-minute cooldown guard
+00:20 +201: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_refresh_capabilities_test.dart: AuthManager — PBAC Slice 1: Capability Refresh — refreshCapabilities ignores call if unauthenticated
+00:20 +202: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_refresh_capabilities_test.dart: (tearDownAll)
+00:20 +202: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_test.dart: (setUpAll)
+00:20 +202: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_test.dart: AuthManager — login succeeds and sets authenticated state
+00:20 +203: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_test.dart: AuthManager — login fails and sets unauthenticated state
+00:20 +204: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_test.dart: AuthManager — logout clears everything
+00:20 +205: C:/Users/HP/Documents/GitHub/Checkly/test/features/auth/manager/auth_manager_test.dart: (tearDownAll)
+00:21 +205: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_manager_test.dart: DashboardManager IA Overhaul (TC-01...TC-04) TC-02: Should return ManagerDashboardState when stores are empty
+00:21 +206: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_manager_test.dart: DashboardManager IA Overhaul (TC-01...TC-04) TC-03 & TC-04: Should set storeName to "Syncing..." and storeId to null when empty
+00:21 +207: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_manager_test.dart: DashboardManager IA Overhaul (TC-01...TC-04) TC-05: Should pull personal metrics despite empty store cache
+00:21 +208: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-01 & VC-02: Greeting should have overline and correct style
+00:22 +208: C:/Users/HP/Documents/GitHub/Checkly/test/features/global_risks/sync_engine_global_risks_test.dart: T1: SyncEngine pulls delta GlobalRisks and stores in CachedGlobalRisks
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:22 +209: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-01 & VC-02: Greeting should have overline and correct style
+00:22 +209: C:/Users/HP/Documents/GitHub/Checkly/test/features/global_risks/sync_engine_global_risks_test.dart: T2: SyncEngine pushes PendingSubmissionRisk and removes from outbox
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:22 +210: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-01 & VC-02: Greeting should have overline and correct style
+00:22 +210: C:/Users/HP/Documents/GitHub/Checkly/test/features/global_risks/sync_engine_global_risks_test.dart: T3: SyncEngine treats 409 Conflict on Push as successful drain
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:22 +211: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-01 & VC-02: Greeting should have overline and correct style
+00:22 +212: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-01 & VC-02: Greeting should have overline and correct style
+00:22 +213: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-01 & VC-02: Greeting should have overline and correct style
+00:22 +214: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-03: DeadlineBanner border should be removed
+00:22 +215: C:/Users/HP/Documents/GitHub/Checkly/test/features/dashboard/dashboard_widgets_test.dart: Dashboard Visual Contracts (VC-01...VC-05) VC-04 & VC-05: SubmissionRow score circle and font
+00:22 +216: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/manager/notification_sync_manager_test.dart: (setUpAll)
+00:22 +216: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/manager/notification_sync_manager_test.dart: TC3.1: NotificationSyncManager_DebouncesMultipleTicklesIntoSingleFetch
+00:22 +217: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/manager/notification_sync_manager_test.dart: TC3.2: NotificationSyncManager_Success_ShowsSpecificBanner
+00:22 +218: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/manager/notification_sync_manager_test.dart: TC3.3: NotificationSyncManager_Empty_ShowsNoBanner
+00:22 +219: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/manager/notification_sync_manager_test.dart: TC3.4: NotificationSyncManager_Timeout_ShowsFallbackBanner
+00:22 +220: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/manager/notification_sync_manager_test.dart: (tearDownAll)
+00:23 +220: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/manager/notification_wiring_test.dart: TC_Wiring_1: App lifecycle resume triggers NotificationSyncManager.onTickle
+00:24 +221: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/pages/inbox_page_test.dart: InboxPage — Tab Filtering TC1.2b: All tab shows all notifications (read + unread)
+00:24 +222: C:/Users/HP/Documents/GitHub/Checkly/test/features/notifications/widgets/notification_bell_lifecycle_test.dart: NotificationBell crashes when loadNotifications is called during build of a sibling/child
+00:24 +223: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Stats Row Removal profilePage_StatsRow_IsAbsent — stats labels must not render after refactor
+00:25 +224: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Stats Row Removal profilePage_StatsRow_IsAbsent — stats labels must not render after refactor
+00:25 +225: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Stats Row Removal profilePage_StatsRow_IsAbsent — stats labels must not render after refactor
+00:25 +226: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Stats Row Removal profilePage_StatsRow_IsAbsent — stats labels must not render after refactor
+00:25 +227: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Stats Row Removal profilePage_StatsRow_IsAbsent — stats labels must not render after refactor
+00:25 +228: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Stats Row Removal profilePage_StatsRow_IsAbsent — stats labels must not render after refactor
+00:25 +229: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:25 +229: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Identity Header Layout profilePage_IdentityHeader_IsColumn — CircleAvatar must be inside a Column (premium centered layout)
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:11530:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:114:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:220:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:25 +230: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:26 +230: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Sign Out Confirmation profilePage_SignOut_TriggersConfirmationDialog — AlertDialog shown before logout is called
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:11530:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:114:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:254:26)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:26 +231: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:26 +231: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Sign Out Confirmation profilePage_SignOut_ConfirmCallsLogout — confirming the dialog calls logout exactly once
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:11530:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:114:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:286:26)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:26 +232: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:26 +232: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Settings Card Grouping profilePage_Settings_RenderInCards — at least 2 Card widgets must wrap menu items
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:11530:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:114:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:328:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:26 +233: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:26 +233: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Real Name Display ProfilePage_DisplayName_ShowsFullName — header must prefer fullName over email
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:11530:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:114:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:358:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:26 +234: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:26 +234: C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart: ProfilePage — Real Name Display ProfilePage_DisplayName_FallsBackToEmail — header shows email in BOTH fields when fullName is null
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:11530:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:114:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:391:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:26 +235: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:26 +236: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_create_wizard_page_test.dart: ProgramCreateWizardPage Tests TC-04: wizard Issue button disabled with no stores
+00:26 +237: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramListPage UI Tests Renders UniversalListCard list when items exist
+00:26 +238: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramListPage UI Tests Renders UniversalListCard list when items exist
+00:26 +239: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramListPage UI Tests Renders UniversalListCard list when items exist
+00:27 +240: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramListPage UI Tests Renders UniversalListCard list when items exist
+00:27 +241: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramListPage UI Tests Renders UniversalListCard list when items exist
+00:27 +242: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramListPage UI Tests Renders UniversalListCard list when items exist
+00:27 +243: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramListPage UI Tests Renders UniversalListCard list when items exist
+00:27 +244: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_store_selector_page_test.dart: ProgramStoreSelectorPage Tests TC-07: store selector returns selected IDs
+00:27 +245: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_store_selector_page_test.dart: ProgramStoreSelectorPage Tests TC-07: store selector returns selected IDs
+00:27 +246: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_store_selector_page_test.dart: ProgramStoreSelectorPage Tests TC-07: store selector returns selected IDs
+00:27 +247: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: AreaCampaignListPage UI Tests Renders UniversalListCard and progress bar
+00:27 +248: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: AreaCampaignListPage UI Tests Renders ChecklyEmptyState on error
+00:27 +249: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramAssignmentListPage UI Tests Renders UniversalListCard for pending assignments
+00:27 +250: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/pages/program_list_pages_ui_test.dart: ProgramAssignmentListPage UI Tests Renders ChecklyEmptyState when all caught up
+00:27 +251: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/program_execution_needs_revision_test.dart: ProgramExecutionPage shows Needs Revision banner when status is needs_revision
+00:28 +252: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/program_execution_needs_revision_test.dart: ProgramExecutionPage shows Needs Revision banner when status is needs_revision
+00:28 +253: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/program_execution_needs_revision_test.dart: ProgramExecutionPage shows Needs Revision banner when status is needs_revision
+00:28 +254: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/program_execution_needs_revision_test.dart: ProgramExecutionPage shows Needs Revision banner when status is needs_revision
+00:28 +255: C:/Users/HP/Documents/GitHub/Checkly/test/features/programs/program_execution_needs_revision_test.dart: ProgramExecutionPage shows Needs Revision banner when status is needs_revision
+00:28 +256: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: modeAllows: BLOCKLIST gate (BL-1) survey → modeAllows is FALSE
+00:28 +257: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: modeAllows: BLOCKLIST gate (BL-1) checklist → modeAllows is FALSE
+00:28 +258: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: modeAllows: BLOCKLIST gate (BL-1) penalty → modeAllows is TRUE
+00:28 +259: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: modeAllows: BLOCKLIST gate (BL-1) accumulation → modeAllows is TRUE
+00:28 +260: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: modeAllows: BLOCKLIST gate (BL-1) null → modeAllows is TRUE (EDD-F backward compat)
+00:28 +261: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: modeAllows: BLOCKLIST gate (BL-1) unknown 'qc' → modeAllows is TRUE (safe default)
+00:28 +262: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: inputTypeScored: Gotcha #11 gate (BL-2) pass_fail → scored
+00:28 +263: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: inputTypeScored: Gotcha #11 gate (BL-2) numeric → scored
+00:28 +264: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: inputTypeScored: Gotcha #11 gate (BL-2) scale → scored
+00:28 +265: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: inputTypeScored: Gotcha #11 gate (BL-2) text → NOT scored (EDD-G)
+00:28 +266: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: inputTypeScored: Gotcha #11 gate (BL-2) single_choice → NOT scored (EDD-G)
+00:28 +267: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: inputTypeScored: Gotcha #11 gate (BL-2) multi_choice → NOT scored (EDD-G)
+00:28 +268: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-A: penalty + ccpOff + criterionFalse → hidden
+00:28 +269: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-B: penalty + globalCcpEnabled=true → shown
+00:28 +270: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-C: criterion.isCcp=true + globalOff → shown (data preservation)
+00:28 +271: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-D: survey + globalCcpEnabled=true → hidden
+00:28 +272: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-E: checklist + globalCcpEnabled=true → hidden
+00:28 +273: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-F: null mode + globalCcpEnabled=true → shown
+00:28 +274: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-G: penalty + globalOn + inputType=text → hidden (Gotcha #11)
+00:28 +275: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-G: penalty + globalOn + inputType=single_choice → hidden
+00:28 +276: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showCcp combined gate (BL-3) EDD-G: penalty + globalOn + inputType=multi_choice → hidden
+00:28 +277: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showRisk mirrors CCP gate (BL-4) penalty + riskOff + criterionFalse → hidden
+00:28 +278: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showRisk mirrors CCP gate (BL-4) penalty + globalRiskEnabled=true → shown
+00:28 +279: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showRisk mirrors CCP gate (BL-4) criterion.isRisk=true + globalOff → shown (data preservation)
+00:28 +280: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showRisk mirrors CCP gate (BL-4) survey + globalRiskEnabled=true → hidden (BLOCKLIST)
+00:28 +281: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showRisk mirrors CCP gate (BL-4) text inputType + globalRiskEnabled=true → hidden
+00:28 +282: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showDivider: only renders if at least one toggle shows (BL-5) both hidden → no divider
+00:28 +283: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showDivider: only renders if at least one toggle shows (BL-5) ccp shown only → divider
+00:28 +284: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showDivider: only renders if at least one toggle shows (BL-5) risk shown only → divider
+00:28 +285: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/ccp_risk_disclosure_test.dart: showDivider: only renders if at least one toggle shows (BL-5) both shown → divider
+00:28 +286: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: survey mode (BL-1) survey → pass_fail is DISABLED
+00:28 +287: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: survey mode (BL-1) survey → numeric is DISABLED
+00:28 +288: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: survey mode (BL-1) survey → scale is DISABLED
+00:28 +289: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: survey mode (BL-1) survey → single_choice is ENABLED
+00:28 +290: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: survey mode (BL-1) survey → multi_choice is ENABLED
+00:28 +291: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: survey mode (BL-1) survey → text is ENABLED
+00:28 +292: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: checklist mode (BL-2) checklist → numeric is DISABLED
+00:28 +293: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: checklist mode (BL-2) checklist → scale is DISABLED
+00:28 +294: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: checklist mode (BL-2) checklist → pass_fail is ENABLED (EDD-D)
+00:28 +295: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: checklist mode (BL-2) checklist → single_choice is ENABLED
+00:28 +296: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: checklist mode (BL-2) checklist → multi_choice is ENABLED
+00:28 +297: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: checklist mode (BL-2) checklist → text is ENABLED
+00:28 +298: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: penalty mode (BL-3) penalty → 'pass_fail' is ENABLED
+00:28 +299: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: penalty mode (BL-3) penalty → 'numeric' is ENABLED
+00:28 +300: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: penalty mode (BL-3) penalty → 'scale' is ENABLED
+00:28 +301: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: penalty mode (BL-3) penalty → 'single_choice' is ENABLED
+00:28 +302: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: penalty mode (BL-3) penalty → 'multi_choice' is ENABLED
+00:28 +303: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: penalty mode (BL-3) penalty → 'text' is ENABLED
+00:28 +304: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: accumulation mode (BL-4) accumulation → 'pass_fail' is ENABLED
+00:28 +305: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: accumulation mode (BL-4) accumulation → 'numeric' is ENABLED
+00:28 +306: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: accumulation mode (BL-4) accumulation → 'scale' is ENABLED
+00:28 +307: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: accumulation mode (BL-4) accumulation → 'single_choice' is ENABLED
+00:28 +308: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: accumulation mode (BL-4) accumulation → 'multi_choice' is ENABLED
+00:28 +309: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: accumulation mode (BL-4) accumulation → 'text' is ENABLED
+00:28 +310: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: null mode (BL-5 – backward compat) null → 'pass_fail' is ENABLED
+00:28 +311: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: null mode (BL-5 – backward compat) null → 'numeric' is ENABLED
+00:28 +312: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: null mode (BL-5 – backward compat) null → 'scale' is ENABLED
+00:28 +313: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: null mode (BL-5 – backward compat) null → 'single_choice' is ENABLED
+00:28 +314: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: null mode (BL-5 – backward compat) null → 'multi_choice' is ENABLED
+00:28 +315: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: null mode (BL-5 – backward compat) null → 'text' is ENABLED
+00:28 +316: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: unknown mode (BL-6 – safe default) unknown 'qc' → 'pass_fail' is ENABLED
+00:28 +317: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: unknown mode (BL-6 – safe default) unknown 'qc' → 'numeric' is ENABLED
+00:28 +318: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: unknown mode (BL-6 – safe default) unknown 'qc' → 'scale' is ENABLED
+00:28 +319: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: unknown mode (BL-6 – safe default) unknown 'qc' → 'single_choice' is ENABLED
+00:28 +320: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: unknown mode (BL-6 – safe default) unknown 'qc' → 'multi_choice' is ENABLED
+00:28 +321: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: isDisabledForMode: unknown mode (BL-6 – safe default) unknown 'qc' → 'text' is ENABLED
+00:28 +322: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: modeLabel helper 'survey' → 'Survey'
+00:28 +323: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: modeLabel helper 'checklist' → 'Checklist'
+00:28 +324: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: modeLabel helper null → empty string
+00:29 +325: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/input_type_filter_test.dart: modeLabel helper 'penalty' → empty string (no label needed)
+00:29 +326: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/manager/template_manager_test.dart: TemplateManager Tests loadTemplates uses cache first, then API
+00:29 +327: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/manager/template_manager_test.dart: TemplateManager Tests loadTemplates handles offline gracefully if cache exists
+00:29 +328: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/manager/template_manager_test.dart: TemplateManager Tests loadTemplates sets error if API fails and cache is empty
+00:29 +329: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/manager/template_manager_test.dart: TemplateManager Tests loadTemplateTree uses cache first, then API
+00:29 +330: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/manager/template_manager_test.dart: TemplateManager Tests deleteTemplate updates API and local state
+00:29 +331: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections business logic rule (Slice 2 / BL-1) null scoringMode → allowed (backward compat for Builder default)
+00:29 +332: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections business logic rule (Slice 2 / BL-1) scoringMode 'penalty' → sub-sections allowed
+00:29 +333: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections business logic rule (Slice 2 / BL-1) scoringMode 'accumulation' → sub-sections allowed
+00:29 +334: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections business logic rule (Slice 2 / BL-1) scoringMode 'survey' → sub-sections NOT allowed
+00:29 +335: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections business logic rule (Slice 2 / BL-1) scoringMode 'checklist' → sub-sections NOT allowed
+00:29 +336: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections business logic rule (Slice 2 / BL-1) unknown non-empty scoringMode 'qc' → NOT allowed (allowlist model)
+00:29 +337: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections business logic rule (Slice 2 / BL-1) empty string scoringMode → NOT allowed (not null, not in allowlist)
+00:29 +338: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections: condition logic for button visibility (Slice 2 / BL-2) survey + no criteria → button visible (restricted mode + no criteria)
+00:29 +339: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections: condition logic for button visibility (Slice 2 / BL-2) survey + has criteria → button STILL visible (restricted mode overrides)
+00:29 +340: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections: condition logic for button visibility (Slice 2 / BL-2) penalty + no criteria → button visible (allowed mode + empty)
+00:29 +341: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections: condition logic for button visibility (Slice 2 / BL-2) penalty + has criteria → button HIDDEN (original behaviour preserved)
+00:29 +342: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/section_editor_scoring_test.dart: allowSubSections: condition logic for button visibility (Slice 2 / BL-2) null mode + has criteria → button HIDDEN (backward compat)
+00:30 +343: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: (setUpAll)
+00:30 +343: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +344: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +345: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +346: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +347: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +348: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +349: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +350: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +351: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +352: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +353: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:30 +354: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/template_list_page_rbac_test.dart: TemplateListPage RBAC Tests TC-06a: FAB is hidden for auditor role
+00:31 +355: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +356: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +357: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +358: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +359: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +360: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +361: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +362: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +363: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +364: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +365: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +366: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +367: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +368: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +369: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +370: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +371: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +372: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +373: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +374: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +375: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +376: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +377: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +378: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +379: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +380: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +381: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +382: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:31 +383: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:32 +384: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:32 +385: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:32 +386: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:32 +387: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:32 +388: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/advanced_settings_card_test.dart: AdvancedSettingsCard - Require Confirmation UI Tests Renders "Require Confirmation" toggle and triggers callback
+00:32 +389: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/parts_test.dart: Template Widget Parts - Public Isolation Tests SectionEditorHeader - Renders correct counts and title
+00:32 +390: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/parts_test.dart: Template Widget Parts - Public Isolation Tests SectionEditorHeader - Renders correct counts and title
+00:32 +391: C:/Users/HP/Documents/GitHub/Checkly/test/features/templates/widgets/parts_test.dart: Template Widget Parts - Public Isolation Tests SectionEditorHeader - Renders correct counts and title
+00:32 +392: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/pages/user_group_list_page_test.dart: UserGroupListPage Widget Tests UG-WID-LIST-01: List page loading state
+00:32 +393: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/pages/user_group_list_page_test.dart: UserGroupListPage Widget Tests UG-WID-LIST-01: List page loading state
+00:32 +394: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/pages/user_group_list_page_test.dart: UserGroupListPage Widget Tests UG-WID-LIST-01: List page loading state
+00:32 +395: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/pages/user_group_list_page_test.dart: UserGroupListPage Widget Tests UG-WID-LIST-01: List page loading state
+00:33 +396: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-01: Form renders correctly
+00:33 +397: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-01: Form renders correctly
+00:33 +398: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-01: Form renders correctly
+00:34 +399: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-01: Form renders correctly
+00:34 +400: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/empty_error_states_test.dart: EmptyState Widget Tests Renders all text elements and invokes callback on tap
+00:34 +401: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/user_group_tile_test.dart: UserGroupTile Widget Tests UG-WID-TILE-01: Tile renders correctly with description
+00:34 +402: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/user_group_tile_test.dart: UserGroupTile Widget Tests UG-WID-TILE-01: Tile renders correctly with description
+00:34 +403: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/user_group_tile_test.dart: UserGroupTile Widget Tests UG-WID-TILE-01: Tile renders correctly with description
+00:34 +404: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +405: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +406: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +407: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +408: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +409: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +410: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +411: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +412: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +413: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-VAL-02: Validation name length > 200
+00:34 +414: C:/Users/HP/Documents/GitHub/Checkly/test/missing_components_test.dart: NotificationBell (Slice 2) AC9: empty notification list shows placeholder
+00:34 +415: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +416: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +417: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +418: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +419: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +420: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +421: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +422: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +423: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-02: Form submit success flow
+00:34 +424: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-03: Form submit failure flow
+00:35 +425: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-03: Form submit failure flow
+00:35 +426: C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/widgets/create_group_sheet_test.dart: CreateGroupSheet Widget Tests UG-WID-CREATE-03: Form submit failure flow
+00:35 +427: C:/Users/HP/Documents/GitHub/Checkly/test/router/shell_tab_visibility_test.dart: ShellTab Visibility shellActiveIndexFromLocation falls back to PROFILE for /templates route
+00:35 +428: C:/Users/HP/Documents/GitHub/Checkly/test/router/shell_tab_visibility_test.dart: ShellTab Visibility shellActiveIndexFromLocation falls back to PROFILE for /admin routes
+00:35 +429: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_conform_guard_test.dart: ScoringEngine_ConformWithStaleNumericValue_NoPhantomDeduction_PenaltyMode
+00:35 +430: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_conform_guard_test.dart: ScoringEngine_NaWithStaleNumericValue_NoPhantomDeduction_PenaltyMode
+00:35 +431: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_conform_guard_test.dart: ScoringEngine_ConformWithStaleNumericValue_NoPhantomDeduction_ChecklistMode
+00:35 +432: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_conform_guard_test.dart: ScoringEngine_NonConformWithMappedNumericValue_DeductionApplied_PenaltyMode
+00:35 +433: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_conform_guard_test.dart: ScoringEngine_ThreePhantomConformDeductions_MatchesServerScore_77_78
+00:35 +434: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_test.dart: (setUpAll)
+00:35 +434: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_test.dart: Run all vectors from JSON
+00:35 +435: C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_test.dart: (tearDownAll)
+00:36 +435: C:/Users/HP/Documents/GitHub/Checkly/test/services/policy_manager_implicit_access_test.dart: Implicit Policy Manager ATDD Gate Specs AC-1: Implicit Grant - can(adminAccess) is true when user has an adminDomain capability
+00:36 +436: C:/Users/HP/Documents/GitHub/Checkly/test/services/policy_manager_implicit_access_test.dart: Implicit Policy Manager ATDD Gate Specs AC-2: Explicit Only - can(adminAccess) is false when user only has non-admin capabilities
+00:36 +437: C:/Users/HP/Documents/GitHub/Checkly/test/services/policy_manager_implicit_access_test.dart: Implicit Policy Manager ATDD Gate Specs AC-3: Unhydrated Safety - can(adminAccess) safely handles empty capability sets
+00:36 +438: C:/Users/HP/Documents/GitHub/Checkly/test/services/policy_manager_implicit_access_test.dart: Implicit Policy Manager ATDD Gate Specs AC-4: No Spillovers - can(templates:create) is false when implicit logic acts sideways
+00:36 +439: C:/Users/HP/Documents/GitHub/Checkly/test/services/policy_manager_test.dart: PM-01: can() returns true when capability exists in AuthManager
+00:36 +440: C:/Users/HP/Documents/GitHub/Checkly/test/services/policy_manager_test.dart: PM-02: can() returns false when capability is absent
+00:36 +441: C:/Users/HP/Documents/GitHub/Checkly/test/services/policy_manager_test.dart: PM-03: isLoaded returns true when capabilities are not empty
+00:36 +442: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_payload_test.dart: CoreAuditSyncModule Answer Payload Builder SE1: buildAnswerPayload with isCcp=true includes isCcp key mapping
+00:36 +443: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_payload_test.dart: CoreAuditSyncModule Answer Payload Builder SE2: buildAnswerPayload with isRisk=true includes isRisk key mapping
+00:36 +444: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_payload_test.dart: CoreAuditSyncModule Answer Payload Builder SE3: buildAnswerPayload with false values serializes them explicitly
+00:37 +445: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S1: Connectivity online triggers sync cycle
+00:37 +446: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S2: Concurrent sync request is ignored
+00:37 +447: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S3: Outbox pushed in FIFO order by createdAt
+00:37 +448: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S4: Partial failure stops at failed item, keeps remaining
+00:37 +449: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S5: Delta pull uses and updates lastSyncTimestamp via SyncMetaDao
+00:37 +450: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S6: Sync skipped when user is not authenticated
+00:37 +451: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S7: Empty outbox only pulls, no push
+00:37 +452: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S8: Connectivity loss during sync transitions to offline
+00:37 +453: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S9: 403 Forbidden immediately exhausts record without retrying
+00:37 +454: C:/Users/HP/Documents/GitHub/Checkly/test/sync_engine_test.dart: S10: 403 on one record continues syncing remaining records
+00:37 +455: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-1: TemplateApiService.createTemplate exists createTemplate method is callable on TemplateApiService
+00:37 +456: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-2: TemplateManager.saveTemplate exists saveTemplate method is callable on TemplateManager
+00:37 +457: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-3: TemplateManager.deleteTemplate exists deleteTemplate method is callable on TemplateManager
+00:37 +458: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-4: Edit template route templates/edit route is wired — TemplateBuilderPage accepts any ID
+00:37 +459: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-5: TemplateBuilderPage has editable form page contains TextFormField for title (not read-only Text)
+00:37 +460: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-6: Scoring rules card page has 5 scoring rule SwitchListTiles
+00:37 +461: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-6: Scoring rules card page has AP Deadline and Reminder number inputs
+00:37 +462: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-7: Section and Criteria editor page has Add Section button
+00:37 +463: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-7: Section and Criteria editor page has Add Criteria button per section
+00:37 +464: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: AC-8: Template footer page has fixed footer with Save button
+00:37 +465: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: GREEN — Existing infrastructure TemplateBuilderPage class exists
+00:37 +466: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: GREEN — Existing infrastructure TemplateBuilderPage accepts templateId parameter
+00:37 +467: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: GREEN — Existing infrastructure TemplateTreeDto has scoringLogicConfig field
+00:37 +468: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: GREEN — Existing infrastructure GroupDto can be constructed for new section
+00:37 +469: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: GREEN — Existing infrastructure CriterionDto can be constructed for new criterion
+00:37 +470: C:/Users/HP/Documents/GitHub/Checkly/test/template_creation_test.dart: GREEN — Existing infrastructure TemplateApiService has group and criteria CRUD
+00:37 +471: C:/Users/HP/Documents/GitHub/Checkly/test/ui_gaps_test.dart: Gap #1: Audits page exists (compile gate) HistoryPage class exists — Audits page is implemented
+00:37 +472: C:/Users/HP/Documents/GitHub/Checkly/test/ui_gaps_test.dart: Gap #2: CreateUser (compile gate) UserManagementPage + AdminApiService.createUser exist
+00:37 +473: C:/Users/HP/Documents/GitHub/Checkly/test/ui_gaps_test.dart: Gap #4: Templates page features TemplateListPage class exists
+00:37 +474: C:/Users/HP/Documents/GitHub/Checkly/test/ui_gaps_test.dart: Gap #5: Analytics page features AnalyticsPage class exists
+00:38 +475: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: AppError & ErrorDictionary Tests TC-01: Valid ProblemDetails code: "conflict"
+00:38 +476: C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart: B1: ActionPlanDto.fromJson parses allowedActions B1a: Parses submit_evidence actions for an open plan
+00:38 +477: C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart: B1: ActionPlanDto.fromJson parses allowedActions B1a: Parses submit_evidence actions for an open plan
+00:38 +478: C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart: B1: ActionPlanDto.fromJson parses allowedActions B1a: Parses submit_evidence actions for an open plan
+00:38 +479: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: AppError & ErrorDictionary Tests TC-04: Connection timeout
+00:38 +480: C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart: B1: ActionPlanDto.fromJson parses allowedActions B1b: Parses verify actions for a pending_verify plan
+00:38 +481: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +482: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +483: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +484: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +485: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +486: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +487: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +488: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:38 +489: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:39 +490: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:39 +491: C:/Users/HP/Documents/GitHub/Checkly/test/unit/error_display_service_test.dart: ErrorDisplayService Tests TC-05: onRetry callback provided
+00:39 +492: C:/Users/HP/Documents/GitHub/Checkly/test/unit/widgets/action_guard_test.dart: ActionGuard Widget TC-07 actions=null, user has fallbackCapability -> Child widget rendered
+00:39 +493: C:/Users/HP/Documents/GitHub/Checkly/test/unit/widgets/action_guard_test.dart: ActionGuard Widget TC-07 actions=null, user has fallbackCapability -> Child widget rendered
+00:39 +494: C:/Users/HP/Documents/GitHub/Checkly/test/unit/widgets/action_guard_test.dart: ActionGuard Widget TC-07 actions=null, user has fallbackCapability -> Child widget rendered
+00:39 +495: C:/Users/HP/Documents/GitHub/Checkly/test/unit/widgets/action_guard_test.dart: ActionGuard Widget TC-07 actions=null, user has fallbackCapability -> Child widget rendered
+00:40 +496: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart: TC-PBAC-01a: PermissionGuard_showAsDisabled_true_WithCapability_RendersInteractiveChild
+00:40 +497: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart: TC-PBAC-01a: PermissionGuard_showAsDisabled_true_WithCapability_RendersInteractiveChild
+00:40 +498: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart: TC-PBAC-01a: PermissionGuard_showAsDisabled_true_WithCapability_RendersInteractiveChild
+00:40 +499: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_disabled_test.dart: TC-PBAC-01a: PermissionGuard_showAsDisabled_true_WithCapability_RendersInteractiveChild
+00:40 +500: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_reactive_test.dart: PermissionGuard rebuilds reactively when capabilities change
+00:40 +501: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_reactive_test.dart: PermissionGuard rebuilds reactively when capabilities change
+00:40 +502: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_reactive_test.dart: PermissionGuard rebuilds reactively when capabilities change
+00:40 +503: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_reactive_test.dart: PermissionGuard rebuilds reactively when capabilities change
+00:40 +504: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_reactive_test.dart: PermissionGuard rebuilds reactively when capabilities change
+00:40 +505: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/permission_guard_test.dart: PG-01: Renders child when can() evaluates to true
+00:41 +506: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BubblyButton Widget Tests BB-01: Renders label text correctly
+00:41 +507: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BubblyButton Widget Tests BB-01: Renders label text correctly
+00:41 +508: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BubblyButton Widget Tests BB-01: Renders label text correctly
+00:41 +509: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:41 +510: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:41 +511: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:41 +512: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:41 +513: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:41 +514: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:41 +515: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:41 +516: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:42 +517: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-01: Renders label and icon correctly
+00:42 +518: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BubblyButton Widget Tests BB-07: Button tap cancel restores scale back to 1.0
+00:42 +519: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-02: Mapped colors are pastel with no grays
+00:42 +520: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: StrokeCard Widget Tests SC-01: Renders children successfully
+00:42 +521: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-03: Tapping triggers onTap callback
+00:42 +522: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: PillChip Widget Tests PC-03: Tapping triggers onTap callback
+00:42 +523: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart: B2: CachedActionPlans.cachedAllowedActions column exists and round-trips B2a: Can write and read back a JSON-encoded allowedActions list
+00:42 +524: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart: B2: CachedActionPlans.cachedAllowedActions column exists and round-trips B2a: Can write and read back a JSON-encoded allowedActions list
+00:42 +525: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart: B2: CachedActionPlans.cachedAllowedActions column exists and round-trips B2a: Can write and read back a JSON-encoded allowedActions list
+00:42 +526: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +527: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +528: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +529: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +530: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +531: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +532: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +533: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +534: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +535: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans when audit is voided
+00:42 +536: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: BubblySwitch Widget Tests BS-02: Tapping triggers onChanged callback
+00:42 +537: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: BubblySwitch Widget Tests BS-02: Tapping triggers onChanged callback
+00:42 +538: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: BubblySwitch Widget Tests BS-02: Tapping triggers onChanged callback
+00:42 +539: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart: B4: Manager.loadActionPlans rehydrates allowedActions offline B4c: Multiple plans rehydrate their individual allowedActions independently
+00:42 +540: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_void_cascade_test.dart: SQLite cascade trigger closes action plans on AFTER INSERT
+00:42 +541: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: ChecklyEmptyState Widget Tests ES-01: Standard empty state displays title, subtitle, and default icon
+00:42 +542: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: BubblyDialog Widget Tests BD-01: Renders layout correctly with R: 24px and Swan border
+00:42 +543: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: BubblyDialog Widget Tests BD-01: Renders layout correctly with R: 24px and Swan border
+00:42 +544: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: BubblyDialog Widget Tests BD-01: Renders layout correctly with R: 24px and Swan border
+00:42 +545: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: BubblyDialog Widget Tests BD-01: Renders layout correctly with R: 24px and Swan border
+00:42 +546: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: ChecklyEmptyState Widget Tests ES-05: Tap jiggle is disabled when reduced motion is requested
+00:42 +547: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: UniversalListCard Widget Tests ULC-01: Renders title and subtitle correctly
+00:42 +548: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: NavItem Widget Tests NI-01: AnimatedSlide and AnimatedScale widgets are found inside NavItem
+00:42 +549: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: UniversalListCard Widget Tests ULC-02: Left side slot has 44x44 constraint size
+00:42 +550: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: NavItem Widget Tests NI-02: Icon scales to 1.2x and slides when isActive=true
+00:42 +551: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: UniversalListCard Widget Tests ULC-03: Renders badges and trailing widget correctly
+00:42 +552: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: NavItem Widget Tests NI-03: Icon scale is 1.0x and offset is 0 when isActive=false
+00:42 +553: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/supporting_primitives_test.dart: UniversalListCard Widget Tests ULC-04: Tap triggers onTap callback
+00:42 +554: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: NavItem Widget Tests NI-04: isActive transition false to true triggers animation
+00:42 +555: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/gc_pruning_test.dart: AC1a â€” GC_PruneStaleCompletedAudits: completed record > 90 days is deleted on db open
+00:42 +556: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyListWrapper Widget Tests BLW-01: BouncyListWrapper renders all children
+00:42 +557: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/gc_pruning_test.dart: AC1b â€” GC_PruneStaleVoidedAudits: voided record > 90 days is deleted on db open
+00:42 +558: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyListWrapper Widget Tests BLW-02: Each child is wrapped in TweenAnimationBuilder
+00:42 +559: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyListWrapper Widget Tests BLW-02: Each child is wrapped in TweenAnimationBuilder
+00:42 +560: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/gc_pruning_test.dart: AC3 â€” GC_NullCompletedAt_NoDelete: completed record with NULL completedAt is NOT pruned
+00:42 +561: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyListWrapper Widget Tests BLW-03: 0 children provided renders empty and causes no error
+00:42 +562: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyListWrapper Widget Tests BLW-03: 0 children provided renders empty and causes no error
+00:42 +563: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyListWrapper Widget Tests BLW-04: 13+ children provided caps stagger delay at 500ms
+00:42 +564: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyCheckbox Widget Tests BC-01: Renders unchecked state correctly
+00:42 +565: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyCheckbox Widget Tests BC-02: Tap triggers onChanged callback
+00:43 +566: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyCheckbox Widget Tests BC-03: AnimatedScale widget is present inside BouncyCheckbox
+00:43 +567: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyCheckbox Widget Tests BC-04: Toggling isChecked false to true plays elastic animation
+00:43 +568: C:/Users/HP/Documents/GitHub/Checkly/test/widgets/primitives_test.dart: BouncyCheckbox Widget Tests BC-05: Tap jiggle is disabled when reduced motion is requested
+00:43 +569: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/outbox_dao_backoff_test.dart: AC1: OutboxDao_NewSubmission_HasDefaultBackoffState
+00:43 +570: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/outbox_dao_backoff_test.dart: AC2: OutboxDao_GetEligiblePending_ExcludesFutureRetry
+00:43 +571: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/outbox_dao_backoff_test.dart: AC3: OutboxDao_GetEligiblePending_IncludesPastRetry
+00:43 +572: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/outbox_dao_backoff_test.dart: AC7: OutboxDao_WatchExhaustedCount_EmitsPositiveSum
+00:43 +573: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/pending_photos_migration_test.dart: AC7: PendingPhotos_Schema_AnswerIdColumnIsNullable - Optional answerId saves correctly
+00:43 +574: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/pending_photos_migration_test.dart: AC7: PendingPhotos_Schema_AnswerIdColumnIsNullable - Optional answerId saves correctly
+00:43 +575: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/pending_photos_migration_test.dart: AC7: PendingPhotos_Schema_AnswerIdColumnIsNullable - Optional answerId saves correctly
+00:43 +576: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/pending_photos_migration_test.dart: AC8: PendingPhotos_Migration_ExistingRowsPreserved - AnswerId preserves backwards compatibility returning null
+00:43 +577: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — full caps (all tabs visible) /home → visual index 0 (Home tab)
+00:43 +578: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — full caps (all tabs visible) /activity → visual index 1 (Activity tab)
+00:43 +579: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — full caps (all tabs visible) /plans → visual index 2 (Plans tab)
+00:43 +580: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — full caps (all tabs visible) /templates → visual index 3 (fallback: no Templates tab, anchors PROFILE)
+00:43 +581: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — full caps (all tabs visible) /profile → visual index 3 (Profile tab)
+00:43 +582: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — full caps (all tabs visible) /inbox → visual index 4 (Inbox tab)
+00:43 +583: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — full caps (all tabs visible) /admin/* → visual index 3 (PROFILE tab — anchored by router fallback)
+00:43 +584: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — no submissionsList cap (Activity hidden) /home → 0
+00:43 +585: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — no submissionsList cap (Activity hidden) /plans → 1 (Activity tab hidden, Plans shifts left)
+00:43 +586: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — no submissionsList cap (Activity hidden) /templates → 2 (fallback to PROFILE; no Templates tab)
+00:43 +587: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — only Home/Plans/Profile/Inbox visible /home → 0
+00:43 +588: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — only Home/Plans/Profile/Inbox visible /profile → 2
+00:43 +589: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — only Home/Plans/Profile/Inbox visible /inbox → 3
+00:43 +590: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/router/app_router_test.dart: shellActiveIndexFromLocation — only Home/Plans/Profile/Inbox visible /activity → 0 when Activity tab is hidden (clamp to Home)
+00:44 +591: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-01: < 5 mins elapsed triggers no callbacks
+00:44 +592: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-02: Exactly 5 mins elapsed triggers onAuthCheck
+00:44 +593: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-03: 5 mins - 12 hours elapsed triggers onAuthCheck
+00:44 +594: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-04: Exactly 12 hours elapsed triggers onFullResync
+00:44 +595: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-05: 12 hours - 7 days elapsed triggers onFullResync
+00:44 +596: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-06: Exactly 7 days elapsed triggers onForceReLogin
+00:44 +597: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-07: > 7 days elapsed triggers onForceReLogin
+00:44 +598: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/app_lifecycle_manager_test.dart: AppLifecycleManager Tests TC-09-08: Debounce cancels pending execution on repeated resumes
+00:44 +599: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:44 +600: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +601: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +602: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +603: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +604: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +605: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +606: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +606: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_api_adapter_test.dart: AC1: LocalPhotoPath_StrippedBeforePost - Local path inside payload is nulled
+[SyncApi] pushSubmission key=key
+00:45 +607: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +607: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_api_adapter_test.dart: AC2: CdnPhotoUrl_PreservedBeforePost - Remote CDN URL is not stripped
+[SyncApi] pushSubmission key=key
+00:45 +608: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +608: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_api_adapter_test.dart: AC10: NullPhotoUrl_NotMangled - Null photoUrl passes through safely
+[SyncApi] pushSubmission key=key
+00:45 +609: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +609: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_api_adapter_test.dart: AC11: SyncAdapter_PushSubmission_WithTargetId_CallsPutFinalize
+[SyncApi] pushSubmission key=key
+00:45 +610: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:45 +610: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_api_adapter_test.dart: AC12: SyncAdapter_PushSubmission_WithNullTargetId_CallsPostSubmissions
+[SyncApi] pushSubmission key=key
+00:45 +611: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +611: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC4: SyncEngine_FirstFailure_SetsRetryCountOneAndNextRetryAt2s
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +612: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +612: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC5: SyncEngine_ThirdFailure_SetsNextRetryAt60s
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +613: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +613: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC6: SyncEngine_FourthFailure_SetsStatusExhausted
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +614: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +614: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC-409: _drainRisks_409Conflict_TreatedAsSuccess_RecordRemoved
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +615: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +615: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC-FATAL: _drainSubmissions_400FatalError_MarkedExhausted_NoRetry
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +616: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +616: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC-CHECKPOINT: drainSubmissions_PushSucceeds_WritesCheckpointBeforeDelete
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +617: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +617: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC-SWEEP: requestSync_StartupSweep_DeletesOrphanedSyncedSubmissions
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +618: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +618: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_backoff_test.dart: AC-SWEEP-NOPUSH: startupSweep_DoesNotPushAlreadySyncedRows
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +619: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +619: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_hardening_test.dart: TC-03: SyncEngine_SubmissionFailure_DoesNotBlock_ActionPlanDrain
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +620: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:46 +620: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_hardening_test.dart: TC-04: SyncEngine_SubmissionFailure_DoesNotBlock_RiskDrain
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:46 +621: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +621: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-01: watchExhaustedCount() emits 0 when outbox is empty
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +622: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +622: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-02: watchExhaustedCount() emits 2 when 2 exhausted rows exist
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +623: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +623: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-03: discardExhausted() removes all exhausted rows from DB
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +624: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +624: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-04: requeueExhausted() resets exhausted rows to pending
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +625: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +625: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-05: syncableCount() returns 0 for empty outbox
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +626: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +626: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-06: syncableCount() returns 1 when 1 pending submission exists
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +627: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +627: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-07: exhaustedCount() returns 0 for empty outbox
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +628: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +628: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_outbox_delegation_test.dart: SyncEngine Outbox Delegation TC-08: exhaustedCount() returns 1 when 1 exhausted submission exists
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +629: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +629: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_plugin_test.dart: SyncEngine Plugin Architecture TC-PLUGIN-1: SyncEngine_EmptyModuleList_CompletesWithoutError
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +630: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +630: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_plugin_test.dart: SyncEngine Plugin Architecture TC-PLUGIN-2: SyncEngine_PullPhase_ExecutesAllModulesInPriorityOrder
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +631: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +631: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_plugin_test.dart: SyncEngine Plugin Architecture TC-PLUGIN-3: SyncEngine_PushPhase_ModuleThrows_SetsErrorState
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +632: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:47 +632: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_plugin_test.dart: SyncEngine Plugin Architecture TC-PLUGIN-4: SyncEngine_OfflineCheck_BetweenModules_AbortsLoop
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:47 +633: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +633: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/sync_engine_push_test.dart: SyncEngine_Push_BuildsCorrectPayloadFromNormalizedTables_AndClearsOutbox
+[SyncEngine] connectivity stream closed. Activating poll fallback.
+00:48 +634: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +635: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +636: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +637: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +638: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +639: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +640: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:48 +641: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC9: PhotoQueue_MissingLocalFile_SkipsBackoff
+00:49 +642: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_service_test.dart: AC11: PhotosUploadedInFifoOrder - FIFO strictly enforced
+00:54 +643: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_service_test.dart: AC11: PhotosUploadedInFifoOrder - FIFO strictly enforced
+00:59 +644: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC12: PhotoQueue_FourthFailure_SetsExhausted
+00:59 +645: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_backoff_test.dart: AC12: PhotoQueue_FourthFailure_SetsExhausted
+01:01 +646: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_service_test.dart: AC6: NetworkFailure_MarksErrorBlocksBatch - Network crash prevents subsequent uploads
+01:05 +647: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_service_test.dart: TC-F1-01: AC_429_ReturnsRetryScheduled_NoDelay
+01:16 +648: C:/Users/HP/Documents/GitHub/Checkly/test/_shared/services/photo_queue_service_test.dart: (tearDownAll)
+01:16 +648: All tests passed!

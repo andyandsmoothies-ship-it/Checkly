@@ -1,0 +1,86 @@
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.Gap2_BulkAssignment_AtomicFailure [8 s]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Conflict
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.Gap2_BulkAssignment_AtomicFailure() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 300
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC3_CreateAM_TakenStore_ReturnsConflict [210 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Conflict
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC3_CreateAM_TakenStore_ReturnsConflict() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 131
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC4_UpdateAM_TakenStore_ReturnsConflict [245 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Conflict
+Actual:   OK
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC4_UpdateAM_TakenStore_ReturnsConflict() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 172
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC1_DbLayer_UniqueIndex_ThrowsOnDuplicateStoreAssignment [18 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(Microsoft.EntityFrameworkCore.DbUpdateException)
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC1_DbLayer_UniqueIndex_ThrowsOnDuplicateStoreAssignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 62
+--- End of stack trace from previous location ---
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19df7a02490a3e41\HP_DESKTOP-T6IM9HH_2026-05-05_17_13_12.trx
+
+Failed!  - Failed:     4, Passed:     3, Skipped:     0, Total:     7, Duration: 9 s - Checkly.Api.Tests.dll (net10.0)
+
+fail dotnet test: 3 passed, 4 failed, 0 skipped, 0 warnings in 1 projects (11.5 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.Gap2_BulkAssignment_AtomicFailure
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: Conflict
+    Actual:   Created
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.Gap2_BulkAssignment_AtomicFailure() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 300
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC3_CreateAM_TakenStore_ReturnsConflict
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: Conflict
+    Actual:   Created
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC3_CreateAM_TakenStore_ReturnsConflict() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 131
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC4_UpdateAM_TakenStore_ReturnsConflict
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: Conflict
+    Actual:   OK
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC4_UpdateAM_TakenStore_ReturnsConflict() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 172
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC1_DbLayer_UniqueIndex_ThrowsOnDuplicateStoreAssignment
+    Error Message:
+    Assert.Throws() Failure: No exception was thrown
+    Expected: typeof(Microsoft.EntityFrameworkCore.DbUpdateException)
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Admin.AreaManagerStoreAssignmentTests.TC1_DbLayer_UniqueIndex_ThrowsOnDuplicateStoreAssignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Admin\AreaManagerStoreAssignmentTests.cs:line 62
+    --- End of stack trace from previous location ---
+    Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19df7a02490a3e41\HP_DESKTOP-T6IM9HH_2026-05-05_17_13_12.trx
+    
+
+

@@ -1,0 +1,639 @@
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_PenaltyTemplate_Returns_Distributions [561 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.SurveyResultsTests.CreateStoreAsync(HttpClient admin, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 54
+   at Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_PenaltyTemplate_Returns_Distributions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 129
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_SurveyTemplate_Still_Returns_Correct_Distributions [113 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.SurveyResultsTests.CreateStoreAsync(HttpClient admin, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 54
+   at Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_SurveyTemplate_Still_Returns_Correct_Distributions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 170
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_With_InputTypes_Filter_Returns_Only_Matching_Criteria [85 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.SurveyResultsTests.CreateStoreAsync(HttpClient admin, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 54
+   at Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_With_InputTypes_Filter_Returns_Only_Matching_Criteria() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 246
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC2_Tenant_Isolation_Excludes_Other_Programs [535 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC2_Tenant_Isolation_Excludes_Other_Programs() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 213
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC1_Empty_Program_Calculates_Zero_Safely [102 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC1_Empty_Program_Calculates_Zero_Safely() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 182
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC1_Valid_HQ_Summary_Request_Calculates_Counts [134 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC1_Valid_HQ_Summary_Request_Calculates_Counts() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 68
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC2_StoreManager_Cannot_Get_Summary [115 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC2_StoreManager_Cannot_Get_Summary() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 110
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC4_Dynamic_Overdue_Calculation [108 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+   at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC4_Dynamic_Overdue_Calculation() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 139
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_05_Template_Mismatch_Returns_400 [1 s]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_05_Template_Mismatch_Returns_400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 357
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Draft_Submission_For_Assignment_Transitions_To_InProgress [301 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Draft_Submission_For_Assignment_Transitions_To_InProgress() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 229
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC2_GetMyAssignments_OnlyReturnsOwnStoreAssignments [275 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC2_GetMyAssignments_OnlyReturnsOwnStoreAssignments() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 154
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_11_Cannot_Draft_Submission_For_Already_Submitted_Assignment [281 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_11_Cannot_Draft_Submission_For_Already_Submitted_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 528
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404 [284 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 389
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_08_Normal_Audit_Path_Unchanged [312 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_08_Normal_Audit_Path_Unchanged() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 463
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_10_DoubleTap_Guard_Returns_Same_Submission [265 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_10_DoubleTap_Guard_Returns_Same_Submission() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 490
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_01_SM_With_ProgramsExecute_Creates_Draft_For_Valid_Assignment [280 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_01_SM_With_ProgramsExecute_Creates_Draft_For_Valid_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 192
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC1_GetMyAssignments_AsStoreManager_ReturnsAssignments [260 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC1_GetMyAssignments_AsStoreManager_ReturnsAssignments() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 126
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_04_IDOR_SM_From_StoreB_Cannot_Use_StoreA_Assignment [286 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_04_IDOR_SM_From_StoreB_Cannot_Use_StoreA_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 325
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_07_SM_Without_ProgramsExecute_Is_Rejected [289 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_07_SM_Without_ProgramsExecute_Is_Rejected() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 423
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted [273 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+   at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 268
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice1_Tests.GapAC2_CreateProgram_WithPastDeadline_ReturnsBadRequest [101 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice1_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice1_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice1_Tests.GapAC2_CreateProgram_WithPastDeadline_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice1_Tests.cs:line 217
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice1_Tests.TC4_CreateProgram_WithNonExistentTemplateId_ReturnsNotFound [91 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice1_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice1_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice1_Tests.TC4_CreateProgram_WithNonExistentTemplateId_ReturnsNotFound() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice1_Tests.cs:line 137
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice1_Tests.TC1_CreateProgram_WithValidData_ReturnsCreated [91 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice1_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice1_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice1_Tests.TC1_CreateProgram_WithValidData_ReturnsCreated() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice1_Tests.cs:line 63
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.UpdateProgram_Admin_ValidPayload_Returns200WithUpdatedTitle [97 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.CreateProgramAsync(HttpClient adminClient) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 42
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.UpdateProgram_Admin_ValidPayload_Returns200WithUpdatedTitle() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 67
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.ArchiveProgram_AlreadyArchived_Returns409Conflict [101 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.CreateProgramAsync(HttpClient adminClient) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 42
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.ArchiveProgram_AlreadyArchived_Returns409Conflict() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 177
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.ArchiveProgram_StoreManager_Returns403 [96 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.CreateProgramAsync(HttpClient adminClient) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 42
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.ArchiveProgram_StoreManager_Returns403() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 196
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.ArchiveProgram_Admin_ActiveProgram_Returns200WithArchivedStatus [99 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.CreateProgramAsync(HttpClient adminClient) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 42
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.ArchiveProgram_Admin_ActiveProgram_Returns200WithArchivedStatus() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 138
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.UpdateProgram_PastDeadline_ReturnsBadRequest [87 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.CreateProgramAsync(HttpClient adminClient) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 42
+   at Checkly.Api.Tests.Features.Programs.ProgramMutations_ATDD_Tests.UpdateProgram_PastDeadline_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\ProgramMutations_ATDD_Tests.cs:line 114
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_A2_StoreManager_Archives_Program_ReturnsForbidden [771 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_A2_StoreManager_Archives_Program_ReturnsForbidden() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 188
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U4_Admin_Updates_With_Past_Deadline_ReturnsBadRequest [120 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_U4_Admin_Updates_With_Past_Deadline_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 129
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_A1_Admin_Archives_Active_Program_ReturnsNoContent [91 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_A1_Admin_Archives_Active_Program_ReturnsNoContent() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 170
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U1_Admin_Updates_Active_Program_ReturnsOk [109 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_U1_Admin_Updates_Active_Program_ReturnsOk() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 82
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U2_StoreManager_Updates_Program_ReturnsForbidden [106 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_U2_StoreManager_Updates_Program_ReturnsForbidden() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 104
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U6_Gap_Admin_Updates_With_Empty_Title_ReturnsBadRequest [93 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_U6_Gap_Admin_Updates_With_Empty_Title_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 158
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_A4_Admin_Archives_Already_Cancelled_Program_ReturnsBadRequest [116 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_A4_Admin_Archives_Already_Cancelled_Program_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 209
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U5_Gap_Admin_Updates_Cancelled_Program_ReturnsBadRequest [94 ms]
+  Error Message:
+   Setup: Could not create store
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 52
+   at Checkly.Api.Tests.Program_Slice6_Tests.CreateProgramAsync(HttpClient adminClient, String title) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 60
+   at Checkly.Api.Tests.Program_Slice6_Tests.TC_U5_Gap_Admin_Updates_Cancelled_Program_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 141
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.SubmissionStatusFilteringTests.ListSubmissions_WhenFilteredByStatus_ReturnsOnlyMatchingSubmissions [644 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.SubmissionStatusFilteringTests.ListSubmissions_WhenFilteredByStatus_ReturnsOnlyMatchingSubmissions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionStatusFilteringTests.cs:line 30
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice5_E2E_Tests.Slice5_E2E_SM_Taps_Submission_Created_Submitted_Approved [768 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Program_Slice5_E2E_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice5_E2E_Tests.cs:line 54
+   at Checkly.Api.Tests.Program_Slice5_E2E_Tests.Slice5_E2E_SM_Taps_Submission_Created_Submitted_Approved() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice5_E2E_Tests.cs:line 128
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.OwnershipScopeFilterTests.ListSubmissions_WithAuditorJwt_ReturnsOnlyOwnSubmissions [588 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.OwnershipScopeFilterTests.ListSubmissions_WithAuditorJwt_ReturnsOnlyOwnSubmissions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\OwnershipScopeFilterTests.cs:line 35
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.OwnershipScopeFilterTests.ListSubmissions_WithStoreManagerMissingStoreId_ReturnsEmptyList [253 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.OwnershipScopeFilterTests.ListSubmissions_WithStoreManagerMissingStoreId_ReturnsEmptyList() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\OwnershipScopeFilterTests.cs:line 163
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.OwnershipScopeFilterTests.ListSubmissions_WithAdminJwt_ReturnsAllSubmissions [99 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.OwnershipScopeFilterTests.ListSubmissions_WithAdminJwt_ReturnsAllSubmissions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\OwnershipScopeFilterTests.cs:line 123
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.GetTopFailures_Uses_Semantic_IsFailure_Instead_Of_String_Matching [588 ms]
+  Error Message:
+   Setup: could not create store 'SC-A7 Store a275ca9a-51e1-4e32-8a08-2e3afaa9ec2c'. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.CreateStoreAsync(HttpClient adminClient, String namePrefix) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 74
+   at Checkly.Api.Tests.AnalyticsTests.GetTopFailures_Uses_Semantic_IsFailure_Instead_Of_String_Matching() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 532
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.Finalize_Scored_Submission_Creates_Section_Score_Rows [81 ms]
+  Error Message:
+   Setup: could not create store 'S1-SectionRows Store 48be5f32-9d8d-4052-88cf-a2f73780a674'. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.CreateStoreAsync(HttpClient adminClient, String namePrefix) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 74
+   at Checkly.Api.Tests.AnalyticsTests.Finalize_Scored_Submission_Creates_Section_Score_Rows() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 204
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.Store_Dashboard_Returns_Snapshot_Fields [106 ms]
+  Error Message:
+   Setup: could not create store 'S3 Dashboard Store 0bfea3af-6114-4d6d-8e3e-7ffdc9975abe'. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.CreateStoreAsync(HttpClient adminClient, String namePrefix) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 74
+   at Checkly.Api.Tests.AnalyticsTests.Store_Dashboard_Returns_Snapshot_Fields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 341
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.Auditor_Can_Get_My_Stats [180 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: OK
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.Auditor_Can_Get_My_Stats() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 376
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.Survey_Mode_Stamps_All_Answers_As_Not_Failure [95 ms]
+  Error Message:
+   Setup: could not create store 'SC-A6 Store e681564a-1ea4-40b0-adfb-66fb32ac9b17'. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.CreateStoreAsync(HttpClient adminClient, String namePrefix) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 74
+   at Checkly.Api.Tests.AnalyticsTests.Survey_Mode_Stamps_All_Answers_As_Not_Failure() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 493
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.Finalize_Stamps_IsFailure_Correctly_In_Db [107 ms]
+  Error Message:
+   Setup: could not create store 'SC-A5 Store 2d38d6f6-27c1-4d64-a0c0-7dfdf9fefd24'. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.CreateStoreAsync(HttpClient adminClient, String namePrefix) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 74
+   at Checkly.Api.Tests.AnalyticsTests.Finalize_Stamps_IsFailure_Correctly_In_Db() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 437
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.Finalize_Survey_Submission_Creates_Zero_Section_Score_Rows [88 ms]
+  Error Message:
+   Setup: could not create store 'S1-Survey Store d6201442-1ac5-43cf-a84e-8c779e5ae833'. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.CreateStoreAsync(HttpClient adminClient, String namePrefix) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 74
+   at Checkly.Api.Tests.AnalyticsTests.Finalize_Survey_Submission_Creates_Zero_Section_Score_Rows() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 243
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.AnalyticsTests.Finalize_Submission_Updates_Store_Analytics_Snapshot [100 ms]
+  Error Message:
+   Setup: could not create store 'S1-Snapshot Store 243fd9e5-cf30-4448-bf9c-205ae359445e'. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.AnalyticsTests.CreateStoreAsync(HttpClient adminClient, String namePrefix) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 74
+   at Checkly.Api.Tests.AnalyticsTests.Finalize_Submission_Updates_Store_Analytics_Snapshot() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\AnalyticsTests.cs:line 272
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:55.39]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [SKIP]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [1 ms]
+[xUnit.net 00:00:56.24]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [SKIP]
+[xUnit.net 00:00:56.80]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [SKIP]
+[xUnit.net 00:00:56.80]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [SKIP]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [1 ms]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [1 ms]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [1 ms]
+[xUnit.net 00:01:29.26]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [SKIP]
+[xUnit.net 00:01:29.26]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [SKIP]
+[xUnit.net 00:01:29.26]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [SKIP]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [1 ms]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [1 ms]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [1 ms]
+  Failed Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.GetPhoto_ExistingPhoto_Returns200WithImageStream [655 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.SetupSubmissionAsync() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 48
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.GetPhoto_ExistingPhoto_Returns200WithImageStream() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 101
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.GetPhoto_NonExistentFile_Returns404 [98 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.SetupSubmissionAsync() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 48
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.GetPhoto_NonExistentFile_Returns404() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 130
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.UploadPhoto_PathTraversalFileName_Returns400 [102 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.SetupSubmissionAsync() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 48
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.UploadPhoto_PathTraversalFileName_Returns400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 145
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.UploadPhoto_ValidJpeg_Returns201AndUrl [89 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.SetupSubmissionAsync() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 48
+   at Checkly.Api.Tests.Features.Photos.LocalFileStorageIntegrationTests.UploadPhoto_ValidJpeg_Returns201AndUrl() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Photos\LocalFileStorageIntegrationTests.cs:line 78
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.StoreTests.GetStore_DeactivatedStore_ReturnsNotFound [92 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.StoreTests.GetStore_DeactivatedStore_ReturnsNotFound() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\StoreTests.cs:line 58
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.StoreTests.GetStore_ActiveStore_ReturnsOk [88 ms]
+  Error Message:
+   System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).
+  Stack Trace:
+     at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at Checkly.Api.Tests.StoreTests.GetStore_ActiveStore_ReturnsOk() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\StoreTests.cs:line 37
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.GAP_AC1_WhenPageIsZeroOrNegative_ClampsToOne [892 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 59
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.GAP_AC1_WhenPageIsZeroOrNegative_ClampsToOne() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 227
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.GAP_AC2_WhenSortKeysAreIdentical_UsesIdAsTiebreakerForStablePaging [265 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 59
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.GAP_AC2_WhenSortKeysAreIdentical_UsesIdAsTiebreakerForStablePaging() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 252
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.BE_GMA_BOUND_03_WhenRequestedPageOverflows_ReturnsEmptyItemsWithTotal [253 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 59
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.BE_GMA_BOUND_03_WhenRequestedPageOverflows_ReturnsEmptyItemsWithTotal() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 180
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.BE_GMA_BOUND_01_WhenStoreHas201Assignments_DefaultRequest_ReturnsFirst50ItemsAndTotal201 [247 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 59
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.BE_GMA_BOUND_01_WhenStoreHas201Assignments_DefaultRequest_ReturnsFirst50ItemsAndTotal201() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 125
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.BE_GMA_BOUND_02_WhenPageSizeExceeds200_ClampsTo200 [248 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 59
+   at Checkly.Api.Tests.Features.Programs.GetMyAssignments_Pagination_Tests.BE_GMA_BOUND_02_WhenPageSizeExceeds200_ClampsTo200() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\GetMyAssignments_Pagination_Tests.cs:line 153
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Analytics.Analytics_AM_Scope_Tests.AM_Analytics_Is_Scoped_To_Assigned_Stores [277 ms]
+  Error Message:
+   Setup: store creation failed. BadRequest: {"error":"Province is required"}
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Analytics.Analytics_AM_Scope_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\Analytics_AM_Scope_Tests.cs:line 48
+   at Checkly.Api.Tests.Features.Analytics.Analytics_AM_Scope_Tests.AM_Analytics_Is_Scoped_To_Assigned_Stores() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Analytics\Analytics_AM_Scope_Tests.cs:line 101
+--- End of stack trace from previous location ---
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e49ec00cd98581\HP_DESKTOP-T6IM9HH_2026-05-21_16_44_31.trx
+
+Failed!  - Failed:    61, Passed:   456, Skipped:     7, Total:   524, Duration: 2 m 10 s - Checkly.Api.Tests.dll (net10.0)
+
+fail dotnet test: 456 passed, 61 failed, 7 skipped, 0 warnings in 1 projects (131.4 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_PenaltyTemplate_Returns_Distributions
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.SurveyResultsTests.CreateStoreAsync(HttpClient admin, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 54
+    at Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_PenaltyTemplate_Returns_Distributions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 129
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_SurveyTemplate_Still_Returns_Correct_Distributions
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.SurveyResultsTests.CreateStoreAsync(HttpClient admin, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 54
+    at Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_For_SurveyTemplate_Still_Returns_Correct_Distributions() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 170
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_With_InputTypes_Filter_Returns_Only_Matching_Criteria
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.SurveyResultsTests.CreateStoreAsync(HttpClient admin, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 54
+    at Checkly.Api.Tests.SurveyResultsTests.GetSurveyResults_With_InputTypes_Filter_Returns_Only_Matching_Criteria() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SurveyResultsTests.cs:line 246
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC2_Tenant_Isolation_Excludes_Other_Programs
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC2_Tenant_Isolation_Excludes_Other_Programs() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 213
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC1_Empty_Program_Calculates_Zero_Safely
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.GapAC1_Empty_Program_Calculates_Zero_Safely() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 182
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC1_Valid_HQ_Summary_Request_Calculates_Counts
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC1_Valid_HQ_Summary_Request_Calculates_Counts() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 68
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC2_StoreManager_Cannot_Get_Summary
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC2_StoreManager_Cannot_Get_Summary() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 110
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC4_Dynamic_Overdue_Calculation
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.CreateProgramAsync(HttpClient adminClient, Int32 numStores, Int32 daysToDeadline) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 46
+    at Checkly.Api.Tests.Features.Programs.Program_Slice5_Tests.TC4_Dynamic_Overdue_Calculation() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Programs\Program_Slice5_Tests.cs:line 139
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_05_Template_Mismatch_Returns_400
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_05_Template_Mismatch_Returns_400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 357
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Draft_Submission_For_Assignment_Transitions_To_InProgress
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Draft_Submission_For_Assignment_Transitions_To_InProgress() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 229
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC2_GetMyAssignments_OnlyReturnsOwnStoreAssignments
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC2_GetMyAssignments_OnlyReturnsOwnStoreAssignments() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 154
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_11_Cannot_Draft_Submission_For_Already_Submitted_Assignment
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_11_Cannot_Draft_Submission_For_Already_Submitted_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 528
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 389
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_08_Normal_Audit_Path_Unchanged
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_08_Normal_Audit_Path_Unchanged() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 463
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_10_DoubleTap_Guard_Returns_Same_Submission
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.Program_Slice2A_Tests.CreateStoreAsync(HttpClient adminClient, String name) in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 98
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_10_DoubleTap_Guard_Returns_Same_Submission() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 490
+    --- End of stack trace from previous location ---
+
+... +46 more failed tests
+

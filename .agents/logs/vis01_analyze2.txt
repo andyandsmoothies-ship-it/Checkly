@@ -1,0 +1,6 @@
+Analyzing lib...                                                
+
+warning - The field doesn't override an inherited getter or setter - _shared\database\app_database.g.dart:10823:38 - override_on_non_overriding_member
+warning - The value of the field '_authManager' isn't used - features\audit\services\core_audit_sync_module.dart:26:21 - unused_field
+warning - The value of the field '_profileDao' isn't used - features\audit\services\core_audit_sync_module.dart:27:20 - unused_field
+

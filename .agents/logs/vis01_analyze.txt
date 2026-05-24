@@ -1,0 +1,11 @@
+Analyzing lib...                                                
+
+warning - The field doesn't override an inherited getter or setter - _shared\database\app_database.g.dart:10823:38 - override_on_non_overriding_member
+warning - The value of the field '_authManager' isn't used - features\audit\services\core_audit_sync_module.dart:26:21 - unused_field
+warning - The value of the field '_profileDao' isn't used - features\audit\services\core_audit_sync_module.dart:27:20 - unused_field
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - features\programs\pages\program_dashboard_page.dart:193:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - features\programs\pages\program_list_page.dart:145:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - features\programs\pages\program_list_page.dart:156:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - features\programs\pages\widgets\program_kpi_card.dart:33:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - features\programs\pages\widgets\program_kpi_card.dart:44:59 - deprecated_member_use
+

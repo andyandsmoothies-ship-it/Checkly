@@ -1,0 +1,18 @@
+
+============================================================
+  verify_workflow.py — AI Workflow Hard Gate
+  Session: C:\Users\HP\.gemini\antigravity\brain\decf3f89-7cbc-46ac-95cb-d7bde845017b
+============================================================
+
+[CHECK 1] Scanning task.md for incomplete phases...
+Traceback (most recent call last):
+  File "C:\Users\HP\Documents\GitHub\Checkly\.agents\scripts\verify_workflow.py", line 385, in <module>
+    main()
+  File "C:\Users\HP\Documents\GitHub\Checkly\.agents\scripts\verify_workflow.py", line 360, in main
+    check_task_md(session_dir)
+  File "C:\Users\HP\Documents\GitHub\Checkly\.agents\scripts\verify_workflow.py", line 162, in check_task_md
+    print("       \u2705 task.md — all phases are marked [x].")
+  File "C:\Users\HP\AppData\Local\Programs\Python\Python311\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2705' in position 7: character maps to <undefined>

@@ -1,0 +1,101 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:05.03]     Checkly.Api.Tests.Program_Slice2A_Tests.TC1_GetMyAssignments_AsStoreManager_ReturnsAssignments [FAIL]
+[xUnit.net 00:00:05.69]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted [FAIL]
+[xUnit.net 00:00:05.91]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_08_Normal_Audit_Path_Unchanged [FAIL]
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC1_GetMyAssignments_AsStoreManager_ReturnsAssignments [190 ms]
+  Error Message:
+   Expected templateId in AssignmentSummaryDto
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2A_Tests.TC1_GetMyAssignments_AsStoreManager_ReturnsAssignments() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 108
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted [639 ms]
+  Error Message:
+   System.Text.Json.JsonException : The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. Path: $ | LineNumber: 0 | BytePositionInLine: 0.
+---- System.Text.Json.JsonReaderException : The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. LineNumber: 0 | BytePositionInLine: 0.
+  Stack Trace:
+     at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, JsonReaderException ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.ContinueDeserialize[TReadBufferState,TStream](TReadBufferState& bufferState, JsonReaderState& jsonReaderState, ReadStack& readStack, T& value)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.DeserializeAsync[TReadBufferState,TStream](TStream utf8Json, TReadBufferState bufferState, CancellationToken cancellationToken)
+   at System.Net.Http.Json.HttpContentJsonExtensions.ReadFromJsonAsyncCore[T](HttpContent content, JsonSerializerOptions options, CancellationToken cancellationToken)
+   at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 161
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader& json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)
+   at System.Text.Json.Utf8JsonReader.Read()
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_08_Normal_Audit_Path_Unchanged [222 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   OK
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_08_Normal_Audit_Path_Unchanged() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 306
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:06.57]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404 [FAIL]
+[xUnit.net 00:00:06.76]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_01_SM_Creates_Draft_For_Valid_Assignment [FAIL]
+[xUnit.net 00:00:06.95]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment [FAIL]
+[xUnit.net 00:00:07.14]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_07_SM_Without_ProgramsExecute_Is_Rejected [FAIL]
+[xUnit.net 00:00:07.32]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_05_Template_Mismatch_Returns_400 [FAIL]
+[xUnit.net 00:00:07.51]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_11_Cannot_Create_Submission_For_Verified_Assignment [FAIL]
+[xUnit.net 00:00:07.69]     Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_10_Double_Tap_Guard_Returns_200 [FAIL]
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404 [171 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: NotFound
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 259
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_01_SM_Creates_Draft_For_Valid_Assignment [193 ms]
+  Error Message:
+   Failed: Forbidden - 
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_01_SM_Creates_Draft_For_Valid_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 104
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment [180 ms]
+  Error Message:
+   Failed: Forbidden - 
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 134
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_07_SM_Without_ProgramsExecute_Is_Rejected [189 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Forbidden
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_07_SM_Without_ProgramsExecute_Is_Rejected() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 283
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_05_Template_Mismatch_Returns_400 [181 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_05_Template_Mismatch_Returns_400() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 237
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_11_Cannot_Create_Submission_For_Verified_Assignment [190 ms]
+  Error Message:
+   System.NullReferenceException : Object reference not set to an instance of an object.
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_11_Cannot_Create_Submission_For_Verified_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 349
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_10_Double_Tap_Guard_Returns_200 [175 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Created
+Actual:   Forbidden
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2B_Submission_Tests.TC_S2_10_Double_Tap_Guard_Returns_200() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2B_Submission_Tests.cs:line 329
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:    10, Passed:     3, Skipped:     0, Total:    13, Duration: 7 s - Checkly.Api.Tests.dll (net10.0)

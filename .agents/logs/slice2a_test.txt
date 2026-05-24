@@ -1,0 +1,301 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Build started 5/11/2026 10:54:47 PM.
+     1>Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" on node 1 (Restore target(s)).
+     1>_GetAllRestoreProjectPathItems:
+         Determining projects to restore...
+     1>Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (1) is building "C:\Users\HP\Documents\GitHub\Checkly\server\Checkly.Api.csproj" (2:4) on node 1 (_GenerateProjectRestoreGraph target(s)).
+     2>AddPrunePackageReferences:
+         Loading prune package data from PrunePackageData folder
+         Failed to load prune package data from PrunePackageData folder, loading from targeting packs instead
+         Looking for targeting packs in C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref
+         Pack directories found: C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.3
+         Found package overrides file C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.3\data\PackageOverrides.txt
+         Loading prune package data from PrunePackageData folder
+         Failed to load prune package data from PrunePackageData folder, loading from targeting packs instead
+         Looking for targeting packs in C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref
+         Pack directories found: C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\10.0.3
+         Found package overrides file C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\10.0.3\data\PackageOverrides.txt
+     2>Done Building Project "C:\Users\HP\Documents\GitHub\Checkly\server\Checkly.Api.csproj" (_GenerateProjectRestoreGraph target(s)).
+     1>Restore:
+         X.509 certificate chain validation will use the default trust store selected by .NET for code signing.
+         X.509 certificate chain validation will use the default trust store selected by .NET for timestamping.
+         Assets file has not changed. Skipping assets file writing. Path: C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\project.assets.json
+         Assets file has not changed. Skipping assets file writing. Path: C:\Users\HP\Documents\GitHub\Checkly\server\obj\project.assets.json
+         Restored C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj (in 71 ms).
+         Restored C:\Users\HP\Documents\GitHub\Checkly\server\Checkly.Api.csproj (in 71 ms).
+         
+         NuGet Config files used:
+             C:\Users\HP\AppData\Roaming\NuGet\NuGet.Config
+         
+         Feeds used:
+             https://api.nuget.org/v3/index.json
+         All projects are up-to-date for restore.
+     1>Done Building Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (Restore target(s)).
+   1:7>Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" on node 1 (VSTest target(s)).
+     1>BuildProject:
+         Build started, please wait...
+   1:7>Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (1:7) is building "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (1:8) on node 1 (default targets).
+   1:8>Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (1:8) is building "C:\Users\HP\Documents\GitHub\Checkly\server\Checkly.Api.csproj" (2:6) on node 1 (default targets).
+     2>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _DiscoverMvcApplicationParts:
+       Skipping target "_DiscoverMvcApplicationParts" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj\Debug\net10.0\Checkly.Api.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       _CreateAppHost:
+       Skipping target "_CreateAppHost" because all output files are up-to-date with respect to the input files.
+       _ProcessScopedCssFiles:
+       Skipping target "_ProcessScopedCssFiles" because it has no outputs.
+       _ProcessScopedCssFiles:
+       Skipping target "_ProcessScopedCssFiles" because it has no outputs.
+       _BuildCopyStaticWebAssetsPreserveNewest:
+       Skipping target "_BuildCopyStaticWebAssetsPreserveNewest" because it has no outputs.
+       _CopyOutOfDateSourceItemsToOutputDirectory:
+       Skipping target "_CopyOutOfDateSourceItemsToOutputDirectory" because all output files are up-to-date with respect to the input files.
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildRuntimeConfigurationFiles:
+       Skipping target "GenerateBuildRuntimeConfigurationFiles" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+     2>Done Building Project "C:\Users\HP\Documents\GitHub\Checkly\server\Checkly.Api.csproj" (default targets).
+     1>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _DiscoverMvcApplicationParts:
+       Skipping target "_DiscoverMvcApplicationParts" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj\Debug\net10.0\Checkly.Api.Tests.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       _CreateAppHost:
+       Skipping target "_CreateAppHost" because all output files are up-to-date with respect to the input files.
+       _ProcessScopedCssFiles:
+       Skipping target "_ProcessScopedCssFiles" because it has no outputs.
+       _ProcessScopedCssFiles:
+       Skipping target "_ProcessScopedCssFiles" because it has no outputs.
+       _BuildCopyStaticWebAssetsPreserveNewest:
+       Skipping target "_BuildCopyStaticWebAssetsPreserveNewest" because it has no outputs.
+       _CopyOutOfDateSourceItemsToOutputDirectory:
+       Building target "_CopyOutOfDateSourceItemsToOutputDirectory" partially, because some output files are out of date with respect to their input files.
+         Copying file from "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\obj\Debug\net10.0\MvcTestingAppManifest.json" to "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\MvcTestingAppManifest.json".
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildRuntimeConfigurationFiles:
+       Skipping target "GenerateBuildRuntimeConfigurationFiles" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+       _MvcCopyDependencyFiles:
+         Copying file from "C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.deps.json" to "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.deps.json".
+     1>Done Building Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (default targets).
+     1>BuildProject:
+         Build completed.
+         
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.3)
+[xUnit.net 00:00:00.12]   Discovering: Checkly.Api.Tests
+[xUnit.net 00:00:00.23]   Discovered:  Checkly.Api.Tests
+[xUnit.net 00:00:00.25]   Starting:    Checkly.Api.Tests
+[22:54:52 INF] Starting Checkly API
+[22:54:54 WRN] FirebaseApp.Create() failed: One or more errors occurred. (Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc.). FCM push will be disabled.
+[22:54:56 INF] PBAC listener connected. Subscribed to 'pbac_invalidate'. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:56 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:56 INF] Executing unconditional Resync-on-Connect PBAC reload. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:56 INF] ReminderService: Distributed lock acquired for tick. {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:56 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:56 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:56 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:56 INF] HTTP POST /api/auth/login responded 200 in 133.6588 ms
+[22:54:56 INF] HTTP POST /api/auth/login responded 200 in 61.2752 ms
+[22:54:57 INF] HTTP POST /api/auth/register responded 201 in 289.7549 ms
+[22:54:57 INF] HTTP POST /api/stores responded 201 in 93.0033 ms
+[22:54:57 INF] HTTP POST /api/templates responded 201 in 60.7058 ms
+[22:54:57 INF] HTTP POST /api/templates responded 201 in 7.0716 ms
+[22:54:57 INF] PBAC debounce window elapsed. Reloading capability cache. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:57 INF] HTTP POST /api/programs responded 201 in 175.7868 ms
+[22:54:57 INF] HTTP POST /api/submissions responded 400 in 53.4174 ms
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_05_Template_Mismatch_Returns_400 [4 s]
+[22:54:57 INF] HTTP POST /api/auth/login responded 200 in 55.6150 ms
+[22:54:57 INF] HTTP POST /api/auth/login responded 200 in 57.5223 ms
+[22:54:57 INF] HTTP POST /api/auth/register responded 201 in 72.0660 ms
+[22:54:57 INF] HTTP POST /api/stores responded 201 in 5.4156 ms
+[22:54:57 INF] HTTP POST /api/templates responded 201 in 5.3900 ms
+[22:54:57 INF] HTTP POST /api/programs responded 201 in 7.9087 ms
+[22:54:57 WRN] CreateSubmission 400: Answers are empty
+[22:54:57 INF] HTTP POST /api/submissions responded 400 in 36.3937 ms
+[xUnit.net 00:00:05.47]       Status: BadRequest. Body: {"error":"Answers are required for completed submissions"}
+[xUnit.net 00:00:05.47]       Stack Trace:
+[xUnit.net 00:00:05.47]         C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs(214,0): at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment()
+[xUnit.net 00:00:05.47]         --- End of stack trace from previous location ---
+[22:54:57 INF] HTTP POST /api/auth/login responded 200 in 52.5135 ms
+[22:54:57 INF] HTTP POST /api/auth/login responded 200 in 54.0141 ms
+[22:54:57 INF] HTTP POST /api/auth/register responded 201 in 96.7556 ms
+[22:54:58 INF] HTTP POST /api/stores responded 201 in 6.6792 ms
+[22:54:58 INF] HTTP POST /api/stores responded 201 in 7.4470 ms
+[22:54:58 INF] HTTP POST /api/templates responded 201 in 6.0356 ms
+[22:54:58 INF] HTTP POST /api/programs responded 201 in 7.4592 ms
+[22:54:58 INF] HTTP POST /api/programs responded 201 in 10.9735 ms
+[22:54:58 INF] HTTP GET /api/programs/assignments/my responded 200 in 108.0370 ms
+[22:54:58 INF] HTTP POST /api/auth/login responded 200 in 57.2484 ms
+[22:54:58 INF] HTTP POST /api/auth/login responded 200 in 51.6860 ms
+[22:54:58 INF] HTTP POST /api/auth/register responded 201 in 70.1525 ms
+[22:54:58 INF] HTTP POST /api/stores responded 201 in 5.0570 ms
+[22:54:58 INF] HTTP POST /api/templates responded 201 in 5.4267 ms
+[22:54:58 INF] HTTP POST /api/programs responded 201 in 9.9365 ms
+[22:54:58 INF] HTTP POST /api/submissions responded 400 in 4.4870 ms
+[22:54:58 INF] HTTP POST /api/auth/login responded 200 in 55.3886 ms
+[22:54:58 INF] HTTP POST /api/auth/login responded 200 in 52.5321 ms
+[22:54:58 INF] PBAC debounce window elapsed. Reloading capability cache. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:58 INF] HTTP POST /api/auth/register responded 201 in 70.8060 ms
+[22:54:58 INF] HTTP POST /api/stores responded 201 in 5.0794 ms
+[22:54:58 INF] HTTP POST /api/templates responded 201 in 4.1876 ms
+[22:54:58 INF] HTTP POST /api/submissions responded 404 in 4.8449 ms
+[22:54:58 INF] HTTP POST /api/auth/login responded 200 in 53.0823 ms
+[22:54:58 INF] HTTP POST /api/auth/login responded 200 in 55.1515 ms
+[22:54:58 INF] HTTP POST /api/auth/register responded 201 in 56.8104 ms
+[22:54:58 INF] HTTP POST /api/stores responded 201 in 6.0943 ms
+[22:54:58 INF] HTTP POST /api/templates responded 201 in 4.7224 ms
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment [263 ms]
+  Error Message:
+   Status: BadRequest. Body: {"error":"Answers are required for completed submissions"}
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 214
+--- End of stack trace from previous location ---
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC2_GetMyAssignments_OnlyReturnsOwnStoreAssignments [370 ms]
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_11_Cannot_Draft_Submission_For_Already_Submitted_Assignment [235 ms]
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404 [206 ms]
+[22:54:59 INF] HTTP POST /api/submissions responded 201 in 246.9083 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 52.4118 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 51.4179 ms
+[22:54:59 INF] HTTP POST /api/auth/register responded 201 in 72.7288 ms
+[22:54:59 INF] HTTP POST /api/stores responded 201 in 5.0230 ms
+[22:54:59 INF] HTTP POST /api/templates responded 201 in 4.7454 ms
+[22:54:59 INF] HTTP POST /api/programs responded 201 in 5.9607 ms
+[22:54:59 INF] HTTP POST /api/submissions responded 201 in 24.9047 ms
+[22:54:59 INF] HTTP POST /api/submissions responded 200 in 6.0385 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 57.1120 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 54.6947 ms
+[22:54:59 INF] HTTP POST /api/auth/register responded 201 in 71.8762 ms
+[22:54:59 INF] HTTP POST /api/stores responded 201 in 4.6910 ms
+[22:54:59 INF] HTTP POST /api/templates responded 201 in 4.7133 ms
+[22:54:59 INF] HTTP POST /api/programs responded 201 in 6.4835 ms
+[22:54:59 INF] HTTP POST /api/submissions responded 201 in 16.0772 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 51.0033 ms
+[22:54:59 INF] PBAC debounce window elapsed. Reloading capability cache. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 51.3377 ms
+[22:54:59 INF] HTTP POST /api/auth/register responded 201 in 68.6140 ms
+[22:54:59 INF] HTTP POST /api/stores responded 201 in 5.7526 ms
+[22:54:59 INF] HTTP POST /api/templates responded 201 in 4.1076 ms
+[22:54:59 INF] HTTP POST /api/programs responded 201 in 6.1892 ms
+[22:54:59 INF] HTTP GET /api/programs/assignments/my responded 200 in 5.6580 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 53.7578 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 53.1726 ms
+[22:54:59 INF] HTTP POST /api/auth/register responded 201 in 72.4850 ms
+[22:54:59 INF] HTTP POST /api/stores responded 201 in 6.1475 ms
+[22:54:59 INF] HTTP POST /api/stores responded 201 in 5.0488 ms
+[22:54:59 INF] HTTP POST /api/templates responded 201 in 4.2125 ms
+[22:54:59 INF] HTTP POST /api/programs responded 201 in 6.6934 ms
+[22:54:59 INF] HTTP POST /api/submissions responded 403 in 5.2909 ms
+[22:54:59 INF] HTTP POST /api/auth/login responded 200 in 52.2573 ms
+[22:55:00 INF] HTTP POST /api/auth/login responded 200 in 52.2641 ms
+[22:55:00 INF] HTTP POST /api/auth/register responded 201 in 71.0011 ms
+[22:55:00 INF] HTTP POST /api/stores responded 201 in 5.5728 ms
+[22:55:00 INF] HTTP POST /api/templates responded 201 in 4.5962 ms
+[22:55:00 INF] HTTP POST /api/programs responded 201 in 6.0177 ms
+[22:55:00 INF] HTTP POST /api/submissions responded 403 in 3.8917 ms
+[22:55:00 INF] HTTP POST /api/auth/login responded 200 in 56.3980 ms
+[22:55:00 INF] HTTP POST /api/auth/login responded 200 in 55.2130 ms
+[22:55:00 INF] HTTP POST /api/auth/register responded 201 in 71.5763 ms
+[22:55:00 INF] HTTP POST /api/stores responded 201 in 5.1741 ms
+[22:55:00 INF] HTTP POST /api/templates responded 201 in 4.9829 ms
+[22:55:00 INF] HTTP POST /api/programs responded 201 in 8.1346 ms
+[22:55:00 INF] HTTP POST /api/submissions responded 201 in 14.3083 ms
+[22:55:00 INF] HTTP PUT /api/submissions/23644c23-c1f2-47b0-8309-b282f9020636/finalize responded 400 in 71.5890 ms
+[xUnit.net 00:00:08.15]       Status: BadRequest. Body: {"error":"Answers are required to finalize"}
+[xUnit.net 00:00:08.15]       Stack Trace:
+[xUnit.net 00:00:08.15]         C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs(263,0): at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted()
+[xUnit.net 00:00:08.15]         --- End of stack trace from previous location ---
+[22:55:00 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[22:55:00 INF] PBAC listener stopped. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[xUnit.net 00:00:08.17]   Finished:    Checkly.Api.Tests
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_08_Normal_Audit_Path_Unchanged [434 ms]
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_10_DoubleTap_Guard_Returns_Same_Submission [239 ms]
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_01_SM_With_ProgramsExecute_Creates_Draft_For_Valid_Assignment [233 ms]
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC1_GetMyAssignments_AsStoreManager_ReturnsAssignments [205 ms]
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_04_IDOR_SM_From_StoreB_Cannot_Use_StoreA_Assignment [221 ms]
+  Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_07_SM_Without_ProgramsExecute_Is_Rejected [210 ms]
+  Failed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted [306 ms]
+  Error Message:
+   Status: BadRequest. Body: {"error":"Answers are required to finalize"}
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 263
+--- End of stack trace from previous location ---
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e17bf811d56d01\HP_DESKTOP-T6IM9HH_2026-05-11_22_54_57.trx
+
+Total tests: 12
+     Passed: 10
+     Failed: 2
+ Total time: 8.6727 Seconds
+       _VSTestConsole:
+         MSB4181: The "VSTestTask" task returned false but did not log an error.
+     1>Done Building Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (VSTest target(s)) -- FAILED.
+
+Build FAILED.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:13.43
+
+fail dotnet test: 10 passed, 2 failed, 0 skipped, 0 warnings in 2 projects (8.7 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment
+    Error Message:
+    Status: BadRequest. Body: {"error":"Answers are required for completed submissions"}
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_02_SM_Creates_Completed_Submission_For_Assignment() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 214
+    --- End of stack trace from previous location ---
+    Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC2_GetMyAssignments_OnlyReturnsOwnStoreAssignments [370 ms]
+    Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_11_Cannot_Draft_Submission_For_Already_Submitted_Assignment [235 ms]
+    Passed Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_06_NonExistent_AssignmentId_Returns_404 [206 ms]
+    [22:54:59 INF] HTTP POST /api/submissions responded 201 in 246.9083 ms
+    [22:54:59 INF] HTTP POST /api/auth/login responded 200 in 52.4118 ms
+    [22:54:59 INF] HTTP POST /api/auth/login responded 200 in 51.4179 ms
+    [22:54:59 INF] HTTP POST /api/auth/register responded 201 in 72.7288 ms
+    [22:54:59 INF] HTTP POST /api/stores responded 201 in 5.0230 ms
+    [22:54:59 INF] HTTP POST /api/templates responded 201 in 4.7454 ms
+    [22:54:59 INF] HTTP POST /api/programs responded 201 in 5.9607 ms
+    [22:54:59 INF] HTTP POST /api/submissions responded 201 in 24.9047 ms
+    [22:54:59 INF] HTTP POST /api/submissions responded 200 in 6.0385 ms
+    [22:54:59 INF] HTTP POST /api/auth/login responded 200 in 57.1120 ms
+    [22:54:59 INF] HTTP POST /api/auth/login responded 200 in 54.6947 ms
+    [22:54:59 INF] HTTP POST /api/auth/register responded 201 in 71.8762 ms
+
+  Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted
+    Error Message:
+    Status: BadRequest. Body: {"error":"Answers are required to finalize"}
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice2A_Tests.TC_S2_03_Finalize_Transitions_Assignment_To_Submitted() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice2A_Tests.cs:line 263
+    --- End of stack trace from previous location ---
+    Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e17bf811d56d01\HP_DESKTOP-T6IM9HH_2026-05-11_22_54_57.trx
+    
+    Total tests: 12
+    Passed: 10
+    Failed: 2
+    Total time: 8.6727 Seconds
+    _VSTestConsole:
+    MSB4181: The "VSTestTask" task returned false but did not log an error.
+    1>Done Building Project "C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Checkly.Api.Tests.csproj" (VSTest target(s)) -- FAILED.
+    
+
+

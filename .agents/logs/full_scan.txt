@@ -1,0 +1,283 @@
+        header         
+-----------------------
+ === ALL TEMPLATES ===
+(1 row)
+
+             title              |                                                                                          scoring_config                                                                                           | top_sections | sub_sections | total_criteria 
+--------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------+--------------+----------------
+ Construction Site Safety       | {"ccpOverride": false, "scoringMode": "penalty", "riskOverride": true, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeatPenalty": true}                                       |            3 |            0 |              9
+ Customer Feedback Form         | {"scoringMode": "survey"}                                                                                                                                                                         |            2 |            0 |              5
+ Daily Opening Checklist        | {"ccpOverride": false, "scoringMode": "checklist", "riskOverride": false, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeatPenalty": false}                                   |            2 |            0 |              8
+ Employee Satisfaction Survey   | {"scoringMode": "survey"}                                                                                                                                                                         |            3 |            0 |              7
+ Employee Training Quiz         | {"ccpOverride": false, "scoringMode": "accumulation", "riskOverride": false, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeatPenalty": false}                                |            3 |            0 |              8
+ Food Handler Certification     | {"ccpOverride": true, "scoringMode": "accumulation", "riskOverride": false, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeatPenalty": false}                                 |            3 |            0 |              8
+ Food Safety / HACCP Audit      | {"ccpOverride": true, "scoringMode": "penalty", "riskOverride": true, "confirmCorrect": false, "weightedDensity": true, "progressiveRepeatPenalty": true}                                         |            2 |            2 |              9
+ ISO Maturity Assessment        | {"ccpOverride": false, "scoringMode": "accumulation", "riskOverride": false, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeatPenalty": false}                                |            2 |            2 |              7
+ Mystery Shopper Evaluation     | {"ccpOverride": false, "scoringMode": "penalty", "riskOverride": false, "confirmCorrect": false, "weightedDensity": true, "progressiveRepeatPenalty": false}                                      |            3 |            0 |             10
+ Post-Training Feedback         | {"scoringMode": "survey"}                                                                                                                                                                         |            2 |            0 |              6
+ Pre-Flight Aircraft Checklist  | {"ccpOverride": false, "scoringMode": "checklist", "riskOverride": true, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeatPenalty": false}                                    |            3 |            0 |              9
+ QC Checklist 2026 v1           | {"ccpOverride": true, "deadlineDays": 3, "reminderDays": 1, "riskOverride": true, "confirmCorrect": true, "weightedDensity": true, "progressiveRepeat": false}                                    |            4 |           27 |             28
+ Safety Equipment Verification  | {"ccpOverride": false, "scoringMode": "checklist", "riskOverride": true, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeatPenalty": false}                                    |            3 |            0 |              7
+ Shift Handover Checklist       | {"ccpOverride": false, "scoringMode": "checklist", "riskOverride": false, "confirmCorrect": true, "weightedDensity": false, "progressiveRepeatPenalty": false}                                    |            2 |            0 |              6
+ Store Condition Audit          | {"ccpOverride": false, "scoringMode": "penalty", "riskOverride": false, "confirmCorrect": false, "weightedDensity": true, "progressiveRepeatPenalty": false}                                      |            3 |            0 |              9
+ Test2                          | {"ccpOverride": false, "scoringMode": "accumulation", "deadlineDays": 7, "reminderDays": 2, "riskOverride": false, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeat": false} |            1 |            0 |              0
+ TnD checklist khu vuc HCM 2026 | {"ccpOverride": false, "deadlineDays": 7, "reminderDays": 2, "riskOverride": false, "confirmCorrect": true, "weightedDensity": false, "progressiveRepeat": false}                                 |            6 |            6 |              6
+ Warehouse Inventory Audit      | {"ccpOverride": false, "scoringMode": "accumulation", "riskOverride": false, "confirmCorrect": false, "weightedDensity": true, "progressiveRepeatPenalty": false}                                 |            2 |            2 |              8
+(18 rows)
+
+        header         
+-----------------------
+ === GROUP WEIGHTS ===
+(1 row)
+
+            template            |             section              | weight | is_sub 
+--------------------------------+----------------------------------+--------+--------
+ Construction Site Safety       | Personal Protective Equipment    |    1.0 | f
+ Construction Site Safety       | Fall Protection                  |    1.0 | f
+ Construction Site Safety       | Site Housekeeping                |    1.0 | f
+ Customer Feedback Form         | Service Experience               |    1.0 | f
+ Customer Feedback Form         | Product Feedback                 |    1.0 | f
+ Daily Opening Checklist        | Opening Tasks                    |    1.0 | f
+ Daily Opening Checklist        | Equipment Check                  |    1.0 | f
+ Employee Satisfaction Survey   | Work Environment                 |    1.0 | f
+ Employee Satisfaction Survey   | Management                       |    1.0 | f
+ Employee Satisfaction Survey   | Growth and Development           |    1.0 | f
+ Employee Training Quiz         | Company Policy                   |    1.0 | f
+ Employee Training Quiz         | Safety Procedures                |    1.0 | f
+ Employee Training Quiz         | Customer Service                 |    1.0 | f
+ Food Handler Certification     | Personal Hygiene                 |    1.0 | f
+ Food Handler Certification     | Food Storage                     |    1.0 | f
+ Food Handler Certification     | Cross-Contamination              |    1.0 | f
+ Food Safety / HACCP Audit      | Kitchen                          |     60 | f
+ Food Safety / HACCP Audit      | Cold Storage (Fridge 1)          |    1.0 | t
+ Food Safety / HACCP Audit      | Hot Station                      |    1.0 | t
+ Food Safety / HACCP Audit      | Dining Area                      |     40 | f
+ ISO Maturity Assessment        | Quality Management               |    1.0 | f
+ ISO Maturity Assessment        | Document Control                 |    1.0 | t
+ ISO Maturity Assessment        | Internal Audit                   |    1.0 | t
+ ISO Maturity Assessment        | Risk Management                  |    1.0 | f
+ Mystery Shopper Evaluation     | Service Quality                  |     40 | f
+ Mystery Shopper Evaluation     | Food Quality                     |     35 | f
+ Mystery Shopper Evaluation     | Ambiance                         |     25 | f
+ Post-Training Feedback         | Session Quality                  |    1.0 | f
+ Post-Training Feedback         | Content and Topics               |    1.0 | f
+ Pre-Flight Aircraft Checklist  | Engine and Systems               |    1.0 | f
+ Pre-Flight Aircraft Checklist  | Controls and Instruments         |    1.0 | f
+ Pre-Flight Aircraft Checklist  | Exterior                         |    1.0 | f
+ QC Checklist 2026 v1           | P1                               |    1.0 | t
+ QC Checklist 2026 v1           | C1                               |    1.0 | t
+ QC Checklist 2026 v1           | H - Hospitality                  |   10.0 | f
+ QC Checklist 2026 v1           | H1                               |    1.0 | t
+ QC Checklist 2026 v1           | E1                               |    1.0 | t
+ QC Checklist 2026 v1           | C2                               |    1.0 | t
+ QC Checklist 2026 v1           | E2                               |    1.0 | t
+ QC Checklist 2026 v1           | P2                               |    1.0 | t
+ QC Checklist 2026 v1           | C - Cleanliness                  |   35.0 | f
+ QC Checklist 2026 v1           | H2                               |    1.0 | t
+ QC Checklist 2026 v1           | H3                               |    1.0 | t
+ QC Checklist 2026 v1           | C3                               |    1.0 | t
+ QC Checklist 2026 v1           | E -  Expiry And Standard Product |   40.0 | f
+ QC Checklist 2026 v1           | P3                               |    1.0 | t
+ QC Checklist 2026 v1           | E3                               |    1.0 | t
+ QC Checklist 2026 v1           | C4                               |    1.0 | t
+ QC Checklist 2026 v1           | E4                               |    1.0 | t
+ QC Checklist 2026 v1           | H4                               |    1.0 | t
+ QC Checklist 2026 v1           | P - Product Quality              |   15.0 | f
+ QC Checklist 2026 v1           | P4                               |    1.0 | t
+ QC Checklist 2026 v1           | C5                               |    1.0 | t
+ QC Checklist 2026 v1           | E5                               |    1.0 | t
+ QC Checklist 2026 v1           | E6                               |    1.0 | t
+ QC Checklist 2026 v1           | C6                               |    1.0 | t
+ QC Checklist 2026 v1           | C7                               |    1.0 | t
+ QC Checklist 2026 v1           | E7                               |    1.0 | t
+ QC Checklist 2026 v1           | E8                               |    1.0 | t
+ QC Checklist 2026 v1           | C8                               |    1.0 | t
+ QC Checklist 2026 v1           | C9                               |    1.0 | t
+ QC Checklist 2026 v1           | C10                              |    1.0 | t
+ QC Checklist 2026 v1           | C11                              |    1.0 | t
+ Safety Equipment Verification  | Fire Safety                      |    1.0 | f
+ Safety Equipment Verification  | First Aid                        |    1.0 | f
+ Safety Equipment Verification  | Emergency Equipment              |    1.0 | f
+ Shift Handover Checklist       | Equipment Status                 |    1.0 | f
+ Shift Handover Checklist       | Inventory Handover               |    1.0 | f
+ Store Condition Audit          | Storefront and Entrance          |     30 | f
+ Store Condition Audit          | Shop Floor                       |     50 | f
+ Store Condition Audit          | Backroom & Storage               |     20 | f
+ Test2                          | Assessment Criteria              |    1.0 | f
+ TnD checklist khu vuc HCM 2026 | Cua toilet                       |    1.0 | t
+ TnD checklist khu vuc HCM 2026 | Ho so nhan vien                  |    1.0 | t
+ TnD checklist khu vuc HCM 2026 | Khu vực bên ngoài                |    1.0 | f
+ TnD checklist khu vuc HCM 2026 | KV1                              |    1.0 | t
+ TnD checklist khu vuc HCM 2026 | Khu pha tra                      |    1.0 | t
+ TnD checklist khu vuc HCM 2026 | Khu chien thuc an                |    1.0 | t
+ TnD checklist khu vuc HCM 2026 | Ban tinh tien                    |    1.0 | t
+ TnD checklist khu vuc HCM 2026 | Khu vực Thu ngân                 |    1.0 | f
+ TnD checklist khu vuc HCM 2026 | Quầy pha chế                     |    1.0 | f
+ TnD checklist khu vuc HCM 2026 | Khu vực Bếp                      |    1.0 | f
+ TnD checklist khu vuc HCM 2026 | Khu vực Toilet                   |    1.0 | f
+ TnD checklist khu vuc HCM 2026 | Các hạng mục khác của quản lý    |    1.0 | f
+ Warehouse Inventory Audit      | Zone A - High Value              |     60 | f
+ Warehouse Inventory Audit      | Rack 1                           |    1.0 | t
+ Warehouse Inventory Audit      | Rack 2                           |    1.0 | t
+ Warehouse Inventory Audit      | Zone B - General                 |     40 | f
+(88 rows)
+
+             header             
+--------------------------------
+ === CRITERIA POINTS_WEIGHT ===
+(1 row)
+
+            template            |            section            |                                                                    criterion                                                                    |  input_type   | points_weight | metadata_status 
+--------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+---------------+---------------+-----------------
+ Construction Site Safety       | Personal Protective Equipment | Hard hats worn by all workers                                                                                                                   | pass_fail     |             3 | NULL
+ Construction Site Safety       | Personal Protective Equipment | Safety vests worn                                                                                                                               | pass_fail     |             2 | NULL
+ Construction Site Safety       | Personal Protective Equipment | Steel-toe boots worn                                                                                                                            | pass_fail     |             2 | NULL
+ Construction Site Safety       | Fall Protection               | Harnesses at height (over 2m)                                                                                                                   | pass_fail     |             5 | NULL
+ Construction Site Safety       | Fall Protection               | Guardrails on scaffolding                                                                                                                       | pass_fail     |             5 | NULL
+ Construction Site Safety       | Fall Protection               | Safety nets installed                                                                                                                           | pass_fail     |             4 | NULL
+ Construction Site Safety       | Site Housekeeping             | Walkways clear of debris                                                                                                                        | pass_fail     |             3 | NULL
+ Construction Site Safety       | Site Housekeeping             | Materials properly stored                                                                                                                       | pass_fail     |             3 | NULL
+ Construction Site Safety       | Site Housekeeping             | Emergency exits unblocked                                                                                                                       | pass_fail     |             4 | NULL
+ Customer Feedback Form         | Service Experience            | What aspects did you enjoy?                                                                                                                     | multi_choice  |           1.0 | OK
+ Customer Feedback Form         | Service Experience            | How did you hear about us?                                                                                                                      | single_choice |           1.0 | OK
+ Customer Feedback Form         | Service Experience            | Would you recommend us?                                                                                                                         | single_choice |           1.0 | OK
+ Customer Feedback Form         | Product Feedback              | Which products did you purchase?                                                                                                                | multi_choice  |           1.0 | OK
+ Customer Feedback Form         | Product Feedback              | Was the value for money fair?                                                                                                                   | single_choice |           1.0 | OK
+ Daily Opening Checklist        | Opening Tasks                 | Lights turned on                                                                                                                                | pass_fail     |             1 | NULL
+ Daily Opening Checklist        | Opening Tasks                 | AC/Heating adjusted                                                                                                                             | pass_fail     |             1 | NULL
+ Daily Opening Checklist        | Opening Tasks                 | Cash register opened                                                                                                                            | pass_fail     |             1 | NULL
+ Daily Opening Checklist        | Opening Tasks                 | Floor swept and mopped                                                                                                                          | pass_fail     |             1 | NULL
+ Daily Opening Checklist        | Opening Tasks                 | Signage displayed                                                                                                                               | pass_fail     |             1 | NULL
+ Daily Opening Checklist        | Equipment Check               | POS system operational                                                                                                                          | pass_fail     |             1 | NULL
+ Daily Opening Checklist        | Equipment Check               | WiFi connected                                                                                                                                  | pass_fail     |             1 | NULL
+ Daily Opening Checklist        | Equipment Check               | Music system on                                                                                                                                 | pass_fail     |             1 | NULL
+ Employee Satisfaction Survey   | Work Environment              | How satisfied are you with your workspace?                                                                                                      | single_choice |           1.0 | OK
+ Employee Satisfaction Survey   | Work Environment              | How is the office temperature?                                                                                                                  | single_choice |           1.0 | OK
+ Employee Satisfaction Survey   | Work Environment              | Are facilities well maintained?                                                                                                                 | single_choice |           1.0 | OK
+ Employee Satisfaction Survey   | Management                    | How supportive is your manager?                                                                                                                 | single_choice |           1.0 | OK
+ Employee Satisfaction Survey   | Management                    | Is feedback given regularly?                                                                                                                    | single_choice |           1.0 | OK
+ Employee Satisfaction Survey   | Growth and Development        | Are training opportunities sufficient?                                                                                                          | single_choice |           1.0 | OK
+ Employee Satisfaction Survey   | Growth and Development        | Do you see a clear career path?                                                                                                                 | single_choice |           1.0 | OK
+ Employee Training Quiz         | Company Policy                | When was the company founded?                                                                                                                   | pass_fail     |             1 | NULL
+ Employee Training Quiz         | Company Policy                | What is the dress code policy?                                                                                                                  | pass_fail     |             1 | NULL
+ Employee Training Quiz         | Company Policy                | Break schedule explained correctly                                                                                                              | pass_fail     |             1 | NULL
+ Employee Training Quiz         | Safety Procedures             | Emergency exit locations known                                                                                                                  | pass_fail     |             2 | NULL
+ Employee Training Quiz         | Safety Procedures             | Fire extinguisher operation                                                                                                                     | pass_fail     |             2 | NULL
+ Employee Training Quiz         | Safety Procedures             | First aid kit location                                                                                                                          | pass_fail     |             1 | NULL
+ Employee Training Quiz         | Customer Service              | Greeting protocol                                                                                                                               | pass_fail     |             1 | NULL
+ Employee Training Quiz         | Customer Service              | Complaint handling steps                                                                                                                        | pass_fail     |             2 | NULL
+ Food Handler Certification     | Personal Hygiene              | Hands washed after handling raw meat                                                                                                            | pass_fail     |             3 | NULL
+ Food Handler Certification     | Personal Hygiene              | Hair net worn                                                                                                                                   | pass_fail     |             2 | NULL
+ Food Handler Certification     | Personal Hygiene              | Jewelry removed                                                                                                                                 | pass_fail     |             1 | NULL
+ Food Handler Certification     | Food Storage                  | FIFO rotation explained                                                                                                                         | pass_fail     |             2 | NULL
+ Food Handler Certification     | Food Storage                  | Correct fridge temp range known                                                                                                                 | pass_fail     |             3 | NULL
+ Food Handler Certification     | Food Storage                  | Raw/cooked storage separation                                                                                                                   | pass_fail     |             3 | NULL
+ Food Handler Certification     | Cross-Contamination           | Cutting board color coding                                                                                                                      | pass_fail     |             2 | NULL
+ Food Handler Certification     | Cross-Contamination           | Sanitizer concentration                                                                                                                         | pass_fail     |             2 | NULL
+ Food Safety / HACCP Audit      | Cold Storage (Fridge 1)       | Temperature below 4C                                                                                                                            | numeric       |             5 | NULL
+ Food Safety / HACCP Audit      | Cold Storage (Fridge 1)       | Food covered and labeled                                                                                                                        | pass_fail     |             3 | NULL
+ Food Safety / HACCP Audit      | Cold Storage (Fridge 1)       | No expired items                                                                                                                                | pass_fail     |             4 | NULL
+ Food Safety / HACCP Audit      | Dining Area                   | Pest evidence found                                                                                                                             | numeric       |             5 | NULL
+ Food Safety / HACCP Audit      | Hot Station                   | Oil temperature within range                                                                                                                    | numeric       |             4 | NULL
+ Food Safety / HACCP Audit      | Dining Area                   | Tables clean and sanitized                                                                                                                      | pass_fail     |             3 | NULL
+ Food Safety / HACCP Audit      | Hot Station                   | Staff wearing gloves                                                                                                                            | pass_fail     |             3 | NULL
+ Food Safety / HACCP Audit      | Dining Area                   | Running water available                                                                                                                         | pass_fail     |             5 | NULL
+ Food Safety / HACCP Audit      | Hot Station                   | No cross-contamination                                                                                                                          | pass_fail     |             5 | NULL
+ ISO Maturity Assessment        | Document Control              | Document versioning in place                                                                                                                    | scale         |             3 | OK
+ ISO Maturity Assessment        | Document Control              | Retention policy defined                                                                                                                        | scale         |             2 | OK
+ ISO Maturity Assessment        | Risk Management               | Risk register maintained                                                                                                                        | scale         |             3 | OK
+ ISO Maturity Assessment        | Internal Audit                | Audit schedule maintained                                                                                                                       | scale         |             3 | OK
+ ISO Maturity Assessment        | Internal Audit                | Corrective actions tracked                                                                                                                      | scale         |             3 | OK
+ ISO Maturity Assessment        | Risk Management               | Risk mitigation plans                                                                                                                           | scale         |             3 | OK
+ ISO Maturity Assessment        | Risk Management               | Management review conducted                                                                                                                     | scale         |             2 | OK
+ Mystery Shopper Evaluation     | Service Quality               | Greeted within 30 seconds                                                                                                                       | numeric       |             5 | NULL
+ Mystery Shopper Evaluation     | Service Quality               | Menu knowledge                                                                                                                                  | numeric       |             4 | NULL
+ Mystery Shopper Evaluation     | Service Quality               | Order accuracy                                                                                                                                  | numeric       |             5 | NULL
+ Mystery Shopper Evaluation     | Service Quality               | Upselling attempted                                                                                                                             | numeric       |             3 | NULL
+ Mystery Shopper Evaluation     | Food Quality                  | Food temperature correct                                                                                                                        | numeric       |             5 | NULL
+ Mystery Shopper Evaluation     | Food Quality                  | Presentation matches menu                                                                                                                       | numeric       |             4 | NULL
+ Mystery Shopper Evaluation     | Food Quality                  | Served within 15 minutes                                                                                                                        | numeric       |             4 | NULL
+ Mystery Shopper Evaluation     | Ambiance                      | Background music appropriate                                                                                                                    | numeric       |             2 | NULL
+ Mystery Shopper Evaluation     | Ambiance                      | Lighting comfortable                                                                                                                            | numeric       |             2 | NULL
+ Mystery Shopper Evaluation     | Ambiance                      | Restrooms clean                                                                                                                                 | numeric       |             3 | NULL
+ Post-Training Feedback         | Session Quality               | Overall session rating                                                                                                                          | single_choice |           1.0 | OK
+ Post-Training Feedback         | Session Quality               | Was the pace appropriate?                                                                                                                       | single_choice |           1.0 | OK
+ Post-Training Feedback         | Session Quality               | Was the trainer knowledgeable?                                                                                                                  | single_choice |           1.0 | OK
+ Post-Training Feedback         | Content and Topics            | Which topics were most useful?                                                                                                                  | multi_choice  |           1.0 | OK
+ Post-Training Feedback         | Content and Topics            | Which topics need more depth?                                                                                                                   | multi_choice  |           1.0 | OK
+ Post-Training Feedback         | Content and Topics            | Would you attend again?                                                                                                                         | single_choice |           1.0 | OK
+ Pre-Flight Aircraft Checklist  | Engine and Systems            | Engine oil level                                                                                                                                | pass_fail     |             3 | NULL
+ Pre-Flight Aircraft Checklist  | Engine and Systems            | Fuel quantity sufficient                                                                                                                        | pass_fail     |             3 | NULL
+ Pre-Flight Aircraft Checklist  | Engine and Systems            | Hydraulic fluid level                                                                                                                           | pass_fail     |             3 | NULL
+ Pre-Flight Aircraft Checklist  | Controls and Instruments      | Altimeter calibrated                                                                                                                            | pass_fail     |             3 | NULL
+ Pre-Flight Aircraft Checklist  | Controls and Instruments      | Radio communication test                                                                                                                        | pass_fail     |             3 | NULL
+ Pre-Flight Aircraft Checklist  | Controls and Instruments      | Brake response test                                                                                                                             | pass_fail     |             3 | NULL
+ Pre-Flight Aircraft Checklist  | Exterior                      | Landing gear visual check                                                                                                                       | pass_fail     |             3 | NULL
+ Pre-Flight Aircraft Checklist  | Exterior                      | All exterior lights working                                                                                                                     | pass_fail     |             2 | NULL
+ Pre-Flight Aircraft Checklist  | Exterior                      | No visible hull damage                                                                                                                          | pass_fail     |             3 | NULL
+ QC Checklist 2026 v1           | P1                            | Sản phẩm                                                                                                                                        | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C1                            | Khu vực thu ngân / Quầy ra món/nhận nước                                                                                                        | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | H1                            | Mặt tiền cửa hàng                                                                                                                               | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E1                            | Tủ bảo quản                                                                                                                                     | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | H1                            | Mặt tiền cửa hàng 2                                                                                                                             | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | P2                            | Thành phẩm món đạt tiêu chuẩn                                                                                                                   | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E2                            | Thành phẩm/chương trình/Tài liệu và Kiến thức pha chế các món/Chương trình                                                                      | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C2                            | Thùng đá                                                                                                                                        | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | H2                            | Cơ sở vật chất, trang thiết bị, bàn ghế khu vực khách hàng sạch sẽ và ở tình trạng tốt                                                          | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | P3                            | Kiến thức chuyên môn                                                                                                                            | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C3                            | Vệ sinh cá nhân, thao tác sơ chế - chế biến. Đồ cá nhân để đúng nơi quy định                                                                    | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E3                            | Điều kiện nhập của Nguyên vật liệu                                                                                                              | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | H3                            | Bộ phận Tư Vấn (SE)                                                                                                                             | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E4                            | Điều kiện bảo quản của Nguyên vật liệu                                                                                                          | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | P4                            | Sơ chế, bảo quản Bán thành phẩm nhóm trà, topping, foam đúng quy trình hay chưa?                                                                | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | H4                            | Tác phong diện mạo nhân viên                                                                                                                    | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C4                            | Trang thiết bị, máy móc                                                                                                                         | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C5                            | Công cụ dụng cụ sơ chế biến sạch sẽ, đầy đủ & đúng tiêu chuẩn theo chart                                                                        | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E5                            | Điều kiện bảo quản của Bán Thành phẩm                                                                                                           | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E6                            | Nguyên vật liệu không phù hợp                                                                                                                   | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C6                            | Dụng cụ vệ sinh, thùng rác và hoá chất tẩy rửa không hiện diện ở khu vực chế biến, tránh xa thực phẩm. Vệ sinh cá nhân trong quá trình pha chế. | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E7                            | Hệ thống tủ bảo quản đảm bảo nhiệt độ bảo quản thực phẩm                                                                                        | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C7                            | Côn trùng và động vật gây hại                                                                                                                   | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | E8                            | Chứng từ hồ sơ                                                                                                                                  | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C8                            | Bồn rửa & bẫy mỡ sạch sẽ và trong tình trạng hoạt động tốt.                                                                                     | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C9                            | Tường, quầy kệ, tủ, trần, sàn khu vực pha chế & bếp sạch sẽ.                                                                                    | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C10                           | Vệ sinh khu vực kho                                                                                                                             | numeric       |           1.0 | NULL
+ QC Checklist 2026 v1           | C11                           | Nhà vệ sinh                                                                                                                                     | numeric       |           1.0 | NULL
+ Safety Equipment Verification  | Fire Safety                   | Fire extinguisher valid (not expired)                                                                                                           | pass_fail     |             3 | NULL
+ Safety Equipment Verification  | Fire Safety                   | Fire extinguisher accessible                                                                                                                    | pass_fail     |             2 | NULL
+ Safety Equipment Verification  | Fire Safety                   | Fire alarm tested                                                                                                                               | pass_fail     |             2 | NULL
+ Safety Equipment Verification  | First Aid                     | First aid kit fully stocked                                                                                                                     | pass_fail     |             2 | NULL
+ Safety Equipment Verification  | First Aid                     | AED battery charged                                                                                                                             | pass_fail     |             3 | NULL
+ Safety Equipment Verification  | Emergency Equipment           | Emergency lighting works                                                                                                                        | pass_fail     |             2 | NULL
+ Safety Equipment Verification  | Emergency Equipment           | Evacuation plan posted                                                                                                                          | pass_fail     |             1 | NULL
+ Shift Handover Checklist       | Equipment Status              | Fridge temperature recorded                                                                                                                     | numeric       |             2 | NULL
+ Shift Handover Checklist       | Equipment Status              | All machines operational                                                                                                                        | pass_fail     |             2 | NULL
+ Shift Handover Checklist       | Equipment Status              | Cleaning log signed                                                                                                                             | pass_fail     |             1 | NULL
+ Shift Handover Checklist       | Inventory Handover            | Cash count matches POS                                                                                                                          | numeric       |             3 | NULL
+ Shift Handover Checklist       | Inventory Handover            | Stock levels reported                                                                                                                           | pass_fail     |             2 | NULL
+ Shift Handover Checklist       | Inventory Handover            | Pending orders noted                                                                                                                            | pass_fail     |             1 | NULL
+ Store Condition Audit          | Storefront and Entrance       | Signage visible and clean                                                                                                                       | pass_fail     |             5 | NULL
+ Store Condition Audit          | Storefront and Entrance       | Windows clean                                                                                                                                   | pass_fail     |             3 | NULL
+ Store Condition Audit          | Storefront and Entrance       | Entrance area tidy                                                                                                                              | pass_fail     |             3 | NULL
+ Store Condition Audit          | Shop Floor                    | Shelves fully stocked                                                                                                                           | pass_fail     |             5 | NULL
+ Store Condition Audit          | Shop Floor                    | Price tags visible                                                                                                                              | pass_fail     |             4 | NULL
+ Store Condition Audit          | Shop Floor                    | Floor clean and dry                                                                                                                             | pass_fail     |             3 | NULL
+ Store Condition Audit          | Shop Floor                    | Display standards met                                                                                                                           | pass_fail     |             4 | NULL
+ Store Condition Audit          | Backroom & Storage            | Storage organized                                                                                                                               | pass_fail     |             3 | NULL
+ Store Condition Audit          | Backroom & Storage            | Trash disposed                                                                                                                                  | pass_fail     |             1 | NULL
+ TnD checklist khu vuc HCM 2026 | KV1                           | Khu giu xe                                                                                                                                      | numeric       |           1.0 | NULL
+ TnD checklist khu vuc HCM 2026 | Ho so nhan vien               | Ho so day du                                                                                                                                    | numeric       |           1.0 | NULL
+ TnD checklist khu vuc HCM 2026 | Cua toilet                    | Lau chui sach se                                                                                                                                | numeric       |           1.0 | NULL
+ TnD checklist khu vuc HCM 2026 | Khu chien thuc an             | Bep chien                                                                                                                                       | numeric       |           1.0 | NULL
+ TnD checklist khu vuc HCM 2026 | Khu pha tra                   | Pha che nuoc                                                                                                                                    | numeric       |           1.0 | NULL
+ TnD checklist khu vuc HCM 2026 | Ban tinh tien                 | Hoc tien                                                                                                                                        | numeric       |           1.0 | NULL
+ Warehouse Inventory Audit      | Rack 1                        | Item count verified                                                                                                                             | pass_fail     |             3 | NULL
+ Warehouse Inventory Audit      | Rack 1                        | Labels match system                                                                                                                             | pass_fail     |             2 | NULL
+ Warehouse Inventory Audit      | Rack 1                        | No damaged packaging                                                                                                                            | pass_fail     |             2 | NULL
+ Warehouse Inventory Audit      | Zone B - General              | Bulk items counted                                                                                                                              | pass_fail     |             3 | NULL
+ Warehouse Inventory Audit      | Rack 2                        | Item count verified                                                                                                                             | pass_fail     |             3 | NULL
+ Warehouse Inventory Audit      | Zone B - General              | Pallet positions correct                                                                                                                        | pass_fail     |             2 | NULL
+ Warehouse Inventory Audit      | Rack 2                        | Labels match system                                                                                                                             | pass_fail     |             2 | NULL
+ Warehouse Inventory Audit      | Zone B - General              | No expired stock                                                                                                                                | pass_fail     |             3 | NULL
+(150 rows)
+

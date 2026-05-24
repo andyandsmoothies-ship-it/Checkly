@@ -1,0 +1,47 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/scoring_engine_conform_guard_test.dart
+00:00 +0: ScoringEngine_ConformWithStaleNumericValue_NoPhantomDeduction_PenaltyMode
+00:00 +0 -1: ScoringEngine_ConformWithStaleNumericValue_NoPhantomDeduction_PenaltyMode [E]
+  Expected: a numeric value within <0.01> of <100.0>
+    Actual: <50.0>
+     Which:  differs by <50.0>
+  conform with stale numericValue should produce 0 deduction (guard missing)
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\scoring_engine_conform_guard_test.dart 77:7    main.<fn>
+  
+00:00 +0 -1: ScoringEngine_NaWithStaleNumericValue_NoPhantomDeduction_PenaltyMode
+00:00 +0 -2: ScoringEngine_NaWithStaleNumericValue_NoPhantomDeduction_PenaltyMode [E]
+  Expected: a numeric value within <0.01> of <100.0>
+    Actual: <0.0>
+     Which:  differs by <100.0>
+  na answer must return 0 deduction regardless of stale numericValue
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\scoring_engine_conform_guard_test.dart 124:7   main.<fn>
+  
+00:00 +0 -2: ScoringEngine_ConformWithStaleNumericValue_NoPhantomDeduction_ChecklistMode
+00:00 +0 -3: ScoringEngine_ConformWithStaleNumericValue_NoPhantomDeduction_ChecklistMode [E]
+  Expected: a numeric value within <0.01> of <100.0>
+    Actual: <90.0>
+     Which:  differs by <10.0>
+  conform with stale numericValue must not cause phantom deduction in checklist mode
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\scoring_engine_conform_guard_test.dart 187:7   main.<fn>
+  
+00:00 +0 -3: ScoringEngine_NonConformWithMappedNumericValue_DeductionApplied_PenaltyMode
+00:00 +1 -3: ScoringEngine_ThreePhantomConformDeductions_MatchesServerScore_77_78
+00:00 +1 -4: ScoringEngine_ThreePhantomConformDeductions_MatchesServerScore_77_78 [E]
+  Expected: a numeric value within <0.01> of <77.78>
+    Actual: <44.44>
+     Which:  differs by <33.34>
+  Flutter score must match server score. Phantom deductions from stale numericValue on conform answers must be zero.
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\scoring_engine_conform_guard_test.dart 310:7   main.<fn>
+  
+00:00 +1 -4: Some tests failed.

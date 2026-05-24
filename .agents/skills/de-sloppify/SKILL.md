@@ -1,13 +1,13 @@
 ---
 name: de-sloppify
 description: >
-  Systematic code cleanup pipeline for .NET projects. Runs 7 ordered steps:
+  Systematic code cleanup pipeline for .NET projects. Runs 8 ordered steps:
   formatting, unused usings, analyzer warnings, dead code removal, TODO resolution,
-  sealed class audit, and CancellationToken propagation. Each step is verified
+  sealed class audit, CancellationToken propagation, and organizing telemetry. Each step is verified
   independently with tests between phases. Load this skill when: "clean up",
   "de-sloppify", "tidy up", "remove dead code", "code cleanup", "housekeeping",
   "tech debt", "fix warnings", "seal classes", "add CancellationToken",
-  "unused usings", "format code".
+  "unused usings", "format code", "organize telemetry".
 ---
 
 # De-Sloppify
@@ -28,7 +28,7 @@ description: >
 
 ## Patterns
 
-### 7-Step Cleanup Pipeline
+### 8-Step Cleanup Pipeline
 
 Execute in order. Verify (build + test) after each step. Commit each step separately.
 
@@ -172,6 +172,27 @@ Common propagation points:
 Verify: `dotnet build` and `dotnet test` pass.
 Commit: `chore: propagate CancellationToken through async chains`
 
+**Step 8: Sweep Historical Telemetry (Librarian)**
+```powershell
+# Organize development history and clean up trash to adhere to Rule 4 Environment Rules
+New-Item -ItemType Directory -Force -Path ".agents/logs" -ErrorAction SilentlyContinue;
+New-Item -ItemType Directory -Force -Path "dbquery" -ErrorAction SilentlyContinue;
+
+# 1. Archive Test Logs & Text Outputs to .agents/logs/
+Get-ChildItem -Path "server", "lib", "." -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -in ".log", ".txt" } | Move-Item -Destination ".agents/logs" -Force -ErrorAction SilentlyContinue;
+
+# 2. Archive Scratch Queries to dbquery/
+Get-ChildItem -Path "server", "." -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -eq ".sql" } | Move-Item -Destination "dbquery" -Force -ErrorAction SilentlyContinue;
+
+# 3. Delete Useless Compiler Dumps & Ephemeral DBs
+Get-ChildItem -Path "server", "." -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -eq ".xml" } | Remove-Item -Force -ErrorAction SilentlyContinue;
+Get-ChildItem -Path "test" -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "_fake_db.sqlite" } | Remove-Item -Force -ErrorAction SilentlyContinue;
+```
+Why eighth: Agents often pipe test outputs or scratch logic directly to project folders during execution. This step acts as a Librarian, sorting valuable historical test logs and SQL queries into their proper archives (`.agents/logs/` and `dbquery/`), while permanently deleting useless compiler dumps.
+
+Verify: Check `git status` to ensure no loose scratch files remain in the root, `server/`, `lib/`, or `test/`.
+Commit: `chore: organize telemetry and clean up workspace`
+
 ### Cleanup Summary Report
 
 After completing all steps, produce a summary:
@@ -188,8 +209,9 @@ After completing all steps, produce a summary:
 | 5. TODOs | Fixed 2, created issues for 3, removed 1 stale | 5 files |
 | 6. Sealed | Sealed 14 classes | 14 files |
 | 7. CancellationToken | Added propagation to 8 async chains | 11 files |
+| 8. Librarian | Organized logs to .agents/logs/ and dbquery/ | 0 files |
 
-**Total: 7 commits, 86 files improved**
+**Total: 8 commits, 86 files improved**
 ```
 
 ## Anti-patterns
@@ -239,7 +261,7 @@ Grep: "OrderService" in test projects → no inheritance, only usage via interfa
 ### Batch-Committing All Cleanup
 
 ```
-# BAD — one giant commit with all 7 steps
+# BAD — one giant commit with all 8 steps
 git add -A && git commit -m "chore: cleanup everything"
 # If sealing a class broke a test, you have to revert ALL cleanup to fix it
 
@@ -267,22 +289,22 @@ Remove dead code → dotnet test → commit
 
 | Scenario | Steps to Run | Notes |
 |----------|-------------|-------|
-| Full cleanup pass | All 7 | Dedicate a session to cleanup only |
-| Quick tidy before PR | 1, 2, 6 | Format, usings, format check |
-| After large feature merge | 1, 2, 3, 4 | Clean up accumulated mess |
-| Quarterly maintenance | All 7 | Schedule regular cleanup sprints |
+| Full cleanup pass | All 8 | Dedicate a session to cleanup only |
+| Quick tidy before PR | 1, 2, 6, 8 | Format, usings, check, sweep trash |
+| After large feature merge | 1, 2, 3, 4, 8 | Clean up accumulated mess |
+| Quarterly maintenance | All 8 | Schedule regular cleanup sprints |
 | New team member onboarding | 1, 2, 3 | Get the codebase to a clean baseline |
 | Before performance work | 4, 6 | Remove dead code, seal classes for devirtualization |
 | After dependency upgrade | 2, 3 | Fix new analyzer warnings from updated packages |
-| Pre-release hardening | All 7 | Full cleanup before a release |
+| Pre-release hardening | All 8 | Full cleanup before a release |
 | CI warning threshold exceeded | 3 | Focus on analyzer warnings only |
-| Tech debt sprint | 4, 5 | Dead code and TODO resolution |
+| Tech debt sprint | 4, 5, 8 | Dead code, TODOs, and trash cleanup |
 
 ---
 
 ## Hard Verification Gate (MANDATORY)
 
-After completing the full 7-step pipeline (or any subset), run EXACTLY:
+After completing the full 8-step pipeline (or any subset), run EXACTLY:
 
 ```
 cmd /c python .agents/skills/de-sloppify/verify_clean_compilation.py server

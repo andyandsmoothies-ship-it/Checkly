@@ -1,0 +1,389 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart
+test/unit/models/action_plan_dto_test.dart:55:3: Error: No named parameter with the name 'allowedActions'.
+  allowedActions: allowedActions,
+  ^^^^^^^^^^^^^^
+lib/features/action_plans/model/action_plan_dto.dart:26:9: Context: Found this candidate, but the arguments don't match.
+  const ActionPlanDto({
+        ^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:295:39: Error: Member not found: 'ActionPlanDto.offline'.
+        final offline = ActionPlanDto.offline(
+                                      ^^^^^^^
+test/unit/models/action_plan_dto_test.dart:76:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:81:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:87:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:99:20: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(dto.allowedActions, isNotNull);
+                   ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:101:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:105:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:129:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:147:20: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(dto.allowedActions, hasLength(3));
+                   ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:148:20: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(dto.allowedActions, contains('delete'));
+                   ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:177:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          updated.dto.allowedActions,
+                      ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:185:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          updated.dto.allowedActions,
+                      ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:214:28: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(updated.dto.allowedActions, isNotNull);
+                           ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:217:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          updated.dto.allowedActions,
+                      ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:221:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          updated.dto.allowedActions,
+                      ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:244:28: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(updated.dto.allowedActions, isNotNull);
+                           ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:247:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          updated.dto.allowedActions,
+                      ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:251:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          updated.dto.allowedActions,
+                      ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:276:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          updated.dto.allowedActions,
+                      ^^^^^^^^^^^^^^
+test/unit/models/action_plan_dto_test.dart:332:15: Error: The getter 'syncStatus' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'syncStatus'.
+          dto.syncStatus,
+              ^^^^^^^^^^
+00:00 +0 -1: loading C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart [E]
+  Failed to load "C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart":
+  Compilation failed for testPath=C:/Users/HP/Documents/GitHub/Checkly/test/unit/models/action_plan_dto_test.dart: test/unit/models/action_plan_dto_test.dart:55:3: Error: No named parameter with the name 'allowedActions'.
+    allowedActions: allowedActions,
+    ^^^^^^^^^^^^^^
+  lib/features/action_plans/model/action_plan_dto.dart:26:9: Context: Found this candidate, but the arguments don't match.
+    const ActionPlanDto({
+          ^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:295:39: Error: Member not found: 'ActionPlanDto.offline'.
+          final offline = ActionPlanDto.offline(
+                                        ^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:76:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:81:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:87:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:99:20: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(dto.allowedActions, isNotNull);
+                     ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:101:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:105:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:129:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:147:20: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(dto.allowedActions, hasLength(3));
+                     ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:148:20: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(dto.allowedActions, contains('delete'));
+                     ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:177:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            updated.dto.allowedActions,
+                        ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:185:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            updated.dto.allowedActions,
+                        ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:214:28: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(updated.dto.allowedActions, isNotNull);
+                             ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:217:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            updated.dto.allowedActions,
+                        ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:221:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            updated.dto.allowedActions,
+                        ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:244:28: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(updated.dto.allowedActions, isNotNull);
+                             ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:247:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            updated.dto.allowedActions,
+                        ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:251:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            updated.dto.allowedActions,
+                        ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:276:23: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            updated.dto.allowedActions,
+                        ^^^^^^^^^^^^^^
+  test/unit/models/action_plan_dto_test.dart:332:15: Error: The getter 'syncStatus' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'syncStatus'.
+            dto.syncStatus,
+                ^^^^^^^^^^
+  .
+  Error: The Dart compiler exited unexpectedly.
+  package:flutter_tools/src/base/common.dart 34:3  throwToolExit
+  package:flutter_tools/src/compile.dart 939:11    DefaultResidentCompiler._compile.<fn>
+  dart:async/zone_root.dart 48:47                  _rootRunUnary
+  dart:async/zone.dart 733:19                      _CustomZone.runUnary
+  dart:async/future_impl.dart 948:45               Future._propagateToListeners.handleValueCallback
+  dart:async/future_impl.dart 977:13               Future._propagateToListeners
+  dart:async/future_impl.dart 862:9                Future._propagateToListeners
+  dart:async/future_impl.dart 720:5                Future._completeWithValue
+  dart:async/future_impl.dart 804:7                Future._asyncCompleteWithValue.<fn>
+  dart:async/zone_root.dart 35:13                  _rootRun
+  dart:async/zone.dart 726:19                      _CustomZone.run
+  dart:async/zone.dart 625:7                       _CustomZone.runGuarded
+  dart:async/zone.dart 666:23                      _CustomZone.bindCallbackGuarded.<fn>
+  dart:async/schedule_microtask.dart 40:35         _microtaskLoop
+  dart:async/schedule_microtask.dart 49:5          _startMicrotaskLoop
+  dart:isolate-patch/isolate_patch.dart 127:13     _runPendingImmediateCallback
+  dart:isolate-patch/isolate_patch.dart 194:5      _RawReceivePort._handleMessage
+  
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:127:7: Error: No named parameter with the name 'cachedAllowedActions'.
+      cachedAllowedActions: Value(jsonEncode(actions)), // <-- NEW COLUMN
+      ^^^^^^^^^^^^^^^^^^^^
+lib/_shared/database/app_database.g.dart:4942:3: Context: Found this candidate, but the arguments don't match.
+  CachedActionPlansCompanion.insert({
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:229:13: Error: No named parameter with the name 'cachedAllowedActions'.
+            cachedAllowedActions: const Value('["view","verify_close","reject_evidence"]'),
+            ^^^^^^^^^^^^^^^^^^^^
+lib/_shared/database/app_database.g.dart:4942:3: Context: Found this candidate, but the arguments don't match.
+  CachedActionPlansCompanion.insert({
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:183:15: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+ - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+          row.cachedAllowedActions, // <-- NEW COLUMN on the generated type
+              ^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:190:40: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+ - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+        final decoded = jsonDecode(row.cachedAllowedActions!) as List;
+                                       ^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:206:15: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+ - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+          row.cachedAllowedActions,
+              ^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:239:47: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+ - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+        final decoded = jsonDecode(rows.first.cachedAllowedActions!) as List;
+                                              ^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:277:18: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+ - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+          legacy.cachedAllowedActions,
+                 ^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:282:15: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+ - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+          v28.cachedAllowedActions,
+              ^^^^^^^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:341:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:348:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:374:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          dto.allowedActions,
+              ^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:415:24: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(openDto.allowedActions, contains('submit_evidence'));
+                       ^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:416:24: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(openDto.allowedActions, isNot(contains('verify_close')));
+                       ^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:418:22: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(pvDto.allowedActions, contains('verify_close'));
+                     ^^^^^^^^^^^^^^
+test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:419:22: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+ - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+        expect(pvDto.allowedActions, isNot(contains('submit_evidence')));
+                     ^^^^^^^^^^^^^^
+00:00 +0 -2: loading C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart [E]
+  Failed to load "C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart":
+  Compilation failed for testPath=C:/Users/HP/Documents/GitHub/Checkly/test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart: test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:127:7: Error: No named parameter with the name 'cachedAllowedActions'.
+        cachedAllowedActions: Value(jsonEncode(actions)), // <-- NEW COLUMN
+        ^^^^^^^^^^^^^^^^^^^^
+  lib/_shared/database/app_database.g.dart:4942:3: Context: Found this candidate, but the arguments don't match.
+    CachedActionPlansCompanion.insert({
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:229:13: Error: No named parameter with the name 'cachedAllowedActions'.
+              cachedAllowedActions: const Value('["view","verify_close","reject_evidence"]'),
+              ^^^^^^^^^^^^^^^^^^^^
+  lib/_shared/database/app_database.g.dart:4942:3: Context: Found this candidate, but the arguments don't match.
+    CachedActionPlansCompanion.insert({
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:183:15: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+   - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+            row.cachedAllowedActions, // <-- NEW COLUMN on the generated type
+                ^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:190:40: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+   - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+          final decoded = jsonDecode(row.cachedAllowedActions!) as List;
+                                         ^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:206:15: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+   - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+            row.cachedAllowedActions,
+                ^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:239:47: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+   - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+          final decoded = jsonDecode(rows.first.cachedAllowedActions!) as List;
+                                                ^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:277:18: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+   - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+            legacy.cachedAllowedActions,
+                   ^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:282:15: Error: The getter 'cachedAllowedActions' isn't defined for the type 'CachedActionPlan'.
+   - 'CachedActionPlan' is from 'package:checkly/_shared/database/app_database.dart' ('lib/_shared/database/app_database.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'cachedAllowedActions'.
+            v28.cachedAllowedActions,
+                ^^^^^^^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:341:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:348:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:374:15: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+            dto.allowedActions,
+                ^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:415:24: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(openDto.allowedActions, contains('submit_evidence'));
+                         ^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:416:24: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(openDto.allowedActions, isNot(contains('verify_close')));
+                         ^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:418:22: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(pvDto.allowedActions, contains('verify_close'));
+                       ^^^^^^^^^^^^^^
+  test/_shared/database/drift_migration_action_plan_allowed_actions_test.dart:419:22: Error: The getter 'allowedActions' isn't defined for the type 'ActionPlanDto'.
+   - 'ActionPlanDto' is from 'package:checkly/features/action_plans/model/action_plan_dto.dart' ('lib/features/action_plans/model/action_plan_dto.dart').
+  Try correcting the name to the name of an existing getter, or defining a getter or field named 'allowedActions'.
+          expect(pvDto.allowedActions, isNot(contains('submit_evidence')));
+                       ^^^^^^^^^^^^^^
+  .
+00:00 +0 -2: Some tests failed.

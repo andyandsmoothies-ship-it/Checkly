@@ -1,0 +1,6 @@
+Analyzing Checkly...                                            
+
+   info - Unnecessary use of multiple underscores - lib\features\user_groups\pages\user_group_list_page.dart:83:37 - unnecessary_underscores
+   info - Use the null-aware marker '?' rather than a null check via an 'if' - lib\features\user_groups\services\user_group_api_service.dart:33:28 - use_null_aware_elements
+
+2 issues found. (ran in 94.9s)

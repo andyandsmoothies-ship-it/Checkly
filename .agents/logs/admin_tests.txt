@@ -1,0 +1,68 @@
+00:00 +0: loading c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/admin_dashboard_page_test.dart
+00:00 +0: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/admin_dashboard_page_test.dart: AdminDashboard — Load Counts AdminDashboard_LoadCounts_ShowsSnackBarOnApiFailure — SnackBar visible when API throws
+00:00 +1: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/admin_dashboard_page_test.dart: AdminDashboard — Load Counts AdminDashboard_LoadCounts_ShowsSnackBarOnApiFailure — SnackBar visible when API throws
+00:01 +2: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/audit_approval_page_test.dart: AuditApprovalPage — Loading State AuditApproval_Loading_ShowsProgressIndicator — CircularProgressIndicator visible while manager is loading
+00:01 +3: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/audit_approval_page_test.dart: AuditApprovalPage — Loading State AuditApproval_Loading_ShowsProgressIndicator — CircularProgressIndicator visible while manager is loading
+00:01 +4: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:01 +5: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:01 +6: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:01 +7: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:01 +8: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_detail_page_self_modification_test.dart: Self-modification guard disables admin:access toggle for admin role
+00:01 +9: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-01: RoleListPage_WhenOffline_ShowsOfflineLock
+00:01 +10: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-01: RoleListPage_WhenOffline_ShowsOfflineLock
+00:01 +11: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-02: RoleDetailPage_WhenConnectionDrops_HidesCheckboxes
+00:02 +12: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-03: RoleDetailPage_WhenNoCapability_CheckboxesDisabled
+00:02 +13: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-04: RoleDetailPage_GrantRevoke_FiresServiceAndReloads
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _AncestorWidgetFinder:<Found 0 widgets with type "CheckboxListTile" that are ancestors of
+widgets with text "templates:create": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart:223:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart line 223
+The test description was:
+  AT-04: RoleDetailPage_GrantRevoke_FiresServiceAndReloads
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +13 -1: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-04: RoleDetailPage_GrantRevoke_FiresServiceAndReloads [E]
+  Test failed. See exception logs above.
+  The test description was: AT-04: RoleDetailPage_GrantRevoke_FiresServiceAndReloads
+  
+00:02 +13 -1: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-05: RoleDetailPage_AtomicFailure_SnackBar
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with type "CheckboxListTile" that are ancestors of widgets with text
+"templates:create": []" (used in a call to "tap()") could not find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2090:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1942:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1075:7)
+#3      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart:267:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  AT-05: RoleDetailPage_AtomicFailure_SnackBar
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:02 +13 -2: c:/Users/HP/Documents/GitHub/Checkly/test/features/admin/pages/role_management_atdd_test.dart: ATDD — PBAC Admin Dashboard Flow AT-05: RoleDetailPage_AtomicFailure_SnackBar [E]
+  Test failed. See exception logs above.
+  The test description was: AT-05: RoleDetailPage_AtomicFailure_SnackBar
+  
+00:02 +13 -2: Some tests failed.

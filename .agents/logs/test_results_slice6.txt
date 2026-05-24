@@ -1,0 +1,7 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+MSBUILD : error MSB1003: Specify a project or solution file. The current working directory does not contain a project or solution file.
+
+fail dotnet test: 0 passed, 1 failed, 0 skipped, 0 warnings in 1 projects (unknown)
+Errors:
+  MSBUILD(0,0) error MSB1003: Specify a project or solution file. The current working directory does not contain a project or solution file.
+

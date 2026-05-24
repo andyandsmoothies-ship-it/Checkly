@@ -1,0 +1,178 @@
+00:00 +0: loading c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart
+00:00 +0: ProfilePage — Stats Row Removal profilePage_StatsRow_IsAbsent — stats labels must not render after refactor
+00:00 +1: ProfilePage — Identity Header Layout profilePage_IdentityHeader_IsHorizontalRow — CircleAvatar and email must share a Row ancestor
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:12299:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:109:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:198:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:00 +2: ProfilePage — Sign Out Confirmation profilePage_SignOut_TriggersConfirmationDialog — AlertDialog shown before logout is called
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:12299:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:109:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:235:26)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      Iterable.single (dart:core/iterable.dart:694:25)
+#1      WidgetController.element (package:flutter_test/src/controller.dart:883:30)
+#2      WidgetController.ensureVisible (package:flutter_test/src/controller.dart:2382:32)
+#3      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:239:22)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  profilePage_SignOut_TriggersConfirmationDialog — AlertDialog shown before logout is called
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +2 -1: ProfilePage — Sign Out Confirmation profilePage_SignOut_TriggersConfirmationDialog — AlertDialog shown before logout is called [E]
+  Test failed. See exception logs above.
+  The test description was: profilePage_SignOut_TriggersConfirmationDialog — AlertDialog shown before logout is called
+  
+00:01 +2 -1: ProfilePage — Sign Out Confirmation profilePage_SignOut_ConfirmCallsLogout — confirming the dialog calls logout exactly once
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:12299:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:109:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:263:26)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      Iterable.single (dart:core/iterable.dart:694:25)
+#1      WidgetController.element (package:flutter_test/src/controller.dart:883:30)
+#2      WidgetController.ensureVisible (package:flutter_test/src/controller.dart:2382:32)
+#3      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:267:22)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  profilePage_SignOut_ConfirmCallsLogout — confirming the dialog calls logout exactly once
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +2 -2: ProfilePage — Sign Out Confirmation profilePage_SignOut_ConfirmCallsLogout — confirming the dialog calls logout exactly once [E]
+  Test failed. See exception logs above.
+  The test description was: profilePage_SignOut_ConfirmCallsLogout — confirming the dialog calls logout exactly once
+  
+00:01 +2 -2: ProfilePage — Settings Card Grouping profilePage_Settings_RenderInCards — at least 2 Card widgets must wrap menu items
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:12299:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:109:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:301:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:01 +3 -2: ProfilePage — Dark Mode Compatibility ProfilePage_EmailText_UsesOnSurfaceColor — email text color must adapt to theme brightness
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:12299:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:109:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:323:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:01 +4 -2: ProfilePage — Real Name Display ProfilePage_DisplayName_ShowsFullName — header must prefer fullName over email
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:12299:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:109:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:379:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:01 +5 -2: ProfilePage — Real Name Display ProfilePage_DisplayName_FallsBackToEmail — header must show email when fullName is null
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:checkly/_shared/database/app_database.g.dart:12299:36)
+#4      new AppDatabase.forTesting (package:checkly/_shared/database/app_database.dart)
+#5      _registerDi (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:109:30)
+#6      main.<anonymous closure>.<anonymous closure> (file:///c:/Users/HP/Documents/GitHub/Checkly/test/features/profile/pages/profile_page_test.dart:407:9)
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+#9      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:01 +6 -2: ProfilePage — Real Name Display ProfilePage_Initials_FromFullName — getInitials must handle name-to-initials logic
+00:01 +7 -2: Some tests failed.

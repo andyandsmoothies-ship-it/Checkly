@@ -1,0 +1,13 @@
+Analyzing Checkly...                                            
+
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\admin\pages\store_management_page.dart:440:17 - deprecated_member_use
+warning - The value of the local variable 'userId' isn't used - lib\features\admin\pages\user_management_page.dart:167:11 - unused_local_variable
+   info - Statements in an if should be enclosed in a block - lib\features\admin\pages\user_management_page.dart:807:37 - curly_braces_in_flow_control_structures
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\analytics\pages\analytics_page.dart:269:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\analytics\pages\analytics_page.dart:300:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\analytics\pages\analytics_page.dart:329:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\analytics\pages\analytics_page.dart:358:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\analytics\pages\analytics_page.dart:387:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\analytics\pages\analytics_page.dart:418:21 - deprecated_member_use
+   info - The import of 'dart:ui' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\features\templates\widgets\ghost_add_button.dart:1:8 - unnecessary_import
+

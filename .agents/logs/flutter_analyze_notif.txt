@@ -1,0 +1,6 @@
+Analyzing Checkly...                                            
+
+   info - The imported package 'flutter_test' isn't a dependency of the importing package - lib\features\notifications\widgets\notification_bell_lifecycle_test.dart:2:8 - depend_on_referenced_packages
+   info - The imported package 'mocktail' isn't a dependency of the importing package - lib\features\notifications\widgets\notification_bell_lifecycle_test.dart:4:8 - depend_on_referenced_packages
+
+2 issues found. (ran in 16.6s)

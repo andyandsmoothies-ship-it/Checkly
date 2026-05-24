@@ -1,0 +1,5 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/services/user_group_api_service_test.dart
+00:00 +0: UserGroupApiService Pathing Tests listGroups should call /user-groups (NOT /api/user-groups)
+00:00 +1: UserGroupApiService Pathing Tests createGroup should call /user-groups (NOT /api/user-groups)
+00:00 +2: UserGroupApiService Pathing Tests Regression Check - 404 Prevention Must NOT call /api/user-groups
+00:00 +3: All tests passed!

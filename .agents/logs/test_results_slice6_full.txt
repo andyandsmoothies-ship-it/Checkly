@@ -1,0 +1,141 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_A2_StoreManager_Archives_Program_ReturnsForbidden [7 s]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Forbidden
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_A2_StoreManager_Archives_Program_ReturnsForbidden() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 194
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U4_Admin_Updates_With_Past_Deadline_ReturnsBadRequest [105 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_U4_Admin_Updates_With_Past_Deadline_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 134
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_A1_Admin_Archives_Active_Program_ReturnsNoContent [97 ms]
+  Error Message:
+   Status: NotFound. Body: 
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_A1_Admin_Archives_Active_Program_ReturnsNoContent() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 173
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U1_Admin_Updates_Active_Program_ReturnsOk [119 ms]
+  Error Message:
+   Status: NotFound. Body: 
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_U1_Admin_Updates_Active_Program_ReturnsOk() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 92
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U2_StoreManager_Updates_Program_ReturnsForbidden [296 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Forbidden
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_U2_StoreManager_Updates_Program_ReturnsForbidden() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 111
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U6_Gap_Admin_Updates_With_Empty_Title_ReturnsBadRequest [130 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   NotFound
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_U6_Gap_Admin_Updates_With_Empty_Title_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 163
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_A4_Admin_Archives_Already_Cancelled_Program_ReturnsBadRequest [122 ms]
+  Error Message:
+   Status: NotFound. Body: 
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_A4_Admin_Archives_Already_Cancelled_Program_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 213
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Program_Slice6_Tests.TC_U5_Gap_Admin_Updates_Cancelled_Program_ReturnsBadRequest [90 ms]
+  Error Message:
+   Status: NotFound. Body: 
+  Stack Trace:
+     at Checkly.Api.Tests.Program_Slice6_Tests.TC_U5_Gap_Admin_Updates_Cancelled_Program_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 145
+--- End of stack trace from previous location ---
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19de336a6af15741\HP_DESKTOP-T6IM9HH_2026-05-01_18_05_15.trx
+
+Failed!  - Failed:     8, Passed:     2, Skipped:     0, Total:    10, Duration: 9 s - Checkly.Api.Tests.dll (net10.0)
+
+fail dotnet test: 2 passed, 8 failed, 0 skipped, 0 warnings in 1 projects (9.9 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_A2_StoreManager_Archives_Program_ReturnsForbidden
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: Forbidden
+    Actual:   NotFound
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_A2_StoreManager_Archives_Program_ReturnsForbidden() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 194
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_U4_Admin_Updates_With_Past_Deadline_ReturnsBadRequest
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: BadRequest
+    Actual:   NotFound
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_U4_Admin_Updates_With_Past_Deadline_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 134
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_A1_Admin_Archives_Active_Program_ReturnsNoContent
+    Error Message:
+    Status: NotFound. Body:
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_A1_Admin_Archives_Active_Program_ReturnsNoContent() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 173
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_U1_Admin_Updates_Active_Program_ReturnsOk
+    Error Message:
+    Status: NotFound. Body:
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_U1_Admin_Updates_Active_Program_ReturnsOk() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 92
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_U2_StoreManager_Updates_Program_ReturnsForbidden
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: Forbidden
+    Actual:   NotFound
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_U2_StoreManager_Updates_Program_ReturnsForbidden() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 111
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_U6_Gap_Admin_Updates_With_Empty_Title_ReturnsBadRequest
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: BadRequest
+    Actual:   NotFound
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_U6_Gap_Admin_Updates_With_Empty_Title_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 163
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_A4_Admin_Archives_Already_Cancelled_Program_ReturnsBadRequest
+    Error Message:
+    Status: NotFound. Body:
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_A4_Admin_Archives_Already_Cancelled_Program_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 213
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Program_Slice6_Tests.TC_U5_Gap_Admin_Updates_Cancelled_Program_ReturnsBadRequest
+    Error Message:
+    Status: NotFound. Body:
+    Stack Trace:
+    at Checkly.Api.Tests.Program_Slice6_Tests.TC_U5_Gap_Admin_Updates_Cancelled_Program_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Program_Slice6_Tests.cs:line 145
+    --- End of stack trace from previous location ---
+    Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19de336a6af15741\HP_DESKTOP-T6IM9HH_2026-05-01_18_05_15.trx
+    
+
+

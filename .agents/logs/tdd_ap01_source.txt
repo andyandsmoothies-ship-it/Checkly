@@ -1,0 +1,129 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.3)
+[xUnit.net 00:00:00.23]   Discovering: Checkly.Api.Tests
+[xUnit.net 00:00:00.36]   Discovered:  Checkly.Api.Tests
+[xUnit.net 00:00:00.38]   Starting:    Checkly.Api.Tests
+[23:48:02 INF] Starting Checkly API
+[23:48:04 WRN] FirebaseApp.Create() failed: One or more errors occurred. (Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc.). FCM push will be disabled.
+[23:48:07 INF] ReminderService started - interval: 12:00:00 {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:07 INF] OutboxBackgroundService is starting. {"SourceContext": "Checkly.Api.Common.Services.OutboxBackgroundService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:07 INF] PBAC listener connected. Subscribed to 'pbac_invalidate'. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:07 INF] Executing unconditional Resync-on-Connect PBAC reload. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:07 INF] Application started. Press Ctrl+C to shut down. {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:07 INF] Hosting environment: Development {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:07 INF] Content root path: C:\Users\HP\Documents\GitHub\Checkly\server {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:07 INF] ReminderService: Distributed lock acquired for tick. {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:08 INF] S6: Sent 141 deadline reminders {"SourceContext": "Checkly.Api.Common.Services.ReminderService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:08 INF] HTTP POST /api/auth/login responded 200 in 168.9578 ms
+[23:48:09 INF] HTTP POST /api/auth/register responded 201 in 229.7580 ms
+[23:48:09 INF] PBAC debounce window elapsed. Reloading capability cache. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:09 INF] HTTP POST /api/action-plans responded 201 in 186.5766 ms
+[xUnit.net 00:00:08.63]       System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+[xUnit.net 00:00:08.63]       Stack Trace:
+[xUnit.net 00:00:08.63]            at System.Text.Json.JsonElement.GetProperty(String propertyName)
+[xUnit.net 00:00:08.63]         C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs(201,0): at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithCampaign_SetsCampaignSource()
+[xUnit.net 00:00:08.63]         --- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithCampaign_SetsCampaignSource [8 s]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithCampaign_SetsCampaignSource() in C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs:line 201
+--- End of stack trace from previous location ---
+[23:48:09 INF] HTTP POST /api/auth/login responded 200 in 52.5808 ms
+[23:48:09 INF] HTTP GET /api/action-plans/fd708c4c-b32b-4cbe-a2bc-920dd65f7640 responded 200 in 38.1211 ms
+[xUnit.net 00:00:08.76]       ActionPlanDto must include a 'sourceTitle' property even for legacy records.
+[xUnit.net 00:00:08.76]       Stack Trace:
+[xUnit.net 00:00:08.76]         C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs(295,0): at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.GetActionPlan_WithNullSourceTitle_ReturnsNullField()
+[xUnit.net 00:00:08.76]         --- End of stack trace from previous location ---
+[23:48:09 INF] HTTP POST /api/auth/login responded 200 in 59.6894 ms
+[23:48:09 INF] HTTP POST /api/auth/register responded 201 in 57.1376 ms
+[23:48:09 INF] HTTP POST /api/action-plans responded 201 in 8.8278 ms
+[xUnit.net 00:00:08.90]       System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+[xUnit.net 00:00:08.90]       Stack Trace:
+[xUnit.net 00:00:08.90]            at System.Text.Json.JsonElement.GetProperty(String propertyName)
+[xUnit.net 00:00:08.90]         C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs(233,0): at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithAudit_SetsAuditSource()
+[xUnit.net 00:00:08.90]         --- End of stack trace from previous location ---
+[23:48:09 INF] Application is shutting down... {"SourceContext": "Microsoft.Hosting.Lifetime", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[23:48:09 INF] PBAC listener stopped. {"SourceContext": "Checkly.Api.Common.Auth.PbacCacheListenerService", "MachineName": "DESKTOP-T6IM9HH", "EnvironmentName": "Production", "Application": "Checkly.Api"}
+[xUnit.net 00:00:08.92]   Finished:    Checkly.Api.Tests
+  Failed Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.GetActionPlan_WithNullSourceTitle_ReturnsNullField [106 ms]
+  Error Message:
+   ActionPlanDto must include a 'sourceTitle' property even for legacy records.
+  Stack Trace:
+     at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.GetActionPlan_WithNullSourceTitle_ReturnsNullField() in C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs:line 295
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithAudit_SetsAuditSource [140 ms]
+  Error Message:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Stack Trace:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithAudit_SetsAuditSource() in C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs:line 233
+--- End of stack trace from previous location ---
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e2c899a4f30801\HP_DESKTOP-T6IM9HH_2026-05-15_23_48_09.trx
+
+Total tests: 3
+     Failed: 3
+ Total time: 9.6349 Seconds
+
+fail dotnet test: 0 passed, 3 failed, 0 skipped, 0 warnings in 1 projects (9.6 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithCampaign_SetsCampaignSource
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithCampaign_SetsCampaignSource() in C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs:line 201
+    --- End of stack trace from previous location ---
+    [23:48:09 INF] HTTP POST /api/auth/login responded 200 in 52.5808 ms
+    [23:48:09 INF] HTTP GET /api/action-plans/fd708c4c-b32b-4cbe-a2bc-920dd65f7640 responded 200 in 38.1211 ms
+    [xUnit.net 00:00:08.76]       ActionPlanDto must include a 'sourceTitle' property even for legacy records.
+    [xUnit.net 00:00:08.76]       Stack Trace:
+    [xUnit.net 00:00:08.76]         C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs(295,0): at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.GetActionPlan_WithNullSourceTitle_ReturnsNullField()
+    [xUnit.net 00:00:08.76]         --- End of stack trace from previous location ---
+    [23:48:09 INF] HTTP POST /api/auth/login responded 200 in 59.6894 ms
+    [23:48:09 INF] HTTP POST /api/auth/register responded 201 in 57.1376 ms
+    [23:48:09 INF] HTTP POST /api/action-plans responded 201 in 8.8278 ms
+    [xUnit.net 00:00:08.90]       System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    [xUnit.net 00:00:08.90]       Stack Trace:
+    [xUnit.net 00:00:08.90]            at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    [xUnit.net 00:00:08.90]         C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs(233,0): at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithAudit_SetsAuditSource()
+    [xUnit.net 00:00:08.90]         --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.GetActionPlan_WithNullSourceTitle_ReturnsNullField
+    Error Message:
+    ActionPlanDto must include a 'sourceTitle' property even for legacy records.
+    Stack Trace:
+    at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.GetActionPlan_WithNullSourceTitle_ReturnsNullField() in C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs:line 295
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithAudit_SetsAuditSource
+    Error Message:
+    System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+    Stack Trace:
+    at System.Text.Json.JsonElement.GetProperty(String propertyName)
+    at Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithAudit_SetsAuditSource() in C:\Users\HP\Documents\GitHub\Checkly\server\Tests\Checkly.Api.Tests\ActionPlan_SourceTitle_Tests.cs:line 233
+    --- End of stack trace from previous location ---
+    Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e2c899a4f30801\HP_DESKTOP-T6IM9HH_2026-05-15_23_48_09.trx
+    
+    Total tests: 3
+    Failed: 3
+    Total time: 9.6349 Seconds
+    
+    [xUnit.net 00:00:08.63]     Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithCampaign_SetsCampaignSource [FAIL]
+    [xUnit.net 00:00:08.76]     Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.GetActionPlan_WithNullSourceTitle_ReturnsNullField [FAIL]
+    [xUnit.net 00:00:08.90]     Checkly.Api.Tests.ActionPlan_SourceTitle_Tests.CreateActionPlan_WithAudit_SetsAuditSource [FAIL]
+    Test Run Failed.
+
+

@@ -1,0 +1,26 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/features/user_groups/services/user_group_api_service_test.dart
+00:00 +0: UserGroupApiService Pathing Tests listGroups should call /user-groups (NOT /api/user-groups)
+00:00 +1: UserGroupApiService Pathing Tests createGroup should call /user-groups (NOT /api/user-groups)
+00:00 +2: UserGroupApiService Pathing Tests Regression Check - 404 Prevention Must NOT call /api/user-groups
+00:00 +2 -1: UserGroupApiService Pathing Tests Regression Check - 404 Prevention Must NOT call /api/user-groups [E]
+  Expected: throws <Instance of 'DioException'>
+    Actual: <Closure: () => Future<List<UserGroupDto>>>
+     Which: threw _TypeError:<type 'Null' is not a subtype of type 'Future<Response<Map<String, dynamic>>>'>
+            stack test\features\user_groups\services\user_group_api_service_test.dart 6:7          MockDio.get
+                  package:checkly/features/user_groups/services/user_group_api_service.dart 17:28  UserGroupApiService.listGroups
+                  test\features\user_groups\services\user_group_api_service_test.dart 75:28        main.<fn>.<fn>.<fn>.<fn>
+                  package:matcher                                                                  expect
+                  package:flutter_test/src/widget_tester.dart 473:18                               expect
+                  test\features\user_groups\services\user_group_api_service_test.dart 75:7         main.<fn>.<fn>.<fn>
+                  ===== asynchronous gap ===========================
+                  package:matcher                                                                  expect
+                  package:flutter_test/src/widget_tester.dart 473:18                               expect
+                  test\features\user_groups\services\user_group_api_service_test.dart 75:7         main.<fn>.<fn>.<fn>
+                  
+            which is not an instance of 'DioException'
+  
+  package:matcher                                                           expect
+  package:flutter_test/src/widget_tester.dart 473:18                        expect
+  test\features\user_groups\services\user_group_api_service_test.dart 75:7  main.<fn>.<fn>.<fn>
+  
+00:00 +2 -1: Some tests failed.

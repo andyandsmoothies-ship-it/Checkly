@@ -1,0 +1,9 @@
+00:00 +0: loading C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart
+00:00 +0: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart: AnalyticsManager computes basic KPIs from empty DB
+00:00 +1: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart: AnalyticsManager computes basic KPIs from empty DB
+00:00 +2: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart: AnalyticsManager computes basic KPIs from empty DB
+00:00 +3: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart: AnalyticsManager computes KPIs accurately from populated DB
+00:00 +4: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart: AnalyticsManager applies filters correctly
+00:00 +5: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart: AR-01: AnalyticsManager online path - calls API and maps response
+00:00 +6: C:/Users/HP/Documents/GitHub/Checkly/test/features/analytics/manager/analytics_manager_test.dart: AR-02: AnalyticsManager offline path - DioException triggers Drift fallback
+00:00 +7: All tests passed!

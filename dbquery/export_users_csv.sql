@@ -1,0 +1,1 @@
+\copy (SELECT u."Id", u."UserName", u."Email", p.full_name, p.store_id, p.area_id, u."PhoneNumber" FROM "AspNetUsers" u LEFT JOIN profiles p ON u."Id" = p.id) TO 'C:/Users/HP/Documents/GitHub/Checkly/.agents/tmp/users_export.csv' WITH CSV HEADER;

@@ -1,0 +1,646 @@
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.3)
+[xUnit.net 00:00:00.07]   Discovering: Checkly.Api.Tests
+[xUnit.net 00:00:00.11]   Discovered:  Checkly.Api.Tests
+[xUnit.net 00:00:00.13]   Starting:    Checkly.Api.Tests
+info: Checkly.Api.Common.Services.ReminderService[0]
+      ReminderService started - interval: 12:00:00
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\HP\Documents\GitHub\Checkly\server
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (21ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (67ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DROP DATABASE checkly_test WITH (FORCE);
+fail: Microsoft.EntityFrameworkCore.Database.Connection[20004]
+      An error occurred using the connection to database 'checkly_test' on server 'tcp://localhost:5432'.
+fail: Microsoft.EntityFrameworkCore.Query[10100]
+      An exception occurred while iterating over the results of a query for context type 'Checkly.Api.Common.Persistence.AppDbContext'.
+      Npgsql.PostgresException (0x80004005): 3D000: database "checkly_test" does not exist
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+        Exception data:
+          Severity: FATAL
+          SqlState: 3D000
+          MessageText: database "checkly_test" does not exist
+          File: postinit.c
+          Line: 1016
+          Routine: InitPostgres
+      Npgsql.PostgresException (0x80004005): 3D000: database "checkly_test" does not exist
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+        Exception data:
+          Severity: FATAL
+          SqlState: 3D000
+          MessageText: database "checkly_test" does not exist
+          File: postinit.c
+          Line: 1016
+          Routine: InitPostgres
+fail: Checkly.Api.Common.Services.ReminderService[0]
+      ReminderService tick failed
+      Npgsql.PostgresException (0x80004005): 3D000: database "checkly_test" does not exist
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+         at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+         at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+         at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+         at Checkly.Api.Common.Services.ReminderService.SendDeadlineReminders(AppDbContext db, CancellationToken ct) in C:\Users\HP\Documents\GitHub\Checkly\server\Common\Services\ReminderService.cs:line 58
+         at Checkly.Api.Common.Services.ReminderService.ExecuteAsync(CancellationToken stoppingToken) in C:\Users\HP\Documents\GitHub\Checkly\server\Common\Services\ReminderService.cs:line 37
+        Exception data:
+          Severity: FATAL
+          SqlState: 3D000
+          MessageText: database "checkly_test" does not exist
+          File: postinit.c
+          Line: 1016
+          Routine: InitPostgres
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (175ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE DATABASE checkly_test;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (51ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE areas (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          name text NOT NULL,
+          description text,
+          is_active boolean NOT NULL DEFAULT TRUE,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_areas" PRIMARY KEY (id)
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "AspNetRoles" (
+          "Id" uuid NOT NULL,
+          "Name" character varying(256),
+          "NormalizedName" character varying(256),
+          "ConcurrencyStamp" text,
+          CONSTRAINT "PK_AspNetRoles" PRIMARY KEY ("Id")
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "AspNetUsers" (
+          "Id" uuid NOT NULL,
+          "UserName" character varying(256),
+          "NormalizedUserName" character varying(256),
+          "Email" character varying(256),
+          "NormalizedEmail" character varying(256),
+          "EmailConfirmed" boolean NOT NULL,
+          "PasswordHash" text,
+          "SecurityStamp" text,
+          "ConcurrencyStamp" text,
+          "PhoneNumber" text,
+          "PhoneNumberConfirmed" boolean NOT NULL,
+          "TwoFactorEnabled" boolean NOT NULL,
+          "LockoutEnd" timestamp with time zone,
+          "LockoutEnabled" boolean NOT NULL,
+          "AccessFailedCount" integer NOT NULL,
+          CONSTRAINT "PK_AspNetUsers" PRIMARY KEY ("Id")
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE notifications (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          user_id uuid NOT NULL,
+          type text NOT NULL,
+          title text NOT NULL,
+          message text,
+          read_at timestamp with time zone,
+          action_url text,
+          metadata jsonb,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_notifications" PRIMARY KEY (id)
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE system_logs (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          user_id uuid,
+          action text NOT NULL,
+          category text NOT NULL,
+          message text,
+          path text,
+          level text NOT NULL DEFAULT 'info',
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_system_logs" PRIMARY KEY (id)
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE templates (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          title text NOT NULL,
+          description text,
+          type text NOT NULL,
+          version integer NOT NULL DEFAULT 1,
+          scoring_logic_config jsonb,
+          display_noun text,
+          is_active boolean NOT NULL DEFAULT TRUE,
+          created_by uuid,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_templates" PRIMARY KEY (id)
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE user_groups (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          name text NOT NULL,
+          description text,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_user_groups" PRIMARY KEY (id)
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE stores (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          name text NOT NULL,
+          address text,
+          area_id uuid,
+          gps_lat numeric,
+          gps_lng numeric,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          is_active boolean DEFAULT TRUE,
+          CONSTRAINT "PK_stores" PRIMARY KEY (id),
+          CONSTRAINT "FK_stores_areas_area_id" FOREIGN KEY (area_id) REFERENCES areas (id) ON DELETE SET NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "AspNetRoleClaims" (
+          "Id" integer GENERATED BY DEFAULT AS IDENTITY,
+          "RoleId" uuid NOT NULL,
+          "ClaimType" text,
+          "ClaimValue" text,
+          CONSTRAINT "PK_AspNetRoleClaims" PRIMARY KEY ("Id"),
+          CONSTRAINT "FK_AspNetRoleClaims_AspNetRoles_RoleId" FOREIGN KEY ("RoleId") REFERENCES "AspNetRoles" ("Id") ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "AspNetUserClaims" (
+          "Id" integer GENERATED BY DEFAULT AS IDENTITY,
+          "UserId" uuid NOT NULL,
+          "ClaimType" text,
+          "ClaimValue" text,
+          CONSTRAINT "PK_AspNetUserClaims" PRIMARY KEY ("Id"),
+          CONSTRAINT "FK_AspNetUserClaims_AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "AspNetUserLogins" (
+          "LoginProvider" text NOT NULL,
+          "ProviderKey" text NOT NULL,
+          "ProviderDisplayName" text,
+          "UserId" uuid NOT NULL,
+          CONSTRAINT "PK_AspNetUserLogins" PRIMARY KEY ("LoginProvider", "ProviderKey"),
+          CONSTRAINT "FK_AspNetUserLogins_AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "AspNetUserRoles" (
+          "UserId" uuid NOT NULL,
+          "RoleId" uuid NOT NULL,
+          CONSTRAINT "PK_AspNetUserRoles" PRIMARY KEY ("UserId", "RoleId"),
+          CONSTRAINT "FK_AspNetUserRoles_AspNetRoles_RoleId" FOREIGN KEY ("RoleId") REFERENCES "AspNetRoles" ("Id") ON DELETE CASCADE,
+          CONSTRAINT "FK_AspNetUserRoles_AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "AspNetUserTokens" (
+          "UserId" uuid NOT NULL,
+          "LoginProvider" text NOT NULL,
+          "Name" text NOT NULL,
+          "Value" text,
+          CONSTRAINT "PK_AspNetUserTokens" PRIMARY KEY ("UserId", "LoginProvider", "Name"),
+          CONSTRAINT "FK_AspNetUserTokens_AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE user_roles (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          user_id uuid NOT NULL,
+          role text NOT NULL,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_user_roles" PRIMARY KEY (id),
+          CONSTRAINT "FK_user_roles_AspNetUsers_user_id" FOREIGN KEY (user_id) REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE groups (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          template_id uuid NOT NULL,
+          title text NOT NULL,
+          description text,
+          weight numeric DEFAULT 1.0,
+          max_deduction_points numeric,
+          minus_per_fault numeric,
+          order_index integer NOT NULL DEFAULT 0,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          parent_id uuid,
+          metadata jsonb,
+          is_active boolean NOT NULL DEFAULT TRUE,
+          CONSTRAINT "PK_groups" PRIMARY KEY (id),
+          CONSTRAINT "FK_groups_groups_parent_id" FOREIGN KEY (parent_id) REFERENCES groups (id) ON DELETE RESTRICT,
+          CONSTRAINT "FK_groups_templates_template_id" FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE template_assignments (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          template_id uuid NOT NULL,
+          user_group_id uuid NOT NULL,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_template_assignments" PRIMARY KEY (id),
+          CONSTRAINT "FK_template_assignments_templates_template_id" FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE,
+          CONSTRAINT "FK_template_assignments_user_groups_user_group_id" FOREIGN KEY (user_group_id) REFERENCES user_groups (id) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE profiles (
+          id uuid NOT NULL,
+          full_name text,
+          email text,
+          avatar_url text,
+          store_id uuid,
+          area_id uuid,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_profiles" PRIMARY KEY (id),
+          CONSTRAINT "FK_profiles_areas_area_id" FOREIGN KEY (area_id) REFERENCES areas (id) ON DELETE SET NULL,
+          CONSTRAINT "FK_profiles_stores_store_id" FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE SET NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE store_analytics_snapshot (
+          store_id uuid NOT NULL,
+          avg_score_30d numeric NOT NULL,
+          total_audits_30d integer NOT NULL,
+          open_action_plans integer NOT NULL DEFAULT 0,
+          overdue_action_plans integer NOT NULL DEFAULT 0,
+          last_audit_score numeric,
+          last_audit_at timestamp with time zone,
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_store_analytics_snapshot" PRIMARY KEY (store_id),
+          CONSTRAINT "FK_store_analytics_snapshot_stores_store_id" FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE submissions (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          template_id uuid,
+          auditor_id uuid,
+          store_id uuid,
+          status text NOT NULL DEFAULT 'draft',
+          scoring_mode text NOT NULL DEFAULT 'penalty',
+          total_score numeric,
+          section_scores jsonb,
+          gps_lat numeric,
+          gps_lng numeric,
+          gps_verified_at timestamp with time zone,
+          notes text,
+          scheduled_at timestamp with time zone,
+          completed_at timestamp with time zone,
+          approved_by uuid,
+          approved_at timestamp with time zone,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          started_at timestamp with time zone,
+          idempotency_key text,
+          auditor_name text,
+          auditor_email text,
+          store_name text,
+          template_title text,
+          display_noun text,
+          approver_name text,
+          review_status text,
+          CONSTRAINT "PK_submissions" PRIMARY KEY (id),
+          CONSTRAINT "FK_submissions_stores_store_id" FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE SET NULL,
+          CONSTRAINT "FK_submissions_templates_template_id" FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE SET NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE criteria (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          group_id uuid NOT NULL,
+          label text NOT NULL,
+          description text,
+          input_type text NOT NULL,
+          points_weight numeric DEFAULT 1.0,
+          is_ccp boolean NOT NULL DEFAULT FALSE,
+          is_risk boolean NOT NULL DEFAULT FALSE,
+          minus_impact numeric,
+          order_index integer NOT NULL DEFAULT 0,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          metadata jsonb,
+          is_active boolean NOT NULL DEFAULT TRUE,
+          CONSTRAINT "PK_criteria" PRIMARY KEY (id),
+          CONSTRAINT "FK_criteria_groups_group_id" FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE user_group_members (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          user_group_id uuid NOT NULL,
+          profile_id uuid NOT NULL,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_user_group_members" PRIMARY KEY (id),
+          CONSTRAINT "FK_user_group_members_profiles_profile_id" FOREIGN KEY (profile_id) REFERENCES profiles (id) ON DELETE CASCADE,
+          CONSTRAINT "FK_user_group_members_user_groups_user_group_id" FOREIGN KEY (user_group_id) REFERENCES user_groups (id) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE submission_section_scores (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          submission_id uuid NOT NULL,
+          store_id uuid,
+          template_id uuid,
+          section_title text NOT NULL,
+          score numeric NOT NULL,
+          max_score numeric NOT NULL,
+          ratio numeric,
+          is_ccp_failed boolean NOT NULL DEFAULT FALSE,
+          weight numeric,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          CONSTRAINT "PK_submission_section_scores" PRIMARY KEY (id),
+          CONSTRAINT "FK_submission_section_scores_submissions_submission_id" FOREIGN KEY (submission_id) REFERENCES submissions (id) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE answers (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          submission_id uuid,
+          criteria_id uuid,
+          value text,
+          numeric_value numeric,
+          note text,
+          photo_url text,
+          photo_metadata jsonb,
+          is_repeated_error boolean NOT NULL DEFAULT FALSE,
+          repeated_faults integer NOT NULL DEFAULT 0,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          metadata jsonb,
+          criteria_label text,
+          CONSTRAINT "PK_answers" PRIMARY KEY (id),
+          CONSTRAINT "FK_answers_criteria_criteria_id" FOREIGN KEY (criteria_id) REFERENCES criteria (id) ON DELETE SET NULL,
+          CONSTRAINT "FK_answers_submissions_submission_id" FOREIGN KEY (submission_id) REFERENCES submissions (id) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE action_plans (
+          id uuid NOT NULL DEFAULT (gen_random_uuid()),
+          answer_id uuid,
+          submission_id uuid,
+          store_id uuid,
+          store_manager_id uuid,
+          criteria_label text NOT NULL,
+          group_title text NOT NULL,
+          plan_description text,
+          evidence_photo_url text,
+          evidence_note text,
+          status text NOT NULL DEFAULT 'open',
+          deadline timestamp with time zone,
+          closed_at timestamp with time zone,
+          verified_by uuid,
+          verified_at timestamp with time zone,
+          created_at timestamp with time zone NOT NULL DEFAULT (now()),
+          updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+          root_cause text,
+          correction_plan text,
+          store_name text,
+          store_manager_name text,
+          verifier_name text,
+          CONSTRAINT "PK_action_plans" PRIMARY KEY (id),
+          CONSTRAINT "FK_action_plans_answers_answer_id" FOREIGN KEY (answer_id) REFERENCES answers (id) ON DELETE SET NULL,
+          CONSTRAINT "FK_action_plans_stores_store_id" FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE SET NULL,
+          CONSTRAINT "FK_action_plans_submissions_submission_id" FOREIGN KEY (submission_id) REFERENCES submissions (id) ON DELETE SET NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_action_plans_answer_id" ON action_plans (answer_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_action_plans_deadline" ON action_plans (deadline);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_action_plans_store_id_status" ON action_plans (store_id, status);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_action_plans_submission_id" ON action_plans (submission_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_answers_criteria_id" ON answers (criteria_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_answers_submission_id" ON answers (submission_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_AspNetRoleClaims_RoleId" ON "AspNetRoleClaims" ("RoleId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "RoleNameIndex" ON "AspNetRoles" ("NormalizedName");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_AspNetUserClaims_UserId" ON "AspNetUserClaims" ("UserId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_AspNetUserLogins_UserId" ON "AspNetUserLogins" ("UserId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_AspNetUserRoles_RoleId" ON "AspNetUserRoles" ("RoleId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "UserNameIndex" ON "AspNetUsers" ("NormalizedUserName");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_criteria_group_id" ON criteria (group_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_groups_parent_id" ON groups (parent_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_groups_template_id" ON groups (template_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_notifications_user_id_created_at" ON notifications (user_id, created_at);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_profiles_area_id" ON profiles (area_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_profiles_store_id" ON profiles (store_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_stores_area_id" ON stores (area_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_stores_is_active" ON stores (is_active) WHERE is_active = true;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_submission_section_scores_store_id_section_title" ON submission_section_scores (store_id, section_title);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_submission_section_scores_submission_id" ON submission_section_scores (submission_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_submissions_auditor_id" ON submissions (auditor_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_submissions_created_at" ON submissions (created_at DESC);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_submissions_idempotency_key" ON submissions (idempotency_key) WHERE idempotency_key IS NOT NULL;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_submissions_status_review_status" ON submissions (status, review_status);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_submissions_store_id" ON submissions (store_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_submissions_template_id" ON submissions (template_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_system_logs_created_at" ON system_logs (created_at DESC);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_template_assignments_template_id_user_group_id" ON template_assignments (template_id, user_group_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_template_assignments_user_group_id" ON template_assignments (user_group_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_user_group_members_profile_id" ON user_group_members (profile_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_user_group_members_user_group_id_profile_id" ON user_group_members (user_group_id, profile_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_user_roles_user_id" ON user_roles (user_id);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (26ms) [Parameters=[@normalizedUserName='?'], CommandType='Text', CommandTimeout='30']
+      SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+      FROM "AspNetUsers" AS a
+      WHERE a."NormalizedUserName" = @normalizedUserName
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+      FROM "AspNetUsers" AS a
+      WHERE a."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Int32), @p2='?', @p3='?', @p4='?' (DbType = Boolean), @p5='?' (DbType = Boolean), @p6='?' (DbType = DateTime), @p7='?', @p8='?', @p9='?', @p10='?', @p11='?' (DbType = Boolean), @p12='?', @p13='?' (DbType = Boolean), @p14='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "AspNetUsers" ("Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?' (DbType = Guid), @p7='?' (DbType = DateTime), @p8='?' (DbType = Guid), @p9='?' (DbType = DateTime), @p10='?', @p11='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO profiles (id, area_id, avatar_url, created_at, email, full_name, store_id, updated_at)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+      INSERT INTO user_roles (id, created_at, role, user_id)
+      VALUES (@p8, @p9, @p10, @p11);
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+      Failed to determine the https port for redirect.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+      FROM "AspNetUsers" AS a
+      WHERE a."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@user_Id='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u.role
+      FROM user_roles AS u
+      WHERE u.user_id = @user_Id
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+      FROM "AspNetUsers" AS a
+      WHERE a."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@normalizedUserName='?'], CommandType='Text', CommandTimeout='30']
+      SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+      FROM "AspNetUsers" AS a
+      WHERE a."NormalizedUserName" = @normalizedUserName
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT a."Id", a."AccessFailedCount", a."ConcurrencyStamp", a."Email", a."EmailConfirmed", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+      FROM "AspNetUsers" AS a
+      WHERE a."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Int32), @p2='?', @p3='?', @p4='?' (DbType = Boolean), @p5='?' (DbType = Boolean), @p6='?' (DbType = DateTime), @p7='?', @p8='?', @p9='?', @p10='?', @p11='?' (DbType = Boolean), @p12='?', @p13='?' (DbType = Boolean), @p14='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "AspNetUsers" ("Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?' (DbType = Guid), @p7='?' (DbType = DateTime), @p8='?' (DbType = Guid), @p9='?' (DbType = DateTime), @p10='?', @p11='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO profiles (id, area_id, avatar_url, created_at, email, full_name, store_id, updated_at)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+      INSERT INTO user_roles (id, created_at, role, user_id)
+      VALUES (@p8, @p9, @p10, @p11);
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[xUnit.net 00:00:02.38]   Finished:    Checkly.Api.Tests
+  Passed Checkly.Api.Tests.AnalyticsTests.Auditor_Cannot_Access_Area_Leaderboard [2 s]
+
+Test Run Successful.
+Total tests: 1
+     Passed: 1
+ Total time: 2.8145 Seconds

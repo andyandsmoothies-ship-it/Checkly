@@ -1,0 +1,7 @@
+﻿cmd : Test directory "test" not found.
+At line:1 char:72
++ ... .txt 2>&1 ; cmd /c rtk flutter test > ..\.agents\tmp\test_results.txt ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Test directory "test" not found.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

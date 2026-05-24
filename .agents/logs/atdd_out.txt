@@ -1,0 +1,2 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+ok dotnet test: completed (binlog-only mode, counts unavailable, 0 warnings) (unknown)

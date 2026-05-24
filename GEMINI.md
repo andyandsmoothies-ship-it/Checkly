@@ -119,4 +119,4 @@
 - **No Interactive CLI:** Do not run `dotnet run`, `dotnet watch`, or `flutter run`.
 - **Zero Bloat:** Do not install packages without permission.
 - **RTK Wrapper:** Always prepend `rtk` to terminal commands (e.g., `rtk dotnet build`).
-- **Test Logs & Output:** NEVER pipe test output or logs to the project root, `server/`, or `lib/`. Any command output (e.g., `> test_output.txt`) MUST be written exclusively to `.agents/tmp/`.
+- **Historical Tracking (Logs & Scratchpads):** NEVER leave test logs (`.log`), scratch queries (`.sql`), or text outputs in the project root, `server/`, or `lib/`. For historical tracking: Route all test outputs/logs to `.agents/logs/`. Route all scratch database scripts to `dbquery/`. Compiler dumps (`.xml`) must be deleted, not saved.

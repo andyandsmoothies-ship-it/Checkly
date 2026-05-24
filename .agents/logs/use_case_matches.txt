@@ -1,0 +1,28 @@
+Match at line 91: \- 2 - Use-Case Storytelling practice
+Match at line 95: \- 4 - Use-Case Authoring practice
+Match at line 103: \- Anatomy of Use-Case 3.0 Practices
+Match at line 269: 5\. Anatomy of Use-Case 3.0 practices – a description of the key concepts, activities, work products,
+Match at line 289: Practice Family” and “Anatomy of Use-Case 3.0 Practices” chapters once you’ve read the “What is Use-Case
+Match at line 2191: 2\. \*\*Use-Case Storytelling practice\*\* – a lightweight way to describe a use case. The practice describes
+Match at line 2197: 3\. \*\*Use-Case Authoring practice\*\* – a use case described in greater detail and using a more formal
+Match at line 2305: \## 2 - Use-Case Storytelling practice
+Match at line 2341: Note: Use-Case Storytelling does not include any use-case modeling. If this practice is used alone, the
+Match at line 2371: The table below shows the state machine for the Use-Case Storytelling practice. It displays how each activity
+Match at line 2509: FIGURE 14 : ACTIVITIES AND WORK PRODUCTS DEFINED BY THE USE-CASE STORYTELLING PRACTICE
+Match at line 2725: Consider using the Use-Case Light Modeling practice composed together with the Use-Case Storytelling
+Match at line 2729: picture” of your system as a use-case model; the Use-Case Storytelling practice describes each use case in
+Match at line 2749: \## 4 - Use-Case Authoring practice
+Match at line 2763: This practice extends the Use-Case Storytelling practice to support the use of use cases when working with
+Match at line 2773: The table below shows the state machine for the Use-Case Authoring practice. It displays how each activity
+Match at line 3001: completeness to your Use-Case Model if this practice is used instead of the Use-Case Storytelling practice.
+Match at line 3261: We have already defined one composed practice: Use-Case Storytelling practice + Use-Case Light Modeling
+Match at line 3267: test cases) are created by the activities defined by the Use-Case Storytelling practice.
+Match at line 3293: Case Light Modeling to find your use cases with the efficiency of Use-Case Storytelling to bring the use cases
+Match at line 3587: AND USE-CASE STORYTELLING PRACTICE TOGETHER
+Match at line 3617: case notation of include, extend and generalization if it is helpful to do so. The use-case authoring practice
+Match at line 3651: \## Anatomy of Use-Case 3.0 Practices
+Match at line 6595: ● Use-Case Light Modeling can be composed together with Use-Case Storytelling – indeed we
+Match at line 6599: ● Use-Case Authoring is an extension of Use-Case Storytelling. This means that a use-case
+Match at line 6601: practitioner may first apply the Use-Case Storytelling practice in their work to describe a use
+Match at line 6605: use case, they may then apply the Use-Case Authoring practice - without having to discard or
+Match at line 6607: significantly rework any work products previously created when using the Use-Case Storytelling

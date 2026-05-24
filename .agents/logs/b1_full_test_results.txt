@@ -1,0 +1,93 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest [83 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 71
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields [95 ms]
+  Error Message:
+   Missing addressProvince in response
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 132
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest [80 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 163
+--- End of stack trace from previous location ---
+[xUnit.net 00:01:05.01]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [SKIP]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [1 ms]
+[xUnit.net 00:01:05.61]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [SKIP]
+[xUnit.net 00:01:05.99]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [SKIP]
+[xUnit.net 00:01:05.99]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [SKIP]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [1 ms]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [1 ms]
+  Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [1 ms]
+[xUnit.net 00:01:34.45]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [SKIP]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [1 ms]
+[xUnit.net 00:01:34.45]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [SKIP]
+[xUnit.net 00:01:34.45]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [SKIP]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [1 ms]
+  Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [1 ms]
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e3d9418264a601\HP_DESKTOP-T6IM9HH_2026-05-19_07_13_02.trx
+
+Failed!  - Failed:     3, Passed:   523, Skipped:     7, Total:   533, Duration: 1 m 43 s - Checkly.Api.Tests.dll (net10.0)
+
+fail dotnet test: 523 passed, 3 failed, 7 skipped, 0 warnings in 1 projects (104.1 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: BadRequest
+    Actual:   Created
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 71
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields
+    Error Message:
+    Missing addressProvince in response
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 132
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: BadRequest
+    Actual:   Created
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 163
+    --- End of stack trace from previous location ---
+    [xUnit.net 00:01:05.01]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [SKIP]
+    Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC03_Reviewer_VoidedSubmission_CannotVoid [1 ms]
+    [xUnit.net 00:01:05.61]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [SKIP]
+    [xUnit.net 00:01:05.99]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [SKIP]
+    [xUnit.net 00:01:05.99]     Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [SKIP]
+    Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC06_Creator_FinalizedSubmission_CannotEdit [1 ms]
+    Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC02_Reviewer_FinalizedSubmission_CannotFinalize [1 ms]
+    Skipped Checkly.Api.Tests.Submissions.SubmissionAllowedActionsTests.TC07_GAP_UnrecognizedStatus_ReturnsOnlyView [1 ms]
+    [xUnit.net 00:01:34.45]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [SKIP]
+    Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_UnassignedTemplate_VisibleToAllAuditors [1 ms]
+    [xUnit.net 00:01:34.45]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [SKIP]
+    [xUnit.net 00:01:34.45]     Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_AssignedTemplate_VisibleOnlyToGroupMembers [SKIP]
+    Skipped Checkly.Api.Tests.FilteredTemplateSyncTests.SyncTemplates_Admin_SeesAllTemplatesRegardless [1 ms]
+
+

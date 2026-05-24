@@ -1,0 +1,26 @@
+Customer Feedback Form > Service Experience > What aspects did you enjoy? | type=multi_choice | metadata=NULL
+Customer Feedback Form > Service Experience > How did you hear about us? | type=single_choice | metadata=NULL
+Customer Feedback Form > Service Experience > Would you recommend us? | type=single_choice | metadata=NULL
+Customer Feedback Form > Product Feedback > Which products did you purchase? | type=multi_choice | metadata=NULL
+Customer Feedback Form > Product Feedback > Was the value for money fair? | type=single_choice | metadata=NULL
+Employee Satisfaction Survey > Work Environment > How satisfied are you with your workspace? | type=single_choice | metadata=NULL
+Employee Satisfaction Survey > Work Environment > How is the office temperature? | type=single_choice | metadata=NULL
+Employee Satisfaction Survey > Work Environment > Are facilities well maintained? | type=single_choice | metadata=NULL
+Employee Satisfaction Survey > Management > How supportive is your manager? | type=single_choice | metadata=NULL
+Employee Satisfaction Survey > Management > Is feedback given regularly? | type=single_choice | metadata=NULL
+Employee Satisfaction Survey > Growth and Development > Are training opportunities sufficient? | type=single_choice | metadata=NULL
+Employee Satisfaction Survey > Growth and Development > Do you see a clear career path? | type=single_choice | metadata=NULL
+ISO Maturity Assessment > Document Control > Document versioning in place | type=scale | metadata=NULL
+ISO Maturity Assessment > Document Control > Retention policy defined | type=scale | metadata=NULL
+ISO Maturity Assessment > Risk Management > Risk register maintained | type=scale | metadata=NULL
+ISO Maturity Assessment > Internal Audit > Audit schedule maintained | type=scale | metadata=NULL
+ISO Maturity Assessment > Risk Management > Risk mitigation plans | type=scale | metadata=NULL
+ISO Maturity Assessment > Internal Audit > Corrective actions tracked | type=scale | metadata=NULL
+ISO Maturity Assessment > Risk Management > Management review conducted | type=scale | metadata=NULL
+Post-Training Feedback > Session Quality > Overall session rating | type=single_choice | metadata=NULL
+Post-Training Feedback > Session Quality > Was the pace appropriate? | type=single_choice | metadata=NULL
+Post-Training Feedback > Session Quality > Was the trainer knowledgeable? | type=single_choice | metadata=NULL
+Post-Training Feedback > Content and Topics > Which topics were most useful? | type=multi_choice | metadata=NULL
+Post-Training Feedback > Content and Topics > Which topics need more depth? | type=multi_choice | metadata=NULL
+Post-Training Feedback > Content and Topics > Would you attend again? | type=single_choice | metadata=NULL
+Test1 > 1 > A | type=multi_choice | metadata=NULL

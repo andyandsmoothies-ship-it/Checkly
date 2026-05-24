@@ -1,0 +1,68 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest [176 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 71
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields [86 ms]
+  Error Message:
+   Missing addressProvince in response
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 132
+--- End of stack trace from previous location ---
+  Failed Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest [84 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: BadRequest
+Actual:   Created
+  Stack Trace:
+     at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 163
+--- End of stack trace from previous location ---
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e3d93a0025aac1\HP_DESKTOP-T6IM9HH_2026-05-19_07_12_37.trx
+
+Failed!  - Failed:     3, Passed:     3, Skipped:     0, Total:     6, Duration: 4 s - Checkly.Api.Tests.dll (net10.0)
+
+fail dotnet test: 3 passed, 3 failed, 0 skipped, 0 warnings in 1 projects (6.0 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: BadRequest
+    Actual:   Created
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_02_CreateStore_WithInvalidProvince_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 71
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields
+    Error Message:
+    Missing addressProvince in response
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.TC_SL1_08_CreateStore_ReturnsAddressFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 132
+    --- End of stack trace from previous location ---
+
+  Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest
+    Error Message:
+    Assert.Equal() Failure: Values differ
+    Expected: BadRequest
+    Actual:   Created
+    Stack Trace:
+    at Checkly.Api.Tests.Features.Stores.StoreStructuredAddress_ATDD_Tests.Gap1_CreateStore_WithTooLongStreet_ReturnsBadRequest() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\Features\Stores\StoreStructuredAddress_ATDD_Tests.cs:line 163
+    --- End of stack trace from previous location ---
+    Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e3d93a0025aac1\HP_DESKTOP-T6IM9HH_2026-05-19_07_12_37.trx
+    
+
+
