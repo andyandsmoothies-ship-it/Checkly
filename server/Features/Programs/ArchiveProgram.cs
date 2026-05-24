@@ -6,18 +6,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Checkly.Api.Features.Programs;
 
 /// <summary>
-/// DELETE /api/programs/{id} — Soft-archive a program by setting Status = 'cancelled'.
+/// Handles both DELETE /api/programs/{id} and POST /api/programs/{id}/archive.
 /// Security: Requires programs:manage capability (admin only).
-///
-/// Design decisions:
-///   - Soft-delete only. Hard-delete is prohibited: ProgramAssignments have a FK
-///     with Restrict on delete which would cause a DB exception.
-///   - Existing in-flight assignments are NOT cascaded to 'cancelled' (out of scope).
-///   - The guard against double-archive (TC-A4) prevents idempotency abuse.
-///
-/// Business rules:
-///   - Program must exist (404).
-///   - Program must not already be 'cancelled' (400).
 /// </summary>
 public static class ArchiveProgram
 {
@@ -47,5 +37,32 @@ public static class ArchiveProgram
         await db.SaveChangesAsync(ct);
 
         return TypedResults.NoContent();
+    }
+
+    public static async Task<IResult> HandlePostArchiveAsync(
+        Guid id,
+        ClaimsPrincipal user,
+        AppDbContext db,
+        CancellationToken ct)
+    {
+        var program = await db.Programs
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
+
+        if (program is null)
+            return TypedResults.NotFound(new { error = "Program not found." });
+
+        if (program.Status == ProgramStatus.Cancelled)
+            return TypedResults.Conflict(new { error = "Program is already archived." });
+
+        program.Status = ProgramStatus.Cancelled;
+        program.UpdatedAt = DateTimeOffset.UtcNow;
+
+        AuditLogger.Log(db, user, "program_archived", "Program", program.Id,
+            $"Program '{program.Title}' archived (status set to cancelled).",
+            $"/api/programs/{id}");
+
+        await db.SaveChangesAsync(ct);
+
+        return TypedResults.Ok(new { status = "archived" });
     }
 }

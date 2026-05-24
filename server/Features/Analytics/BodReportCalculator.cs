@@ -245,15 +245,16 @@ namespace Checkly.Api.Features.Analytics
                     .OrderByDescending(x => x.AvgScore)
                     .ThenByDescending(x => x.AuditCount)
                     .Take(5)
-                    .Select(x => new BodStoreRankEntry(x.StoreId, x.StoreName, Math.Round(x.AvgScore, 1), x.AuditCount))
+                    .Select(x => new BodStoreRankEntry(x.StoreId, x.StoreName, Math.Round(x.AvgScore, 1), x.AuditCount, null))
                     .ToList();
 
                 bottomStores = storeStats
                     .OrderBy(x => x.AvgScore)
                     .ThenBy(x => x.AuditCount)
                     .Take(5)
-                    .Select(x => new BodStoreRankEntry(x.StoreId, x.StoreName, Math.Round(x.AvgScore, 1), x.AuditCount))
+                    .Select(x => new BodStoreRankEntry(x.StoreId, x.StoreName, Math.Round(x.AvgScore, 1), x.AuditCount, null))
                     .ToList();
+
             }
             catch (Exception ex)
             {

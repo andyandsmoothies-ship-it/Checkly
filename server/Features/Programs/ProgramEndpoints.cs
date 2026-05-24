@@ -79,6 +79,11 @@ public static class ProgramEndpoints
             .WithName("ArchiveProgram")
             .RequireCapability(AppCapabilities.ProgramsManage);
 
+        // POST /api/programs/{id}/archive — Admin soft-archives a program (ATDD contract compliance)
+        group.MapPost("/{id}/archive", ArchiveProgram.HandlePostArchiveAsync)
+            .WithName("PostArchiveProgram")
+            .RequireCapability(AppCapabilities.ProgramsManage);
+
         // GET /api/programs/{id} — Retrieve a single program by ID
         // NOTE: Must be declared AFTER all more-specific sub-path routes (e.g. /{id}/assignments)
         // to prevent the catch-all parameter from intercepting them.

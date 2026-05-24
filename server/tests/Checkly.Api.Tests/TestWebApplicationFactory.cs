@@ -83,10 +83,24 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
 
                 // The database is migrated automatically by Program.cs during app startup.
                 // We rely on tests creating unique entities (Guid.NewGuid) to avoid conflicts.
+                dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"action_plans\" CASCADE;");
+                dbInit.Database.ExecuteSqlRaw("TRUNCATE TABLE \"submissions\" CASCADE;");
 
                 // Seed a bootstrap admin so tests can create admin users via the API
                 var userManagerInit = scopeInit.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
                 var existingAdmin = userManagerInit.FindByEmailAsync("bootstrap@admin.test").GetAwaiter().GetResult();
+                
+                if (existingAdmin != null)
+                {
+                    // Self-healing: if the user exists but profile is missing, delete user to force re-seed
+                    var hasProfile = dbInit.Profiles.Any(p => p.Email == "bootstrap@admin.test");
+                    if (!hasProfile)
+                    {
+                        userManagerInit.DeleteAsync(existingAdmin).GetAwaiter().GetResult();
+                        existingAdmin = null;
+                    }
+                }
+
                 if (existingAdmin == null)
                 {
                     var adminUserInit = new AppUser
@@ -143,7 +157,22 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                        (gen_random_uuid(), 'auditor',       'action_plans:verify',         now()),
                        (gen_random_uuid(), 'area_manager',  'action_plans:verify',         now()),
                        (gen_random_uuid(), 'admin',         'action_plans:verify',         now()),
-                       (gen_random_uuid(), 'admin',         'analytics:bod',               now())
+                       (gen_random_uuid(), 'admin',         'analytics:bod',               now()),
+                       (gen_random_uuid(), 'auditor',       'analytics:view',              now()),
+                       (gen_random_uuid(), 'admin',         'templates:create',            now()),
+                       (gen_random_uuid(), 'admin',         'templates:update',            now()),
+                       (gen_random_uuid(), 'admin',         'templates:delete',            now()),
+                       (gen_random_uuid(), 'admin',         'stores:write',                now()),
+                       (gen_random_uuid(), 'admin',         'users:manage',                now()),
+                       (gen_random_uuid(), 'admin',         'analytics:admin',             now()),
+                       (gen_random_uuid(), 'auditor',       'analytics:my_stats',          now()),
+                       (gen_random_uuid(), 'admin',         'submissions:create',          now()),
+                       (gen_random_uuid(), 'auditor',       'submissions:create',          now()),
+                       (gen_random_uuid(), 'area_manager',  'submissions:create',          now()),
+                       (gen_random_uuid(), 'admin',         'submissions:review',          now()),
+                       (gen_random_uuid(), 'area_manager',  'submissions:review',          now()),
+                       (gen_random_uuid(), 'store_manager', 'analytics:view',              now()),
+                       (gen_random_uuid(), 'area_manager',  'analytics:view',              now())
                 ON CONFLICT (role, capability) DO NOTHING;
                 """);
 

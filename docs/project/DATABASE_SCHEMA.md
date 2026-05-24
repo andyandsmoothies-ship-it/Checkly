@@ -10,19 +10,19 @@
 
 ## Table Overview
 
-The Checkly database contains **30 tables** organized into 3 categories:
+The Checkly database contains **31 tables** organized into 3 categories:
 
 > **Performance Note**: All core domain tables involved in offline Delta Sync (`stores`, `templates`, `groups`, `criteria`, `submissions`, `answers`, `action_plans`, `global_risks`, `submission_risks`, `program_assignments`, `program_evidence`) enforce mandatory **B-Tree indexes on `updated_at`** to prevent full-table scans during mobile sync rounds.
 
 | Category | Tables | Purpose |
 |----------|--------|---------|
-| **Business Domain** | 22 tables | Core audit & programs workflow data |
+| **Business Domain** | 23 tables | Core audit & programs workflow data |
 | **ASP.NET Identity** | 7 tables | Authentication & identity infrastructure |
 | **EF Core Internal** | 1 table | Migration tracking |
 
 ---
 
-## Business Domain Tables (22)
+## Business Domain Tables (23)
 
 ### `profiles`
 **Rows**: 7 | **Soft Delete**: No (ban via `AspNetUsers.LockoutEnd`)
@@ -393,6 +393,21 @@ Pre-computed province-level benchmark snapshot (averages, standard deviations, r
 | `total_audit_count` | integer | Total audits included in calculation |
 | `last_calculated_at` | timestamptz | When the metrics were last aggregated |
 | `created_at` | timestamptz | Row creation |
+
+---
+
+### `bod_report_snapshots`
+**Rows**: 1 per day | **Upserted** via scheduled background worker
+
+Pre-computed Boardroom Executive Dashboard metrics. A nightly background worker pre-computes data into JSONB documents to prevent real-time database load for complex OLAP queries.
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | UUID (PK) | Unique identifier |
+| `date` | date | The reporting date (1 row per day) |
+| `computed_at` | timestamptz | When the snapshot was computed |
+| `status` | text | Status of calculation (e.g. Complete) |
+| `payload` | jsonb | Full pre-computed metrics JSON tree (Leaderboards, Weakness, Aging, Productivity) |
 
 ---
 

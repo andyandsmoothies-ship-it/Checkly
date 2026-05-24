@@ -229,6 +229,8 @@ try
     });
     builder.Services.AddProblemDetails();
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddMemoryCache();
+
 
     builder.Services.AddScoped<TokenService>();
     builder.Services.AddScoped<Register.Handler>();
@@ -347,7 +349,8 @@ try
                 (gen_random_uuid(), 'admin', 'action_plans:verify', now()),
                 
                 -- BOD Analytics Module
-                (gen_random_uuid(), 'admin', 'analytics:bod', now())
+                (gen_random_uuid(), 'admin', 'analytics:bod', now()),
+                (gen_random_uuid(), 'auditor', 'analytics:view', now())
             ON CONFLICT (role, capability) DO NOTHING;
             """);
 

@@ -48,7 +48,7 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
     }
 
     private async Task<Guid> SeedSubmissionAsync(Guid storeId, string status = "completed",
-        DateTimeOffset? updatedAt = null, string? voidReason = null)
+        DateTimeOffset? updatedAt = null, string? voidReason = null, Guid? auditorId = null)
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -62,7 +62,8 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
             VoidReason = voidReason,
             VoidedAt = voidReason is not null ? DateTimeOffset.UtcNow : null,
             CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = updatedAt ?? DateTimeOffset.UtcNow
+            UpdatedAt = updatedAt ?? DateTimeOffset.UtcNow,
+            AuditorId = auditorId
         });
         await db.SaveChangesAsync();
         return submissionId;
@@ -388,18 +389,50 @@ public class SyncSubmissionsEndpointTests : IClassFixture<TestWebApplicationFact
     // ── Error Paths ────────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task SyncSubmissions_MissingTenantScope_Returns400()
+    public async Task SyncSubmissions_MissingTenantScope_NonAuditorNonAreaManager_Returns400()
     {
-        // Arrange — non-admin with no storeId
+        // Arrange — store manager with no resolved storeId (not linked to any store)
         var client = _factory.CreateClient();
-        var (auditorToken, _) = await _factory.RegisterUserAsync(
-            client, $"auditor-scope-{Guid.NewGuid()}@test.test", "Aud12345!@", "ScopeAuditor", "auditor");
-        var authClient = _factory.CreateAuthenticatedClient(auditorToken);
+        var (smToken, _) = await _factory.RegisterUserAsync(
+            client, $"sm-scope-{Guid.NewGuid()}@test.test", "Password123!@", "ScopeStoreManager", "store_manager");
+        var authClient = _factory.CreateAuthenticatedClient(smToken);
 
         // Act — no storeId
         var response = await authClient.GetAsync("/api/sync/submissions");
 
-        // Assert — Rule 1: unbounded non-admin syncs are rejected
+        // Assert — Rule 1: unbounded non-admin, non-auditor syncs are rejected
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SyncSubmissions_AuditorUnboundedSync_Allowed_ReturnsOnlyOwnSubmissions()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var (auditorToken, auditorId) = await _factory.RegisterUserAsync(
+            client, $"auditor-sync-{Guid.NewGuid()}@test.test", "Password123!@", "SyncAuditor", "auditor");
+        var authClient = _factory.CreateAuthenticatedClient(auditorToken);
+
+        var storeA = await SeedStoreAsync("auditorA");
+        var storeB = await SeedStoreAsync("auditorB");
+
+        // Owned by our auditor
+        var ownSub = await SeedSubmissionAsync(storeA, "completed", auditorId: auditorId);
+        // Owned by a different auditor/user
+        var otherSub = await SeedSubmissionAsync(storeB, "completed", auditorId: Guid.NewGuid());
+
+        // Act — auditor does unbounded sync
+        var response = await authClient.GetAsync("/api/sync/submissions");
+
+        // Assert
+        if (!response.IsSuccessStatusCode) 
+            Assert.Fail($"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var items = body.GetProperty("items").EnumerateArray().ToList();
+
+        Assert.Contains(items, i => Guid.Parse(i.GetProperty("id").GetString()!) == ownSub);
+        Assert.DoesNotContain(items, i => Guid.Parse(i.GetProperty("id").GetString()!) == otherSub);
     }
 }

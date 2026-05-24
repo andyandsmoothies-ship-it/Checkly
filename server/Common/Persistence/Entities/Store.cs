@@ -20,6 +20,8 @@ public sealed class Store
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool? IsActive { get; set; }
+    public DateTimeOffset? LastSyncedAt { get; set; }
+
 
     // Navigation properties
     public ICollection<Profile> Profiles { get; set; } = [];

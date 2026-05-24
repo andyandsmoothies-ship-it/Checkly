@@ -277,6 +277,17 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | 14D.4 | Empty Radar State | View a province with only 1 or 2 audit categories | Radar chart is hidden (replaced with generic empty state or removed). | [ ] |
 | 14D.5 | Empty Insights State | View analytics for a province with no audits | InsightCard displays a friendly empty state message. | [ ] |
 
+### 14E: Boardroom (BOD) Analytics
+
+| ID | Test Case | Steps to Verify | Expected Result | Pass/Fail |
+|----|-----------|-----------------|-----------------|:---------:|
+| 14E.1 | Admin Access | Login as Admin → Go to Analytics | BOD Dashboard tab is visible. | [ ] |
+| 14E.2 | Non-Admin Denial | Login as Auditor/Manager → Go to Analytics | BOD Dashboard tab is hidden/denied. | [ ] |
+| 14E.3 | Data Refresh Polling | Trigger manual refresh on BOD Dashboard | Loading shimmer appears, UI polls every 5s until `computedAt` increments (max 60s). | [ ] |
+| 14E.4 | Leaderboard Renders | View Store Leaderboards | Top 5 and Bottom 5 stores are rendered accurately. | [ ] |
+| 14E.5 | Category Weakness | View Category Weakness | Top 5 failing categories shown. | [ ] |
+| 14E.6 | Auditor Productivity | View Auditor Productivity | Active auditors and their audit counts are shown. | [ ] |
+
 ## Module 15: User Groups & Template Access Control
 **Focus**: Group-based template visibility, membership management. **NEW in v3.0.**
 
@@ -305,6 +316,6 @@ Master User Acceptance Testing (UAT) document for the Checkly Mobile application
 | Audit Engine (Mod 6-8) | [ ] Pass / [ ] Fail | |
 | Photo & Offline (Mod 9-10) | [ ] Pass / [ ] Fail | |
 | Workflows + Dirty State (Mod 11-13) | [ ] Pass / [ ] Fail | |
-| Dashboard & Analytics (Mod 14A-C) | [ ] Pass / [ ] Fail | |
+| Dashboard & Analytics (Mod 14A-E) | [ ] Pass / [ ] Fail | |
 | User Groups & Access Control (Mod 15) | [ ] Pass / [ ] Fail | |
 | **Release Decision** | [ ] **APPROVED FOR PROD** | |

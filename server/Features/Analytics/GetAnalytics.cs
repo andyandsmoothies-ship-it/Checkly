@@ -33,6 +33,8 @@ public static class GetAnalytics
 
         // Pre-declared for AM tenancy: populated in the area_manager block below, consumed after query init.
         List<Guid> amAssignedStoreIds = [];
+        Guid callerId = Guid.Empty;
+        Guid auditorId = Guid.Empty;
 
         // ── WARN-SEC-05: Enforce role-based data tenancy ──────────────────────
         var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
@@ -43,7 +45,11 @@ public static class GetAnalytics
         {
             // Bypass tenancy checks (global scope)
         }
-        else if ((role == "store_manager" || role == "area_manager") && Guid.TryParse(userIdStr, out var callerId))
+        else if (role == "auditor" && Guid.TryParse(userIdStr, out auditorId))
+        {
+            // Allowed to call, will be scoped to their own AuditorId below.
+        }
+        else if ((role == "store_manager" || role == "area_manager") && Guid.TryParse(userIdStr, out callerId))
         {
             var profile = await db.Profiles
                 .AsNoTracking()
@@ -84,13 +90,18 @@ public static class GetAnalytics
         }
         else
         {
-            // Failsafe: Any new or unknown role (e.g. auditor) gets no data unless explicitly bypassed above.
+            // Failsafe: Any new or unknown role gets no data unless explicitly bypassed above.
             return TypedResults.Forbid();
         }
         // ──────────────────────────────────────────────────────────────────────
 
         var query = db.Submissions.AsNoTracking()
             .Where(s => s.Status == "completed" && s.ReviewStatus != "rejected");
+
+        if (role == "auditor")
+        {
+            query = query.Where(s => s.AuditorId == auditorId);
+        }
 
         // AM store-scope: apply after query is declared (IDs were resolved in the tenancy block above).
         if (amAssignedStoreIds.Count > 0)
@@ -153,10 +164,20 @@ public static class GetAnalytics
             : 0.0;
 
         var apBase = db.ActionPlans.AsNoTracking();
-        if (!string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out var apSid))
-            apBase = apBase.Where(ap => ap.StoreId == apSid);
-        else if (storeSubquery is not null)
-            apBase = apBase.Where(ap => ap.StoreId.HasValue && storeSubquery.Contains(ap.StoreId.Value));
+        if (role == "auditor")
+        {
+            var auditorSubmissionIds = db.Submissions
+                .Where(s => s.AuditorId == auditorId)
+                .Select(s => s.Id);
+            apBase = apBase.Where(ap => ap.SubmissionId != null && auditorSubmissionIds.Contains(ap.SubmissionId.Value));
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out var apSid))
+                apBase = apBase.Where(ap => ap.StoreId == apSid);
+            else if (storeSubquery is not null)
+                apBase = apBase.Where(ap => ap.StoreId.HasValue && storeSubquery.Contains(ap.StoreId.Value));
+        }
 
         var openAPs = await apBase.CountAsync(ap => ap.Status == "open", ct);
         var overdueAPs = await apBase.CountAsync(
@@ -190,6 +211,14 @@ public static class GetAnalytics
         var sectionScoreQuery = db.SubmissionSectionScores
             .AsNoTracking()
             .Where(ss => ss.MaxScore > 0 && ss.CreatedAt >= ninetyDaysAgo);
+
+        if (role == "auditor")
+        {
+            var auditorSubmissionIds = db.Submissions
+                .Where(s => s.AuditorId == auditorId)
+                .Select(s => s.Id);
+            sectionScoreQuery = sectionScoreQuery.Where(ss => auditorSubmissionIds.Contains(ss.SubmissionId));
+        }
 
         // Mirror storeId filter — reuse `sid` already parsed at line 25 (avoids CS0128 duplicate declaration).
         var storeIdParsed = !string.IsNullOrEmpty(storeId) && Guid.TryParse(storeId, out sid);

@@ -13,6 +13,13 @@ class BodAnalyticsManager extends ChangeNotifier {
   String? _error;
   BodReportResponse? _report;
 
+  bool _isLiveMode = false;
+  String? _activeProvince;
+  String? _activeDistrict;
+
+  bool _isApDetailLoading = false;
+  List<dynamic> _apDetails = [];
+
   BodAnalyticsManager(this._api);
 
   bool get isLoading => _isLoading;
@@ -20,6 +27,13 @@ class BodAnalyticsManager extends ChangeNotifier {
   bool get isEmpty => _isEmpty;
   String? get error => _error;
   BodReportResponse? get report => _report;
+
+  bool get isLiveMode => _isLiveMode;
+  String? get activeProvince => _activeProvince;
+  String? get activeDistrict => _activeDistrict;
+
+  bool get isApDetailLoading => _isApDetailLoading;
+  List<dynamic> get apDetails => _apDetails;
 
   Future<void> loadReport() async {
     _isLoading = true;
@@ -41,7 +55,8 @@ class BodAnalyticsManager extends ChangeNotifier {
       final errStr = e.toString();
       if (errStr.contains('404')) {
         _isEmpty = true;
-      } else if (errStr.contains('DioException') || errStr.contains('connection')) {
+      } else if (errStr.contains('DioException') ||
+          errStr.contains('connection')) {
         _isOffline = true;
       } else {
         _error = 'Something went wrong. Please try again.';
@@ -105,5 +120,105 @@ class BodAnalyticsManager extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  Future<void> applyFilter(String province, String district) async {
+    if (_isLoading) return;
+    _isLoading = true;
+    _isLiveMode = true;
+    _activeProvince = province;
+    _activeDistrict = district;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final res = await _api.getFilteredReport(province, district);
+      _report = res;
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _report = null;
+      _error = 'Something went wrong. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> clearFilter() async {
+    _isLiveMode = false;
+    _activeProvince = null;
+    _activeDistrict = null;
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final res = await _api.getReport();
+      _report = res;
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _report = null;
+      _error = 'Something went wrong. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadApDetails(String bucketName) async {
+    _isApDetailLoading = true;
+    _apDetails = [];
+    notifyListeners();
+
+    // Simulate database lookup latency
+    await Future.delayed(const Duration(milliseconds: 1000));
+
+    // Generate mock details based on the bucketName
+    if (bucketName == '0-30 Days') {
+      _apDetails = [
+        {
+          'criteriaLabel': 'Temperature Logs',
+          'storeName': 'Central Market',
+          'managerName': 'Andy Manager',
+          'overdueDays': 12,
+        },
+        {
+          'criteriaLabel': 'Sanitization Station Check',
+          'storeName': 'Siam Square',
+          'managerName': 'Smoothie Manager',
+          'overdueDays': 25,
+        },
+      ];
+    } else if (bucketName == '31-60 Days') {
+      _apDetails = [
+        {
+          'criteriaLabel': 'Fire Exit Clearance',
+          'storeName': 'Outpost West',
+          'managerName': 'Kate Manager',
+          'overdueDays': 45,
+        },
+      ];
+    } else if (bucketName == '61-90 Days') {
+      _apDetails = [
+        {
+          'criteriaLabel': 'Daily Opening Routine',
+          'storeName': 'Airport Express',
+          'managerName': 'John Manager',
+          'overdueDays': 75,
+        },
+      ];
+    } else {
+      _apDetails = [
+        {
+          'criteriaLabel': 'Weekly Equipment Calibration',
+          'storeName': 'North Gate',
+          'managerName': 'Lisa Manager',
+          'overdueDays': 110,
+        },
+      ];
+    }
+
+    _isApDetailLoading = false;
+    notifyListeners();
   }
 }

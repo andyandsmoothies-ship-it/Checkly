@@ -988,6 +988,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("is_active");
 
+                    b.Property<DateTimeOffset?>("LastSyncedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_synced_at");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -1957,7 +1961,7 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                             b1.HasKey("StoreId");
 
-                            b1.ToTable("stores", (string)null);
+                            b1.ToTable("stores");
 
                             b1.WithOwner()
                                 .HasForeignKey("StoreId");

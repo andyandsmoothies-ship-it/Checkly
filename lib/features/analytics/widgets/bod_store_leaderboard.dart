@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../manager/bod_analytics_data.dart';
+import 'bod_store_sync_modal.dart';
 
+/// Performance leaderboard displaying top and bottom performing stores.
+///
+/// Features color-coded synchronization status dots and onTap bottom sheet telemetry.
 class BodStoreLeaderboard extends StatelessWidget {
-  final List<dynamic> topStores;
-  final List<dynamic> bottomStores;
+  final List<BodStorePerformanceEntry> topStores;
+  final List<BodStorePerformanceEntry> bottomStores;
 
   const BodStoreLeaderboard({
     super.key,
@@ -20,15 +25,41 @@ class BodStoreLeaderboard extends StatelessWidget {
     final finalTop = topStores.isNotEmpty
         ? topStores
         : [
-            {'storeName': 'Central Market', 'avgScore': 96.5},
-            {'storeName': 'Siam Square', 'avgScore': 94.2},
+            BodStorePerformanceEntry(
+              storeId: 'mock-1',
+              storeName: 'Central Market',
+              avgScore: 96.5,
+              auditCount: 15,
+              lastSyncedAt: DateTime.now().subtract(
+                const Duration(minutes: 45),
+              ),
+            ),
+            BodStorePerformanceEntry(
+              storeId: 'mock-2',
+              storeName: 'Siam Square',
+              avgScore: 94.2,
+              auditCount: 12,
+              lastSyncedAt: DateTime.now().subtract(const Duration(hours: 4)),
+            ),
           ];
 
     final finalBottom = bottomStores.isNotEmpty
         ? bottomStores
         : [
-            {'storeName': 'Outpost West', 'avgScore': 62.1},
-            {'storeName': 'Airport Express', 'avgScore': 58.4},
+            BodStorePerformanceEntry(
+              storeId: 'mock-3',
+              storeName: 'Outpost West',
+              avgScore: 62.1,
+              auditCount: 8,
+              lastSyncedAt: DateTime.now().subtract(const Duration(hours: 36)),
+            ),
+            BodStorePerformanceEntry(
+              storeId: 'mock-4',
+              storeName: 'Airport Express',
+              avgScore: 58.4,
+              auditCount: 10,
+              lastSyncedAt: null,
+            ),
           ];
 
     return StrokeCard(
@@ -75,52 +106,92 @@ class BodStoreLeaderboard extends StatelessWidget {
     );
   }
 
-  Widget _buildStoreRow(BuildContext context, dynamic s, {required bool isTop}) {
+  Widget _buildStoreRow(
+    BuildContext context,
+    BodStorePerformanceEntry s, {
+    required bool isTop,
+  }) {
     final theme = Theme.of(context);
-    final storeName = s['storeName'] ?? s['name'] ?? 'Unknown Store';
-    final avgScore = (s['avgScore'] ?? s['score'] ?? 0.0).toDouble();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  storeName,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.eel,
+    // Calculate sync color status
+    Color syncDotColor;
+    if (s.lastSyncedAt == null) {
+      syncDotColor = AppColors.cardinal; // Red: Never synced
+    } else {
+      final age = DateTime.now().difference(s.lastSyncedAt!);
+      if (age.inHours < 2) {
+        syncDotColor = AppColors.featherGreen; // Green: Active sync
+      } else if (age.inHours < 24) {
+        syncDotColor = AppColors.fox; // Amber: Mildly stale sync
+      } else {
+        syncDotColor = AppColors.cardinal; // Red: Stale sync
+      }
+    }
+
+    return InkWell(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          builder: (ctx) => BodStoreSyncModal(store: s),
+        );
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                // Coloured Sync dot indicator
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: syncDotColor,
+                    shape: BoxShape.circle,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Text(
-                '${avgScore.toStringAsFixed(1)}%',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: isTop ? AppColors.featherGreen : AppColors.cardinal,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    s.storeName,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.eel,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: avgScore / 100,
-              backgroundColor: AppColors.swan.withValues(alpha: 0.3),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                isTop ? AppColors.featherGreen : AppColors.cardinal,
-              ),
-              minHeight: 8,
+                const SizedBox(width: 8),
+                Text(
+                  '${s.avgScore.toStringAsFixed(1)}%',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: isTop ? AppColors.featherGreen : AppColors.cardinal,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: s.avgScore / 100,
+                backgroundColor: AppColors.swan.withValues(alpha: 0.3),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  isTop ? AppColors.featherGreen : AppColors.cardinal,
+                ),
+                minHeight: 8,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

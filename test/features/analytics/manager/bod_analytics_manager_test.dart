@@ -32,29 +32,29 @@ void main() {
   });
 
   final successReport = BodReportResponse(
-    chainKpis: {'totalAudits': 450, 'avgScore': 84.5},
-    trend: [],
-    topStores: [],
-    bottomStores: [],
-    categoryBreakdown: [],
-    apAging: {},
-    auditorProductivity: [],
+    chainKpis: const BodChainKpis(totalAudits: 450, avgScore: 84.5, avgTtrDays: 4.2),
+    trend: const [],
+    topStores: const [],
+    bottomStores: const [],
+    categoryBreakdown: const [],
+    apAging: const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0),
+    auditorProductivity: const [],
     computedAt: '2026-05-24T02:15:00Z',
     snapshotStatus: 'Complete',
-    allowedActions: ['refresh'],
+    allowedActions: const ['refresh'],
   );
 
   final updatedReport = BodReportResponse(
-    chainKpis: {'totalAudits': 451, 'avgScore': 84.6},
-    trend: [],
-    topStores: [],
-    bottomStores: [],
-    categoryBreakdown: [],
-    apAging: {},
-    auditorProductivity: [],
+    chainKpis: const BodChainKpis(totalAudits: 451, avgScore: 84.6, avgTtrDays: 4.1),
+    trend: const [],
+    topStores: const [],
+    bottomStores: const [],
+    categoryBreakdown: const [],
+    apAging: const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0),
+    auditorProductivity: const [],
     computedAt: '2026-05-24T02:20:00Z', // Updated timestamp
     snapshotStatus: 'Complete',
-    allowedActions: ['refresh'],
+    allowedActions: const ['refresh'],
   );
 
   group('BodAnalyticsManager Unit Tests', () {

@@ -19,6 +19,8 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
         e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
         e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
         e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+        e.Property(x => x.LastSyncedAt).HasColumnName("last_synced_at");
+
 
         // Performance indexes
         e.HasIndex(x => x.IsActive).HasFilter("is_active = true");

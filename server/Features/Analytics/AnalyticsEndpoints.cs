@@ -26,6 +26,14 @@ public static class AnalyticsEndpoints
             .WithName("GetBodReport")
             .RequireCapability(AppCapabilities.AnalyticsBod);
 
+        group.MapGet("/bod/ap/{bucket}", GetApBucketDetail.HandleAsync)
+            .WithName("GetApBucketDetail")
+            .RequireCapability(AppCapabilities.AnalyticsBod);
+
+        group.MapGet("/auditors/productivity", GetAuditorProductivity.HandleAsync)
+            .WithName("GetAuditorProductivity")
+            .RequireCapability(AppCapabilities.AnalyticsBod);
+
         group.MapPost("/bod/refresh", RefreshBodReport.HandleAsync)
             .WithName("RefreshBodReport")
             .RequireCapability(AppCapabilities.AnalyticsBod);

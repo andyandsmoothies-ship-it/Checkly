@@ -54,6 +54,7 @@ public static class SyncSubmissions
         var isAdmin = user.IsInRole("admin");
 
         var isAreaManager = user.IsInRole("area_manager");
+        var isAuditor = user.IsInRole("auditor");
 
         // ── Rule 1: Scope guard — non-admins must provide storeId, or be resolvable ──
         if (!isAdmin && !storeId.HasValue)
@@ -67,20 +68,20 @@ public static class SyncSubmissions
                     storeId = profile?.StoreId;
                 }
             }
-            // area_manager: allowed to perform unbounded sync (no storeId required)
+            // area_manager and auditor: allowed to perform unbounded sync (no storeId required)
         }
 
-        // Non-admin, non-area_manager with no resolved storeId → reject
-        if (!isAdmin && !isAreaManager && !storeId.HasValue)
+        // Non-admin, non-area_manager, non-auditor with no resolved storeId → reject
+        if (!isAdmin && !isAreaManager && !isAuditor && !storeId.HasValue)
             return TypedResults.BadRequest(new
             {
                 error = "A storeId query parameter is required for non-admin callers."
             });
 
         // ── Rule 2: IDOR guard ───────────────────────────────────────────────
-        // Admin bypasses. Area_manager unbounded sync (no storeId) bypasses IDOR.
+        // Admin bypasses. Area_manager and auditor unbounded syncs bypass IDOR.
         // All other non-admins with an explicit storeId must pass the junction check.
-        if (!isAdmin && storeId.HasValue)
+        if (!isAdmin && !isAuditor && storeId.HasValue)
         {
             var hasAccess = await ResourceAccessGuard.CanAccessAsync(
                 user, new ResourceScope(StoreId: storeId), db, ct);
@@ -117,6 +118,15 @@ public static class SyncSubmissions
                 .ToListAsync(ct);
 
             query = query.Where(s => s.StoreId.HasValue && assignedStoreIds.Contains(s.StoreId.Value));
+        }
+
+        // Apply auditor ownership filter if user is an auditor
+        if (isAuditor)
+        {
+            if (!Guid.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var auditorUserId))
+                return TypedResults.Forbid();
+
+            query = query.Where(s => s.AuditorId == auditorUserId);
         }
 
         // Cursor logic

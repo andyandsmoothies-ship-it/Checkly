@@ -15,9 +15,21 @@ class BodCategoryWeakness extends StatelessWidget {
     final finalBreakdown = categoryBreakdown.isNotEmpty
         ? categoryBreakdown
         : [
-            {'categoryName': 'Food Safety', 'avgScore': 72.4, 'failureCount': 18},
-            {'categoryName': 'Customer Service', 'avgScore': 88.1, 'failureCount': 2},
-            {'categoryName': 'Facility Cleanliness', 'avgScore': 84.5, 'failureCount': 6},
+            {
+              'categoryName': 'Food Safety',
+              'avgScore': 72.4,
+              'failureCount': 18,
+            },
+            {
+              'categoryName': 'Customer Service',
+              'avgScore': 88.1,
+              'failureCount': 2,
+            },
+            {
+              'categoryName': 'Facility Cleanliness',
+              'avgScore': 84.5,
+              'failureCount': 6,
+            },
           ];
 
     return StrokeCard(
@@ -72,10 +84,15 @@ class BodCategoryWeakness extends StatelessWidget {
                             if (failures > 0) ...[
                               const SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: isWeak
-                                      ? AppColors.cardinal.withValues(alpha: 0.15)
+                                      ? AppColors.cardinal.withValues(
+                                          alpha: 0.15,
+                                        )
                                       : AppColors.canary.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -83,7 +100,9 @@ class BodCategoryWeakness extends StatelessWidget {
                                   '$failures Failures',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.w900,
-                                    color: isWeak ? AppColors.cardinal : AppColors.fox,
+                                    color: isWeak
+                                        ? AppColors.cardinal
+                                        : AppColors.fox,
                                     fontSize: 9,
                                   ),
                                 ),

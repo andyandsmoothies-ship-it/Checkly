@@ -321,6 +321,7 @@ server/
 | **Batch 9** | PBAC UI Capabilities — Dynamic role tabs, PermissionGuard, backend capability syncing | ✅ Done |
 | **Batch 10** | Error UX & Observability — RFC 9457 Problem Details, actionable snackbar queues, and deterministic styling | ✅ Done |
 | **Batch 11** | Analytics Insight Rewire — Radar charts, heuristic Actionable Insights generator, Area Benchmark snapshots, offline-first syncing, and dynamic bounds enforcement | ✅ Done |
+| **Batch 12** | BOD Analytics — Boardroom Executive Dashboard providing high-level metrics (Store Leaderboards, Category Weakness, AP Aging, Auditor Productivity) via pre-computed background snapshots | ✅ Done |
 
 ### Future Phases
 

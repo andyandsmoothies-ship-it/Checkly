@@ -18,7 +18,7 @@
 - **Programs & Campaigns** — Assign specific templates to target stores or areas with strict deadlines. Program assignments sync automatically to offline devices for execution.
 - **Offline-First** — Complete audits without internet. Data is persisted to a local SQLite database (Drift) and synced via a resilient, plugin-based background Sync Engine featuring exponential backoff when connectivity returns.
 - **Real-Time Scoring** — Live score HUD during audits with section breakdowns, progressive repeat penalties, and confirm-correct mode.
-- **Enterprise Analytics Dashboard** — Role-aware command center with contextual stat cards, hierarchical drilldowns, and SQLite aggregations for Auditors, Managers, and Admins.
+- **Enterprise & Boardroom Analytics** — Role-aware command center with contextual stat cards, hierarchical drilldowns, and SQLite aggregations for Auditors, Managers, and Admins. Features a Boardroom Executive Dashboard with OLAP-style pre-computed snapshots for Store Leaderboards, Category Weakness, and Auditor Productivity.
 - **Action Plan Workflow** — Auto-generated corrective actions from failed criteria with deadlines, reminders, and status tracking.
 - **Server-Side Score Verification** — The backend independently recalculates scores and rejects submissions with suspicious mathematical deltas.
 - **Notification Engine** — Real-time SignalR notifications and in-app inbox for audit submissions and action plan deadlines.

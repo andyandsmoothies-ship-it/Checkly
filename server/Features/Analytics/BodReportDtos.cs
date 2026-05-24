@@ -19,13 +19,20 @@ namespace Checkly.Api.Features.Analytics
         int OpenActionPlans,
         int OverdueActionPlans,
         int ActiveStores,
-        int TotalAuditors);
+        int TotalAuditors,
+        decimal AvgTtrDays = 0m);
 
-    public record BodStoreRankEntry(Guid StoreId, string StoreName, decimal AvgScore, int AuditCount);
+
+    public record BodStoreRankEntry(Guid StoreId, string StoreName, decimal AvgScore, int AuditCount, DateTimeOffset? LastSyncedAt);
+
 
     public record BodCategoryWeakness(string CategoryName, string TemplateTitle, decimal AvgScore, int AuditCount);
 
     public record BodApAgingBucket(string Bucket, int Count);
 
     public record BodAuditorProductivity(Guid AuditorId, string AuditorName, int CompletedAudits, decimal AvgScore);
+
+    public record ApDetailEntry(Guid Id, string CriteriaLabel, string StoreName, string ManagerName, int AgeInDays);
+
+    public record AuditorProductivityEntry(Guid AuditorId, string AuditorName, int CompletedAudits, decimal AvgScore, string BiasRating);
 }

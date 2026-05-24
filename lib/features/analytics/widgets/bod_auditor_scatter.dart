@@ -16,8 +16,16 @@ class BodAuditorScatter extends StatelessWidget {
         ? auditorProductivity
         : [
             {'auditorName': 'John Doe', 'avgScore': 86.2, 'completedCount': 24},
-            {'auditorName': 'Jane Smith', 'avgScore': 89.4, 'completedCount': 18},
-            {'auditorName': 'Bob Johnson', 'avgScore': 78.1, 'completedCount': 15},
+            {
+              'auditorName': 'Jane Smith',
+              'avgScore': 89.4,
+              'completedCount': 18,
+            },
+            {
+              'auditorName': 'Bob Johnson',
+              'avgScore': 78.1,
+              'completedCount': 15,
+            },
           ];
 
     return StrokeCard(
@@ -26,7 +34,11 @@ class BodAuditorScatter extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.people_outline, color: AppColors.macaw, size: 24),
+              const Icon(
+                Icons.people_outline,
+                color: AppColors.macaw,
+                size: 24,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -83,7 +95,10 @@ class BodAuditorScatter extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.polar,
                       borderRadius: BorderRadius.circular(20),
