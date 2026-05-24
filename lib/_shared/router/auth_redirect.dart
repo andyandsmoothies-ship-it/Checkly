@@ -74,7 +74,11 @@ String? authRedirect(BuildContext context, GoRouterState state) {
   if (isAuthenticated) {
     final pm = _di<PolicyManager>();
 
-    if (state.matchedLocation.startsWith('/analytics') &&
+    if (state.matchedLocation == '/analytics/bod') {
+      if (!pm.can(AppCapabilities.analyticsBod)) {
+        return '/home';
+      }
+    } else if (state.matchedLocation.startsWith('/analytics') &&
         !pm.can(AppCapabilities.analyticsView)) {
       return '/home';
     }

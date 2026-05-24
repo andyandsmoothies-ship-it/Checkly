@@ -52,6 +52,10 @@ REQUIRED_SECTIONS = {
         r"##\s+decision\s+log",
         r"##\s+verification\s+handoff",
     ],
+    "test_spec": [
+        r"##\s+decision\s+log",
+        r"##\s+verification\s+handoff",
+    ],
     "analysis_epic": [
         r"##\s+exec\s+summary|executive\s+summary",
         r"##\s+decision\s+matrix",
@@ -152,7 +156,7 @@ def warn(msg: str) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def check_task_md(session_dir: str) -> None:
-    print("\n[CHECK 1] Scanning task.md for incomplete phases...")
+    print("\n[CHECK 1] Scanning task.md for incomplete steps...")
     task_path = get_latest_task_file(session_dir)
 
     if task_path is None:
@@ -175,10 +179,10 @@ def check_task_md(session_dir: str) -> None:
         for lineno, content in incomplete_lines:
             fail(
                 f"task.md line {lineno} has an unchecked task: '{content}'\n"
-                f"         Fix: mark it '[x]' once the phase is truly complete."
+                f"         Fix: mark it '[x]' once the step is truly complete."
             )
     else:
-        print("       ✅ task.md — all phases are marked [x].")
+        print("       ✅ task.md — all steps are marked [x].")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -344,7 +348,7 @@ def check_forensic_evidence(session_dir: str) -> None:
     for file_path in artifacts_to_check:
         name = os.path.basename(file_path)
         lower_name = name.lower()
-        if lower_name.startswith("research") or lower_name.startswith("analysis") or lower_name.startswith("audit") or lower_name.startswith("diagnose") or lower_name.startswith("failure_report") or lower_name.startswith("walkthrough") or lower_name.startswith("executed_tests"):
+        if lower_name.startswith("research") or lower_name.startswith("analysis") or lower_name.startswith("audit") or lower_name.startswith("diagnose") or lower_name.startswith("failure_report") or lower_name.startswith("walkthrough") or lower_name.startswith("executed_tests") or lower_name.startswith("test_spec") or lower_name.startswith("red_test_log") or lower_name.startswith("green_test_log"):
             with open(file_path, encoding="utf-8") as f:
                 content = f.read().lower()
                 
@@ -364,7 +368,7 @@ def check_forensic_evidence(session_dir: str) -> None:
                     fail(f"'{name}' Latent Scratchpad is too shallow. Expand your computational thinking before concluding.")
 
             # 2. Enforce Test Trace feedback loop on Execution/QA Tasks
-            is_execution = lower_name.startswith("walkthrough") or lower_name.startswith("executed_tests") or lower_name.startswith("test_contracts")
+            is_execution = lower_name.startswith("walkthrough") or lower_name.startswith("executed_tests") or lower_name.startswith("test_contracts") or lower_name.startswith("test_spec") or lower_name.startswith("red_test_log") or lower_name.startswith("green_test_log")
             if is_execution:
                 if not test_trace_match:
                     fail(

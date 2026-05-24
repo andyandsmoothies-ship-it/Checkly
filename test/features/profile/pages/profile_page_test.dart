@@ -38,7 +38,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
 import 'package:checkly/features/profile/pages/profile_page.dart';
-import 'package:checkly/_shared/theme/app_theme.dart';
 import 'package:checkly/_shared/database/database_service.dart';
 import 'package:checkly/_shared/database/app_database.dart';
 import 'package:checkly/_shared/database/dao/outbox_dao.dart';

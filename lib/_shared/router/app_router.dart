@@ -26,6 +26,7 @@ import '../../features/admin/pages/schedule_audit_page.dart';
 import '../../features/admin/pages/role_list_page.dart';
 import '../../features/admin/pages/role_detail_page.dart';
 import '../../features/analytics/pages/analytics_page.dart';
+import '../../features/analytics/pages/bod_analytics_page.dart';
 import '../../features/stores/pages/store_dashboard_page.dart';
 import '../../features/templates/pages/template_builder_page.dart';
 import '../../features/templates/pages/template_wizard_page.dart';
@@ -257,6 +258,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/analytics',
       builder: (context, state) => const AnalyticsPage(),
+    ),
+    GoRoute(
+      path: '/analytics/bod',
+      redirect: (context, state) {
+        final pm = _di<PolicyManager>();
+        if (!pm.can(AppCapabilities.analyticsBod)) return '/home';
+        return null;
+      },
+      builder: (context, state) => const BodAnalyticsPage(),
     ),
     GoRoute(
       path: '/stores/:id/dashboard',

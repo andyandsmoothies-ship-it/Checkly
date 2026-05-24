@@ -112,6 +112,15 @@
   - **Fix:** When implementing custom animated widgets whose internal controller states or animation status needs to be verified during widget testing (e.g. `isAnimating`), name the `State` class publicly (e.g. `class ChecklyEmptyStateState extends State<ChecklyEmptyState>` instead of using a private `_` prefix). This allows the widget testing framework to access it directly via `tester.state<ChecklyEmptyStateState>(find.byType(ChecklyEmptyState))`.
 - **Gotcha: Reduced Motion Compliance**
   - **Fix:** All highly active micro-animations (such as bouncy button squashes, list cascades, empty state jiggles, and elastic checkbox pops) must explicitly verify and respect reduced motion settings via `MediaQuery.disableAnimationsOf(context)`. If active, transitions must immediately snap to target boundaries without delay, curve interpolation, or ticker activity, to avoid triggering motion sensitivity issues for accessibility users.
+- **Gotcha: Shared Database Testing & Analytics Pollution**
+  - **Fix:** Integration tests running against a shared database must never assume the database is empty or calculate absolute aggregates against mutable seeded tables. Always isolate test calculations using unique query anchors (e.g., unique tags, isolated IDs, or far-past/far-future dates) to prevent other tests' persistent records from corrupting mathematical assertions.
+- **Gotcha: Card Title Flex Overflow in Headless Tests**
+  - **Fix:** In narrow headless testing environments or mobile layouts, horizontal `Row` components containing `Icon` and `Text` (like card header layouts) will throw layout overflow exceptions. Always wrap the header `Text` widget in an `Expanded` or `Flexible` widget to allow elegant text wrapping and guarantee test robustness.
+- **Gotcha: Pre-computed Snapshot Polling**
+  - **Fix:** When triggering on-demand calculations, the API returns immediately while calculations complete in the background. The Flutter frontend must poll the GET endpoint every 5 seconds (with a 60s timeout fallback) until the retrieved `computedAt` timestamp increases, showing a loading shimmer in the meantime to ensure real-time visual accuracy without instant page snaps.
+- **Gotcha: OLAP Background Aggregations (Advisory Locking)**
+  - **Fix:** To prevent database performance degradation under heavy aggregate queries, calculate boardroom analytics in a nightly background job and cache the rollups as `jsonb` documents in a snapshot table. Protect worker concurrency using PostgreSQL-native transaction-level advisory locks to eliminate race conditions and thundering herds.
+
 
 
 ## 4. Environment Rules

@@ -60,7 +60,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(descriptor);
 
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(testConnectionString));
+                options.UseNpgsql(testConnectionString)
+                       .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
         });
     }
 
@@ -141,7 +142,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                        (gen_random_uuid(), 'admin',         'action_plans:write',          now()),
                        (gen_random_uuid(), 'auditor',       'action_plans:verify',         now()),
                        (gen_random_uuid(), 'area_manager',  'action_plans:verify',         now()),
-                       (gen_random_uuid(), 'admin',         'action_plans:verify',         now())
+                       (gen_random_uuid(), 'admin',         'action_plans:verify',         now()),
+                       (gen_random_uuid(), 'admin',         'analytics:bod',               now())
                 ON CONFLICT (role, capability) DO NOTHING;
                 """);
 

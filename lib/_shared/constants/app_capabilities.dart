@@ -34,6 +34,7 @@ class AppCapabilities {
   static const programsAssignmentsList = 'programs:assignments_list';
   static const globalRisksManage = 'global_risks:manage';
   static const analyticsView = 'analytics:view';
+  static const analyticsBod = 'analytics:bod';
 
   // --- Implicit Admin Access Domain ---
   // Any capability in this set grants implicit admin:access via PolicyManager.
@@ -48,5 +49,6 @@ class AppCapabilities {
     adminManageRoles,
     programsCreate,
     globalRisksManage,
+    analyticsBod,
   };
 }

@@ -235,6 +235,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         ),
       ),
       (
+        cap: AppCapabilities.analyticsBod,
+        item: _MenuItem(
+          icon: Icons.analytics_outlined,
+          title: 'BOD Analytics',
+          subtitle: 'View executive performance data',
+          onTap: () => context.push('/analytics/bod'),
+        ),
+      ),
+      (
         cap: null,
         item: _MenuItem(
           icon: Icons.warning_amber,

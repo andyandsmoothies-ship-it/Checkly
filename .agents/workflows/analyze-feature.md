@@ -1,142 +1,175 @@
 ---
-description: Easy-to-read analysis workflow for standard features and bugs.
----
 
-@[.agents/rules/orchestration-standards.md]
+description: Concise, high-density analysis workflow for standard features and bugs.
+
+---
 
 # Workflow: /analyze-feature
 
-> [!NOTE]
-> Use this workflow to plan small to medium tasks. The goal is to quickly and safely create an Implementation Plan.
+> Use to quickly and safely plan small to medium features and bug fixes.
 
-## Phase 0: Start
+## Step 1: Start & Task Tracking
 
-| Step | Instructions |
-|---|---|
-| **Task Tracking** | Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` using the template below before doing anything else.|
-| **Check Epic Rules** | If this task is part of a larger Epic, read the Epic's plan first. Your job is to create exact database schemas, file paths, and code changes that match the Epic, without changing the main rules. |
+- **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` before coding:
 
-```markdown
-# Task: [Feature / Bug / Topic Name]
-Workflow: /analyze-feature | Track: [A / B1 / B2]
+  ```markdown
 
-## Input Lineage
-- **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
+  # Task: [Name] | Workflow: /analyze-feature | Track: [A/B1/B2]
 
-## Phases
-- [ ] Phase 1: Search & Understand
-- [ ] Phase 2: Check Impacts & States
-- [ ] Phase 3: Create Plan
-- [ ] Phase 4: Pick Next Route
-## Artifact Inventory
-| Status | File Path | Type |
-| [NEW]  | docs/architecture/[topic]/implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Plan |
-```
+  - **Source Input**: [Path]
 
-## Phase 1: Search & Understand
+  - [ ] Step 2: Search & Scope | [ ] Step 3: Impacts & States | [ ] Step 4: Plan | [ ] Step 5: Route
 
-| Step | Instructions |
-|---|---|
-| **Interrogation Gate**| **MANDATORY**: Before writing a plan, cross-reference the user's request against the codebase. If terminology is sloppy or contradicts existing code, **STOP** and ask the user to clarify. |
-| **Constraint Extraction** | **MANDATORY**: Read the Input Lineage documents specifically looking for 'Constraints', 'Rules', or 'Decisions'. Write these in your latent space scratchpad so you do not forget them. |
-| **Search First** | Always use `grep_search` to find the exact line numbers needed, then use `view_file` to read only those specific chunks. Do not read full files blindly to save memory. |
-| **Check Setup** | Read config files (like `.csproj` or `pubspec.yaml`) to understand the project setup. |
-| **Learn the Code** | Search current code to learn how it works before you start planning. |
-| **Label the Pattern** | Before jumping straight into a solution, explicitly label the pattern of the problem (e.g., is this a State Machine? A Queue? A Caching problem?). Understanding the kind of problem you are solving makes the architecture simpler and trade-offs clearer. |
-| **Check Ideas** | If the user provides an idea or document, check if it works by searching the code. Do not use ideas that do not fit the current code. |
-| **Out of Scope (YAGNI)**| Write down what you will NOT build. If a step breaks a main rule, stop and ask the user. Do not silently skip it. |
-| **Spot Check**| Search the code to double-check at least one main idea in your plan before finishing. |
+  - **Artifact Inventory**: docs/architecture/[topic]/implementation_plan_[ShortID]_[topic]_[ConversationID].md
 
-> **MANDATORY @@SCAN**: Print this checklist directly into your chat response before proceeding. (1) Do you know the main goal? (2) Did you write down what is out of scope? (3) Did you double-check the code?
+  ```
 
-## Phase 2: Check Impacts & States
+- **Epic Rules**: If task is part of an Epic, match DB schemas and file paths without changing main rules.
 
-| Step | Instructions |
-|---|---|
-| **Risk & ROI Evaluation** | **MANDATORY**: Evaluate if the proposed change is worth the architectural cost. If the blast radius is high, it introduces tech debt, or the ROI is negative, **do not stop**, but you MUST include a prominent **Risk Warning** at the top of your implementation plan and in your chat response so the user understands the current situation and tradeoffs. |
-| **Find Connections** | Before changing any class or API, use `grep_search` to find it everywhere in the project (`/server` and `/lib`). Check 6 areas: 1) UI, 2) Routes, 3) Database, 4) Mocks, 5) Events, 6) Dependency Injection. |
-| **Impact Check** | Do not change existing tests or mocks just to make your new code pass. Make your code fit the current rules. If you change a database or API, make sure you update both the backend and frontend. |
-| **Trust the Source** | Do not trust UI state alone. If your plan depends on a status (like `if status == 'x'`), search the database or API to prove it can actually send that status. |
-| **File Size Limit** | If the file you want to edit has more than 250 lines, your plan must include a step to split the file before adding new features. |
-| **System Context** | Define environmental constraints: Is this offline-first, live API, or hybrid? What exact RBAC permissions gate this feature? |
-| **Lifecycle Context** | Define the 4-State Matrix: How does the UI look in `Loading`, `Empty`, `Error`, and `Success` situations? |
+## Step 2: Search & Understand
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Is the Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined?
+- **Interrogation Gate**: MANDATORY. Cross-reference request against codebase. If sloppy or contradictory, STOP and ask user.
 
-## Phase 3: Create Plan
+- **Constraint Extraction**: MANDATORY. Read input lineage for rules/decisions. Save constraints in latent scratchpad.
 
-| Step | Instructions |
-|---|---|
-| **Constraint Traceability** | **MANDATORY**: Review your scratchpad. Did you miss any constraints from the input document? Every constraint MUST be explicitly covered by an Acceptance Criteria or Test Contract. |
-| **Acceptance Criteria** | Write clear Acceptance Criteria. Your plan must include a Test Contract matrix. **CRITICAL:** ALL boundary constraints and edge cases MUST be explicit rows in the matrix, not loose bullet points. If applicable, define exact JSON Request/Response payloads and explicitly list the Required Test Fixture State (e.g., 'Requires Admin Client, 3 Seeded Stores'). |
-| **Tools Needed** | Write down which skills the Builder will need. Write down the commands to test the code (like `flutter test` or `dotnet test`). |
-| **Slicing Strategy** | **MANDATORY**: Load and apply the `use-case-slicing` skill. Slice outside-in by focusing on *observable behavior*, not just internal technical steps. Every slice must define an 'Entry State Required' and 'Exit State Guaranteed'. Output slices as 'Micro-Specs'. |
-| **Write the Plan** | Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` in the `docs/architecture/[topic]/` folder. |
-| **Clear Goals** | The plan must have clear steps. |
+- **Search First**: Use `grep_search` to find exact lines, then `view_file` to read specific chunks. Do not read full files.
 
-> **MANDATORY @@SCAN**: Print this checklist directly into your chat response before proceeding. (1) Did you explicitly extract all constraints from the input document into your scratchpad? (2) Is every constraint mapped to a Test Contract?
+- **Check Setup**: Check project configuration files (e.g., config, dependencies) to understand environmental limits.
 
-## Phase 4: Pick Next Route
+- **Learn Code**: Study existing patterns and classes before planning the solution.
 
-> [!CAUTION]
-> **Too Big?** If the task has unknown rules, new complex states, or needs more than 1 new database table, STOP. Tell the user they need to run an Epic Analysis workflow instead.
-> **Logic Bypass?** If a slice creates or modifies Business Logic (e.g. Services, state math), you MUST require tests before coding.
+- **Label Pattern**: Label the architecture pattern (e.g., State Machine, Caching, Event-Driven, Queue).
 
-| Signal Check | Route 1: Direct Build | Route 2: Unit Tests First | Route 3: Acceptance Tests First |
-|---|---|---|---|
-| **Type** | UI-Only (No network/auth) | Internal Logic / Data Math | Uses Network/Auth/Database |
-| **Clarity** | Very clear | Needs math or algorithms | Unclear or tricky |
-| **Pattern** | Uses existing pattern | Known code pattern | New pattern |
-| **Testing Risk**| Low (Visual changes) | Medium (Needs Unit Tests) | High (Needs Integration/E2E Tests) |
+- **Check Ideas**: Test all user ideas or docs against code patterns first. Reject incompatible concepts.
+
+- **Out of Scope (YAGNI)**: Explicitly identify and write down what you will NOT build.
+
+- **Spot Check**: Search codebase to verify at least one core plan concept before writing the plan.
+
+- **Mandatory Scan**: Print checklist in response: (1) Main goal known? (2) Out-of-scope defined? (3) Code verified?
+
+## Step 3: Check Impacts & States
+
+- **Risk & ROI**: Evaluate if change is worth the architectural cost. If blast radius is high or ROI negative, include a prominent "Risk Warning" at the top of the plan and in your chat response.
+
+- **Find Connections**: Search 6 areas: UI, Routes, Database, Mocks, Events, and Dependency Injection to map all dependencies before modifying code.
+
+- **Dual-Stack Impact**: Do not change existing tests or mocks to pass. Adapt code to existing contract. If changing database/API, update both backend and frontend.
+
+- **Trust the Source**: Do not trust UI state alone. Verify the database/API contract actually sends that state or status.
+
+- **File Limit**: If any target file exceeds 250 lines, your plan must include a step to split the file or extract logic first.
+
+- **System Context**: Define constraints (e.g. offline-first, sync logic, RBAC capabilities).
+
+- **Lifecycle Context**: Define the 4-State Matrix: how presentation layer handles Success, Loading, Error, and Empty states.
+
+- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined?
+
+## Step 4: Create Plan
+
+- **Constraint Traceability**: Review scratchpad. Map EVERY constraint from the input document to an Acceptance Criteria or Test Contract.
+
+- **Acceptance Criteria & Contract**: Write clear Acceptance Criteria and a Test Contract matrix. All boundary constraints and edge cases must be explicit rows. Define exact JSON Request/Response payloads and the Required Test Fixture State.
+
+- **Tools & Commands**: Specify exact skills the Builder needs and target execution/test commands (e.g. `flutter test`, `dotnet test`).
+
+- **Slicing Strategy**: Apply the **Thin Vertical Slicing Strategy** (highly focused slices of <= 4 files each). Sequence slices vertically: Happy Path first (Slice 1), Edge Cases & Validation (Slice 2), then Offline/Visual Resiliency (Slice 3). Each slice must define 'Entry State Required' and 'Exit State Guaranteed'.
+
+- **Write the Plan**: Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` in the `docs/architecture/[topic]/` folder.
+
+- **Mandatory Scan**: Print checklist in response: (1) Did you explicitly extract all constraints from the input document into your scratchpad? (2) Is every constraint mapped to a Test Contract?
+
+## Step 5: Pick Next Route
+
+- **Too Big Warning**: If task has unknown rules, complex states, or > 1 new DB table, STOP and recommend Epic Analysis.
+
+- **Logic Bypass Warning**: If slice creates/modifies Business Logic (e.g. Services, state math), you MUST require tests before coding.
+
+- **Route Selection Strategy**: Match each slice to a Route:
+
+  - **Route 1: Direct Build**: UI-Only, no network/auth, very clear, uses existing pattern, low testing risk.
+
+  - **Route 2: Unit Tests First**: Internal Logic / Data Math, known pattern, medium testing risk.
+
+  - **Route 3: Acceptance Tests First**: Uses Network/Auth/Database, new/complex pattern, high testing risk.
 
 ## 🚦 Handoff
 
-> [!IMPORTANT]
-> **Action:** State the exact next Phase for the user. Match each step to its correct route.
-> 
-> **Step-by-Step Rule:** Tell the user to execute these phases **ONE AT A TIME**. Do not execute them all at once.
->
-> **Route 1: Direct Build (Visuals/Simple)**
-> Next Phase: **Build Phase** for [Slice N]. Input: `{Absolute_Path_to_plan}`
->
-> **Route 2: Unit Tests First (Logic/Standard)**
-> Next Phase: **Write Unit Tests**, then **Build Phase** for [Slice N]. Input: `{Absolute_Path_to_plan}`
->
-> **Route 3: Acceptance Tests First (Network/Auth/DB)**
-> Next Phase: **Write Acceptance Tests**, then **Build Phase** for [Slice N]. Input: `{Absolute_Path_to_plan}`
->
-> **Concurrency:** State which slices must wait for others to finish.
+- **Handoff Target**: State the exact next Step for the user.
+
+- **Step-by-Step Execution**: Explicitly direct the user to execute steps/slices **ONE AT A TIME**. Do not run them all at once.
+
+- **Route Mapping**:
+
+  - **Route 1 (Direct Build)**: Next Step: **Build Step** for [Slice N]. Input: `{Absolute_Path_to_plan}`
+
+  - **Route 2 (Unit Tests First)**: Next Step: **Write Unit Tests**, then **Build Step** for [Slice N]. Input: `{Absolute_Path_to_plan}`
+
+  - **Route 3 (Acceptance Tests First)**: Next Step: **Write Acceptance Tests**, then **Build Step** for [Slice N]. Input: `{Absolute_Path_to_plan}`
+
+- **Concurrency & Dependency**: Clearly state which slices must wait for others to finish.
 
 ### Final Output Rules
-> [!IMPORTANT]
+
 <output_schema>
-> **File Format:** Your `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` MUST have these exact sections. Keep it short and simple.
-> - `<latent_space_scratchpad>`: Your hidden thoughts about edge cases.
-> - `## Input Lineage`: Absolute path of the source Epic Plan, Bug Report, or idea document.
-> - `## Executive Summary & Out of Scope`
-> - `## System Context` (Offline/Online, APIs, RBAC, Logs)
-> - `## Lifecycle Context` (4-State Matrix: Success, Error, Empty, Loading)
-> - `## Constraint Traceability`: A simple markdown table mapping EVERY constraint from the input document (e.g., "Must fail closed") to its corresponding Test Contract ID (e.g., "AP-PBAC-12"). This forces you to prove you didn't miss anything.
-> - `## Test Contracts` (ID, Exact Text, State Matrix, Why it fails first). **CRITICAL:** Every boundary constraint MUST be an explicit row.
-> - `## Test Fixture & Payloads` (Explicit setup requirements like "Seeded Admin" and raw JSON Request/Response examples for API slices).
-> - `## Tools & Commands` (Skills and test commands)
-> - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files. **For UI components, you MUST include a Markdown table mapping Component -> Truncation Limit -> Overflow Action -> Required New Route. Never leave routing ambiguous.**
-> - `## Concept Diagram`: Simple text flowchart to explain the idea. **For UI changes, include routing/state transitions so there are no dead ends.**
-> - `## Execution Slices` (Micro-Specs): Group the work using the `use-case-slicing` skill methodology. **CRITICAL:** Apply the 'Maximum Thickness' rule to prevent AI context overflow. **A single phase should ideally represent ONE complete vertical slice of the Happy Path.** However, if that slice requires modifying **more than 5 files** or touching highly complex shared files **>400 lines**, you MUST split it horizontally into sub-phases (e.g., `Phase B1: Data Layer`, `Phase B2: Offline Logic`). Always separate the Happy Path (Slice 1) from Error/Edge Cases (Slice 2). For each slice, you MUST output the Micro-Spec format (Plain English Summary, Value Delivered, Entry/Exit State, Scope, Acceptance Criteria). Explain the plan but **DO NOT write exact code**.<br><br>For each phase, rate the **Complexity** (Low/Medium/High) with a reason.<br><br>For each major choice, write the **Pros & Cons**. Ask the user to decide before starting to code. **If there is only 1 phase, call it "Execution Phase", NOT "Slice 1".**
-> - `<command_logs>`: A list of terminal commands you ran.
-> - `## Handoff Block`: A short summary for the next AI agent. You MUST provide a short, concise list specifying the sequence of actions for **EVERY slice** based on its risk (e.g., `- **Slice 1**: Plan -> Write Acceptance Tests -> Build` or `- **Slice 2**: Plan -> Build`). Do not use project-specific workflow names (like `/tdd` or `/implement`), just generic actions. Tell the user to execute them ONE AT A TIME. Include the absolute file path to the plan.
->
-> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md**: Change `[/]` to `[x]` and add absolute file paths.
-> 
-> **Script Verification (Required)**:
-> Use the `run_command` tool to run this script before finishing.
-> // turbo
-> `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
-> - `Code 0`: *"Handoff complete."*
-> - `Code 1`: Fix errors and try again.
+
+- **File Format**: `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` in `docs/architecture/[topic]/` must contain:
+
+  - `<latent_space_scratchpad>`: Hidden thoughts on edge cases, limits, and risks.
+
+  - `## Input Lineage`: Absolute path of source requirement/lineage document.
+
+  - `## Executive Summary & Out of Scope`: High-level goal and explicit out-of-scope boundaries.
+
+  - `## System Context`: Offline/online behavior, APIs, RBAC capabilities, and telemetry.
+
+  - `## Lifecycle Context`: 4-State Matrix (Success, Error, Empty, Loading).
+
+  - `## Constraint Traceability`: Table mapping each input constraint to its Test Contract ID.
+
+  - `## Test Contracts`: ID, description, state matrix, and fail-first explanation. Boundary rules must be explicit rows.
+
+  - `## Test Fixture & Payloads`: Setup requirements (e.g. Seeded Admin) and raw JSON Request/Response payloads.
+
+  - `## Tools & Commands`: Necessary skills and execution commands.
+
+  - `## Proposed Changes`: List `[NEW]/[MOD]/[DEL]` files in sequential build order (e.g. Schema -> Logic -> API -> UI). For UI components, include a table mapping: Component -> Truncation Limit -> Overflow Action -> Required New Route.
+
+  - `## Concept Diagram`: Simple text flowchart showing data flow and UI routing transitions.
+
+  - `## Execution Slices` (Micro-Specs): Slice vertically and keep thin.
+
+    - **4-File Rule**: Each slice must create/modify <= 4 files. If > 4 or files > 400 lines, split into smaller sub-slices.
+
+    - **Slice 1 (Happy Path)**: Basic positive flow.
+
+    - **Slice 2 (Edge Cases & Validation)**: Boundary rules, error states, and exceptions.
+
+    - **Slice 3 (Visual Resiliency & UX)**: Caching, offline retry, layout edge cases, visual polish.
+
+    - **Format per Slice**: Micro-Spec (Summary, Value, Entry/Exit State, Scope, Acceptance Criteria). No code. Complexity rating.
+
+  - `<command_logs>`: List of commands run during planning.
+
+  - `## Handoff Block`: Absolute plan path, and generic action sequence per slice (e.g. `- **Slice 1**: Plan -> Write Acceptance Tests -> Build`). Tell user to execute them ONE AT A TIME.
+
+- **Task Tracking Update**: Update `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` (change `[ ]` to `[x]`, append absolute file paths).
+
+- **Script Verification**: Run verification script using `run_command` tool before concluding:
+
+  `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to task tracker}"`
+
+  - Code 0: Handoff complete.
+
+  - Code 1: Fix errors and retry.
+
 <mandatory_constraints>
+
 - NEVER execute `git` commands. Yield to the user.
+
 - TESTS ALWAYS WIN over Markdown plans.
+
 </mandatory_constraints>
 
 </output_schema>

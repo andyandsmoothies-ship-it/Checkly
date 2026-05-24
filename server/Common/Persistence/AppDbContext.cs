@@ -39,6 +39,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ProfileStoreAssignment> ProfileStoreAssignments => Set<ProfileStoreAssignment>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<ProvinceBenchmarkSnapshot> ProvinceBenchmarkSnapshots => Set<ProvinceBenchmarkSnapshot>();
+    public DbSet<BodReportSnapshot> BodReportSnapshots => Set<BodReportSnapshot>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

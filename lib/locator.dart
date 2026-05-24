@@ -54,6 +54,8 @@ import 'features/admin/manager/admin_audit_manager.dart';
 import 'features/admin/manager/admin_global_risk_manager.dart';
 import 'features/analytics/services/analytics_api_service.dart';
 import 'features/analytics/manager/analytics_manager.dart';
+import 'features/analytics/services/bod_analytics_api_service.dart';
+import 'features/analytics/manager/bod_analytics_manager.dart';
 import 'features/stores/manager/store_dashboard_manager.dart';
 import 'features/profile/manager/profile_manager.dart';
 import 'features/user_groups/services/user_group_api_service.dart';
@@ -273,6 +275,12 @@ void configureDependencies() {
   );
   di.registerLazySingleton<AnalyticsManager>(
     () => AnalyticsManager(apiService: di<AnalyticsApiService>()),
+  );
+  di.registerLazySingleton<BodAnalyticsApiService>(
+    () => BodAnalyticsApiService(di<Dio>()),
+  );
+  di.registerLazySingleton<BodAnalyticsManager>(
+    () => BodAnalyticsManager(di<BodAnalyticsApiService>()),
   );
 
   // ---------- Store Dashboard ----------

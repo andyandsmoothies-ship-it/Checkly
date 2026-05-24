@@ -79,7 +79,8 @@ try
                     maxRetryCount: 3,
                     maxRetryDelay: TimeSpan.FromSeconds(5),
                     errorCodesToAdd: null);
-            }));
+            })
+            .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
     // --- ASP.NET Identity ---
     builder.Services.AddIdentityCore<AppUser>(options =>
@@ -242,6 +243,9 @@ try
     builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
     builder.Services.AddHostedService<ReminderService>();
     builder.Services.AddHostedService<OutboxBackgroundService>();
+    builder.Services.AddScoped<BodReportCalculator>();
+    builder.Services.AddSingleton<BodReportWorker>();
+    builder.Services.AddHostedService<BodReportWorker>(sp => sp.GetRequiredService<BodReportWorker>());
 
     builder.Services.AddResiliencePipeline("fcm", static pipeline =>
     {
@@ -340,7 +344,10 @@ try
                 (gen_random_uuid(), 'admin', 'action_plans:write', now()),
                 (gen_random_uuid(), 'auditor', 'action_plans:verify', now()),
                 (gen_random_uuid(), 'area_manager', 'action_plans:verify', now()),
-                (gen_random_uuid(), 'admin', 'action_plans:verify', now())
+                (gen_random_uuid(), 'admin', 'action_plans:verify', now()),
+                
+                -- BOD Analytics Module
+                (gen_random_uuid(), 'admin', 'analytics:bod', now())
             ON CONFLICT (role, capability) DO NOTHING;
             """);
 
@@ -398,6 +405,8 @@ try
     app.MapSystemEndpoints();
     app.MapUserEndpoints();
     app.MapReferenceEndpoints();
+
+
 
     app.Run();
 }

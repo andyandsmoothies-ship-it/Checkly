@@ -1,6 +1,37 @@
 import os
 import re
 
+def clean_workflow_content(content):
+    lines = content.splitlines()
+    cleaned_lines = []
+    for line in lines:
+        stripped = line.strip()
+        is_empty_row = False
+        if stripped.startswith("|") and stripped.endswith("|"):
+            # check if there's any alphanumeric or standard characters
+            inner = stripped[1:-1]
+            if not re.search(r"[a-zA-Z0-9`\[\*\(\_#]", inner):
+                # It only contains spaces, pipes, colons, dashes.
+                # If it doesn't contain dashes or colons, or if it's completely empty:
+                if not re.search(r"[-:]", inner):
+                    is_empty_row = True
+        if not is_empty_row:
+            cleaned_lines.append(line)
+    
+    # Remove consecutive empty lines (more than 1 empty line in a row)
+    final_lines = []
+    consec_empty = 0
+    for line in cleaned_lines:
+        if not line.strip():
+            consec_empty += 1
+            if consec_empty <= 1:
+                final_lines.append(line)
+        else:
+            consec_empty = 0
+            final_lines.append(line)
+            
+    return "\n".join(final_lines) + "\n"
+
 def update_workflows():
     dir_path = r"C:\Users\HP\Documents\GitHub\Checkly\.agents\workflows"
     
@@ -19,8 +50,10 @@ def update_workflows():
         )
         
         # Determine if task.md should also be renamed to task_[ConversationID].md
-        # The user specifically requested all artifacts. task.md is an artifact.
         new_content = re.sub(r"\btask\.md\b", r"task_[ConversationID].md", new_content)
+        
+        # Apply the empty row and whitespace cleaning
+        new_content = clean_workflow_content(new_content)
         
         if new_content != content:
             with open(filepath, "w", encoding="utf-8") as f:
@@ -32,14 +65,6 @@ def update_verify_script():
     with open(verify_path, "r", encoding="utf-8") as f:
         content = f.read()
     
-    # We need to change find_file(session_dir, "task.md") to find task*.md
-    # Let's add a helper or modify the task finding logic.
-    # Actually, we can replace: task_path = find_file(session_dir, "task.md")
-    # with: tasks = find_files_by_prefix(session_dir, "task") \n task_path = tasks[0] if tasks else None
-    
-    # The safest way is to replace find_file(..., "task.md") calls.
-    # I'll just change the string literal "task.md" in `find_file` to support prefix.
-    # Wait, `get_active_artifacts` has `task_path = find_file(session_dir, "task.md")`
     new_content = re.sub(
         r'task_path = find_file\(session_dir, "task\.md"\)', 
         r'task_path = next((f for f in find_files_by_prefix(session_dir, "task") if "task" in os.path.basename(f).lower()), None)', 
