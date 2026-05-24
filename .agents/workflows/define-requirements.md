@@ -46,7 +46,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 - [ ] **Identify Unknowns**: Flag any unresolved business logic with ⚠️.
 
 ## Phase 4: Deliverable Generation
-- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/product/` directory.
+- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/product/[topic]/` directory.
 - [ ] **Payload Schema**:
     1. `## Input Lineage`: Absolute path to the original request or idea document.
     2. `[ORIGIN_IDEA]` or `[ADR_REFERENCE]`.

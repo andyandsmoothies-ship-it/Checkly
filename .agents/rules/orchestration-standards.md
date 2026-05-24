@@ -23,6 +23,7 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 - **Context Portability**: Artifacts must embed constraints/gotchas for the next agent. Do not rely on chat history.
 
 ## 3. Testing Workflows: When to use ATDD vs TDD
+- **The Anti-Bias Law**: NEVER allow an AI agent to write both the tests and the implementation code in the same prompt cycle or session. This creates confirmation bias where the AI writes a test that perfectly matches its own flawed logic. Always separate concerns: QA writes the failing test (Outer Loop), Builder writes the code to pass it (Inner Loop).
 - **ATDD (Acceptance/Integration)**: Use for **Business Features & API Contracts**. Run this *before* technical architecture. Tests *WHAT* the system does (e.g., API boundaries, JSON serialization, end-to-end workflows).
 - **TDD (Unit)**: Use for **Algorithmic Logic & Internal Classes**. Run this *after* technical design, during implementation. Tests *HOW* the system computes (e.g., internal state, data formatting, complex math).
 - **Universal Application**: If your project doesn't use these exact workflow names, follow the principle: Write contract/integration tests to define requirements, and write unit tests to drive class-level implementation.

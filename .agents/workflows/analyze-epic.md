@@ -31,7 +31,7 @@ Workflow: /analyze-epic | Track: C
 - [ ] Phase 4: Break Down Work
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/architecture/analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Epic Plan |
+| [NEW]  | docs/architecture/[topic]/analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Epic Plan |
 ```
 
 ## Phase 1: Discover & Plan
@@ -71,7 +71,7 @@ Workflow: /analyze-epic | Track: C
 
 | Step | Instructions |
 |---|---|
-| **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/architecture/` folder. Do not print the whole plan in the chat. |
+| **Write the Plan** | Use `write_to_file` to save `analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` to the `docs/architecture/[topic]/` folder. Do not print the whole plan in the chat. |
 
 > **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Does the document have all required sections?
 

@@ -34,7 +34,7 @@ Workflow: /atdd | Track: [B2 / C]
 - [ ] Phase 3: Deliverable
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/qa/contracts/test_contracts_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Contracts |
+| [NEW]  | docs/qa/contracts/[topic]/test_contracts_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md | Contracts |
 ```
 
 ## Phase 1: Spec Discovery

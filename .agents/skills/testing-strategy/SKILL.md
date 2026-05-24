@@ -24,6 +24,37 @@ description: >
 
 ## Patterns
 
+### Property-Based Testing (PBT)
+
+Property-Based Testing (PBT) prevents the "Enterprise Developer From Hell" (EDFH) from gaming your tests with hardcoded values or naive implementations. Instead of writing example-based tests (`Assert.Equal(4, Add(2, 2))`), you define mathematical properties that hold true for *all* inputs. Tools like **FsCheck** (for .NET) generate hundreds of randomized, adversarial inputs to try and falsify your assumptions.
+
+**When to use PBT (The 7 Core Patterns):**
+1. **Different paths, same destination (Commutativity):** Changing the order of operations yields the same result (e.g., `Add(a, b) == Add(b, a)`).
+2. **There and back again (Invertibility):** Applying an operation and its inverse returns the original state (e.g., `Deserialize(Serialize(x)) == x`). Essential for DTO mapping and parsers.
+3. **Some things never change (Invariants):** A property remains constant after transformation (e.g., `Map` shouldn't change the size of a collection; a balanced tree stays balanced).
+4. **The more things change, the more they stay the same (Idempotence):** Doing it twice is the same as doing it once (e.g., `Distinct(Distinct(x)) == Distinct(x)`). Excellent for validating REST API `PUT`/`DELETE` endpoints or sync engines.
+5. **Solve a smaller problem first (Structural Induction):** Recursive verification where proving it for a smaller sub-component proves the larger whole.
+6. **Hard to prove, easy to verify:** The logic to find the answer is complex, but verifying the answer is trivial (e.g., verifying a solved maze path).
+7. **The Test Oracle:** Cross-check a highly-optimized, complex algorithm against a slow, brute-force, but obviously correct implementation (e.g., `OptimizedQuery(x) == BruteForceQuery(x)`).
+
+**Example in .NET using FsCheck.Xunit:**
+```csharp
+public class OrderMappingTests
+{
+    // Property-Based Test Pattern: "There and back again"
+    [Property]
+    public Property DtoMapping_IsInvertible(Order original)
+    {
+        var dto = OrderMapper.ToDto(original);
+        var mappedBack = OrderMapper.FromDto(dto);
+        
+        // FsCheck will generate hundreds of random Order objects to break this
+        return mappedBack.Equals(original).ToProperty();
+    }
+}
+```
+
+
 ### xUnit v3 Basics
 
 ```csharp

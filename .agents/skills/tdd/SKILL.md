@@ -64,6 +64,20 @@ These are two different things that often happen at the same time. Don't confuse
 > [!IMPORTANT]
 > When specs arrive from the `/atdd` workflow, they ARE the RED starting point. Do not re-specify what ATDD already defined — go straight to GREEN. BDD (ATDD) defines the *edges of the box* at the macro level; TDD *fills it in* at the micro level. They are nested: a high-level BDD scenario fails first, prompting the developer into the granular TDD Red-Green-Refactor cycle to implement the underlying logic.
 
+## Example-Based vs. Generative Testing
+
+As you shift left on quality, you must decide between writing **Example-Based Tests** and **Generative (Property-Based) Tests (PBT)**. 
+
+| | Example-Based (Standard TDD) | Generative (Property-Based) |
+|---|---|---|
+| **What it tests** | Specific inputs and their known outputs (e.g., "Given cart with $10 item, tax is $1") | Universal truths/invariants (e.g., "Tax is always > 0 for valid carts") |
+| **How data is created** | Hardcoded by the developer | Auto-generated randomly by the testing framework (e.g., FsCheck, glados) |
+| **Primary Value** | Excellent for UI workflows, business logic chains, and documenting expected behavior. | Discovers the "unknown unknowns." Destroys brittle, hardcoded implementations (The "Enterprise Developer From Hell"). |
+| **When to use** | Use for **Outer Loop ATDD** and standard **Inner Loop TDD** features. | Use for pure functions, data transformers, offline-sync state machines, serialization, and algorithms. |
+
+**Rule of Thumb:** If you are testing a complex calculation, a sync engine, or a serialization contract, TDD with Example-Based tests is insufficient because you cannot anticipate every edge case. You must drop down into Property-Based Testing to let the machine fuzz your logic. See the **testing-strategy** skill for the "7 PBT Patterns."
+
+
 ## Anti-Pattern: The Mirror Function Trap
 
 **DO NOT copy-paste private production methods into your test file.**

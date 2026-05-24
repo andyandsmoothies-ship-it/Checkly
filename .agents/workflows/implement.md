@@ -7,7 +7,7 @@ description: The Core Builder Implementation Workflow
 # /implement Workflow
 
 > [!CAUTION]
-> **[TEST_FIRST_LOCK]**: PROHIBITED: Writing prod code until QA writes failing tests (unless explicitly instructed as Track B1).
+> **[TEST_FIRST_LOCK / ANTI-BIAS GATE]**: PROHIBITED: Writing prod code until QA writes failing tests (unless explicitly instructed as Track B1 / UI-Only). If you are asked to build Business Logic (Track B2/C) and failing tests do not exist yet, you MUST HALT immediately. Do not write tests yourself. Yield to the user and instruct them to run `/atdd` or `/tdd` in a separate session to prevent confirmation bias.
 
 ## Phase 0: Init & Calibration
 | Step | Execution Contract |
@@ -55,7 +55,7 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 | **Strict TDD (Legacy)**| IF altering legacy boundaries -> MANDATORY: Update legacy test FIRST (turn RED) -> THEN write PROD code (turn GREEN). |
 | **Behavior-Driven** | MANDATORY: The upstream tests are your living documentation. Build exactly the behavior specified by the tests. Do not add speculative internal logic that is not proven by a test. |
 | **Immutable Mock Guard**| PROHIBITED: Changing existing ATDD Tests to make code pass. Adapt code to existing contract. |
-| **Red/Green Loop**| Turn RED test GREEN -> Refactor. Do NOT modify test files. |
+| **Red/Green Loop**| Turn RED test GREEN -> Refactor. Do NOT modify test files. If tests are missing, trigger the Anti-Bias Gate and STOP. |
 | **Refactor Safety**| `grep_search` 4 ways: 1) Direct calls, 2) Types, 3) Strings, 4) Test Mocks. |
 | **Zero Trust Code**| MANDATORY: Treat all inputs as hostile. Re-validate inputs at every layer. Do not implicitly trust upstream data cleansing. |
 | **Mirror Trap** | PROHIBITED: GREENing a cloned/replica function in a test file. Route test to actual prod logic. |
