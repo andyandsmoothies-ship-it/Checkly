@@ -91,9 +91,40 @@ class BodApAging {
     return BodApAging(
       bucket0to30: json['bucket0to30'] ?? 0,
       bucket31to60: json['bucket31to60'] ?? 0,
-      bucket61to90: json['bucket61to90'] ?? 0,
+      bucket61to90: json['bucket61to60'] ?? json['bucket61to90'] ?? 0,
       bucket90Plus: json['bucket90Plus'] ?? 0,
     );
+  }
+
+  /// Handles both server shapes:
+  ///   List: [{"range":"0-30","count":5}, ...]
+  ///   Map:  {"bucket0to30": 5, ...}
+  static BodApAging fromDynamic(dynamic raw) {
+    if (raw == null) {
+      return const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0);
+    }
+    if (raw is Map) {
+      return BodApAging.fromJson(Map<String, dynamic>.from(raw));
+    }
+    if (raw is List) {
+      int b0 = 0, b31 = 0, b61 = 0, b90 = 0;
+      for (final item in raw) {
+        if (item is! Map) continue;
+        final range = (item['range'] ?? item['bucket'] ?? '').toString();
+        final count = (item['count'] ?? item['value'] ?? 0) as int;
+        if (range.startsWith('0')) {
+          b0 = count;
+        } else if (range.startsWith('31')) {
+          b31 = count;
+        } else if (range.startsWith('61')) {
+          b61 = count;
+        } else if (range.startsWith('90') || range.contains('+')) {
+          b90 = count;
+        }
+      }
+      return BodApAging(bucket0to30: b0, bucket31to60: b31, bucket61to90: b61, bucket90Plus: b90);
+    }
+    return const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0);
   }
 
   Map<String, dynamic> toJson() {
@@ -158,7 +189,7 @@ class BodReportResponse {
   factory BodReportResponse.fromJson(Map<String, dynamic> json) {
     return BodReportResponse(
       chainKpis: BodChainKpis.fromJson(
-        Map<String, dynamic>.from(json['chainKpis'] ?? {}),
+        Map<String, dynamic>.from(json['kpis'] ?? json['chainKpis'] ?? {}),
       ),
       trend: List<dynamic>.from(json['trend'] ?? []),
       topStores:
@@ -179,15 +210,13 @@ class BodReportResponse {
               )
               .toList() ??
           [],
-      categoryBreakdown: List<dynamic>.from(json['categoryBreakdown'] ?? []),
-      apAging: BodApAging.fromJson(
-        Map<String, dynamic>.from(json['apAging'] ?? {}),
-      ),
+      categoryBreakdown: List<dynamic>.from(json['weaknesses'] ?? json['categoryBreakdown'] ?? []),
+      apAging: BodApAging.fromDynamic(json['actionPlanAging'] ?? json['apAging']),
       auditorProductivity: List<dynamic>.from(
         json['auditorProductivity'] ?? [],
       ),
       computedAt: json['computedAt'] ?? '',
-      snapshotStatus: json['snapshotStatus'] ?? '',
+      snapshotStatus: json['status'] ?? json['snapshotStatus'] ?? '',
       allowedActions: List<dynamic>.from(json['allowedActions'] ?? []),
       goldenStore: json['goldenStore'] != null
           ? BodGoldenStore.fromJson(
@@ -197,3 +226,122 @@ class BodReportResponse {
     );
   }
 }
+
+class ApDetailEntry {
+  final String id;
+  final String criteriaLabel;
+  final String storeName;
+  final String managerName;
+  final int ageInDays;
+
+  ApDetailEntry({
+    required this.id,
+    required this.criteriaLabel,
+    required this.storeName,
+    required this.managerName,
+    required this.ageInDays,
+  });
+
+  factory ApDetailEntry.fromJson(Map<String, dynamic> json) {
+    return ApDetailEntry(
+      id: json['id'] ?? '',
+      criteriaLabel: json['criteriaLabel'] ?? '',
+      storeName: json['storeName'] ?? '',
+      managerName: json['managerName'] ?? '',
+      ageInDays: json['ageInDays'] ?? json['overdueDays'] ?? 0,
+    );
+  }
+}
+
+class RecentAuditEntry {
+  final String date;
+  final double score;
+  final String auditorName;
+
+  RecentAuditEntry({
+    required this.date,
+    required this.score,
+    required this.auditorName,
+  });
+
+  factory RecentAuditEntry.fromJson(Map<String, dynamic> json) {
+    return RecentAuditEntry(
+      date: json['date'] ?? '',
+      score: (json['score'] ?? 0.0) is int
+          ? (json['score'] as int).toDouble()
+          : (json['score'] ?? 0.0).toDouble(),
+      auditorName: json['auditorName'] ?? '',
+    );
+  }
+}
+
+class CategoryScoreEntry {
+  final String categoryName;
+  final double avgScore;
+
+  CategoryScoreEntry({
+    required this.categoryName,
+    required this.avgScore,
+  });
+
+  factory CategoryScoreEntry.fromJson(Map<String, dynamic> json) {
+    return CategoryScoreEntry(
+      categoryName: json['categoryName'] ?? '',
+      avgScore: (json['avgScore'] ?? 0.0) is int
+          ? (json['avgScore'] as int).toDouble()
+          : (json['avgScore'] ?? 0.0).toDouble(),
+    );
+  }
+}
+
+class StoreBodSummary {
+  final String storeName;
+  final List<RecentAuditEntry> recentAudits;
+  final List<CategoryScoreEntry> categoryBreakdown;
+
+  StoreBodSummary({
+    required this.storeName,
+    required this.recentAudits,
+    required this.categoryBreakdown,
+  });
+
+  factory StoreBodSummary.fromJson(Map<String, dynamic> json) {
+    return StoreBodSummary(
+      storeName: json['storeName'] ?? '',
+      recentAudits: (json['recentAudits'] as List<dynamic>?)
+              ?.map((e) => RecentAuditEntry.fromJson(Map<String, dynamic>.from(e)))
+              .toList() ??
+          [],
+      categoryBreakdown: (json['categoryBreakdown'] as List<dynamic>?)
+              ?.map((e) => CategoryScoreEntry.fromJson(Map<String, dynamic>.from(e)))
+              .toList() ??
+          [],
+    );
+  }
+}
+
+class CategoryStoreEntry {
+  final String storeName;
+  final double avgScore;
+  final int auditCount;
+  final int failureCount;
+
+  CategoryStoreEntry({
+    required this.storeName,
+    required this.avgScore,
+    required this.auditCount,
+    required this.failureCount,
+  });
+
+  factory CategoryStoreEntry.fromJson(Map<String, dynamic> json) {
+    return CategoryStoreEntry(
+      storeName: json['storeName'] ?? '',
+      avgScore: (json['avgScore'] ?? 0.0) is int
+          ? (json['avgScore'] as int).toDouble()
+          : (json['avgScore'] ?? 0.0).toDouble(),
+      auditCount: json['auditCount'] ?? 0,
+      failureCount: json['failureCount'] ?? 0,
+    );
+  }
+}
+

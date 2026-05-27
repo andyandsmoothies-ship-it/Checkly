@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:checkly/features/analytics/pages/bod_analytics_page.dart';
 import 'package:checkly/features/analytics/manager/bod_analytics_manager.dart';
 import 'package:checkly/features/analytics/manager/bod_analytics_data.dart';
-import 'package:checkly/features/analytics/widgets/bod_store_sync_modal.dart';
+import 'package:checkly/features/analytics/widgets/bod_store_detail_sheet.dart';
 import 'package:checkly/features/auth/manager/auth_manager.dart';
 import 'package:checkly/features/auth/model/auth_state.dart';
 import 'package:checkly/features/auth/model/user_session.dart';
@@ -353,7 +353,7 @@ void main() {
     );
 
     testWidgets(
-      'TC-BOD-SLICE5-02: Leaderboard row shows sync dot status and opens sync modal on tap',
+      'TC-BOD-SLICE5-02: Leaderboard row shows sync dot status and opens store detail sheet on tap',
       (tester) async {
         when(() => mockManager.isLoading).thenReturn(false);
         when(() => mockManager.isOffline).thenReturn(false);
@@ -362,6 +362,17 @@ void main() {
         when(
           () => mockManager.report,
         ).thenReturn(successReportWithBenchAndTrend);
+
+        // Stub the store detail load
+        when(() => mockManager.loadStoreDetail(any())).thenAnswer((_) async {});
+        when(() => mockManager.isStoreDetailLoading).thenReturn(false);
+        when(() => mockManager.storeDetail).thenReturn(StoreBodSummary(
+          storeName: 'Siam Square',
+          recentAudits: [
+            RecentAuditEntry(date: '2026-05-24T14:30:00Z', score: 96.5, auditorName: 'Alice'),
+          ],
+          categoryBreakdown: [],
+        ));
 
         await tester.pumpWidget(buildTestWidget());
 
@@ -374,35 +385,21 @@ void main() {
         await tester.tap(rowFinder);
         await tester.pumpAndSettle();
 
-        // Verify modal sheet is opened with title and sync info
-        expect(find.byType(BodStoreSyncModal), findsOneWidget);
-        expect(find.text('Last Database Sync'), findsOneWidget);
-        expect(find.textContaining('Synced 45m ago'), findsOneWidget);
-
-        // Verify "Perform Live Sync" action button is visible
+        // Verify store detail modal sheet is opened
+        expect(find.byType(BodStoreDetailSheet), findsOneWidget);
         expect(
-          find.widgetWithText(FilledButton, 'Perform Live Sync'),
+          find.descendant(
+            of: find.byType(BodStoreDetailSheet),
+            matching: find.text('Siam Square'),
+          ),
           findsOneWidget,
         );
-
-        // Tap sync button and verify simulated loading indicator is shown
-        await tester.tap(
-          find.widgetWithText(FilledButton, 'Perform Live Sync'),
-        );
-        await tester.pump();
-
-        expect(find.byType(CircularProgressIndicator), findsOneWidget);
-
-        // Complete sync simulation and check completion status
-        await tester.pump(const Duration(milliseconds: 1600));
-        await tester.pumpAndSettle();
-
-        expect(find.text('Sync Complete!'), findsOneWidget);
+        expect(find.textContaining('Live data as of'), findsOneWidget);
 
         // Close the modal
         await tester.tap(find.byIcon(Icons.close));
         await tester.pumpAndSettle();
-        expect(find.byType(BodStoreSyncModal), findsNothing);
+        expect(find.byType(BodStoreDetailSheet), findsNothing);
       },
     );
 
@@ -452,12 +449,13 @@ void main() {
         // 3. Stub details sheet loading state
         when(() => mockManager.isApDetailLoading).thenReturn(false);
         when(() => mockManager.apDetails).thenReturn([
-          {
-            'criteriaLabel': 'Temperature Logs',
-            'storeName': 'Central Market',
-            'managerName': 'Andy Manager',
-            'overdueDays': 12,
-          },
+          ApDetailEntry(
+            id: '11111111-2222-3333-4444-555555555555',
+            criteriaLabel: 'Temperature Logs',
+            storeName: 'Central Market',
+            managerName: 'Andy Manager',
+            ageInDays: 12,
+          ),
         ]);
         when(() => mockManager.loadApDetails(any())).thenAnswer((_) async {});
 
@@ -529,15 +527,15 @@ void main() {
         expect(find.text('88.0%'), findsOneWidget);
         expect(find.text('90.0%'), findsOneWidget);
 
-        // 3. Verify SMA calculations:
-        // Jan & Feb don't have SMA (since window=3)
-        // Mar SMA = (80 + 84 + 88)/3 = 84.0%
-        // Apr SMA = (84 + 88 + 90)/3 = 87.33% => 87.3%
-        expect(find.text('SMA: 84.0%'), findsOneWidget);
-        expect(find.text('SMA: 87.3%'), findsOneWidget);
+        // 3. Verify Smoothed calculations:
+        // Jan & Feb don't have Smoothed (since window=3)
+        // Mar Smoothed = (80 + 84 + 88)/3 = 84.0%
+        // Apr Smoothed = (84 + 88 + 90)/3 = 87.33% => 87.3%
+        expect(find.text('Smoothed: 84.0%'), findsOneWidget);
+        expect(find.text('Smoothed: 87.3%'), findsOneWidget);
 
-        // 4. Verify Trajectory chip shows Improving (since Apr SMA 87.3% > Mar SMA 84.0%)
-        expect(find.textContaining('Trajectory: Improving'), findsOneWidget);
+        // 4. Verify Trend chip shows Going up (since Apr Smoothed 87.3% > Mar Smoothed 84.0%)
+        expect(find.textContaining('Trend: Going up'), findsOneWidget);
       },
     );
   });

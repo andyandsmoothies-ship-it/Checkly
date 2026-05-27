@@ -286,7 +286,7 @@ namespace Checkly.Api.Tests.Features.Analytics
     // Helper fake class to test partial failures
     public class FakeFailingBodReportCalculator : BodReportCalculator
     {
-        public new async Task<string> ComputeDailyReportAsync(AppDbContext db, DateOnly date, CancellationToken ct)
+        public new Task<string> ComputeDailyReportAsync(AppDbContext db, DateOnly date, CancellationToken ct)
         {
             // Simulate that Query 3 failed, so we output a partially filled payload
             var payload = new
@@ -300,7 +300,7 @@ namespace Checkly.Api.Tests.Features.Analytics
                 auditorProductivity = new[] { new { auditorName = "Alice", completedAudits = 5 } }
             };
 
-            return JsonSerializer.Serialize(payload);
+            return Task.FromResult(JsonSerializer.Serialize(payload));
         }
     }
 }

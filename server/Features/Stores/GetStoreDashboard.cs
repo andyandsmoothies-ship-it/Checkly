@@ -63,7 +63,7 @@ public static class GetStoreDashboard
 
         var submissions = await db.Submissions
             .AsNoTracking()
-            .Where(s => s.StoreId == id && s.Status == SubmissionStatus.Completed && s.ReviewStatus != ReviewStatus.Rejected)
+            .Where(s => s.StoreId == id && s.Status == SubmissionStatus.Completed && (s.ReviewStatus == null || s.ReviewStatus != ReviewStatus.Rejected))
             .OrderByDescending(s => s.CreatedAt)
             .Take(20)
             .Select(s => new

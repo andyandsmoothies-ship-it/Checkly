@@ -4,6 +4,7 @@ import 'answer_input.dart';
 import 'scoring_input.dart';
 import 'scoring_result.dart';
 import 'scoring_helpers.dart';
+import 'section_score.dart';
 
 class ChecklistCalculator {
   // ── Checklist Mode (Raw Deduction From 100) ──────────────
@@ -48,8 +49,59 @@ class ChecklistCalculator {
       score = 0.0;
     }
 
+    final sectionScores = <String, SectionScore>{};
+    for (final section in input.sections) {
+      final sectionCriteria = [
+        ...section.criteria,
+        ...section.subsections.expand((sub) => sub.criteria),
+      ];
+
+      if (sectionCriteria.isEmpty) continue;
+
+      double sectionDeductions = 0.0;
+      bool sectionCcp = false;
+      bool sectionRisk = false;
+
+      for (final c in sectionCriteria) {
+        final answer = answerMap[c.id];
+        final isAnswerCcp = answer?.isCcp ?? false;
+        final isAnswerRisk = answer?.isRisk ?? false;
+        final hasFaults =
+            answer != null && ScoringHelpers.hasFault(c, answer);
+        final isTemplateCcp = c.isCcp && hasFaults;
+        final isTemplateRisk = c.isRisk && hasFaults;
+
+        if (isAnswerCcp || isTemplateCcp) sectionCcp = true;
+        if (isAnswerRisk || isTemplateRisk) sectionRisk = true;
+
+        sectionDeductions += ScoringHelpers.getDeduction(
+          c,
+          answerMap,
+          input.progressiveRepeatPenalty,
+        );
+      }
+
+      final maxPoints = sectionCriteria.length.toDouble();
+      final deductionsCount = sectionCriteria.where((c) {
+        final answer = answerMap[c.id];
+        return answer != null && ScoringHelpers.hasFault(c, answer);
+      }).length.toDouble();
+
+      final sectionScoreValue = max(0.0, maxPoints - deductionsCount);
+
+      sectionScores[section.id] = SectionScore(
+        sectionId: section.id,
+        maxPoints: maxPoints,
+        deductions: deductionsCount,
+        score: sectionScoreValue,
+        hasCcpFailure: sectionCcp,
+        hasRiskFailure: sectionRisk,
+      );
+    }
+
     return ScoringResult(
       totalScore: hasRiskFailure ? 0.0 : ScoringHelpers.round2(score),
+      sectionScores: sectionScores,
       hasRiskFailure: hasRiskFailure,
     );
   }

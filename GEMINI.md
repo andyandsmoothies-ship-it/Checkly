@@ -26,6 +26,10 @@
 - **Rule**: Write the simplest code that solves the problem. Don't make bad abstractions.
 - **Enforcement**: Duplication is cheaper than the wrong abstraction (WET). Do not extract shared helpers unless used in 3+ places.
 
+### Rule: Failure Modes Over Happy Paths
+- **Rule**: The happy path is easy; always identify how the system crashes under edge cases before coding.
+- **Enforcement**: Before writing code for a new feature, explicitly document 2 ways the architecture will crash or fail under edge-case conditions, and write tests to catch those specific failures.
+
 ### Rule: Well Partitioned Modules
 - **Rule**: Keep domains strongly partitioned. Reject "God" modules and tightly coupled designs.
 - **Enforcement**: Control coupling. Refactor monolithic services by using events (MediatR/EventBus) to decouple.
@@ -120,6 +124,11 @@
   - **Fix:** When triggering on-demand calculations, the API returns immediately while calculations complete in the background. The Flutter frontend must poll the GET endpoint every 5 seconds (with a 60s timeout fallback) until the retrieved `computedAt` timestamp increases, showing a loading shimmer in the meantime to ensure real-time visual accuracy without instant page snaps.
 - **Gotcha: OLAP Background Aggregations (Advisory Locking)**
   - **Fix:** To prevent database performance degradation under heavy aggregate queries, calculate boardroom analytics in a nightly background job and cache the rollups as `jsonb` documents in a snapshot table. Protect worker concurrency using PostgreSQL-native transaction-level advisory locks to eliminate race conditions and thundering herds.
+- **Gotcha: BOD Section Scores Key Mismatch**
+  - **Fix:** Do not assume `SubmissionSectionScores` JSON uses raw names or simple keys. The Flutter frontend `_buildSectionScoresJson()` serializes group details under distinct keys (the group UUIDs) with nested `title`, `score`, and `maxScore`/`maxPoints` properties. The backend `SectionScoreExploder.cs` extracts the human-readable section title from this nested `"title"` property to match UI category queries, falling back to the property name key for older or simpler payloads.
+- **Gotcha: PostgreSQL Null Inequality Translation Bug**
+  - **Fix:** In EF Core queries targeting PostgreSQL, any inequality comparison like `s.ReviewStatus != "rejected"` will silently exclude all records where the column value is `NULL`. This happens because Postgres evaluates `NULL != 'rejected'` as `NULL` (falsy in WHERE clauses). To correctly query all records that are not rejected (including both null/unreviewed and non-rejected records), you must always write `(s.ReviewStatus == null || s.ReviewStatus != "rejected")`.
+
 
 
 

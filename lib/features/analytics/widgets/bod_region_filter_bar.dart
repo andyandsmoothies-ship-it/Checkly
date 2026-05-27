@@ -140,56 +140,65 @@ class _BodRegionFilterBarState extends State<BodRegionFilterBar> {
             children: [
               // Province Dropdown
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: _selectedProvince,
+                child: InputDecorator(
                   decoration: const InputDecoration(
                     labelText: 'Province',
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 8,
+                      vertical: 4,
                     ),
                     border: OutlineInputBorder(),
                   ),
-                  items: _provinceDistricts.keys.map((prov) {
-                    return DropdownMenuItem<String>(
-                      value: prov,
-                      child: Text(prov),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedProvince = val;
-                      _selectedDistrict = null;
-                    });
-                  },
+                  child: DropdownButton<String?>(
+                    value: _selectedProvince,
+                    isExpanded: true,
+                    underline: const SizedBox.shrink(),
+                    items: [
+                      const DropdownMenuItem<String?>(value: null, child: Text('All Provinces')),
+                      ..._provinceDistricts.keys.map((prov) {
+                        return DropdownMenuItem<String?>(value: prov, child: Text(prov));
+                      }),
+                    ],
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedProvince = val;
+                        _selectedDistrict = null;
+                      });
+                    },
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               // District Dropdown
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: _selectedDistrict,
+                child: InputDecorator(
                   decoration: const InputDecoration(
                     labelText: 'District',
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 8,
+                      vertical: 4,
                     ),
                     border: OutlineInputBorder(),
                   ),
-                  items: districts?.map((dist) {
-                    return DropdownMenuItem<String>(
-                      value: dist,
-                      child: Text(dist),
-                    );
-                  }).toList(),
-                  onChanged: _selectedProvince == null
-                      ? null
-                      : (val) {
-                          setState(() {
-                            _selectedDistrict = val;
-                          });
-                        },
+                  child: DropdownButton<String?>(
+                    value: _selectedDistrict,
+                    isExpanded: true,
+                    underline: const SizedBox.shrink(),
+                    items: [
+                      const DropdownMenuItem<String?>(value: null, child: Text('All Districts')),
+                      if (districts != null)
+                        ...districts.map((dist) {
+                          return DropdownMenuItem<String?>(value: dist, child: Text(dist));
+                        }),
+                    ],
+                    onChanged: _selectedProvince == null
+                        ? null
+                        : (val) {
+                            setState(() {
+                              _selectedDistrict = val;
+                            });
+                          },
+                  ),
                 ),
               ),
             ],
@@ -217,6 +226,9 @@ class _BodRegionFilterBarState extends State<BodRegionFilterBar> {
                 ),
               const SizedBox(width: 8),
               ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(0, 48),
+                ),
                 onPressed:
                     (_selectedProvince != null && _selectedDistrict != null)
                     ? _handleApply

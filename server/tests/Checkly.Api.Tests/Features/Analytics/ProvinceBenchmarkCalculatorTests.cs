@@ -76,8 +76,8 @@ public class ProvinceBenchmarkCalculatorTests : IClassFixture<TestWebApplication
         var storeNull1 = Guid.NewGuid();
         var storeNull2 = Guid.NewGuid();
         db.Stores.AddRange(
-            new Store { Id = storeNull1, Name = "Store Null 1", Address2 = new StoreAddress { Province = null }, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow },
-            new Store { Id = storeNull2, Name = "Store Null 2", Address2 = null, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow }
+            new Store { Id = storeNull1, Name = "Store Null 1", Address2 = new StoreAddress { Province = null! }, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow },
+            new Store { Id = storeNull2, Name = "Store Null 2", Address2 = null!, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow }
         );
 
         db.StoreAnalyticsSnapshots.AddRange(

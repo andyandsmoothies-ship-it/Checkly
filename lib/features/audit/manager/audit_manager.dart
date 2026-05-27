@@ -296,10 +296,13 @@ class AuditManager extends ChangeNotifier {
     if (_template == null) return '{}';
     final sections = <String, dynamic>{};
     for (final group in _template!.groups) {
+      final secScore = _sectionScores[group.id];
       sections[group.id] = {
         'title': group.title,
         'weight': group.weight,
-        'maxPoints': _sectionScores[group.id]?.maxPoints ?? 0.0,
+        'maxPoints': secScore?.maxPoints ?? 0.0,
+        'score': secScore?.score ?? 0.0,
+        'maxScore': secScore?.maxPoints ?? 0.0,
       };
     }
     return jsonEncode(sections);

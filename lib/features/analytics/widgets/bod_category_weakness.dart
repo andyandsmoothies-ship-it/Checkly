@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
+import '../manager/bod_analytics_manager.dart';
+import 'bod_category_detail_sheet.dart';
 
 class BodCategoryWeakness extends StatelessWidget {
   final List<dynamic> categoryBreakdown;
+  final BodAnalyticsManager manager;
 
-  const BodCategoryWeakness({super.key, required this.categoryBreakdown});
+  const BodCategoryWeakness({
+    super.key,
+    required this.categoryBreakdown,
+    required this.manager,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,19 +23,19 @@ class BodCategoryWeakness extends StatelessWidget {
         ? categoryBreakdown
         : [
             {
-              'categoryName': 'Food Safety',
-              'avgScore': 72.4,
-              'failureCount': 18,
+              'categoryName': 'Opening Tasks',
+              'avgScore': 86.1,
+              'failureCount': 5,
             },
             {
-              'categoryName': 'Customer Service',
-              'avgScore': 88.1,
-              'failureCount': 2,
+              'categoryName': 'Closing Tasks',
+              'avgScore': 100.0,
+              'failureCount': 0,
             },
             {
-              'categoryName': 'Facility Cleanliness',
-              'avgScore': 84.5,
-              'failureCount': 6,
+              'categoryName': 'Daily Operations',
+              'avgScore': 100.0,
+              'failureCount': 0,
             },
           ];
 
@@ -59,80 +66,103 @@ class BodCategoryWeakness extends StatelessWidget {
 
             final bool isWeak = score < 75.0;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                name,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.eel,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (failures > 0) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isWeak
-                                      ? AppColors.cardinal.withValues(
-                                          alpha: 0.15,
-                                        )
-                                      : AppColors.canary.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  '$failures Failures',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: isWeak
-                                        ? AppColors.cardinal
-                                        : AppColors.fox,
-                                    fontSize: 9,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '${score.toStringAsFixed(1)}%',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: isWeak ? AppColors.cardinal : AppColors.eel,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: score / 100,
-                      backgroundColor: AppColors.swan.withValues(alpha: 0.3),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        isWeak ? AppColors.cardinal : AppColors.iguana,
-                      ),
-                      minHeight: 8,
+            return InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
                     ),
                   ),
-                ],
+                  builder: (context) => BodCategoryDetailSheet(
+                    categoryName: name,
+                    manager: manager,
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 4.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  name,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.eel,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (failures > 0) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isWeak
+                                        ? AppColors.cardinal.withValues(
+                                            alpha: 0.15,
+                                          )
+                                        : AppColors.canary.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    '$failures Failures',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.w900,
+                                      color: isWeak
+                                          ? AppColors.cardinal
+                                          : AppColors.fox,
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '${score.toStringAsFixed(1)}%',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: isWeak ? AppColors.cardinal : AppColors.eel,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: score / 100,
+                        backgroundColor: AppColors.swan.withValues(alpha: 0.3),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          isWeak ? AppColors.cardinal : AppColors.iguana,
+                        ),
+                        minHeight: 8,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }),

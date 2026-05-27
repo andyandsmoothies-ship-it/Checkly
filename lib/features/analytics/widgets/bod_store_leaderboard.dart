@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
 import '../manager/bod_analytics_data.dart';
-import 'bod_store_sync_modal.dart';
+import '../manager/bod_analytics_manager.dart';
+import 'bod_store_detail_sheet.dart';
 
 /// Performance leaderboard displaying top and bottom performing stores.
 ///
@@ -10,11 +11,13 @@ import 'bod_store_sync_modal.dart';
 class BodStoreLeaderboard extends StatelessWidget {
   final List<BodStorePerformanceEntry> topStores;
   final List<BodStorePerformanceEntry> bottomStores;
+  final BodAnalyticsManager manager;
 
   const BodStoreLeaderboard({
     super.key,
     required this.topStores,
     required this.bottomStores,
+    required this.manager,
   });
 
   @override
@@ -81,7 +84,16 @@ class BodStoreLeaderboard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 4),
+          Text(
+            'Compare the highest and lowest performing stores based on audit scores',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.wolf.withAlpha(160),
+              fontSize: 9,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 12),
           Text(
             'Top Performing Stores',
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -136,7 +148,10 @@ class BodStoreLeaderboard extends StatelessWidget {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          builder: (ctx) => BodStoreSyncModal(store: s),
+          builder: (ctx) => BodStoreDetailSheet(
+            storeId: s.storeId,
+            manager: manager,
+          ),
         );
       },
       borderRadius: BorderRadius.circular(8),

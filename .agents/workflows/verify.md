@@ -36,13 +36,15 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 - **Drift OOM Scan**: IF (Flutter/Drift `*_queries.dart` / `*_manager.dart`) THEN SCAN for `.get()`. MUST possess limit OR aggregate OR explicit safety comment. IF missing -> FAIL (OOM violation).
 
+- **Stability Scan**: IF (Flutter UI) THEN SCAN for infinite width widgets (e.g., `ElevatedButton`) inside horizontal layouts (`Row`). MUST possess bounds (`Expanded`, `minimumSize`). IF (Flutter Logic) THEN SCAN for proper `GetIt` DI registration before consumption (no mocking unregistered services).
+
 - **Efficiency Eval**: MANDATORY: Evaluate N+1 queries, memory leaks, Big-O complexity. PROHIBITED: Declaring SUCCESS simply because tests pass if UX degrades.
 
 - **Zero Trust Gate**: MANDATORY: Ensure no secrets/keys are hardcoded, explicit `[Authorize]` tags are applied, CORS is strict, and no unapproved "Shadow IT" packages were added.
 
 - **Supportability (Crickett's Rule)**: MANDATORY: Reject code that is non-idiomatic. Demand explicit documentation answering: What does this do? Why is this done this way? What are the tradeoffs?
 
-- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Hostile Interrogation run? (2) Drift OOM Scan executed (if applicable)? (3) Supportability tradeoffs documented?
+- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Hostile Interrogation run? (2) Drift/OOM/Stability Scans executed (if applicable)? (3) Supportability tradeoffs documented?
 
 ## Step 3: Continuous Integration (CI) Gate
 

@@ -42,27 +42,74 @@ class BodDashboardBody extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isWide = screenWidth > 720;
 
-    final card1 = BodKpiGrid(
-      chainKpis: report.chainKpis.toJson(),
-      trend: report.trend,
-      goldenStore: report.goldenStore,
-    );
-    final card2 = BodScoreTrend(trend: report.trend);
-    final card3 = BodStoreLeaderboard(
-      topStores: report.topStores,
-      bottomStores: report.bottomStores,
-    );
-    final card4 = BodCategoryWeakness(
-      categoryBreakdown: report.categoryBreakdown,
-    );
-    final card5 = BodApAgingFunnel(
-      apAging: report.apAging.toJson(),
-      avgTtrDays: report.chainKpis.avgTtrDays,
-      manager: manager,
-    );
-    final card6 = BodAuditorScatter(
-      auditorProductivity: report.auditorProductivity,
-    );
+    // ── DIAGNOSTIC: try-catch each card so Debug Console reports which card crashes ──
+    Widget card1;
+    try {
+      card1 = BodKpiGrid(
+        chainKpis: report.chainKpis.toJson(),
+        trend: report.trend,
+        goldenStore: report.goldenStore,
+        manager: manager,
+      );
+    } catch (e, s) {
+      debugPrint('🔴 BOD card1 (BodKpiGrid) CRASH: $e\n$s');
+      rethrow;
+    }
+
+    Widget card2;
+    try {
+      card2 = BodScoreTrend(trend: report.trend);
+    } catch (e, s) {
+      debugPrint('🔴 BOD card2 (BodScoreTrend) CRASH: $e\n$s');
+      rethrow;
+    }
+
+    Widget card3;
+    try {
+      card3 = BodStoreLeaderboard(
+        topStores: report.topStores,
+        bottomStores: report.bottomStores,
+        manager: manager,
+      );
+    } catch (e, s) {
+      debugPrint('🔴 BOD card3 (BodStoreLeaderboard) CRASH: $e\n$s');
+      rethrow;
+    }
+
+    Widget card4;
+    try {
+      card4 = BodCategoryWeakness(
+        categoryBreakdown: report.categoryBreakdown,
+        manager: manager,
+      );
+    } catch (e, s) {
+      debugPrint('🔴 BOD card4 (BodCategoryWeakness) CRASH: $e\n$s');
+      rethrow;
+    }
+
+    Widget card5;
+    try {
+      card5 = BodApAgingFunnel(
+        apAging: report.apAging.toJson(),
+        avgTtrDays: report.chainKpis.avgTtrDays,
+        manager: manager,
+      );
+    } catch (e, s) {
+      debugPrint('🔴 BOD card5 (BodApAgingFunnel) CRASH: $e\n$s');
+      rethrow;
+    }
+
+    Widget card6;
+    try {
+      card6 = BodAuditorScatter(
+        auditorProductivity: report.auditorProductivity,
+        manager: manager,
+        nationalAvg: report.chainKpis.avgScore,
+      );
+    } catch (e, s) {
+      debugPrint('🔴 BOD card6 (BodAuditorScatter) CRASH: $e\n$s');
+      rethrow;
+    }
 
     return RefreshIndicator(
       onRefresh: manager.refreshReport,

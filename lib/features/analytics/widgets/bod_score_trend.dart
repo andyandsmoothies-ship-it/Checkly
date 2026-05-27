@@ -51,7 +51,7 @@ class BodScoreTrend extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: PillChip(
               label:
-                  '📈 Trajectory: Improving (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
+                  '📈 Trend: Going up (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
               type: PillChipType.green,
             ),
           );
@@ -60,7 +60,7 @@ class BodScoreTrend extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: PillChip(
               label:
-                  '📉 Trajectory: Declining (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
+                  '📉 Trend: Going down (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
               type: PillChipType.red,
             ),
           );
@@ -69,7 +69,7 @@ class BodScoreTrend extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: PillChip(
               label:
-                  '📈 Trajectory: Steady (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
+                  '📈 Trend: Steady (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
               type: PillChipType.blue,
             ),
           );
@@ -84,7 +84,7 @@ class BodScoreTrend extends StatelessWidget {
         fit: BoxFit.scaleDown,
         child: PillChip(
           label:
-              '📈 Trajectory: Steady (Score: ${lastScore.toStringAsFixed(1)}%)',
+              '📈 Trend: Steady (Score: ${lastScore.toStringAsFixed(1)}%)',
           type: PillChipType.blue,
         ),
       );
@@ -108,10 +108,19 @@ class BodScoreTrend extends StatelessWidget {
                   color: AppColors.eel,
                 ),
               ),
-              if (trajectoryChip != null) trajectoryChip!,
+              if (trajectoryChip != null) trajectoryChip,
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 4),
+          Text(
+            'Compare actual monthly scores with a 3-month smoothed average',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.wolf.withAlpha(160),
+              fontSize: 9,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 20),
           SizedBox(
             height:
                 140, // Increased height slightly to accommodate the dual label spacing
@@ -144,7 +153,7 @@ class BodScoreTrend extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            'SMA: ${sma.toStringAsFixed(1)}%',
+                            'Smoothed: ${sma.toStringAsFixed(1)}%',
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w800,
                               color: AppColors.beetle,

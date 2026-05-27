@@ -191,6 +191,16 @@ After answering the three questions:
 
 ---
 
+## Part D: Bug Triage Matrix (Juice vs. Squeeze)
+
+When auditing code or verifying fixes, categorize all issues into a severity matrix:
+1. **Critical / High**: Security flaws, crashes, incorrect business math, data corruption. **Action: Fix immediately.**
+2. **Medium / Low**: Minor performance sub-optimizations, edge cases that take >100 lines to fix, nitpick formatting. **Action: STOP and ask the user "Is the juice worth the squeeze?" before fixing.**
+
+Do not automatically fix Medium/Low bugs without user approval to prevent wasting time on minor edge cases.
+
+---
+
 ## Fix-and-Retry Loop
 
 When a phase fails, follow this exact sequence:

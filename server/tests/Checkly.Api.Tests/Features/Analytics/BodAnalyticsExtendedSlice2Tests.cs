@@ -72,7 +72,7 @@ namespace Checkly.Api.Tests.Features.Analytics
                 };
                 db.ActionPlans.Add(ap90);
 
-                // Seed open Action Plan created 10 days ago (Bucket: 0-30d)
+                // Seed open Action Plan created 10 days ago (Bucket: 8-30d)
                 ap30Id = Guid.NewGuid();
                 var ap30 = new ActionPlan
                 {
@@ -125,7 +125,7 @@ namespace Checkly.Api.Tests.Features.Analytics
             }
 
             Assert.True(found90, "Expected open action plan from 90d+ bucket to be returned");
-            Assert.False(found30, "Action plan from 0-30d bucket should not be returned in 90d+ endpoint");
+            Assert.False(found30, "Action plan from 8-30d bucket should not be returned in 90d+ endpoint");
         }
 
         [Fact]

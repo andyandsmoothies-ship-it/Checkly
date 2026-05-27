@@ -12,6 +12,7 @@ import '_shared/database/dao/program_outbox_dao.dart';
 import '_shared/services/connectivity_service.dart';
 import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
+import '_shared/services/interaction_manager.dart';
 import '_shared/services/sync_engine.dart';
 import '_shared/services/service_adapters.dart';
 import 'features/audit/services/core_audit_sync_module.dart';
@@ -92,6 +93,7 @@ void configureDependencies() {
     () => ProgramOutboxDao(di<DatabaseService>().db),
   );
   di.registerLazySingleton<GpsService>(() => GpsService());
+  di.registerLazySingleton<InteractionManager>(() => InteractionManager());
 
   // ---------- Auth (Slice 2 + PBAC Slice 4) ----------
   di.registerLazySingleton<SecureStorageService>(() => SecureStorageService());

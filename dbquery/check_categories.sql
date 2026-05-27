@@ -1,0 +1,1 @@
+SELECT DISTINCT section_title FROM submission_section_scores;

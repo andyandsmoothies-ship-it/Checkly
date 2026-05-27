@@ -96,7 +96,7 @@ public static class GetAnalytics
         // ──────────────────────────────────────────────────────────────────────
 
         var query = db.Submissions.AsNoTracking()
-            .Where(s => s.Status == "completed" && s.ReviewStatus != "rejected");
+            .Where(s => s.Status == "completed" && (s.ReviewStatus == null || s.ReviewStatus != "rejected"));
 
         if (role == "auditor")
         {

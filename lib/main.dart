@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
@@ -12,6 +14,20 @@ import 'locator.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
+
+  // ── DIAGNOSTIC INSTRUMENT (temporary) ─────────────────────────────────
+  // Captures the exact exception message when the BOD dashboard freezes.
+  // Remove after root cause is confirmed.
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrint('════════════════════════════════════════');
+    debugPrint('🔴 FLUTTER ERROR CAUGHT');
+    debugPrint('  Exception : ${details.exception}');
+    debugPrint('  Library   : ${details.library}');
+    debugPrint('  Context   : ${details.context}');
+    debugPrint('  Stack     :\n${details.stack}');
+    debugPrint('════════════════════════════════════════');
+    FlutterError.presentError(details); // still show red screen in debug
+  };
 
   // GC: Clean up expired drafts (>14 days per ADR-001) + orphaned photo files.
   // Runs on every cold boot. Errors are swallowed — GC must never crash startup.
@@ -29,6 +45,18 @@ void main() async {
 
   // Try auto-login from stored token
   GetIt.instance<AuthManager>().tryAutoLogin();
+
+  // Secondary safety net: catches errors from platform/isolate level
+  // (e.g. exceptions thrown inside async functions, Future chains, etc.)
+  // This fires BEFORE the Dart debugger can intercept paused exceptions.
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('════════════════════════════════════════');
+    debugPrint('🔴 PLATFORM ERROR CAUGHT');
+    debugPrint('  Error : $error');
+    debugPrint('  Stack :\n$stack');
+    debugPrint('════════════════════════════════════════');
+    return true; // mark as handled so the app doesn't terminate
+  };
 
   runApp(const ChecklyApp());
 }

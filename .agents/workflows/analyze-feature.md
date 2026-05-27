@@ -64,7 +64,9 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Lifecycle Context**: Define the 4-State Matrix: how presentation layer handles Success, Loading, Error, and Empty states.
 
-- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined?
+- **Safety & Stability Checks**: MANDATORY. (1) **DI Safety**: Ensure all newly required services are planned for registration in `locator.dart`. (2) **Layout Safety**: Ensure UI components with infinite width (like `ElevatedButton`) used inside horizontal layouts (like `Row`) are explicitly bounded (e.g., using `Expanded` or `minimumSize`).
+
+- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified?
 
 ## Step 4: Create Plan
 

@@ -18,7 +18,16 @@ class BodAnalyticsManager extends ChangeNotifier {
   String? _activeDistrict;
 
   bool _isApDetailLoading = false;
-  List<dynamic> _apDetails = [];
+  List<ApDetailEntry> _apDetails = [];
+
+  bool _isStoreDetailLoading = false;
+  StoreBodSummary? _storeDetail;
+
+  bool _isCategoryDetailLoading = false;
+  List<CategoryStoreEntry> _categoryDetail = [];
+
+  bool _isAuditorDetailLoading = false;
+  dynamic _auditorDetail;
 
   BodAnalyticsManager(this._api);
 
@@ -33,7 +42,17 @@ class BodAnalyticsManager extends ChangeNotifier {
   String? get activeDistrict => _activeDistrict;
 
   bool get isApDetailLoading => _isApDetailLoading;
-  List<dynamic> get apDetails => _apDetails;
+  List<ApDetailEntry> get apDetails => _apDetails;
+
+  bool get isStoreDetailLoading => _isStoreDetailLoading;
+  StoreBodSummary? get storeDetail => _storeDetail;
+
+  bool get isCategoryDetailLoading => _isCategoryDetailLoading;
+  List<CategoryStoreEntry> get categoryDetail => _categoryDetail;
+
+  bool get isAuditorDetailLoading => _isAuditorDetailLoading;
+  dynamic get auditorDetail => _auditorDetail;
+
 
   Future<void> loadReport() async {
     _isLoading = true;
@@ -43,13 +62,17 @@ class BodAnalyticsManager extends ChangeNotifier {
     notifyListeners();
 
     try {
+      debugPrint('[BOD] loadReport → calling _api.getReport()');
       final res = await _api.getReport();
+      debugPrint('[BOD] loadReport → fromJson complete. trend.length=${res.trend.length}');
       _report = res;
       _isLoading = false;
       _isOffline = false;
       _isEmpty = false;
+      debugPrint('[BOD] loadReport → notifyListeners()');
       notifyListeners();
-    } catch (e) {
+    } catch (e, s) {
+      debugPrint('[BOD] loadReport → CATCH: $e\n$s');
       _isLoading = false;
       _report = null;
       final errStr = e.toString();
@@ -73,6 +96,26 @@ class BodAnalyticsManager extends ChangeNotifier {
     _isEmpty = false;
     _error = null;
     notifyListeners();
+
+    if (_isLiveMode && _activeProvince != null) {
+      try {
+        final res = await _api.getFilteredReport(_activeProvince!, _activeDistrict ?? '');
+        _report = res;
+        _isLoading = false;
+        notifyListeners();
+      } catch (e) {
+        _isLoading = false;
+        _report = prevReport;
+        final errStr = e.toString();
+        if (errStr.contains('DioException') || errStr.contains('connection')) {
+          _isOffline = true;
+        } else {
+          _error = 'Something went wrong. Please try again.';
+        }
+        notifyListeners();
+      }
+      return;
+    }
 
     try {
       await _api.triggerRefresh();
@@ -166,59 +209,130 @@ class BodAnalyticsManager extends ChangeNotifier {
   }
 
   Future<void> loadApDetails(String bucketName) async {
+    if (_isApDetailLoading) return;
     _isApDetailLoading = true;
-    _apDetails = [];
+    _error = null;
     notifyListeners();
 
-    // Simulate database lookup latency
-    await Future.delayed(const Duration(milliseconds: 1000));
-
-    // Generate mock details based on the bucketName
-    if (bucketName == '0-30 Days') {
-      _apDetails = [
-        {
-          'criteriaLabel': 'Temperature Logs',
-          'storeName': 'Central Market',
-          'managerName': 'Andy Manager',
-          'overdueDays': 12,
-        },
-        {
-          'criteriaLabel': 'Sanitization Station Check',
-          'storeName': 'Siam Square',
-          'managerName': 'Smoothie Manager',
-          'overdueDays': 25,
-        },
-      ];
-    } else if (bucketName == '31-60 Days') {
-      _apDetails = [
-        {
-          'criteriaLabel': 'Fire Exit Clearance',
-          'storeName': 'Outpost West',
-          'managerName': 'Kate Manager',
-          'overdueDays': 45,
-        },
-      ];
-    } else if (bucketName == '61-90 Days') {
-      _apDetails = [
-        {
-          'criteriaLabel': 'Daily Opening Routine',
-          'storeName': 'Airport Express',
-          'managerName': 'John Manager',
-          'overdueDays': 75,
-        },
-      ];
-    } else {
-      _apDetails = [
-        {
-          'criteriaLabel': 'Weekly Equipment Calibration',
-          'storeName': 'North Gate',
-          'managerName': 'Lisa Manager',
-          'overdueDays': 110,
-        },
-      ];
+    final trimmed = bucketName.trim().toLowerCase();
+    if (trimmed.isEmpty || trimmed == 'all' || trimmed == 'open') {
+      try {
+        final List<List<ApDetailEntry>> results = await Future.wait([
+          _api.getApBucketDetail('0-7d'),
+          _api.getApBucketDetail('8-30d'),
+          _api.getApBucketDetail('31-90d'),
+          _api.getApBucketDetail('90d+'),
+        ]);
+        _apDetails = results.expand((x) => x).toList()
+          ..sort((a, b) => b.ageInDays.compareTo(a.ageInDays));
+        _isApDetailLoading = false;
+        notifyListeners();
+        return;
+      } catch (e) {
+        _isApDetailLoading = false;
+        _apDetails = [];
+        _error = 'Something went wrong. Please try again.';
+        notifyListeners();
+        return;
+      }
     }
 
-    _isApDetailLoading = false;
+    String normalized;
+    if (trimmed.contains('0-7') || trimmed.contains('0-7d')) {
+      normalized = '0-7d';
+    } else if (trimmed.contains('8-30') || trimmed.contains('8-30d')) {
+      normalized = '8-30d';
+    } else if (trimmed.contains('31-90') || trimmed.contains('31-90d')) {
+      normalized = '31-90d';
+    } else if (trimmed.contains('90+') || trimmed.contains('90d')) {
+      normalized = '90d+';
+    } else if (trimmed.contains('0-30')) {
+      normalized = '8-30d';
+    } else if (trimmed.contains('31-60')) {
+      normalized = '31-90d';
+    } else if (trimmed.contains('61-90')) {
+      normalized = '31-90d';
+    } else {
+      normalized = trimmed;
+    }
+
+    try {
+      final res = await _api.getApBucketDetail(normalized);
+      _apDetails = res;
+      _isApDetailLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isApDetailLoading = false;
+      _apDetails = [];
+      _error = 'Something went wrong. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadStoreDetail(String storeId) async {
+    if (_isStoreDetailLoading) return;
+    _isStoreDetailLoading = true;
+    _error = null;
     notifyListeners();
+
+    try {
+      final res = await _api.getStoreBodSummary(storeId);
+      _storeDetail = res;
+      _isStoreDetailLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isStoreDetailLoading = false;
+      _storeDetail = null;
+      _error = 'Something went wrong. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadCategoryDetail(String name) async {
+    if (_isCategoryDetailLoading) return;
+    _isCategoryDetailLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final trimmedName = name.trim();
+
+    try {
+      final res = await _api.getCategoryDetail(trimmedName);
+      _categoryDetail = res;
+      _isCategoryDetailLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isCategoryDetailLoading = false;
+      _categoryDetail = [];
+      _error = 'Something went wrong. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadAuditorDetail(String auditorName) async {
+    if (_isAuditorDetailLoading) return;
+    _isAuditorDetailLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final productivityList = await _api.getAuditorProductivity();
+      dynamic matched;
+      for (final item in productivityList) {
+        if (item is Map && item['auditorName'] == auditorName) {
+          matched = item;
+          break;
+        }
+      }
+      _auditorDetail = matched;
+      _isAuditorDetailLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isAuditorDetailLoading = false;
+      _auditorDetail = null;
+      _error = 'Something went wrong. Please try again.';
+      notifyListeners();
+    }
   }
 }
+

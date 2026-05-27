@@ -29,7 +29,9 @@ class _BodAnalyticsPageState extends State<BodAnalyticsPage> {
   void initState() {
     super.initState();
     _manager = GetIt.I<BodAnalyticsManager>();
-    _manager.loadReport();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _manager.loadReport();
+    });
   }
 
   @override

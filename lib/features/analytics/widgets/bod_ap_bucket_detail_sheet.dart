@@ -4,6 +4,7 @@ import '../../../_shared/widgets/primitives/stroke_card.dart';
 import '../../../_shared/widgets/primitives/universal_list_card.dart';
 import '../../../_shared/widgets/primitives/pill_chip.dart';
 import '../manager/bod_analytics_manager.dart';
+import '../manager/bod_analytics_data.dart';
 
 /// Modal bottom sheet displaying detailed overdue Action Plans for a selected aging bucket.
 class BodApBucketDetailSheet extends StatefulWidget {
@@ -25,7 +26,11 @@ class _BodApBucketDetailSheetState extends State<BodApBucketDetailSheet> {
   void initState() {
     super.initState();
     // Load details asynchronously when the sheet mounts
-    widget.manager.loadApDetails(widget.bucketName);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget.manager.loadApDetails(widget.bucketName);
+      }
+    });
   }
 
   @override
@@ -105,12 +110,12 @@ class _BodApBucketDetailSheetState extends State<BodApBucketDetailSheet> {
                     separatorBuilder: (context, index) =>
                         const SizedBox(height: 8),
                     itemBuilder: (context, index) {
-                      final item = items[index];
-                      final int overdue = item['overdueDays'] ?? 0;
+                      final ApDetailEntry item = items[index];
+                      final int overdue = item.ageInDays;
 
                       return UniversalListCard(
-                        title: item['criteriaLabel'] ?? 'Overdue Action Plan',
-                        subtitle: 'Store: ${item['storeName']}',
+                        title: item.criteriaLabel,
+                        subtitle: 'Store: ${item.storeName}',
                         leading: Container(
                           width: 44,
                           height: 44,
@@ -125,7 +130,7 @@ class _BodApBucketDetailSheetState extends State<BodApBucketDetailSheet> {
                         ),
                         badges: [
                           PillChip(
-                            label: 'Manager: ${item['managerName']}',
+                            label: 'Manager: ${item.managerName}',
                             type: PillChipType.blue,
                           ),
                           PillChip(

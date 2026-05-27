@@ -38,3 +38,7 @@
 - **Gotcha 26: BubblyButton Constraints**: Always wrap `BubblyButton` in layout constraints or specify container boundaries, as it defaults to `width: double.infinity` to align with the core grid.
 - **Gotcha 27: QuestProgressBar Scale Clamp**: Value parameter is clamped internally. Do not write manual clamping layers outside it.
 - **Gotcha 28: PillChip and PastelAvatar Theme Preservation**: These primitives utilize predefined color maps instead of arbitrary gray or dark presets to maintain the gamified, vibrant aesthetic. Do not inject custom style overrides that bypass the predefined enums or theme classes.
+
+## Diagnostic & Layout Stability
+- **Gotcha 29: Unregistered Global Singletons (DI Crashes)**: `GetIt.instance<T>()` crashes the app if `T` isn't registered. Always verify `locator.dart` registers global services before consuming them. Never mock missing dependencies in tests if they don't exist in production.
+- **Gotcha 30: Infinite Layout Freezes in Rows**: Widgets defaulting to `double.infinity` width (like `ElevatedButton`, `TextFormField`) cause infinite layout loops inside an unconstrained horizontal `Row`. Always wrap them in `Expanded`, `Flexible`, or apply a bounded `minimumSize`.

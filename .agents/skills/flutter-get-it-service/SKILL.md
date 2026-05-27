@@ -178,6 +178,15 @@ getIt.enableRegisteringMultipleInstancesOfOneType();   // allow unnamed multiple
 ## Anti-Patterns
 
 ```dart
+// ❌ Using/Mocking unregistered services
+// This hides runtime StateError crashes in tests
+class MockMyService extends Mock implements MyService {}
+// Test passes, but app crashes at runtime because MyService isn't in locator.dart
+
+// ✅ Verify registration
+// Always ensure the service is registered in lib/locator.dart before consumption or testing
+getIt.registerLazySingleton<MyService>(() => MyService());
+
 // ❌ Accessing async service before allReady()
 configureDependencies();
 final db = getIt<Database>();  // THROWS - not ready yet

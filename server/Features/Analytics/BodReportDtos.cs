@@ -35,4 +35,9 @@ namespace Checkly.Api.Features.Analytics
     public record ApDetailEntry(Guid Id, string CriteriaLabel, string StoreName, string ManagerName, int AgeInDays);
 
     public record AuditorProductivityEntry(Guid AuditorId, string AuditorName, int CompletedAudits, decimal AvgScore, string BiasRating);
+
+    public record StoreBodSummary(string StoreName, List<RecentAuditEntry> RecentAudits, List<CategoryScoreEntry> CategoryBreakdown);
+    public record RecentAuditEntry(DateTimeOffset Date, decimal Score, string AuditorName);
+    public record CategoryScoreEntry(string CategoryName, decimal AvgScore);
+    public record CategoryStoreEntry(string StoreName, decimal AvgScore, int AuditCount, int FailureCount);
 }

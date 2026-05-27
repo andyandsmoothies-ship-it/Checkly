@@ -17,9 +17,9 @@ public static class GetApBucketDetail
 {
     private static readonly HashSet<string> ValidBuckets = new(StringComparer.OrdinalIgnoreCase)
     {
-        "0-30d",
-        "31-60d",
-        "61-90d",
+        "0-7d",
+        "8-30d",
+        "31-90d",
         "90d+"
     };
 
@@ -30,7 +30,7 @@ public static class GetApBucketDetail
     {
         if (string.IsNullOrWhiteSpace(bucket) || !ValidBuckets.Contains(bucket))
         {
-            return TypedResults.BadRequest(new { error = "Invalid bucket value. Allowed values: 0-30d, 31-60d, 61-90d, 90d+" });
+            return TypedResults.BadRequest(new { error = "Invalid bucket value. Allowed values: 0-7d, 8-30d, 31-90d, 90d+" });
         }
 
         var now = DateTimeOffset.UtcNow;
@@ -39,21 +39,21 @@ public static class GetApBucketDetail
             .AsNoTracking()
             .Where(ap => ap.Status == "open");
 
-        if (bucket.Equals("0-30d", StringComparison.OrdinalIgnoreCase))
+        if (bucket.Equals("0-7d", StringComparison.OrdinalIgnoreCase))
         {
-            var cutoff = now.AddDays(-30);
+            var cutoff = now.AddDays(-7);
             query = query.Where(ap => ap.CreatedAt >= cutoff && ap.CreatedAt <= now);
         }
-        else if (bucket.Equals("31-60d", StringComparison.OrdinalIgnoreCase))
+        else if (bucket.Equals("8-30d", StringComparison.OrdinalIgnoreCase))
         {
-            var start = now.AddDays(-60);
-            var end = now.AddDays(-30);
+            var start = now.AddDays(-30);
+            var end = now.AddDays(-7);
             query = query.Where(ap => ap.CreatedAt >= start && ap.CreatedAt < end);
         }
-        else if (bucket.Equals("61-90d", StringComparison.OrdinalIgnoreCase))
+        else if (bucket.Equals("31-90d", StringComparison.OrdinalIgnoreCase))
         {
             var start = now.AddDays(-90);
-            var end = now.AddDays(-60);
+            var end = now.AddDays(-30);
             query = query.Where(ap => ap.CreatedAt >= start && ap.CreatedAt < end);
         }
         else if (bucket.Equals("90d+", StringComparison.OrdinalIgnoreCase))

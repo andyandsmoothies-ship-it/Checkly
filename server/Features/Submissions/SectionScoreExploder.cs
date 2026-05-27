@@ -20,8 +20,60 @@ public static class SectionScoreExploder
             foreach (var prop in sectionsDoc.RootElement.EnumerateObject())
             {
                 var sectionTitle = prop.Name;
-                var sectionScore = prop.Value.TryGetProperty("score", out var sc) ? sc.GetDecimal() : 0m;
-                var sectionMax = prop.Value.TryGetProperty("maxScore", out var mx) ? mx.GetDecimal() : 0m;
+                if (prop.Value.ValueKind == JsonValueKind.Object)
+                {
+                    if (prop.Value.TryGetProperty("title", out var titleProp) && titleProp.ValueKind == JsonValueKind.String)
+                    {
+                        var tVal = titleProp.GetString();
+                        if (!string.IsNullOrWhiteSpace(tVal))
+                        {
+                            sectionTitle = tVal;
+                        }
+                    }
+                }
+
+                var sectionScore = 0m;
+                if (prop.Value.ValueKind == JsonValueKind.Object)
+                {
+                    if (prop.Value.TryGetProperty("score", out var sc))
+                    {
+                        if (sc.ValueKind == JsonValueKind.Number)
+                        {
+                            sectionScore = sc.GetDecimal();
+                        }
+                        else if (sc.ValueKind == JsonValueKind.String && decimal.TryParse(sc.GetString(), out var parsedScore))
+                        {
+                            sectionScore = parsedScore;
+                        }
+                    }
+                }
+
+                var sectionMax = 0m;
+                if (prop.Value.ValueKind == JsonValueKind.Object)
+                {
+                    if (prop.Value.TryGetProperty("maxScore", out var mx))
+                    {
+                        if (mx.ValueKind == JsonValueKind.Number)
+                        {
+                            sectionMax = mx.GetDecimal();
+                        }
+                        else if (mx.ValueKind == JsonValueKind.String && decimal.TryParse(mx.GetString(), out var parsedMax))
+                        {
+                            sectionMax = parsedMax;
+                        }
+                    }
+                    else if (prop.Value.TryGetProperty("maxPoints", out var mp))
+                    {
+                        if (mp.ValueKind == JsonValueKind.Number)
+                        {
+                            sectionMax = mp.GetDecimal();
+                        }
+                        else if (mp.ValueKind == JsonValueKind.String && decimal.TryParse(mp.GetString(), out var parsedMax))
+                        {
+                            sectionMax = parsedMax;
+                        }
+                    }
+                }
 
                 db.SubmissionSectionScores.Add(new SubmissionSectionScore
                 {

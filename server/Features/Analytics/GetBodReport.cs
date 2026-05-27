@@ -231,6 +231,132 @@ public static class GetBodReport
                 .Take(5)
                 .ToList();
 
+            // 2. 12-Month Trend (Filtered by stores)
+            var localFirstDay = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-11);
+            var trendStartDate = new DateTimeOffset(localFirstDay, TimeSpan.Zero);
+            
+            var trendRaw = await db.Submissions.AsNoTracking()
+                .Where(s => 
+                    s.Status == "completed" && 
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
+                    s.CompletedAt.HasValue && 
+                    s.CompletedAt >= trendStartDate && 
+                    s.CompletedAt <= now && 
+                    (s.ScoringMode == null || s.ScoringMode != "survey") && 
+                    s.TotalScore.HasValue &&
+                    s.StoreId.HasValue &&
+                    filteredStoreIds.Contains(s.StoreId.Value))
+                .GroupBy(s => new { s.CompletedAt!.Value.Year, s.CompletedAt.Value.Month })
+                .Select(g => new
+                {
+                    g.Key.Year,
+                    g.Key.Month,
+                    AvgScore = g.Average(s => s.TotalScore!.Value),
+                    Count = g.Count()
+                })
+                .ToListAsync(ct);
+
+            var trendList = trendRaw
+                .OrderBy(x => x.Year).ThenBy(x => x.Month)
+                .Select(x => new TrendPoint(
+                    $"{x.Year}-{x.Month:D2}",
+                    Math.Round((double)x.AvgScore, 1),
+                    x.Count))
+                .ToList();
+
+            // 4. Category Weaknesses (Last 90 Days) (Filtered by stores)
+            var start90DaysAgo = now.AddDays(-90);
+            
+            var sectionStats = await db.SubmissionSectionScores.AsNoTracking()
+                .Where(ss => ss.CreatedAt >= start90DaysAgo && 
+                             ss.CreatedAt <= now && 
+                             ss.MaxScore > 0 &&
+                             ss.StoreId.HasValue &&
+                             filteredStoreIds.Contains(ss.StoreId.Value))
+                .GroupBy(ss => new { ss.SectionTitle, TemplateTitle = ss.Submission != null ? ss.Submission.TemplateTitle : "Unknown Template" })
+                .Select(g => new
+                {
+                    CategoryName = g.Key.SectionTitle,
+                    TemplateTitle = g.Key.TemplateTitle ?? "Unknown Template",
+                    TotalScore = g.Sum(ss => ss.Score),
+                    TotalMaxScore = g.Sum(ss => ss.MaxScore),
+                    AuditCount = g.Count()
+                })
+                .ToListAsync(ct);
+
+            var weaknessesList = sectionStats
+                .Select(x => new BodCategoryWeakness(
+                    x.CategoryName,
+                    x.TemplateTitle,
+                    x.TotalMaxScore > 0 ? Math.Round((x.TotalScore / x.TotalMaxScore) * 100m, 1) : 0m,
+                    x.AuditCount))
+                .OrderBy(x => x.AvgScore)
+                .Take(5)
+                .ToList();
+
+            // 5. Action Plan Aging (Filtered by stores)
+            var openAps = await db.ActionPlans.AsNoTracking()
+                .Where(ap => ap.Status == "open" && 
+                             ap.CreatedAt <= now &&
+                             ap.StoreId.HasValue &&
+                             filteredStoreIds.Contains(ap.StoreId.Value))
+                .Select(ap => ap.CreatedAt)
+                .ToListAsync(ct);
+
+            var bucket_0_7 = 0;
+            var bucket_8_30 = 0;
+            var bucket_31_90 = 0;
+            var bucket_90_plus = 0;
+
+            foreach (var apCreatedAt in openAps)
+            {
+                var ageInDays = (now - apCreatedAt).TotalDays;
+                if (ageInDays <= 7) bucket_0_7++;
+                else if (ageInDays <= 30) bucket_8_30++;
+                else if (ageInDays <= 90) bucket_31_90++;
+                else bucket_90_plus++;
+            }
+
+            var actionPlanAgingList = new List<BodApAgingBucket>
+            {
+                new("0-7d", bucket_0_7),
+                new("8-30d", bucket_8_30),
+                new("31-90d", bucket_31_90),
+                new("90d+", bucket_90_plus)
+            };
+
+            // 6. Auditor Productivity (Last 30 Days) (Filtered by stores)
+            var auditorStats = await db.Submissions.AsNoTracking()
+                .Where(s => 
+                    s.Status == "completed" && 
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
+                    s.CompletedAt.HasValue && 
+                    s.CompletedAt >= start30DaysAgo && 
+                    s.CompletedAt <= now && 
+                    s.AuditorId.HasValue &&
+                    s.StoreId.HasValue &&
+                    filteredStoreIds.Contains(s.StoreId.Value))
+                .GroupBy(s => new { s.AuditorId!.Value, s.AuditorName })
+                .Select(g => new
+                {
+                    AuditorId = g.Key.Value,
+                    AuditorName = g.Key.AuditorName ?? "Unknown Auditor",
+                    CompletedAudits = g.Count(),
+                    AvgScore = g.Any(s => s.TotalScore.HasValue && s.ScoringMode != "survey")
+                        ? g.Where(s => s.TotalScore.HasValue && s.ScoringMode != "survey").Average(s => s.TotalScore!.Value)
+                        : 0m
+                })
+                .ToListAsync(ct);
+
+            var auditorProductivityList = auditorStats
+                .Select(x => new BodAuditorProductivity(
+                    x.AuditorId,
+                    x.AuditorName,
+                    x.CompletedAudits,
+                    Math.Round(x.AvgScore, 1)))
+                .OrderByDescending(x => x.CompletedAudits)
+                .ToList();
+
             // allowedActions
             var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
             var capabilities = pbacCache.GetCapabilities(role);
@@ -255,12 +381,12 @@ public static class GetBodReport
                     avgTtrDays = avgTtrDays
                 },
                 goldenStore = goldenStoreObj,
-                trend = new List<object>(),
+                trend = trendList,
                 topStores = topStoresList,
                 bottomStores = bottomStoresList,
-                weaknesses = new List<object>(),
-                actionPlanAging = new List<object>(),
-                auditorProductivity = new List<object>(),
+                weaknesses = weaknessesList,
+                actionPlanAging = actionPlanAgingList,
+                auditorProductivity = auditorProductivityList,
                 allowedActions = allowedActions
             };
 

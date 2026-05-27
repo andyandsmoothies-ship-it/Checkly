@@ -91,13 +91,13 @@ namespace Checkly.Api.Features.Analytics
             {
                 var totalAudits = await db.Submissions.CountAsync(s => 
                     s.Status == "completed" && 
-                    s.ReviewStatus != "rejected" && 
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
                     s.CompletedAt.HasValue && 
                     s.CompletedAt <= targetDateTime, ct);
 
                 var scoredQuery = db.Submissions.Where(s => 
                     s.Status == "completed" && 
-                    s.ReviewStatus != "rejected" && 
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
                     s.CompletedAt.HasValue && 
                     s.CompletedAt <= targetDateTime && 
                     s.ScoringMode != "survey" && 
@@ -109,7 +109,7 @@ namespace Checkly.Api.Features.Analytics
                     : 0m;
 
                 var totalScheduled = await db.Submissions.CountAsync(s => 
-                    s.ReviewStatus != "rejected" && 
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
                     s.CreatedAt <= targetDateTime, ct);
 
                 var completionRate = totalScheduled > 0
@@ -132,7 +132,7 @@ namespace Checkly.Api.Features.Analytics
 
                 var totalAuditors = await db.Submissions.Where(s => 
                     s.Status == "completed" && 
-                    s.ReviewStatus != "rejected" && 
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
                     s.CompletedAt.HasValue && 
                     s.CompletedAt <= targetDateTime && 
                     s.AuditorId.HasValue)
@@ -175,7 +175,7 @@ namespace Checkly.Api.Features.Analytics
                 var trendRaw = await db.Submissions.AsNoTracking()
                     .Where(s => 
                         s.Status == "completed" && 
-                        s.ReviewStatus != "rejected" && 
+                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
                         s.CompletedAt.HasValue && 
                         s.CompletedAt >= trendStartDate && 
                         s.CompletedAt <= targetDateTime && 
@@ -224,7 +224,7 @@ namespace Checkly.Api.Features.Analytics
                 var storeStats = await db.Submissions.AsNoTracking()
                     .Where(s => 
                         s.Status == "completed" && 
-                        s.ReviewStatus != "rejected" && 
+                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
                         s.CompletedAt.HasValue && 
                         s.CompletedAt >= start30DaysAgo && 
                         s.CompletedAt <= targetDateTime && 
@@ -364,7 +364,7 @@ namespace Checkly.Api.Features.Analytics
                 var auditorStats = await db.Submissions.AsNoTracking()
                     .Where(s => 
                         s.Status == "completed" && 
-                        s.ReviewStatus != "rejected" && 
+                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
                         s.CompletedAt.HasValue && 
                         s.CompletedAt >= start30DaysAgo && 
                         s.CompletedAt <= targetDateTime && 
