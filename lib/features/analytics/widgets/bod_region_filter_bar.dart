@@ -42,8 +42,8 @@ class _BodRegionFilterBarState extends State<BodRegionFilterBar> {
   }
 
   void _handleApply() {
-    if (_selectedProvince != null && _selectedDistrict != null) {
-      widget.manager.applyFilter(_selectedProvince!, _selectedDistrict!);
+    if (_selectedProvince != null) {
+      widget.manager.applyFilter(_selectedProvince!, _selectedDistrict ?? '');
     }
   }
 
@@ -230,7 +230,7 @@ class _BodRegionFilterBarState extends State<BodRegionFilterBar> {
                   minimumSize: const Size(0, 48),
                 ),
                 onPressed:
-                    (_selectedProvince != null && _selectedDistrict != null)
+                    _selectedProvince != null
                     ? _handleApply
                     : null,
                 icon: const Icon(Icons.search_rounded),

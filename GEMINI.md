@@ -64,6 +64,10 @@
 - **Rule**: Do not add new features if the code has errors. 
 - **Enforcement**: Stop and run `de-sloppify` first. Ignore warnings you didn't create.
 
+### Rule: Golden UI Tests for Design Verification
+- **Rule**: All UI additions or modifications must include Golden UI tests to prevent manual verification of components and layout.
+- **Enforcement**: Run `flutter test --update-goldens` during the implementation phase to check rendering before concluding.
+
 ## 2. Platform Architecture
 - **Frontend**: Flutter (Dart) — Offline-first with SQLite. Core UI rules are in `lib/GEMINI.md`.
 - **Backend**: ASP.NET Core (.NET 10) Minimal API. Database and endpoint rules are in `server/GEMINI.md`.
@@ -130,6 +134,8 @@
   - **Fix:** In EF Core queries targeting PostgreSQL, any inequality comparison like `s.ReviewStatus != "rejected"` will silently exclude all records where the column value is `NULL`. This happens because Postgres evaluates `NULL != 'rejected'` as `NULL` (falsy in WHERE clauses). To correctly query all records that are not rejected (including both null/unreviewed and non-rejected records), you must always write `(s.ReviewStatus == null || s.ReviewStatus != "rejected")`.
 - **Gotcha: Flutter SQLite Array Serialization (categoryTags)**
   - **Fix:** SQLite does not natively support array types. `TemplateDao` serializes `List<String>? categoryTags` into a comma-separated String when saving to SQLite. When reading, it splits by comma and sanitizes the result using `.where((t) => t.isNotEmpty).toList()` to prevent empty strings from polluting the output. Ensure any test models or frontend widgets handle empty/whitespace strings gracefully and never assume index-based access on un-sanitized comma values.
+- **Gotcha: Golden UI Asset Path Mapping**
+  - **Fix:** Golden test images must be saved under the `test/goldens/` directory. Do not check in full device screenshots; only assert against the target widget or isolated component viewports to keep reference images small, lightweight, and clean.
 
 
 

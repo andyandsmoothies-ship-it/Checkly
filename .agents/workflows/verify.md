@@ -54,11 +54,11 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
   2. Run `grep_search` on touched files to block sloppy code (leftover `print()`, `console.log`, `TODO:`, hardcoded styling/colors, AND **dead UI stubs like `onPressed: () {}` or `href='#'`**).
 
-- **Test Quality**: Map walkthrough files to related test files (via suffix mapping or grepping symbol references in tests). Evaluate tests to ensure: (1) no empty/ghost assertions, (2) no mocking of core business/domain logic, (3) assertions test observable behavior rather than private state, and (4) failed states report explicit error messages rather than raw silent booleans.
+- **Test Quality**: Map walkthrough files to related test files (via suffix mapping or grepping symbol references in tests). Evaluate tests to ensure: (1) no empty/ghost assertions, (2) no mocking of core business/domain logic, (3) assertions test observable behavior rather than private state, (4) failed states report explicit error messages rather than raw silent booleans, and (5) all modified UI pages/widgets/contracts include and pass automated Golden/Snapshot tests.
 
-- **Execution**: Stop Dev Servers -> Run ALL tests globally (`flutter test`, `dotnet test`). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions broke.
+- **Execution**: Stop Dev Servers -> Run ALL tests globally (e.g., `flutter test --update-goldens` for Flutter, `npx playwright test --update-snapshots` for Web, or standard text/JSON snapshot commands first, then run full test suite). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions or visual references broke.
 
-- **Pass/Fail Logic**: IF (Tests Green AND Zero Warnings) -> Proceed Step 4. IF (Any Fail/Warning) -> **MANDATORY TRANSITION**: `/diagnose`. Do NOT ask permission.
+- **Pass/Fail Logic**: IF (Tests Green, Golden Visuals/Snapshots Match, AND Zero Warnings) -> Proceed Step 4. IF (Any Fail/Warning) -> **MANDATORY TRANSITION**: `/diagnose`. Do NOT ask permission.
 
 - **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Build passed with zero warnings? (2) Test quality checks executed and logged? (3) IF failed -> transitioned to `/diagnose`?
 

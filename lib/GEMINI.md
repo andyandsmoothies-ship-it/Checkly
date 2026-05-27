@@ -33,6 +33,8 @@
   - **Fix:** You MUST use `tester.drag` or `tester.scrollUntilVisible` to bring hidden elements into view before asserting their existence.
 - **Gotcha 25: UI Library Constraints in Tests**: Third-party UI constraints (e.g., `fl_chart` requiring >= 3 categories for a RadarChart) apply even in tests.
   - **Fix:** Test mock data MUST respect these constraints. Do not bypass manager guards by injecting faulty mock data directly into widgets.
+- **Gotcha 31: Automated Golden UI Verification**: Manual screen checking is highly error-prone. All new custom widgets or primary design updates must build a Golden test to lock in layout and look.
+  - **Fix:** Reference images must live in `test/goldens/`. Always run `flutter test --update-goldens` to lock your changes.
 
 ## Primitives & Reskin Gotchas
 - **Gotcha 26: BubblyButton Constraints**: Always wrap `BubblyButton` in layout constraints or specify container boundaries, as it defaults to `width: double.infinity` to align with the core grid.

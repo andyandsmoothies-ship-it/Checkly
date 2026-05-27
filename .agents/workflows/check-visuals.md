@@ -56,9 +56,11 @@ description: Execute a screenshot-based visual and aesthetic audit using AI visi
 
 `{Absolute_Path_to_visual_qa_report.md}`
 
-2. **Re-check** → After the fix, hot-reload the emulator, screenshot the same screens, and run `/check-visuals` again.
+2. **Automate** → Write an automated visual Golden/Snapshot test (e.g. `matchesGoldenFile` inside `test/goldens/` for Flutter, or standard visual snapshot assertions like `toHaveScreenshot()` inside Playwright/Jest for Web) to lock in the approved visual state.
 
-3. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.
+3. **Re-check** → After the fix and Golden/Snapshot creation, hot-reload the emulator/app, run `/check-visuals` again, and verify the automated visual tests pass.
+
+4. **Next chunk?** → Reply *"yes, continue to Chunk [N+1]"*.
 
 <mandatory_constraints>
 

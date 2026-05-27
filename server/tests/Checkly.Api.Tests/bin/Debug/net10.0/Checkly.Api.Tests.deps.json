@@ -43,6 +43,7 @@
           "Microsoft.EntityFrameworkCore.InMemory": "10.0.4",
           "Microsoft.EntityFrameworkCore.Sqlite": "10.0.4",
           "Microsoft.NET.Test.Sdk": "17.14.1",
+          "NetArchTest.Rules": "1.3.2",
           "coverlet.collector": "6.0.4",
           "xunit": "2.9.3",
           "xunit.runner.visualstudio": "3.1.4",
@@ -1066,6 +1067,46 @@
           "lib/net8.0/Microsoft.VisualStudio.TestPlatform.Common.dll": {},
           "lib/net8.0/Microsoft.VisualStudio.TestPlatform.ObjectModel.dll": {},
           "lib/net8.0/testhost.dll": {}
+        }
+      },
+      "Mono.Cecil/0.11.3": {
+        "runtime": {
+          "lib/netstandard2.0/Mono.Cecil.Mdb.dll": {
+            "assemblyVersion": "0.11.3.0",
+            "fileVersion": "0.11.3.0"
+          },
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {
+            "assemblyVersion": "0.11.3.0",
+            "fileVersion": "0.11.3.0"
+          },
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {
+            "assemblyVersion": "0.11.3.0",
+            "fileVersion": "0.11.3.0"
+          },
+          "lib/netstandard2.0/Mono.Cecil.dll": {
+            "assemblyVersion": "0.11.3.0",
+            "fileVersion": "0.11.3.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Mono.Cecil.Mdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {},
+          "lib/netstandard2.0/Mono.Cecil.dll": {}
+        }
+      },
+      "NetArchTest.Rules/1.3.2": {
+        "dependencies": {
+          "Mono.Cecil": "0.11.3"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NetArchTest.Rules.dll": {
+            "assemblyVersion": "1.3.1.0",
+            "fileVersion": "1.3.1.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/NetArchTest.Rules.dll": {}
         }
       },
       "Newtonsoft.Json/13.0.4": {
@@ -3710,6 +3751,20 @@
       "sha512": "sha512-d78LPzGKkJwsJXAQwsbJJ7LE7D1wB+rAyhHHAaODF+RDSQ0NgMjDFkSA1Djw18VrxO76GlKAjRUhl+H8NL8Z+Q==",
       "path": "microsoft.testplatform.testhost/17.14.1",
       "hashPath": "microsoft.testplatform.testhost.17.14.1.nupkg.sha512"
+    },
+    "Mono.Cecil/0.11.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DNYE+io5XfEE8+E+5padThTPHJARJHbz1mhbhMPNrrWGKVKKqj/KEeLvbawAmbIcT73NuxLV7itHZaYCZcVWGg==",
+      "path": "mono.cecil/0.11.3",
+      "hashPath": "mono.cecil.0.11.3.nupkg.sha512"
+    },
+    "NetArchTest.Rules/1.3.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-puPyNXkwJq8/UwXhHV8NrzNzkQl4IxEbcP+3PU0xLRiOedsVpaSdpwHhvOZfI0VwTcRvawCNxYQcSRbD4RUg4w==",
+      "path": "netarchtest.rules/1.3.2",
+      "hashPath": "netarchtest.rules.1.3.2.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.4": {
       "type": "package",
