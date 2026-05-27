@@ -36,9 +36,9 @@ class BodApAgingFunnel extends StatelessWidget {
     final theme = Theme.of(context);
 
     // Dynamic aging categories
-    final age30 = apAging['0-30'] ?? apAging['0-30 Days'] ?? 10;
-    final age60 = apAging['31-60'] ?? apAging['31-60 Days'] ?? 5;
-    final age90 = apAging['61-90'] ?? apAging['61-90 Days'] ?? 2;
+    final age7 = apAging['0-7'] ?? apAging['0-7 Days'] ?? 10;
+    final age30 = apAging['8-30'] ?? apAging['8-30 Days'] ?? 5;
+    final age90 = apAging['31-90'] ?? apAging['31-90 Days'] ?? 2;
     final ageOver = apAging['90+'] ?? apAging['90+ Days'] ?? 1;
 
     return StrokeCard(
@@ -84,12 +84,12 @@ class BodApAgingFunnel extends StatelessWidget {
             children: [
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, '0-30 Days'),
+                  onTap: () => _openBucketDetails(context, '0-7 Days'),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
-                    '0-30 Days',
-                    '$age30',
+                    '0-7 Days',
+                    '$age7',
                     AppColors.iguana.withValues(alpha: 0.15),
                     AppColors.iguana,
                   ),
@@ -98,12 +98,12 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, '31-60 Days'),
+                  onTap: () => _openBucketDetails(context, '8-30 Days'),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
-                    '31-60 Days',
-                    '$age60',
+                    '8-30 Days',
+                    '$age30',
                     AppColors.canary.withValues(alpha: 0.2),
                     AppColors.fox,
                   ),
@@ -112,11 +112,11 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, '61-90 Days'),
+                  onTap: () => _openBucketDetails(context, '31-90 Days'),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
-                    '61-90 Days',
+                    '31-90 Days',
                     '$age90',
                     AppColors.flamingo.withValues(alpha: 0.15),
                     AppColors.flamingo,

@@ -52,6 +52,11 @@ class BodAnalyticsApiService {
           {"categoryName": "Opening Tasks", "templateTitle": "Basic checklist", "avgScore": 85.8, "auditCount": 75},
           {"categoryName": "Closing Tasks", "templateTitle": "Basic checklist", "avgScore": 86.1, "auditCount": 75}
         ],
+        "goldenStore": {
+          "storeName": "Checkly Nguyen Hue",
+          "avgScore": 92.5,
+          "province": "Hanoi"
+        },
         "actionPlanAging": [
           {"bucket": "0-7d", "count": 4},
           {"bucket": "8-30d", "count": 6},

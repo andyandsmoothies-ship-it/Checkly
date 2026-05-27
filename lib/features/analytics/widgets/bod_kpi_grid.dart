@@ -36,6 +36,8 @@ class BodKpiGrid extends StatelessWidget {
         chainKpis['completionRateDelta']?.toDouble() ?? 0.0;
     final openAPs = chainKpis['openAPs'] ?? 0;
     final overdueAPs = chainKpis['overdueAPs'] ?? 0;
+    final activeStores = chainKpis['activeStores'] ?? 0;
+    final totalAuditors = chainKpis['totalAuditors'] ?? 0;
 
     return StrokeCard(
       child: Column(
@@ -138,6 +140,29 @@ class BodKpiGrid extends StatelessWidget {
                           ),
                         );
                       },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: _buildKpiCard(
+                      context,
+                      'Active Stores',
+                      '$activeStores',
+                      description: 'Total stores with audit activity (last 30 days)',
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildKpiCard(
+                      context,
+                      'Total Auditors',
+                      '$totalAuditors',
+                      description: 'Total unique auditors submitting audits',
                     ),
                   ),
                 ],

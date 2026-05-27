@@ -35,6 +35,7 @@ public static class SaveTemplateTree
         decimal? MinusPerFault,
         int OrderIndex,
         string? Metadata,
+        List<string>? CategoryTags,
         List<SaveGroupRequest> Children,
         List<SaveCriterionRequest> Criteria);
 
@@ -49,7 +50,8 @@ public static class SaveTemplateTree
         decimal? MinusImpact,
         decimal? MaxDeductionPoints,
         int OrderIndex,
-        string? Metadata);
+        string? Metadata,
+        List<string>? CategoryTags);
 
     public static async Task<IResult> HandleAsync(
         Guid id,
@@ -200,6 +202,7 @@ public static class SaveTemplateTree
                     MinusPerFault = g.MinusPerFault,
                     OrderIndex = g.OrderIndex,
                     Metadata = g.Metadata,
+                    CategoryTags = g.CategoryTags,
                     IsActive = true,
                     CreatedAt = now,
                     UpdatedAt = now,
@@ -219,6 +222,7 @@ public static class SaveTemplateTree
                     existing.MinusPerFault = g.MinusPerFault;
                     existing.OrderIndex = g.OrderIndex;
                     existing.Metadata = g.Metadata;
+                    existing.CategoryTags = g.CategoryTags;
                     existing.ParentId = parentId;
                     existing.IsActive = true;
                     existing.UpdatedAt = now;
@@ -238,6 +242,7 @@ public static class SaveTemplateTree
                         MinusPerFault = g.MinusPerFault,
                         OrderIndex = g.OrderIndex,
                         Metadata = g.Metadata,
+                        CategoryTags = g.CategoryTags,
                         IsActive = true,
                         CreatedAt = now,
                         UpdatedAt = now,
@@ -266,6 +271,7 @@ public static class SaveTemplateTree
                         MaxDeductionPoints = c.MaxDeductionPoints,
                         OrderIndex = c.OrderIndex,
                         Metadata = c.Metadata,
+                        CategoryTags = c.CategoryTags,
                         IsActive = true,
                         CreatedAt = now,
                         UpdatedAt = now,
@@ -285,6 +291,7 @@ public static class SaveTemplateTree
                     existingC.MaxDeductionPoints = c.MaxDeductionPoints;
                     existingC.OrderIndex = c.OrderIndex;
                     existingC.Metadata = c.Metadata;
+                    existingC.CategoryTags = c.CategoryTags;
                     existingC.IsActive = true;
                     existingC.UpdatedAt = now;
                 }
@@ -305,6 +312,7 @@ public static class SaveTemplateTree
                         MaxDeductionPoints = c.MaxDeductionPoints,
                         OrderIndex = c.OrderIndex,
                         Metadata = c.Metadata,
+                        CategoryTags = c.CategoryTags,
                         IsActive = true,
                         CreatedAt = now,
                         UpdatedAt = now,

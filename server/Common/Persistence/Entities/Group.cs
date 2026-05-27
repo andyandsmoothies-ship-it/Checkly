@@ -20,6 +20,7 @@ public sealed class Group
     public Guid? ParentId { get; set; }
     public string? Metadata { get; set; }
     public bool IsActive { get; set; }
+    public List<string>? CategoryTags { get; set; }
 
     // Navigation properties
     public Template Template { get; set; } = null!;

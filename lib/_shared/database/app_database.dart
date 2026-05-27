@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 30;
+  int get schemaVersion => 31;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -238,6 +238,11 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(
           'CREATE INDEX IF NOT EXISTS idx_cached_action_plans_status ON cached_action_plans(status)',
         );
+      }
+      if (from < 31) {
+        // v31: CategoryTags — add categoryTags to CachedGroups and CachedCriteria
+        await m.addColumn(cachedGroups, cachedGroups.categoryTags);
+        await m.addColumn(cachedCriteria, cachedCriteria.categoryTags);
       }
     },
     beforeOpen: (details) async {

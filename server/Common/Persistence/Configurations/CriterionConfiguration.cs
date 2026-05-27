@@ -26,6 +26,7 @@ public class CriterionConfiguration : IEntityTypeConfiguration<Criterion>
         e.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
         e.Property(x => x.Metadata).HasColumnName("metadata").HasColumnType("jsonb");
         e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+        e.Property(x => x.CategoryTags).HasColumnName("category_tags");
 
         e.HasOne(x => x.Group)
             .WithMany(g => g.Criteria)

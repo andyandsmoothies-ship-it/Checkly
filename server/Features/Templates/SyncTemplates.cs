@@ -31,6 +31,7 @@ public static class SyncTemplates
         decimal? MinusPerFault,
         int OrderIndex,
         string? Metadata,
+        List<string>? CategoryTags,
         bool IsActive,
         DateTimeOffset UpdatedAt);
 
@@ -76,7 +77,7 @@ public static class SyncTemplates
             .Select(g => new SyncGroupDto(
                 g.Id, g.TemplateId, g.ParentId, g.Title, g.Description,
                 g.Weight, g.MaxDeductionPoints, g.MinusPerFault, g.OrderIndex, g.Metadata,
-                g.IsActive, g.UpdatedAt))
+                g.CategoryTags, g.IsActive, g.UpdatedAt))
             .Take(limit)
             .ToListAsync(ct);
 
@@ -84,7 +85,8 @@ public static class SyncTemplates
             .Where(c => c.UpdatedAt > since)
             .Select(c => new CriterionDto(
                 c.Id, c.Label, c.Description, c.InputType, c.PointsWeight,
-                c.IsCcp, c.IsRisk, c.MinusImpact, c.MaxDeductionPoints, c.OrderIndex, c.Metadata))
+                c.IsCcp, c.IsRisk, c.MinusImpact, c.MaxDeductionPoints, c.OrderIndex, c.Metadata,
+                c.CategoryTags))
             .Take(limit)
             .ToListAsync(ct);
 

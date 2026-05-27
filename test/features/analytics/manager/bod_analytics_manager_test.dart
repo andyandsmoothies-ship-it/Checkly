@@ -37,7 +37,7 @@ void main() {
     topStores: const [],
     bottomStores: const [],
     categoryBreakdown: const [],
-    apAging: const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0),
+    apAging: const BodApAging(bucket0to7: 0, bucket8to30: 0, bucket31to90: 0, bucket90Plus: 0),
     auditorProductivity: const [],
     computedAt: '2026-05-24T02:15:00Z',
     snapshotStatus: 'Complete',
@@ -50,7 +50,7 @@ void main() {
     topStores: const [],
     bottomStores: const [],
     categoryBreakdown: const [],
-    apAging: const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0),
+    apAging: const BodApAging(bucket0to7: 0, bucket8to30: 0, bucket31to90: 0, bucket90Plus: 0),
     auditorProductivity: const [],
     computedAt: '2026-05-24T02:20:00Z', // Updated timestamp
     snapshotStatus: 'Complete',

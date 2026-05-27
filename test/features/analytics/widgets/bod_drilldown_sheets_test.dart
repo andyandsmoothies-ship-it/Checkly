@@ -261,5 +261,35 @@ void main() {
       expect(find.byType(BodApBucketDetailSheet), findsOneWidget);
       verify(() => mockManager.loadApDetails('All')).called(1);
     });
+
+    testWidgets('C4-TEST-02: BodKpiGrid displays active stores and total auditors counts', (tester) async {
+      final chainKpis = {
+        'totalAudits': 150,
+        'avgScore': 78.5,
+        'completionRate': 92.0,
+        'completionRateDelta': 1.5,
+        'openAPs': 12,
+        'overdueAPs': 3,
+        'activeStores': 45,
+        'totalAuditors': 14,
+      };
+
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: chainKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+
+      // Check active stores card
+      expect(find.text('Active Stores'), findsOneWidget);
+      expect(find.text('45'), findsOneWidget);
+
+      // Check total auditors card
+      expect(find.text('Total Auditors'), findsOneWidget);
+      expect(find.text('14'), findsOneWidget);
+    });
   });
 }

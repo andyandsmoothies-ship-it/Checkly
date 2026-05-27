@@ -66,7 +66,7 @@ Checkly uses a **Hierarchical Tree Structure** to model audit templates. This st
 │ ParentId (FK) - UUID (Self-Ref, null) ◄── Allows infinite subsection nesting
 │ Title - string                        │
 │ Description - string (nullable)       │
-│ CategoryTags - string array (null)    ◄── Cross-template analytics tags (e.g. ['Food Safety'])
+│ CategoryTags - string array (null)    ◄── [UNIMPLEMENTED in code] Cross-template analytics tags
 │ Weight - decimal (nullable)           │
 │ MaxDeductionPoints - decimal (null)   │
 │ MinusPerFault - decimal (nullable)    │
@@ -86,8 +86,8 @@ Checkly uses a **Hierarchical Tree Structure** to model audit templates. This st
 │ GroupId (FK) - UUID                   │
 │ Label - string                        │
 │ Description - string (nullable)       │
-│ InputType - string                    ◄── 'pass_fail', 'scale', 'numeric', 'single_choice', 'multi_choice', 'text', 'photo', 'signature', 'barcode'
-│ CategoryTags - string array (null)    ◄── Cross-template tagging for granular analytics
+│ InputType - string                    ◄── 'pass_fail', 'scale', 'numeric', 'single_choice', 'multi_choice', 'text', 'photo', 'signature', 'barcode' (Note: code comments are currently stale)
+│ CategoryTags - string array (null)    ◄── [UNIMPLEMENTED in code] Cross-template tagging for granular analytics
 │ PointsWeight - decimal (nullable)     │
 │ IsCcp - boolean (Critical Control Pt) │
 │ IsRisk - boolean (Fatal Zero Risk)    │
@@ -123,10 +123,11 @@ The engine supports mandatory Corrective and Preventive Actions (CAPA) triggered
 * `requireCommentOnFail: true` — A textual explanation must be provided.
 * `requireActionPlanOnFail: true` — Forces the auditor to spawn a tracked "Action Plan / Task" for the store manager to resolve.
 
-### Cross-Template Category Tagging
-To support unified boardroom analytics (BOD) where executives want to see "Food Safety" across *all* active templates, the system relies on `CategoryTags`.
-* Both `Group` and `Criterion` support a string array of tags.
-* This allows analytics endpoints to query flat sections grouped by explicit tags, preventing data fragmentation when admins rename sections in the UI.
+### Cross-Template Category Tagging (UNIMPLEMENTED DRIFT)
+*Note: This feature is currently missing from the codebase.*
+To support unified boardroom analytics (BOD) where executives want to see "Food Safety" across *all* active templates, the system was designed to rely on `CategoryTags`.
+* Both `Group` and `Criterion` were intended to support a string array of tags.
+* Currently, the system relies on the `SectionTitle` from `SubmissionSectionScore` instead, which causes data fragmentation if admins rename sections in the UI. Implementing `CategoryTags` requires a database migration.
 
 ### Branching & Conditional Logic
 To keep offline sync lightweight, the engine employs a "Linear by Default, Branched by Metadata" strategy.
@@ -252,7 +253,7 @@ All template operations are performed through transactional, secure Minimal API 
 * **Purpose**: Assigns the template to specific user groups.
 
 ### 5. Template Sync (Offline-First)
-* **Route**: `GET /api/sync/templates?since={timestamp}`
+* **Route**: `GET /api/sync/templates?since={timestamp}` (Mapped in `SyncEndpoints.cs`, not `TemplateEndpoints.cs`)
 * **Purpose**: Allows offline Flutter devices to download all new or modified templates.
 
 ---

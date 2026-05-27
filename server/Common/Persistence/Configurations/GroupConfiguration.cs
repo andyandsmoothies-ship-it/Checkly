@@ -24,6 +24,7 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
         e.Property(x => x.ParentId).HasColumnName("parent_id");
         e.Property(x => x.Metadata).HasColumnName("metadata").HasColumnType("jsonb");
         e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+        e.Property(x => x.CategoryTags).HasColumnName("category_tags");
 
         e.HasOne(x => x.Template)
             .WithMany(t => t.Groups)

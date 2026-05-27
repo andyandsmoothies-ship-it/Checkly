@@ -5,6 +5,8 @@ class BodChainKpis {
   final double completionRate;
   final int openAPs;
   final int overdueAPs;
+  final int activeStores;
+  final int totalAuditors;
 
   const BodChainKpis({
     required this.totalAudits,
@@ -13,6 +15,8 @@ class BodChainKpis {
     this.completionRate = 0.0,
     this.openAPs = 0,
     this.overdueAPs = 0,
+    this.activeStores = 0,
+    this.totalAuditors = 0,
   });
 
   factory BodChainKpis.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,8 @@ class BodChainKpis {
           : (json['completionRate'] ?? 0.0).toDouble(),
       openAPs: json['openActionPlans'] ?? json['openAPs'] ?? 0,
       overdueAPs: json['overdueActionPlans'] ?? json['overdueAPs'] ?? 0,
+      activeStores: json['activeStores'] ?? 0,
+      totalAuditors: json['totalAuditors'] ?? 0,
     );
   }
 
@@ -40,6 +46,8 @@ class BodChainKpis {
       'completionRate': completionRate,
       'openAPs': openAPs,
       'overdueAPs': overdueAPs,
+      'activeStores': activeStores,
+      'totalAuditors': totalAuditors,
     };
   }
 }
@@ -75,86 +83,101 @@ class BodStorePerformanceEntry {
 }
 
 class BodApAging {
-  final int bucket0to30;
-  final int bucket31to60;
-  final int bucket61to90;
+  final int bucket0to7;
+  final int bucket8to30;
+  final int bucket31to90;
   final int bucket90Plus;
 
   const BodApAging({
-    required this.bucket0to30,
-    required this.bucket31to60,
-    required this.bucket61to90,
+    required this.bucket0to7,
+    required this.bucket8to30,
+    required this.bucket31to90,
     required this.bucket90Plus,
   });
 
   factory BodApAging.fromJson(Map<String, dynamic> json) {
     return BodApAging(
-      bucket0to30: json['bucket0to30'] ?? 0,
-      bucket31to60: json['bucket31to60'] ?? 0,
-      bucket61to90: json['bucket61to60'] ?? json['bucket61to90'] ?? 0,
+      bucket0to7: json['bucket0to7'] ?? json['bucket0to30'] ?? 0,
+      bucket8to30: json['bucket8to30'] ?? json['bucket31to60'] ?? 0,
+      bucket31to90: json['bucket31to90'] ?? json['bucket61to90'] ?? 0,
       bucket90Plus: json['bucket90Plus'] ?? 0,
     );
   }
 
   /// Handles both server shapes:
-  ///   List: [{"range":"0-30","count":5}, ...]
-  ///   Map:  {"bucket0to30": 5, ...}
+  ///   List: [{"range":"0-7d","count":5}, ...]
+  ///   Map:  {"bucket0to7": 5, ...}
   static BodApAging fromDynamic(dynamic raw) {
     if (raw == null) {
-      return const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0);
+      return const BodApAging(
+        bucket0to7: 0,
+        bucket8to30: 0,
+        bucket31to90: 0,
+        bucket90Plus: 0,
+      );
     }
     if (raw is Map) {
       return BodApAging.fromJson(Map<String, dynamic>.from(raw));
     }
     if (raw is List) {
-      int b0 = 0, b31 = 0, b61 = 0, b90 = 0;
+      int b0to7 = 0, b8to30 = 0, b31to90 = 0, b90Plus = 0;
       for (final item in raw) {
         if (item is! Map) continue;
-        final range = (item['range'] ?? item['bucket'] ?? '').toString();
+        final range = (item['range'] ?? item['bucket'] ?? '').toString().toLowerCase();
         final count = (item['count'] ?? item['value'] ?? 0) as int;
-        if (range.startsWith('0')) {
-          b0 = count;
-        } else if (range.startsWith('31')) {
-          b31 = count;
-        } else if (range.startsWith('61')) {
-          b61 = count;
-        } else if (range.startsWith('90') || range.contains('+')) {
-          b90 = count;
+        if (range.contains('0-7')) {
+          b0to7 = count;
+        } else if (range.contains('8-30')) {
+          b8to30 = count;
+        } else if (range.contains('31-90')) {
+          b31to90 = count;
+        } else if (range.contains('90') || range.contains('+')) {
+          b90Plus = count;
         }
       }
-      return BodApAging(bucket0to30: b0, bucket31to60: b31, bucket61to90: b61, bucket90Plus: b90);
+      return BodApAging(
+        bucket0to7: b0to7,
+        bucket8to30: b8to30,
+        bucket31to90: b31to90,
+        bucket90Plus: b90Plus,
+      );
     }
-    return const BodApAging(bucket0to30: 0, bucket31to60: 0, bucket61to90: 0, bucket90Plus: 0);
+    return const BodApAging(
+      bucket0to7: 0,
+      bucket8to30: 0,
+      bucket31to90: 0,
+      bucket90Plus: 0,
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '0-30': bucket0to30,
-      '31-60': bucket31to60,
-      '61-90': bucket61to90,
+      '0-7': bucket0to7,
+      '8-30': bucket8to30,
+      '31-90': bucket31to90,
       '90+': bucket90Plus,
     };
   }
 }
 
 class BodGoldenStore {
-  final String storeId;
   final String storeName;
   final double avgScore;
+  final String province;
 
   BodGoldenStore({
-    required this.storeId,
     required this.storeName,
     required this.avgScore,
+    required this.province,
   });
 
   factory BodGoldenStore.fromJson(Map<String, dynamic> json) {
     return BodGoldenStore(
-      storeId: json['storeId'] ?? '',
       storeName: json['storeName'] ?? '',
       avgScore: (json['avgScore'] ?? 0.0) is int
           ? (json['avgScore'] as int).toDouble()
           : (json['avgScore'] ?? 0.0).toDouble(),
+      province: json['province'] ?? '',
     );
   }
 }

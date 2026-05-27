@@ -76,6 +76,7 @@ class TemplateDao {
           orderIndex: Value(g.orderIndex),
           parentId: Value(parentId),
           metadata: Value(g.metadata),
+          categoryTags: Value(g.categoryTags?.join(',')),
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
@@ -134,6 +135,7 @@ class TemplateDao {
               isRisk: Value(c.isRisk),
               orderIndex: Value(c.orderIndex),
               metadata: Value(c.metadata),
+              categoryTags: Value(c.categoryTags?.join(',')),
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
             ),
@@ -178,6 +180,7 @@ class TemplateDao {
             minusPerFault: g.minusPerFault,
             orderIndex: g.orderIndex,
             metadata: g.metadata,
+            categoryTags: g.categoryTags?.split(',').where((t) => t.isNotEmpty).toList(),
             children: buildTree(children),
             criteria: criteria
                 .map(
@@ -193,6 +196,7 @@ class TemplateDao {
                     isRisk: c.isRisk,
                     orderIndex: c.orderIndex,
                     metadata: c.metadata,
+                    categoryTags: c.categoryTags?.split(',').where((t) => t.isNotEmpty).toList(),
                   ),
                 )
                 .toList(),

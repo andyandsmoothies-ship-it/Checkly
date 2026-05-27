@@ -59,11 +59,11 @@ public static class GetTemplate
             .Where(g => g.ParentId == parentId)
             .Select(g => new GroupDto(
                 g.Id, g.Title, g.Description, g.Weight, g.MaxDeductionPoints, g.MinusPerFault,
-                g.OrderIndex, g.Metadata,
+                g.OrderIndex, g.Metadata, g.CategoryTags,
                 BuildGroupTree(allGroups, g.Id),
                 g.Criteria.Select(c => new CriterionDto(
                     c.Id, c.Label, c.Description, c.InputType, c.PointsWeight,
-                    c.IsCcp, c.IsRisk, c.MinusImpact, c.MaxDeductionPoints, c.OrderIndex, c.Metadata)).ToList()))
+                    c.IsCcp, c.IsRisk, c.MinusImpact, c.MaxDeductionPoints, c.OrderIndex, c.Metadata, c.CategoryTags)).ToList()))
             .ToList();
     }
 }

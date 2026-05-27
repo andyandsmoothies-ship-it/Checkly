@@ -109,6 +109,7 @@ class GroupDto {
   final double? minusPerFault;
   final int orderIndex;
   final String? metadata;
+  final List<String>? categoryTags;
   final List<GroupDto> children;
   final List<CriterionDto> criteria;
 
@@ -121,6 +122,7 @@ class GroupDto {
     this.minusPerFault,
     required this.orderIndex,
     this.metadata,
+    this.categoryTags,
     required this.children,
     required this.criteria,
   });
@@ -134,6 +136,9 @@ class GroupDto {
     minusPerFault: (json['minusPerFault'] as num?)?.toDouble(),
     orderIndex: json['orderIndex'] as int,
     metadata: _parseJsonString(json['metadata']),
+    categoryTags: json['categoryTags'] == null
+        ? null
+        : (json['categoryTags'] as List<dynamic>).map((e) => e as String).toList(),
     children:
         (json['children'] as List<dynamic>?)
             ?.map((g) => GroupDto.fromJson(g as Map<String, dynamic>))
@@ -160,6 +165,7 @@ class CriterionDto {
   final double? maxDeductionPoints;
   final int orderIndex;
   final String? metadata;
+  final List<String>? categoryTags;
 
   const CriterionDto({
     required this.id,
@@ -173,6 +179,7 @@ class CriterionDto {
     this.maxDeductionPoints,
     required this.orderIndex,
     this.metadata,
+    this.categoryTags,
   });
 
   factory CriterionDto.fromJson(Map<String, dynamic> json) => CriterionDto(
@@ -187,5 +194,8 @@ class CriterionDto {
     maxDeductionPoints: (json['maxDeductionPoints'] as num?)?.toDouble(),
     orderIndex: json['orderIndex'] as int,
     metadata: _parseJsonString(json['metadata']),
+    categoryTags: json['categoryTags'] == null
+        ? null
+        : (json['categoryTags'] as List<dynamic>).map((e) => e as String).toList(),
   );
 }

@@ -81,10 +81,10 @@ The dashboard contains 6 distinct analytical widgets. Each card has a specific p
 * **What it displays**:
   * **Total Audits Completed**: Count of all non-rejected completed submissions.
   * **Average Compliance Score**: Rounded mean score of scored templates.
-  * **Flagship Benchmark Subtitle**: Under the Average Compliance Score, the UI displays a benchmark label comparing the organization to the top store: `"X% of flagship (Store Name Y%)"`. The top store is the store with the highest average score and at least one completed audit in the last 30 days.
+  * **Flagship Benchmark Subtitle**: Under the Average Compliance Score, the UI displays a benchmark label comparing the organization to the top store: `"X% of flagship (Store Name Y%)"`. The top store is the store with the highest average score and at least one completed audit in the last 30 days. Note: This benchmark footer is populated dynamically when filters are active (live query mode); in the baseline nightly snapshot response, `goldenStore` is `null` and the benchmark subtitle is hidden in the UI by default.
   * **Audit Completion Rate**: Percentage of completed scheduled audits.
   * **Open & Overdue Action Plans**: Outstanding corrective action plans.
-  * **Average Time-to-Resolve (TTR)**: Average days taken to close resolved action plans (`avgTtrDays`).
+  * **Average Time-to-Resolve (TTR)**: Average days taken to close resolved action plans (`avgTtrDays`). Note: In the pre-computed nightly snapshot payload, `avgTtrDays` defaults to `0.0` (not pre-calculated by the background job), but it is fully computed dynamically when queries shift to the live filtered path.
 * **Drill-down behavior**:
   * Tapping the **Open/Overdue Action Plans** tile opens the **Action Plan Aging Bottom Sheet**, displaying all pending corrective plans across the organization.
   * Displays a Month-over-Month (MoM) variance indicator (e.g. `+2.4% ↑` or `-1.1% ↓`) computed client-side.
@@ -114,7 +114,7 @@ The dashboard contains 6 distinct analytical widgets. Each card has a specific p
 * **Drill-down behavior**:
   * Tapping an aging bucket opens the **Action Plan Bucket Details Sheet**.
   * Queries real database action plans where age falls into the selected duration.
-  * Returns a list containing: `{ CriteriaLabel, StoreName, ManagerName, AgeInDays, Deadline }`.
+  * Returns a list containing: `{ CriteriaLabel, StoreName, ManagerName, AgeInDays }`. Note: The `Deadline` column is not mapped or returned in the `ApDetailEntry` DTO by the live database endpoint.
 
 ### Card 6: Auditor Productivity & Bias Scatter
 * **What it displays**: A scatter plot mapping auditors by the number of completed audits (X-axis) and their average audit score (Y-axis). Helps executives spot strict or generous grading behaviors.
@@ -149,11 +149,11 @@ Instead of querying millions of audit transaction rows to calculate when a store
 * Every time a device syncs, the server executes a quick, direct `UPDATE Stores SET LastSyncedAt = NOW() WHERE Id = @StoreId`.
 * Reading the sync status on the leaderboard is a simple, zero-join project query.
 
-### 2. Indexed Address Geography for Fast Filtering
+### 2. Standard Owned Address Geography for Fast Filtering
 The owned `StoreAddress` configuration maps geographic boundaries natively:
 * `Store.Address2.Province`
 * `Store.Address2.District`
-Database queries utilize composite indexes on these columns to guarantee sub-millisecond filtering times during live presentation sessions.
+Database queries utilize owned properties on these columns. Note: While designed for speed, composite database indexes are not registered in the EF Core configuration (`StoreConfiguration.cs`) for `address_province` and `address_district` in the current version. Live queries run performant single-table filtering.
 
 ---
 
@@ -164,53 +164,92 @@ Database queries utilize composite indexes on these columns to guarantee sub-mil
 * **Query Parameters**:
   * `province` (string, optional) — Filter by province.
   * `district` (string, optional) — Cascading filter by district.
-* **Response Model (`BodReportResponse`)**:
-  ```json
-  {
-    "status": "completed",
-    "date": "2026-05-26",
-    "computedAt": "2026-05-26T02:00:00Z",
-    "allowedActions": ["refresh"],
-    "kpis": {
-      "totalAudits": 482,
-      "avgScore": 82.4,
-      "completionRate": 94.2,
-      "openActionPlans": 12,
-      "overdueActionPlans": 3,
-      "avgTtrDays": 4.5,
-      "activeStores": 45,
-      "totalAuditors": 8
-    },
-    "goldenStore": {
-      "storeId": "guid",
-      "storeName": "Hanoi Central Store",
-      "avgScore": 95.0,
-      "auditCount": 8
-    },
-    "trend": [
-      { "month": "2025-06", "avgScore": 81.2, "auditCount": 40 },
-      { "month": "2025-07", "avgScore": 83.5, "auditCount": 42 }
-    ],
-    "topStores": [
-      { "storeId": "guid", "storeName": "Store A", "avgScore": 95.5, "auditCount": 5, "lastSyncedAt": "2026-05-26T02:00:00Z" }
-    ],
-    "bottomStores": [
-      { "storeId": "guid", "storeName": "Store Z", "avgScore": 62.1, "auditCount": 4, "lastSyncedAt": "2026-05-25T18:30:00Z" }
-    ],
-    "weaknesses": [
-      { "categoryName": "Food Safety", "templateTitle": "Food Safety Check", "avgScore": 72.1, "auditCount": 24 }
-    ],
-    "actionPlanAging": [
-      { "bucketLabel": "0-7d", "count": 5 },
-      { "bucketLabel": "8-30d", "count": 4 },
-      { "bucketLabel": "31-90d", "count": 2 },
-      { "bucketLabel": "90d+", "count": 1 }
-    ],
-    "auditorProductivity": [
-      { "auditorId": "guid", "auditorName": "John Doe", "completedAudits": 15, "avgScore": 84.2 }
-    ]
-  }
-  ```
+* **Response Model Schema**:
+  The response structure varies slightly depending on whether the baseline nightly snapshot is served or a live dynamic regional query is active.
+
+#### Structure A: Dynamic Live Query (Province/District Filters Active)
+```json
+{
+  "isLiveData": true,
+  "kpis": {
+    "totalAudits": 482,
+    "avgScore": 82.4,
+    "completionRate": 94.2,
+    "openActionPlans": 12,
+    "overdueActionPlans": 3,
+    "activeStores": 45,
+    "totalAuditors": 8,
+    "avgTtrDays": 4.5
+  },
+  "goldenStore": {
+    "storeName": "Hanoi Central Store",
+    "avgScore": 95.0,
+    "province": "Hanoi"
+  },
+  "trend": [
+    { "month": "2025-06", "avgScore": 81.2, "auditCount": 40 },
+    { "month": "2025-07", "avgScore": 83.5, "auditCount": 42 }
+  ],
+  "topStores": [
+    { "storeId": "guid", "storeName": "Store A", "avgScore": 95.5, "auditCount": 5, "lastSyncedAt": "2026-05-26T02:00:00Z" }
+  ],
+  "bottomStores": [
+    { "storeId": "guid", "storeName": "Store Z", "avgScore": 62.1, "auditCount": 4, "lastSyncedAt": "2026-05-25T18:30:00Z" }
+  ],
+  "weaknesses": [
+    { "categoryName": "Food Safety", "templateTitle": "Food Safety Check", "avgScore": 72.1, "auditCount": 24 }
+  ],
+  "actionPlanAging": [
+    { "bucket": "0-7d", "count": 5 },
+    { "bucket": "8-30d", "count": 4 },
+    { "bucket": "31-90d", "count": 2 },
+    { "bucket": "90d+", "count": 1 }
+  ],
+  "auditorProductivity": [
+    { "auditorId": "guid", "auditorName": "John Doe", "completedAudits": 15, "avgScore": 84.2 }
+  ],
+  "allowedActions": ["refresh"]
+}
+```
+
+#### Structure B: Nightly Cached Snapshot (No Filter Active)
+```json
+{
+  "kpis": {
+    "totalAudits": 482,
+    "avgScore": 82.4,
+    "completionRate": 94.2,
+    "openActionPlans": 12,
+    "overdueActionPlans": 3,
+    "activeStores": 45,
+    "totalAuditors": 8,
+    "avgTtrDays": 0.0
+  },
+  "goldenStore": null,
+  "trend": [
+    { "month": "2025-06", "avgScore": 81.2, "auditCount": 40 }
+  ],
+  "topStores": [
+    { "storeId": "guid", "storeName": "Store A", "avgScore": 95.5, "auditCount": 5, "lastSyncedAt": null }
+  ],
+  "bottomStores": [
+    { "storeId": "guid", "storeName": "Store Z", "avgScore": 62.1, "auditCount": 4, "lastSyncedAt": null }
+  ],
+  "weaknesses": [
+    { "categoryName": "Food Safety", "templateTitle": "Food Safety Check", "avgScore": 72.1, "auditCount": 24 }
+  ],
+  "actionPlanAging": [
+    { "bucket": "0-7d", "count": 5 }
+  ],
+  "auditorProductivity": [
+    { "auditorId": "guid", "auditorName": "John Doe", "completedAudits": 15, "avgScore": 84.2 }
+  ],
+  "status": "completed",
+  "date": "2026-05-26",
+  "computedAt": "2026-05-26T02:00:00Z",
+  "allowedActions": ["refresh"]
+}
+```
 
 ### 2. Store Executive Summary Endpoint
 * **Route**: `GET /api/analytics/stores/{storeId}/bod-summary`
@@ -229,7 +268,7 @@ Database queries utilize composite indexes on these columns to guarantee sub-mil
   ```
 
 ### 3. Category Compliance Details Endpoint
-* **Route**: `GET /api/analytics/bod/category/{categoryName}`
+* **Route**: `GET /api/analytics/bod/category/{name}`
 * **Response Model (`List<CategoryStoreEntry>`)**:
   ```json
   [
@@ -248,8 +287,7 @@ Database queries utilize composite indexes on these columns to guarantee sub-mil
       "criteriaLabel": "Check temperature log missing entries",
       "storeName": "Store Z",
       "managerName": "Michael Scott",
-      "ageInDays": 94,
-      "deadline": "2026-02-20T17:00:00Z"
+      "ageInDays": 94
     }
   ]
   ```

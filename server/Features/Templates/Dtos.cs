@@ -37,6 +37,7 @@ public sealed record GroupDto(
     decimal? MinusPerFault,
     int OrderIndex,
     string? Metadata,
+    List<string>? CategoryTags,
     List<GroupDto> Children,
     List<CriterionDto> Criteria);
 
@@ -51,7 +52,8 @@ public sealed record CriterionDto(
     decimal? MinusImpact,
     decimal? MaxDeductionPoints,
     int OrderIndex,
-    string? Metadata);
+    string? Metadata,
+    List<string>? CategoryTags);
 
 public sealed record CreateTemplateRequest(
     string Title,

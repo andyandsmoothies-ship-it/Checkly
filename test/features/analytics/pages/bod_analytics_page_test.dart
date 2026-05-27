@@ -90,10 +90,10 @@ void main() {
     topStores: [],
     bottomStores: [],
     categoryBreakdown: [],
-    apAging: BodApAging(
-      bucket0to30: 0,
-      bucket31to60: 0,
-      bucket61to90: 0,
+    apAging: const BodApAging(
+      bucket0to7: 0,
+      bucket8to30: 0,
+      bucket31to90: 0,
       bucket90Plus: 0,
     ),
     auditorProductivity: [],
@@ -108,10 +108,10 @@ void main() {
     topStores: [],
     bottomStores: [],
     categoryBreakdown: [],
-    apAging: BodApAging(
-      bucket0to30: 0,
-      bucket31to60: 0,
-      bucket61to90: 0,
+    apAging: const BodApAging(
+      bucket0to7: 0,
+      bucket8to30: 0,
+      bucket31to90: 0,
       bucket90Plus: 0,
     ),
     auditorProductivity: [],
@@ -145,10 +145,10 @@ void main() {
       ),
     ],
     categoryBreakdown: [],
-    apAging: BodApAging(
-      bucket0to30: 0,
-      bucket31to60: 0,
-      bucket61to90: 0,
+    apAging: const BodApAging(
+      bucket0to7: 0,
+      bucket8to30: 0,
+      bucket31to90: 0,
       bucket90Plus: 0,
     ),
     auditorProductivity: [],
@@ -156,9 +156,9 @@ void main() {
     snapshotStatus: 'Complete',
     allowedActions: ['refresh'],
     goldenStore: BodGoldenStore(
-      storeId: 'store-1',
       storeName: 'Siam Square',
       avgScore: 96.5,
+      province: 'Bangkok',
     ),
   );
 
@@ -422,9 +422,9 @@ void main() {
           bottomStores: [],
           categoryBreakdown: [],
           apAging: const BodApAging(
-            bucket0to30: 10,
-            bucket31to60: 5,
-            bucket61to90: 2,
+            bucket0to7: 10,
+            bucket8to30: 5,
+            bucket31to90: 2,
             bucket90Plus: 1,
           ),
           auditorProductivity: [],
@@ -459,15 +459,15 @@ void main() {
         ]);
         when(() => mockManager.loadApDetails(any())).thenAnswer((_) async {});
 
-        // 4. Tap the first bucket (0-30 Days)
-        final firstBucket = find.text('0-30 Days');
+        // 4. Tap the first bucket (0-7 Days)
+        final firstBucket = find.text('0-7 Days');
         await tester.ensureVisible(firstBucket);
         await tester.pumpAndSettle();
         await tester.tap(firstBucket);
         await tester.pumpAndSettle();
 
         // 5. Verify the sheet is displayed and displays universal list card with items
-        expect(find.text('0-30 Days Overdue Action Plans'), findsOneWidget);
+        expect(find.text('0-7 Days Overdue Action Plans'), findsOneWidget);
         expect(find.text('Store: Central Market'), findsOneWidget);
         expect(find.text('Manager: Andy Manager'), findsOneWidget);
         expect(find.text('12 Days Overdue'), findsOneWidget);
@@ -504,9 +504,9 @@ void main() {
           bottomStores: [],
           categoryBreakdown: [],
           apAging: const BodApAging(
-            bucket0to30: 0,
-            bucket31to60: 0,
-            bucket61to90: 0,
+            bucket0to7: 0,
+            bucket8to30: 0,
+            bucket31to90: 0,
             bucket90Plus: 0,
           ),
           auditorProductivity: [],

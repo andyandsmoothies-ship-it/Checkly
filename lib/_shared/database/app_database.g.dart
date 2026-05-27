@@ -689,6 +689,17 @@ class $CachedGroupsTable extends CachedGroups
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _categoryTagsMeta = const VerificationMeta(
+    'categoryTags',
+  );
+  @override
+  late final GeneratedColumn<String> categoryTags = GeneratedColumn<String>(
+    'category_tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isActiveMeta = const VerificationMeta(
     'isActive',
   );
@@ -738,6 +749,7 @@ class $CachedGroupsTable extends CachedGroups
     orderIndex,
     parentId,
     metadata,
+    categoryTags,
     isActive,
     createdAt,
     updatedAt,
@@ -826,6 +838,15 @@ class $CachedGroupsTable extends CachedGroups
         metadata.isAcceptableOrUnknown(data['metadata']!, _metadataMeta),
       );
     }
+    if (data.containsKey('category_tags')) {
+      context.handle(
+        _categoryTagsMeta,
+        categoryTags.isAcceptableOrUnknown(
+          data['category_tags']!,
+          _categoryTagsMeta,
+        ),
+      );
+    }
     if (data.containsKey('is_active')) {
       context.handle(
         _isActiveMeta,
@@ -897,6 +918,10 @@ class $CachedGroupsTable extends CachedGroups
         DriftSqlType.string,
         data['${effectivePrefix}metadata'],
       ),
+      categoryTags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_tags'],
+      ),
       isActive: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_active'],
@@ -929,6 +954,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
   final int orderIndex;
   final String? parentId;
   final String? metadata;
+  final String? categoryTags;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -943,6 +969,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     required this.orderIndex,
     this.parentId,
     this.metadata,
+    this.categoryTags,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
@@ -971,6 +998,9 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     }
     if (!nullToAbsent || metadata != null) {
       map['metadata'] = Variable<String>(metadata);
+    }
+    if (!nullToAbsent || categoryTags != null) {
+      map['category_tags'] = Variable<String>(categoryTags);
     }
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -1002,6 +1032,9 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
       metadata: metadata == null && nullToAbsent
           ? const Value.absent()
           : Value(metadata),
+      categoryTags: categoryTags == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryTags),
       isActive: Value(isActive),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -1026,6 +1059,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
       orderIndex: serializer.fromJson<int>(json['orderIndex']),
       parentId: serializer.fromJson<String?>(json['parentId']),
       metadata: serializer.fromJson<String?>(json['metadata']),
+      categoryTags: serializer.fromJson<String?>(json['categoryTags']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -1045,6 +1079,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
       'orderIndex': serializer.toJson<int>(orderIndex),
       'parentId': serializer.toJson<String?>(parentId),
       'metadata': serializer.toJson<String?>(metadata),
+      'categoryTags': serializer.toJson<String?>(categoryTags),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -1062,6 +1097,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     int? orderIndex,
     Value<String?> parentId = const Value.absent(),
     Value<String?> metadata = const Value.absent(),
+    Value<String?> categoryTags = const Value.absent(),
     bool? isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -1080,6 +1116,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     orderIndex: orderIndex ?? this.orderIndex,
     parentId: parentId.present ? parentId.value : this.parentId,
     metadata: metadata.present ? metadata.value : this.metadata,
+    categoryTags: categoryTags.present ? categoryTags.value : this.categoryTags,
     isActive: isActive ?? this.isActive,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -1106,6 +1143,9 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
           : this.orderIndex,
       parentId: data.parentId.present ? data.parentId.value : this.parentId,
       metadata: data.metadata.present ? data.metadata.value : this.metadata,
+      categoryTags: data.categoryTags.present
+          ? data.categoryTags.value
+          : this.categoryTags,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -1125,6 +1165,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
           ..write('orderIndex: $orderIndex, ')
           ..write('parentId: $parentId, ')
           ..write('metadata: $metadata, ')
+          ..write('categoryTags: $categoryTags, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -1144,6 +1185,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
     orderIndex,
     parentId,
     metadata,
+    categoryTags,
     isActive,
     createdAt,
     updatedAt,
@@ -1162,6 +1204,7 @@ class CachedGroup extends DataClass implements Insertable<CachedGroup> {
           other.orderIndex == this.orderIndex &&
           other.parentId == this.parentId &&
           other.metadata == this.metadata &&
+          other.categoryTags == this.categoryTags &&
           other.isActive == this.isActive &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -1178,6 +1221,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
   final Value<int> orderIndex;
   final Value<String?> parentId;
   final Value<String?> metadata;
+  final Value<String?> categoryTags;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -1193,6 +1237,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     this.orderIndex = const Value.absent(),
     this.parentId = const Value.absent(),
     this.metadata = const Value.absent(),
+    this.categoryTags = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -1209,6 +1254,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     this.orderIndex = const Value.absent(),
     this.parentId = const Value.absent(),
     this.metadata = const Value.absent(),
+    this.categoryTags = const Value.absent(),
     this.isActive = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -1229,6 +1275,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     Expression<int>? orderIndex,
     Expression<String>? parentId,
     Expression<String>? metadata,
+    Expression<String>? categoryTags,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -1246,6 +1293,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
       if (orderIndex != null) 'order_index': orderIndex,
       if (parentId != null) 'parent_id': parentId,
       if (metadata != null) 'metadata': metadata,
+      if (categoryTags != null) 'category_tags': categoryTags,
       if (isActive != null) 'is_active': isActive,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -1264,6 +1312,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     Value<int>? orderIndex,
     Value<String?>? parentId,
     Value<String?>? metadata,
+    Value<String?>? categoryTags,
     Value<bool>? isActive,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
@@ -1280,6 +1329,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
       orderIndex: orderIndex ?? this.orderIndex,
       parentId: parentId ?? this.parentId,
       metadata: metadata ?? this.metadata,
+      categoryTags: categoryTags ?? this.categoryTags,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -1320,6 +1370,9 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
     if (metadata.present) {
       map['metadata'] = Variable<String>(metadata.value);
     }
+    if (categoryTags.present) {
+      map['category_tags'] = Variable<String>(categoryTags.value);
+    }
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
@@ -1348,6 +1401,7 @@ class CachedGroupsCompanion extends UpdateCompanion<CachedGroup> {
           ..write('orderIndex: $orderIndex, ')
           ..write('parentId: $parentId, ')
           ..write('metadata: $metadata, ')
+          ..write('categoryTags: $categoryTags, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -1499,6 +1553,17 @@ class $CachedCriteriaTable extends CachedCriteria
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _categoryTagsMeta = const VerificationMeta(
+    'categoryTags',
+  );
+  @override
+  late final GeneratedColumn<String> categoryTags = GeneratedColumn<String>(
+    'category_tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isActiveMeta = const VerificationMeta(
     'isActive',
   );
@@ -1550,6 +1615,7 @@ class $CachedCriteriaTable extends CachedCriteria
     isRisk,
     orderIndex,
     metadata,
+    categoryTags,
     isActive,
     createdAt,
     updatedAt,
@@ -1655,6 +1721,15 @@ class $CachedCriteriaTable extends CachedCriteria
         metadata.isAcceptableOrUnknown(data['metadata']!, _metadataMeta),
       );
     }
+    if (data.containsKey('category_tags')) {
+      context.handle(
+        _categoryTagsMeta,
+        categoryTags.isAcceptableOrUnknown(
+          data['category_tags']!,
+          _categoryTagsMeta,
+        ),
+      );
+    }
     if (data.containsKey('is_active')) {
       context.handle(
         _isActiveMeta,
@@ -1734,6 +1809,10 @@ class $CachedCriteriaTable extends CachedCriteria
         DriftSqlType.string,
         data['${effectivePrefix}metadata'],
       ),
+      categoryTags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_tags'],
+      ),
       isActive: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_active'],
@@ -1769,6 +1848,7 @@ class CachedCriteriaData extends DataClass
   final bool isRisk;
   final int orderIndex;
   final String? metadata;
+  final String? categoryTags;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -1785,6 +1865,7 @@ class CachedCriteriaData extends DataClass
     required this.isRisk,
     required this.orderIndex,
     this.metadata,
+    this.categoryTags,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
@@ -1813,6 +1894,9 @@ class CachedCriteriaData extends DataClass
     map['order_index'] = Variable<int>(orderIndex);
     if (!nullToAbsent || metadata != null) {
       map['metadata'] = Variable<String>(metadata);
+    }
+    if (!nullToAbsent || categoryTags != null) {
+      map['category_tags'] = Variable<String>(categoryTags);
     }
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -1844,6 +1928,9 @@ class CachedCriteriaData extends DataClass
       metadata: metadata == null && nullToAbsent
           ? const Value.absent()
           : Value(metadata),
+      categoryTags: categoryTags == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryTags),
       isActive: Value(isActive),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -1870,6 +1957,7 @@ class CachedCriteriaData extends DataClass
       isRisk: serializer.fromJson<bool>(json['isRisk']),
       orderIndex: serializer.fromJson<int>(json['orderIndex']),
       metadata: serializer.fromJson<String?>(json['metadata']),
+      categoryTags: serializer.fromJson<String?>(json['categoryTags']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -1891,6 +1979,7 @@ class CachedCriteriaData extends DataClass
       'isRisk': serializer.toJson<bool>(isRisk),
       'orderIndex': serializer.toJson<int>(orderIndex),
       'metadata': serializer.toJson<String?>(metadata),
+      'categoryTags': serializer.toJson<String?>(categoryTags),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -1910,6 +1999,7 @@ class CachedCriteriaData extends DataClass
     bool? isRisk,
     int? orderIndex,
     Value<String?> metadata = const Value.absent(),
+    Value<String?> categoryTags = const Value.absent(),
     bool? isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -1928,6 +2018,7 @@ class CachedCriteriaData extends DataClass
     isRisk: isRisk ?? this.isRisk,
     orderIndex: orderIndex ?? this.orderIndex,
     metadata: metadata.present ? metadata.value : this.metadata,
+    categoryTags: categoryTags.present ? categoryTags.value : this.categoryTags,
     isActive: isActive ?? this.isActive,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -1956,6 +2047,9 @@ class CachedCriteriaData extends DataClass
           ? data.orderIndex.value
           : this.orderIndex,
       metadata: data.metadata.present ? data.metadata.value : this.metadata,
+      categoryTags: data.categoryTags.present
+          ? data.categoryTags.value
+          : this.categoryTags,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -1977,6 +2071,7 @@ class CachedCriteriaData extends DataClass
           ..write('isRisk: $isRisk, ')
           ..write('orderIndex: $orderIndex, ')
           ..write('metadata: $metadata, ')
+          ..write('categoryTags: $categoryTags, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -1998,6 +2093,7 @@ class CachedCriteriaData extends DataClass
     isRisk,
     orderIndex,
     metadata,
+    categoryTags,
     isActive,
     createdAt,
     updatedAt,
@@ -2018,6 +2114,7 @@ class CachedCriteriaData extends DataClass
           other.isRisk == this.isRisk &&
           other.orderIndex == this.orderIndex &&
           other.metadata == this.metadata &&
+          other.categoryTags == this.categoryTags &&
           other.isActive == this.isActive &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -2036,6 +2133,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
   final Value<bool> isRisk;
   final Value<int> orderIndex;
   final Value<String?> metadata;
+  final Value<String?> categoryTags;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -2053,6 +2151,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     this.isRisk = const Value.absent(),
     this.orderIndex = const Value.absent(),
     this.metadata = const Value.absent(),
+    this.categoryTags = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -2071,6 +2170,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     this.isRisk = const Value.absent(),
     this.orderIndex = const Value.absent(),
     this.metadata = const Value.absent(),
+    this.categoryTags = const Value.absent(),
     this.isActive = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -2094,6 +2194,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     Expression<bool>? isRisk,
     Expression<int>? orderIndex,
     Expression<String>? metadata,
+    Expression<String>? categoryTags,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -2113,6 +2214,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
       if (isRisk != null) 'is_risk': isRisk,
       if (orderIndex != null) 'order_index': orderIndex,
       if (metadata != null) 'metadata': metadata,
+      if (categoryTags != null) 'category_tags': categoryTags,
       if (isActive != null) 'is_active': isActive,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -2133,6 +2235,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     Value<bool>? isRisk,
     Value<int>? orderIndex,
     Value<String?>? metadata,
+    Value<String?>? categoryTags,
     Value<bool>? isActive,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
@@ -2151,6 +2254,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
       isRisk: isRisk ?? this.isRisk,
       orderIndex: orderIndex ?? this.orderIndex,
       metadata: metadata ?? this.metadata,
+      categoryTags: categoryTags ?? this.categoryTags,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -2197,6 +2301,9 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
     if (metadata.present) {
       map['metadata'] = Variable<String>(metadata.value);
     }
+    if (categoryTags.present) {
+      map['category_tags'] = Variable<String>(categoryTags.value);
+    }
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
@@ -2227,6 +2334,7 @@ class CachedCriteriaCompanion extends UpdateCompanion<CachedCriteriaData> {
           ..write('isRisk: $isRisk, ')
           ..write('orderIndex: $orderIndex, ')
           ..write('metadata: $metadata, ')
+          ..write('categoryTags: $categoryTags, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -12011,6 +12119,7 @@ typedef $$CachedGroupsTableCreateCompanionBuilder =
       Value<int> orderIndex,
       Value<String?> parentId,
       Value<String?> metadata,
+      Value<String?> categoryTags,
       Value<bool> isActive,
       required DateTime createdAt,
       required DateTime updatedAt,
@@ -12028,6 +12137,7 @@ typedef $$CachedGroupsTableUpdateCompanionBuilder =
       Value<int> orderIndex,
       Value<String?> parentId,
       Value<String?> metadata,
+      Value<String?> categoryTags,
       Value<bool> isActive,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
@@ -12130,6 +12240,11 @@ class $$CachedGroupsTableFilterComposer
 
   ColumnFilters<String> get metadata => $composableBuilder(
     column: $table.metadata,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryTags => $composableBuilder(
+    column: $table.categoryTags,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12251,6 +12366,11 @@ class $$CachedGroupsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get categoryTags => $composableBuilder(
+    column: $table.categoryTags,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isActive => $composableBuilder(
     column: $table.isActive,
     builder: (column) => ColumnOrderings(column),
@@ -12333,6 +12453,11 @@ class $$CachedGroupsTableAnnotationComposer
 
   GeneratedColumn<String> get metadata =>
       $composableBuilder(column: $table.metadata, builder: (column) => column);
+
+  GeneratedColumn<String> get categoryTags => $composableBuilder(
+    column: $table.categoryTags,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
@@ -12430,6 +12555,7 @@ class $$CachedGroupsTableTableManager
                 Value<int> orderIndex = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
                 Value<String?> metadata = const Value.absent(),
+                Value<String?> categoryTags = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
@@ -12445,6 +12571,7 @@ class $$CachedGroupsTableTableManager
                 orderIndex: orderIndex,
                 parentId: parentId,
                 metadata: metadata,
+                categoryTags: categoryTags,
                 isActive: isActive,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -12462,6 +12589,7 @@ class $$CachedGroupsTableTableManager
                 Value<int> orderIndex = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
                 Value<String?> metadata = const Value.absent(),
+                Value<String?> categoryTags = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
@@ -12477,6 +12605,7 @@ class $$CachedGroupsTableTableManager
                 orderIndex: orderIndex,
                 parentId: parentId,
                 metadata: metadata,
+                categoryTags: categoryTags,
                 isActive: isActive,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -12590,6 +12719,7 @@ typedef $$CachedCriteriaTableCreateCompanionBuilder =
       Value<bool> isRisk,
       Value<int> orderIndex,
       Value<String?> metadata,
+      Value<String?> categoryTags,
       Value<bool> isActive,
       required DateTime createdAt,
       required DateTime updatedAt,
@@ -12609,6 +12739,7 @@ typedef $$CachedCriteriaTableUpdateCompanionBuilder =
       Value<bool> isRisk,
       Value<int> orderIndex,
       Value<String?> metadata,
+      Value<String?> categoryTags,
       Value<bool> isActive,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
@@ -12709,6 +12840,11 @@ class $$CachedCriteriaTableFilterComposer
 
   ColumnFilters<String> get metadata => $composableBuilder(
     column: $table.metadata,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryTags => $composableBuilder(
+    column: $table.categoryTags,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12815,6 +12951,11 @@ class $$CachedCriteriaTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get categoryTags => $composableBuilder(
+    column: $table.categoryTags,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isActive => $composableBuilder(
     column: $table.isActive,
     builder: (column) => ColumnOrderings(column),
@@ -12906,6 +13047,11 @@ class $$CachedCriteriaTableAnnotationComposer
   GeneratedColumn<String> get metadata =>
       $composableBuilder(column: $table.metadata, builder: (column) => column);
 
+  GeneratedColumn<String> get categoryTags => $composableBuilder(
+    column: $table.categoryTags,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
 
@@ -12981,6 +13127,7 @@ class $$CachedCriteriaTableTableManager
                 Value<bool> isRisk = const Value.absent(),
                 Value<int> orderIndex = const Value.absent(),
                 Value<String?> metadata = const Value.absent(),
+                Value<String?> categoryTags = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
@@ -12998,6 +13145,7 @@ class $$CachedCriteriaTableTableManager
                 isRisk: isRisk,
                 orderIndex: orderIndex,
                 metadata: metadata,
+                categoryTags: categoryTags,
                 isActive: isActive,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -13017,6 +13165,7 @@ class $$CachedCriteriaTableTableManager
                 Value<bool> isRisk = const Value.absent(),
                 Value<int> orderIndex = const Value.absent(),
                 Value<String?> metadata = const Value.absent(),
+                Value<String?> categoryTags = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
@@ -13034,6 +13183,7 @@ class $$CachedCriteriaTableTableManager
                 isRisk: isRisk,
                 orderIndex: orderIndex,
                 metadata: metadata,
+                categoryTags: categoryTags,
                 isActive: isActive,
                 createdAt: createdAt,
                 updatedAt: updatedAt,

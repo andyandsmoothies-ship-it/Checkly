@@ -32,6 +32,7 @@ class CachedGroups extends Table {
   IntColumn get orderIndex => integer().withDefault(const Constant(0))();
   TextColumn get parentId => text().nullable()();
   TextColumn get metadata => text().nullable()();
+  TextColumn get categoryTags => text().nullable()();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
@@ -54,6 +55,7 @@ class CachedCriteria extends Table {
   BoolColumn get isRisk => boolean().withDefault(const Constant(false))();
   IntColumn get orderIndex => integer().withDefault(const Constant(0))();
   TextColumn get metadata => text().nullable()();
+  TextColumn get categoryTags => text().nullable()();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();

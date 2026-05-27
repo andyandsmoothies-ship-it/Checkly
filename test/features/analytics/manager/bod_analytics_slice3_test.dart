@@ -122,9 +122,9 @@ void main() {
       bottomStores: [],
       categoryBreakdown: [],
       apAging: BodApAging(
-        bucket0to30: 0,
-        bucket31to60: 0,
-        bucket61to90: 0,
+        bucket0to7: 0,
+        bucket8to30: 0,
+        bucket31to90: 0,
         bucket90Plus: 0,
       ),
       auditorProductivity: [],

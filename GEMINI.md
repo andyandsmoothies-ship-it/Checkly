@@ -128,6 +128,9 @@
   - **Fix:** Do not assume `SubmissionSectionScores` JSON uses raw names or simple keys. The Flutter frontend `_buildSectionScoresJson()` serializes group details under distinct keys (the group UUIDs) with nested `title`, `score`, and `maxScore`/`maxPoints` properties. The backend `SectionScoreExploder.cs` extracts the human-readable section title from this nested `"title"` property to match UI category queries, falling back to the property name key for older or simpler payloads.
 - **Gotcha: PostgreSQL Null Inequality Translation Bug**
   - **Fix:** In EF Core queries targeting PostgreSQL, any inequality comparison like `s.ReviewStatus != "rejected"` will silently exclude all records where the column value is `NULL`. This happens because Postgres evaluates `NULL != 'rejected'` as `NULL` (falsy in WHERE clauses). To correctly query all records that are not rejected (including both null/unreviewed and non-rejected records), you must always write `(s.ReviewStatus == null || s.ReviewStatus != "rejected")`.
+- **Gotcha: Flutter SQLite Array Serialization (categoryTags)**
+  - **Fix:** SQLite does not natively support array types. `TemplateDao` serializes `List<String>? categoryTags` into a comma-separated String when saving to SQLite. When reading, it splits by comma and sanitizes the result using `.where((t) => t.isNotEmpty).toList()` to prevent empty strings from polluting the output. Ensure any test models or frontend widgets handle empty/whitespace strings gracefully and never assume index-based access on un-sanitized comma values.
+
 
 
 

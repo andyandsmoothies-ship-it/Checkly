@@ -3,7 +3,7 @@ namespace Checkly.Api.Common.Persistence.Entities;
 /// <summary>
 /// Audit questions within a template.
 /// Maps to: public.criteria (13 columns)
-/// InputType check: 'pass_fail', 'scale', 'numeric'
+/// Valid InputType values: 'pass_fail', 'scale', 'numeric', 'single_choice', 'multi_choice', 'text', 'photo', 'signature', 'barcode'
 /// </summary>
 public sealed class Criterion
 {
@@ -22,6 +22,7 @@ public sealed class Criterion
     public DateTimeOffset UpdatedAt { get; set; }
     public string? Metadata { get; set; }
     public bool IsActive { get; set; }
+    public List<string>? CategoryTags { get; set; }
 
     // Navigation properties
     public Group Group { get; set; } = null!;
