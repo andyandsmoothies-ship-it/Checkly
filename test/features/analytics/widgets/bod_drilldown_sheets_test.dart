@@ -7,6 +7,7 @@ import 'package:checkly/features/analytics/widgets/bod_kpi_grid.dart';
 import 'package:checkly/features/analytics/widgets/bod_ap_bucket_detail_sheet.dart';
 import 'package:checkly/features/analytics/manager/bod_analytics_manager.dart';
 import 'package:checkly/features/analytics/manager/bod_analytics_data.dart';
+import 'package:checkly/_shared/widgets/primitives/pill_chip.dart';
 
 class MockBodAnalyticsManager extends Mock implements BodAnalyticsManager {}
 
@@ -290,6 +291,148 @@ void main() {
       // Check total auditors card
       expect(find.text('Total Auditors'), findsOneWidget);
       expect(find.text('14'), findsOneWidget);
+    });
+
+    testWidgets('TC-S2-01: BodKpiGrid displays Avg TTR Days and a non-zero value format', (tester) async {
+      final chainKpis = {
+        'totalAudits': 150,
+        'avgScore': 78.5,
+        'completionRate': 92.0,
+        'openAPs': 12,
+        'overdueAPs': 3,
+        'activeStores': 45,
+        'totalAuditors': 14,
+        'avgTtrDays': 4.2,
+      };
+
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: chainKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+
+      expect(find.text('Avg TTR Days'), findsOneWidget);
+      expect(find.text('4.2 days'), findsOneWidget);
+    });
+
+    testWidgets('TC-S2-02: BodKpiGrid displays N/A when avgTtrDays is exactly 0.0', (tester) async {
+      final chainKpis = {
+        'totalAudits': 150,
+        'avgScore': 78.5,
+        'completionRate': 92.0,
+        'openAPs': 12,
+        'overdueAPs': 3,
+        'activeStores': 45,
+        'totalAuditors': 14,
+        'avgTtrDays': 0.0,
+      };
+
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: chainKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+
+      expect(find.text('Avg TTR Days'), findsOneWidget);
+      expect(find.text('N/A'), findsOneWidget);
+      expect(find.text('0.0 days'), findsNothing);
+    });
+
+    testWidgets('TC-S2-03: BodKpiGrid displays correct colored PillChips for different TTR limits', (tester) async {
+      // Test Green: <= 7.0
+      final greenKpis = { 'avgTtrDays': 5.0 };
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: greenKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PillChip && widget.type == PillChipType.green,
+        ),
+        findsOneWidget,
+      );
+
+      // Test Yellow: <= 14.0
+      final yellowKpis = { 'avgTtrDays': 10.0 };
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: yellowKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PillChip && widget.type == PillChipType.yellow,
+        ),
+        findsOneWidget,
+      );
+
+      // Test Red: > 14.0
+      final redKpis = { 'avgTtrDays': 15.0 };
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: redKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PillChip && widget.type == PillChipType.red,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('TC-S2-06: BodKpiGrid treats negative avgTtrDays value as 0.0 and shows N/A', (tester) async {
+      final chainKpis = {
+        'avgTtrDays': -3.5,
+      };
+
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: chainKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+
+      expect(find.text('Avg TTR Days'), findsOneWidget);
+      expect(find.text('N/A'), findsOneWidget);
+      expect(find.text('-3.5 days'), findsNothing);
+    });
+
+    testWidgets('TC-S2-07: BodKpiGrid with extremely large value handles layouts cleanly at 400px width', (tester) async {
+      final chainKpis = {
+        'avgTtrDays': 999.9,
+      };
+
+      await tester.pumpWidget(buildTestWidget(
+        BodKpiGrid(
+          chainKpis: chainKpis,
+          trend: const [],
+          manager: mockManager,
+        ),
+        disableAnimations: true,
+      ));
+
+      expect(find.text('Avg TTR Days'), findsOneWidget);
+      expect(find.text('999.9 days'), findsOneWidget);
+      // No layout exceptions are thrown under the test framework, proving layout robustness.
     });
   });
 }

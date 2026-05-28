@@ -42,7 +42,7 @@
 
 - [ ] **The Iteration Gate**: Present the drafted foundation to the user. Ask: *"Does this capture the true goal, or do we need to iterate on the problem statement and boundaries?"* Loop back to Step 1 if the user wants to refine.
 
-- [ ] **Commit Artifact**: Once approved, use `write_to_file` to save all Step 1-4 data into `docs/architecture/foundation_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md`.
+- [ ] **Commit Artifact**: Once approved, use `write_to_file` to save all Step 1-4 data into `docs/architecture/foundation_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
 
 - [ ] **Routing**: Output the final prompt: *"Foundation established. Run `/start-project` for Day-1 stack selection and scaffolding, or `/define-requirements` to begin slicing use cases."*
 

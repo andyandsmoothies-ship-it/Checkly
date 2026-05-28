@@ -12,9 +12,9 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 
 ## Step 1: Pre-Flight (Anti-Poisoning Mandate)
 
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the diagnostic artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the diagnostic artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 
-- **Reasoning Steps**: Structure internal thoughts via exactly 4 steps: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md`.
+- **Reasoning Steps**: Structure internal thoughts via exactly 4 steps: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
 
 ```markdown
 
@@ -40,7 +40,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 | Status | File Path | Type |
 
-| [NEW]  | docs/diagnostics/failure_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Report |
+| [NEW]  | docs/diagnostics/failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Report |
 
 ```
 
@@ -72,7 +72,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 - **Redundancy Check**: MANDATORY: Before proposing a fix that swaps in a shared utility/widget, verify if it makes surrounding `if` guards or boilerplate redundant. Delete the redundant code.
 
-- **Artifact Gen**: Export `failure_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md`.
+- **Artifact Gen**: Export `failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
 
 - **Constraint (Micro-Experiments)**: PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in the `task_` file and pivot.
 
@@ -90,7 +90,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 <output_schema>
 
-> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
+> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
 
 >
 
@@ -106,7 +106,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 >
 
-> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 
 >
 

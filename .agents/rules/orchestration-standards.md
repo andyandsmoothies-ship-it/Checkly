@@ -6,9 +6,9 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 # Orchestration Standards
 ## 1. Artifacts & Naming
 - **Immutable Artifacts (Read-Only)**: PROHIBITED: Modifying/overwriting existing workflow artifacts (research, task, plan, etc.) created in past sessions. ALWAYS write a new file with fresh timestamp/ID.
-- **[ShortID]**: First 8 chars of session ID or random 8-char hex.
+- **[ConversationID]**: The full UUID of the active conversation session (e.g., `c3563378-9cd7-4609-ae6d-2aba9f71c9ff`).
 - **Topic Folders**: Group by Epic/Issue ID (e.g., `F-123_auth`). Carry folder name forward across all session boundaries.
-- **Dynamic Naming**: Avoid collisions: `[type]_[YYYYMMDD_HHMMSS]_[ShortID]_[topic].md` (e.g., `task_...`, `walkthrough_...`, `implementation_plan_...`).
+- **Dynamic Naming**: Avoid collisions: `[type]_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` (e.g., `task_...`, `walkthrough_...`, `implementation_plan_...`).
 - **Enterprise Storage**: PROHIBITED: Saving artifacts to `brain/`. Write to absolute workspace paths:
   - `.agents/active_tasks/[topic]/` (Tasks, walkthroughs)
   - `docs/architecture/[topic]/` (Plans, analysis)

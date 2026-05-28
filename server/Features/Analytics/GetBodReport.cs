@@ -192,7 +192,8 @@ public static class GetBodReport
                             (s.ScoringMode == null || s.ScoringMode != "survey") &&
                             s.TotalScore.HasValue &&
                             s.StoreId.HasValue &&
-                            filteredStoreIds.Contains(s.StoreId.Value))
+                            filteredStoreIds.Contains(s.StoreId.Value) &&
+                            (s.TemplateId == null || s.Template!.Type == "QC"))
                 .GroupBy(s => s.StoreId!.Value)
                 .Select(g => new
                 {

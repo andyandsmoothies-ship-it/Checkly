@@ -16,7 +16,7 @@ description: The Core Builder Implementation Workflow
 
 - **Governance**: Run Pre-Flight check (`governance-rules.md`).
 
-- **Task Tracker**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` BEFORE writing code:
+- **Task Tracker**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` BEFORE writing code:
 
 ```markdown
 
@@ -52,9 +52,9 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 |---|---|---|
 
-| [NEW] | .agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Walkthrough |
+| [NEW] | .agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Walkthrough |
 
-| [NEW] | docs/qa/gates/[topic]/green_test_log_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Test Log |
+| [NEW] | docs/qa/gates/[topic]/green_test_log_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Test Log |
 
 ```
 
@@ -114,13 +114,13 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 ## Step 4: Handoff
 
-- **Ship/Show (TDD Green, Blast Radius 0)**: Write full `walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` + `green_test_log_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` -> Execute Verify Script.
+- **Ship/Show (TDD Green, Blast Radius 0)**: Write full `walkthrough_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` + `green_test_log_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` -> Execute Verify Script.
 
 - **Ask (Architecture/Security Change)**: Notify user BEFORE action and wait for approval.
 
 ### Walkthrough Schema
 
-- **Required Sections**: Walkthrough `.agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` MUST contain:
+- **Required Sections**: Walkthrough `.agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` MUST contain:
 
   1. `## Input Lineage`: Absolute path of implementation plan.
 

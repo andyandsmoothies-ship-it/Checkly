@@ -230,7 +230,8 @@ namespace Checkly.Api.Features.Analytics
                         s.CompletedAt <= targetDateTime && 
                         s.ScoringMode != "survey" && 
                         s.TotalScore.HasValue && 
-                        s.StoreId.HasValue)
+                        s.StoreId.HasValue &&
+                        (s.TemplateId == null || s.Template!.Type == "QC"))
                     .GroupBy(s => new { s.StoreId!.Value, s.StoreName })
                     .Select(g => new
                     {

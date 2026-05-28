@@ -4,6 +4,7 @@ import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../manager/bod_analytics_manager.dart';
 import '../widgets/bod_dashboard_body.dart';
+import '../widgets/bod_region_filter_sheet.dart';
 
 /// Boardroom (BOD) Executive Analytics Dashboard.
 ///
@@ -43,6 +44,33 @@ class _BodAnalyticsPageState extends State<BodAnalyticsPage> {
         title: const Text('Boardroom Analytics'),
         centerTitle: false,
         actions: [
+          ListenableBuilder(
+            listenable: _manager,
+            builder: (context, _) {
+              if (_manager.report == null || _manager.isLoading) {
+                return const SizedBox.shrink();
+              }
+              return IconButton(
+                icon: const Icon(Icons.filter_alt_outlined),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: theme.colorScheme.surface,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    builder: (context) => BodRegionFilterSheet(
+                      manager: _manager,
+                    ),
+                  );
+                },
+                tooltip: 'Filter Region',
+              );
+            },
+          ),
           ListenableBuilder(
             listenable: _manager,
             builder: (context, _) {

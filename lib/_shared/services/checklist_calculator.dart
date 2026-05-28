@@ -58,6 +58,7 @@ class ChecklistCalculator {
 
       if (sectionCriteria.isEmpty) continue;
 
+      double sectionDeductions = 0.0;
       bool sectionCcp = false;
       bool sectionRisk = false;
 
@@ -72,6 +73,12 @@ class ChecklistCalculator {
 
         if (isAnswerCcp || isTemplateCcp) sectionCcp = true;
         if (isAnswerRisk || isTemplateRisk) sectionRisk = true;
+
+        sectionDeductions += ScoringHelpers.getDeduction(
+          c,
+          answerMap,
+          input.progressiveRepeatPenalty,
+        );
       }
 
       final maxPoints = sectionCriteria.length.toDouble();

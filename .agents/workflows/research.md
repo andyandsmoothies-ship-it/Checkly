@@ -22,7 +22,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 |---|---|
 
-| **Task Tracking** | MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` using the strict schema BEFORE proceeding. List ONLY the research artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step. |
+| **Task Tracking** | MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema BEFORE proceeding. List ONLY the research artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step. |
 
 | **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
 
@@ -56,7 +56,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 |---|---|
 
-| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` to the `docs/product/` directory. NEVER overwrite existing research files with the same topic; always create a new file. NEVER output the research directly to the chat UI. Output the absolute path to this visible file in your final message. |
+| **Artifact Gen** | MANDATORY: Use `write_to_file` to save `research_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` to the `docs/product/` directory. NEVER overwrite existing research files with the same topic; always create a new file. NEVER output the research directly to the chat UI. Output the absolute path to this visible file in your final message. |
 
 ### Final Generation Mandate (Suffix)
 
@@ -64,7 +64,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 <output_schema>
 
-> **Payload Schema:** Your generated `research_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` MUST INCLUDE:
+> **Payload Schema:** Your generated `research_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` MUST INCLUDE:
 
 > 1. `[ORIGIN_IDEA]`: A strictly preserved, 1:1 summary of the user's original business goal/idea from the prompt. This anchors all future workflows.
 

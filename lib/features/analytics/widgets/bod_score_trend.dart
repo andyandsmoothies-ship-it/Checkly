@@ -108,7 +108,7 @@ class BodScoreTrend extends StatelessWidget {
                   color: AppColors.eel,
                 ),
               ),
-              ?trajectoryChip,
+              if (trajectoryChip != null) trajectoryChip,
             ],
           ),
           const SizedBox(height: 4),

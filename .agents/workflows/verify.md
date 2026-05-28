@@ -12,7 +12,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 ## Step 1: Context & Accountability Audit
 
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` using the strict schema BEFORE proceeding. You MUST include an `## Input Lineage` section tracking the absolute path to the input artifact.
+- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema BEFORE proceeding. You MUST include an `## Input Lineage` section tracking the absolute path to the input artifact.
 
 - **Skill Load**: Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills.
 
@@ -66,7 +66,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 - **Coverage & Metrics Gen**: MANDATORY: Execute available tooling to calculate Test Coverage, Cyclomatic Complexity, File Sizing, and Mutation scores (e.g., `dotnet test /p:CollectCoverage=true`). The human relies on these metrics to govern the factory; do not skip them.
 
-- **Artifact Form**: MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` into the `docs/qa/gates/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the green test suite.
+- **Artifact Form**: MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` into the `docs/qa/gates/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the green test suite.
 
 - **Yield & Handoff**: Yield to the user with the exact Next Command explicitly referencing `{Absolute_Path_to_verification_artifact.md}`.
 

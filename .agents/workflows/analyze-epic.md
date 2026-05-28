@@ -16,7 +16,7 @@ description: Easy-to-read analysis workflow for large features and epics.
 
 ## Step 1: Start
 
-- **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` before doing anything else. List only the Epic Plan in the Artifact Inventory.
+- **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` before doing anything else. List only the Epic Plan in the Artifact Inventory.
 
 ```markdown
 
@@ -42,7 +42,7 @@ Workflow: /analyze-epic | Track: C
 
 | Status | File Path | Type |
 
-| [NEW]  | docs/architecture/[topic]/analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Epic Plan |
+| [NEW]  | docs/architecture/[topic]/analysis_epic_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Epic Plan |
 
 ```
 
@@ -94,7 +94,7 @@ Workflow: /analyze-epic | Track: C
 
 ## Step 4: Create Plan
 
-- **Write the Plan**: Save `analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` to `docs/architecture/[topic]/`. Do not dump the plan in chat.
+- **Write the Plan**: Save `analysis_epic_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` to `docs/architecture/[topic]/`. Do not dump the plan in chat.
 
 - **@@SCAN**: Print checklist in response: Does the document contain all required sections?
 
@@ -126,7 +126,7 @@ Workflow: /analyze-epic | Track: C
 
 <output_schema>
 
-> **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` MUST have these exact sections. Keep it short and simple.
+> **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` MUST have these exact sections. Keep it short and simple.
 
 > 1. `<latent_space_scratchpad>`: Your hidden thoughts and tradeoffs.
 
@@ -170,7 +170,7 @@ Workflow: /analyze-epic | Track: C
 
 >
 
-> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md**: Change `[/]` to `[x]` and add absolute file paths.
+> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md**: Change `[/]` to `[x]` and add absolute file paths.
 
 >
 

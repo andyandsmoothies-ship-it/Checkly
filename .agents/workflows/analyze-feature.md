@@ -10,7 +10,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 ## Step 1: Start & Task Tracking
 
-- **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` before coding:
+- **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` before coding:
 
   ```markdown
 
@@ -20,7 +20,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - [ ] Step 2: Search & Scope | [ ] Step 3: Impacts & States | [ ] Step 4: Plan | [ ] Step 5: Route
 
-  - **Artifact Inventory**: docs/architecture/[topic]/implementation_plan_[ShortID]_[topic]_[ConversationID].md
+  - **Artifact Inventory**: docs/architecture/[topic]/implementation_plan_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md
 
   ```
 
@@ -78,7 +78,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Slicing Strategy**: Apply the **Thin Vertical Slicing Strategy** (highly focused slices of <= 4 files each). Sequence slices vertically: Happy Path first (Slice 1), Edge Cases & Validation (Slice 2), then Offline/Visual Resiliency (Slice 3). Each slice must define 'Entry State Required' and 'Exit State Guaranteed'.
 
-- **Write the Plan**: Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` in the `docs/architecture/[topic]/` folder.
+- **Write the Plan**: Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in the `docs/architecture/[topic]/` folder.
 
 - **Mandatory Scan**: Print checklist in response: (1) Did you explicitly extract all constraints from the input document into your scratchpad? (2) Is every constraint mapped to a Test Contract?
 
@@ -116,7 +116,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 <output_schema>
 
-- **File Format**: `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` in `docs/architecture/[topic]/` must contain:
+- **File Format**: `implementation_plan_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in `docs/architecture/[topic]/` must contain:
 
   - `<latent_space_scratchpad>`: Hidden thoughts on edge cases, limits, and risks.
 
@@ -156,7 +156,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - `## Handoff Block`: Absolute plan path, and generic action sequence per slice (e.g. `- **Slice 1**: Plan -> Write Acceptance Tests -> Build`). Tell user to execute them ONE AT A TIME.
 
-- **Task Tracking Update**: Update `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` (change `[ ]` to `[x]`, append absolute file paths).
+- **Task Tracking Update**: Update `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` (change `[ ]` to `[x]`, append absolute file paths).
 
 - **Script Verification**: Run verification script using `run_command` tool before concluding:
 

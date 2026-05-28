@@ -34,7 +34,7 @@ description: Acceptance Test-Driven Development — defines acceptance tests BEF
 
 ## Step 1: Pre-Flight
 
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding.
+- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding.
 
 ```markdown
 
@@ -58,7 +58,7 @@ Workflow: /atdd | Track: [B2 / C]
 
 | Status | File Path | Type |
 
-| [NEW]  | docs/qa/contracts/[topic]/test_contracts_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Contracts |
+| [NEW]  | docs/qa/contracts/[topic]/test_contracts_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Contracts |
 
 ```
 
@@ -70,7 +70,7 @@ Workflow: /atdd | Track: [B2 / C]
 
 - **Skill Load**: MANDATORY: Load `atdd-quality-gates` skill.
 
-- **Verification**: MANDATORY: Read upstream `implementation_plan_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md`. Execute `grep_search` / `view_file` to confirm existing entities. **Exception:** If the plan explicitly defines a NET-NEW API route/feature to be built, do NOT flag its absence as an error. Your job is to write the failing test for it (Red Step). For existing dependencies that are missing, IF discrepancy THEN Flag to user → STOP.
+- **Verification**: MANDATORY: Read upstream `implementation_plan_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`. Execute `grep_search` / `view_file` to confirm existing entities. **Exception:** If the plan explicitly defines a NET-NEW API route/feature to be built, do NOT flag its absence as an error. Your job is to write the failing test for it (Red Step). For existing dependencies that are missing, IF discrepancy THEN Flag to user → STOP.
 
 - **Origin Idea Alignment**: MANDATORY: Read the `[ORIGIN_IDEA]` tag. You must evaluate if the upstream plan actually solves the human's goal. Then, your test scenarios MUST explicitly assert that the original business goal is achieved. Prove the business value, not just the compiler state.
 
@@ -138,7 +138,7 @@ Workflow: /atdd | Track: [B2 / C]
 
 <output_schema>
 
-> **Outputs Created:** Physical test files (RED) + `test_contracts_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md`.
+> **Outputs Created:** Physical test files (RED) + `test_contracts_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
 
 >
 
@@ -148,7 +148,7 @@ Workflow: /atdd | Track: [B2 / C]
 
 > [!IMPORTANT]
 
-> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 
 >
 

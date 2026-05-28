@@ -12,7 +12,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 
 ## Step 1: Intake & Context Alignment
 
-- [ ] **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
+- [ ] **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
 
 - [ ] **Skill Load**: Load the `shaping` skill, the `use-case-creator` skill, and the `use-case-slicing` skill from `.agents/skills/`.
 
@@ -74,7 +74,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 
 ## Step 4: Deliverable Generation
 
-- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` to the `docs/product/[topic]/` directory.
+- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` to the `docs/product/[topic]/` directory.
 
 - [ ] **Payload Schema**:
 

@@ -20,7 +20,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 ## Pre-Flight Setup
 
-- **Task File**: Create a `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` document right now using this exact template. Update your progress as you work.
+- **Task File**: Create a `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` document right now using this exact template. Update your progress as you work.
 
   ```markdown
 
@@ -46,9 +46,9 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
   | Status | File Path | Type |
 
-  | [NEW]  | docs/qa/gates/[topic]/red_test_log_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Red Tests |
+  | [NEW]  | docs/qa/gates/[topic]/red_test_log_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Red Tests |
 
-  | [NEW]  | .agents/active_tasks/[topic]/test_spec_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Test Spec |
+  | [NEW]  | .agents/active_tasks/[topic]/test_spec_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Test Spec |
 
   ```
 
@@ -150,9 +150,9 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 ## Step 4: Handoff
 
-- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `red_test_log_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` in the `docs/qa/gates/[topic]/` folder. Do not print long logs in the chat.
+- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `red_test_log_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in the `docs/qa/gates/[topic]/` folder. Do not print long logs in the chat.
 
-- **Write Summary**: Use `write_to_file` to create `test_spec_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` in the `.agents/active_tasks/[topic]/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
+- **Write Summary**: Use `write_to_file` to create `test_spec_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in the `.agents/active_tasks/[topic]/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
 
 - **Give Command**: Print the exact block below for the user:
 
@@ -162,7 +162,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 <output_schema>
 
-> **Outputs Created:** Failing Unit Tests + `red_test_log_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` and `test_spec_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md`.
+> **Outputs Created:** Failing Unit Tests + `red_test_log_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` and `test_spec_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
 
 >
 
@@ -176,7 +176,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 > [!IMPORTANT]
 
-> **Update `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md`**: Change all checkboxes to `[x]` and add the absolute file paths to your Artifact Inventory.
+> **Update `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`**: Change all checkboxes to `[x]` and add the absolute file paths to your Artifact Inventory.
 
 Run this exact command using the `run_command` tool:
 

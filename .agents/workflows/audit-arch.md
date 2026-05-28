@@ -7,7 +7,7 @@ description: SRE Hostile Architecture Review — Hunts for distributed systems f
 > Do not be polite. Do not assume good intent. Your job is to find the catastrophic edge cases that will trigger a 2:00 AM PagerDuty alert. Strip away "fake-smart" complexity and attack the raw system mechanics.
 ## Step 1: Scope & Threat Modeling
 - **Trigger**: Execute when a new feature implies concurrency, sync, caching, background workers, or complex state across microservices/clients.
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 - **Label the Pattern**: Explicitly label the core System Design Pattern of the component being audited. A News Feed has different failure modes than a Payment Ledger. You cannot audit what you haven't labeled.
 - **System Boundary**: Extract the target system (e.g., "Offline Sync", "Auth Cache", "Message Queue"). Identify exactly what fails if the network drops by 50% or latency spikes to 5000ms.
 ```markdown
@@ -22,7 +22,7 @@ Workflow: /audit-arch | Track: C
 - [ ] Step 5: Deliverable Handoff
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/diagnostics/audit_arch_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md | Report |
+| [NEW]  | docs/diagnostics/audit_arch_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Report |
 ```
 ## Step 2: The Brutal Interrogation (The 4 Critics)
 You must subject the proposed architecture to these 4 hostile critics. If it survives, it ships.
@@ -42,7 +42,7 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 - [ ] **Hasty Abstractions**: Did the AI generate an overly complex Design Pattern (e.g., massive AbstractFactories, Repositories) when a simple JSON dictionary, flat struct, or static function would suffice? Flag and demand deletion of fake-smart architectural bloat.
 - **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Execute the interrogation. Record exact failure scenarios for each critic.
 ## Step 3: The Verdict Payload
-- **Artifact Gen**: Create `audit_arch_report_[YYYYMMDD_HHMMSS]_[ShortID]_[topic]_[ConversationID].md` in `docs/diagnostics/` folder. Format as a stark, unappeasing teardown.
+- **Artifact Gen**: Create `audit_arch_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in `docs/diagnostics/` folder. Format as a stark, unappeasing teardown.
 - **Severity Matrix**: `🔴 Fatal` (Bricks the system / Data Corruption / DDoS) | `🟡 Brittle` (Fake-Smart. Will scale poorly or fail silently) | `🟢 Resilient` (Actually viable).
 - **Actionable Fix & Trade-offs**: MANDATORY: Do not just complain. Provide the exact system design fix (e.g., "Implement Exponential Backoff Retry").
   - **Complexity**: For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.

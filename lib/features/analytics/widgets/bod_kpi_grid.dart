@@ -39,6 +39,33 @@ class BodKpiGrid extends StatelessWidget {
     final activeStores = chainKpis['activeStores'] ?? 0;
     final totalAuditors = chainKpis['totalAuditors'] ?? 0;
 
+    final double? rawAvgTtrDays = chainKpis['avgTtrDays']?.toDouble();
+    final String avgTtrDisplay;
+    PillChip? avgTtrPill;
+
+    if (rawAvgTtrDays == null || rawAvgTtrDays <= 0.0) {
+      avgTtrDisplay = 'N/A';
+      avgTtrPill = null;
+    } else {
+      avgTtrDisplay = '${rawAvgTtrDays.toStringAsFixed(1)} days';
+      if (rawAvgTtrDays <= 7.0) {
+        avgTtrPill = const PillChip(
+          label: 'Fast',
+          type: PillChipType.green,
+        );
+      } else if (rawAvgTtrDays <= 14.0) {
+        avgTtrPill = const PillChip(
+          label: 'On Pace',
+          type: PillChipType.yellow,
+        );
+      } else {
+        avgTtrPill = const PillChip(
+          label: 'Slow',
+          type: PillChipType.red,
+        );
+      }
+    }
+
     return StrokeCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +112,7 @@ class BodKpiGrid extends StatelessWidget {
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              )
+                            )
                           : null,
                     ),
                   ),
@@ -116,9 +143,10 @@ class BodKpiGrid extends StatelessWidget {
                   Expanded(
                     child: _buildKpiCard(
                       context,
-                      'Total Audits',
-                      '$totalAudits',
-                      description: 'Total number of finished audits (last 30 days)',
+                      'Avg TTR Days',
+                      avgTtrDisplay,
+                      description: 'Average days to resolve an action plan',
+                      rightIndicator: avgTtrPill,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -151,12 +179,26 @@ class BodKpiGrid extends StatelessWidget {
                   Expanded(
                     child: _buildKpiCard(
                       context,
+                      'Total Audits',
+                      '$totalAudits',
+                      description: 'Total number of finished audits (last 30 days)',
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildKpiCard(
+                      context,
                       'Active Stores',
                       '$activeStores',
                       description: 'Total stores with audit activity (last 30 days)',
                     ),
                   ),
-                  const SizedBox(width: 12),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Expanded(
                     child: _buildKpiCard(
                       context,
@@ -164,6 +206,10 @@ class BodKpiGrid extends StatelessWidget {
                       '$totalAuditors',
                       description: 'Total unique auditors submitting audits',
                     ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: SizedBox(),
                   ),
                 ],
               ),

@@ -8,7 +8,7 @@ import 'bod_store_leaderboard.dart';
 import 'bod_category_weakness.dart';
 import 'bod_ap_aging_funnel.dart';
 import 'bod_auditor_scatter.dart';
-import 'bod_region_filter_bar.dart';
+import '../../../_shared/widgets/primitives/pill_chip.dart';
 
 /// The success state dashboard body.
 ///
@@ -119,9 +119,76 @@ class BodDashboardBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Sticky Regional Filter Bar at the top of the body
-            BodRegionFilterBar(manager: manager),
-            const SizedBox(height: 8),
+            ListenableBuilder(
+              listenable: manager,
+              builder: (context, _) {
+                final province = manager.activeProvince;
+                final district = manager.activeDistrict;
+                if (province == null || district == null) {
+                  return const SizedBox.shrink();
+                }
+                return Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.brightness == Brightness.light
+                          ? AppColors.swan
+                          : AppColors.swan.withValues(alpha: 0.2),
+                      width: 2.0,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.filter_alt_outlined,
+                        color: theme.brightness == Brightness.light
+                            ? AppColors.eel
+                            : AppColors.snow,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            PillChip(
+                              label: province,
+                              type: PillChipType.blue,
+                              icon: const Icon(
+                                Icons.location_city_rounded,
+                                size: 14,
+                                color: AppColors.humpback,
+                              ),
+                              onTap: manager.clearFilter,
+                            ),
+                            PillChip(
+                              label: district,
+                              type: PillChipType.purple,
+                              icon: const Icon(
+                                Icons.map_rounded,
+                                size: 14,
+                                color: AppColors.beetle,
+                              ),
+                              onTap: manager.clearFilter,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: manager.clearFilter,
+                        icon: const Icon(Icons.cancel_rounded, color: AppColors.cardinal),
+                        tooltip: 'Clear filters',
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
 
             if (report.snapshotStatus == 'PartiallyFailed') ...[
               Container(
