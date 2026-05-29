@@ -4,7 +4,6 @@ import '../../../../_shared/services/criterion_input.dart';
 import '../../../../_shared/services/scoring_engine.dart';
 import '../../../../_shared/services/scoring_input.dart';
 import '../../../../_shared/services/scoring_mode.dart';
-import '../../../../_shared/services/scoring_result.dart';
 import '../../../../_shared/services/section_input.dart';
 import '../../../../_shared/services/subsection_input.dart';
 import '../../../../_shared/widgets/primitives/stroke_card.dart';

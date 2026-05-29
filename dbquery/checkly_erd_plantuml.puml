@@ -1,0 +1,409 @@
+@startuml
+skinparam linetype ortho
+hide circle
+
+entity AppUser {
+  * Id: uuid <<PK>>
+  --
+  InvalidateTokensBefore: timestamptz
+}
+
+entity Profile {
+  * Id: uuid <<PK>>
+  --
+  FullName: varchar
+  Email: varchar
+  AvatarUrl: varchar
+  StoreId: uuid <<FK>>
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+}
+
+entity UserRole {
+  * Id: uuid <<PK>>
+  --
+  UserId: uuid <<FK>>
+  Role: varchar
+  CreatedAt: timestamptz
+}
+
+entity RoleCapability {
+  * Id: uuid <<PK>>
+  --
+  Role: varchar
+  Capability: varchar
+  CreatedAt: timestamptz
+}
+
+entity UserGroup {
+  * Id: uuid <<PK>>
+  --
+  Name: varchar
+  Description: varchar
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+}
+
+entity UserGroupMember {
+  * Id: uuid <<PK>>
+  --
+  UserGroupId: uuid <<FK>>
+  ProfileId: uuid <<FK>>
+  CreatedAt: timestamptz
+}
+
+entity UserDeviceToken {
+  * Id: uuid <<PK>>
+  --
+  UserId: uuid <<FK>>
+  FcmToken: varchar
+  Platform: varchar
+  LastUsedAt: datetime
+  CreatedAt: datetime
+}
+
+entity Store {
+  * Id: uuid <<PK>>
+  --
+  Name: varchar
+  Address: varchar
+  GpsLat: numeric
+  GpsLng: numeric
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  IsActive: boolean
+  LastSyncedAt: timestamptz
+  address_province: varchar
+  address_district: varchar
+  address_ward: varchar
+  address_street: varchar
+}
+
+entity ProfileStoreAssignment {
+  * ProfileId: uuid <<PK>> <<FK>>
+  * StoreId: uuid <<PK>> <<FK>>
+  --
+  CreatedAt: timestamptz
+}
+
+entity StoreAnalyticsSnapshot {
+  * StoreId: uuid <<PK>> <<FK>>
+  --
+  AvgScore30d: numeric
+  TotalAudits30d: integer
+  OpenActionPlans: integer
+  OverdueActionPlans: integer
+  LastAuditScore: numeric
+  LastAuditAt: timestamptz
+  UpdatedAt: timestamptz
+}
+
+entity ProvinceBenchmarkSnapshot {
+  * Province: varchar <<PK>>
+  --
+  CategoryAverages: varchar
+  OverallAvgScore: numeric
+  StdDeviation: numeric
+  TotalAuditCount: integer
+  LastCalculatedAt: timestamptz
+  CreatedAt: timestamptz
+}
+
+entity Template {
+  * Id: uuid <<PK>>
+  --
+  Title: varchar
+  Description: varchar
+  Type: varchar
+  Version: integer
+  ScoringLogicConfig: varchar
+  DisplayNoun: varchar
+  IsActive: boolean
+  CreatedBy: guid
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  RowVersion: integer
+}
+
+entity Group {
+  * Id: uuid <<PK>>
+  --
+  TemplateId: uuid <<FK>>
+  Title: varchar
+  Description: varchar
+  Weight: numeric
+  MaxDeductionPoints: numeric
+  MinusPerFault: numeric
+  OrderIndex: integer
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  ParentId: guid <<FK>>
+  Metadata: varchar
+  IsActive: boolean
+}
+
+entity Criterion {
+  * Id: uuid <<PK>>
+  --
+  GroupId: uuid <<FK>>
+  Label: varchar
+  Description: varchar
+  InputType: varchar
+  PointsWeight: numeric
+  IsCcp: boolean
+  IsRisk: boolean
+  MinusImpact: numeric
+  MaxDeductionPoints: numeric
+  OrderIndex: integer
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  Metadata: varchar
+  IsActive: boolean
+}
+
+entity TemplateAssignment {
+  * Id: uuid <<PK>>
+  --
+  TemplateId: uuid <<FK>>
+  UserGroupId: uuid <<FK>>
+  CreatedAt: timestamptz
+}
+
+entity Submission {
+  * Id: uuid <<PK>>
+  --
+  ProgramAssignmentId: guid <<FK>>
+  TemplateId: guid <<FK>>
+  AuditorId: guid <<FK>>
+  StoreId: guid <<FK>>
+  Status: varchar
+  ScoringMode: varchar
+  TotalScore: numeric
+  SectionScores: varchar
+  GpsLat: numeric
+  GpsLng: numeric
+  GpsVerifiedAt: timestamptz
+  Notes: varchar
+  ScheduledAt: timestamptz
+  CompletedAt: timestamptz
+  ApprovedBy: guid
+  ApprovedAt: timestamptz
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  StartedAt: timestamptz
+  IdempotencyKey: varchar
+  AuditorName: varchar
+  AuditorEmail: varchar
+  StoreName: varchar
+  TemplateTitle: varchar
+  TemplateType: varchar
+  DisplayNoun: varchar
+  ApproverName: varchar
+  ReviewStatus: varchar
+  TemplateSnapshot: varchar
+  TemplateVersion: integer
+  RawEarnedPoints: numeric
+  RawMaxPoints: numeric
+  IsWeighted: boolean
+  VoidReason: varchar
+  VoidedAt: timestamptz
+  RowVersion: integer
+}
+
+entity Answer {
+  * Id: uuid <<PK>>
+  --
+  SubmissionId: guid <<FK>>
+  CriteriaId: guid <<FK>>
+  Value: varchar
+  NumericValue: numeric
+  Note: varchar
+  PhotoUrl: varchar
+  PhotoMetadata: varchar
+  IsRepeatedError: boolean
+  IsCcp: boolean
+  IsRisk: boolean
+  IsFailure: boolean
+  RepeatedFaults: integer
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  Metadata: varchar
+  CriteriaLabel: varchar
+}
+
+entity SubmissionSectionScore {
+  * Id: uuid <<PK>>
+  --
+  SubmissionId: uuid <<FK>>
+  StoreId: guid <<FK>>
+  TemplateId: guid <<FK>>
+  SectionTitle: varchar
+  Score: numeric
+  MaxScore: numeric
+  Ratio: numeric
+  IsCcpFailed: boolean
+  Weight: numeric
+  CreatedAt: timestamptz
+}
+
+entity ActionPlan {
+  * Id: uuid <<PK>>
+  --
+  AnswerId: guid <<FK>>
+  SubmissionId: guid <<FK>>
+  StoreId: guid <<FK>>
+  StoreManagerId: guid <<FK>>
+  CriteriaLabel: varchar
+  GroupTitle: varchar
+  PlanDescription: varchar
+  EvidencePhotoUrl: varchar
+  EvidenceNote: varchar
+  Status: varchar
+  Deadline: timestamptz
+  ClosedAt: timestamptz
+  VerifiedBy: guid
+  VerifiedAt: timestamptz
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  RootCause: varchar
+  CorrectionPlan: varchar
+  StoreName: varchar
+  StoreManagerName: varchar
+  VerifierName: varchar
+  EvidenceSubmittedAt: timestamptz
+  EvidenceSubmittedByName: varchar
+  SourceTitle: varchar
+}
+
+entity GlobalRisk {
+  * Id: uuid <<PK>>
+  --
+  Label: varchar
+  Description: varchar
+  IsActive: boolean
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+}
+
+entity SubmissionRisk {
+  * Id: uuid <<PK>>
+  --
+  SubmissionId: uuid <<FK>>
+  GlobalRiskId: uuid <<FK>>
+  TriggeredById: guid <<FK>>
+  Note: varchar
+  TriggeredAt: timestamptz
+  CreatedAt: timestamptz
+}
+
+entity Program {
+  * Id: uuid <<PK>>
+  --
+  TemplateId: uuid <<FK>>
+  Title: varchar
+  Category: varchar
+  Deadline: datetime
+  Status: varchar
+  CreatedBy: guid
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  RowVersion: integer
+}
+
+entity ProgramAssignment {
+  * Id: uuid <<PK>>
+  --
+  ProgramId: uuid <<FK>>
+  StoreId: uuid <<FK>>
+  AssignedById: uuid <<FK>>
+  AssigneeId: guid <<FK>>
+  Status: varchar
+  CompletedAt: timestamptz
+  CreatedAt: timestamptz
+  UpdatedAt: timestamptz
+  RejectionComment: varchar
+  VerifiedAt: timestamptz
+  RowVersion: integer
+}
+
+entity Notification {
+  * Id: uuid <<PK>>
+  --
+  UserId: uuid <<FK>>
+  Type: varchar
+  Title: varchar
+  Message: varchar
+  ReadAt: timestamptz
+  ActionUrl: varchar
+  Metadata: varchar
+  CreatedAt: timestamptz
+}
+
+entity SystemLog {
+  * Id: uuid <<PK>>
+  --
+  UserId: guid <<FK>>
+  Action: varchar
+  Category: varchar
+  Message: varchar
+  Path: varchar
+  Level: varchar
+  EntityType: varchar
+  EntityId: guid <<FK>>
+  TraceId: varchar
+  UserEmail: varchar
+  CreatedAt: timestamptz
+}
+
+entity OutboxMessage {
+  * Id: uuid <<PK>>
+  --
+  Type: varchar
+  Payload: varchar
+  CreatedAt: timestamptz
+  ProcessedAt: timestamptz
+  Error: varchar
+}
+
+entity BodReportSnapshot {
+  * Id: uuid <<PK>>
+  --
+  Date: date
+  ComputedAt: timestamptz
+  Status: varchar
+  Payload: varchar
+}
+
+AppUser ||--o| Profile : "Profile Identity"
+AppUser ||--o{ UserRole : "Roles assigned"
+AppUser ||--o{ UserDeviceToken : "Registered devices"
+UserGroup ||--o{ UserGroupMember : "Members"
+Profile ||--o{ UserGroupMember : "Group memberships"
+Store ||--o{ ProfileStoreAssignment : "Manager assignments"
+Profile ||--o{ ProfileStoreAssignment : "Store assignments"
+Store ||--o| StoreAnalyticsSnapshot : "Boardroom performance"
+Template ||--o{ Group : "Sections"
+Group ||--o{ Group : "Subsection hierarchy"
+Group ||--o{ Criterion : "Evaluation questions"
+Template ||--o{ TemplateAssignment : "Target groups"
+UserGroup ||--o{ TemplateAssignment : "Assigned templates"
+Template ||--o{ Program : "Program blueprints"
+Program ||--o{ ProgramAssignment : "Store allocations"
+Store ||--o{ ProgramAssignment : "Assigned programs"
+ProgramAssignment ||--o{ Submission : "Audit records"
+Template ||--o{ Submission : "Audit blueprint snapshot"
+Store ||--o{ Submission : "Audited facility"
+Submission ||--o{ Answer : "Checklist replies"
+Criterion ||--o{ Answer : "Question snapshot"
+Submission ||--o{ SubmissionSectionScore : "Category breakdowns"
+Store ||--o{ SubmissionSectionScore : "Store scores"
+Template ||--o{ SubmissionSectionScore : "Template scores"
+Answer ||--o| ActionPlan : "Corrective task"
+Submission ||--o{ ActionPlan : "Submission plans"
+Store ||--o{ ActionPlan : "Store action plans"
+Submission ||--o{ SubmissionRisk : "Flagged risks"
+GlobalRisk ||--o{ SubmissionRisk : "Triggered risk types"
+AppUser ||--o{ Notification : "System notices"
+AppUser ||--o{ SystemLog : "Audited user activity"
+
+@enduml

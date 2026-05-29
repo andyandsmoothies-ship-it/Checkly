@@ -175,7 +175,7 @@ class Program {
 
                         using (var cmd = new NpgsqlCommand(insertSubmissionSql, conn, trans)) {
                             cmd.Parameters.AddWithValue("id", submissionId);
-                            cmd.Parameters.AddWithValue("program_assignment_id", (object)linkedAssignmentId ?? DBNull.Value);
+                            cmd.Parameters.AddWithValue("program_assignment_id", linkedAssignmentId.HasValue ? (object)linkedAssignmentId.Value : DBNull.Value);
                             cmd.Parameters.AddWithValue("template_id", templateId);
                             cmd.Parameters.AddWithValue("auditor_id", auditor.id);
                             cmd.Parameters.AddWithValue("store_id", store.id);

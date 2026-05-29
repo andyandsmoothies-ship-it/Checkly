@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -6,8 +5,6 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:checkly/features/templates/models/editable_criterion.dart';
 import 'package:checkly/features/templates/models/editable_group.dart';
-import 'package:checkly/features/templates/models/lint_result.dart';
-import 'package:checkly/features/templates/utils/dart_template_linter.dart';
 import 'package:checkly/features/templates/widgets/template_linter_panel.dart';
 import 'package:checkly/features/templates/pages/template_builder_page.dart';
 import 'package:checkly/features/templates/manager/template_manager.dart';
