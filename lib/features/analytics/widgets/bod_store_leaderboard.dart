@@ -148,10 +148,8 @@ class BodStoreLeaderboard extends StatelessWidget {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          builder: (ctx) => BodStoreDetailSheet(
-            storeId: s.storeId,
-            manager: manager,
-          ),
+          builder: (ctx) =>
+              BodStoreDetailSheet(storeId: s.storeId, manager: manager),
         );
       },
       borderRadius: BorderRadius.circular(8),

@@ -5,27 +5,27 @@ import 'package:get_it/get_it.dart';
 import 'package:checkly/features/analytics/manager/bod_analytics_manager.dart';
 import 'package:checkly/features/analytics/manager/bod_analytics_data.dart';
 import 'package:checkly/features/analytics/services/bod_analytics_api_service.dart';
-import 'package:checkly/_shared/services/interaction_manager.dart';
+import 'package:checkly/_shared/services/error_display_service.dart';
 // Note: We anticipate this helper in Slice 3 for TC-12 compliance
 import 'package:checkly/features/analytics/utils/trend_utils.dart';
 
 class MockBodAnalyticsApiService extends Mock
     implements BodAnalyticsApiService {}
 
-class MockInteractionManager extends Mock implements InteractionManager {}
+class MockErrorDisplayService extends Mock implements ErrorDisplayService {}
 
 void main() {
   late MockBodAnalyticsApiService mockApi;
-  late MockInteractionManager mockInteraction;
+  late MockErrorDisplayService mockErrorDisplay;
   late BodAnalyticsManager manager;
 
   setUp(() {
     mockApi = MockBodAnalyticsApiService();
-    mockInteraction = MockInteractionManager();
+    mockErrorDisplay = MockErrorDisplayService();
 
     final di = GetIt.instance;
     di.pushNewScope();
-    di.registerSingleton<InteractionManager>(mockInteraction);
+    di.registerSingleton<ErrorDisplayService>(mockErrorDisplay);
 
     manager = BodAnalyticsManager(mockApi);
   });

@@ -39,6 +39,7 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
       _loading = false;
       _isDirty = false; // Initial load is not a user edit
     });
+    _triggerLinter();
   }
 
   String _buildScoringConfig() {
@@ -103,6 +104,18 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
       }
     } on DioException catch (e) {
       if (mounted) {
+        if (e.response?.statusCode == 422) {
+          final data = e.response?.data;
+          if (data is Map<String, dynamic>) {
+            final lintData = data['lintResult'] ?? data;
+            if (lintData is Map<String, dynamic>) {
+              setState(() {
+                _lintResult = LintResult.fromJson(lintData);
+              });
+              return;
+            }
+          }
+        }
         _di<ErrorDisplayService>().show(AppError.fromDioException(e));
       }
     } catch (e) {

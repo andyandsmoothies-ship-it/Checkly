@@ -60,6 +60,10 @@ class MockGoRouterState extends Fake implements GoRouterState {
 }
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(BodAgingBucket.all);
+  });
+
   late MockBodAnalyticsManager mockManager;
 
   setUp(() {
@@ -366,13 +370,19 @@ void main() {
         // Stub the store detail load
         when(() => mockManager.loadStoreDetail(any())).thenAnswer((_) async {});
         when(() => mockManager.isStoreDetailLoading).thenReturn(false);
-        when(() => mockManager.storeDetail).thenReturn(StoreBodSummary(
-          storeName: 'Siam Square',
-          recentAudits: [
-            RecentAuditEntry(date: '2026-05-24T14:30:00Z', score: 96.5, auditorName: 'Alice'),
-          ],
-          categoryBreakdown: [],
-        ));
+        when(() => mockManager.storeDetail).thenReturn(
+          StoreBodSummary(
+            storeName: 'Siam Square',
+            recentAudits: [
+              RecentAuditEntry(
+                date: '2026-05-24T14:30:00Z',
+                score: 96.5,
+                auditorName: 'Alice',
+              ),
+            ],
+            categoryBreakdown: [],
+          ),
+        );
 
         await tester.pumpWidget(buildTestWidget());
 

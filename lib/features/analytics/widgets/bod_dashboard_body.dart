@@ -42,74 +42,37 @@ class BodDashboardBody extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isWide = screenWidth > 720;
 
-    // ── DIAGNOSTIC: try-catch each card so Debug Console reports which card crashes ──
-    Widget card1;
-    try {
-      card1 = BodKpiGrid(
-        chainKpis: report.chainKpis.toJson(),
-        trend: report.trend,
-        goldenStore: report.goldenStore,
-        manager: manager,
-      );
-    } catch (e, s) {
-      debugPrint('🔴 BOD card1 (BodKpiGrid) CRASH: $e\n$s');
-      rethrow;
-    }
+    final card1 = BodKpiGrid(
+      chainKpis: report.chainKpis.toJson(),
+      trend: report.trend,
+      goldenStore: report.goldenStore,
+      manager: manager,
+    );
 
-    Widget card2;
-    try {
-      card2 = BodScoreTrend(trend: report.trend);
-    } catch (e, s) {
-      debugPrint('🔴 BOD card2 (BodScoreTrend) CRASH: $e\n$s');
-      rethrow;
-    }
+    final card2 = BodScoreTrend(trend: report.trend);
 
-    Widget card3;
-    try {
-      card3 = BodStoreLeaderboard(
-        topStores: report.topStores,
-        bottomStores: report.bottomStores,
-        manager: manager,
-      );
-    } catch (e, s) {
-      debugPrint('🔴 BOD card3 (BodStoreLeaderboard) CRASH: $e\n$s');
-      rethrow;
-    }
+    final card3 = BodStoreLeaderboard(
+      topStores: report.topStores,
+      bottomStores: report.bottomStores,
+      manager: manager,
+    );
 
-    Widget card4;
-    try {
-      card4 = BodCategoryWeakness(
-        categoryBreakdown: report.categoryBreakdown,
-        manager: manager,
-      );
-    } catch (e, s) {
-      debugPrint('🔴 BOD card4 (BodCategoryWeakness) CRASH: $e\n$s');
-      rethrow;
-    }
+    final card4 = BodCategoryWeakness(
+      categoryBreakdown: report.categoryBreakdown,
+      manager: manager,
+    );
 
-    Widget card5;
-    try {
-      card5 = BodApAgingFunnel(
-        apAging: report.apAging.toJson(),
-        avgTtrDays: report.chainKpis.avgTtrDays,
-        manager: manager,
-      );
-    } catch (e, s) {
-      debugPrint('🔴 BOD card5 (BodApAgingFunnel) CRASH: $e\n$s');
-      rethrow;
-    }
+    final card5 = BodApAgingFunnel(
+      apAging: report.apAging.toJson(),
+      avgTtrDays: report.chainKpis.avgTtrDays,
+      manager: manager,
+    );
 
-    Widget card6;
-    try {
-      card6 = BodAuditorScatter(
-        auditorProductivity: report.auditorProductivity,
-        manager: manager,
-        nationalAvg: report.chainKpis.avgScore,
-      );
-    } catch (e, s) {
-      debugPrint('🔴 BOD card6 (BodAuditorScatter) CRASH: $e\n$s');
-      rethrow;
-    }
+    final card6 = BodAuditorScatter(
+      auditorProductivity: report.auditorProductivity,
+      manager: manager,
+      nationalAvg: report.chainKpis.avgScore,
+    );
 
     return RefreshIndicator(
       onRefresh: manager.refreshReport,
@@ -130,7 +93,10 @@ class BodDashboardBody extends StatelessWidget {
                 return Container(
                   width: double.infinity,
                   margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(16),
@@ -181,7 +147,10 @@ class BodDashboardBody extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: manager.clearFilter,
-                        icon: const Icon(Icons.cancel_rounded, color: AppColors.cardinal),
+                        icon: const Icon(
+                          Icons.cancel_rounded,
+                          color: AppColors.cardinal,
+                        ),
                         tooltip: 'Clear filters',
                       ),
                     ],

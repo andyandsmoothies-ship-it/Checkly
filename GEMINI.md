@@ -136,6 +136,17 @@
   - **Fix:** SQLite does not natively support array types. `TemplateDao` serializes `List<String>? categoryTags` into a comma-separated String when saving to SQLite. When reading, it splits by comma and sanitizes the result using `.where((t) => t.isNotEmpty).toList()` to prevent empty strings from polluting the output. Ensure any test models or frontend widgets handle empty/whitespace strings gracefully and never assume index-based access on un-sanitized comma values.
 - **Gotcha: Golden UI Asset Path Mapping**
   - **Fix:** Golden test images must be saved under the `test/goldens/` directory. Do not check in full device screenshots; only assert against the target widget or isolated component viewports to keep reference images small, lightweight, and clean.
+- **Gotcha: Widget-Type Switch Finder Collisions**
+  - **Fix:** In Flutter widget testing, when using `find.byType(Switch).first` to retrieve the first question's toggle, ensure that other simulation switches (e.g., Global Risk Override switches) are placed at the bottom of the list or use unique widgets/keys so they do not collide with the question's toggle selection.
+- **Gotcha: Default pass_fail minusImpact**
+  - **Fix:** For scoring engine simulators, a failed `pass_fail` criterion with no explicit `minusImpact` set should fall back to `1.0` to match expected test deductions (e.g. dropping score from `100.00%` to `90.00%` under a standard `10` points weight).
+- **Gotcha: Linter Rule Drift & HTTP 422 Mapping**
+  - **Fix:** The frontend linter and backend linter might drift. When mapping HTTP 422 response bodies to the frontend, ensure that `LintResult` parsing is resilient to missing fields and can display server-side linter errors gracefully in the linter panel.
+- **Gotcha: Nesting Depth Constraints**
+  - **Fix:** Scoring calculation engines (`VerifyPenalty` in C# and `ScoringInputMapper` in Dart) only support up to 2 levels of group hierarchy (Sections and Subsections). Nesting beyond this depth results in incorrect calculations because intermediate groups are bypassed or ignored.
+- **Gotcha: Progressive Repeat Decimal Overflow Safeguards**
+  - **Fix:** Always cast progressive repeat fault counts to `decimal` *before* multiplication (`(decimal)repeatedFaults * (decimal)repeatedFaults`) to prevent 32-bit integer overflow exceptions on high fault counts (above 46,340 faults).
+
 
 
 

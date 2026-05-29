@@ -94,9 +94,11 @@ class OnlineCapabilityGrid extends StatelessWidget {
                                   child: Text(
                                     groupName.toUpperCase(),
                                     style: AppFonts.displayStyle(
-                                      fontSize: theme.textTheme.labelSmall?.fontSize,
+                                      fontSize:
+                                          theme.textTheme.labelSmall?.fontSize,
                                       fontWeight: FontWeight.w900,
-                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.65),
                                       letterSpacing: 3,
                                     ),
                                     maxLines: 1,
@@ -160,7 +162,8 @@ class OnlineCapabilityGrid extends StatelessWidget {
                                     titleText,
                                     style: AppFonts.displayStyle(
                                       fontWeight: FontWeight.w700,
-                                      fontSize: theme.textTheme.bodyMedium?.fontSize,
+                                      fontSize:
+                                          theme.textTheme.bodyMedium?.fontSize,
                                     ),
                                   ),
                                 ),
@@ -171,13 +174,16 @@ class OnlineCapabilityGrid extends StatelessWidget {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    color: theme
+                                        .colorScheme
+                                        .surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
                                     cap,
                                     style: AppFonts.displayStyle(
-                                      fontSize: theme.textTheme.labelSmall?.fontSize,
+                                      fontSize:
+                                          theme.textTheme.labelSmall?.fontSize,
                                       fontWeight: FontWeight.w700,
                                       color: theme.colorScheme.onSurfaceVariant,
                                     ),

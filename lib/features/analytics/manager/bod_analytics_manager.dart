@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:checkly/features/analytics/manager/bod_analytics_data.dart';
 import 'package:checkly/features/analytics/services/bod_analytics_api_service.dart';
-import 'package:checkly/_shared/services/interaction_manager.dart';
+import 'package:checkly/_shared/services/error_display_service.dart';
 
 class BodAnalyticsManager extends ChangeNotifier {
   final BodAnalyticsApiService _api;
@@ -27,7 +27,7 @@ class BodAnalyticsManager extends ChangeNotifier {
   List<CategoryStoreEntry> _categoryDetail = [];
 
   bool _isAuditorDetailLoading = false;
-  dynamic _auditorDetail;
+  BodAuditorEntry? _auditorDetail;
 
   BodAnalyticsManager(this._api);
 
@@ -51,68 +51,77 @@ class BodAnalyticsManager extends ChangeNotifier {
   List<CategoryStoreEntry> get categoryDetail => _categoryDetail;
 
   bool get isAuditorDetailLoading => _isAuditorDetailLoading;
-  dynamic get auditorDetail => _auditorDetail;
+  BodAuditorEntry? get auditorDetail => _auditorDetail;
 
+  void _update(VoidCallback fn) {
+    fn();
+    notifyListeners();
+  }
 
   Future<void> loadReport() async {
-    _isLoading = true;
-    _isOffline = false;
-    _isEmpty = false;
-    _error = null;
-    notifyListeners();
-
-    try {
-      debugPrint('[BOD] loadReport → calling _api.getReport()');
-      final res = await _api.getReport();
-      debugPrint('[BOD] loadReport → fromJson complete. trend.length=${res.trend.length}');
-      _report = res;
-      _isLoading = false;
+    _update(() {
+      _isLoading = true;
       _isOffline = false;
       _isEmpty = false;
-      debugPrint('[BOD] loadReport → notifyListeners()');
-      notifyListeners();
-    } catch (e, s) {
-      debugPrint('[BOD] loadReport → CATCH: $e\n$s');
-      _isLoading = false;
-      _report = null;
-      final errStr = e.toString();
-      if (errStr.contains('404')) {
-        _isEmpty = true;
-      } else if (errStr.contains('DioException') ||
-          errStr.contains('connection')) {
-        _isOffline = true;
-      } else {
-        _error = 'Something went wrong. Please try again.';
-      }
-      notifyListeners();
+      _error = null;
+    });
+
+    try {
+      final res = await _api.getReport();
+      _update(() {
+        _report = res;
+        _isLoading = false;
+        _isOffline = false;
+        _isEmpty = false;
+      });
+    } catch (e) {
+      _update(() {
+        _isLoading = false;
+        _report = null;
+        final errStr = e.toString();
+        if (errStr.contains('404')) {
+          _isEmpty = true;
+        } else if (errStr.contains('DioException') ||
+            errStr.contains('connection')) {
+          _isOffline = true;
+        } else {
+          _error = 'Something went wrong. Please try again.';
+        }
+      });
     }
   }
 
   Future<void> refreshReport() async {
     final prevReport = _report;
     final prevComputedAt = prevReport?.computedAt;
-    _isLoading = true;
-    _isOffline = false;
-    _isEmpty = false;
-    _error = null;
-    notifyListeners();
+    _update(() {
+      _isLoading = true;
+      _isOffline = false;
+      _isEmpty = false;
+      _error = null;
+    });
 
     if (_isLiveMode && _activeProvince != null) {
       try {
-        final res = await _api.getFilteredReport(_activeProvince!, _activeDistrict ?? '');
-        _report = res;
-        _isLoading = false;
-        notifyListeners();
+        final res = await _api.getFilteredReport(
+          _activeProvince!,
+          _activeDistrict ?? '',
+        );
+        _update(() {
+          _report = res;
+          _isLoading = false;
+        });
       } catch (e) {
-        _isLoading = false;
-        _report = prevReport;
-        final errStr = e.toString();
-        if (errStr.contains('DioException') || errStr.contains('connection')) {
-          _isOffline = true;
-        } else {
-          _error = 'Something went wrong. Please try again.';
-        }
-        notifyListeners();
+        _update(() {
+          _isLoading = false;
+          _report = prevReport;
+          final errStr = e.toString();
+          if (errStr.contains('DioException') || errStr.contains('connection')) {
+            _isOffline = true;
+          } else {
+            _error = 'Something went wrong. Please try again.';
+          }
+        });
       }
       return;
     }
@@ -130,10 +139,11 @@ class BodAnalyticsManager extends ChangeNotifier {
         try {
           final newReport = await _api.getReport();
           if (newReport.computedAt != prevComputedAt) {
-            _report = newReport;
-            _isLoading = false;
-            updated = true;
-            notifyListeners();
+            _update(() {
+              _report = newReport;
+              _isLoading = false;
+              updated = true;
+            });
             break;
           }
         } catch (e) {
@@ -142,80 +152,86 @@ class BodAnalyticsManager extends ChangeNotifier {
       }
 
       if (!updated) {
-        _isLoading = false;
-        _report = prevReport;
-        GetIt.instance<InteractionManager>().showWarningToast(
-          'Data computation is taking longer than expected. Please check back shortly.',
-        );
-        notifyListeners();
+        _update(() {
+          _isLoading = false;
+          _report = prevReport;
+          GetIt.instance<ErrorDisplayService>().showWarningToast(
+            'Data computation is taking longer than expected. Please check back shortly.',
+          );
+        });
       }
     } catch (e) {
       final errStr = e.toString();
-      if (errStr.contains('429')) {
+      _update(() {
         _isLoading = false;
-        GetIt.instance<InteractionManager>().showWarningToast(
-          'Rate limit exceeded. Please try again later.',
-        );
-        notifyListeners();
-      } else {
-        _isLoading = false;
-        _error = 'Something went wrong. Please try again.';
-        notifyListeners();
-      }
+        if (errStr.contains('429')) {
+          GetIt.instance<ErrorDisplayService>().showWarningToast(
+            'Rate limit exceeded. Please try again later.',
+          );
+        } else {
+          _error = 'Something went wrong. Please try again.';
+        }
+      });
     }
   }
 
   Future<void> applyFilter(String province, String district) async {
     if (_isLoading) return;
-    _isLoading = true;
-    _isLiveMode = true;
-    _activeProvince = province;
-    _activeDistrict = district;
-    _error = null;
-    notifyListeners();
+    _update(() {
+      _isLoading = true;
+      _isLiveMode = true;
+      _activeProvince = province;
+      _activeDistrict = district;
+      _error = null;
+    });
 
     try {
       final res = await _api.getFilteredReport(province, district);
-      _report = res;
-      _isLoading = false;
-      notifyListeners();
+      _update(() {
+        _report = res;
+        _isLoading = false;
+      });
     } catch (e) {
-      _isLoading = false;
-      _report = null;
-      _error = 'Something went wrong. Please try again.';
-      notifyListeners();
+      _update(() {
+        _isLoading = false;
+        _report = null;
+        _error = 'Something went wrong. Please try again.';
+      });
     }
   }
 
   Future<void> clearFilter() async {
-    _isLiveMode = false;
-    _activeProvince = null;
-    _activeDistrict = null;
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+    _update(() {
+      _isLiveMode = false;
+      _activeProvince = null;
+      _activeDistrict = null;
+      _isLoading = true;
+      _error = null;
+    });
 
     try {
       final res = await _api.getReport();
-      _report = res;
-      _isLoading = false;
-      notifyListeners();
+      _update(() {
+        _report = res;
+        _isLoading = false;
+      });
     } catch (e) {
-      _isLoading = false;
-      _report = null;
-      _error = 'Something went wrong. Please try again.';
-      notifyListeners();
+      _update(() {
+        _isLoading = false;
+        _report = null;
+        _error = 'Something went wrong. Please try again.';
+      });
     }
   }
 
-  Future<void> loadApDetails(String bucketName) async {
+  Future<void> loadApDetails(BodAgingBucket bucket) async {
     if (_isApDetailLoading) return;
-    _isApDetailLoading = true;
-    _error = null;
-    notifyListeners();
+    _update(() {
+      _isApDetailLoading = true;
+      _error = null;
+    });
 
-    final trimmed = bucketName.trim().toLowerCase();
-    if (trimmed.isEmpty || trimmed == 'all' || trimmed == 'open') {
+    if (bucket == BodAgingBucket.all) {
       try {
         final List<List<ApDetailEntry>> results = await Future.wait([
           _api.getApBucketDetail('0-7d'),
@@ -223,116 +239,109 @@ class BodAnalyticsManager extends ChangeNotifier {
           _api.getApBucketDetail('31-90d'),
           _api.getApBucketDetail('90d+'),
         ]);
-        _apDetails = results.expand((x) => x).toList()
-          ..sort((a, b) => b.ageInDays.compareTo(a.ageInDays));
-        _isApDetailLoading = false;
-        notifyListeners();
+        _update(() {
+          _apDetails = results.expand((x) => x).toList()
+            ..sort((a, b) => b.ageInDays.compareTo(a.ageInDays));
+          _isApDetailLoading = false;
+        });
         return;
       } catch (e) {
-        _isApDetailLoading = false;
-        _apDetails = [];
-        _error = 'Something went wrong. Please try again.';
-        notifyListeners();
+        _update(() {
+          _isApDetailLoading = false;
+          _apDetails = [];
+          _error = 'Something went wrong. Please try again.';
+        });
         return;
       }
     }
 
-    String normalized;
-    if (trimmed.contains('0-7') || trimmed.contains('0-7d')) {
-      normalized = '0-7d';
-    } else if (trimmed.contains('8-30') || trimmed.contains('8-30d')) {
-      normalized = '8-30d';
-    } else if (trimmed.contains('31-90') || trimmed.contains('31-90d')) {
-      normalized = '31-90d';
-    } else if (trimmed.contains('90+') || trimmed.contains('90d')) {
-      normalized = '90d+';
-    } else if (trimmed.contains('0-30')) {
-      normalized = '8-30d';
-    } else if (trimmed.contains('31-60')) {
-      normalized = '31-90d';
-    } else if (trimmed.contains('61-90')) {
-      normalized = '31-90d';
-    } else {
-      normalized = trimmed;
-    }
-
     try {
-      final res = await _api.getApBucketDetail(normalized);
-      _apDetails = res;
-      _isApDetailLoading = false;
-      notifyListeners();
+      final res = await _api.getApBucketDetail(bucket.toApiKey());
+      _update(() {
+        _apDetails = res;
+        _isApDetailLoading = false;
+      });
     } catch (e) {
-      _isApDetailLoading = false;
-      _apDetails = [];
-      _error = 'Something went wrong. Please try again.';
-      notifyListeners();
+      _update(() {
+        _isApDetailLoading = false;
+        _apDetails = [];
+        _error = 'Something went wrong. Please try again.';
+      });
     }
   }
 
   Future<void> loadStoreDetail(String storeId) async {
     if (_isStoreDetailLoading) return;
-    _isStoreDetailLoading = true;
-    _error = null;
-    notifyListeners();
+    _update(() {
+      _isStoreDetailLoading = true;
+      _error = null;
+    });
 
     try {
       final res = await _api.getStoreBodSummary(storeId);
-      _storeDetail = res;
-      _isStoreDetailLoading = false;
-      notifyListeners();
+      _update(() {
+        _storeDetail = res;
+        _isStoreDetailLoading = false;
+      });
     } catch (e) {
-      _isStoreDetailLoading = false;
-      _storeDetail = null;
-      _error = 'Something went wrong. Please try again.';
-      notifyListeners();
+      _update(() {
+        _isStoreDetailLoading = false;
+        _storeDetail = null;
+        _error = 'Something went wrong. Please try again.';
+      });
     }
   }
 
   Future<void> loadCategoryDetail(String name) async {
     if (_isCategoryDetailLoading) return;
-    _isCategoryDetailLoading = true;
-    _error = null;
-    notifyListeners();
+    _update(() {
+      _isCategoryDetailLoading = true;
+      _error = null;
+    });
 
     final trimmedName = name.trim();
 
     try {
       final res = await _api.getCategoryDetail(trimmedName);
-      _categoryDetail = res;
-      _isCategoryDetailLoading = false;
-      notifyListeners();
+      _update(() {
+        _categoryDetail = res;
+        _isCategoryDetailLoading = false;
+      });
     } catch (e) {
-      _isCategoryDetailLoading = false;
-      _categoryDetail = [];
-      _error = 'Something went wrong. Please try again.';
-      notifyListeners();
+      _update(() {
+        _isCategoryDetailLoading = false;
+        _categoryDetail = [];
+        _error = 'Something went wrong. Please try again.';
+      });
     }
   }
 
   Future<void> loadAuditorDetail(String auditorName) async {
     if (_isAuditorDetailLoading) return;
-    _isAuditorDetailLoading = true;
-    _error = null;
-    notifyListeners();
+    _update(() {
+      _isAuditorDetailLoading = true;
+      _error = null;
+    });
 
     try {
       final productivityList = await _api.getAuditorProductivity();
-      dynamic matched;
+      BodAuditorEntry? matched;
       for (final item in productivityList) {
-        if (item is Map && item['auditorName'] == auditorName) {
+        if (item.auditorName == auditorName) {
           matched = item;
           break;
         }
       }
-      _auditorDetail = matched;
-      _isAuditorDetailLoading = false;
-      notifyListeners();
+      _update(() {
+        _auditorDetail = matched;
+        _isAuditorDetailLoading = false;
+      });
     } catch (e) {
-      _isAuditorDetailLoading = false;
-      _auditorDetail = null;
-      _error = 'Something went wrong. Please try again.';
-      notifyListeners();
+      _update(() {
+        _isAuditorDetailLoading = false;
+        _auditorDetail = null;
+        _error = 'Something went wrong. Please try again.';
+      });
     }
   }
 }
-

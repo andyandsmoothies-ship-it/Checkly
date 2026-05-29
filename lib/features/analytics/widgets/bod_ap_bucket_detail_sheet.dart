@@ -8,12 +8,12 @@ import '../manager/bod_analytics_data.dart';
 
 /// Modal bottom sheet displaying detailed overdue Action Plans for a selected aging bucket.
 class BodApBucketDetailSheet extends StatefulWidget {
-  final String bucketName;
+  final BodAgingBucket bucket;
   final BodAnalyticsManager manager;
 
   const BodApBucketDetailSheet({
     super.key,
-    required this.bucketName,
+    required this.bucket,
     required this.manager,
   });
 
@@ -28,7 +28,7 @@ class _BodApBucketDetailSheetState extends State<BodApBucketDetailSheet> {
     // Load details asynchronously when the sheet mounts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        widget.manager.loadApDetails(widget.bucketName);
+        widget.manager.loadApDetails(widget.bucket);
       }
     });
   }
@@ -66,7 +66,7 @@ class _BodApBucketDetailSheetState extends State<BodApBucketDetailSheet> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${widget.bucketName} Overdue Action Plans',
+                      '${widget.bucket.displayName} Overdue Action Plans',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                         color: AppColors.eel,

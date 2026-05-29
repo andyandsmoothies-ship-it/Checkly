@@ -140,7 +140,8 @@ class _BodCategoryDetailSheetState extends State<BodCategoryDetailSheet> {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: UniversalListCard(
                               title: item.storeName,
-                              subtitle: 'Audits: ${item.auditCount} | Failures: ${item.failureCount}',
+                              subtitle:
+                                  'Audits: ${item.auditCount} | Failures: ${item.failureCount}',
                               leading: Container(
                                 width: 44,
                                 height: 44,
@@ -159,8 +160,8 @@ class _BodCategoryDetailSheetState extends State<BodCategoryDetailSheet> {
                                   type: item.avgScore < 70
                                       ? PillChipType.red
                                       : item.avgScore < 85
-                                          ? PillChipType.blue
-                                          : PillChipType.green,
+                                      ? PillChipType.blue
+                                      : PillChipType.green,
                                 ),
                               ],
                             ),

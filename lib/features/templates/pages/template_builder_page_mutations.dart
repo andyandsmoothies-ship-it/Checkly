@@ -8,6 +8,7 @@ extension _TemplateBuilderMutations on _TemplateBuilderPageState {
       _sections.add(EditableGroup());
       _isDirty = true;
     });
+    _triggerLinter();
   }
 
   void _removeSection(int index) {
@@ -16,6 +17,7 @@ extension _TemplateBuilderMutations on _TemplateBuilderPageState {
       _sections.removeAt(index);
       _isDirty = true;
     });
+    _triggerLinter();
   }
 
   void _addSubSection(int sectionIndex) {
@@ -23,6 +25,7 @@ extension _TemplateBuilderMutations on _TemplateBuilderPageState {
       _sections[sectionIndex].subSections.add(EditableGroup());
       _isDirty = true;
     });
+    _triggerLinter();
   }
 
   void _removeSubSection(int sectionIndex, int subIndex) {
@@ -31,6 +34,7 @@ extension _TemplateBuilderMutations on _TemplateBuilderPageState {
       _sections[sectionIndex].subSections.removeAt(subIndex);
       _isDirty = true;
     });
+    _triggerLinter();
   }
 
   void _addCriterionToGroup(
@@ -41,6 +45,7 @@ extension _TemplateBuilderMutations on _TemplateBuilderPageState {
       group.criteria.add(EditableCriterion(inputType: inputType));
       _isDirty = true;
     });
+    _triggerLinter();
   }
 
   void _removeCriterionFromGroup(EditableGroup group, int criterionIndex) {
@@ -50,6 +55,7 @@ extension _TemplateBuilderMutations on _TemplateBuilderPageState {
       group.criteria.removeAt(criterionIndex);
       _isDirty = true;
     });
+    _triggerLinter();
   }
 
   // ── Computed values ──

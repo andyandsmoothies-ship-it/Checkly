@@ -51,8 +51,9 @@ class _BodAuditorDetailSheetState extends State<BodAuditorDetailSheet> {
           String computedBias = 'Balanced';
           PillChipType biasChipType = PillChipType.blue;
           if (detail != null) {
-            final avgScore = (detail['avgScore'] ?? detail['score'] ?? 0.0).toDouble();
-            final nationalAvg = widget.manager.report?.chainKpis.avgScore ?? 85.0;
+            final avgScore = detail.avgScore;
+            final nationalAvg =
+                widget.manager.report?.chainKpis.avgScore ?? 85.0;
 
             if (avgScore <= nationalAvg - 5.0) {
               computedBias = 'Strict';
@@ -170,7 +171,8 @@ class _BodAuditorDetailSheetState extends State<BodAuditorDetailSheet> {
                             ),
                             badges: [
                               PillChip(
-                                label: '${(detail['avgScore'] ?? detail['score'] ?? 0.0).toDouble().toStringAsFixed(1)}%',
+                                label:
+                                    '${detail.avgScore.toStringAsFixed(1)}%',
                                 type: PillChipType.blue,
                               ),
                             ],
@@ -178,7 +180,8 @@ class _BodAuditorDetailSheetState extends State<BodAuditorDetailSheet> {
                           const SizedBox(height: 12),
                           UniversalListCard(
                             title: 'Calibration Rating',
-                            subtitle: 'Based on average deviation from corporate baseline',
+                            subtitle:
+                                'Based on average deviation from corporate baseline',
                             leading: Container(
                               width: 44,
                               height: 44,
@@ -192,16 +195,14 @@ class _BodAuditorDetailSheetState extends State<BodAuditorDetailSheet> {
                               ),
                             ),
                             badges: [
-                              PillChip(
-                                label: computedBias,
-                                type: biasChipType,
-                              ),
+                              PillChip(label: computedBias, type: biasChipType),
                             ],
                           ),
                           const SizedBox(height: 12),
                           UniversalListCard(
                             title: 'Activity Level',
-                            subtitle: '${detail['completedCount'] ?? detail['completedAudits'] ?? detail['count'] ?? 0} total audits completed',
+                            subtitle:
+                                '${detail.completedAudits} total audits completed',
                             leading: Container(
                               width: 44,
                               height: 44,

@@ -235,7 +235,10 @@ class _BodRegionFilterSheetState extends State<BodRegionFilterSheet> {
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 48),
-                      side: const BorderSide(color: AppColors.cardinal, width: 2.0),
+                      side: const BorderSide(
+                        color: AppColors.cardinal,
+                        width: 2.0,
+                      ),
                       foregroundColor: AppColors.cardinal,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -263,8 +266,8 @@ class _BodRegionFilterSheetState extends State<BodRegionFilterSheet> {
                   ),
                   onPressed:
                       (_selectedProvince != null && _selectedDistrict != null)
-                          ? _handleApply
-                          : null,
+                      ? _handleApply
+                      : null,
                   icon: const Icon(Icons.search_rounded),
                   label: const Text(
                     'Apply Filter',

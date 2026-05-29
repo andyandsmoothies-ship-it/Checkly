@@ -160,7 +160,8 @@ class _BodStoreDetailSheetState extends State<BodStoreDetailSheet> {
                                   ),
                                   badges: [
                                     PillChip(
-                                      label: '${cat.avgScore.toStringAsFixed(1)}%',
+                                      label:
+                                          '${cat.avgScore.toStringAsFixed(1)}%',
                                       type: PillChipType.blue,
                                     ),
                                   ],
@@ -182,7 +183,8 @@ class _BodStoreDetailSheetState extends State<BodStoreDetailSheet> {
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: UniversalListCard(
                                 title: 'Audit by ${audit.auditorName}',
-                                subtitle: 'Date: ${audit.date.length >= 10 ? audit.date.substring(0, 10) : audit.date}',
+                                subtitle:
+                                    'Date: ${audit.date.length >= 10 ? audit.date.substring(0, 10) : audit.date}',
                                 leading: Container(
                                   width: 44,
                                   height: 44,

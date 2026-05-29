@@ -62,9 +62,8 @@ class _BodAnalyticsPageState extends State<BodAnalyticsPage> {
                         top: Radius.circular(20),
                       ),
                     ),
-                    builder: (context) => BodRegionFilterSheet(
-                      manager: _manager,
-                    ),
+                    builder: (context) =>
+                        BodRegionFilterSheet(manager: _manager),
                   );
                 },
                 tooltip: 'Filter Region',

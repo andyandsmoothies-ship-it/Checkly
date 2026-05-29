@@ -86,7 +86,7 @@ internal static class ScoringHelpers
 
     internal static decimal GetDeduction(Criterion criterion, IReadOnlyList<Answer> answers, bool progressiveRepeatPenalty = false)
     {
-        var answer = answers.FirstOrDefault(a => a.CriteriaId == criterion.Id);
+        var answer = answers.FirstOrDefault(a => a.CriteriaId == criterion.Id || (criterion.Id == Guid.Empty && (a.CriteriaId == null || a.CriteriaId == Guid.Empty)));
         if (answer is null) return 0;
         // Pass/fail mode: explicit conform/na → no deduction
         if (string.Equals(answer.Value, "conform", StringComparison.OrdinalIgnoreCase)
@@ -107,7 +107,7 @@ internal static class ScoringHelpers
         // C3: progressive repeat penalty (n² × impact)
         if (progressiveRepeatPenalty && answer.RepeatedFaults > 0)
         {
-            var repeatDeduction = (decimal)(answer.RepeatedFaults * answer.RepeatedFaults) * impact;
+            var repeatDeduction = (decimal)answer.RepeatedFaults * (decimal)answer.RepeatedFaults * impact;
             rawDeduction = baseDeduction + repeatDeduction;
         }
         // Linear repeat penalty (n × impact) — applied even when progressive is OFF

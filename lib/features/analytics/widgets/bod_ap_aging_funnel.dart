@@ -3,6 +3,7 @@ import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
 import '../../../_shared/widgets/primitives/pill_chip.dart';
 import '../manager/bod_analytics_manager.dart';
+import '../manager/bod_analytics_data.dart';
 import 'bod_ap_bucket_detail_sheet.dart';
 
 /// Renders the action plan aging funnel.
@@ -21,13 +22,13 @@ class BodApAgingFunnel extends StatelessWidget {
     required this.manager,
   });
 
-  void _openBucketDetails(BuildContext context, String bucketName) {
+  void _openBucketDetails(BuildContext context, BodAgingBucket bucket) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) =>
-          BodApBucketDetailSheet(bucketName: bucketName, manager: manager),
+          BodApBucketDetailSheet(bucket: bucket, manager: manager),
     );
   }
 
@@ -84,7 +85,7 @@ class BodApAgingFunnel extends StatelessWidget {
             children: [
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, '0-7 Days'),
+                  onTap: () => _openBucketDetails(context, BodAgingBucket.sevenDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -98,7 +99,7 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, '8-30 Days'),
+                  onTap: () => _openBucketDetails(context, BodAgingBucket.thirtyDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -112,7 +113,7 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, '31-90 Days'),
+                  onTap: () => _openBucketDetails(context, BodAgingBucket.ninetyDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -126,7 +127,7 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, '90+ Days'),
+                  onTap: () => _openBucketDetails(context, BodAgingBucket.overdue),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,

@@ -82,4 +82,23 @@ class ErrorDisplayService {
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+
+  /// Shows a warning toast for a non-error/warning message.
+  void showWarningToast(String message) {
+    final context = _navigatorKey.currentContext;
+    if (context != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: const Color(0xFFE65100), // Dark warning orange
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    } else {
+      debugPrint(
+        '[ErrorDisplayService] Context is null. Cannot show toast: $message',
+      );
+    }
+  }
 }

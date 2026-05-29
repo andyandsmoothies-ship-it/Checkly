@@ -49,20 +49,14 @@ class BodKpiGrid extends StatelessWidget {
     } else {
       avgTtrDisplay = '${rawAvgTtrDays.toStringAsFixed(1)} days';
       if (rawAvgTtrDays <= 7.0) {
-        avgTtrPill = const PillChip(
-          label: 'Fast',
-          type: PillChipType.green,
-        );
+        avgTtrPill = const PillChip(label: 'Fast', type: PillChipType.green);
       } else if (rawAvgTtrDays <= 14.0) {
         avgTtrPill = const PillChip(
           label: 'On Pace',
           type: PillChipType.yellow,
         );
       } else {
-        avgTtrPill = const PillChip(
-          label: 'Slow',
-          type: PillChipType.red,
-        );
+        avgTtrPill = const PillChip(label: 'Slow', type: PillChipType.red);
       }
     }
 
@@ -100,7 +94,8 @@ class BodKpiGrid extends StatelessWidget {
                       context,
                       'Average Score',
                       '${avgScore.toStringAsFixed(1)}%',
-                      description: 'Average score of finished audits (last 30 days)',
+                      description:
+                          'Average score of finished audits (last 30 days)',
                       rightIndicator: BodMomDeltaChip(trend: trend),
                       footer: goldenStore != null
                           ? Text(
@@ -122,7 +117,8 @@ class BodKpiGrid extends StatelessWidget {
                       context,
                       'Completion Rate',
                       '${completionRate.toStringAsFixed(1)}%',
-                      description: 'How many planned audits were actually finished (last 30 days)',
+                      description:
+                          'How many planned audits were actually finished (last 30 days)',
                       rightIndicator: completionRateDelta != 0.0
                           ? PillChip(
                               label:
@@ -155,7 +151,8 @@ class BodKpiGrid extends StatelessWidget {
                       context,
                       'Overdue / Open APs',
                       '$overdueAPs / $openAPs',
-                      description: 'Late action plans out of all active action plans',
+                      description:
+                          'Late action plans out of all active action plans',
                       isAlert: overdueAPs > 0,
                       onTap: () {
                         showModalBottomSheet(
@@ -163,7 +160,7 @@ class BodKpiGrid extends StatelessWidget {
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
                           builder: (context) => BodApBucketDetailSheet(
-                            bucketName: 'All',
+                            bucket: BodAgingBucket.all,
                             manager: manager,
                           ),
                         );
@@ -181,7 +178,8 @@ class BodKpiGrid extends StatelessWidget {
                       context,
                       'Total Audits',
                       '$totalAudits',
-                      description: 'Total number of finished audits (last 30 days)',
+                      description:
+                          'Total number of finished audits (last 30 days)',
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -190,7 +188,8 @@ class BodKpiGrid extends StatelessWidget {
                       context,
                       'Active Stores',
                       '$activeStores',
-                      description: 'Total stores with audit activity (last 30 days)',
+                      description:
+                          'Total stores with audit activity (last 30 days)',
                     ),
                   ),
                 ],
@@ -208,9 +207,7 @@ class BodKpiGrid extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
-                    child: SizedBox(),
-                  ),
+                  const Expanded(child: SizedBox()),
                 ],
               ),
             ],

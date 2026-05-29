@@ -83,8 +83,7 @@ class BodScoreTrend extends StatelessWidget {
       trajectoryChip = FittedBox(
         fit: BoxFit.scaleDown,
         child: PillChip(
-          label:
-              '📈 Trend: Steady (Score: ${lastScore.toStringAsFixed(1)}%)',
+          label: '📈 Trend: Steady (Score: ${lastScore.toStringAsFixed(1)}%)',
           type: PillChipType.blue,
         ),
       );

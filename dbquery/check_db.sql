@@ -1,2 +1,13 @@
-\x
-SELECT id, template_title, created_at, status, total_score, is_score_parity_valid FROM submissions WHERE id = 'ab2a2df0-bb79-4be1-b1f2-f3df2306f124';
+-- Verify the new Action Plans Summary
+SELECT 
+    status,
+    COUNT(*) AS ap_count
+FROM action_plans
+GROUP BY status;
+
+-- Verify Overdue Action Plans vs All Open Action Plans
+SELECT 
+    COUNT(*) AS total_open_aps,
+    COUNT(CASE WHEN deadline <= NOW() THEN 1 END) AS overdue_aps
+FROM action_plans
+WHERE status = 'open';

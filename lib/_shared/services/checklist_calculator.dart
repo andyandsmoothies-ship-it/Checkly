@@ -66,8 +66,7 @@ class ChecklistCalculator {
         final answer = answerMap[c.id];
         final isAnswerCcp = answer?.isCcp ?? false;
         final isAnswerRisk = answer?.isRisk ?? false;
-        final hasFaults =
-            answer != null && ScoringHelpers.hasFault(c, answer);
+        final hasFaults = answer != null && ScoringHelpers.hasFault(c, answer);
         final isTemplateCcp = c.isCcp && hasFaults;
         final isTemplateRisk = c.isRisk && hasFaults;
 
@@ -82,10 +81,13 @@ class ChecklistCalculator {
       }
 
       final maxPoints = sectionCriteria.length.toDouble();
-      final deductionsCount = sectionCriteria.where((c) {
-        final answer = answerMap[c.id];
-        return answer != null && ScoringHelpers.hasFault(c, answer);
-      }).length.toDouble();
+      final deductionsCount = sectionCriteria
+          .where((c) {
+            final answer = answerMap[c.id];
+            return answer != null && ScoringHelpers.hasFault(c, answer);
+          })
+          .length
+          .toDouble();
 
       final sectionScoreValue = max(0.0, maxPoints - deductionsCount);
 

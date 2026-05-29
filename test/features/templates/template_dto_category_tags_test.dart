@@ -15,7 +15,7 @@ void main() {
         'metadata': '{"foo": "bar"}',
         'categoryTags': ['Food Safety', 'Cleanliness'],
         'children': [],
-        'criteria': []
+        'criteria': [],
       };
 
       final group = GroupDto.fromJson(json);
@@ -31,7 +31,7 @@ void main() {
         'title': 'Back of House',
         'orderIndex': 1,
         'children': [],
-        'criteria': []
+        'criteria': [],
       };
 
       final group = GroupDto.fromJson(json);
@@ -53,7 +53,7 @@ void main() {
         'isRisk': false,
         'orderIndex': 0,
         'metadata': null,
-        'categoryTags': ['CCP', 'Hygiene']
+        'categoryTags': ['CCP', 'Hygiene'],
       };
 
       final criterion = CriterionDto.fromJson(json);
@@ -64,20 +64,23 @@ void main() {
       expect(criterion.categoryTags, containsAll(['CCP', 'Hygiene']));
     });
 
-    test('TC-CAT-06: CriterionDto parsed with null categoryTags gracefully', () {
-      final json = {
-        'id': 'criterion-2',
-        'label': 'Clean aprons worn',
-        'inputType': 'pass_fail',
-        'isCcp': false,
-        'isRisk': false,
-        'orderIndex': 1
-      };
+    test(
+      'TC-CAT-06: CriterionDto parsed with null categoryTags gracefully',
+      () {
+        final json = {
+          'id': 'criterion-2',
+          'label': 'Clean aprons worn',
+          'inputType': 'pass_fail',
+          'isCcp': false,
+          'isRisk': false,
+          'orderIndex': 1,
+        };
 
-      final criterion = CriterionDto.fromJson(json);
+        final criterion = CriterionDto.fromJson(json);
 
-      expect(criterion.id, 'criterion-2');
-      expect(criterion.categoryTags, isNull);
-    });
+        expect(criterion.id, 'criterion-2');
+        expect(criterion.categoryTags, isNull);
+      },
+    );
   });
 }

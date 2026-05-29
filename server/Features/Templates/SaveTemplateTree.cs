@@ -67,6 +67,17 @@ public static class SaveTemplateTree
         if (template is null)
             return TypedResults.NotFound();
 
+        // 1.5 IDOR Tenant Ownership Authorization Check
+        var userIdStr = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userIdStr != null)
+        {
+            var currentUserId = Guid.Parse(userIdStr);
+            if (template.CreatedBy.HasValue && template.CreatedBy.Value != currentUserId)
+            {
+                return TypedResults.Forbid();
+            }
+        }
+
         // 2. Optimistic concurrency check via Version column
         if (template.Version != request.Version)
         {
@@ -84,6 +95,18 @@ public static class SaveTemplateTree
             return TypedResults.BadRequest(new { error = $"Too many groups ({groupCount}). Maximum is {MaxGroups}." });
         if (criterionCount > MaxCriteria)
             return TypedResults.BadRequest(new { error = $"Too many criteria ({criterionCount}). Maximum is {MaxCriteria}." });
+        if (groupCount + criterionCount > 500)
+            return TypedResults.BadRequest(new { error = $"Template tree contains too many nodes ({groupCount + criterionCount}). The maximum allowed combined total is 500." });
+
+        // 3.5 Run Template Linter validation rules
+        var lintResult = TemplateLinter.Run(request, template.Type);
+        if (lintResult.Errors.Any())
+        {
+            return TypedResults.UnprocessableEntity(new
+            {
+                errors = new { lintResult = lintResult.Errors }
+            });
+        }
 
         // 4. Load existing groups + criteria for this template
         var existingGroups = await db.Groups
@@ -168,7 +191,8 @@ public static class SaveTemplateTree
         var dto = new TemplateTreeDto(
             template.Id, template.Title, template.Description, template.Type,
             template.Version, template.ScoringLogicConfig, template.DisplayNoun,
-            template.IsActive, template.CreatedAt, template.UpdatedAt, tree);
+            template.IsActive, template.CreatedAt, template.UpdatedAt, tree,
+            lintResult);
 
         return TypedResults.Ok(dto);
     }

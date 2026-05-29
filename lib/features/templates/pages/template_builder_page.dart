@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -12,13 +13,17 @@ import '../manager/template_manager.dart';
 import '../models/editable_criterion.dart';
 import '../models/editable_group.dart';
 import '../models/validation_result.dart';
+import '../models/lint_result.dart';
 import '../utils/template_payload_mapper.dart';
+import '../utils/dart_template_linter.dart';
 import '../widgets/ghost_add_button.dart';
 import '../widgets/advanced_settings_card.dart';
 import '../widgets/metadata_form_card.dart';
 import '../widgets/section_editor.dart';
 import '../widgets/template_footer.dart';
+import '../widgets/template_linter_panel.dart';
 import 'widgets/builder_validation_banner.dart';
+import 'widgets/live_score_simulator.dart';
 
 part 'template_builder_page_logic.dart';
 part 'template_builder_page_validation.dart';
@@ -44,6 +49,11 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   bool _saving = false;
   bool _isDirty = false;
 
+  // Linter state
+  LintResult _lintResult = LintResult(errors: [], warnings: []);
+  bool _bypassLinter = false;
+  Timer? _lintTimer;
+
   // Validation state
   ValidationErrors? _validationErrors;
   final Map<String, GlobalKey> _errorKeys = {};
@@ -67,11 +77,27 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   List<EditableGroup> _sections = [];
   int _version = 0;
 
+  void _triggerLinter() {
+    _lintTimer?.cancel();
+    _lintTimer = Timer(const Duration(milliseconds: 800), () {
+      if (mounted) {
+        setState(() {
+          _lintResult = DartTemplateLinter.lint(
+            sections: _sections,
+            scoringMode: _scoringMode,
+            templateType: _type,
+            progressiveRepeat: _progressiveRepeat,
+          );
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _manager = _di<TemplateManager>();
-    // Track text controller changes for dirty state
+    // Track text controller changes for dirty state and trigger linter
     _titleCtrl.addListener(_markDirty);
     _descCtrl.addListener(_markDirty);
     _deadlineCtrl.addListener(_markDirty);
@@ -82,18 +108,18 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       });
     } else {
       _loading = false;
-      // Classic Builder: start with an empty canvas.
-      // The Blueprint modal is intentionally NOT shown here — the user
-      // already declared their intent by choosing "Classic Builder".
+      _triggerLinter();
     }
   }
 
   void _markDirty() {
     if (!_isDirty && mounted) setState(() => _isDirty = true);
+    _triggerLinter();
   }
 
   @override
   void dispose() {
+    _lintTimer?.cancel();
     _titleCtrl.dispose();
     _descCtrl.dispose();
     _deadlineCtrl.dispose();
@@ -104,6 +130,142 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWide = screenWidth >= 800;
+
+    Widget buildMainForm() {
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // ── Metadata Card (AC-5) ──
+          MetadataFormCard(
+            titleCtrl: _titleCtrl,
+            descCtrl: _descCtrl,
+            type: _type,
+            onTypeChanged: (v) => setState(() {
+              _type = v ?? _type;
+              _triggerLinter();
+            }),
+            scoringMode: _scoringMode,
+            onScoringModeChanged: (v) => setState(() {
+              _scoringMode = v ?? _scoringMode;
+              _triggerLinter();
+            }),
+          ),
+
+          const SizedBox(height: 16),
+          KeyedSubtree(
+            key: _errorKeys['density'] ?? ValueKey('settings'),
+            child: AdvancedSettingsCard(
+              scoringMode: _scoringMode,
+              ccpOverride: _ccpOverride,
+              riskOverride: _riskOverride,
+              weightedDensity: _weightedDensity,
+              progressiveRepeat: _progressiveRepeat,
+              confirmRequired: _confirmCorrect,
+              deadlineCtrl: _deadlineCtrl,
+              reminderCtrl: _reminderCtrl,
+              onCcpChanged: (v) => setState(() {
+                _ccpOverride = v;
+                _triggerLinter();
+              }),
+              onRiskChanged: (v) => setState(() {
+                _riskOverride = v;
+                _triggerLinter();
+              }),
+              onDensityChanged: (v) => setState(() {
+                _weightedDensity = v;
+                _triggerLinter();
+              }),
+              onProgressiveChanged: (v) => setState(() {
+                _progressiveRepeat = v;
+                _triggerLinter();
+              }),
+              onConfirmChanged: (v) => setState(() {
+                _confirmCorrect = v;
+                _triggerLinter();
+              }),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // ── Error Banner ──
+          if (_validationErrors?.hasAny == true)
+            BuilderValidationBanner(
+              errorCount: _validationErrors!.totalCount,
+              onDismiss: () => setState(() => _validationErrors = null),
+            ),
+
+          if (!isWide) ...[
+            TemplateLinterPanel(
+              lintResult: _lintResult,
+              bypassLinter: _bypassLinter,
+              onBypassChanged: (v) => setState(() => _bypassLinter = v),
+              onScrollToTarget: (targetId) {
+                final gk = _errorKeys[targetId];
+                if (gk?.currentContext != null) {
+                  Scrollable.ensureVisible(
+                    gk!.currentContext!,
+                    duration: const Duration(milliseconds: 350),
+                    curve: Curves.easeInOut,
+                    alignment: 0.3,
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // ── Sections Editor (AC-7) ──
+          const SectionHeader('SECTIONS'),
+          const SizedBox(height: 8),
+
+          ..._sections.asMap().entries.map((e) {
+            final i = e.key;
+            final section = e.value;
+            final sKey = 'section:$i';
+            return KeyedSubtree(
+              key: _errorKeys[sKey] ?? (_errorKeys[sKey] = GlobalKey()),
+              child: SectionEditor(
+                index: i,
+                section: section,
+                depth: 0,
+                densityEnabled: _weightedDensity,
+                errors: _validationErrors,
+                errorKeyPrefix: sKey,
+                errorKeys: _errorKeys,
+                scoringMode: _scoringMode,
+                globalCcpEnabled: _ccpOverride,
+                globalRiskEnabled: _riskOverride,
+                globalConfirmRequired: _confirmCorrect,
+                onRemoveSection: () => _removeSection(i),
+                onAddCriterion: (inputType) =>
+                    _addCriterionToGroup(section, inputType),
+                onRemoveCriterion: (ci) =>
+                    _removeCriterionFromGroup(section, ci),
+                onAddSubSection: () => _addSubSection(i),
+                onRemoveSubSection: (si) => _removeSubSection(i, si),
+                onChanged: () {
+                  setState(() {});
+                  _triggerLinter();
+                },
+              ),
+            );
+          }),
+
+          // "Add Section" ghost card at the bottom
+          GhostAddButton(
+            label: 'Add Section',
+            icon: Icons.add,
+            onPressed: _addSection,
+            tintColor: theme.colorScheme.outline,
+          ),
+
+          const SizedBox(height: 80), // Footer clearance
+        ],
+      );
+    }
 
     return UnsavedChangesGuard(
       isDirty: _isDirty,
@@ -116,103 +278,119 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
           canSave:
               _titleCtrl.text.trim().isNotEmpty &&
               _sections.isNotEmpty &&
-              (!_weightedDensity || (_totalDensity - 100).abs() < 0.01),
+              (!_weightedDensity || (_totalDensity - 100).abs() < 0.01) &&
+              (!_lintResult.hasErrors || _bypassLinter),
           saving: _saving,
           onSave: _save,
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
-            : ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  // ── Metadata Card (AC-5) ──
-                  MetadataFormCard(
-                    titleCtrl: _titleCtrl,
-                    descCtrl: _descCtrl,
-                    type: _type,
-                    onTypeChanged: (v) => setState(() => _type = v ?? _type),
-                    scoringMode: _scoringMode,
-                    onScoringModeChanged: (v) =>
-                        setState(() => _scoringMode = v ?? _scoringMode),
-                  ),
-
-                  const SizedBox(height: 16),
-                  KeyedSubtree(
-                    key: _errorKeys['density'] ?? ValueKey('settings'),
-                    child: AdvancedSettingsCard(
-                      scoringMode: _scoringMode,
-                      ccpOverride: _ccpOverride,
-                      riskOverride: _riskOverride,
-                      weightedDensity: _weightedDensity,
-                      progressiveRepeat: _progressiveRepeat,
-                      confirmRequired: _confirmCorrect,
-                      deadlineCtrl: _deadlineCtrl,
-                      reminderCtrl: _reminderCtrl,
-                      onCcpChanged: (v) => setState(() => _ccpOverride = v),
-                      onRiskChanged: (v) => setState(() => _riskOverride = v),
-                      onDensityChanged: (v) =>
-                          setState(() => _weightedDensity = v),
-                      onProgressiveChanged: (v) =>
-                          setState(() => _progressiveRepeat = v),
-                      onConfirmChanged: (v) =>
-                          setState(() => _confirmCorrect = v),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // ── Error Banner ──
-                  if (_validationErrors?.hasAny == true)
-                    BuilderValidationBanner(
-                      errorCount: _validationErrors!.totalCount,
-                      onDismiss: () => setState(() => _validationErrors = null),
-                    ),
-
-                  // ── Sections Editor (AC-7) ──
-                  const SectionHeader('SECTIONS'),
-                  const SizedBox(height: 8),
-
-                  ..._sections.asMap().entries.map((e) {
-                    final i = e.key;
-                    final section = e.value;
-                    final sKey = 'section:$i';
-                    return KeyedSubtree(
-                      key: _errorKeys[sKey] ?? (_errorKeys[sKey] = GlobalKey()),
-                      child: SectionEditor(
-                        index: i,
-                        section: section,
-                        depth: 0,
-                        densityEnabled: _weightedDensity,
-                        errors: _validationErrors,
-                        errorKeyPrefix: sKey,
-                        errorKeys: _errorKeys,
-                        scoringMode: _scoringMode,
-                        globalCcpEnabled: _ccpOverride,
-                        globalRiskEnabled: _riskOverride,
-                        globalConfirmRequired: _confirmCorrect,
-                        onRemoveSection: () => _removeSection(i),
-                        onAddCriterion: (inputType) =>
-                            _addCriterionToGroup(section, inputType),
-                        onRemoveCriterion: (ci) =>
-                            _removeCriterionFromGroup(section, ci),
-                        onAddSubSection: () => _addSubSection(i),
-                        onRemoveSubSection: (si) => _removeSubSection(i, si),
-                        onChanged: () => setState(() {}),
+            : (isWide
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 3, child: buildMainForm()),
+                        const VerticalDivider(width: 1, thickness: 1),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: ListView(
+                              children: [
+                                TemplateLinterPanel(
+                                  lintResult: _lintResult,
+                                  bypassLinter: _bypassLinter,
+                                  onBypassChanged: (v) =>
+                                      setState(() => _bypassLinter = v),
+                                  onScrollToTarget: (targetId) {
+                                    final gk = _errorKeys[targetId];
+                                    if (gk?.currentContext != null) {
+                                      Scrollable.ensureVisible(
+                                        gk!.currentContext!,
+                                        duration: const Duration(
+                                          milliseconds: 350,
+                                        ),
+                                        curve: Curves.easeInOut,
+                                        alignment: 0.3,
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const VerticalDivider(width: 1, thickness: 1),
+                        Expanded(
+                          flex: 2,
+                          child: LiveScoreSimulator(
+                            sections: _sections,
+                            scoringMode: _scoringMode,
+                            progressiveRepeat: _progressiveRepeat,
+                          ),
+                        ),
+                      ],
+                    )
+                  : DefaultTabController(
+                      length: 3,
+                      child: Builder(
+                        builder: (context) {
+                          return Column(
+                            children: [
+                              const TabBar(
+                                tabs: [
+                                  Tab(text: 'Design'),
+                                  Tab(text: 'Issues'),
+                                  Tab(text: 'Simulator'),
+                                ],
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  children: [
+                                    buildMainForm(),
+                                    SingleChildScrollView(
+                                      padding: const EdgeInsets.all(16),
+                                      child: TemplateLinterPanel(
+                                        lintResult: _lintResult,
+                                        bypassLinter: _bypassLinter,
+                                        onBypassChanged: (v) =>
+                                            setState(() => _bypassLinter = v),
+                                        onScrollToTarget: (targetId) {
+                                          DefaultTabController.of(
+                                            context,
+                                          ).animateTo(0);
+                                          Future.delayed(
+                                            const Duration(milliseconds: 150),
+                                            () {
+                                              final gk = _errorKeys[targetId];
+                                              if (gk?.currentContext != null) {
+                                                Scrollable.ensureVisible(
+                                                  gk!.currentContext!,
+                                                  duration: const Duration(
+                                                    milliseconds: 350,
+                                                  ),
+                                                  curve: Curves.easeInOut,
+                                                  alignment: 0.3,
+                                                );
+                                              }
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    LiveScoreSimulator(
+                                      sections: _sections,
+                                      scoringMode: _scoringMode,
+                                      progressiveRepeat: _progressiveRepeat,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    );
-                  }),
-
-                  // "Add Section" ghost card at the bottom
-                  GhostAddButton(
-                    label: 'Add Section',
-                    icon: Icons.add,
-                    onPressed: _addSection,
-                    tintColor: theme.colorScheme.outline,
-                  ),
-
-                  const SizedBox(height: 80), // Footer clearance
-                ],
-              ),
+                    )),
       ),
     );
   }

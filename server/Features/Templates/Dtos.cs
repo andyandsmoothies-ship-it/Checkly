@@ -15,6 +15,16 @@ public sealed record TemplateDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
 
+public sealed record LintIssue(
+    string RuleId,
+    string Message,
+    Guid? TargetId,
+    string Severity);
+
+public sealed record LintResult(
+    List<LintIssue> Errors,
+    List<LintIssue> Warnings);
+
 public sealed record TemplateTreeDto(
     Guid Id,
     string Title,
@@ -26,7 +36,8 @@ public sealed record TemplateTreeDto(
     bool IsActive,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt,
-    List<GroupDto> Groups);
+    List<GroupDto> Groups,
+    LintResult? LintResult = null);
 
 public sealed record GroupDto(
     Guid Id,

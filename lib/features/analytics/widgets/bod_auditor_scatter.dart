@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
 import '../../../_shared/widgets/primitives/pill_chip.dart';
+import '../manager/bod_analytics_data.dart';
 import '../manager/bod_analytics_manager.dart';
 import 'bod_auditor_detail_sheet.dart';
 
 class BodAuditorScatter extends StatelessWidget {
-  final List<dynamic> auditorProductivity;
+  final List<BodAuditorEntry> auditorProductivity;
   final BodAnalyticsManager manager;
   final double nationalAvg;
 
@@ -24,18 +25,25 @@ class BodAuditorScatter extends StatelessWidget {
     // Fallback beautiful mock data if list is empty
     final finalProductivity = auditorProductivity.isNotEmpty
         ? auditorProductivity
-        : [
-            {'auditorName': 'John Doe', 'avgScore': 86.2, 'completedCount': 24},
-            {
-              'auditorName': 'Jane Smith',
-              'avgScore': 89.4,
-              'completedCount': 18,
-            },
-            {
-              'auditorName': 'Bob Johnson',
-              'avgScore': 78.1,
-              'completedCount': 15,
-            },
+        : const [
+            BodAuditorEntry(
+              auditorId: 'mock-1',
+              auditorName: 'John Doe',
+              avgScore: 86.2,
+              completedAudits: 24,
+            ),
+            BodAuditorEntry(
+              auditorId: 'mock-2',
+              auditorName: 'Jane Smith',
+              avgScore: 89.4,
+              completedAudits: 18,
+            ),
+            BodAuditorEntry(
+              auditorId: 'mock-3',
+              auditorName: 'Bob Johnson',
+              avgScore: 78.1,
+              completedAudits: 15,
+            ),
           ];
 
     return StrokeCard(
@@ -63,9 +71,9 @@ class BodAuditorScatter extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ...finalProductivity.map((a) {
-            final name = a['auditorName'] ?? a['name'] ?? 'Unknown Auditor';
-            final score = (a['avgScore'] ?? a['score'] ?? 0.0).toDouble();
-            final count = a['completedCount'] ?? a['count'] ?? 0;
+            final name = a.auditorName;
+            final score = a.avgScore;
+            final count = a.completedAudits;
 
             final double dev = score - nationalAvg;
             final String biasRating;
@@ -136,10 +144,7 @@ class BodAuditorScatter extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              PillChip(
-                                label: biasRating,
-                                type: ratingType,
-                              ),
+                              PillChip(label: biasRating, type: ratingType),
                             ],
                           ),
                           const SizedBox(height: 4),

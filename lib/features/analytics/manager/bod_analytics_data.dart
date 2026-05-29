@@ -123,7 +123,9 @@ class BodApAging {
       int b0to7 = 0, b8to30 = 0, b31to90 = 0, b90Plus = 0;
       for (final item in raw) {
         if (item is! Map) continue;
-        final range = (item['range'] ?? item['bucket'] ?? '').toString().toLowerCase();
+        final range = (item['range'] ?? item['bucket'] ?? '')
+            .toString()
+            .toLowerCase();
         final count = (item['count'] ?? item['value'] ?? 0) as int;
         if (range.contains('0-7')) {
           b0to7 = count;
@@ -189,7 +191,7 @@ class BodReportResponse {
   final List<BodStorePerformanceEntry> bottomStores;
   final List<dynamic> categoryBreakdown;
   final BodApAging apAging;
-  final List<dynamic> auditorProductivity;
+  final List<BodAuditorEntry> auditorProductivity;
   final String computedAt;
   final String snapshotStatus;
   final List<dynamic> allowedActions;
@@ -233,11 +235,20 @@ class BodReportResponse {
               )
               .toList() ??
           [],
-      categoryBreakdown: List<dynamic>.from(json['weaknesses'] ?? json['categoryBreakdown'] ?? []),
-      apAging: BodApAging.fromDynamic(json['actionPlanAging'] ?? json['apAging']),
-      auditorProductivity: List<dynamic>.from(
-        json['auditorProductivity'] ?? [],
+      categoryBreakdown: List<dynamic>.from(
+        json['weaknesses'] ?? json['categoryBreakdown'] ?? [],
       ),
+      apAging: BodApAging.fromDynamic(
+        json['actionPlanAging'] ?? json['apAging'],
+      ),
+      auditorProductivity: (json['auditorProductivity'] as List<dynamic>?)
+              ?.map(
+                (item) => BodAuditorEntry.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList() ??
+          [],
       computedAt: json['computedAt'] ?? '',
       snapshotStatus: json['status'] ?? json['snapshotStatus'] ?? '',
       allowedActions: List<dynamic>.from(json['allowedActions'] ?? []),
@@ -302,10 +313,7 @@ class CategoryScoreEntry {
   final String categoryName;
   final double avgScore;
 
-  CategoryScoreEntry({
-    required this.categoryName,
-    required this.avgScore,
-  });
+  CategoryScoreEntry({required this.categoryName, required this.avgScore});
 
   factory CategoryScoreEntry.fromJson(Map<String, dynamic> json) {
     return CategoryScoreEntry(
@@ -331,12 +339,19 @@ class StoreBodSummary {
   factory StoreBodSummary.fromJson(Map<String, dynamic> json) {
     return StoreBodSummary(
       storeName: json['storeName'] ?? '',
-      recentAudits: (json['recentAudits'] as List<dynamic>?)
-              ?.map((e) => RecentAuditEntry.fromJson(Map<String, dynamic>.from(e)))
+      recentAudits:
+          (json['recentAudits'] as List<dynamic>?)
+              ?.map(
+                (e) => RecentAuditEntry.fromJson(Map<String, dynamic>.from(e)),
+              )
               .toList() ??
           [],
-      categoryBreakdown: (json['categoryBreakdown'] as List<dynamic>?)
-              ?.map((e) => CategoryScoreEntry.fromJson(Map<String, dynamic>.from(e)))
+      categoryBreakdown:
+          (json['categoryBreakdown'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    CategoryScoreEntry.fromJson(Map<String, dynamic>.from(e)),
+              )
               .toList() ??
           [],
     );
@@ -365,6 +380,104 @@ class CategoryStoreEntry {
       auditCount: json['auditCount'] ?? 0,
       failureCount: json['failureCount'] ?? 0,
     );
+  }
+}
+
+class BodAuditorEntry {
+  final String auditorId;
+  final String auditorName;
+  final int completedAudits;
+  final double avgScore;
+
+  const BodAuditorEntry({
+    required this.auditorId,
+    required this.auditorName,
+    required this.completedAudits,
+    required this.avgScore,
+  });
+
+  factory BodAuditorEntry.fromJson(Map<String, dynamic> json) {
+    return BodAuditorEntry(
+      auditorId: json['auditorId'] ?? json['id'] ?? '',
+      auditorName: json['auditorName'] ?? json['name'] ?? '',
+      completedAudits: json['completedAudits'] ??
+          json['completedCount'] ??
+          json['count'] ??
+          json['audits'] ??
+          0,
+      avgScore: (json['avgScore'] ?? json['score'] ?? 0.0) is int
+          ? (json['avgScore'] ?? json['score'] as int).toDouble()
+          : (json['avgScore'] ?? json['score'] ?? 0.0).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'auditorId': auditorId,
+        'auditorName': auditorName,
+        'completedAudits': completedAudits,
+        'avgScore': avgScore,
+      };
+}
+
+/// Represents the strongly typed aging buckets for overdue Action Plans.
+enum BodAgingBucket {
+  sevenDays,
+  thirtyDays,
+  ninetyDays,
+  overdue,
+  all;
+
+  /// Returns the matching request parameter key for the backend API.
+  String toApiKey() {
+    switch (this) {
+      case BodAgingBucket.sevenDays:
+        return '0-7d';
+      case BodAgingBucket.thirtyDays:
+        return '8-30d';
+      case BodAgingBucket.ninetyDays:
+        return '31-90d';
+      case BodAgingBucket.overdue:
+        return '90d+';
+      case BodAgingBucket.all:
+        return 'all';
+    }
+  }
+
+  /// Returns the human-readable display name for the UI.
+  String get displayName {
+    switch (this) {
+      case BodAgingBucket.sevenDays:
+        return '0-7 Days';
+      case BodAgingBucket.thirtyDays:
+        return '8-30 Days';
+      case BodAgingBucket.ninetyDays:
+        return '31-90 Days';
+      case BodAgingBucket.overdue:
+        return '90+ Days';
+      case BodAgingBucket.all:
+        return 'All';
+    }
+  }
+
+  /// Resolves raw string parameters safely to their enum representation.
+  static BodAgingBucket fromName(String name) {
+    final trimmed = name.trim().toLowerCase();
+    if (trimmed.isEmpty || trimmed == 'all' || trimmed == 'open') {
+      return BodAgingBucket.all;
+    }
+    if (trimmed.contains('0-7') || trimmed.contains('0-7d')) {
+      return BodAgingBucket.sevenDays;
+    }
+    if (trimmed.contains('8-30') || trimmed.contains('8-30d') || trimmed.contains('0-30')) {
+      return BodAgingBucket.thirtyDays;
+    }
+    if (trimmed.contains('31-90') || trimmed.contains('31-90d') || trimmed.contains('31-60') || trimmed.contains('61-90')) {
+      return BodAgingBucket.ninetyDays;
+    }
+    if (trimmed.contains('90+') || trimmed.contains('90d')) {
+      return BodAgingBucket.overdue;
+    }
+    return BodAgingBucket.all;
   }
 }
 

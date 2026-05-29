@@ -180,7 +180,10 @@ class TemplateDao {
             minusPerFault: g.minusPerFault,
             orderIndex: g.orderIndex,
             metadata: g.metadata,
-            categoryTags: g.categoryTags?.split(',').where((t) => t.isNotEmpty).toList(),
+            categoryTags: g.categoryTags
+                ?.split(',')
+                .where((t) => t.isNotEmpty)
+                .toList(),
             children: buildTree(children),
             criteria: criteria
                 .map(
@@ -196,7 +199,10 @@ class TemplateDao {
                     isRisk: c.isRisk,
                     orderIndex: c.orderIndex,
                     metadata: c.metadata,
-                    categoryTags: c.categoryTags?.split(',').where((t) => t.isNotEmpty).toList(),
+                    categoryTags: c.categoryTags
+                        ?.split(',')
+                        .where((t) => t.isNotEmpty)
+                        .toList(),
                   ),
                 )
                 .toList(),

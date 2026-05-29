@@ -138,7 +138,9 @@ class GroupDto {
     metadata: _parseJsonString(json['metadata']),
     categoryTags: json['categoryTags'] == null
         ? null
-        : (json['categoryTags'] as List<dynamic>).map((e) => e as String).toList(),
+        : (json['categoryTags'] as List<dynamic>)
+              .map((e) => e as String)
+              .toList(),
     children:
         (json['children'] as List<dynamic>?)
             ?.map((g) => GroupDto.fromJson(g as Map<String, dynamic>))
@@ -196,6 +198,8 @@ class CriterionDto {
     metadata: _parseJsonString(json['metadata']),
     categoryTags: json['categoryTags'] == null
         ? null
-        : (json['categoryTags'] as List<dynamic>).map((e) => e as String).toList(),
+        : (json['categoryTags'] as List<dynamic>)
+              .map((e) => e as String)
+              .toList(),
   );
 }

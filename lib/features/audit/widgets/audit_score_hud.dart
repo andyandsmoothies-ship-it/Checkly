@@ -30,10 +30,7 @@ class AuditScoreHud extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              surveyColor.withAlpha(25),
-              surveyColor.withAlpha(10),
-            ],
+            colors: [surveyColor.withAlpha(25), surveyColor.withAlpha(10)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
