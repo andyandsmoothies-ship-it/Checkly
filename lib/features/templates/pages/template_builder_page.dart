@@ -70,8 +70,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   String get _scoringMode => _scoreDirection == 'none'
       ? 'survey'
       : (_scoreDirection == 'up'
-          ? 'accumulation'
-          : (_isWeighted ? 'penalty' : 'checklist'));
+            ? 'accumulation'
+            : (_isWeighted ? 'penalty' : 'checklist'));
 
   bool _ccpOverride = false;
   bool _riskOverride = false;
@@ -165,6 +165,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             isWeighted: _isWeighted,
             onIsWeightedChanged: (v) => setState(() {
               _isWeighted = v;
+              _weightedDensity = v;
               _triggerLinter();
             }),
           ),
@@ -191,6 +192,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
               }),
               onDensityChanged: (v) => setState(() {
                 _weightedDensity = v;
+                _isWeighted = v;
                 _triggerLinter();
               }),
               onProgressiveChanged: (v) => setState(() {

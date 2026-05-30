@@ -84,6 +84,7 @@ class AuditCard extends StatelessWidget {
                       rawMax: submission.rawMaxPoints,
                       totalScore: submission.totalScore,
                       isWeighted: submission.isWeighted,
+                      shortForm: true,
                     ),
                     style: AppFonts.serifStyle(
                       fontSize: theme.textTheme.bodyMedium?.fontSize ?? 14,

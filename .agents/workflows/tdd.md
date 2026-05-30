@@ -20,7 +20,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 ## Pre-Flight Setup
 
-- **Task File**: Create a `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` document right now using this exact template. Update your progress as you work.
+- **Task File**: Create a `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` document right now using this exact template. Update your progress as you work.
 
   ```markdown
 
@@ -46,9 +46,9 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
   | Status | File Path | Type |
 
-  | [NEW]  | docs/reports/qa/[topic]/red_test_log_[YYYYMMDD_HHMMSS].md | Red Tests |
+  | [NEW]  | docs/reports/qa/[topic]/red_test_log_[topic]_[YYYYMMDD_HHMMSS].md | Red Tests |
 
-  | [NEW]  | docs/features/[topic]/test_spec_[YYYYMMDD_HHMMSS].md | Test Spec |
+  | [NEW]  | docs/features/[topic]/test_spec_[topic]_[YYYYMMDD_HHMMSS].md | Test Spec |
 
   ```
 
@@ -150,9 +150,9 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 ## Step 4: Handoff
 
-- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `red_test_log_[YYYYMMDD_HHMMSS].md` in the `docs/reports/qa/[topic]/` folder. Do not print long logs in the chat.
+- **Save Logs**: Use `write_to_file` to save the raw terminal output proving the tests fail correctly to `red_test_log_[topic]_[YYYYMMDD_HHMMSS].md` in the `docs/reports/qa/[topic]/` folder. Do not print long logs in the chat.
 
-- **Write Summary**: Use `write_to_file` to create `test_spec_[YYYYMMDD_HHMMSS].md` in the `docs/features/[topic]/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
+- **Write Summary**: Use `write_to_file` to create `test_spec_[topic]_[YYYYMMDD_HHMMSS].md` in the `docs/features/[topic]/` folder. Explain the tests you wrote and give the exact terminal commands the Builder should use to run them. **MANDATORY**: You MUST include an `## Input Lineage` section at the top of both files with the absolute path of the input plan.
 
 - **Give Command**: Print the exact block below for the user:
 
@@ -162,7 +162,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 
 <output_schema>
 
-> **Outputs Created:** Failing Unit Tests + `red_test_log_[YYYYMMDD_HHMMSS].md` and `test_spec_[YYYYMMDD_HHMMSS].md`.
+> **Outputs Created:** Failing Unit Tests + `red_test_log_[topic]_[YYYYMMDD_HHMMSS].md` and `test_spec_[topic]_[YYYYMMDD_HHMMSS].md`.
 
 >
 
@@ -175,7 +175,7 @@ description: Test-Driven Development (TDD) workflow for the QA Agent (Sentinel) 
 ## Final Step: Script Verification
 
 > [!IMPORTANT]
-> **Update `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md`**: Change all checkboxes to `[x]` and add the absolute file paths to your Artifact Inventory.
+> **Update `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md`**: Change all checkboxes to `[x]` and add the absolute file paths to your Artifact Inventory.
 
 > **Document Cleanup (Required)**:
 > Automatically clean up and organize newly created markdown plans into their correct topic folders:

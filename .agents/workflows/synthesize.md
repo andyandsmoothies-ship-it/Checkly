@@ -12,7 +12,7 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 
 ## Step 1: Ingestion & Task Setup
 
-- [ ] **Task Tracking**: Create `docs/reports/research/[topic]/task_[YYYYMMDD_HHMMSS].md` using the standard schema. Include an `## Input Lineage` section tracking the input links/directories. List ONLY the final decision artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- [ ] **Task Tracking**: Create `docs/reports/research/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the standard schema. Include an `## Input Lineage` section tracking the input links/directories. List ONLY the final decision artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 
 - [ ] **Load Research**: Execute `list_dir` on `docs/reports/research/[topic]/` (or the specific directory provided by the user) to find all competing research options.
 

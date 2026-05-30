@@ -6,7 +6,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 > Read-Only analysis. Role: **Sentinel**. Target: "AI Slop", tech debt, formatting drift.
 ## Step 1: Scope & Skills
 - **Trigger**: Execute weekly or on-demand. (Use `/audit-infra` for DB/architecture health).
-- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 - **Skill Load**: Extract 2-3 keywords (e.g., "health", "refactoring") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list.
 ```markdown
 # Task: [Code Audit Topic Name]

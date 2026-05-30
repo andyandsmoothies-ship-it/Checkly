@@ -16,7 +16,7 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 
 |---|---|
 
-| **Task Tracking** | MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema BEFORE proceeding. |
+| **Task Tracking** | MANDATORY: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the strict schema BEFORE proceeding. |
 
 | **Skill Load** | MANDATORY: Load `ux-heuristic-evaluation` skill. |
 

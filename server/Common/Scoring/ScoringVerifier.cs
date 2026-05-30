@@ -73,7 +73,7 @@ public sealed class ScoringVerifier
         return scoreDirection switch
         {
             "none" => new VerificationResult(true, null, "Survey mode — no scoring", []),
-            "up" => ScoringCalculators.VerifyAccumulation(clientScore, answers, groups, criteria, Tolerance),
+            "up" => ScoringCalculators.VerifyAccumulation(clientScore, answers, groups, criteria, isWeighted, Tolerance),
             "down" when isWeighted
                    => ScoringCalculators.VerifyPenalty(clientScore, answers, groups, criteria, progressiveRepeatPenalty, Tolerance),
             "down" =>

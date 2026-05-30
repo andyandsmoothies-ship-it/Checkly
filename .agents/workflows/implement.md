@@ -16,7 +16,7 @@ description: The Core Builder Implementation Workflow
 
 - **Governance**: Run Pre-Flight check (`governance-rules.md`).
 
-- **Task Tracker**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` BEFORE writing code:
+- **Task Tracker**: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` BEFORE writing code:
 
 ```markdown
 
@@ -52,9 +52,9 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 |---|---|---|
 
-| [NEW] | docs/features/[topic]/walkthrough_[YYYYMMDD_HHMMSS].md | Walkthrough |
+| [NEW] | docs/features/[topic]/walkthrough_[topic]_[YYYYMMDD_HHMMSS].md | Walkthrough |
 
-| [NEW] | docs/reports/qa/[topic]/green_test_log_[YYYYMMDD_HHMMSS].md | Test Log |
+| [NEW] | docs/reports/qa/[topic]/green_test_log_[topic]_[YYYYMMDD_HHMMSS].md | Test Log |
 
 ```
 
@@ -119,13 +119,13 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 ## Step 4: Handoff
 
 
-- **Ship/Show (TDD Green, Blast Radius 0)**: Write full `walkthrough_[YYYYMMDD_HHMMSS].md` + `green_test_log_[YYYYMMDD_HHMMSS].md` -> Execute Verify Script.
+- **Ship/Show (TDD Green, Blast Radius 0)**: Write full `walkthrough_[topic]_[YYYYMMDD_HHMMSS].md` + `green_test_log_[topic]_[YYYYMMDD_HHMMSS].md` -> Execute Verify Script.
 
 - **Ask (Architecture/Security Change)**: Notify user BEFORE action and wait for approval.
 
 ### Walkthrough Schema
 
-- **Required Sections**: Walkthrough `docs/features/[topic]/walkthrough_[YYYYMMDD_HHMMSS].md` MUST contain:
+- **Required Sections**: Walkthrough `docs/features/[topic]/walkthrough_[topic]_[YYYYMMDD_HHMMSS].md` MUST contain:
 
   1. `## Input Lineage`: Absolute path of implementation plan.
 

@@ -81,7 +81,9 @@ extension _TemplateWizardLogic on _TemplateWizardPageState {
           scoreDirection: _scoringMode == 'survey'
               ? 'none'
               : (_scoringMode == 'accumulation' ? 'up' : 'down'),
-          isWeighted: _scoringMode == 'penalty',
+          isWeighted:
+              _scoringMode == 'penalty' ||
+              (_scoringMode == 'accumulation' && _weightedDensity),
           ccpOverride: _ccpOverride,
           riskOverride: _riskOverride,
           weightedDensity: _weightedDensity,

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Checkly.Api.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+07e7108dfb92d351be2f5599df50d5b4bfceddd2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a1dc4e3713ef7a80bc09e6e784a8f7b93794dfe")]
 [assembly: System.Reflection.AssemblyProductAttribute("Checkly.Api.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Checkly.Api.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

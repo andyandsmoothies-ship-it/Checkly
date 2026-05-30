@@ -22,7 +22,7 @@ description: Architect's Strategic Research Workflow for System Architecture.
 
 |---|---|
 
-| **Task Tracking** | MANDATORY: Create `docs/reports/research/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema BEFORE proceeding. List ONLY the research artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step. |
+| **Task Tracking** | MANDATORY: Create `docs/reports/research/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the strict schema BEFORE proceeding. List ONLY the research artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step. |
 
 | **Skill Load** | Extract 2-3 architectural keywords -> Load 1-2 skills from `.agents/skills/`. |
 

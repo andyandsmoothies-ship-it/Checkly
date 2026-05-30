@@ -6,6 +6,7 @@ import 'scoring_helpers.dart';
 import 'penalty_calculator.dart';
 import 'accumulation_calculator.dart';
 import 'checklist_calculator.dart';
+import 'weighted_accumulation_calculator.dart'; // NEW (Slice 1)
 
 // ============================================================
 // Scoring Engine — supports Penalty, Accumulation, Checklist, Survey.
@@ -95,6 +96,13 @@ class ScoringEngine {
       case ScoringMode.penalty:
         return PenaltyCalculator.calculate(input, answerMap, hasRiskFailure);
       case ScoringMode.accumulation:
+        if (input.isWeighted) {
+          return WeightedAccumulationCalculator.calculate(
+            input,
+            answerMap,
+            hasRiskFailure,
+          );
+        }
         return AccumulationCalculator.calculate(
           input,
           answerMap,

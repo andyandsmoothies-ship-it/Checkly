@@ -151,61 +151,135 @@ internal static class ScoringCalculators
         IReadOnlyList<Answer> answers,
         IReadOnlyList<Group> groups,
         IReadOnlyList<Criterion> criteria,
+        bool isWeighted,
         decimal tolerance)
     {
         var rootGroups = groups.Where(g => g.ParentId == null).ToList();
-        decimal totalPossible = 0;
-        decimal totalEarned = 0;
+        var totalWeight = rootGroups.Sum(g => g.Weight ?? 0m);
+        var isWeightedReal = isWeighted && totalWeight > 0;
 
-        foreach (var section in rootGroups)
+        if (isWeightedReal)
         {
-            var sectionCriteria = ScoringHelpers.GetCriteriaForGroup(section.Id, groups, criteria);
-            var ccpTriggered = sectionCriteria.Any(c =>
-                (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) ||
-                (c.IsCcp && ScoringHelpers.HasFaults(c, answers)));
+            var sectionResults = new List<(decimal ratio, decimal weight)>();
 
-            var sectionPossible = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
-            var sectionEarned = 0m;
-
-            if (!ccpTriggered)
+            foreach (var section in rootGroups)
             {
-                foreach (var c in sectionCriteria)
+                var sectionCriteria = ScoringHelpers.GetCriteriaForGroup(section.Id, groups, criteria);
+                var sectionPossible = sectionCriteria.Sum(c => c.PointsWeight ?? 0m);
+                if (sectionPossible == 0) continue;
+
+                var ccpTriggered = sectionCriteria.Any(c =>
+                    (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) ||
+                    (c.IsCcp && ScoringHelpers.HasFaults(c, answers)));
+
+                var sectionEarned = 0m;
+                if (!ccpTriggered)
                 {
-                    var answer = answers.FirstOrDefault(a => a.CriteriaId == c.Id);
-                    if (answer is null) continue;
-
-                    if (string.Equals(c.InputType, "scale", StringComparison.OrdinalIgnoreCase)
-                        && answer.NumericValue.HasValue)
+                    foreach (var c in sectionCriteria)
                     {
-                        // Scale: numericValue IS earned points (partial credit)
-                        sectionEarned += answer.NumericValue.Value;
-                    }
-                    else
-                    {
-                        var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
+                        var answer = answers.FirstOrDefault(a => a.CriteriaId == c.Id);
+                        if (answer is null) continue;
 
-                        // Binary: full points if numericValue=0 (no faults), not non_conform, no repeated faults
-                        var faults = answer.NumericValue ?? 0;
-                        if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
-                            sectionEarned += c.PointsWeight ?? 0;
+                        if (string.Equals(c.InputType, "scale", StringComparison.OrdinalIgnoreCase)
+                            && answer.NumericValue.HasValue)
+                        {
+                            // Scale: numericValue IS earned points (partial credit)
+                            sectionEarned += answer.NumericValue.Value;
+                        }
+                        else
+                        {
+                            var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
+
+                            // Binary: full points if numericValue=0 (no faults), not non_conform, no repeated faults
+                            var faults = answer.NumericValue ?? 0;
+                            if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
+                                sectionEarned += c.PointsWeight ?? 0;
+                        }
                     }
+                }
+
+                var sectionRatio = ccpTriggered ? 0m : sectionEarned / sectionPossible;
+                sectionResults.Add((sectionRatio, section.Weight ?? 0m));
+            }
+
+            var participatingWeight = sectionResults.Sum(p => p.weight);
+            var finalScore = 0m;
+
+            if (participatingWeight > 0)
+            {
+                foreach (var (ratio, weight) in sectionResults)
+                {
+                    finalScore += ratio * (weight / participatingWeight);
                 }
             }
 
-            totalPossible += sectionPossible;
-            totalEarned += sectionEarned;
+            var serverScore = finalScore * 100m;
+
+            return new ScoringVerifier.VerificationResult(
+                Math.Abs(clientScore - Math.Round(serverScore, 2)) <= tolerance,
+                Math.Round(serverScore, 2),
+                null,
+                ScoringHelpers.BuildFailedSet(criteria, answers),
+                RawEarned: null,
+                RawMax: null,
+                IsWeighted: true);
         }
+        else
+        {
+            decimal totalPossible = 0;
+            decimal totalEarned = 0;
 
-        var serverScore = totalPossible > 0
-            ? totalEarned / totalPossible * 100
-            : 100m;
+            foreach (var section in rootGroups)
+            {
+                var sectionCriteria = ScoringHelpers.GetCriteriaForGroup(section.Id, groups, criteria);
+                var ccpTriggered = sectionCriteria.Any(c =>
+                    (answers.FirstOrDefault(a => a.CriteriaId == c.Id)?.IsCcp == true) ||
+                    (c.IsCcp && ScoringHelpers.HasFaults(c, answers)));
 
-        return new ScoringVerifier.VerificationResult(
-            Math.Abs(clientScore - Math.Round(serverScore, 2)) <= tolerance,
-            Math.Round(serverScore, 2),
-            null,
-            ScoringHelpers.BuildFailedSet(criteria, answers),
-            RawEarned: totalEarned,
-            RawMax: totalPossible);
+                var sectionPossible = sectionCriteria.Sum(c => c.PointsWeight ?? 0);
+                var sectionEarned = 0m;
+
+                if (!ccpTriggered)
+                {
+                    foreach (var c in sectionCriteria)
+                    {
+                        var answer = answers.FirstOrDefault(a => a.CriteriaId == c.Id);
+                        if (answer is null) continue;
+
+                        if (string.Equals(c.InputType, "scale", StringComparison.OrdinalIgnoreCase)
+                            && answer.NumericValue.HasValue)
+                        {
+                            // Scale: numericValue IS earned points (partial credit)
+                            sectionEarned += answer.NumericValue.Value;
+                        }
+                        else
+                        {
+                            var isNonConform = string.Equals(answer.Value, "non_conform", StringComparison.OrdinalIgnoreCase);
+
+                            // Binary: full points if numericValue=0 (no faults), not non_conform, no repeated faults
+                            var faults = answer.NumericValue ?? 0;
+                            if (faults == 0 && !isNonConform && answer.RepeatedFaults == 0)
+                                sectionEarned += c.PointsWeight ?? 0;
+                        }
+                    }
+                }
+
+                totalPossible += sectionPossible;
+                totalEarned += sectionEarned;
+            }
+
+            var serverScore = totalPossible > 0
+                ? totalEarned / totalPossible * 100
+                : 100m;
+
+            return new ScoringVerifier.VerificationResult(
+                Math.Abs(clientScore - Math.Round(serverScore, 2)) <= tolerance,
+                Math.Round(serverScore, 2),
+                null,
+                ScoringHelpers.BuildFailedSet(criteria, answers),
+                RawEarned: totalEarned,
+                RawMax: totalPossible,
+                IsWeighted: isWeighted ? false : null);
+        }
     }
 }

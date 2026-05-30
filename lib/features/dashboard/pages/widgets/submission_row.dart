@@ -175,6 +175,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
       rawMax: sub.rawMaxPoints,
       totalScore: sub.totalScore,
       isWeighted: sub.isWeighted,
+      shortForm: true,
     );
 
     final semanticColor = score != null

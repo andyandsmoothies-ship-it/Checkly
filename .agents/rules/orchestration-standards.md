@@ -11,7 +11,7 @@ description: AI Orchestration, Workflow, and Handoff Standards.
   - **Features**: `docs/features/[feature_name]/` (for standalone features/bugs)
   - **Reports**: `docs/reports/[type]/[topic]/` (for audits, diagnostics, research)
 - **Epic Ledger**: For Epics, a mandatory `_epic_ledger.md` must be maintained at `docs/epics/[epic_name]/` serving as the single source of truth for progress, linking to the most recent plans and tasks.
-- **Deterministic Naming**: Files MUST use the format `[type]_[YYYYMMDD_HHMMSS].md` (e.g., `task_20260530_144500.md` or `3_task_...`). Do NOT include `ConversationID` in the filename.
+- **Deterministic Naming**: Files MUST use the format `[type]_[topic]_[YYYYMMDD_HHMMSS].md` (e.g., `task_accumulation-weighted_20260530_144500.md` or `task_accumulation-weighted_slice2_20260530_144500.md`). Do NOT include `ConversationID` in the filename.
 - **Metadata Preservation**: The `ConversationID` (e.g., `c3563378-9cd7-4609-ae6d-2aba9f71c9ff`) MUST be stored in the **YAML Frontmatter** of the file to keep filenames clean.
 - **No Scripts**: The AI is strictly PROHIBITED from moving or renaming files via PowerShell/Python scripts (e.g., `organize_docs.ps1`). Write files directly to their permanent path.
 ## 2. Output Formatting

@@ -100,6 +100,28 @@ class HeaderCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (detail.isWeighted == true) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'Final score is weighted based on section importance.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ],
         ),

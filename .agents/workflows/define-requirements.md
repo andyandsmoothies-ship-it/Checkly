@@ -12,7 +12,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 
 ## Step 1: Intake & Context Alignment
 
-- [ ] **Task Tracking**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
+- [ ] **Task Tracking**: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
 
 - [ ] **Skill Load**: Load the `shaping` skill, the `use-case-creator` skill, and the `use-case-slicing` skill from `.agents/skills/`.
 

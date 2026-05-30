@@ -10,7 +10,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 ## Step 1: Start & Task Tracking
 
-- **Task Tracking**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` before coding:
+- **Task Tracking**: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` before coding:
 
   ```markdown
 
@@ -20,7 +20,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - [ ] Step 2: Search & Scope | [ ] Step 3: Impacts & States | [ ] Step 4: Plan | [ ] Step 5: Route
 
-  - **Artifact Inventory**: docs/features/[topic]/implementation_plan_[YYYYMMDD_HHMMSS].md
+  - **Artifact Inventory**: docs/features/[topic]/implementation_plan_[topic]_[YYYYMMDD_HHMMSS].md
 
   ```
 
@@ -76,9 +76,9 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Tools & Commands**: Specify exact skills the Builder needs and target execution/test commands (e.g. `flutter test`, `dotnet test`).
 
-- **Slicing Strategy**: Apply the **Thin Vertical Slicing Strategy** (highly focused slices of <= 4 files each). Sequence slices vertically: Happy Path first (Slice 1), Edge Cases & Validation (Slice 2), then Offline/Visual Resiliency (Slice 3). Each slice must define 'Entry State Required' and 'Exit State Guaranteed'.
+- **Slicing Strategy**: Apply the **Thin Vertical Slicing Strategy** (highly focused slices based on Test Contracts, not strict file counts). Sequence slices vertically: Happy Path first (Slice 1), Edge Cases & Validation (Slice 2), then Offline/Visual Resiliency (Slice 3). Each slice must define 'Entry State Required' and 'Exit State Guaranteed'.
 
-- **Write the Plan**: Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS].md` in the `docs/features/[topic]/` folder.
+- **Write the Plan**: Use `write_to_file` to create `implementation_plan_[topic]_[YYYYMMDD_HHMMSS].md` in the `docs/features/[topic]/` folder.
 
 - **Mandatory Scan**: Print checklist in response: (1) Did you explicitly extract all constraints from the input document into your scratchpad? (2) Is every constraint mapped to a Test Contract?
 
@@ -120,7 +120,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 <output_schema>
 
-- **File Format**: `implementation_plan_[YYYYMMDD_HHMMSS].md` in `docs/features/[topic]/` must contain:
+- **File Format**: `implementation_plan_[topic]_[YYYYMMDD_HHMMSS].md` in `docs/features/[topic]/` must contain:
 
   - `<latent_space_scratchpad>`: Hidden thoughts on edge cases, limits, and risks.
 
@@ -146,7 +146,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - `## Execution Slices` (Micro-Specs): Slice vertically and keep thin.
 
-    - **4-File Rule**: Each slice must create/modify <= 4 files. If > 4 or files > 400 lines, split into smaller sub-slices.
+    - **Sizing Rule**: Limit slices by Test Contracts (e.g., 1-5 behaviors), not file counts. Group trivial wiring changes with core logic to prevent horizontal slicing.
 
     - **Slice 1 (Happy Path)**: Basic positive flow.
 
@@ -160,7 +160,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - `## Handoff Block`: Absolute plan path, and generic action sequence per slice (e.g. `- **Slice 1**: Plan -> Write Acceptance & Unit Tests -> Build`). Tell user to execute them ONE AT A TIME.
 
-- **Task Tracking Update**: Update `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` (change `[ ]` to `[x]`, append absolute file paths).
+- **Task Tracking Update**: Update `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` (change `[ ]` to `[x]`, append absolute file paths).
 
 - **Document Cleanup**: Automatically clean up and organize newly created markdown plans into their correct topic folders:
   // turbo

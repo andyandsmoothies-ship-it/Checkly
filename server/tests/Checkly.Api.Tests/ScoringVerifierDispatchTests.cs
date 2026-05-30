@@ -140,19 +140,20 @@ public class ScoringVerifierDispatchTests
     }
 
     [Fact]
-    public void Verify_With_Up_And_Weighted_True_Dispatches_To_VerifyAccumulation_Ignoring_Weighted()
+    public void Verify_With_Up_And_Weighted_True_Dispatches_To_VerifyAccumulationWeighted()
     {
-        // Gap Analysis AC 2: Up direction ignores the isWeighted flag and dispatches to Accumulation
+        // Arrange
         var groupId = Guid.NewGuid();
         var groups = new List<Group>
         {
-            new() { Id = groupId, ParentId = null }
+            new() { Id = groupId, ParentId = null, Weight = 10 }
         };
         var criteria = new List<Criterion>
         {
             new() { Id = Guid.NewGuid(), GroupId = groupId, PointsWeight = 10 }
         };
 
+        // Act
         var result = _verifier.Verify(
             clientScore: 100m,
             answers: _emptyAnswers,
@@ -160,11 +161,12 @@ public class ScoringVerifierDispatchTests
             criteria: criteria,
             progressiveRepeatPenalty: false,
             scoreDirection: "up",
-            isWeighted: true // Should be ignored
+            isWeighted: true
         );
 
-        Assert.NotNull(result.RawEarned);
-        Assert.NotNull(result.RawMax);
-        Assert.Null(result.IsWeighted);
+        // Assert
+        Assert.True(result.IsWeighted);
+        Assert.Null(result.RawEarned);
+        Assert.Null(result.RawMax);
     }
 }

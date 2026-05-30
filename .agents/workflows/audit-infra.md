@@ -6,7 +6,7 @@ description: Infrastructure & architecture audit — database health, security p
 > Read-Only structural analysis. Role: **Sentinel**. Target: Missing indexes, Auth gaps, Unbounded queries, CRUD surface.
 ## Step 1: Scope & Skills
 - **Trigger**: Execute post-major feature release or pre-scaling.
-- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 - **Skill Load**: Extract 2-3 keywords (e.g., "database", "security", "api-design") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list.
 ```markdown
 # Task: [Infrastructure Audit Topic Name]

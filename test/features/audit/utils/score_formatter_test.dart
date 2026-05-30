@@ -10,7 +10,7 @@ void main() {
         rawMax: 15,
         totalScore: 66.7,
       );
-      expect(result, '10 / 15 pts');
+      expect(result, '66.7% (10 / 15 raw pts)');
     });
 
     test(
@@ -22,7 +22,7 @@ void main() {
           rawMax: null,
           totalScore: 66.7,
         );
-        expect(result, '66.7');
+        expect(result, '66.7%');
       },
     );
 
@@ -73,7 +73,7 @@ void main() {
         rawMax: 15,
         totalScore: 0,
       );
-      expect(result, '0 / 15 pts');
+      expect(result, '0% (0 / 15 raw pts)');
     });
 
     test('TC-S2-09: ScoreFormatter_Checklist_WholeNumber_NoDecimal', () {
@@ -91,5 +91,35 @@ void main() {
       );
       expect(result, '85.5');
     });
+
+    test(
+      'TC-S2-11: ScoreFormatter_Penalty_Weighted_Detailed_ShowsRawPoints',
+      () {
+        final result = ScoreFormatter.format(
+          scoringMode: 'penalty',
+          isWeighted: true,
+          totalScore: 85.0,
+          rawEarned: 120.0,
+          rawMax: 150.0,
+          shortForm: false,
+        );
+        expect(result, '85% (120 / 150 raw pts)');
+      },
+    );
+
+    test(
+      'TC-S2-12: ScoreFormatter_Penalty_Weighted_ShortForm_ShowsPercentOnly',
+      () {
+        final result = ScoreFormatter.format(
+          scoringMode: 'penalty',
+          isWeighted: true,
+          totalScore: 85.0,
+          rawEarned: 120.0,
+          rawMax: 150.0,
+          shortForm: true,
+        );
+        expect(result, '85');
+      },
+    );
   });
 }

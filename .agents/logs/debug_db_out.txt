@@ -1,24 +1,518 @@
 === Checkly Database Diagnostic ===
-Run Date: 5/30/2026 1:08:13 AM +00:00
+Run Date: 5/30/2026 2:28:57 PM +00:00
 
 --- Submissions ---
-ERROR: 42703: column s.category_tag does not exist
+Total Submissions: 128
+Id: e2e2609f-be57-4d0a-baf4-09c3b4786ae6, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 1/7/2026 10:07:00 AM +00:00, SectionScores: 
+Id: 5742cf65-22f4-4060-9cab-f4bfa0c06933, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 1/15/2026 11:15:00 AM +00:00, SectionScores: 
+Id: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 1/7/2026 12:23:00 PM +00:00, SectionScores: 
+Id: 0901ef35-b931-498f-b021-213ad1968fdf, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 1/15/2026 10:54:00 AM +00:00, SectionScores: 
+Id: b0ce7b13-b115-4cf1-9519-36395e812f4d, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 1/22/2026 2:00:00 PM +00:00, SectionScores: 
+Id: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 1/5/2026 10:46:00 AM +00:00, SectionScores: 
+Id: 01f7e814-3c03-47cb-bc1a-c65b2962e141, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 1/14/2026 1:01:00 PM +00:00, SectionScores: 
+Id: 928dfa28-1a33-408a-8a0d-4bdff22e97a3, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 1/5/2026 12:19:00 PM +00:00, SectionScores: 
+Id: ae20c8e0-9418-4efd-817e-d70545353eeb, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 1/15/2026 1:40:00 PM +00:00, SectionScores: 
+Id: d05ebc84-4139-4650-a024-88c26358ea8b, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 1/22/2026 2:01:00 PM +00:00, SectionScores: 
+Id: a8b25921-851a-4b8d-b762-1582df1afa45, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 2/15/2026 12:09:00 PM +00:00, SectionScores: 
+Id: e36834fc-d8a9-4445-8e0a-820f7750348e, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 2/21/2026 11:54:00 AM +00:00, SectionScores: 
+Id: 7d127039-ccfe-43f7-a67a-e0e03c66b94a, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 2/7/2026 11:32:00 AM +00:00, SectionScores: 
+Id: b228ac5c-f814-40e1-a8e2-3480d3a7bda4, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 2/14/2026 1:54:00 PM +00:00, SectionScores: 
+Id: f377b7fb-056d-412f-be08-4ab9dcaadc57, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 2/7/2026 2:56:00 PM +00:00, SectionScores: 
+Id: c23c4a11-83e6-4809-b551-05421c3a02ee, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 2/15/2026 10:42:00 AM +00:00, SectionScores: 
+Id: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 2/21/2026 11:49:00 AM +00:00, SectionScores: 
+Id: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 3/7/2026 11:51:00 AM +00:00, SectionScores: 
+Id: 198662d7-dbf3-421c-b8c4-39343ff2e87d, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 3/15/2026 10:33:00 AM +00:00, SectionScores: 
+Id: 5af4409e-75ba-4c9c-bced-9cee714fe604, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 3/5/2026 12:22:00 PM +00:00, SectionScores: 
+Id: ed79914f-0e59-4bb4-823b-cc210b74ded8, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 3/14/2026 1:31:00 PM +00:00, SectionScores: 
+Id: 7618b09e-3a63-4684-a14d-498e711060a7, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 3/21/2026 11:24:00 AM +00:00, SectionScores: 
+Id: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 3/7/2026 1:53:00 PM +00:00, SectionScores: 
+Id: 7fe6509c-d7df-4162-b507-9b33a0b51d20, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 3/14/2026 1:27:00 PM +00:00, SectionScores: 
+Id: c76fe306-0448-48e9-a647-74f51bef287e, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 3/6/2026 12:21:00 PM +00:00, SectionScores: 
+Id: 77978cb1-5f39-47ed-bc89-d0487e2f709b, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 3/14/2026 2:57:00 PM +00:00, SectionScores: 
+Id: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 3/21/2026 2:23:00 PM +00:00, SectionScores: 
+Id: 8ca7ad20-c82d-4539-bc38-72c34e0a382f, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 3/7/2026 10:28:00 AM +00:00, SectionScores: 
+Id: 31a41b08-695a-4b5a-8dd2-ac4f76e65408, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 1/13/2026 10:36:00 AM +00:00, SectionScores: 
+Id: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 1/5/2026 11:16:00 AM +00:00, SectionScores: 
+Id: 4b46b70e-bceb-471d-ba67-b242b53b7aa8, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 1/15/2026 12:30:00 PM +00:00, SectionScores: 
+Id: 68b97da8-e796-4d59-9ffb-a048502edbd7, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 1/22/2026 10:54:00 AM +00:00, SectionScores: 
+Id: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 1/6/2026 10:26:00 AM +00:00, SectionScores: 
+Id: 6bb32a7e-2865-44f3-8527-e67ee522551c, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 1/5/2026 2:07:00 PM +00:00, SectionScores: 
+Id: 1d95446b-e8c8-4b64-8661-e5eccbb42096, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 1/13/2026 2:53:00 PM +00:00, SectionScores: 
+Id: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 1/6/2026 1:11:00 PM +00:00, SectionScores: 
+Id: 3fa0cd02-855c-4945-88d6-caa308423bf4, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 1/14/2026 10:54:00 AM +00:00, SectionScores: 
+Id: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 1/6/2026 2:49:00 PM +00:00, SectionScores: 
+Id: 9088cc8f-afd4-4798-ba17-77a700b99208, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 1/15/2026 1:11:00 PM +00:00, SectionScores: 
+Id: 65514410-610b-43f1-9d19-17103020fa76, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 1/23/2026 2:46:00 PM +00:00, SectionScores: 
+Id: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 2/5/2026 12:12:00 PM +00:00, SectionScores: 
+Id: 84c4a061-1001-4f45-8e45-98972a20839b, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 2/14/2026 12:43:00 PM +00:00, SectionScores: 
+Id: 7b7cbc04-41f8-4b82-a35b-654814be2b80, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 1/15/2026 10:53:00 AM +00:00, SectionScores: 
+Id: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 1/22/2026 11:52:00 AM +00:00, SectionScores: 
+Id: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 1/7/2026 10:06:00 AM +00:00, SectionScores: 
+Id: 91dc6913-dd24-4a91-9a51-2901b6b4e316, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 2/7/2026 10:03:00 AM +00:00, SectionScores: 
+Id: e157ac17-18d2-482d-a3d7-f262753ca2bc, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 2/14/2026 11:27:00 AM +00:00, SectionScores: 
+Id: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 2/21/2026 10:56:00 AM +00:00, SectionScores: 
+Id: becef460-d832-4195-a04e-50a4a7b32059, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 2/6/2026 2:18:00 PM +00:00, SectionScores: 
+Id: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 2/14/2026 10:53:00 AM +00:00, SectionScores: 
+Id: 8cabee41-abc6-4744-8f02-0248a20237d6, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 2/7/2026 1:01:00 PM +00:00, SectionScores: 
+Id: 5eb16d18-53e9-42f3-b528-0bb690ba237f, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 2/14/2026 11:13:00 AM +00:00, SectionScores: 
+Id: 8d477011-b7b4-4428-b07b-7e7754fa3894, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 2/21/2026 10:50:00 AM +00:00, SectionScores: 
+Id: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 2/6/2026 10:10:00 AM +00:00, SectionScores: 
+Id: 702e2e48-471c-4906-b04b-567a0df90ff4, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 2/14/2026 1:51:00 PM +00:00, SectionScores: 
+Id: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 2/7/2026 12:32:00 PM +00:00, SectionScores: 
+Id: 39b3c2d4-441f-4307-960c-d4758262e6ae, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 2/13/2026 12:48:00 PM +00:00, SectionScores: 
+Id: 40e9256f-db95-4016-8237-56bc4f244994, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 2/22/2026 2:02:00 PM +00:00, SectionScores: 
+Id: bba16a63-00da-49c7-8bfe-6eb13cd32c73, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 2/7/2026 12:18:00 PM +00:00, SectionScores: 
+Id: d0c6f014-231b-4158-93ee-6bd745454893, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 2/15/2026 12:54:00 PM +00:00, SectionScores: 
+Id: bdc27de2-f8cb-48a6-9823-79aeb24e6169, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 2/6/2026 1:50:00 PM +00:00, SectionScores: 
+Id: dd1d01a7-fc64-435f-83ed-84edf6257f26, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 3/15/2026 11:32:00 AM +00:00, SectionScores: 
+Id: 1f108754-3207-42a8-94d6-c28a61abe38b, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 3/6/2026 12:19:00 PM +00:00, SectionScores: 
+Id: 6ef69875-41ce-4a5f-b73b-cd993afa20ee, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 3/13/2026 11:12:00 AM +00:00, SectionScores: 
+Id: eafd188d-a522-4903-a01f-ff5b2bbbc40a, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 3/23/2026 10:09:00 AM +00:00, SectionScores: 
+Id: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 3/6/2026 2:52:00 PM +00:00, SectionScores: 
+Id: 6b8d6656-7afb-4343-ab99-882b7fe75879, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 3/13/2026 10:14:00 AM +00:00, SectionScores: 
+Id: 4e728737-8f14-4797-992a-b1e272c9d5c3, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 3/6/2026 1:53:00 PM +00:00, SectionScores: 
+Id: a4165384-cdc8-45b1-b380-a31a73a6563f, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 3/13/2026 12:06:00 PM +00:00, SectionScores: 
+Id: 5890787b-f7e5-4c88-b0c4-5a6866967ea9, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 3/22/2026 12:10:00 PM +00:00, SectionScores: 
+Id: 0e0ed938-a2de-4a0c-877b-68815869e00c, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 3/7/2026 2:11:00 PM +00:00, SectionScores: 
+Id: 9180dd97-f4bb-46b1-8354-5e097837a5e1, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 3/13/2026 2:28:00 PM +00:00, SectionScores: 
+Id: a73e4538-eaec-4896-ab97-a42a727fc2b5, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 3/7/2026 10:21:00 AM +00:00, SectionScores: 
+Id: dcd9c3a1-6027-490c-93b7-8a9077b7527f, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 3/13/2026 11:01:00 AM +00:00, SectionScores: 
+Id: a896c64b-ad37-447b-adc7-331085578c98, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 3/23/2026 1:50:00 PM +00:00, SectionScores: 
+Id: a0091eed-8c9f-4b41-ba18-abf24dd62520, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 4/5/2026 2:45:00 PM +00:00, SectionScores: 
+Id: 369c4d04-2741-4b48-8174-605e28f180d0, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 4/13/2026 12:43:00 PM +00:00, SectionScores: 
+Id: a4122994-8946-4d08-9847-ec1a11adbb3a, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 4/6/2026 12:42:00 PM +00:00, SectionScores: 
+Id: de89057b-53dc-44aa-9ab9-44ac94b42f41, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 4/13/2026 10:37:00 AM +00:00, SectionScores: 
+Id: 27ba497b-e3eb-4663-a06a-2f77318f6f48, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 4/22/2026 10:38:00 AM +00:00, SectionScores: 
+Id: f027bf47-1898-4174-a1bf-bce640975774, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 4/7/2026 11:31:00 AM +00:00, SectionScores: 
+Id: f74ab72c-9023-452e-9aed-5dd62dd98dbf, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 4/15/2026 2:59:00 PM +00:00, SectionScores: 
+Id: 901422da-5318-4ab6-abae-ddfd3a0020ca, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 4/5/2026 2:45:00 PM +00:00, SectionScores: 
+Id: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 4/15/2026 10:47:00 AM +00:00, SectionScores: 
+Id: e6643d27-bb08-4fe3-a911-e6cc7946f140, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 4/23/2026 11:08:00 AM +00:00, SectionScores: 
+Id: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 4/7/2026 1:43:00 PM +00:00, SectionScores: 
+Id: d96baef7-6238-4021-bdf9-f42ce4aa4299, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 4/13/2026 12:21:00 PM +00:00, SectionScores: 
+Id: 746c7277-81d5-43f8-a377-c72dfe7c0b2c, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 4/7/2026 10:36:00 AM +00:00, SectionScores: 
+Id: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 4/15/2026 2:34:00 PM +00:00, SectionScores: 
+Id: 355e533d-bd42-4c6d-aff6-30f9e2a5441d, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 4/21/2026 2:14:00 PM +00:00, SectionScores: 
+Id: d225b8d5-fbbb-4e46-9230-f43b98be8fbe, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 4/6/2026 10:40:00 AM +00:00, SectionScores: 
+Id: 72078641-626d-4f8f-8d1b-ea852860830a, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 4/14/2026 1:07:00 PM +00:00, SectionScores: 
+Id: ccec504b-03d6-402b-a3f3-d844d23430ef, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 4/7/2026 11:49:00 AM +00:00, SectionScores: 
+Id: f7afc524-32ac-4c23-be21-1e2f637a5cb2, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 4/15/2026 10:11:00 AM +00:00, SectionScores: 
+Id: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 4/23/2026 11:11:00 AM +00:00, SectionScores: 
+Id: 58751f27-81df-420c-a0bb-2859249e4e4b, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 4/6/2026 10:03:00 AM +00:00, SectionScores: 
+Id: 76026960-e879-471e-8809-b5a0d89f79d2, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 4/15/2026 11:04:00 AM +00:00, SectionScores: 
+Id: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 4/7/2026 2:32:00 PM +00:00, SectionScores: 
+Id: 4f6e7d7a-8750-48b5-a450-6c0d7026c860, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 4/13/2026 1:09:00 PM +00:00, SectionScores: 
+Id: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 4/22/2026 12:54:00 PM +00:00, SectionScores: 
+Id: 29214909-4b1f-4b17-acc9-176c8a8e39a9, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 5/7/2026 10:36:00 AM +00:00, SectionScores: 
+Id: 7af8d08c-ea1e-40ed-b513-c93a0767188f, StoreName: Checkly D1 - Nguyen Hue, Status: completed, CompletedAt: 5/14/2026 12:25:00 PM +00:00, SectionScores: 
+Id: cb848aa5-a96a-4ef7-a14b-caf72e7ca223, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 5/7/2026 12:21:00 PM +00:00, SectionScores: 
+Id: 78e10b6a-62e2-444c-988b-7d5581a82658, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 5/14/2026 2:33:00 PM +00:00, SectionScores: 
+Id: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e, StoreName: Checkly D1 - Bui Vien, Status: completed, CompletedAt: 5/22/2026 10:50:00 AM +00:00, SectionScores: 
+Id: 10648846-fa66-4b0d-aa2e-77550d019823, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 5/6/2026 10:24:00 AM +00:00, SectionScores: 
+Id: 7e48a66f-563f-4331-a836-51d97f86196e, StoreName: Checkly D3 - Vo Van Tan, Status: completed, CompletedAt: 5/14/2026 11:04:00 AM +00:00, SectionScores: 
+Id: f15b8a0c-7841-494c-827b-883343fbde37, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 5/5/2026 10:33:00 AM +00:00, SectionScores: 
+Id: e199031e-3466-4936-bda2-e416cbd8a014, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 5/14/2026 1:18:00 PM +00:00, SectionScores: 
+Id: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b, StoreName: Checkly D10 - Su Van Hanh, Status: completed, CompletedAt: 5/21/2026 2:49:00 PM +00:00, SectionScores: 
+Id: 1060ab86-6109-4934-868e-4095d69b7c57, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 5/6/2026 10:39:00 AM +00:00, SectionScores: 
+Id: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925, StoreName: Checkly D2 - Thao Dien, Status: completed, CompletedAt: 5/13/2026 10:59:00 AM +00:00, SectionScores: 
+Id: 3a478a00-cc6e-46f0-a568-e401feaa1bad, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 5/7/2026 2:27:00 PM +00:00, SectionScores: 
+Id: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 5/15/2026 11:31:00 AM +00:00, SectionScores: 
+Id: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40, StoreName: Checkly D7 - Phu My Hung, Status: completed, CompletedAt: 5/22/2026 11:01:00 AM +00:00, SectionScores: 
+Id: 94f8942f-f2ae-46de-8950-21d098c9136a, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 5/6/2026 10:12:00 AM +00:00, SectionScores: 
+Id: ba38d536-7d50-4100-8119-26369cebdb77, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 5/15/2026 12:00:00 PM +00:00, SectionScores: 
+Id: 01a8c749-d1c9-4788-8059-2dc76a0524f8, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 5/6/2026 1:29:00 PM +00:00, SectionScores: 
+Id: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 5/15/2026 11:19:00 AM +00:00, SectionScores: 
+Id: c50324e7-70f6-4400-9fc2-3db100873f72, StoreName: Checkly Phu Nhuan - Phan Xich Long, Status: completed, CompletedAt: 5/23/2026 10:40:00 AM +00:00, SectionScores: 
+Id: 166d154b-d362-4a14-924c-eb1463596e7f, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 5/5/2026 1:13:00 PM +00:00, SectionScores: 
+Id: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe, StoreName: Checkly Tan Binh - Cong Hoa, Status: completed, CompletedAt: 5/14/2026 2:35:00 PM +00:00, SectionScores: 
+Id: a7915863-3b9c-4c02-92af-07763a5cb12d, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 5/5/2026 10:32:00 AM +00:00, SectionScores: 
+Id: 8d01a5b0-64de-414b-b9a2-4533ed465a6b, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 5/15/2026 1:05:00 PM +00:00, SectionScores: 
+Id: d5e7e7c6-8ced-4254-ab39-42c1cbae6618, StoreName: Checkly Go Vap - Quang Trung, Status: completed, CompletedAt: 5/22/2026 11:38:00 AM +00:00, SectionScores: 
+Id: db19ef7e-a8bc-4b5e-9fdb-219988f146b6, StoreName: Checkly D1 - Bui Vien, Status: scheduled, CompletedAt: , SectionScores: 
+Id: 913d5477-5d6c-4343-92be-c9e0d2204ba3, StoreName: Checkly Binh Thanh - Landmark 81, Status: completed, CompletedAt: 5/29/2026 2:25:50 PM +00:00, SectionScores: {"e3727b38-8389-4cff-8c33-42263a9e1a3e": {"score": 1.0, "title": "Section A: Core Check", "weight": null, "maxScore": 2.0, "maxPoints": 2.0}}
+Id: e174256f-f2f5-429c-b171-c6ecfcdc3252, StoreName: Checkly Binh Thanh - Landmark 81, Status: scheduled, CompletedAt: , SectionScores: 
 
-POSITION: 108
-   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
-   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
-   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlDataReader.NextResult()
-   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
-   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
-   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
-   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
-   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__21_0(DbContext _, Enumerator enumerator)
-   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
-   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
-   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
-   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
-   at Checkly.Api.Tests.UnitTest1.TestDatabaseData() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\UnitTest1.cs:line 37
+--- Submission Section Scores ---
+Total Scores: 376
+Id: 9d04a813-ca0c-4a23-9901-06b567c314ee, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 77.0, MaxScore: 100.0, Ratio: 0.77
+Id: 34e41815-19dc-4395-89f1-18bab1968452, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 80.7, MaxScore: 100.0, Ratio: 0.807
+Id: 92a00067-93ec-44cf-8d93-53631e1044d0, SubmissionId: e2e2609f-be57-4d0a-baf4-09c3b4786ae6, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 79.0, MaxScore: 100.0, Ratio: 0.79
+Id: fa6d87aa-9dd4-4556-b5fe-29b1a5a32250, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 81.4, MaxScore: 100.0, Ratio: 0.814
+Id: be58ca4c-8842-4edf-8451-778b3226f063, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 80.5, MaxScore: 100.0, Ratio: 0.805
+Id: 404a53c1-fab4-4b38-93e4-34fb7785a7cd, SubmissionId: 5742cf65-22f4-4060-9cab-f4bfa0c06933, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 82.5, MaxScore: 100.0, Ratio: 0.825
+Id: 1a01233c-93ef-4a8c-9343-769cb7f9bd73, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 78.7, MaxScore: 100.0, Ratio: 0.787
+Id: fb5c9e95-cda9-4cb1-a1b2-bda6e9cace1c, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 79.6, MaxScore: 100.0, Ratio: 0.796
+Id: cf33d265-fb16-4a46-aa17-adedc05d4f05, SubmissionId: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 77.4, MaxScore: 100.0, Ratio: 0.774
+Id: 7ec8dbeb-d720-4f48-b57a-f95c7a0aec07, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 84.4, MaxScore: 100.0, Ratio: 0.844
+Id: 850fa2c1-b9ba-4ce2-b54f-4fec5a882ea6, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 83.2, MaxScore: 100.0, Ratio: 0.832
+Id: 32d1127c-edc7-4c59-96f2-a5e0972966c1, SubmissionId: 0901ef35-b931-498f-b021-213ad1968fdf, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 85.4, MaxScore: 100.0, Ratio: 0.854
+Id: a6439682-13eb-48ce-bf46-7d2b38554c55, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 95.5, MaxScore: 100.0, Ratio: 0.955
+Id: 8248a4b9-8f2d-4f1f-ae7d-4e4a0d9087f0, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 92.6, MaxScore: 100.0, Ratio: 0.926
+Id: 59d4ad2f-3824-4fed-9443-be1145e43ba5, SubmissionId: b0ce7b13-b115-4cf1-9519-36395e812f4d, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 90.7, MaxScore: 100.0, Ratio: 0.907
+Id: 7bbcbbf9-1368-403b-9fa4-69b3639887d1, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 75.6, MaxScore: 100.0, Ratio: 0.756
+Id: e40f29f9-0c20-402e-923e-824371824294, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 79.8, MaxScore: 100.0, Ratio: 0.798
+Id: d4120d21-01b9-4b64-881f-d1325940ed75, SubmissionId: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 75.9, MaxScore: 100.0, Ratio: 0.759
+Id: 32d9ecb4-089d-4685-a818-bf619b060b8e, SubmissionId: 31a41b08-695a-4b5a-8dd2-ac4f76e65408, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 75.6, MaxScore: 100.0, Ratio: 0.756
+Id: 2bb911e3-520d-475b-9da4-b76a2a519f00, SubmissionId: 31a41b08-695a-4b5a-8dd2-ac4f76e65408, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 77.9, MaxScore: 100.0, Ratio: 0.779
+Id: 94bf87fe-bc19-4580-b85f-02b3abc688e0, SubmissionId: 31a41b08-695a-4b5a-8dd2-ac4f76e65408, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 77.2, MaxScore: 100.0, Ratio: 0.772
+Id: 3ae3fa5a-c58d-43d9-a702-2d31a5476553, SubmissionId: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 88.1, MaxScore: 100.0, Ratio: 0.881
+Id: 966b8119-2d28-4144-a19b-2117305e060c, SubmissionId: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 91.2, MaxScore: 100.0, Ratio: 0.912
+Id: c25079af-9c59-44cb-8037-8e27694621a3, SubmissionId: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 87.6, MaxScore: 100.0, Ratio: 0.876
+Id: 6fe0cf1c-a11b-4864-8edb-7a478bc6bf1a, SubmissionId: 4b46b70e-bceb-471d-ba67-b242b53b7aa8, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 77.8, MaxScore: 100.0, Ratio: 0.778
+Id: 6305cad7-c30d-4190-8fdb-d50ec45d6942, SubmissionId: 4b46b70e-bceb-471d-ba67-b242b53b7aa8, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 71.3, MaxScore: 100.0, Ratio: 0.713
+Id: bf0a64e9-cc26-435a-8f01-f89d7f516e74, SubmissionId: 4b46b70e-bceb-471d-ba67-b242b53b7aa8, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 71.2, MaxScore: 100.0, Ratio: 0.712
+Id: 564bebe8-af39-4faa-b50d-4d3bfee37881, SubmissionId: 68b97da8-e796-4d59-9ffb-a048502edbd7, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 84.6, MaxScore: 100.0, Ratio: 0.846
+Id: ac8dbf01-b514-47ff-8e1f-f555b61e1412, SubmissionId: 68b97da8-e796-4d59-9ffb-a048502edbd7, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 86.5, MaxScore: 100.0, Ratio: 0.865
+Id: 415209cc-5b35-4c39-9c93-a801d356d380, SubmissionId: 68b97da8-e796-4d59-9ffb-a048502edbd7, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 82.0, MaxScore: 100.0, Ratio: 0.82
+Id: e56a9222-85e5-434c-a001-fe662c5b636f, SubmissionId: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 86.4, MaxScore: 100.0, Ratio: 0.864
+Id: 00681c87-a2b4-412a-a322-3ed19515fad5, SubmissionId: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 85.6, MaxScore: 100.0, Ratio: 0.856
+Id: 542048ec-186a-4adf-9fa6-83ea811b4e2b, SubmissionId: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 90.5, MaxScore: 100.0, Ratio: 0.905
+Id: c1a06f5b-1374-4271-83ca-6d51b692a32b, SubmissionId: 01f7e814-3c03-47cb-bc1a-c65b2962e141, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 95.7, MaxScore: 100.0, Ratio: 0.957
+Id: da81160c-128f-442e-b651-2bcf9debfec2, SubmissionId: 01f7e814-3c03-47cb-bc1a-c65b2962e141, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 98.7, MaxScore: 100.0, Ratio: 0.987
+Id: b03982e2-3261-4a3d-9495-b3d267577197, SubmissionId: 01f7e814-3c03-47cb-bc1a-c65b2962e141, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 94.3, MaxScore: 100.0, Ratio: 0.943
+Id: 11a8aab8-771e-43cb-9338-6dbc7b7cac8b, SubmissionId: 928dfa28-1a33-408a-8a0d-4bdff22e97a3, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 75.5, MaxScore: 100.0, Ratio: 0.755
+Id: 03fa235c-e7c3-4e99-a079-db3b700c7a39, SubmissionId: 928dfa28-1a33-408a-8a0d-4bdff22e97a3, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 76.1, MaxScore: 100.0, Ratio: 0.761
+Id: 5d0739fb-ada5-4ca0-8667-a2386fe8a8a6, SubmissionId: 928dfa28-1a33-408a-8a0d-4bdff22e97a3, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 79.1, MaxScore: 100.0, Ratio: 0.791
+Id: 1926abdd-0ae0-40f7-abce-acf9e6714110, SubmissionId: ae20c8e0-9418-4efd-817e-d70545353eeb, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 82.1, MaxScore: 100.0, Ratio: 0.821
+Id: 7c9f19a5-0f1e-4d3e-a21e-521695c8774d, SubmissionId: ae20c8e0-9418-4efd-817e-d70545353eeb, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 85.6, MaxScore: 100.0, Ratio: 0.856
+Id: 6bce0e8c-88f3-4493-9559-3f6488dcdfca, SubmissionId: ae20c8e0-9418-4efd-817e-d70545353eeb, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 82.9, MaxScore: 100.0, Ratio: 0.829
+Id: ac945c53-a10d-455c-ad93-9c577d95fd24, SubmissionId: d05ebc84-4139-4650-a024-88c26358ea8b, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 77.4, MaxScore: 100.0, Ratio: 0.774
+Id: 85384c23-5cf2-4e47-b339-8cff35aafad5, SubmissionId: d05ebc84-4139-4650-a024-88c26358ea8b, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 78.8, MaxScore: 100.0, Ratio: 0.788
+Id: 60d7cd73-56b8-4ca5-838d-71cb25aeb19b, SubmissionId: d05ebc84-4139-4650-a024-88c26358ea8b, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 81.8, MaxScore: 100.0, Ratio: 0.818
+Id: adf7daba-c3e7-4a70-94ef-ca82fa8641cd, SubmissionId: 6bb32a7e-2865-44f3-8527-e67ee522551c, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 81.0, MaxScore: 100.0, Ratio: 0.81
+Id: 8091b95d-8fd4-4052-9e1e-c0bf3793dd6a, SubmissionId: 6bb32a7e-2865-44f3-8527-e67ee522551c, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 84.4, MaxScore: 100.0, Ratio: 0.844
+Id: 8a8abdc6-61b1-47dd-b626-8a61effadbee, SubmissionId: 6bb32a7e-2865-44f3-8527-e67ee522551c, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 85.0, MaxScore: 100.0, Ratio: 0.85
+Id: d70d0d9b-e681-488b-9a08-3c3120c39cff, SubmissionId: 1d95446b-e8c8-4b64-8661-e5eccbb42096, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 99.1, MaxScore: 100.0, Ratio: 0.991
+Id: cd0173aa-cc5d-4236-9c0f-f6cb66e0ebd9, SubmissionId: 1d95446b-e8c8-4b64-8661-e5eccbb42096, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 94.5, MaxScore: 100.0, Ratio: 0.945
+Id: 59e1b308-292b-40be-8d5d-2075548af475, SubmissionId: 1d95446b-e8c8-4b64-8661-e5eccbb42096, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 96.7, MaxScore: 100.0, Ratio: 0.967
+Id: 7b6445f6-f969-421c-92a5-a947dfac7b2d, SubmissionId: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 75.4, MaxScore: 100.0, Ratio: 0.754
+Id: de2e1376-0ef5-4762-a5a9-79115f9736d5, SubmissionId: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 77.0, MaxScore: 100.0, Ratio: 0.77
+Id: 13e8d19c-d72e-47bd-be34-155a7fbcfa83, SubmissionId: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 82.7, MaxScore: 100.0, Ratio: 0.827
+Id: ab717806-f8b7-4232-9723-cffdb43c184f, SubmissionId: 7b7cbc04-41f8-4b82-a35b-654814be2b80, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 82.3, MaxScore: 100.0, Ratio: 0.823
+Id: 4ac2743a-28fd-4fb6-84fd-95fcadd47d2e, SubmissionId: 7b7cbc04-41f8-4b82-a35b-654814be2b80, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 82.2, MaxScore: 100.0, Ratio: 0.822
+Id: 8ebb5566-7d53-4863-89c9-29ed0ac982ed, SubmissionId: 7b7cbc04-41f8-4b82-a35b-654814be2b80, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 83.5, MaxScore: 100.0, Ratio: 0.835
+Id: 381a24a3-441a-4d2a-942c-be82c531a937, SubmissionId: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 86.7, MaxScore: 100.0, Ratio: 0.867
+Id: 45ab4b5c-4fa6-4409-922f-5df260ccbf56, SubmissionId: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 82.7, MaxScore: 100.0, Ratio: 0.827
+Id: fa503fec-3cff-4f82-b01c-ae7c174ca4b7, SubmissionId: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 83.3, MaxScore: 100.0, Ratio: 0.833
+Id: 7ab8437d-5bb3-4a2d-85a2-e926169d06bf, SubmissionId: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 82.7, MaxScore: 100.0, Ratio: 0.827
+Id: dbbe0613-3678-4e70-9c7b-936a947f4e16, SubmissionId: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 81.0, MaxScore: 100.0, Ratio: 0.81
+Id: ae182322-7b7e-4f3c-90e2-60d453dbc5c3, SubmissionId: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 78.4, MaxScore: 100.0, Ratio: 0.784
+Id: 157b8274-499f-429e-ab74-a54b148779e6, SubmissionId: 3fa0cd02-855c-4945-88d6-caa308423bf4, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 92.9, MaxScore: 100.0, Ratio: 0.929
+Id: 393a610c-6f27-488f-80dd-5e4c7158d127, SubmissionId: 3fa0cd02-855c-4945-88d6-caa308423bf4, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 94.2, MaxScore: 100.0, Ratio: 0.942
+Id: a0016446-b2ca-490a-a107-cdb23f30c5e0, SubmissionId: 3fa0cd02-855c-4945-88d6-caa308423bf4, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 95.8, MaxScore: 100.0, Ratio: 0.958
+Id: ba306471-efe5-4b9a-a50a-97eb6eb92143, SubmissionId: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 80.2, MaxScore: 100.0, Ratio: 0.802
+Id: ce583d21-c684-4099-881f-7d9826a976ed, SubmissionId: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 81.7, MaxScore: 100.0, Ratio: 0.817
+Id: a545a44a-dc8b-4a05-bcde-19028c5a5f6f, SubmissionId: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 83.9, MaxScore: 100.0, Ratio: 0.839
+Id: 81822e17-61a7-400e-9d6c-6c5178986e6a, SubmissionId: 9088cc8f-afd4-4798-ba17-77a700b99208, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 83.0, MaxScore: 100.0, Ratio: 0.83
+Id: 252576b8-70e0-4760-9c62-f1f5a22a6013, SubmissionId: 9088cc8f-afd4-4798-ba17-77a700b99208, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 81.4, MaxScore: 100.0, Ratio: 0.814
+Id: 219bdee2-2809-4db7-87d5-d7bccb4aba58, SubmissionId: 9088cc8f-afd4-4798-ba17-77a700b99208, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 77.0, MaxScore: 100.0, Ratio: 0.77
+Id: 7ee21932-daee-4040-9f68-c86c397a0c6a, SubmissionId: 65514410-610b-43f1-9d19-17103020fa76, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 96.4, MaxScore: 100.0, Ratio: 0.964
+Id: bb1f45ca-c1a2-4dd4-b5ca-3f5d30d9e89e, SubmissionId: 65514410-610b-43f1-9d19-17103020fa76, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 99.8, MaxScore: 100.0, Ratio: 0.998
+Id: 26ea30bf-5da5-454a-8061-8639025f129c, SubmissionId: 65514410-610b-43f1-9d19-17103020fa76, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 100, MaxScore: 100.0, Ratio: 1
+Id: 62c38ffd-92dc-4414-9dda-b00b881e4dff, SubmissionId: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 88.2, MaxScore: 100.0, Ratio: 0.882
+Id: dcd87732-90c0-43ce-8df8-8cec057d9765, SubmissionId: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 83.4, MaxScore: 100.0, Ratio: 0.834
+Id: abef111f-f20f-4625-9b2c-ba1178cf0731, SubmissionId: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 88.9, MaxScore: 100.0, Ratio: 0.889
+Id: 6216140b-4fc4-467b-83f4-0bb572346992, SubmissionId: 84c4a061-1001-4f45-8e45-98972a20839b, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 89.5, MaxScore: 100.0, Ratio: 0.895
+Id: a48adf1b-b75a-45f5-adc8-4ccb6dd544e7, SubmissionId: 84c4a061-1001-4f45-8e45-98972a20839b, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 87.9, MaxScore: 100.0, Ratio: 0.879
+Id: c80ef5db-7725-43ce-af8f-67c21804af71, SubmissionId: 84c4a061-1001-4f45-8e45-98972a20839b, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 84.8, MaxScore: 100.0, Ratio: 0.848
+Id: 334c82d4-797d-4396-a799-c99e0d91da2d, SubmissionId: 91dc6913-dd24-4a91-9a51-2901b6b4e316, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 79.6, MaxScore: 100.0, Ratio: 0.796
+Id: b3a6549c-8203-4209-b8a6-1d78f82d9661, SubmissionId: 913d5477-5d6c-4343-92be-c9e0d2204ba3, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Section A: Core Check', Score: 1.0, MaxScore: 2.0, Ratio: 0.5
+Id: 7f86730a-6838-4c7d-8ba2-85d43a4c973f, SubmissionId: 91dc6913-dd24-4a91-9a51-2901b6b4e316, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 80.5, MaxScore: 100.0, Ratio: 0.805
+Id: bbbb74f4-4eb1-4ce5-a955-c8fee285c9de, SubmissionId: 91dc6913-dd24-4a91-9a51-2901b6b4e316, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 80.4, MaxScore: 100.0, Ratio: 0.804
+Id: 70def95d-1f4b-40e0-9a9f-2b4966eb3a4a, SubmissionId: e157ac17-18d2-482d-a3d7-f262753ca2bc, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 94.2, MaxScore: 100.0, Ratio: 0.942
+Id: 139d71fa-412b-4917-911f-2e4f1ee9eaf4, SubmissionId: e157ac17-18d2-482d-a3d7-f262753ca2bc, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 89.0, MaxScore: 100.0, Ratio: 0.89
+Id: 6f439b6a-8530-48f9-870f-6fe5a4f8746d, SubmissionId: e157ac17-18d2-482d-a3d7-f262753ca2bc, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 93.1, MaxScore: 100.0, Ratio: 0.931
+Id: d214bd0c-30d6-4794-9a49-d693d0a28397, SubmissionId: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 88.2, MaxScore: 100.0, Ratio: 0.882
+Id: 782491f7-ab59-493a-8e84-cd4da1153564, SubmissionId: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 92.7, MaxScore: 100.0, Ratio: 0.927
+Id: 13beb5f2-fbed-4610-9cfc-f498d9a56061, SubmissionId: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 85.7, MaxScore: 100.0, Ratio: 0.857
+Id: 10ac29ea-75c9-4967-9fc0-e8fe6f3198b7, SubmissionId: becef460-d832-4195-a04e-50a4a7b32059, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 98.4, MaxScore: 100.0, Ratio: 0.984
+Id: 1f56231d-ceda-4be7-ae72-22d33ba8ca50, SubmissionId: becef460-d832-4195-a04e-50a4a7b32059, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 91.4, MaxScore: 100.0, Ratio: 0.914
+Id: b3690e07-928a-41d8-9eca-c725895d8a74, SubmissionId: becef460-d832-4195-a04e-50a4a7b32059, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 93.7, MaxScore: 100.0, Ratio: 0.937
+Id: 25513578-a2b7-4793-ba5d-9c3dacbb65ee, SubmissionId: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 91.8, MaxScore: 100.0, Ratio: 0.918
+Id: 98e88bed-d2f5-4dd9-a2e0-2a8a5e3c32f0, SubmissionId: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 94.5, MaxScore: 100.0, Ratio: 0.945
+Id: 3eb59a84-5495-4482-93b9-07d88028abeb, SubmissionId: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 89.0, MaxScore: 100.0, Ratio: 0.89
+Id: 70648090-3957-4bee-86fc-78fb8e0eeda0, SubmissionId: 8cabee41-abc6-4744-8f02-0248a20237d6, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 86.4, MaxScore: 100.0, Ratio: 0.864
+Id: 0238a6fc-9738-48b3-a7e6-d3623c2eadae, SubmissionId: 8cabee41-abc6-4744-8f02-0248a20237d6, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 91.6, MaxScore: 100.0, Ratio: 0.916
+Id: 828cac78-7e46-4fdd-aa21-f5c5d244ae5a, SubmissionId: 8cabee41-abc6-4744-8f02-0248a20237d6, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 90.3, MaxScore: 100.0, Ratio: 0.903
+Id: 9f589dde-3392-4f8a-9810-c8a74a4bee42, SubmissionId: 5eb16d18-53e9-42f3-b528-0bb690ba237f, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 90.6, MaxScore: 100.0, Ratio: 0.906
+Id: ef063d41-68b6-435d-b019-5b106563ffe3, SubmissionId: 5eb16d18-53e9-42f3-b528-0bb690ba237f, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 88.4, MaxScore: 100.0, Ratio: 0.884
+Id: b13053ae-b2fb-46ae-aac4-eccccf101dc9, SubmissionId: 5eb16d18-53e9-42f3-b528-0bb690ba237f, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 91.1, MaxScore: 100.0, Ratio: 0.911
+Id: 29f80036-a21d-4c98-92a0-27165f6661ac, SubmissionId: 8d477011-b7b4-4428-b07b-7e7754fa3894, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 96.3, MaxScore: 100.0, Ratio: 0.963
+Id: 980f4237-df41-42cb-9dcb-e8b7a4e7124a, SubmissionId: 8d477011-b7b4-4428-b07b-7e7754fa3894, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 93.5, MaxScore: 100.0, Ratio: 0.935
+Id: a26d4fbf-08c2-4661-8438-25aa56dd2536, SubmissionId: 8d477011-b7b4-4428-b07b-7e7754fa3894, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 98.1, MaxScore: 100.0, Ratio: 0.981
+Id: 7ddf0b7a-158b-4217-9570-9694aadbf5cd, SubmissionId: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 81.1, MaxScore: 100.0, Ratio: 0.811
+Id: 5e4e1744-970e-4bef-bbdd-d60953fc7a4c, SubmissionId: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 74.9, MaxScore: 100.0, Ratio: 0.749
+Id: 2d535a01-bcaf-446f-8b7e-db8b89b1f634, SubmissionId: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 78.7, MaxScore: 100.0, Ratio: 0.787
+Id: 89ae2e3a-629e-4576-bf97-22494443953d, SubmissionId: 702e2e48-471c-4906-b04b-567a0df90ff4, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 88.6, MaxScore: 100.0, Ratio: 0.886
+Id: 109ac209-eabe-479f-b717-3afd61f62045, SubmissionId: 702e2e48-471c-4906-b04b-567a0df90ff4, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 88.6, MaxScore: 100.0, Ratio: 0.886
+Id: ec53e43d-7404-4c37-9b3c-2105111c4c41, SubmissionId: 702e2e48-471c-4906-b04b-567a0df90ff4, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 86.8, MaxScore: 100.0, Ratio: 0.868
+Id: c1473d99-54e5-4b2a-af7d-6b26c3a7b213, SubmissionId: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 85.7, MaxScore: 100.0, Ratio: 0.857
+Id: a454911e-0ab6-4760-812a-b4c6d71e010f, SubmissionId: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 88.3, MaxScore: 100.0, Ratio: 0.883
+Id: 07c33f60-c88d-428b-9546-a024437ed98b, SubmissionId: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 86.1, MaxScore: 100.0, Ratio: 0.861
+Id: ce12bc69-036f-4d31-9ce4-9eb162a16930, SubmissionId: 39b3c2d4-441f-4307-960c-d4758262e6ae, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 83.0, MaxScore: 100.0, Ratio: 0.83
+Id: bb1a0068-692c-4222-aed7-bae9f32a5a57, SubmissionId: 39b3c2d4-441f-4307-960c-d4758262e6ae, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 84.3, MaxScore: 100.0, Ratio: 0.843
+Id: 6982f2a8-fe25-4abb-b5a5-2213d5cfa46a, SubmissionId: 39b3c2d4-441f-4307-960c-d4758262e6ae, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 81.9, MaxScore: 100.0, Ratio: 0.819
+Id: 1da55577-430c-4c83-9889-179b131b78ca, SubmissionId: 40e9256f-db95-4016-8237-56bc4f244994, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 82.0, MaxScore: 100.0, Ratio: 0.82
+Id: bd023f0b-f46c-4a02-a216-aabc9f809cf6, SubmissionId: 40e9256f-db95-4016-8237-56bc4f244994, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 85.2, MaxScore: 100.0, Ratio: 0.852
+Id: 0ddd27ef-eca9-49ef-bf94-55cb0f43c8fa, SubmissionId: 40e9256f-db95-4016-8237-56bc4f244994, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 84.0, MaxScore: 100.0, Ratio: 0.84
+Id: 6e711cc8-f6b1-4cac-93aa-5ef0902d3659, SubmissionId: bba16a63-00da-49c7-8bfe-6eb13cd32c73, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 90.7, MaxScore: 100.0, Ratio: 0.907
+Id: a3219996-c1e0-4771-81ed-7227d8d43f55, SubmissionId: bba16a63-00da-49c7-8bfe-6eb13cd32c73, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 88.2, MaxScore: 100.0, Ratio: 0.882
+Id: 43f3beb4-14d5-4585-9ed3-f24b6b084742, SubmissionId: bba16a63-00da-49c7-8bfe-6eb13cd32c73, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 88.9, MaxScore: 100.0, Ratio: 0.889
+Id: 6c375d1b-ce50-4bbc-a7f9-a6846258b775, SubmissionId: d0c6f014-231b-4158-93ee-6bd745454893, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 84.2, MaxScore: 100.0, Ratio: 0.842
+Id: 034db9d2-e826-456e-919c-80ff5da942be, SubmissionId: d0c6f014-231b-4158-93ee-6bd745454893, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 90.1, MaxScore: 100.0, Ratio: 0.901
+Id: 6b2dbf5f-82bd-42d9-aaf2-4a9cce86e094, SubmissionId: d0c6f014-231b-4158-93ee-6bd745454893, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 89.6, MaxScore: 100.0, Ratio: 0.896
+Id: a39be2f4-cbe2-46f3-ac21-cf5b0ed9e802, SubmissionId: bdc27de2-f8cb-48a6-9823-79aeb24e6169, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 79.0, MaxScore: 100.0, Ratio: 0.79
+Id: d96a6560-2b3e-4fd3-abf2-41325c37be44, SubmissionId: bdc27de2-f8cb-48a6-9823-79aeb24e6169, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 79.4, MaxScore: 100.0, Ratio: 0.794
+Id: 6c7b4645-752f-4392-af92-6e6135ba8501, SubmissionId: bdc27de2-f8cb-48a6-9823-79aeb24e6169, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 85.7, MaxScore: 100.0, Ratio: 0.857
+Id: 261a6237-2174-48f0-9129-b1979d06242c, SubmissionId: a8b25921-851a-4b8d-b762-1582df1afa45, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 77.1, MaxScore: 100.0, Ratio: 0.771
+Id: 2d89e66c-8524-412c-aaae-5808b0e509e0, SubmissionId: a8b25921-851a-4b8d-b762-1582df1afa45, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 75.0, MaxScore: 100.0, Ratio: 0.75
+Id: be945f65-f31e-42f0-a296-23070540020e, SubmissionId: a8b25921-851a-4b8d-b762-1582df1afa45, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 74.1, MaxScore: 100.0, Ratio: 0.741
+Id: 769ece1b-2cd2-4509-b5c6-ba8afa6cbd31, SubmissionId: e36834fc-d8a9-4445-8e0a-820f7750348e, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 93.2, MaxScore: 100.0, Ratio: 0.932
+Id: 59f29f1a-6d78-46c1-8e2b-adc868ba2b63, SubmissionId: e36834fc-d8a9-4445-8e0a-820f7750348e, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 94.8, MaxScore: 100.0, Ratio: 0.948
+Id: 65227665-f506-4936-be93-420da485ff4b, SubmissionId: e36834fc-d8a9-4445-8e0a-820f7750348e, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 91.0, MaxScore: 100.0, Ratio: 0.91
+Id: c919a84b-7597-4e3b-9bb5-abf7e3fe5cae, SubmissionId: 7d127039-ccfe-43f7-a67a-e0e03c66b94a, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 76.2, MaxScore: 100.0, Ratio: 0.762
+Id: 8b179cf6-7e25-4f5a-8833-beca58caa28d, SubmissionId: 7d127039-ccfe-43f7-a67a-e0e03c66b94a, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 71.8, MaxScore: 100.0, Ratio: 0.718
+Id: 5daed6d7-5c62-40a3-9873-53ef21c1f0ca, SubmissionId: 7d127039-ccfe-43f7-a67a-e0e03c66b94a, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 75.2, MaxScore: 100.0, Ratio: 0.752
+Id: caafae6b-5c4d-484b-b7a7-e77f753dd327, SubmissionId: b228ac5c-f814-40e1-a8e2-3480d3a7bda4, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 94.3, MaxScore: 100.0, Ratio: 0.943
+Id: ba943a82-26e9-4527-af3a-b1fa4319dc46, SubmissionId: b228ac5c-f814-40e1-a8e2-3480d3a7bda4, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 94.7, MaxScore: 100.0, Ratio: 0.947
+Id: df00485e-1e15-434e-afea-934b69bbfe1b, SubmissionId: b228ac5c-f814-40e1-a8e2-3480d3a7bda4, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 98.4, MaxScore: 100.0, Ratio: 0.984
+Id: ab706e9d-a3cf-4d78-bda9-ca9482609d21, SubmissionId: f377b7fb-056d-412f-be08-4ab9dcaadc57, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 86.9, MaxScore: 100.0, Ratio: 0.869
+Id: 50bd5dd7-68a1-4c17-adb5-a59c3a799ec6, SubmissionId: f377b7fb-056d-412f-be08-4ab9dcaadc57, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 92.6, MaxScore: 100.0, Ratio: 0.926
+Id: f7f63e18-c757-429d-b1e9-36c3fd619348, SubmissionId: f377b7fb-056d-412f-be08-4ab9dcaadc57, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 93.7, MaxScore: 100.0, Ratio: 0.937
+Id: 012ad2fe-13f6-49c5-b564-b2c6e3e3cc12, SubmissionId: c23c4a11-83e6-4809-b551-05421c3a02ee, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 96.0, MaxScore: 100.0, Ratio: 0.96
+Id: 9d313e43-c2de-46cd-8282-7ae489b2e4c0, SubmissionId: c23c4a11-83e6-4809-b551-05421c3a02ee, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 93.1, MaxScore: 100.0, Ratio: 0.931
+Id: d494ee87-d08b-44ae-a0cf-6c1fdb88376f, SubmissionId: c23c4a11-83e6-4809-b551-05421c3a02ee, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 96.8, MaxScore: 100.0, Ratio: 0.968
+Id: 61241e0d-f2cc-45b7-b6c1-2fe1a0fe3cf6, SubmissionId: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 91.5, MaxScore: 100.0, Ratio: 0.915
+Id: f5326dae-a118-455e-9894-f77e5c10eb6d, SubmissionId: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 91.5, MaxScore: 100.0, Ratio: 0.915
+Id: 9a59937e-557e-4d34-b3c1-59ca08a6f3a6, SubmissionId: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 84.7, MaxScore: 100.0, Ratio: 0.847
+Id: b9a5366c-e65a-4541-93cf-a538e5086ed8, SubmissionId: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 81.2, MaxScore: 100.0, Ratio: 0.812
+Id: fa9c8f8b-1131-499d-a55f-076dbe79839a, SubmissionId: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 74.5, MaxScore: 100.0, Ratio: 0.745
+Id: 4a7d02e9-2ccc-4e06-b52d-70afc1cf1ee6, SubmissionId: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 80.5, MaxScore: 100.0, Ratio: 0.805
+Id: 3cd52819-4036-442e-aac7-e0fdaf44013c, SubmissionId: 198662d7-dbf3-421c-b8c4-39343ff2e87d, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 79.3, MaxScore: 100.0, Ratio: 0.793
+Id: 6c07a17e-63cf-453b-a87c-b815a0521da4, SubmissionId: 198662d7-dbf3-421c-b8c4-39343ff2e87d, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 79.9, MaxScore: 100.0, Ratio: 0.799
+Id: 7166144e-84e3-40c8-be11-388cf00440ef, SubmissionId: 198662d7-dbf3-421c-b8c4-39343ff2e87d, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 84.3, MaxScore: 100.0, Ratio: 0.843
+Id: ec246712-6f85-48ef-ae4d-6efa9db35f45, SubmissionId: 5af4409e-75ba-4c9c-bced-9cee714fe604, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 99.2, MaxScore: 100.0, Ratio: 0.992
+Id: 89c15b5e-ea47-4da5-b0bf-95b64a188617, SubmissionId: 5af4409e-75ba-4c9c-bced-9cee714fe604, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 95.7, MaxScore: 100.0, Ratio: 0.957
+Id: b091d22c-f6cb-41ad-87f4-2fce58aa39c6, SubmissionId: 5af4409e-75ba-4c9c-bced-9cee714fe604, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 100, MaxScore: 100.0, Ratio: 1
+Id: 989b0d8b-737b-4b2e-81cc-c0582f60caf3, SubmissionId: ed79914f-0e59-4bb4-823b-cc210b74ded8, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 84.5, MaxScore: 100.0, Ratio: 0.845
+Id: bcc18752-3488-4a15-a80d-1bc09299a4de, SubmissionId: ed79914f-0e59-4bb4-823b-cc210b74ded8, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 84.9, MaxScore: 100.0, Ratio: 0.849
+Id: c1e25eb0-07f0-4d86-a54f-bcbaea1064ce, SubmissionId: ed79914f-0e59-4bb4-823b-cc210b74ded8, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 84.6, MaxScore: 100.0, Ratio: 0.846
+Id: ad184578-8bf1-4c54-a35e-5399b8ca8624, SubmissionId: 7618b09e-3a63-4684-a14d-498e711060a7, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 91.5, MaxScore: 100.0, Ratio: 0.915
+Id: e8ee22a2-0fb4-4a7d-bd62-25e6fc7075cc, SubmissionId: 7618b09e-3a63-4684-a14d-498e711060a7, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 97.7, MaxScore: 100.0, Ratio: 0.977
+Id: a43563ff-9b9d-4eae-82d9-9b19fb8eff67, SubmissionId: 7618b09e-3a63-4684-a14d-498e711060a7, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 94.7, MaxScore: 100.0, Ratio: 0.947
+Id: 3b7965e3-4fe6-4c22-acd7-3f4b1a3820c5, SubmissionId: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 92.3, MaxScore: 100.0, Ratio: 0.923
+Id: c5f20d73-7dcb-4b37-a537-816d46d57112, SubmissionId: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 96.2, MaxScore: 100.0, Ratio: 0.962
+Id: 34985742-79a6-4a97-ad27-cae7cacaf890, SubmissionId: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 96.1, MaxScore: 100.0, Ratio: 0.961
+Id: fdc5dc04-49f7-4e00-ab15-3c13acdaee1f, SubmissionId: 7fe6509c-d7df-4162-b507-9b33a0b51d20, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 80.4, MaxScore: 100.0, Ratio: 0.804
+Id: 127a810d-d39e-4b1d-a2dd-e07a33ae7310, SubmissionId: 7fe6509c-d7df-4162-b507-9b33a0b51d20, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 78.6, MaxScore: 100.0, Ratio: 0.786
+Id: 62a3dd30-ec95-4dc1-a071-492953f4b88b, SubmissionId: 7fe6509c-d7df-4162-b507-9b33a0b51d20, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 78.4, MaxScore: 100.0, Ratio: 0.784
+Id: 75c19446-cc74-451b-bfcb-6848b41b20d0, SubmissionId: c76fe306-0448-48e9-a647-74f51bef287e, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 88.0, MaxScore: 100.0, Ratio: 0.88
+Id: dcd4a6c4-dcf9-4ecf-a8fe-1da2088f7fed, SubmissionId: c76fe306-0448-48e9-a647-74f51bef287e, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 91.8, MaxScore: 100.0, Ratio: 0.918
+Id: 0ee9a995-75e9-43ca-9d63-efa69a15e8d5, SubmissionId: c76fe306-0448-48e9-a647-74f51bef287e, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 93.0, MaxScore: 100.0, Ratio: 0.93
+Id: 730618d9-0744-43d4-a4b0-628b620b5e67, SubmissionId: 77978cb1-5f39-47ed-bc89-d0487e2f709b, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 79.8, MaxScore: 100.0, Ratio: 0.798
+Id: 676974d6-c71d-4141-aa3d-49948b1e4c51, SubmissionId: 77978cb1-5f39-47ed-bc89-d0487e2f709b, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 80.9, MaxScore: 100.0, Ratio: 0.809
+Id: 4f2998ff-9503-4c66-9678-1c47e3565043, SubmissionId: 77978cb1-5f39-47ed-bc89-d0487e2f709b, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 82.0, MaxScore: 100.0, Ratio: 0.82
+Id: 73ed8e5f-ff22-41a0-bea3-47e726fb4f16, SubmissionId: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 88.7, MaxScore: 100.0, Ratio: 0.887
+Id: 3a351e81-9c46-46b7-8d11-7d25fb4911ed, SubmissionId: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 92.2, MaxScore: 100.0, Ratio: 0.922
+Id: 8c33f3de-4836-48ca-89fa-36bfb2d3ab44, SubmissionId: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 88.3, MaxScore: 100.0, Ratio: 0.883
+Id: 2f359b39-7a8d-49e4-8741-b24e6f8a7c88, SubmissionId: 8ca7ad20-c82d-4539-bc38-72c34e0a382f, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 94.3, MaxScore: 100.0, Ratio: 0.943
+Id: a47e2724-799f-44c2-b073-b1b4e5fc4016, SubmissionId: 8ca7ad20-c82d-4539-bc38-72c34e0a382f, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 87.5, MaxScore: 100.0, Ratio: 0.875
+Id: 0fb62741-f503-4130-8cf8-5a97fc88fac0, SubmissionId: 8ca7ad20-c82d-4539-bc38-72c34e0a382f, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 89.1, MaxScore: 100.0, Ratio: 0.891
+Id: ccd5911a-9a4b-472d-86a3-c9fb823c7d0b, SubmissionId: dd1d01a7-fc64-435f-83ed-84edf6257f26, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 94.9, MaxScore: 100.0, Ratio: 0.949
+Id: 1e3d9c65-69a2-4b7a-bcd7-368e1e9746ad, SubmissionId: dd1d01a7-fc64-435f-83ed-84edf6257f26, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 98.7, MaxScore: 100.0, Ratio: 0.987
+Id: 151b19c2-1e76-45bd-b739-b9328a9cb830, SubmissionId: dd1d01a7-fc64-435f-83ed-84edf6257f26, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 95.8, MaxScore: 100.0, Ratio: 0.958
+Id: 6d5b6eca-4ea5-4f54-b450-92f978f86621, SubmissionId: 1f108754-3207-42a8-94d6-c28a61abe38b, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 78.7, MaxScore: 100.0, Ratio: 0.787
+Id: 4d06857a-d98a-4227-8e81-9dfe481c167e, SubmissionId: 1f108754-3207-42a8-94d6-c28a61abe38b, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 81.2, MaxScore: 100.0, Ratio: 0.812
+Id: 7105effb-3f7f-490d-8d0a-9b213062f620, SubmissionId: 1f108754-3207-42a8-94d6-c28a61abe38b, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 77.7, MaxScore: 100.0, Ratio: 0.777
+Id: a725abf1-8fcd-4834-b04e-6ec28765e4aa, SubmissionId: 6ef69875-41ce-4a5f-b73b-cd993afa20ee, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 86.5, MaxScore: 100.0, Ratio: 0.865
+Id: 379ce6ad-2bf4-49bf-9598-19450a455014, SubmissionId: 6ef69875-41ce-4a5f-b73b-cd993afa20ee, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 79.7, MaxScore: 100.0, Ratio: 0.797
+Id: 22b261b8-3a2c-4c6d-9e30-3faa7adffb41, SubmissionId: 6ef69875-41ce-4a5f-b73b-cd993afa20ee, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 82.9, MaxScore: 100.0, Ratio: 0.829
+Id: ba59625e-6ba5-433b-a2f1-1f03f45260c1, SubmissionId: eafd188d-a522-4903-a01f-ff5b2bbbc40a, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 93.3, MaxScore: 100.0, Ratio: 0.933
+Id: b5a46013-d00f-442e-afd4-879dfcbc607d, SubmissionId: eafd188d-a522-4903-a01f-ff5b2bbbc40a, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 93.3, MaxScore: 100.0, Ratio: 0.933
+Id: c2b0184b-6363-4d33-a8cb-cb14514b0901, SubmissionId: eafd188d-a522-4903-a01f-ff5b2bbbc40a, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 86.8, MaxScore: 100.0, Ratio: 0.868
+Id: b32a45e7-6467-4fa5-a1bd-0d5d324397cd, SubmissionId: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 81.8, MaxScore: 100.0, Ratio: 0.818
+Id: 45b42b7b-7544-4a54-91a4-86c84ed171bb, SubmissionId: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 76.3, MaxScore: 100.0, Ratio: 0.763
+Id: 1a18e350-9ac4-4cf8-866e-0d4d7502a995, SubmissionId: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 74.9, MaxScore: 100.0, Ratio: 0.749
+Id: 4d9fc0ef-c9ac-48a1-b934-5483c80de5ca, SubmissionId: 6b8d6656-7afb-4343-ab99-882b7fe75879, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 90.9, MaxScore: 100.0, Ratio: 0.909
+Id: 262a65b2-c6da-4f19-b2b7-bed1b872d369, SubmissionId: 6b8d6656-7afb-4343-ab99-882b7fe75879, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 89.3, MaxScore: 100.0, Ratio: 0.893
+Id: 8a561776-07b9-4b7c-9f58-1d5620bec49d, SubmissionId: 6b8d6656-7afb-4343-ab99-882b7fe75879, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 86.5, MaxScore: 100.0, Ratio: 0.865
+Id: b175fddf-6a00-4713-b5cb-782ff6bc4869, SubmissionId: 4e728737-8f14-4797-992a-b1e272c9d5c3, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 83.1, MaxScore: 100.0, Ratio: 0.831
+Id: 294992f0-67fb-40f5-bfcc-969fe48af827, SubmissionId: 4e728737-8f14-4797-992a-b1e272c9d5c3, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 83.3, MaxScore: 100.0, Ratio: 0.833
+Id: 7025bca7-6131-4a7d-af43-088502637e4f, SubmissionId: 4e728737-8f14-4797-992a-b1e272c9d5c3, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 79.5, MaxScore: 100.0, Ratio: 0.795
+Id: b91e340f-a359-4962-9fd9-8878da40c089, SubmissionId: a4165384-cdc8-45b1-b380-a31a73a6563f, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 94.3, MaxScore: 100.0, Ratio: 0.943
+Id: 2910aa72-cee2-4ef2-9663-d941b2a39db8, SubmissionId: a4165384-cdc8-45b1-b380-a31a73a6563f, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 97.0, MaxScore: 100.0, Ratio: 0.97
+Id: 14616282-27f6-4f7c-a94c-dca4e1d4d766, SubmissionId: a4165384-cdc8-45b1-b380-a31a73a6563f, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 92.5, MaxScore: 100.0, Ratio: 0.925
+Id: 4692e9e2-6aff-4c10-9917-29a332b506ac, SubmissionId: 5890787b-f7e5-4c88-b0c4-5a6866967ea9, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 74.0, MaxScore: 100.0, Ratio: 0.74
+Id: a98e61d4-4696-4124-b04d-cf8189629e68, SubmissionId: 5890787b-f7e5-4c88-b0c4-5a6866967ea9, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 79.4, MaxScore: 100.0, Ratio: 0.794
+Id: 9c90aea4-7698-40a9-a133-9a0a97ce4114, SubmissionId: 5890787b-f7e5-4c88-b0c4-5a6866967ea9, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 76.9, MaxScore: 100.0, Ratio: 0.769
+Id: b7a06f4b-c507-4656-a086-c8471268d0ed, SubmissionId: 0e0ed938-a2de-4a0c-877b-68815869e00c, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 79.2, MaxScore: 100.0, Ratio: 0.792
+Id: 8e7cfa60-fbd1-4ca7-b5d7-74c265f48030, SubmissionId: 0e0ed938-a2de-4a0c-877b-68815869e00c, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 81.7, MaxScore: 100.0, Ratio: 0.817
+Id: 1f689b10-ec52-4b7e-97eb-36d71d6f5889, SubmissionId: 0e0ed938-a2de-4a0c-877b-68815869e00c, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 79.8, MaxScore: 100.0, Ratio: 0.798
+Id: c71f9b69-bb36-4ced-9eb3-d623417ec242, SubmissionId: 9180dd97-f4bb-46b1-8354-5e097837a5e1, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 83.5, MaxScore: 100.0, Ratio: 0.835
+Id: dd768c73-068c-49da-8d34-782b07dbb7d3, SubmissionId: 9180dd97-f4bb-46b1-8354-5e097837a5e1, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 80.9, MaxScore: 100.0, Ratio: 0.809
+Id: 26374539-381d-406d-ba1a-3d6001b839c2, SubmissionId: 9180dd97-f4bb-46b1-8354-5e097837a5e1, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 82.0, MaxScore: 100.0, Ratio: 0.82
+Id: e432e538-5efc-4102-a201-a2d8d0e92716, SubmissionId: a73e4538-eaec-4896-ab97-a42a727fc2b5, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 90.5, MaxScore: 100.0, Ratio: 0.905
+Id: 07041c57-5750-4cd3-aefc-e6b8d7d5a134, SubmissionId: a73e4538-eaec-4896-ab97-a42a727fc2b5, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 94.3, MaxScore: 100.0, Ratio: 0.943
+Id: 447e938b-d532-4fa0-8933-9aaef37698ad, SubmissionId: a73e4538-eaec-4896-ab97-a42a727fc2b5, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 87.2, MaxScore: 100.0, Ratio: 0.872
+Id: bcbdb786-2fa8-4ebe-8176-4ad92513706a, SubmissionId: dcd9c3a1-6027-490c-93b7-8a9077b7527f, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 89.9, MaxScore: 100.0, Ratio: 0.899
+Id: c5bc6a89-68b7-42c4-bdfc-aacf4dc2e892, SubmissionId: dcd9c3a1-6027-490c-93b7-8a9077b7527f, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 89.9, MaxScore: 100.0, Ratio: 0.899
+Id: a9ce3091-0371-431a-9ee2-9a489ff8d0a4, SubmissionId: dcd9c3a1-6027-490c-93b7-8a9077b7527f, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 84.3, MaxScore: 100.0, Ratio: 0.843
+Id: af4d3a20-96f2-49ff-a305-5cec0d000955, SubmissionId: a896c64b-ad37-447b-adc7-331085578c98, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 74.2, MaxScore: 100.0, Ratio: 0.742
+Id: dc92706d-4827-4446-84bf-c2f5d427ee1b, SubmissionId: a896c64b-ad37-447b-adc7-331085578c98, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 75.9, MaxScore: 100.0, Ratio: 0.759
+Id: d148cb0a-d8a5-4f82-8733-280839e89549, SubmissionId: a896c64b-ad37-447b-adc7-331085578c98, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 76.1, MaxScore: 100.0, Ratio: 0.761
+Id: b7d752df-f7f5-4258-8774-995aa8f12431, SubmissionId: a0091eed-8c9f-4b41-ba18-abf24dd62520, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 81.3, MaxScore: 100.0, Ratio: 0.813
+Id: 5de988f0-057c-4a48-8e93-5c768f83d664, SubmissionId: a0091eed-8c9f-4b41-ba18-abf24dd62520, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 74.9, MaxScore: 100.0, Ratio: 0.749
+Id: 51393565-9781-4b48-a0f3-6fc97b50285f, SubmissionId: a0091eed-8c9f-4b41-ba18-abf24dd62520, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 81.8, MaxScore: 100.0, Ratio: 0.818
+Id: 3f3b77d0-6d5a-49b1-8fe6-a6e1f2f3d675, SubmissionId: 369c4d04-2741-4b48-8174-605e28f180d0, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 81.4, MaxScore: 100.0, Ratio: 0.814
+Id: 9d859e9c-ac01-43ef-bfe6-1ad468fe738f, SubmissionId: 369c4d04-2741-4b48-8174-605e28f180d0, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 83.2, MaxScore: 100.0, Ratio: 0.832
+Id: 5c2ddcfe-013a-4c95-b804-7f0d4f5a35c6, SubmissionId: 369c4d04-2741-4b48-8174-605e28f180d0, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 76.9, MaxScore: 100.0, Ratio: 0.769
+Id: 38753d64-384f-433b-a261-e4415a9f366a, SubmissionId: a4122994-8946-4d08-9847-ec1a11adbb3a, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 75.3, MaxScore: 100.0, Ratio: 0.753
+Id: ecc065dd-b75d-4af8-ad93-14ea375e9a20, SubmissionId: a4122994-8946-4d08-9847-ec1a11adbb3a, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 78.8, MaxScore: 100.0, Ratio: 0.788
+Id: 12cf52bf-fb7c-411b-9be8-12e6dc1dea6e, SubmissionId: a4122994-8946-4d08-9847-ec1a11adbb3a, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 77.1, MaxScore: 100.0, Ratio: 0.771
+Id: 476e0f19-00d3-4a3a-8bd6-5bd1469d6d29, SubmissionId: de89057b-53dc-44aa-9ab9-44ac94b42f41, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 93.1, MaxScore: 100.0, Ratio: 0.931
+Id: b2f475bc-0eb2-4ffb-a1f7-7d02293b46de, SubmissionId: de89057b-53dc-44aa-9ab9-44ac94b42f41, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 89.8, MaxScore: 100.0, Ratio: 0.898
+Id: 22dcd911-1fa4-4bb2-b0bb-4d207e2a2b8d, SubmissionId: de89057b-53dc-44aa-9ab9-44ac94b42f41, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 88.5, MaxScore: 100.0, Ratio: 0.885
+Id: 6ab539b0-dad5-4cec-9f06-a098ae1f3056, SubmissionId: 27ba497b-e3eb-4663-a06a-2f77318f6f48, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 81.2, MaxScore: 100.0, Ratio: 0.812
+Id: 55426f5f-1a82-4330-ba8b-a529443efa29, SubmissionId: 27ba497b-e3eb-4663-a06a-2f77318f6f48, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 85.7, MaxScore: 100.0, Ratio: 0.857
+Id: 5c0448bd-eaa2-4c3e-ac7f-43d374fdc02a, SubmissionId: 27ba497b-e3eb-4663-a06a-2f77318f6f48, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 88.6, MaxScore: 100.0, Ratio: 0.886
+Id: 5caccb0b-e32a-4324-990b-dd3375022146, SubmissionId: f027bf47-1898-4174-a1bf-bce640975774, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 81.7, MaxScore: 100.0, Ratio: 0.817
+Id: 14131265-1a25-4c75-905b-f006ecac5c28, SubmissionId: f027bf47-1898-4174-a1bf-bce640975774, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 81.7, MaxScore: 100.0, Ratio: 0.817
+Id: e34d33f7-bf82-4065-8a7d-30900af591dc, SubmissionId: f027bf47-1898-4174-a1bf-bce640975774, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 88.1, MaxScore: 100.0, Ratio: 0.881
+Id: bf4fad97-09d5-420d-a68f-1ceacac9cd96, SubmissionId: f74ab72c-9023-452e-9aed-5dd62dd98dbf, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 91.7, MaxScore: 100.0, Ratio: 0.917
+Id: d34c45a1-8d35-44b7-85d4-8a01a0e9eaa2, SubmissionId: f74ab72c-9023-452e-9aed-5dd62dd98dbf, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 93.5, MaxScore: 100.0, Ratio: 0.935
+Id: f5726307-7ec6-4e54-93b6-008809c9366d, SubmissionId: f74ab72c-9023-452e-9aed-5dd62dd98dbf, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 93.2, MaxScore: 100.0, Ratio: 0.932
+Id: 69e6985b-3d8c-457c-b684-5d30cbcb67d8, SubmissionId: 901422da-5318-4ab6-abae-ddfd3a0020ca, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 94.1, MaxScore: 100.0, Ratio: 0.941
+Id: 77bb454f-0089-42ce-961d-1a957e73eca5, SubmissionId: 901422da-5318-4ab6-abae-ddfd3a0020ca, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 92.6, MaxScore: 100.0, Ratio: 0.926
+Id: 907ab732-b04c-4920-ac78-0c6b77e57002, SubmissionId: 901422da-5318-4ab6-abae-ddfd3a0020ca, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 86.8, MaxScore: 100.0, Ratio: 0.868
+Id: 03514528-1ec5-4ef6-8212-63178fd707b0, SubmissionId: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 82.6, MaxScore: 100.0, Ratio: 0.826
+Id: fe11c3aa-ad9a-4ad3-9a84-ef0e7d619a51, SubmissionId: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 85.8, MaxScore: 100.0, Ratio: 0.858
+Id: 9af2b8a2-c468-4a0f-8932-ced173eecec6, SubmissionId: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 83.2, MaxScore: 100.0, Ratio: 0.832
+Id: ce2da92d-8c02-4f45-afa8-ee577aec768e, SubmissionId: e6643d27-bb08-4fe3-a911-e6cc7946f140, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 88.5, MaxScore: 100.0, Ratio: 0.885
+Id: f87e5d88-c280-41db-b852-e193717507d0, SubmissionId: e6643d27-bb08-4fe3-a911-e6cc7946f140, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 86.8, MaxScore: 100.0, Ratio: 0.868
+Id: 47579873-0594-4267-93ae-e59196de7a24, SubmissionId: e6643d27-bb08-4fe3-a911-e6cc7946f140, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 86.1, MaxScore: 100.0, Ratio: 0.861
+Id: 9726f705-3271-4a09-8827-ed297478c620, SubmissionId: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 89.2, MaxScore: 100.0, Ratio: 0.892
+Id: e995279f-f8a4-4cff-92bf-4a7b58dc3809, SubmissionId: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 90.0, MaxScore: 100.0, Ratio: 0.9
+Id: 2f3bd8fe-7090-4be0-893f-2a8207268fc3, SubmissionId: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 90.9, MaxScore: 100.0, Ratio: 0.909
+Id: 03e563a0-d40f-4ba7-9c2a-2ebc5f7f572d, SubmissionId: d96baef7-6238-4021-bdf9-f42ce4aa4299, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 90.5, MaxScore: 100.0, Ratio: 0.905
+Id: 115e89af-9b4c-4845-9599-c155dda7e665, SubmissionId: d96baef7-6238-4021-bdf9-f42ce4aa4299, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 90.9, MaxScore: 100.0, Ratio: 0.909
+Id: 4a81d818-198b-4f8b-bfad-113ae2fa1051, SubmissionId: d96baef7-6238-4021-bdf9-f42ce4aa4299, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 93.6, MaxScore: 100.0, Ratio: 0.936
+Id: fc9d3a5e-1140-484a-aa36-b7b192d36f81, SubmissionId: 746c7277-81d5-43f8-a377-c72dfe7c0b2c, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 81.1, MaxScore: 100.0, Ratio: 0.811
+Id: 17bf4fa5-a767-4493-9c7c-8058d0c06e20, SubmissionId: 746c7277-81d5-43f8-a377-c72dfe7c0b2c, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 80.7, MaxScore: 100.0, Ratio: 0.807
+Id: d3a7c2e5-5d4c-4b42-b284-9ae6655d329e, SubmissionId: 746c7277-81d5-43f8-a377-c72dfe7c0b2c, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 85.2, MaxScore: 100.0, Ratio: 0.852
+Id: 17bf28ea-ea15-49fa-abf5-e6468e833561, SubmissionId: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 78.1, MaxScore: 100.0, Ratio: 0.781
+Id: f167b6ff-7bc6-4d9b-9060-af411eeeaa4d, SubmissionId: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 78.0, MaxScore: 100.0, Ratio: 0.78
+Id: 424c0d6d-10b2-4719-8a98-831be81cd472, SubmissionId: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 77.6, MaxScore: 100.0, Ratio: 0.776
+Id: 491c635f-521a-4e9f-8c93-9e3ccb0f1a88, SubmissionId: 355e533d-bd42-4c6d-aff6-30f9e2a5441d, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 83.6, MaxScore: 100.0, Ratio: 0.836
+Id: ec3c7fe4-7882-46c2-bb82-c8da6f7fb729, SubmissionId: 355e533d-bd42-4c6d-aff6-30f9e2a5441d, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 85.2, MaxScore: 100.0, Ratio: 0.852
+Id: 73897820-df96-4ece-9c35-c8f9659dbf5c, SubmissionId: 355e533d-bd42-4c6d-aff6-30f9e2a5441d, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 89.6, MaxScore: 100.0, Ratio: 0.896
+Id: 1e275d2b-d48f-46ed-b20b-024ae07d0323, SubmissionId: d225b8d5-fbbb-4e46-9230-f43b98be8fbe, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 82.7, MaxScore: 100.0, Ratio: 0.827
+Id: dd2c6705-2de1-4756-a6c4-34cf04354366, SubmissionId: d225b8d5-fbbb-4e46-9230-f43b98be8fbe, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 78.5, MaxScore: 100.0, Ratio: 0.785
+Id: df8cf26f-15c7-47d9-8d79-5b1f7d0940ee, SubmissionId: d225b8d5-fbbb-4e46-9230-f43b98be8fbe, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 83.1, MaxScore: 100.0, Ratio: 0.831
+Id: 20211a6f-4632-427c-8098-ebca72a9598d, SubmissionId: 72078641-626d-4f8f-8d1b-ea852860830a, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 82.5, MaxScore: 100.0, Ratio: 0.825
+Id: 12120f9d-b21c-48cd-9169-ce7237e387ff, SubmissionId: 72078641-626d-4f8f-8d1b-ea852860830a, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 85.9, MaxScore: 100.0, Ratio: 0.859
+Id: 09804af6-accb-4e01-bd74-e8860297d41b, SubmissionId: 72078641-626d-4f8f-8d1b-ea852860830a, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 82.9, MaxScore: 100.0, Ratio: 0.829
+Id: 604abc38-18fe-4157-b645-afb53fb01d4a, SubmissionId: ccec504b-03d6-402b-a3f3-d844d23430ef, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 91.4, MaxScore: 100.0, Ratio: 0.914
+Id: bfcfdfee-9eb9-489b-91d3-cee8a51e42ea, SubmissionId: ccec504b-03d6-402b-a3f3-d844d23430ef, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 90.8, MaxScore: 100.0, Ratio: 0.908
+Id: e618497a-fae1-4837-a20a-d83d45ebf65e, SubmissionId: ccec504b-03d6-402b-a3f3-d844d23430ef, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 87.4, MaxScore: 100.0, Ratio: 0.874
+Id: 6aab785e-8fe8-4379-aa47-914ca05a1711, SubmissionId: f7afc524-32ac-4c23-be21-1e2f637a5cb2, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 87.1, MaxScore: 100.0, Ratio: 0.871
+Id: c15cda72-be19-43d8-80b1-d027c57a1ad7, SubmissionId: f7afc524-32ac-4c23-be21-1e2f637a5cb2, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 88.5, MaxScore: 100.0, Ratio: 0.885
+Id: e917fbc1-35ac-49fe-a943-692217f92224, SubmissionId: f7afc524-32ac-4c23-be21-1e2f637a5cb2, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 86.7, MaxScore: 100.0, Ratio: 0.867
+Id: 19b961b6-64fd-4717-b813-890ae98c00fe, SubmissionId: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 87.2, MaxScore: 100.0, Ratio: 0.872
+Id: 9e980614-7fcb-4dbe-8fa1-793d1375ad76, SubmissionId: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 88.2, MaxScore: 100.0, Ratio: 0.882
+Id: fcf03cb8-6dba-46a8-ac4e-62765a85b08c, SubmissionId: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 88.0, MaxScore: 100.0, Ratio: 0.88
+Id: 649b3aef-e037-42a9-aa5d-21f97bd6d14e, SubmissionId: 58751f27-81df-420c-a0bb-2859249e4e4b, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 78.9, MaxScore: 100.0, Ratio: 0.789
+Id: 328aecb8-2301-4cee-9286-913b560c69a2, SubmissionId: 58751f27-81df-420c-a0bb-2859249e4e4b, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 76.2, MaxScore: 100.0, Ratio: 0.762
+Id: 1868da60-39e9-4d68-a81d-23013fb621d7, SubmissionId: 58751f27-81df-420c-a0bb-2859249e4e4b, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 75.2, MaxScore: 100.0, Ratio: 0.752
+Id: 05783e58-083f-400c-9dd6-4347226fa26e, SubmissionId: 76026960-e879-471e-8809-b5a0d89f79d2, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 79.1, MaxScore: 100.0, Ratio: 0.791
+Id: b0242e59-88c8-4627-850b-003bf9ef54ea, SubmissionId: 76026960-e879-471e-8809-b5a0d89f79d2, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 77.0, MaxScore: 100.0, Ratio: 0.77
+Id: eedf9dea-119e-41d8-974a-33066cbb628b, SubmissionId: 76026960-e879-471e-8809-b5a0d89f79d2, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 82.0, MaxScore: 100.0, Ratio: 0.82
+Id: 23aee350-0e43-40fb-be8e-0ec90bcda60c, SubmissionId: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 74.7, MaxScore: 100.0, Ratio: 0.747
+Id: f5be6f0f-3f9d-492d-ab5c-1d95979b693c, SubmissionId: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 76.7, MaxScore: 100.0, Ratio: 0.767
+Id: 95087790-9cf4-4322-8ac5-723a0d26aed0, SubmissionId: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 75.1, MaxScore: 100.0, Ratio: 0.751
+Id: 1835d61c-eb32-44fc-8eda-3c2f943172f9, SubmissionId: 4f6e7d7a-8750-48b5-a450-6c0d7026c860, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 88.2, MaxScore: 100.0, Ratio: 0.882
+Id: 0b7b77ff-01d7-40b3-a0e3-4c1eb9ee04da, SubmissionId: 4f6e7d7a-8750-48b5-a450-6c0d7026c860, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 85.1, MaxScore: 100.0, Ratio: 0.851
+Id: d9fa9cb6-f40f-4b9f-992f-cdaf2c61640d, SubmissionId: 4f6e7d7a-8750-48b5-a450-6c0d7026c860, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 87.7, MaxScore: 100.0, Ratio: 0.877
+Id: 2fa52730-1183-49b2-9347-5133f79ff186, SubmissionId: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 98.7, MaxScore: 100.0, Ratio: 0.987
+Id: d82dcfc2-e651-42bc-b0f6-3b712f4e4db3, SubmissionId: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 99.9, MaxScore: 100.0, Ratio: 0.999
+Id: aeb5b9ac-d2b0-41b6-b3c3-994af968a630, SubmissionId: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 98.8, MaxScore: 100.0, Ratio: 0.988
+Id: 7dd2629a-cce4-4eb4-b184-cfe5e94ad1d8, SubmissionId: 29214909-4b1f-4b17-acc9-176c8a8e39a9, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 96.0, MaxScore: 100.0, Ratio: 0.96
+Id: 954fa75d-efe7-4540-b4d5-c5a2ba5769e5, SubmissionId: 29214909-4b1f-4b17-acc9-176c8a8e39a9, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 89.5, MaxScore: 100.0, Ratio: 0.895
+Id: a0ff28c4-093b-460d-b526-17c13ad019b1, SubmissionId: 29214909-4b1f-4b17-acc9-176c8a8e39a9, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 93.4, MaxScore: 100.0, Ratio: 0.934
+Id: 4a12c229-1690-4b4a-a54d-199a92384df6, SubmissionId: 7af8d08c-ea1e-40ed-b513-c93a0767188f, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Opening Tasks', Score: 87.2, MaxScore: 100.0, Ratio: 0.872
+Id: b76254aa-8747-4743-8510-5181bc7bafe9, SubmissionId: 7af8d08c-ea1e-40ed-b513-c93a0767188f, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Closing Tasks', Score: 93.6, MaxScore: 100.0, Ratio: 0.936
+Id: 6d8dcfcb-9bbd-4a32-89bc-dead88a23d4b, SubmissionId: 7af8d08c-ea1e-40ed-b513-c93a0767188f, StoreId: ba7e69f8-7a67-4092-ae80-51291a18aa25, SectionTitle: 'Daily Operations', Score: 87.9, MaxScore: 100.0, Ratio: 0.879
+Id: 3a4690fb-ddb9-4a0f-8828-324bdd53fe0c, SubmissionId: cb848aa5-a96a-4ef7-a14b-caf72e7ca223, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 80.6, MaxScore: 100.0, Ratio: 0.806
+Id: 1fa5386b-992d-41f2-98f8-76a10bba7c2c, SubmissionId: cb848aa5-a96a-4ef7-a14b-caf72e7ca223, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 81.6, MaxScore: 100.0, Ratio: 0.816
+Id: 566df02a-d5c8-42f5-ada4-99138d422de9, SubmissionId: cb848aa5-a96a-4ef7-a14b-caf72e7ca223, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 76.3, MaxScore: 100.0, Ratio: 0.763
+Id: a0fce27b-6a84-42b2-8808-b97b7ae55a6d, SubmissionId: 78e10b6a-62e2-444c-988b-7d5581a82658, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 81.2, MaxScore: 100.0, Ratio: 0.812
+Id: 9efde9e0-88b2-4895-906d-45159de63923, SubmissionId: 78e10b6a-62e2-444c-988b-7d5581a82658, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 77.1, MaxScore: 100.0, Ratio: 0.771
+Id: 80c96c90-a81d-4179-ab64-578bdd928f7a, SubmissionId: 78e10b6a-62e2-444c-988b-7d5581a82658, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 80.2, MaxScore: 100.0, Ratio: 0.802
+Id: 2ca05b12-ecfd-4ff6-9d43-8aeb50a4a777, SubmissionId: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Opening Tasks', Score: 86.3, MaxScore: 100.0, Ratio: 0.863
+Id: deb45683-ca31-4e35-85d2-3629bb086c57, SubmissionId: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Closing Tasks', Score: 88.8, MaxScore: 100.0, Ratio: 0.888
+Id: 6d8c1a79-c13f-485a-a883-0e3f894d2947, SubmissionId: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e, StoreId: 2a3c00c5-aa6c-43cb-854c-cc2066de36e4, SectionTitle: 'Daily Operations', Score: 89.0, MaxScore: 100.0, Ratio: 0.89
+Id: d8d476b3-986c-4555-b8b4-488c33946686, SubmissionId: 10648846-fa66-4b0d-aa2e-77550d019823, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 76.5, MaxScore: 100.0, Ratio: 0.765
+Id: 2075ebef-d4f8-403b-aa59-dc0b0714eb1f, SubmissionId: 10648846-fa66-4b0d-aa2e-77550d019823, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 78.2, MaxScore: 100.0, Ratio: 0.782
+Id: 2a8d4219-b141-4479-af3e-9edde51e8385, SubmissionId: 10648846-fa66-4b0d-aa2e-77550d019823, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 78.9, MaxScore: 100.0, Ratio: 0.789
+Id: 0238a02a-4208-4809-8778-e6a701e2e68e, SubmissionId: 7e48a66f-563f-4331-a836-51d97f86196e, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Opening Tasks', Score: 93.7, MaxScore: 100.0, Ratio: 0.937
+Id: 20ff5ed4-2a56-480d-9d49-8cbf7a14d1da, SubmissionId: 7e48a66f-563f-4331-a836-51d97f86196e, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Closing Tasks', Score: 94.7, MaxScore: 100.0, Ratio: 0.947
+Id: 50b2133e-69be-4ccc-858b-d8a7e802ed16, SubmissionId: 7e48a66f-563f-4331-a836-51d97f86196e, StoreId: fd393a99-d5d1-4038-80e3-53504057f2c2, SectionTitle: 'Daily Operations', Score: 98.1, MaxScore: 100.0, Ratio: 0.981
+Id: 904af994-95c4-4189-ac6a-fea630572c95, SubmissionId: f15b8a0c-7841-494c-827b-883343fbde37, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 82.0, MaxScore: 100.0, Ratio: 0.82
+Id: 554f819f-9036-4017-b416-1d6ab59342f0, SubmissionId: f15b8a0c-7841-494c-827b-883343fbde37, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 77.9, MaxScore: 100.0, Ratio: 0.779
+Id: 4d86e3b3-ba37-4f3e-9c8e-59aa9855fc49, SubmissionId: f15b8a0c-7841-494c-827b-883343fbde37, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 78.2, MaxScore: 100.0, Ratio: 0.782
+Id: ef394113-db32-4e11-ae84-1059120e8aed, SubmissionId: e199031e-3466-4936-bda2-e416cbd8a014, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 93.1, MaxScore: 100.0, Ratio: 0.931
+Id: 69abefa9-d9dd-40d4-920c-f280e9a53af3, SubmissionId: e199031e-3466-4936-bda2-e416cbd8a014, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 93.5, MaxScore: 100.0, Ratio: 0.935
+Id: fc18cff9-a97a-4053-a46a-9f3bfe056b54, SubmissionId: e199031e-3466-4936-bda2-e416cbd8a014, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 96.7, MaxScore: 100.0, Ratio: 0.967
+Id: c90f12ed-09ad-419d-9455-9f5a4972a173, SubmissionId: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Opening Tasks', Score: 83.0, MaxScore: 100.0, Ratio: 0.83
+Id: 2f785db2-09b5-4546-b790-8a8f65b9afe3, SubmissionId: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Closing Tasks', Score: 87.2, MaxScore: 100.0, Ratio: 0.872
+Id: dcf1b858-f74e-49ea-b945-113a54846d19, SubmissionId: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b, StoreId: 82e71697-8d6c-45ae-8734-2f26d738275a, SectionTitle: 'Daily Operations', Score: 80.3, MaxScore: 100.0, Ratio: 0.803
+Id: 0d5dfbe7-1a65-4c4c-9662-d56af6d502bc, SubmissionId: 1060ab86-6109-4934-868e-4095d69b7c57, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 89.3, MaxScore: 100.0, Ratio: 0.893
+Id: f3461de2-9fd6-4b5b-bb90-305dc7941a65, SubmissionId: 1060ab86-6109-4934-868e-4095d69b7c57, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 86.5, MaxScore: 100.0, Ratio: 0.865
+Id: e0f59103-3caa-4a46-8222-ba8a09d0c9f5, SubmissionId: 1060ab86-6109-4934-868e-4095d69b7c57, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 83.1, MaxScore: 100.0, Ratio: 0.831
+Id: f1ed549c-f67e-48e8-b031-eb990db63a21, SubmissionId: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Opening Tasks', Score: 82.9, MaxScore: 100.0, Ratio: 0.829
+Id: e10b72a9-7c74-44f7-97d9-f0cb824d4f26, SubmissionId: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Closing Tasks', Score: 82.2, MaxScore: 100.0, Ratio: 0.822
+Id: 78756898-3ce1-49cd-bc2d-3ee3537c0346, SubmissionId: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925, StoreId: 8d151226-1e93-42ae-bcec-79bc7ce5cf74, SectionTitle: 'Daily Operations', Score: 83.2, MaxScore: 100.0, Ratio: 0.832
+Id: 3375cfb7-4eb4-4f2e-9464-cbe976c9a91c, SubmissionId: 3a478a00-cc6e-46f0-a568-e401feaa1bad, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 85.2, MaxScore: 100.0, Ratio: 0.852
+Id: f88e5aa8-1df3-4735-8899-b3eaf2afda2a, SubmissionId: 3a478a00-cc6e-46f0-a568-e401feaa1bad, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 91.1, MaxScore: 100.0, Ratio: 0.911
+Id: a02939c6-eed8-4bd8-9a08-87a19b40c969, SubmissionId: 3a478a00-cc6e-46f0-a568-e401feaa1bad, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 91.4, MaxScore: 100.0, Ratio: 0.914
+Id: d0019962-eb4d-4330-b5bf-366b35bd2e80, SubmissionId: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 97.6, MaxScore: 100.0, Ratio: 0.976
+Id: 169db7de-cc3f-4039-8f43-03d3546885e8, SubmissionId: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 97.1, MaxScore: 100.0, Ratio: 0.971
+Id: 134da7ab-17e3-4643-a859-187fb720d7b3, SubmissionId: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 98.0, MaxScore: 100.0, Ratio: 0.98
+Id: f1b98b8a-3de4-49ed-b309-8ebfff5aa052, SubmissionId: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Opening Tasks', Score: 75.0, MaxScore: 100.0, Ratio: 0.75
+Id: 3b9aed5d-a5b6-4830-8cb8-98ebd9ac9219, SubmissionId: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Closing Tasks', Score: 81.4, MaxScore: 100.0, Ratio: 0.814
+Id: a527fcba-ed5e-4cd9-8246-ee725345e427, SubmissionId: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40, StoreId: 155be63b-056d-43ff-8c51-68243de324b5, SectionTitle: 'Daily Operations', Score: 80.3, MaxScore: 100.0, Ratio: 0.803
+Id: 0fb7ba5c-ab89-4b90-9830-093cc0f19a46, SubmissionId: 94f8942f-f2ae-46de-8950-21d098c9136a, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 92.4, MaxScore: 100.0, Ratio: 0.924
+Id: 08a4698d-0d92-4e56-8431-7a8e8bc29dfc, SubmissionId: 94f8942f-f2ae-46de-8950-21d098c9136a, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 92.5, MaxScore: 100.0, Ratio: 0.925
+Id: b2d4887b-1c9a-4035-aff4-6007ffbbdc71, SubmissionId: 94f8942f-f2ae-46de-8950-21d098c9136a, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 93.1, MaxScore: 100.0, Ratio: 0.931
+Id: 435573e5-38b6-44ea-ab16-8e239dc28924, SubmissionId: ba38d536-7d50-4100-8119-26369cebdb77, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Opening Tasks', Score: 90.9, MaxScore: 100.0, Ratio: 0.909
+Id: bde9cd5d-6e18-42e2-b538-ab5e7aae12df, SubmissionId: ba38d536-7d50-4100-8119-26369cebdb77, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Closing Tasks', Score: 91.6, MaxScore: 100.0, Ratio: 0.916
+Id: 253fbded-5e71-444f-a6ed-f6452ac8e9b4, SubmissionId: ba38d536-7d50-4100-8119-26369cebdb77, StoreId: 0ac3cf0b-e393-40f0-81c7-2e4f296bec94, SectionTitle: 'Daily Operations', Score: 90.6, MaxScore: 100.0, Ratio: 0.906
+Id: 0495adcc-d3cf-4e48-bd83-30b1a1775a70, SubmissionId: 01a8c749-d1c9-4788-8059-2dc76a0524f8, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 80.9, MaxScore: 100.0, Ratio: 0.809
+Id: 92155714-fff4-4171-b6a7-6d42315628ff, SubmissionId: 01a8c749-d1c9-4788-8059-2dc76a0524f8, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 80.8, MaxScore: 100.0, Ratio: 0.808
+Id: d407a788-f1f5-4cb8-af71-1e812630158a, SubmissionId: 01a8c749-d1c9-4788-8059-2dc76a0524f8, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 80.2, MaxScore: 100.0, Ratio: 0.802
+Id: afcc0287-2e6e-461b-8070-fdd9cc331a53, SubmissionId: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 83.3, MaxScore: 100.0, Ratio: 0.833
+Id: c9b923d3-ca40-417b-9d35-9b5b4f9d1bf8, SubmissionId: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 85.5, MaxScore: 100.0, Ratio: 0.855
+Id: ee2c97c6-42b5-4503-b294-322d953b5181, SubmissionId: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 83.3, MaxScore: 100.0, Ratio: 0.833
+Id: b78a56ee-1d66-4ad7-a18b-9c602273752b, SubmissionId: c50324e7-70f6-4400-9fc2-3db100873f72, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Opening Tasks', Score: 78.0, MaxScore: 100.0, Ratio: 0.78
+Id: 767481b9-ffc5-4d98-8e81-a04b5d731c51, SubmissionId: c50324e7-70f6-4400-9fc2-3db100873f72, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Closing Tasks', Score: 71.3, MaxScore: 100.0, Ratio: 0.713
+Id: f5191c3d-728f-439c-a00f-8cfa4e271bf3, SubmissionId: c50324e7-70f6-4400-9fc2-3db100873f72, StoreId: ed6dd187-7709-41bc-89e4-b6e7994d5d72, SectionTitle: 'Daily Operations', Score: 72.7, MaxScore: 100.0, Ratio: 0.727
+Id: 1d7d0a60-7c57-4950-8187-ac6bfaa4fd13, SubmissionId: 166d154b-d362-4a14-924c-eb1463596e7f, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 80.9, MaxScore: 100.0, Ratio: 0.809
+Id: 7fcbf9e3-1417-4045-b125-0acc51a388fe, SubmissionId: 166d154b-d362-4a14-924c-eb1463596e7f, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 85.3, MaxScore: 100.0, Ratio: 0.853
+Id: fb4cba7b-e886-4b0b-83b7-94e7f0ab3055, SubmissionId: 166d154b-d362-4a14-924c-eb1463596e7f, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 84.0, MaxScore: 100.0, Ratio: 0.84
+Id: 619dfa0c-0d26-40c9-a900-0565ef932aa4, SubmissionId: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Opening Tasks', Score: 92.5, MaxScore: 100.0, Ratio: 0.925
+Id: 5496eb6c-c2ea-42e5-a5fc-bbe535c1ce14, SubmissionId: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Closing Tasks', Score: 92.4, MaxScore: 100.0, Ratio: 0.924
+Id: 5a77b133-a784-4eb6-be18-86a09fd72c91, SubmissionId: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe, StoreId: 766bf35d-235b-40f0-b6d2-1940c0e2486f, SectionTitle: 'Daily Operations', Score: 91.6, MaxScore: 100.0, Ratio: 0.916
+Id: d0207d3e-dbf6-478d-8e7f-458b4ca10d68, SubmissionId: a7915863-3b9c-4c02-92af-07763a5cb12d, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 92.4, MaxScore: 100.0, Ratio: 0.924
+Id: b69a2383-1558-434f-9777-7a7daeee4b5c, SubmissionId: a7915863-3b9c-4c02-92af-07763a5cb12d, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 99.1, MaxScore: 100.0, Ratio: 0.991
+Id: 4a06571c-2733-4c7f-b8cf-7377edcbea57, SubmissionId: a7915863-3b9c-4c02-92af-07763a5cb12d, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 93.0, MaxScore: 100.0, Ratio: 0.93
+Id: c89f4767-cf56-496d-b347-4916a77a99f7, SubmissionId: 8d01a5b0-64de-414b-b9a2-4533ed465a6b, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 92.8, MaxScore: 100.0, Ratio: 0.928
+Id: c9712aaa-deab-4e9c-a176-b95b4de40f8d, SubmissionId: 8d01a5b0-64de-414b-b9a2-4533ed465a6b, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 95.3, MaxScore: 100.0, Ratio: 0.953
+Id: efcd3992-7f93-4eaf-81a2-df852199d7a0, SubmissionId: 8d01a5b0-64de-414b-b9a2-4533ed465a6b, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 88.6, MaxScore: 100.0, Ratio: 0.886
+Id: 189da901-9fd7-4a6d-9adb-024e2d15385e, SubmissionId: d5e7e7c6-8ced-4254-ab39-42c1cbae6618, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Opening Tasks', Score: 82.1, MaxScore: 100.0, Ratio: 0.821
+Id: 3be3600f-ef39-4e34-8be8-92629967ceae, SubmissionId: d5e7e7c6-8ced-4254-ab39-42c1cbae6618, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Closing Tasks', Score: 77.0, MaxScore: 100.0, Ratio: 0.77
+Id: 5b453cd6-4c14-43ac-adde-c9781b24b510, SubmissionId: d5e7e7c6-8ced-4254-ab39-42c1cbae6618, StoreId: 9a1082b2-2796-42ef-885f-34f8c746a110, SectionTitle: 'Daily Operations', Score: 78.1, MaxScore: 100.0, Ratio: 0.781
+
+--- Distinct Section Titles ---
+Distinct Title: 'Opening Tasks'
+Distinct Title: 'Closing Tasks'
+Distinct Title: 'Section A: Core Check'
+Distinct Title: 'Daily Operations'

@@ -45,6 +45,7 @@ class AuditReviewSheet extends StatelessWidget {
         rawMax: item.rawMaxPoints,
         totalScore: item.totalScore,
         isWeighted: item.isWeighted,
+        shortForm: true,
       );
       return s.isEmpty ? '—' : s;
     }();

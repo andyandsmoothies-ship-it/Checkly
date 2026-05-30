@@ -12,7 +12,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 ## Step 1: Context & Accountability Audit
 
-- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema BEFORE proceeding. You MUST include an `## Input Lineage` section tracking the absolute path to the input artifact.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the strict schema BEFORE proceeding. You MUST include an `## Input Lineage` section tracking the absolute path to the input artifact.
 
 - **Skill Load**: Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills.
 

@@ -12,9 +12,9 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 
 ## Step 1: Pre-Flight (Anti-Poisoning Mandate)
 
-- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the diagnostic artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the diagnostic artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 
-- **Reasoning Steps**: Structure internal thoughts via exactly 4 steps: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md`.
+- **Reasoning Steps**: Structure internal thoughts via exactly 4 steps: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md`.
 
 ```markdown
 
@@ -106,7 +106,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 >
 
-> **Update docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 
 > **Document Cleanup (Required)**:
 > Automatically clean up and organize newly created markdown plans into their correct topic folders:

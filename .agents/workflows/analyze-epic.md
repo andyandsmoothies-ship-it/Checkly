@@ -16,7 +16,7 @@ description: Easy-to-read analysis workflow for large features and epics.
 
 ## Step 1: Start
 
-- **Task Tracking**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` before doing anything else. List only the Epic Plan in the Artifact Inventory.
+- **Task Tracking**: Create `docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md` before doing anything else. List only the Epic Plan in the Artifact Inventory.
 
 ```markdown
 
@@ -172,7 +172,7 @@ Workflow: /analyze-epic | Track: C
 
 >
 
-> **Update docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md**: Change `[/]` to `[x]` and add absolute file paths.
+> **Update docs/features/[topic]/task_[topic]_[YYYYMMDD_HHMMSS].md**: Change `[/]` to `[x]` and add absolute file paths.
 
 > **Document Cleanup (Required)**:
 > Automatically clean up and organize newly created markdown plans into their correct topic folders:

@@ -56,8 +56,14 @@ class MetadataFormCard extends StatelessWidget {
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: () {
-              final normalized = type.toLowerCase().trim().replaceAll('_', ' ').replaceAll('taskforce', 'task force');
-              return TemplateConstants.categoryTypes.any((t) => t.$1 == normalized)
+              final normalized = type
+                  .toLowerCase()
+                  .trim()
+                  .replaceAll('_', ' ')
+                  .replaceAll('taskforce', 'task force');
+              return TemplateConstants.categoryTypes.any(
+                    (t) => t.$1 == normalized,
+                  )
                   ? normalized
                   : 'qc';
             }(),
@@ -103,7 +109,13 @@ class MetadataFormCard extends StatelessWidget {
           const SizedBox(height: 12),
           SwitchListTile(
             title: const Text('Weighted Scoring'),
-            subtitle: const Text('💡 Distribute scoring impact using section/criteria weights.'),
+            subtitle: Text(
+              scoreDirection == 'none'
+                  ? '💡 Scoring is disabled for surveys.'
+                  : (isWeighted
+                        ? '💡 Sections and questions have different importance (weights) to calculate the score.'
+                        : '💡 All sections and questions have equal importance in the final score.'),
+            ),
             contentPadding: EdgeInsets.zero,
             value: scoreDirection == 'none' ? false : isWeighted,
             onChanged: scoreDirection == 'none'
@@ -116,13 +128,15 @@ class MetadataFormCard extends StatelessWidget {
             child: Text(
               switch (scoreDirection) {
                 'none' =>
-                  '📊 Survey: Collect responses without scoring. Results are aggregated for analysis. Use Single Choice or Multi Choice inputs.',
-                'up' =>
-                  '💡 Accumulation: Your audit starts at 0%. Points are added for compliant answers. Displays the final score as a percentage of total earned points over possible points.',
+                  '📊 Survey: Gather answers without calculating any scores. Used to collect general feedback.',
+                'up' when isWeighted =>
+                  '💡 Accumulation (Weighted): Your audit starts at 0%. You gain points for correct answers. Sections have different weights to calculate the final score.',
+                'up' when !isWeighted =>
+                  '💡 Accumulation: Your audit starts at 0%. You gain points for correct answers. Your final score is the percentage of points you earned out of the total possible.',
                 'down' when isWeighted =>
-                  '💡 Penalty (Weighted): Your audit starts at 100%. Faults deduct points from sections, which are then combined using section weights to calculate the final weighted percentage.',
+                  '💡 Penalty (Weighted): Your audit starts at 100%. Failed items take points away from each section. The final score combines each section based on its importance (weight).',
                 'down' when !isWeighted =>
-                  '✅ Checklist (Simple Down): Simple pass/fail checks. Your audit starts at 100 points, and each failed item deducts its points weight directly. Displays total score and compliance status.',
+                  '✅ Checklist (Simple Down): Simple pass/fail checks. Your audit starts at 100 points. Each failed item takes points away directly from the total score.',
                 _ => '💡 Select a scoring mode to see how it works.',
               },
               style: TextStyle(
