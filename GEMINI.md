@@ -146,6 +146,9 @@
   - **Fix:** Scoring calculation engines (`VerifyPenalty` in C# and `ScoringInputMapper` in Dart) only support up to 2 levels of group hierarchy (Sections and Subsections). Nesting beyond this depth results in incorrect calculations because intermediate groups are bypassed or ignored.
 - **Gotcha: Progressive Repeat Decimal Overflow Safeguards**
   - **Fix:** Always cast progressive repeat fault counts to `decimal` *before* multiplication (`(decimal)repeatedFaults * (decimal)repeatedFaults`) to prevent 32-bit integer overflow exceptions on high fault counts (above 46,340 faults).
+- **Gotcha: PowerShell UTF-8 ANSI Double-Encoding (Vietnamese/Unicode Corruption)**
+  - **Fix:** Windows PowerShell 5.1 loads files in ANSI by default if they lack a BOM, which corrupts multi-byte UTF-8 sequences (like Vietnamese `Đ` and `á`) during seeder generation. To prevent string corruption, NEVER use raw non-ASCII unicode literal strings in script templates or heredocs. Always express non-ASCII characters inside string literals using their safe C# escape sequence representation (e.g., `\u0110\u00e1nh gi\u00e1` for `Đánh giá`).
+
 
 
 

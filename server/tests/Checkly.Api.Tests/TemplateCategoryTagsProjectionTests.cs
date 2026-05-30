@@ -242,4 +242,96 @@ public class TemplateCategoryTagsProjectionTests : IClassFixture<TestWebApplicat
         Assert.True(targetCriterion.TryGetProperty("categoryTags", out var syncCritTagsElement));
         Assert.Equal(JsonValueKind.Null, syncCritTagsElement.ValueKind);
     }
+
+    // ── TC-CAT-05: Top-Level Template CategoryTag CRUD and Sync ──
+    [Fact]
+    public async Task Admin_Can_CRUD_Template_With_TopLevel_CategoryTag()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        
+        // 1. Create template with CategoryTag
+        var createResponse = await adminClient.PostAsJsonAsync("/api/templates", new
+        {
+            title = "Template with Top-level Tag",
+            type = "qc",
+            description = "Top-level tag test",
+            categoryTag = "Audits"
+        });
+        
+        if (!createResponse.IsSuccessStatusCode)
+        {
+            Assert.Fail($"Create template failed. Status: {createResponse.StatusCode}. Body: {await createResponse.Content.ReadAsStringAsync()}");
+        }
+        
+        var createBody = await createResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var templateId = createBody.GetProperty("id").GetString()!;
+        Assert.Equal("Audits", createBody.GetProperty("categoryTag").GetString());
+
+        // 2. Get template and verify CategoryTag
+        var getResponse = await adminClient.GetAsync($"/api/templates/{templateId}");
+        if (!getResponse.IsSuccessStatusCode)
+        {
+            Assert.Fail($"Get template failed. Status: {getResponse.StatusCode}. Body: {await getResponse.Content.ReadAsStringAsync()}");
+        }
+        
+        var getBody = await getResponse.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Audits", getBody.GetProperty("categoryTag").GetString());
+
+        // 3. Update template CategoryTag
+        var updateResponse = await adminClient.PutAsJsonAsync($"/api/templates/{templateId}", new
+        {
+            title = "Template with Top-level Tag",
+            description = "Top-level tag test updated",
+            type = "qc",
+            categoryTag = "Assessments"
+        });
+        
+        if (!updateResponse.IsSuccessStatusCode)
+        {
+            Assert.Fail($"Update template failed. Status: {updateResponse.StatusCode}. Body: {await updateResponse.Content.ReadAsStringAsync()}");
+        }
+
+        // 4. Get template again to verify update
+        var getResponse2 = await adminClient.GetAsync($"/api/templates/{templateId}");
+        var getBody2 = await getResponse2.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Assessments", getBody2.GetProperty("categoryTag").GetString());
+
+        // 5. Save tree and verify CategoryTag propagates
+        var treePayload = new
+        {
+            Title = "Template with Top-level Tag",
+            Type = "qc",
+            Description = "Top-level tag test updated",
+            ScoringLogicConfig = (string?)null,
+            DisplayNoun = (string?)null,
+            Version = 2,
+            CategoryTag = "Assessments",
+            Groups = Array.Empty<object>()
+        };
+        
+        var saveResponse = await adminClient.PutAsJsonAsync($"/api/templates/{templateId}/tree", treePayload);
+        if (!saveResponse.IsSuccessStatusCode)
+        {
+            Assert.Fail($"SaveTemplateTree failed. Status: {saveResponse.StatusCode}. Body: {await saveResponse.Content.ReadAsStringAsync()}");
+        }
+        
+        var saveBody = await saveResponse.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Assessments", saveBody.GetProperty("categoryTag").GetString());
+
+        // 6. Sync templates and verify CategoryTag is present
+        var sinceTimestamp = DateTimeOffset.UtcNow.AddMinutes(-5).ToString("o");
+        var syncResponse = await adminClient.GetAsync($"/api/sync/templates?since={Uri.EscapeDataString(sinceTimestamp)}");
+        if (!syncResponse.IsSuccessStatusCode)
+        {
+            Assert.Fail($"SyncTemplates failed. Status: {syncResponse.StatusCode}. Body: {await syncResponse.Content.ReadAsStringAsync()}");
+        }
+
+        var syncBody = await syncResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var syncTemplates = syncBody.GetProperty("templates").EnumerateArray().ToList();
+        var targetTemplate = syncTemplates.FirstOrDefault(t => t.GetProperty("id").GetString() == templateId);
+        
+        Assert.NotNull(targetTemplate.ValueKind == JsonValueKind.Undefined ? null : (object?)targetTemplate);
+        Assert.Equal("Assessments", targetTemplate.GetProperty("categoryTag").GetString());
+    }
 }

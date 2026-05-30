@@ -48,3 +48,8 @@ All list endpoints MUST use `PagedResult<T>` (`Common/PagedResult.cs`). Query pa
 ## Testing Gotchas
 - **Gotcha: Test Data Isolation for Boundary Conditions**: If testing a boundary condition for a child entity (e.g., Store audit count < 3), its parent entity (e.g., Area) MUST explicitly fall *outside* that boundary condition (Area audit count > 3). If both the parent and child trigger the boundary, the test may silently pass for the wrong reason (False Positive), masking logic regressions where the wrong scope was passed.
   - **Fix:** Always explicitly isolate variables. Seed parent entities with sufficient data to bypass guards, so you strictly test the child guard logic.
+
+## Schema Migration Gotchas
+- **Gotcha: Safe Non-Nullable Column Migration & Backfill**: When adding a new non-nullable column (like `score_direction`) to an existing database with production data, adding it directly as non-nullable in the migration step can cause issues or fill with a generic default.
+  - **Fix:** Always add the column as `nullable: true` first, execute custom SQL to backfill values based on existing states (e.g., mapping `scoring_mode` using CASE), and then alter the column to `nullable: false` with its final default value constraint. This guarantees historical correctness and zero data corruption.
+

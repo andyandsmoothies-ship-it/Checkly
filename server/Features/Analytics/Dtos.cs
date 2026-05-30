@@ -9,7 +9,10 @@ public sealed record AnalyticsKpis(
     double AvgScore,
     int OpenAPs,
     int OverdueAPs,
-    double CompletionRate);
+    double CompletionRate)
+{
+    public int ScoredCount => TotalScored;
+}
 
 public sealed record TrendPoint(
     string Month,
@@ -38,4 +41,6 @@ public sealed record AnalyticsResponse(
     List<SectionScore> SectionBreakdown,
     List<ActionableInsight>? Insights = null,
     RadarData? RadarData = null,
-    bool InsightsStale = false);
+    bool InsightsStale = false,
+    List<string>? CategoryTagNames = null);
+

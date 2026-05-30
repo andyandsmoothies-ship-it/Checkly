@@ -6,9 +6,18 @@ class TypeBadge extends StatelessWidget {
 
   const TypeBadge({super.key, required this.type});
 
+  String _normalize(String type) {
+    final t = type.toLowerCase().trim();
+    if (t == 'qc') return 'qc';
+    if (t == 'training') return 'training';
+    if (t == 'general') return 'general';
+    if (t == 'task force' || t == 'task_force' || t == 'taskforce') return 'task force';
+    return t;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final t = type.toLowerCase();
+    final t = _normalize(type);
     PillChipType chipType;
 
     if (t == 'qc') {
@@ -17,10 +26,13 @@ class TypeBadge extends StatelessWidget {
       chipType = PillChipType.blue;
     } else if (t == 'general') {
       chipType = PillChipType.purple;
+    } else if (t == 'task force') {
+      chipType = PillChipType.yellow;
     } else {
       chipType = PillChipType.yellow;
     }
 
-    return PillChip(label: type.toUpperCase(), type: chipType);
+    final label = t == 'task force' ? 'TASK FORCE' : t.toUpperCase();
+    return PillChip(label: label, type: chipType);
   }
 }

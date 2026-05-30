@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 31;
+  int get schemaVersion => 32;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -243,6 +243,10 @@ class AppDatabase extends _$AppDatabase {
         // v31: CategoryTags — add categoryTags to CachedGroups and CachedCriteria
         await m.addColumn(cachedGroups, cachedGroups.categoryTags);
         await m.addColumn(cachedCriteria, cachedCriteria.categoryTags);
+      }
+      if (from < 32) {
+        // v32: CategoryTag for templates — add categoryTag to CachedTemplates
+        await m.addColumn(cachedTemplates, cachedTemplates.categoryTag);
       }
     },
     beforeOpen: (details) async {

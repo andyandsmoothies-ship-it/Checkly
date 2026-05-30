@@ -6,7 +6,7 @@ description: Infrastructure & architecture audit — database health, security p
 > Read-Only structural analysis. Role: **Sentinel**. Target: Missing indexes, Auth gaps, Unbounded queries, CRUD surface.
 ## Step 1: Scope & Skills
 - **Trigger**: Execute post-major feature release or pre-scaling.
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 - **Skill Load**: Extract 2-3 keywords (e.g., "database", "security", "api-design") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list.
 ```markdown
 # Task: [Infrastructure Audit Topic Name]
@@ -23,7 +23,7 @@ Workflow: /audit-infra | Track: B2
 - [ ] Step 8: Deliverable Handoff
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/diagnostics/audit_infra_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Report |
+| [NEW]  | docs/reports/diagnostics/audit_infra_report_[YYYYMMDD_HHMMSS].md | Report |
 ```
 ## Step 2: Database & Query Audit
 - **Scalability (`🔴`)**: Scan `ToListAsync()` / `.get()`. IF missing Pagination OR Limit THEN Flag Unbounded OOM risk.
@@ -48,7 +48,7 @@ Workflow: /audit-infra | Track: B2
 - **Circuit Breakers (`🟡`)**: Verify external API calls use resilience handlers.
 - **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Missing logs on mutations? (2) Missing resilience handlers?
 ## Step 5: Assessment Payload
-- **Artifact Gen**: Create `audit_infra_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in `docs/diagnostics/` folder. IF zero issues -> create `audit_infra_pass_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
+- **Artifact Gen**: Create `audit_infra_report_[YYYYMMDD_HHMMSS].md` in `docs/reports/diagnostics/` folder. IF zero issues -> create `audit_infra_pass_[YYYYMMDD_HHMMSS].md`.
 - **Severity Matrix**: `🔴 Critical` (Data loss/Security breach/Unbounded rows) | `🟡 Warning` (Performance drag/Leakage) | `🟢 Optimization` (Cleanups).
 - **Actionable Fix & Trade-offs**: MANDATORY: Provide exact fix snippet or EF migration plan for EVERY finding.
   - **Complexity**: For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.
@@ -62,6 +62,10 @@ Workflow: /audit-infra | Track: B2
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
 <output_schema>
+> **Document Cleanup (Required)**:
+> Automatically clean up and organize newly created markdown plans into their correct topic folders:
+> // turbo
+
 > **Script Verification Gate (MANDATORY)**:
 > You MUST use the `run_command` tool to execute this script before considering the task complete.
 > // turbo

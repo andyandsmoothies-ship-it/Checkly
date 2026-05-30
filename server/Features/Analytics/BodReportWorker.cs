@@ -283,14 +283,14 @@ namespace Checkly.Api.Features.Analytics
         private IConfiguration GetConfiguration(AppDbContext db)
         {
             if (_configuration != null) return _configuration;
-            return db.GetService<IConfiguration>() 
+            return db.GetService<IConfiguration>()
                    ?? throw new InvalidOperationException("Could not resolve IConfiguration.");
         }
 
         private DistributedLockManager GetLockManager(AppDbContext db)
         {
             if (_lockManager != null) return _lockManager;
-            return db.GetService<DistributedLockManager>() 
+            return db.GetService<DistributedLockManager>()
                    ?? throw new InvalidOperationException("Could not resolve DistributedLockManager.");
         }
 
@@ -298,7 +298,7 @@ namespace Checkly.Api.Features.Analytics
         {
             if (_logger != null) return _logger;
             var loggerFactory = db.GetService<ILoggerFactory>();
-            return loggerFactory?.CreateLogger<BodReportWorker>() 
+            return loggerFactory?.CreateLogger<BodReportWorker>()
                    ?? throw new InvalidOperationException("Could not resolve ILogger<BodReportWorker>.");
         }
     }

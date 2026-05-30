@@ -17,7 +17,9 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.Property(x => x.AuditorId).HasColumnName("auditor_id");
         e.Property(x => x.StoreId).HasColumnName("store_id");
         e.Property(x => x.Status).HasColumnName("status").HasDefaultValue("draft");
-        e.Property(x => x.ScoringMode).HasColumnName("scoring_mode").HasDefaultValue("penalty");
+        e.Property(x => x.ScoringMode).HasColumnName("scoring_mode").IsRequired(false).HasDefaultValue("penalty");
+        e.Property(x => x.ScoreDirection).HasColumnName("score_direction").IsRequired().HasMaxLength(20).HasDefaultValue("down");
+        e.Property(x => x.CategoryTag).HasColumnName("category_tag");
         e.Property(x => x.TotalScore).HasColumnName("total_score");
         e.Property(x => x.SectionScores).HasColumnName("section_scores").HasColumnType("jsonb");
         e.Property(x => x.GpsLat).HasColumnName("gps_lat");
@@ -66,7 +68,7 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.HasIndex(x => x.UpdatedAt); // For offline delta sync
         e.HasIndex(x => new { x.Status, x.ReviewStatus });
         e.HasIndex(x => new { x.StoreId, x.CreatedAt }).IsDescending(false, true);
-        e.HasIndex(x => new { x.TemplateId, x.ScoringMode });
+        e.HasIndex(x => new { x.TemplateId, x.ScoreDirection });
         e.HasIndex(x => new { x.AuditorId, x.Status, x.CreatedAt });
 
         e.HasOne(x => x.Template)

@@ -28,8 +28,23 @@ class AuditSnapshotParser {
           final configMap = map['scoringLogicConfig'] is String
               ? jsonDecode(map['scoringLogicConfig'])
               : map['scoringLogicConfig'];
-          scoringMode =
-              configMap['mode'] ?? configMap['scoringMode'] ?? 'penalty';
+          if (configMap is Map<String, dynamic>) {
+            final scoreDirection = configMap['scoreDirection'] as String?;
+            final isWeighted = configMap['isWeighted'] as bool? ?? false;
+
+            if (scoreDirection != null) {
+              if (scoreDirection == 'none') {
+                scoringMode = 'survey';
+              } else if (scoreDirection == 'up') {
+                scoringMode = 'accumulation';
+              } else if (scoreDirection == 'down') {
+                scoringMode = isWeighted ? 'penalty' : 'checklist';
+              }
+            } else {
+              scoringMode =
+                  configMap['mode'] ?? configMap['scoringMode'] ?? 'penalty';
+            }
+          }
         } catch (_) {}
       }
 

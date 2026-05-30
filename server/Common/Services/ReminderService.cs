@@ -204,22 +204,22 @@ public sealed class ReminderService : BackgroundService
         var threshold = now.AddHours(-24);
 
         var toEscalate = await (from ap in db.ActionPlans.AsNoTracking()
-                                 where (ap.Status == "open" || ap.Status == "overdue")
-                                       && ap.Deadline.HasValue
-                                       && ap.Deadline.Value < threshold
-                                 join s in db.Submissions.AsNoTracking() on ap.SubmissionId equals s.Id
-                                 join psa in db.ProfileStoreAssignments.AsNoTracking() on s.StoreId equals psa.StoreId
-                                 join p in db.Profiles.AsNoTracking() on psa.ProfileId equals p.Id
-                                 join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
-                                 where r.Role == "area_manager"
-                                 where !db.Notifications.Any(n => n.UserId == p.Id 
-                                                               && n.Type == "action_plan_overdue_escalation" 
-                                                               && n.ActionUrl == "/action-plans/" + ap.Id.ToString())
-                                 select new
-                                 {
-                                     AP = ap,
-                                     AreaManagerId = p.Id
-                                 }).ToListAsync(ct);
+                                where (ap.Status == "open" || ap.Status == "overdue")
+                                      && ap.Deadline.HasValue
+                                      && ap.Deadline.Value < threshold
+                                join s in db.Submissions.AsNoTracking() on ap.SubmissionId equals s.Id
+                                join psa in db.ProfileStoreAssignments.AsNoTracking() on s.StoreId equals psa.StoreId
+                                join p in db.Profiles.AsNoTracking() on psa.ProfileId equals p.Id
+                                join r in db.AppUserRoles.AsNoTracking() on p.Id equals r.UserId
+                                where r.Role == "area_manager"
+                                where !db.Notifications.Any(n => n.UserId == p.Id
+                                                              && n.Type == "action_plan_overdue_escalation"
+                                                              && n.ActionUrl == "/action-plans/" + ap.Id.ToString())
+                                select new
+                                {
+                                    AP = ap,
+                                    AreaManagerId = p.Id
+                                }).ToListAsync(ct);
 
         var count = 0;
         var fcmTargets = new HashSet<Guid>();

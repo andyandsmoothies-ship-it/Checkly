@@ -99,7 +99,7 @@ public class ScoringVerifierTests
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "non_conform") };
 
         // Act
-        var result = _sut.Verify(0m, answers, groups, criteria, scoringMode: "survey");
+        var result = _sut.Verify(0m, answers, groups, criteria, scoreDirection: "none");
 
         Assert.Empty(result.FailedCriteriaIds);
     }
@@ -152,7 +152,7 @@ public class ScoringVerifierTests
         // Act - checklist mode score = 100 - deductions
         // Expected deduction: 1 (base impact) + (2 * 1) (linear penalty) = 3
         // Expected Score: 100 - 3 = 97
-        var result = _sut.Verify(97m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+        var result = _sut.Verify(97m, answers, groups, criteria, scoreDirection: "down", isWeighted: false, progressiveRepeatPenalty: false);
 
         Assert.Equal(97m, result.ServerScore);
     }
@@ -171,7 +171,7 @@ public class ScoringVerifierTests
         // Act - checklist mode score = 100 - deductions
         // Expected deduction: 1 (base impact) + (2^2 * 1) (quadratic penalty) = 5
         // Expected Score: 100 - 5 = 95
-        var result = _sut.Verify(95m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: true);
+        var result = _sut.Verify(95m, answers, groups, criteria, scoreDirection: "down", isWeighted: false, progressiveRepeatPenalty: true);
 
         Assert.Equal(95m, result.ServerScore);
     }
@@ -189,7 +189,7 @@ public class ScoringVerifierTests
         // Act - checklist mode score = 100 - deductions
         // Expected deduction: 1
         // Expected Score: 100 - 1 = 99
-        var result = _sut.Verify(99m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+        var result = _sut.Verify(99m, answers, groups, criteria, scoreDirection: "down", isWeighted: false, progressiveRepeatPenalty: false);
 
         Assert.Equal(99m, result.ServerScore);
     }
@@ -213,7 +213,7 @@ public class ScoringVerifierTests
 
         // Act
         // 2 faults * 5 impact = 10 deduction. Score = 100 - 10 = 90.
-        var result = _sut.Verify(90m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+        var result = _sut.Verify(90m, answers, groups, criteria, scoreDirection: "down", isWeighted: false, progressiveRepeatPenalty: false);
 
         Assert.Equal(90m, result.ServerScore);
     }
@@ -234,7 +234,7 @@ public class ScoringVerifierTests
         // Act
         // 2 faults * 5 impact = 10 deduction.
         // Cap is 8. So deduction is 8. Score = 100 - 8 = 92.
-        var result = _sut.Verify(92m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+        var result = _sut.Verify(92m, answers, groups, criteria, scoreDirection: "down", isWeighted: false, progressiveRepeatPenalty: false);
 
         Assert.Equal(92m, result.ServerScore);
     }
@@ -254,7 +254,7 @@ public class ScoringVerifierTests
 
         // Act
         // 2 faults * 3 impact (fallback) = 6 deduction. Score = 100 - 6 = 94.
-        var result = _sut.Verify(94m, answers, groups, criteria, scoringMode: "checklist", progressiveRepeatPenalty: false);
+        var result = _sut.Verify(94m, answers, groups, criteria, scoreDirection: "down", isWeighted: false, progressiveRepeatPenalty: false);
 
         Assert.Equal(94m, result.ServerScore);
     }

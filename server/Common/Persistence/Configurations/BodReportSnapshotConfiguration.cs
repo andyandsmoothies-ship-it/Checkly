@@ -11,11 +11,11 @@ public class BodReportSnapshotConfiguration : IEntityTypeConfiguration<BodReport
         e.ToTable("bod_report_snapshots");
         e.HasKey(x => x.Id);
         e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        
+
         e.Property(x => x.Date)
             .HasColumnName("date")
             .IsRequired();
-            
+
         e.HasIndex(x => x.Date)
             .IsUnique();
 

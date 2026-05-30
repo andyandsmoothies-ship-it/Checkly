@@ -21,7 +21,7 @@ description: SRE Failure Mode & Flop-Catcher Review.
 ---
 
 ## Step 1: Preparation & Setup
-- [ ] **Create Task Tracker**: Create `.agents/active_tasks/flop_audit/task_[YYYYMMDD_HHMMSS]_flop_audit_[ConversationID].md` using this strict schema:
+- [ ] **Create Task Tracker**: Create `docs/features/flop_audit/task_[YYYYMMDD_HHMMSS]_flop_audit.md` using this strict schema:
 ```markdown
 # Task: Catch Flops / Failure Modes Audit
 Workflow: /catch-flops | Track: C
@@ -75,7 +75,7 @@ Verify layout scaling, animation disposes, and accessibility tags in Flutter:
 ---
 
 ## Step 6: Create Verdict & Action Plan
-- [ ] **Generate Report**: Save `audit_failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` inside the absolute workspace folder `docs/diagnostics/[topic]/`.
+- [ ] **Generate Report**: Save `audit_failure_report_[YYYYMMDD_HHMMSS].md` inside the absolute workspace folder `docs/reports/diagnostics/[topic]/`.
 - [ ] **Write the Failure Scenarios**: Explicitly list the discovered flops, categorizing them by severity:
   - `🔴 Critical`: Causes system crash, database error, or data corruption.
   - `🟡 Warning`: Causes visual/layout bugs, test hanging, or incorrect calculations.
@@ -85,5 +85,5 @@ Verify layout scaling, animation disposes, and accessibility tags in Flutter:
 
 ## ## Handoff Block
 - **Audit Verdict**: [Fatal/Brittle/Resilient]
-- **Failure Report Path**: `docs/diagnostics/[topic]/audit_failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`
+- **Failure Report Path**: `docs/reports/diagnostics/[topic]/audit_failure_report_[YYYYMMDD_HHMMSS].md`
 - **Next Steps**: A short 1-2 sentence TL;DR for the next agent to implement the required fixes.

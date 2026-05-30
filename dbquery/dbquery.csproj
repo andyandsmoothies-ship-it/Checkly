@@ -10,9 +10,4 @@
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="10.0.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\server\Checkly.Api.csproj" />
-  </ItemGroup>
-
 </Project>

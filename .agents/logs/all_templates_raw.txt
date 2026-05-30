@@ -1,0 +1,24 @@
+﻿ID: d1c26713-d9fe-4550-bca2-7608f969eb1d
+Title: Basic checklist
+IsActive: True
+Type: qc
+Description: NULL
+--------------------------------------------------
+ID: 5d3829d0-a76e-4cc4-b658-3aef9ffd7876
+Title: Training Audit Template
+IsActive: True
+Type: training
+Description: SÃ¡t háº¡ch Ä‘Ã o táº¡o nhÃ¢n sá»± - Sá»­ dá»¥ng cháº¿ Ä‘á»™ cháº¥m Ä‘iá»ƒm TÃ­ch lÅ©y (Accumulation).
+--------------------------------------------------
+ID: 2d98d800-cbfc-42c8-879d-b5064d356e65
+Title: General Audit Template
+IsActive: True
+Type: general
+Description: ÄÃ¡nh giÃ¡ tiÃªu chuáº©n váº­n hÃ nh chung - Sá»­ dá»¥ng cháº¿ Ä‘á»™ trá»« Ä‘iá»ƒm Trá»« lÃ¹i (Penalty).
+--------------------------------------------------
+ID: b5617868-2aeb-4c5d-bd68-a0f03653b393
+Title: Taskforce Audit Template
+IsActive: True
+Type: task force
+Description: Thanh tra Ä‘á»™t xuáº¥t chiáº¿n dá»‹ch Ä‘áº·c biá»‡t - Cháº¿ Ä‘á»™ trá»« Ä‘iá»ƒm pháº³ng (Checklist).
+--------------------------------------------------

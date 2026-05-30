@@ -23,14 +23,16 @@ public class ScoringVerifierJsonTests
         // Act + Assert: expectedError path
         if (v.ExpectedError is not null)
         {
+            var (errDir, errWt) = MapLegacyMode(v.ScoringMode);
             Assert.Throws<Exception>(() =>
                 _sut.Verify(0m, answers, groups, criteria,
-                    v.ProgressiveRepeatPenalty, v.ScoringMode ?? "penalty", explicitRiskIds));
+                    v.ProgressiveRepeatPenalty, errDir, errWt, explicitRiskIds));
             return;
         }
 
+        var (dir, wt) = MapLegacyMode(v.ScoringMode);
         var result = _sut.Verify(v.ExpectedScore, answers, groups, criteria,
-            v.ProgressiveRepeatPenalty, v.ScoringMode ?? "penalty", explicitRiskIds);
+            v.ProgressiveRepeatPenalty, dir, wt, explicitRiskIds);
 
         // Assert: isPurityGateTriggered path
         if (v.IsPurityGateTriggered)
@@ -44,6 +46,15 @@ public class ScoringVerifierJsonTests
         Assert.True(result.IsValid,
             $"[{v.Id}] Expected {v.ExpectedScore} but server returned {result.ServerScore}");
     }
+
+    /// <summary>Maps legacy JSON vector scoringMode to (scoreDirection, isWeighted) for the new Verify() API.</summary>
+    private static (string Direction, bool IsWeighted) MapLegacyMode(string? mode) => mode switch
+    {
+        "accumulation" => ("up",   false),
+        "survey"       => ("none", false),
+        "checklist"    => ("down", false),
+        _              => ("down", true),  // "penalty" + unknown default
+    };
 
     [Fact]
     public void Missing_Repo_Root_Throws_InvalidOperationException()

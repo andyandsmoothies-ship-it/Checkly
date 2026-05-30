@@ -1099,6 +1099,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("auditor_name");
 
+                    b.Property<string>("CategoryTag")
+                        .HasColumnType("text")
+                        .HasColumnName("category_tag");
+
                     b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("completed_at");
@@ -1163,8 +1167,15 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("scheduled_at");
 
-                    b.Property<string>("ScoringMode")
+                    b.Property<string>("ScoreDirection")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("down")
+                        .HasColumnName("score_direction");
+
+                    b.Property<string>("ScoringMode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValue("penalty")
@@ -1252,7 +1263,7 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("StoreId", "CreatedAt")
                         .IsDescending(false, true);
 
-                    b.HasIndex("TemplateId", "ScoringMode");
+                    b.HasIndex("TemplateId", "ScoreDirection");
 
                     b.HasIndex("AuditorId", "Status", "CreatedAt");
 
@@ -1445,6 +1456,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("CategoryTag")
+                        .HasColumnType("text")
+                        .HasColumnName("category_tag");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()

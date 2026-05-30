@@ -78,7 +78,10 @@ extension _TemplateWizardLogic on _TemplateWizardPageState {
             ? _descCtrl.text.trim()
             : null,
         scoringLogicConfig: buildScoringLogicConfig(
-          scoringMode: _scoringMode,
+          scoreDirection: _scoringMode == 'survey'
+              ? 'none'
+              : (_scoringMode == 'accumulation' ? 'up' : 'down'),
+          isWeighted: _scoringMode == 'penalty',
           ccpOverride: _ccpOverride,
           riskOverride: _riskOverride,
           weightedDensity: _weightedDensity,

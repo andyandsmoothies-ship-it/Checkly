@@ -241,11 +241,11 @@ class BodReportResponse {
       apAging: BodApAging.fromDynamic(
         json['actionPlanAging'] ?? json['apAging'],
       ),
-      auditorProductivity: (json['auditorProductivity'] as List<dynamic>?)
+      auditorProductivity:
+          (json['auditorProductivity'] as List<dynamic>?)
               ?.map(
-                (item) => BodAuditorEntry.fromJson(
-                  Map<String, dynamic>.from(item),
-                ),
+                (item) =>
+                    BodAuditorEntry.fromJson(Map<String, dynamic>.from(item)),
               )
               .toList() ??
           [],
@@ -400,7 +400,8 @@ class BodAuditorEntry {
     return BodAuditorEntry(
       auditorId: json['auditorId'] ?? json['id'] ?? '',
       auditorName: json['auditorName'] ?? json['name'] ?? '',
-      completedAudits: json['completedAudits'] ??
+      completedAudits:
+          json['completedAudits'] ??
           json['completedCount'] ??
           json['count'] ??
           json['audits'] ??
@@ -412,11 +413,11 @@ class BodAuditorEntry {
   }
 
   Map<String, dynamic> toJson() => {
-        'auditorId': auditorId,
-        'auditorName': auditorName,
-        'completedAudits': completedAudits,
-        'avgScore': avgScore,
-      };
+    'auditorId': auditorId,
+    'auditorName': auditorName,
+    'completedAudits': completedAudits,
+    'avgScore': avgScore,
+  };
 }
 
 /// Represents the strongly typed aging buckets for overdue Action Plans.
@@ -468,10 +469,15 @@ enum BodAgingBucket {
     if (trimmed.contains('0-7') || trimmed.contains('0-7d')) {
       return BodAgingBucket.sevenDays;
     }
-    if (trimmed.contains('8-30') || trimmed.contains('8-30d') || trimmed.contains('0-30')) {
+    if (trimmed.contains('8-30') ||
+        trimmed.contains('8-30d') ||
+        trimmed.contains('0-30')) {
       return BodAgingBucket.thirtyDays;
     }
-    if (trimmed.contains('31-90') || trimmed.contains('31-90d') || trimmed.contains('31-60') || trimmed.contains('61-90')) {
+    if (trimmed.contains('31-90') ||
+        trimmed.contains('31-90d') ||
+        trimmed.contains('31-60') ||
+        trimmed.contains('61-90')) {
       return BodAgingBucket.ninetyDays;
     }
     if (trimmed.contains('90+') || trimmed.contains('90d')) {
@@ -480,4 +486,3 @@ enum BodAgingBucket {
     return BodAgingBucket.all;
   }
 }
-

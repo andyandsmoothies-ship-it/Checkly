@@ -1,6 +1,6 @@
 # Checkly Scoring System
 
-This document describes the technical implementation and business rules for all scoring modes in Checkly: **Penalty**, **Accumulation**, **Checklist**, and **Survey**.
+This document describes the technical implementation and business rules for scoring configurations in Checkly. Scoring is driven by two orthogonal toggles (**Score Direction** and **Is Weighted**) instead of legacy scoring modes.
 
 > [!NOTE]
 > As of 2026-03-17, **template type is a pure filter tag**. All features (Points, CCP, RISK, Is Required, Weighted Density, Progressive Repeat) are universally available regardless of type. The `templateType == 'qc'` conditional logic has been fully removed.
@@ -86,7 +86,7 @@ The live HUD in the Audit Form displays "Points Earned / Points Possible".
 - **Points Earned**: `SUM(Section After)` (where `Section After` is forced to 0 if a CCP is present in that section).
 
 > [!IMPORTANT]
-> **Multi-Mode Support**: Templates support four scoring modes via `scoring_logic_config.scoringMode`: `penalty` (default), `accumulation`, `checklist`, and `survey`. The mode determines how the scoring engine calculates the final score.
+> **Orthogonal Scoring Configurations**: Templates support scoring logic via two fields in the JSON config: `scoreDirection` (down, up, none) and `isWeighted` (boolean). This replaced the legacy 4-value mode string, separating the mathematical direction from the weight constraint.
 
 ### Is Required (Per-Criterion) & Global Confirm Correct
 Accountability and validation are enforced through the `isRequired` flag rather than redundant bottom-sheet buttons:
@@ -95,14 +95,14 @@ Accountability and validation are enforced through the `isRequired` flag rather 
 - This simplifies the auditor UX by unifying all validation under a single `isRequired` mechanism, rather than relying on disparate confirmation buttons.
 
 
-## 5. Survey and Checklist Modes (Builder Constraints)
+## 5. Non-Scored and Flat Point Configurations (Builder Constraints)
 
 To prevent novice users from creating mathematically invalid templates (e.g., trying to assign point deductions to a Survey), the Template Builder UI enforces strict **Smart Constraints** via the Blueprint Wizard.
 
-When a template is created as a `survey` or `checklist`:
+When a template is created as 'No Score' (survey) or 'Flat Points' (checklist):
 - **Sub-sections are Physically Disabled**: The `+ Add Sub-Section` button is greyed out. Surveys and checklists strictly enforce a flat, 2-level hierarchy (Sections → Criteria) to ensure quick field operation.
 - **Scored Input Types are Greyed Out**: Users are blocked from selecting `pass_fail`, `numeric`, `fault_count`, or `scale` in the criterion designer.
-- **Scoring Engine Bypass**: If `scoringMode == 'survey'`, the scoring engine skips all calculation (`totalScore = null`). The live points HUD is hidden in the audit form, and the "Points Weight" input is completely hidden in the Template Builder to prevent UX confusion.
+- **Scoring Engine Bypass**: If `scoreDirection == ScoreDirection.none` (Survey), the scoring engine skips all calculation (`totalScore = null`). The live points HUD is hidden in the audit form, and the "Points Weight" input is completely hidden in the Template Builder to prevent UX confusion.
 - **Answers stored normally** — `Answer.Value` holds the selected option label (or comma-separated for multi-choice)
 - **Analytics endpoint**: `GET /api/submissions/survey-results?templateId={id}` — admin-only, aggregates option counts per criterion
 - **Choice input types**: `single_choice` (pick one) and `multi_choice` (select all that apply) — options stored in `criteria.metadata` as `{"options": ["A","B","C"]}`
@@ -132,7 +132,7 @@ The `CreateSubmission` and `FinalizeSubmission` endpoints include **synchronous 
 | Component | Purpose |
 |:---|:---|
 | `ScoringVerifier.cs` | Re-computes from template + answers, mimicking `scoring_engine.dart` |
-| `ScoringConfigParser.cs` | Safe extraction of `scoringMode` and `progressiveRepeat` from JSON configs, with logging on parse failure to prevent silent fallbacks. |
+| `ScoringConfigParser.cs` | Safe extraction of `scoreDirection`, `isWeighted`, and `progressiveRepeat` from JSON configs, with logging on parse failure to prevent silent fallbacks. |
 | `scoring_input_mapper.dart` | Client-side mapper. Applies a case-insensitive check for `non_conform` answers to assign a default `numericValue=1`, ensuring parity with C#. |
 
 > [!WARNING]

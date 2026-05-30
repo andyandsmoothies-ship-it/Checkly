@@ -12,9 +12,9 @@ description: High-Compliance Diagnostic Workflow for System Errors.
 
 ## Step 1: Pre-Flight (Anti-Poisoning Mandate)
 
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the diagnostic artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the diagnostic artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 
-- **Reasoning Steps**: Structure internal thoughts via exactly 4 steps: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
+- **Reasoning Steps**: Structure internal thoughts via exactly 4 steps: `Initial Hypothesis`, `Evidence Gathered`, `Root Cause Identified`, `Fix Strategy`. PROHIBITED: Outputting monologue outside `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md`.
 
 ```markdown
 
@@ -40,7 +40,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 | Status | File Path | Type |
 
-| [NEW]  | docs/diagnostics/failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Report |
+| [NEW]  | docs/reports/diagnostics/failure_report_[YYYYMMDD_HHMMSS].md | Report |
 
 ```
 
@@ -48,7 +48,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 - **The Feedback Loop**: MANDATORY: Before guessing, construct a fast, deterministic pass/fail signal. Use a failing test, a `curl` script, or a throwaway harness. PROHIBITED: Hypothesizing without a reproducible loop.
 
-- **Log Extraction**: Script-First: Check if `.agents/scripts/collect_logs.py` exists. Execute it to aggregate trace logs into `docs/diagnostics/`.
+- **Log Extraction**: Script-First: Check if `.agents/scripts/collect_logs.py` exists. Execute it to aggregate trace logs into `docs/reports/diagnostics/`.
 
 - **Origin Trace**: MANDATORY: Trace data flows to their origin (the Write-Path). PROHIBITED: Stopping at the Read-Path symptom.
 
@@ -72,7 +72,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 - **Redundancy Check**: MANDATORY: Before proposing a fix that swaps in a shared utility/widget, verify if it makes surrounding `if` guards or boilerplate redundant. Delete the redundant code.
 
-- **Artifact Gen**: Export `failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
+- **Artifact Gen**: Export `failure_report_[YYYYMMDD_HHMMSS].md`.
 
 - **Constraint (Micro-Experiments)**: PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in the `task_` file and pivot.
 
@@ -82,7 +82,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 - **Gotcha Protocol**: MANDATORY: Propose edits to the local sub-folder's `GEMINI.md` (e.g., `server/GEMINI.md` or `lib/GEMINI.md`) if a project-specific rule caused the bug. ELSE: State "No new gotcha".
 
-- **Routing**: MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] Execute Build Step: docs/diagnostics/failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD.
+- **Routing**: MANDATORY: Output an "Execution Queue" checklist in the final chat response containing the exact implementation command (e.g., `- [ ] Execute Build Step: docs/reports/diagnostics/failure_report.md`) so the user can easily invoke the Builder Agent. -> YIELD.
 
 ### Final Generation Mandate (Suffix)
 
@@ -90,7 +90,7 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 <output_schema>
 
-> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
+> **Payload Schema:** Your `failure_report_[YYYYMMDD_HHMMSS].md` MUST INCLUDE: `## Input Lineage` (the absolute path of the input bug report/log), `Root Cause`, `Explicit Code Trace (Premises + Proof)`, `Proposed Scope-Limited Fix`, and `<forensic_evidence>` tags logging all terminal tools/commands executed.<br><br>**CRITICAL:** For the `Proposed Scope-Limited Fix`, you MUST present the **Trade-offs / Pros & Cons** of the solution (e.g., performance impact, edge cases). Yield to the user to make the final executive decision before jumping to implementation.
 
 >
 
@@ -102,20 +102,19 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 > 3. **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do).
 
-> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] Execute Build Step: docs/diagnostics/failure_report.md`).
+> 4. An "Execution Queue" checklist of the exact commands for the user to copy-paste (e.g., `- [ ] Execute Build Step: docs/reports/diagnostics/failure_report.md`).
 
 >
 
-> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md**: Convert `[/]` to `[x]` and detail absolute file paths.
+> **Update docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md**: Convert `[/]` to `[x]` and detail absolute file paths.
 
->
-
-> **Script Verification Gate (MANDATORY)**:
-
-> You MUST use the `run_command` tool to execute this script before considering the task complete.
-
+> **Document Cleanup (Required)**:
+> Automatically clean up and organize newly created markdown plans into their correct topic folders:
 > // turbo
 
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 
 > - `Code 0`: *"Handoff complete."*

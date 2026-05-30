@@ -18,6 +18,7 @@ public class TemplateConfiguration : IEntityTypeConfiguration<Template>
         e.Property(x => x.Version).HasColumnName("version").HasDefaultValue(1);
         e.Property(x => x.ScoringLogicConfig).HasColumnName("scoring_logic_config").HasColumnType("jsonb");
         e.Property(x => x.DisplayNoun).HasColumnName("display_noun");
+        e.Property(x => x.CategoryTag).HasColumnName("category_tag");
         e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
         e.Property(x => x.CreatedBy).HasColumnName("created_by");
         e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");

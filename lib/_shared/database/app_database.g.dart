@@ -85,6 +85,17 @@ class $CachedTemplatesTable extends CachedTemplates
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _categoryTagMeta = const VerificationMeta(
+    'categoryTag',
+  );
+  @override
+  late final GeneratedColumn<String> categoryTag = GeneratedColumn<String>(
+    'category_tag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -116,6 +127,7 @@ class $CachedTemplatesTable extends CachedTemplates
     version,
     isActive,
     scoringLogicConfig,
+    categoryTag,
     createdAt,
     updatedAt,
   ];
@@ -182,6 +194,15 @@ class $CachedTemplatesTable extends CachedTemplates
         ),
       );
     }
+    if (data.containsKey('category_tag')) {
+      context.handle(
+        _categoryTagMeta,
+        categoryTag.isAcceptableOrUnknown(
+          data['category_tag']!,
+          _categoryTagMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -235,6 +256,10 @@ class $CachedTemplatesTable extends CachedTemplates
         DriftSqlType.string,
         data['${effectivePrefix}scoring_logic_config'],
       ),
+      categoryTag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_tag'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -260,6 +285,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
   final int version;
   final bool isActive;
   final String? scoringLogicConfig;
+  final String? categoryTag;
   final DateTime createdAt;
   final DateTime updatedAt;
   const CachedTemplate({
@@ -270,6 +296,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     required this.version,
     required this.isActive,
     this.scoringLogicConfig,
+    this.categoryTag,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -286,6 +313,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     map['is_active'] = Variable<bool>(isActive);
     if (!nullToAbsent || scoringLogicConfig != null) {
       map['scoring_logic_config'] = Variable<String>(scoringLogicConfig);
+    }
+    if (!nullToAbsent || categoryTag != null) {
+      map['category_tag'] = Variable<String>(categoryTag);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -305,6 +335,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
       scoringLogicConfig: scoringLogicConfig == null && nullToAbsent
           ? const Value.absent()
           : Value(scoringLogicConfig),
+      categoryTag: categoryTag == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryTag),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -325,6 +358,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
       scoringLogicConfig: serializer.fromJson<String?>(
         json['scoringLogicConfig'],
       ),
+      categoryTag: serializer.fromJson<String?>(json['categoryTag']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -340,6 +374,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
       'version': serializer.toJson<int>(version),
       'isActive': serializer.toJson<bool>(isActive),
       'scoringLogicConfig': serializer.toJson<String?>(scoringLogicConfig),
+      'categoryTag': serializer.toJson<String?>(categoryTag),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -353,6 +388,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     int? version,
     bool? isActive,
     Value<String?> scoringLogicConfig = const Value.absent(),
+    Value<String?> categoryTag = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => CachedTemplate(
@@ -365,6 +401,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     scoringLogicConfig: scoringLogicConfig.present
         ? scoringLogicConfig.value
         : this.scoringLogicConfig,
+    categoryTag: categoryTag.present ? categoryTag.value : this.categoryTag,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -381,6 +418,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
       scoringLogicConfig: data.scoringLogicConfig.present
           ? data.scoringLogicConfig.value
           : this.scoringLogicConfig,
+      categoryTag: data.categoryTag.present
+          ? data.categoryTag.value
+          : this.categoryTag,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -396,6 +436,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
           ..write('version: $version, ')
           ..write('isActive: $isActive, ')
           ..write('scoringLogicConfig: $scoringLogicConfig, ')
+          ..write('categoryTag: $categoryTag, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -411,6 +452,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     version,
     isActive,
     scoringLogicConfig,
+    categoryTag,
     createdAt,
     updatedAt,
   );
@@ -425,6 +467,7 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
           other.version == this.version &&
           other.isActive == this.isActive &&
           other.scoringLogicConfig == this.scoringLogicConfig &&
+          other.categoryTag == this.categoryTag &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -437,6 +480,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
   final Value<int> version;
   final Value<bool> isActive;
   final Value<String?> scoringLogicConfig;
+  final Value<String?> categoryTag;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -448,6 +492,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     this.version = const Value.absent(),
     this.isActive = const Value.absent(),
     this.scoringLogicConfig = const Value.absent(),
+    this.categoryTag = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -460,6 +505,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     this.version = const Value.absent(),
     this.isActive = const Value.absent(),
     this.scoringLogicConfig = const Value.absent(),
+    this.categoryTag = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -476,6 +522,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     Expression<int>? version,
     Expression<bool>? isActive,
     Expression<String>? scoringLogicConfig,
+    Expression<String>? categoryTag,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -489,6 +536,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
       if (isActive != null) 'is_active': isActive,
       if (scoringLogicConfig != null)
         'scoring_logic_config': scoringLogicConfig,
+      if (categoryTag != null) 'category_tag': categoryTag,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -503,6 +551,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     Value<int>? version,
     Value<bool>? isActive,
     Value<String?>? scoringLogicConfig,
+    Value<String?>? categoryTag,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -515,6 +564,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
       version: version ?? this.version,
       isActive: isActive ?? this.isActive,
       scoringLogicConfig: scoringLogicConfig ?? this.scoringLogicConfig,
+      categoryTag: categoryTag ?? this.categoryTag,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -545,6 +595,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     if (scoringLogicConfig.present) {
       map['scoring_logic_config'] = Variable<String>(scoringLogicConfig.value);
     }
+    if (categoryTag.present) {
+      map['category_tag'] = Variable<String>(categoryTag.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -567,6 +620,7 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
           ..write('version: $version, ')
           ..write('isActive: $isActive, ')
           ..write('scoringLogicConfig: $scoringLogicConfig, ')
+          ..write('categoryTag: $categoryTag, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -11725,6 +11779,7 @@ typedef $$CachedTemplatesTableCreateCompanionBuilder =
       Value<int> version,
       Value<bool> isActive,
       Value<String?> scoringLogicConfig,
+      Value<String?> categoryTag,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -11738,6 +11793,7 @@ typedef $$CachedTemplatesTableUpdateCompanionBuilder =
       Value<int> version,
       Value<bool> isActive,
       Value<String?> scoringLogicConfig,
+      Value<String?> categoryTag,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -11815,6 +11871,11 @@ class $$CachedTemplatesTableFilterComposer
 
   ColumnFilters<String> get scoringLogicConfig => $composableBuilder(
     column: $table.scoringLogicConfig,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryTag => $composableBuilder(
+    column: $table.categoryTag,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11898,6 +11959,11 @@ class $$CachedTemplatesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get categoryTag => $composableBuilder(
+    column: $table.categoryTag,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -11940,6 +12006,11 @@ class $$CachedTemplatesTableAnnotationComposer
 
   GeneratedColumn<String> get scoringLogicConfig => $composableBuilder(
     column: $table.scoringLogicConfig,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get categoryTag => $composableBuilder(
+    column: $table.categoryTag,
     builder: (column) => column,
   );
 
@@ -12012,6 +12083,7 @@ class $$CachedTemplatesTableTableManager
                 Value<int> version = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<String?> scoringLogicConfig = const Value.absent(),
+                Value<String?> categoryTag = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -12023,6 +12095,7 @@ class $$CachedTemplatesTableTableManager
                 version: version,
                 isActive: isActive,
                 scoringLogicConfig: scoringLogicConfig,
+                categoryTag: categoryTag,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -12036,6 +12109,7 @@ class $$CachedTemplatesTableTableManager
                 Value<int> version = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<String?> scoringLogicConfig = const Value.absent(),
+                Value<String?> categoryTag = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -12047,6 +12121,7 @@ class $$CachedTemplatesTableTableManager
                 version: version,
                 isActive: isActive,
                 scoringLogicConfig: scoringLogicConfig,
+                categoryTag: categoryTag,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

@@ -12,7 +12,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 ## Step 1: Context & Accountability Audit
 
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema BEFORE proceeding. You MUST include an `## Input Lineage` section tracking the absolute path to the input artifact.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema BEFORE proceeding. You MUST include an `## Input Lineage` section tracking the absolute path to the input artifact.
 
 - **Skill Load**: Extract 2-3 keywords -> `grep_search` `.agents/skills/` -> Load Verification/Testing skills.
 
@@ -54,6 +54,13 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
   2. Run `grep_search` on touched files to block sloppy code (leftover `print()`, `console.log`, `TODO:`, hardcoded styling/colors, AND **dead UI stubs like `onPressed: () {}` or `href='#'`**).
 
+  3. Automatically organize documentation by running the organizer script:
+     // turbo
+
+  4. Run the PBAC UI checker to scan for unprotected widgets (advisory mode):
+     // turbo
+     `cmd /c python .agents/scripts/verify_pbac_ui.py --advisory`
+
 - **Test Quality**: Map walkthrough files to related test files (via suffix mapping or grepping symbol references in tests). Evaluate tests to ensure: (1) no empty/ghost assertions, (2) no mocking of core business/domain logic, (3) assertions test observable behavior rather than private state, (4) failed states report explicit error messages rather than raw silent booleans, and (5) all modified UI pages/widgets/contracts include and pass automated Golden/Snapshot tests.
 
 - **Execution**: Stop Dev Servers -> Run ALL tests globally (e.g., `flutter test --update-goldens` for Flutter, `npx playwright test --update-snapshots` for Web, or standard text/JSON snapshot commands first, then run full test suite). PROHIBITED: Isolated test runs (`flutter test path/...`). MUST prove no legacy assertions or visual references broke.
@@ -66,7 +73,7 @@ description: Universal verification gate proving upstream artifacts (code, plans
 
 - **Coverage & Metrics Gen**: MANDATORY: Execute available tooling to calculate Test Coverage, Cyclomatic Complexity, File Sizing, and Mutation scores (e.g., `dotnet test /p:CollectCoverage=true`). The human relies on these metrics to govern the factory; do not skip them.
 
-- **Artifact Form**: MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` into the `docs/qa/gates/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the green test suite.
+- **Artifact Form**: MANDATORY: Use `write_to_file` to save `verification_[YYYYMMDD_HHMMSS].md` into the `docs/reports/qa/` directory. MUST INCLUDE: (1) `## Input Lineage` containing the absolute path to the verified artifact, (2) The Quantitative Metrics Dashboard (Coverage %, Complexity, Warnings count), and (3) Terminal log proof of the green test suite.
 
 - **Yield & Handoff**: Yield to the user with the exact Next Command explicitly referencing `{Absolute_Path_to_verification_artifact.md}`.
 

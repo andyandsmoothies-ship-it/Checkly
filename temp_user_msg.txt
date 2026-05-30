@@ -1,0 +1,26 @@
+<USER_REQUEST>
+check the insight below, anything else we can apply into this current project?
+
+The Generative Programmer
+For software builders: the emerging patterns in coding, architecture, and product development in the age of generative AI.
+
+By Bilgin Ibryam
+Type your email...
+Subscribe
+By subscribing, you agree Substack's Terms of Use, and acknowledge its Information Collection Notice and Privacy Policy.
+
+The Generative Programmer
+
+Read distraction-free on Substack
+The Missing Quality Layer for AI Coding Agents
+As coding agents get better at writing code, the next challenge is proving the code is safe to merge.
+May 29, 2026
+
+3
+
+
+1
+
+There is a growing trend with more experienced teams adopting coding agents. They are moving past the first-order question of whether Claude Code, Cursor, Codex, or similar tools can write useful code. The answer is increasingly yes. The harder question is what has to exist around those agents before teams can trust the code they produce.
+
+<truncated 14094 bytes>

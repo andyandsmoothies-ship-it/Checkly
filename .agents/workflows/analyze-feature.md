@@ -10,7 +10,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 ## Step 1: Start & Task Tracking
 
-- **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` before coding:
+- **Task Tracking**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` before coding:
 
   ```markdown
 
@@ -20,7 +20,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - [ ] Step 2: Search & Scope | [ ] Step 3: Impacts & States | [ ] Step 4: Plan | [ ] Step 5: Route
 
-  - **Artifact Inventory**: docs/architecture/[topic]/implementation_plan_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md
+  - **Artifact Inventory**: docs/features/[topic]/implementation_plan_[YYYYMMDD_HHMMSS].md
 
   ```
 
@@ -78,7 +78,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Slicing Strategy**: Apply the **Thin Vertical Slicing Strategy** (highly focused slices of <= 4 files each). Sequence slices vertically: Happy Path first (Slice 1), Edge Cases & Validation (Slice 2), then Offline/Visual Resiliency (Slice 3). Each slice must define 'Entry State Required' and 'Exit State Guaranteed'.
 
-- **Write the Plan**: Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in the `docs/architecture/[topic]/` folder.
+- **Write the Plan**: Use `write_to_file` to create `implementation_plan_[YYYYMMDD_HHMMSS].md` in the `docs/features/[topic]/` folder.
 
 - **Mandatory Scan**: Print checklist in response: (1) Did you explicitly extract all constraints from the input document into your scratchpad? (2) Is every constraint mapped to a Test Contract?
 
@@ -96,6 +96,8 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - **Route 3: Acceptance Tests First**: Uses Network/Auth/Database, new/complex pattern, high testing risk.
 
+  - **Route 4: Double-Loop**: Database/API changes AND complex backend calculations, very high risk.
+
 ## 🚦 Handoff
 
 - **Handoff Target**: State the exact next Step for the user.
@@ -110,13 +112,15 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - **Route 3 (Acceptance Tests First)**: Next Step: **Write Acceptance Tests**, then **Build Step** for [Slice N]. Input: `{Absolute_Path_to_plan}`
 
+  - **Route 4 (Double-Loop)**: Next Step: **Write Acceptance & Unit Tests**, then **Build Step** for [Slice N]. Input: `{Absolute_Path_to_plan}`
+
 - **Concurrency & Dependency**: Clearly state which slices must wait for others to finish.
 
 ### Final Output Rules
 
 <output_schema>
 
-- **File Format**: `implementation_plan_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in `docs/architecture/[topic]/` must contain:
+- **File Format**: `implementation_plan_[YYYYMMDD_HHMMSS].md` in `docs/features/[topic]/` must contain:
 
   - `<latent_space_scratchpad>`: Hidden thoughts on edge cases, limits, and risks.
 
@@ -154,9 +158,12 @@ description: Concise, high-density analysis workflow for standard features and b
 
   - `<command_logs>`: List of commands run during planning.
 
-  - `## Handoff Block`: Absolute plan path, and generic action sequence per slice (e.g. `- **Slice 1**: Plan -> Write Acceptance Tests -> Build`). Tell user to execute them ONE AT A TIME.
+  - `## Handoff Block`: Absolute plan path, and generic action sequence per slice (e.g. `- **Slice 1**: Plan -> Write Acceptance & Unit Tests -> Build`). Tell user to execute them ONE AT A TIME.
 
-- **Task Tracking Update**: Update `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` (change `[ ]` to `[x]`, append absolute file paths).
+- **Task Tracking Update**: Update `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` (change `[ ]` to `[x]`, append absolute file paths).
+
+- **Document Cleanup**: Automatically clean up and organize newly created markdown plans into their correct topic folders:
+  // turbo
 
 - **Script Verification**: Run verification script using `run_command` tool before concluding:
 

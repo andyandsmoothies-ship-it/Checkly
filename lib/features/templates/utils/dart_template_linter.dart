@@ -4,10 +4,17 @@ import '../models/lint_result.dart';
 class DartTemplateLinter {
   static LintResult lint({
     required List<EditableGroup> sections,
-    required String scoringMode,
+    required String scoreDirection,
+    required bool isWeighted,
     required String templateType,
     required bool progressiveRepeat,
   }) {
+    final String scoringMode = scoreDirection == 'none'
+        ? 'survey'
+        : (scoreDirection == 'up'
+            ? 'accumulation'
+            : (isWeighted ? 'penalty' : 'checklist'));
+
     final List<LintIssue> errors = [];
     final List<LintIssue> warnings = [];
 

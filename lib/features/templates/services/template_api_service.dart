@@ -36,12 +36,14 @@ class TemplateApiService {
     required String type,
     String? description,
     String? scoringLogicConfig,
+    String? categoryTag,
   }) async {
     final body = <String, dynamic>{'title': title, 'type': type};
     if (description != null) body['description'] = description;
     if (scoringLogicConfig != null) {
       body['scoringLogicConfig'] = scoringLogicConfig;
     }
+    if (categoryTag != null) body['categoryTag'] = categoryTag;
     final response = await _dio.post('/templates', data: body);
     return response.data as Map<String, dynamic>;
   }
@@ -89,6 +91,7 @@ class TemplateApiService {
     String? description,
     String? scoringLogicConfig,
     String? displayNoun,
+    String? categoryTag,
     required int version,
     required List<Map<String, dynamic>> groups,
   }) async {
@@ -103,6 +106,7 @@ class TemplateApiService {
       body['scoringLogicConfig'] = scoringLogicConfig;
     }
     if (displayNoun != null) body['displayNoun'] = displayNoun;
+    if (categoryTag != null) body['categoryTag'] = categoryTag;
 
     final response = await _dio.put('/templates/$id/tree', data: body);
     return TemplateTreeDto.fromJson(response.data as Map<String, dynamic>);

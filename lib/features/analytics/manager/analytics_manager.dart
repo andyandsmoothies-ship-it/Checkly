@@ -44,6 +44,7 @@ class AnalyticsManager extends ChangeNotifier {
   String? selectedAuditor;
   String? selectedStatus;
   String? selectedReviewStatus;
+  String? selectedCategoryTag;
   String dateRange = 'all'; // all, 30, 90, 180, custom
   DateTimeRange? customDateRange;
 
@@ -92,6 +93,7 @@ class AnalyticsManager extends ChangeNotifier {
         province: province,
         startDate: startDate,
         endDate: endDate,
+        categoryTag: selectedCategoryTag,
       );
 
       isOffline = false;
@@ -169,6 +171,9 @@ class AnalyticsManager extends ChangeNotifier {
       }
       // ──────────────────────────────────────────────────────────────────────
 
+      final categoryTagNames =
+          (json['categoryTagNames'] as List<dynamic>?)?.cast<String>() ??
+          const <String>[];
       final kpis = (json['kpis'] as Map<String, dynamic>?) ?? {};
       data = AnalyticsData(
         totalAudits: kpis['totalAudits'] ?? 0,
@@ -182,6 +187,7 @@ class AnalyticsManager extends ChangeNotifier {
         templateTypes: templateTypes,
         provinceNames: provinceNames,
         auditorNames: auditorNames,
+        categoryTagNames: categoryTagNames,
         insights: insights,
         radarData: radarData,
         insightsStale: json['insightsStale'] ?? false,
@@ -196,6 +202,7 @@ class AnalyticsManager extends ChangeNotifier {
         selectedAuditor: selectedAuditor,
         selectedStatus: selectedStatus,
         selectedReviewStatus: selectedReviewStatus,
+        selectedCategoryTag: selectedCategoryTag,
         dateRange: dateRange,
         customDateRange: customDateRange,
       );

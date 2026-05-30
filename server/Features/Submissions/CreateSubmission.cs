@@ -120,21 +120,6 @@ public static class CreateSubmission
             }
         }
 
-        // Validate: completed submissions MUST have score + answers
-        if (!isDraft && !isScheduled)
-        {
-            if (request.ClientScore is null)
-            {
-                Log.Warning("CreateSubmission 400: ClientScore is missing");
-                return TypedResults.BadRequest(new { error = "ClientScore is required for completed submissions" });
-            }
-            if (request.Answers is null || request.Answers.Count == 0)
-            {
-                Log.Warning("CreateSubmission 400: Answers are empty");
-                return TypedResults.BadRequest(new { error = "Answers are required for completed submissions" });
-            }
-        }
-
         var template = await db.Templates
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == request.TemplateId, ct);
@@ -149,6 +134,24 @@ public static class CreateSubmission
         {
             Log.Warning("CreateSubmission 400: Template archived");
             return TypedResults.BadRequest(new { error = "Template is archived" });
+        }
+
+        var isSurveyMode = ScoringConfigParser.Parse(template.ScoringLogicConfig).ScoreDirection == "none";
+
+        // Validate: completed submissions MUST have score + answers
+        // Survey mode (scoreDirection=none) exempts ClientScore from being required.
+        if (!isDraft && !isScheduled)
+        {
+            if (request.ClientScore is null && !isSurveyMode)
+            {
+                Log.Warning("CreateSubmission 400: ClientScore is missing");
+                return TypedResults.BadRequest(new { error = "ClientScore is required for completed submissions" });
+            }
+            if (request.Answers is null || request.Answers.Count == 0)
+            {
+                Log.Warning("CreateSubmission 400: Answers are empty");
+                return TypedResults.BadRequest(new { error = "Answers are required for completed submissions" });
+            }
         }
 
         var store = await db.Stores
@@ -184,7 +187,7 @@ public static class CreateSubmission
 
         if (!isDraft && !isScheduled)
         {
-            var (scoringMode, progressiveRepeatPenalty) = ScoringConfigParser.Parse(template.ScoringLogicConfig);
+            var (scoreDirection, isWeighted, progressiveRepeatPenalty) = ScoringConfigParser.Parse(template.ScoringLogicConfig);
 
             var tempAnswers = request.Answers!.Select(a => new Answer
             {
@@ -222,34 +225,38 @@ public static class CreateSubmission
             // loads from DB — but here we have no submission row yet.
             bool hasGlobalRisk = request.HasGlobalRisk;
 
-            var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
-                scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty, hasGlobalRisk: hasGlobalRisk);
-
-            var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
-            if (!verification.IsValid)
+            if (!isSurveyMode)
             {
-                if (scoreMode == "enforce")
-                {
-                    Log.Warning("CreateSubmission 400: Score mismatch. Client: {Client}, Server: {Server}. Reason: {Reason}",
-                        request.ClientScore, verification.ServerScore, verification.Reason);
-                    return TypedResults.BadRequest(new
-                    {
-                        error = "Score verification failed",
-                        clientScore = request.ClientScore,
-                        serverScore = verification.ServerScore,
-                        reason = verification.Reason
-                    });
-                }
-            }
+                var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
+                    progressiveRepeatPenalty: progressiveRepeatPenalty, scoreDirection: scoreDirection, isWeighted: isWeighted,
+                    explicitRiskAnswerIds: explicitRiskIds, hasGlobalRisk: hasGlobalRisk);
 
-            serverScore = scoringMode == "survey" ? null : verification.ServerScore;
+                var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
+                if (!verification.IsValid)
+                {
+                    if (scoreMode == "enforce")
+                    {
+                        Log.Warning("CreateSubmission 400: Score mismatch. Client: {Client}, Server: {Server}. Reason: {Reason}",
+                            request.ClientScore, verification.ServerScore, verification.Reason);
+                        return TypedResults.BadRequest(new
+                        {
+                            error = "Score verification failed",
+                            clientScore = request.ClientScore,
+                            serverScore = verification.ServerScore,
+                            reason = verification.Reason
+                        });
+                    }
+                }
+
+                serverScore = verification.ServerScore;
+            }
         }
 
         var profile = await db.Profiles
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == auditorId, ct);
 
-        var (submissionScoringMode, _) = ScoringConfigParser.Parse(template.ScoringLogicConfig);
+        var (submissionScoreDirection, submissionIsWeighted, _) = ScoringConfigParser.Parse(template.ScoringLogicConfig);
 
         var now = DateTimeOffset.UtcNow;
         var submission = new Submission
@@ -259,7 +266,8 @@ public static class CreateSubmission
             StoreId = request.StoreId,
             AuditorId = auditorId,
             Status = requestedStatus,
-            ScoringMode = submissionScoringMode,
+            ScoreDirection = submissionScoreDirection,
+            IsWeighted = submissionIsWeighted,
             TotalScore = serverScore,
             SectionScores = request.SectionScores,
             Notes = request.Notes,
@@ -316,7 +324,7 @@ public static class CreateSubmission
                 await ActionPlanService.AutoCreateAsync(
                     submission.Id, submission.StoreId,
                     answers, criteria, groups, now, db, ct,
-                    scoringMode: submissionScoringMode,
+                    scoringMode: submissionScoreDirection == "none" ? "survey" : null,
                     scoringLogicConfig: template.ScoringLogicConfig);
             }
 
@@ -348,7 +356,7 @@ public static class CreateSubmission
             if (!isDraft && !isScheduled)
             {
                 // --- S2: Explode SectionScores JSON into relational rows (skip for survey mode) ---
-                if (submissionScoringMode != "survey")
+                if (submissionScoreDirection != "none")
                 {
                     await SectionScoreExploder.ExplodeAsync(submission.Id, submission.StoreId, submission.TemplateId, request.SectionScores, db, now, ct);
                 }

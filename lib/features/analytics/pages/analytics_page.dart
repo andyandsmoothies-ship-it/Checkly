@@ -67,6 +67,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     if (_manager.selectedAuditor != null) count++;
     if (_manager.selectedStatus != null) count++;
     if (_manager.selectedReviewStatus != null) count++;
+    if (_manager.selectedCategoryTag != null) count++;
     return count;
   }
 

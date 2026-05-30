@@ -110,7 +110,8 @@ List<Map<String, dynamic>> buildGroupsPayload({
 
 /// Serializes the scoring logic configuration into a JSON string.
 String buildScoringLogicConfig({
-  required String scoringMode,
+  required String scoreDirection,
+  required bool isWeighted,
   required bool ccpOverride,
   required bool riskOverride,
   required bool weightedDensity,
@@ -119,7 +120,15 @@ String buildScoringLogicConfig({
   required String deadlineDays,
   required String reminderDays,
 }) {
+  final String scoringMode = scoreDirection == 'none'
+      ? 'survey'
+      : (scoreDirection == 'up'
+          ? 'accumulation'
+          : (isWeighted ? 'penalty' : 'checklist'));
+
   return json.encode({
+    'scoreDirection': scoreDirection,
+    'isWeighted': isWeighted,
     'scoringMode': scoringMode,
     'ccpOverride': ccpOverride,
     'riskOverride': riskOverride,

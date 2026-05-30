@@ -8,6 +8,7 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
     if (tree != null) {
       _titleCtrl.text = tree.title;
       _descCtrl.text = tree.description ?? '';
+      _categoryTagCtrl.text = tree.categoryTag ?? '';
       _type = tree.type;
       _version = tree.version;
       _sections = tree.groups.map((g) => EditableGroup.fromDto(g)).toList();
@@ -23,7 +24,16 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
           _weightedDensity = config['weightedDensity'] == true;
           _confirmCorrect = config['confirmCorrect'] == true;
           _progressiveRepeat = config['progressiveRepeat'] == true;
-          _scoringMode = (config['scoringMode'] as String?) ?? 'penalty';
+
+          _scoreDirection = (config['scoreDirection'] as String?) ??
+              ((config['scoringMode'] as String?) == 'survey'
+                  ? 'none'
+                  : ((config['scoringMode'] as String?) == 'accumulation'
+                      ? 'up'
+                      : 'down'));
+          _isWeighted = config['isWeighted'] == true ||
+              (config['scoringMode'] as String?) == 'penalty';
+
           if (config['deadlineDays'] != null) {
             _deadlineCtrl.text = config['deadlineDays'].toString();
           }
@@ -44,7 +54,8 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
 
   String _buildScoringConfig() {
     return buildScoringLogicConfig(
-      scoringMode: _scoringMode,
+      scoreDirection: _scoreDirection,
+      isWeighted: _isWeighted,
       ccpOverride: _ccpOverride,
       riskOverride: _riskOverride,
       weightedDensity: _weightedDensity,
@@ -88,6 +99,9 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
         description: _descCtrl.text.trim().isEmpty
             ? null
             : _descCtrl.text.trim(),
+        categoryTag: _categoryTagCtrl.text.trim().isEmpty
+            ? null
+            : _categoryTagCtrl.text.trim(),
         scoringLogicConfig: _buildScoringConfig(),
         version: _version,
         groups: _buildGroups(),

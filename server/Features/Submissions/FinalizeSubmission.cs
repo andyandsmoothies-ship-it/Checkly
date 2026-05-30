@@ -135,7 +135,7 @@ public static class FinalizeSubmission
         }
 
         // 4. Verify score — parse scoring mode from template config
-        var (scoringMode, progressiveRepeatPenalty) = ScoringConfigParser.Parse(scoringLogicConfig);
+        var (scoreDirection, isWeighted, progressiveRepeatPenalty) = ScoringConfigParser.Parse(scoringLogicConfig);
 
         var tempAnswers = request.Answers!.Select(a => new Answer
         {
@@ -169,7 +169,8 @@ public static class FinalizeSubmission
         }
 
         var verification = scorer.Verify(request.ClientScore!.Value, tempAnswers, groups, criteria,
-            scoringMode: scoringMode, explicitRiskAnswerIds: explicitRiskIds, progressiveRepeatPenalty: progressiveRepeatPenalty, hasGlobalRisk: hasGlobalRisk);
+            progressiveRepeatPenalty: progressiveRepeatPenalty, scoreDirection: scoreDirection, isWeighted: isWeighted,
+            explicitRiskAnswerIds: explicitRiskIds, hasGlobalRisk: hasGlobalRisk);
 
         var scoreMode = config["ScoreVerification:Mode"] ?? "enforce";
         if (!verification.IsValid && scoreMode == "enforce")
@@ -189,11 +190,11 @@ public static class FinalizeSubmission
         // 5. Update submission
         var now = DateTimeOffset.UtcNow;
         submission.Status = "completed";
-        submission.TotalScore = scoringMode == "survey" ? null : verification.ServerScore;
-        submission.RawEarnedPoints = scoringMode == "survey" ? null : verification.RawEarned;
-        submission.RawMaxPoints = scoringMode == "survey" ? null : verification.RawMax;
-        submission.IsWeighted = scoringMode == "survey" ? null : verification.IsWeighted;
-        submission.ScoringMode = scoringMode;
+        submission.TotalScore = scoreDirection == "none" ? null : verification.ServerScore;
+        submission.RawEarnedPoints = scoreDirection == "none" ? null : verification.RawEarned;
+        submission.RawMaxPoints = scoreDirection == "none" ? null : verification.RawMax;
+        submission.IsWeighted = scoreDirection == "none" ? null : verification.IsWeighted;
+        submission.ScoreDirection = scoreDirection;
         submission.SectionScores = request.SectionScores;
         submission.Notes = request.Notes;
         submission.GpsLat = request.GpsLat;
@@ -245,7 +246,7 @@ public static class FinalizeSubmission
             await ActionPlanService.AutoCreateAsync(
                 submission.Id, submission.StoreId,
                 answers, criteria, groups, now, db, ct,
-                scoringMode: scoringMode,
+                scoringMode: scoreDirection == "none" ? "survey" : null,
                 scoringLogicConfig: scoringLogicConfig,
                 globalRisks: globalRisks);
 
@@ -265,7 +266,7 @@ public static class FinalizeSubmission
             }
 
             // 8. Explode SectionScores JSON into relational rows (skip for survey mode)
-            if (scoringMode != "survey")
+            if (scoreDirection != "none")
             {
                 await SectionScoreExploder.ExplodeAsync(submission.Id, submission.StoreId, submission.TemplateId, request.SectionScores, db, now, ct);
             }

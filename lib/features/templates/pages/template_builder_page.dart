@@ -61,10 +61,18 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   // ── Form state ──
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
+  final _categoryTagCtrl = TextEditingController();
   String _type = 'qc';
 
   // Scoring rules
-  String _scoringMode = 'penalty'; // 'penalty' | 'accumulation' | 'checklist'
+  String _scoreDirection = 'down'; // 'down' | 'up' | 'none'
+  bool _isWeighted = true;
+  String get _scoringMode => _scoreDirection == 'none'
+      ? 'survey'
+      : (_scoreDirection == 'up'
+          ? 'accumulation'
+          : (_isWeighted ? 'penalty' : 'checklist'));
+
   bool _ccpOverride = false;
   bool _riskOverride = false;
   bool _weightedDensity = false;
@@ -84,7 +92,8 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
         setState(() {
           _lintResult = DartTemplateLinter.lint(
             sections: _sections,
-            scoringMode: _scoringMode,
+            scoreDirection: _scoreDirection,
+            isWeighted: _isWeighted,
             templateType: _type,
             progressiveRepeat: _progressiveRepeat,
           );
@@ -100,6 +109,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     // Track text controller changes for dirty state and trigger linter
     _titleCtrl.addListener(_markDirty);
     _descCtrl.addListener(_markDirty);
+    _categoryTagCtrl.addListener(_markDirty);
     _deadlineCtrl.addListener(_markDirty);
     _reminderCtrl.addListener(_markDirty);
     if (!_isNew) {
@@ -122,6 +132,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     _lintTimer?.cancel();
     _titleCtrl.dispose();
     _descCtrl.dispose();
+    _categoryTagCtrl.dispose();
     _deadlineCtrl.dispose();
     _reminderCtrl.dispose();
     super.dispose();
@@ -137,18 +148,23 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
       return ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // ── Metadata Card (AC-5) ──
           MetadataFormCard(
             titleCtrl: _titleCtrl,
             descCtrl: _descCtrl,
+            categoryTagCtrl: _categoryTagCtrl,
             type: _type,
             onTypeChanged: (v) => setState(() {
               _type = v ?? _type;
               _triggerLinter();
             }),
-            scoringMode: _scoringMode,
-            onScoringModeChanged: (v) => setState(() {
-              _scoringMode = v ?? _scoringMode;
+            scoreDirection: _scoreDirection,
+            onScoreDirectionChanged: (v) => setState(() {
+              _scoreDirection = v;
+              _triggerLinter();
+            }),
+            isWeighted: _isWeighted,
+            onIsWeightedChanged: (v) => setState(() {
+              _isWeighted = v;
               _triggerLinter();
             }),
           ),

@@ -245,7 +245,8 @@ void main() {
   group('TemplatePayloadMapper - buildScoringLogicConfig', () {
     test('correctly serializes the scoring logic configuration', () {
       final jsonStr = buildScoringLogicConfig(
-        scoringMode: 'penalty',
+        scoreDirection: 'down',
+        isWeighted: true,
         ccpOverride: true,
         riskOverride: false,
         weightedDensity: true,
@@ -256,6 +257,8 @@ void main() {
       );
 
       final config = json.decode(jsonStr) as Map<String, dynamic>;
+      expect(config['scoreDirection'], 'down');
+      expect(config['isWeighted'], isTrue);
       expect(config['scoringMode'], 'penalty');
       expect(config['ccpOverride'], isTrue);
       expect(config['riskOverride'], isFalse);
@@ -270,7 +273,8 @@ void main() {
       'defaults invalid deadline and reminder days to standard fallbacks',
       () {
         final jsonStr = buildScoringLogicConfig(
-          scoringMode: 'penalty',
+          scoreDirection: 'down',
+          isWeighted: true,
           ccpOverride: false,
           riskOverride: false,
           weightedDensity: false,

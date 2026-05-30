@@ -226,22 +226,18 @@ void main() {
   group('BodReportResponse Tests —', () {
     test('Should parse full response correctly with nested resources', () {
       final json = {
-        'chainKpis': {
-          'totalAudits': 1500,
-          'avgScore': 81.2,
-          'avgTtrDays': 6.8,
-        },
+        'chainKpis': {'totalAudits': 1500, 'avgScore': 81.2, 'avgTtrDays': 6.8},
         'trend': [
-          {'date': '2026-05-01', 'score': 80.0}
+          {'date': '2026-05-01', 'score': 80.0},
         ],
         'topStores': [
-          {'storeId': 's-1', 'storeName': 'Top A', 'avgScore': 90.0}
+          {'storeId': 's-1', 'storeName': 'Top A', 'avgScore': 90.0},
         ],
         'bottomStores': [
-          {'storeId': 's-2', 'storeName': 'Bottom A', 'avgScore': 60.0}
+          {'storeId': 's-2', 'storeName': 'Bottom A', 'avgScore': 60.0},
         ],
         'weaknesses': [
-          {'category': 'Hygiene', 'score': 45.0}
+          {'category': 'Hygiene', 'score': 45.0},
         ],
         'actionPlanAging': {
           'bucket0to7': 1,
@@ -250,7 +246,7 @@ void main() {
           'bucket90Plus': 4,
         },
         'auditorProductivity': [
-          {'name': 'Auditor John', 'audits': 25}
+          {'name': 'Auditor John', 'audits': 25},
         ],
         'computedAt': '2026-05-29T10:00:00Z',
         'snapshotStatus': 'Stale',
@@ -259,7 +255,7 @@ void main() {
           'storeName': 'Superb Store',
           'avgScore': 98.4,
           'province': 'Northern Province',
-        }
+        },
       };
 
       final response = BodReportResponse.fromJson(json);
@@ -329,10 +325,7 @@ void main() {
 
   group('CategoryScoreEntry Tests —', () {
     test('Should parse fields and handle int-to-double conversions', () {
-      final json = {
-        'categoryName': 'Food Safety',
-        'avgScore': 91,
-      };
+      final json = {'categoryName': 'Food Safety', 'avgScore': 91};
 
       final entry = CategoryScoreEntry.fromJson(json);
 
@@ -346,11 +339,11 @@ void main() {
       final json = {
         'storeName': 'Store 311',
         'recentAudits': [
-          {'date': '2026-05-20', 'score': 80.5, 'auditorName': 'Tim'}
+          {'date': '2026-05-20', 'score': 80.5, 'auditorName': 'Tim'},
         ],
         'categoryBreakdown': [
-          {'categoryName': 'Staff Grooming', 'avgScore': 95.0}
-        ]
+          {'categoryName': 'Staff Grooming', 'avgScore': 95.0},
+        ],
       };
 
       final summary = StoreBodSummary.fromJson(json);

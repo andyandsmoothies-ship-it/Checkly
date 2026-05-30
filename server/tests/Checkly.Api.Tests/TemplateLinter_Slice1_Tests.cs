@@ -606,4 +606,80 @@ public class TemplateLinter_Slice1_Tests : IClassFixture<TestWebApplicationFacto
         Assert.Empty(errorsList.EnumerateArray());
         Assert.Empty(warningsList.EnumerateArray());
     }
+
+    // ─── Scenario 13: New Weighted JSON Format Group Sum (Blocking Rule - TC-09) ──────
+    [Fact]
+    public async Task SaveTemplateTree_WithNewWeightedJsonSummingTo95_Returns422()
+    {
+        // Arrange
+        var admin = await GetAdminClientAsync();
+        var templateId = await CreateTemplateAsync(admin, "New Weighted Group Sum Template");
+
+        var payload = new
+        {
+            Title = "New Weighted Group Sum Template",
+            Type = "qc",
+            ScoringLogicConfig = "{\"scoreDirection\":\"down\",\"isWeighted\":true}",
+            Version = 1,
+            Groups = new[]
+            {
+                new
+                {
+                    Id = (Guid?)null,
+                    Title = "Kitchen",
+                    Weight = (decimal?)95.0m, // Only 95%
+                    OrderIndex = 0,
+                    Children = Array.Empty<object>(),
+                    Criteria = Array.Empty<object>()
+                }
+            }
+        };
+
+        // Act
+        var response = await admin.PutAsJsonAsync($"/api/templates/{templateId}/tree", payload);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.True(body.TryGetProperty("errors", out var errorsObj));
+        Assert.True(errorsObj.TryGetProperty("lintResult", out var errorsList));
+        var list = errorsList.EnumerateArray().ToList();
+        Assert.Contains(list, x => x.GetProperty("ruleId").GetString() == "PenaltyModeGroupSum");
+    }
+
+    // ─── Scenario 14: New Unweighted JSON Format Group Sum (No Blocking - TC-09b) ────
+    [Fact]
+    public async Task SaveTemplateTree_WithNewUnweightedJsonSummingTo95_SavesSuccessfully()
+    {
+        // Arrange
+        var admin = await GetAdminClientAsync();
+        var templateId = await CreateTemplateAsync(admin, "New Unweighted Group Sum Template");
+
+        var payload = new
+        {
+            Title = "New Unweighted Group Sum Template",
+            Type = "qc",
+            ScoringLogicConfig = "{\"scoreDirection\":\"down\",\"isWeighted\":false}",
+            Version = 1,
+            Groups = new[]
+            {
+                new
+                {
+                    Id = (Guid?)null,
+                    Title = "Kitchen",
+                    Weight = (decimal?)95.0m, // Not 100%, but isWeighted = false so sum check is skipped
+                    OrderIndex = 0,
+                    Children = Array.Empty<object>(),
+                    Criteria = Array.Empty<object>()
+                }
+            }
+        };
+
+        // Act
+        var response = await admin.PutAsJsonAsync($"/api/templates/{templateId}/tree", payload);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
 }

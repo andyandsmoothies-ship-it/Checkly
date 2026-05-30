@@ -16,7 +16,7 @@ description: Easy-to-read analysis workflow for large features and epics.
 
 ## Step 1: Start
 
-- **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` before doing anything else. List only the Epic Plan in the Artifact Inventory.
+- **Task Tracking**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` before doing anything else. List only the Epic Plan in the Artifact Inventory.
 
 ```markdown
 
@@ -42,7 +42,7 @@ Workflow: /analyze-epic | Track: C
 
 | Status | File Path | Type |
 
-| [NEW]  | docs/architecture/[topic]/analysis_epic_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Epic Plan |
+| [NEW]  | docs/features/[topic]/analysis_epic_[YYYYMMDD_HHMMSS].md | Epic Plan |
 
 ```
 
@@ -94,7 +94,7 @@ Workflow: /analyze-epic | Track: C
 
 ## Step 4: Create Plan
 
-- **Write the Plan**: Save `analysis_epic_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` to `docs/architecture/[topic]/`. Do not dump the plan in chat.
+- **Write the Plan**: Save `analysis_epic_[YYYYMMDD_HHMMSS].md` to `docs/features/[topic]/`. Do not dump the plan in chat.
 
 - **@@SCAN**: Print checklist in response: Does the document contain all required sections?
 
@@ -116,6 +116,8 @@ Workflow: /analyze-epic | Track: C
 
   - **Network/Auth/Database**: Plan -> Write Acceptance Tests -> Build
 
+  - **High-Risk Database + Logic**: Plan -> Write Acceptance & Unit Tests (Double-Loop) -> Build
+
 - **Order of Work**: Mark slices as `[BLOCKING]`, `[PARALLEL]`, or `[SEQUENTIAL]`.
 
 - **@@SCAN**: Print checklist in response: Have you classified each slice's risk to set the testing sequence?
@@ -126,7 +128,7 @@ Workflow: /analyze-epic | Track: C
 
 <output_schema>
 
-> **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` MUST have these exact sections. Keep it short and simple.
+> **File Format:** Your `analysis_epic_[YYYYMMDD_HHMMSS].md` MUST have these exact sections. Keep it short and simple.
 
 > 1. `<latent_space_scratchpad>`: Your hidden thoughts and tradeoffs.
 
@@ -166,13 +168,15 @@ Workflow: /analyze-epic | Track: C
 
 > 3. **Next Steps**: A short summary for the next agent.
 
-> 4. **Handoff Roadmap**: You MUST explicitly state the Risk Classification (Visuals, Internal Logic, or Network/Database) for **EVERY slice**, and then provide the matching sequence of actions. Example: `- **Slice 1**: [Risk: Network/Database] Plan -> Write Acceptance Tests -> Build` or `- **Slice 2**: [Risk: Visuals] Plan -> Build`. Do not use project-specific workflow names (like `/tdd` or `/implement`), just generic actions. Tell the user to execute them ONE AT A TIME. Include the absolute file path to the epic plan.
+> 4. **Handoff Roadmap**: You MUST explicitly state the Risk Classification (Visuals, Internal Logic, Network/Database, or High-Risk Database + Logic) for **EVERY slice**, and then provide the matching sequence of actions. Example: `- **Slice 1**: [Risk: Network/Database] Plan -> Write Acceptance Tests -> Build` or `- **Slice 2**: [Risk: High-Risk Database + Logic] Plan -> Write Acceptance & Unit Tests -> Build`. Do not use project-specific workflow names (like `/tdd` or `/implement`), just generic actions. Tell the user to execute them ONE AT A TIME. Include the absolute file path to the epic plan.
 
 >
 
-> **Update .agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md**: Change `[/]` to `[x]` and add absolute file paths.
+> **Update docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md**: Change `[/]` to `[x]` and add absolute file paths.
 
->
+> **Document Cleanup (Required)**:
+> Automatically clean up and organize newly created markdown plans into their correct topic folders:
+> // turbo
 
 > **Script Verification (Required)**:
 

@@ -1,0 +1,94 @@
+﻿==================== DATABASE: checkly ====================
+--- templates ---
+Template ID: b5617868-2aeb-4c5d-bd68-a0f03653b393 | Title: Taskforce Audit Template | Type: task force | Config: {"scoringMode": "checklist"}
+  -- Groups --
+    Group ID: e3727b38-8389-4cff-8c33-42263a9e1a3e | Title: Section A: Core Check | Weight: NULL | Parent: NULL | MaxDeduction: NULL
+      -- Criteria --
+        Crit ID: 52178e14-8f64-48da-a11a-b5cb29afab2c | Label: Criterion 1.1: Quality compliance check | Type: pass_fail | PtsWeight: 1.0 | MinusImp: NULL | MaxDeduction: NULL | CCP: False | Risk: False
+        Crit ID: febcfd46-6eb6-40ab-a7b5-481e4827acac | Label: Criterion 1.2: Safety and procedure check | Type: pass_fail | PtsWeight: 1.0 | MinusImp: NULL | MaxDeduction: NULL | CCP: False | Risk: False
+
+==================== DATABASE: checkly_test ====================
+--- templates ---
+Template ID: 25fe2fd7-978c-4ac8-92f8-9bb5f7c71995 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 627f4f47-b5ed-45d9-b100-809127922f69 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 49211da9-ffac-4213-979b-2e452e25d2d5 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: b211e4d2-cfb4-4044-8917-a50761a907a1 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 9aab2129-3405-429c-9aa3-a065d4fb8fec | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 754472df-8d7e-4f77-ba38-7462a1a8d355 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: c1406b56-303b-40e8-ad31-3479eb33b48f | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 20ce91ed-cbbc-44bc-afdb-75b9626b8fad | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 47352500-35bf-4194-9a68-9001d7d765d2 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 74aba366-7840-4ba9-8317-1846b0b71d0a | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 9bdd86ca-1d17-4079-b39c-643e74d8071f | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 3dade3fa-5e6d-4630-949e-225f6a3d8068 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 7dea8827-69a3-4ae1-9447-af455eaa60e2 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 60f587b9-17ca-467c-8b7a-0dcc55562e2f | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 6bd684b0-8f41-4762-910e-a043636313f8 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 3eff7681-f43d-4fa3-98df-beae05edf105 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: ec53e166-93c4-4f74-a293-87f81cb4a2a3 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 68b0a2ff-608d-4023-b52a-5da8e77b5b40 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 0ba1f765-eda9-4a98-9e78-a64cca91f725 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 59642f4c-a35d-46a1-a9a0-d145084dc0e3 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: b8a7e584-dcb4-41a1-9fe9-e76e32e26910 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 1568c617-e85e-426f-9af6-546482001d81 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 591e7600-5573-4bca-a5e2-25d10eddb37c | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 22bb0571-b19a-4b57-86b9-271a0d6496cd | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 89466f55-97a6-4a46-b1e2-c5424835c8cb | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 3ca17c9e-2328-4356-962a-d8c27cc831bb | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 7b6e466d-69ec-4cc2-8442-440054a44831 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: ebd5f581-0d52-4026-b3a4-18b409abfffe | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 69038257-b5c0-4ae7-bda0-488bb71672a0 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 51cd9374-f06d-41e1-bee9-deeb7e752bb8 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 7c39b7bd-f108-4ebe-be57-7c61336b0800 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 5e0b43aa-99bc-4cd9-bfb2-db3bd38a3b02 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: 3d6c14e4-bf14-42c3-9e02-c7889d77a87d | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 4ebf1efb-fe9b-47d8-a709-fbe70726b0c5 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: ed17930b-30dc-45e1-96a6-01c59552876f | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: c8a2bdbd-a166-4d27-9a53-57814ebe6dc9 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 91f9460c-ca40-465d-aa2c-46b52fd269ca | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+Template ID: 22ef088d-bea2-4063-b15b-aaeff245de37 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: e6948aba-124b-4fac-92dc-d3d54d3b3a23 | Title: General Tasks Audit | Type: General | Config: NULL
+  -- Groups --
+Template ID: ffa1f1df-e708-4c27-83ae-a5e60b1a30a1 | Title: General Tasks | Type: General | Config: NULL
+  -- Groups --
+Template ID: 9dd5082a-6f87-451e-a5ee-1d3fa7b5b585 | Title: General Tasks Live | Type: General | Config: NULL
+  -- Groups --
+

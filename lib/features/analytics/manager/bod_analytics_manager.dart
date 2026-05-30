@@ -116,7 +116,8 @@ class BodAnalyticsManager extends ChangeNotifier {
           _isLoading = false;
           _report = prevReport;
           final errStr = e.toString();
-          if (errStr.contains('DioException') || errStr.contains('connection')) {
+          if (errStr.contains('DioException') ||
+              errStr.contains('connection')) {
             _isOffline = true;
           } else {
             _error = 'Something went wrong. Please try again.';

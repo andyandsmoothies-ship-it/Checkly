@@ -23,6 +23,7 @@ void main() {
     String? auditorName,
     String templateId = 't1',
     String templateType = 'food_safety',
+    String? categoryTag,
   }) async {
     final now = DateTime.now();
 
@@ -50,6 +51,7 @@ void main() {
             type: templateType,
             version: const Value(1),
             isActive: const Value(true),
+            categoryTag: Value(categoryTag),
             createdAt: now,
             updatedAt: now,
           ),
@@ -90,6 +92,7 @@ void main() {
     String? selectedAuditor,
     String? selectedStatus,
     String? selectedReviewStatus,
+    String? selectedCategoryTag,
     String dateRange = 'all',
     DateTimeRange? customDateRange,
   }) => loadFromDrift(
@@ -100,6 +103,7 @@ void main() {
     selectedAuditor: selectedAuditor,
     selectedStatus: selectedStatus,
     selectedReviewStatus: selectedReviewStatus,
+    selectedCategoryTag: selectedCategoryTag,
     dateRange: dateRange,
     customDateRange: customDateRange,
   );
@@ -327,5 +331,64 @@ void main() {
 
       expect(data.totalAudits, 1);
     });
+  });
+
+  group('CategoryTag offline filtering', () {
+    test(
+      'DL-09: populates categoryTagNames dynamically and filters by selected category tag',
+      () async {
+        final now = DateTime.now();
+
+        await seedSubmission(
+          id: 'sub1',
+          createdAt: now,
+          templateId: 't1',
+          templateType: 'food_safety',
+          categoryTag: 'Quality',
+        );
+        await seedSubmission(
+          id: 'sub2',
+          createdAt: now,
+          templateId: 't2',
+          templateType: 'health_safety',
+          categoryTag: 'Safety',
+        );
+        await seedSubmission(
+          id: 'sub3',
+          createdAt: now,
+          templateId: 't3',
+          templateType: 'cleaning',
+          categoryTag: 'Quality',
+        );
+        await seedSubmission(
+          id: 'sub4',
+          createdAt: now,
+          templateId: 't4',
+          templateType: 'survey',
+          categoryTag: null,
+        );
+
+        // 1. Check without categoryTag filter
+        final dataNoFilter = await load(dateRange: 'all');
+        expect(dataNoFilter.categoryTagNames, ['Quality', 'Safety']);
+        expect(dataNoFilter.totalAudits, 4);
+
+        // 2. Filter by 'Quality'
+        final dataQuality = await load(
+          selectedCategoryTag: 'Quality',
+          dateRange: 'all',
+        );
+        expect(dataQuality.categoryTagNames, ['Quality', 'Safety']);
+        expect(dataQuality.totalAudits, 2);
+
+        // 3. Filter by 'Safety'
+        final dataSafety = await load(
+          selectedCategoryTag: 'Safety',
+          dateRange: 'all',
+        );
+        expect(dataSafety.categoryTagNames, ['Quality', 'Safety']);
+        expect(dataSafety.totalAudits, 1);
+      },
+    );
   });
 }

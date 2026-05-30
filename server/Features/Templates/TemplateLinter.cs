@@ -45,9 +45,9 @@ public static class TemplateLinter
         }
 
         // 3. Penalty Mode Group Sum (Blocking Rule)
-        var (scoringMode, progressiveRepeat) = ScoringConfigParser.Parse(request.ScoringLogicConfig);
+        var (scoreDirection, isWeighted, progressiveRepeat) = ScoringConfigParser.Parse(request.ScoringLogicConfig);
         if (!string.Equals(templateType, "survey", StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(scoringMode, "penalty", StringComparison.OrdinalIgnoreCase))
+            string.Equals(scoreDirection, "down", StringComparison.OrdinalIgnoreCase) && isWeighted)
         {
             decimal sum = request.Groups.Sum(g => g.Weight ?? 0m);
             if (sum != 100m)

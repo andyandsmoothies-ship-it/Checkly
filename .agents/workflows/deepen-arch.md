@@ -78,7 +78,7 @@ description: Find and deepen shallow architectural modules. Increases testabilit
 
 | **Documentation** | If the new deep module introduces new domain concepts not present in the project, recommend adding them to `GEMINI.md`. |
 
-| **Architectural Decision Record (ADR)** | Do NOT generate an implementation plan. Instead, create an ADR artifact (e.g., `adr_[timestamp]_[id]_deepen_[topic]_[ConversationID].md`) summarizing the context, the 3 explored options, the Pugh Matrix, the locked-in interface, and any identified domain/schema gaps. This ADR must act as the primary input for the `analyze-feature` or `analyze-epic` workflow so that rigorous vertical slice impact analysis occurs before writing code. |
+| **Architectural Decision Record (ADR)** | Do NOT generate an implementation plan. Instead, create an ADR artifact (e.g., `adr_[timestamp]_[id]_deepen_[topic].md`) summarizing the context, the 3 explored options, the Pugh Matrix, the locked-in interface, and any identified domain/schema gaps. This ADR must act as the primary input for the `analyze-feature` or `analyze-epic` workflow so that rigorous vertical slice impact analysis occurs before writing code. |
 
 ## Step 4: Deliverable Handoff
 

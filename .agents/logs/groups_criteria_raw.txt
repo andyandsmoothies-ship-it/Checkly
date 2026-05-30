@@ -1,0 +1,79 @@
+﻿=== GROUPS ===
+Group ID: c2293db1-a4ce-4b59-accc-7d14b09e88c3 | Template: 2d98d800-cbfc-42c8-879d-b5064d356e65
+Title: Section A: Core Check
+Description: Core validation checks for this audit type
+------------------------------
+Group ID: ec74584e-5f34-4a03-85d8-70e9a70ad762 | Template: 5d3829d0-a76e-4cc4-b658-3aef9ffd7876
+Title: Section A: Core Check
+Description: Core validation checks for this audit type
+------------------------------
+Group ID: e3727b38-8389-4cff-8c33-42263a9e1a3e | Template: b5617868-2aeb-4c5d-bd68-a0f03653b393
+Title: Section A: Core Check
+Description: Core validation checks for this audit type
+------------------------------
+Group ID: 28dd0b87-f9e9-4b37-ab91-30c18eec2863 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d
+Title: Daily Operations
+Description: NULL
+------------------------------
+Group ID: 87f4f487-809a-4e62-8047-cf35cb04a54a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d
+Title: Closing Tasks
+Description: NULL
+------------------------------
+Group ID: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d
+Title: Opening Tasks
+Description: NULL
+------------------------------
+
+=== CRITERIA ===
+Criteria ID: 77422a3f-2197-4b29-8d58-4635b89c2e26 | Group: 28dd0b87-f9e9-4b37-ab91-30c18eec2863
+Label: Log temperature readings
+Description: NULL
+------------------------------
+Criteria ID: 9a1f4cb2-1b48-4de1-bcb1-274e64bcafb4 | Group: 28dd0b87-f9e9-4b37-ab91-30c18eec2863
+Label: Perform visual inspection
+Description: NULL
+------------------------------
+Criteria ID: 3f9bd58b-cedb-45f2-968e-46d762fbf320 | Group: 87f4f487-809a-4e62-8047-cf35cb04a54a
+Label: Kiem tra cuoi ca ban hang
+Description: Ghi lai tong ket cuoi ca ban hang
+------------------------------
+Criteria ID: f3347f18-0c5f-41a0-a2f7-de7fe9705922 | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7
+Label: Power on equipment
+Description: Mo tat ca thiet bi dien
+------------------------------
+Criteria ID: fe090bdd-21a7-4915-a0a4-933c199f184a | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7
+Label: Check inventory levels
+Description: Kiem tra cac tang cua kho hang
+------------------------------
+Criteria ID: 7caf6994-e644-4402-b32a-bee7abbd27b1 | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7
+Label: Brief team on objectives
+Description: NULL
+------------------------------
+Criteria ID: c826561b-a1a9-4c79-8641-020b764e3017 | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7
+Label: Unlock and secure premises
+Description: NULL
+------------------------------
+Criteria ID: a6d3befe-16ea-40bb-942f-a88b997f9157 | Group: c2293db1-a4ce-4b59-accc-7d14b09e88c3
+Label: Criterion 1.2: Safety and procedure check
+Description: Ensure standard operating procedures are followed.
+------------------------------
+Criteria ID: b0f212d5-c99d-46c8-b109-4cf4d70681a4 | Group: c2293db1-a4ce-4b59-accc-7d14b09e88c3
+Label: Criterion 1.1: Quality compliance check
+Description: Ensure quality standards are met.
+------------------------------
+Criteria ID: 52178e14-8f64-48da-a11a-b5cb29afab2c | Group: e3727b38-8389-4cff-8c33-42263a9e1a3e
+Label: Criterion 1.1: Quality compliance check
+Description: Ensure quality standards are met.
+------------------------------
+Criteria ID: febcfd46-6eb6-40ab-a7b5-481e4827acac | Group: e3727b38-8389-4cff-8c33-42263a9e1a3e
+Label: Criterion 1.2: Safety and procedure check
+Description: Ensure standard operating procedures are followed.
+------------------------------
+Criteria ID: 26ef1ffd-d67a-4a43-8579-e83503e80d4a | Group: ec74584e-5f34-4a03-85d8-70e9a70ad762
+Label: Criterion 1.1: Quality compliance check
+Description: Ensure quality standards are met.
+------------------------------
+Criteria ID: cfd856d7-42d7-42c0-b40f-dc0668e367d5 | Group: ec74584e-5f34-4a03-85d8-70e9a70ad762
+Label: Criterion 1.2: Safety and procedure check
+Description: Ensure standard operating procedures are followed.
+------------------------------

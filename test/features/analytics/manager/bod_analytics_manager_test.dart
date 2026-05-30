@@ -356,10 +356,22 @@ void main() {
       test(
         'TC-BOD-AP-01: BodAgingBucket.fromName maps raw strings case-insensitively with trim',
         () {
-          expect(BodAgingBucket.fromName('0-7 Days'), equals(BodAgingBucket.sevenDays));
-          expect(BodAgingBucket.fromName('  8-30 days  '), equals(BodAgingBucket.thirtyDays));
-          expect(BodAgingBucket.fromName('31-90 Days'), equals(BodAgingBucket.ninetyDays));
-          expect(BodAgingBucket.fromName('90+ Days'), equals(BodAgingBucket.overdue));
+          expect(
+            BodAgingBucket.fromName('0-7 Days'),
+            equals(BodAgingBucket.sevenDays),
+          );
+          expect(
+            BodAgingBucket.fromName('  8-30 days  '),
+            equals(BodAgingBucket.thirtyDays),
+          );
+          expect(
+            BodAgingBucket.fromName('31-90 Days'),
+            equals(BodAgingBucket.ninetyDays),
+          );
+          expect(
+            BodAgingBucket.fromName('90+ Days'),
+            equals(BodAgingBucket.overdue),
+          );
           expect(BodAgingBucket.fromName('All'), equals(BodAgingBucket.all));
         },
       );

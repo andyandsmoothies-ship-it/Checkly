@@ -171,8 +171,7 @@ class _BodAuditorDetailSheetState extends State<BodAuditorDetailSheet> {
                             ),
                             badges: [
                               PillChip(
-                                label:
-                                    '${detail.avgScore.toStringAsFixed(1)}%',
+                                label: '${detail.avgScore.toStringAsFixed(1)}%',
                                 type: PillChipType.blue,
                               ),
                             ],

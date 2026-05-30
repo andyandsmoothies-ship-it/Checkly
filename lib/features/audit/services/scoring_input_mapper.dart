@@ -126,6 +126,18 @@ class ScoringInputMapper {
     if (configJson == null || configJson.isEmpty) return ScoringMode.penalty;
     try {
       final config = json.decode(configJson) as Map<String, dynamic>;
+      final scoreDirection = config['scoreDirection'] as String?;
+      final isWeighted = config['isWeighted'] as bool? ?? false;
+
+      if (scoreDirection != null) {
+        if (scoreDirection == 'none') return ScoringMode.survey;
+        if (scoreDirection == 'up') return ScoringMode.accumulation;
+        if (scoreDirection == 'down') {
+          return isWeighted ? ScoringMode.penalty : ScoringMode.checklist;
+        }
+      }
+
+      // Fallback: legacy scoringMode key (for old template snapshots)
       final mode = config['scoringMode'] as String?;
       if (mode == 'accumulation') return ScoringMode.accumulation;
       if (mode == 'checklist') return ScoringMode.checklist;

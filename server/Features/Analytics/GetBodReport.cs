@@ -37,7 +37,7 @@ public static class GetBodReport
             }
 
             var storeQuery = db.Stores.AsNoTracking().Where(x => x.IsActive == true);
-            
+
             storeQuery = storeQuery.Where(x => x.Address2 != null && x.Address2.Province == province);
 
             if (!string.IsNullOrEmpty(district))
@@ -235,15 +235,15 @@ public static class GetBodReport
             // 2. 12-Month Trend (Filtered by stores)
             var localFirstDay = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-11);
             var trendStartDate = new DateTimeOffset(localFirstDay, TimeSpan.Zero);
-            
+
             var trendRaw = await db.Submissions.AsNoTracking()
-                .Where(s => 
-                    s.Status == "completed" && 
-                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                    s.CompletedAt.HasValue && 
-                    s.CompletedAt >= trendStartDate && 
-                    s.CompletedAt <= now && 
-                    (s.ScoringMode == null || s.ScoringMode != "survey") && 
+                .Where(s =>
+                    s.Status == "completed" &&
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                    s.CompletedAt.HasValue &&
+                    s.CompletedAt >= trendStartDate &&
+                    s.CompletedAt <= now &&
+                    (s.ScoringMode == null || s.ScoringMode != "survey") &&
                     s.TotalScore.HasValue &&
                     s.StoreId.HasValue &&
                     filteredStoreIds.Contains(s.StoreId.Value))
@@ -267,10 +267,10 @@ public static class GetBodReport
 
             // 4. Category Weaknesses (Last 90 Days) (Filtered by stores)
             var start90DaysAgo = now.AddDays(-90);
-            
+
             var sectionStats = await db.SubmissionSectionScores.AsNoTracking()
-                .Where(ss => ss.CreatedAt >= start90DaysAgo && 
-                             ss.CreatedAt <= now && 
+                .Where(ss => ss.CreatedAt >= start90DaysAgo &&
+                             ss.CreatedAt <= now &&
                              ss.MaxScore > 0 &&
                              ss.StoreId.HasValue &&
                              filteredStoreIds.Contains(ss.StoreId.Value))
@@ -297,7 +297,7 @@ public static class GetBodReport
 
             // 5. Action Plan Aging (Filtered by stores)
             var openAps = await db.ActionPlans.AsNoTracking()
-                .Where(ap => ap.Status == "open" && 
+                .Where(ap => ap.Status == "open" &&
                              ap.CreatedAt <= now &&
                              ap.StoreId.HasValue &&
                              filteredStoreIds.Contains(ap.StoreId.Value))
@@ -328,12 +328,12 @@ public static class GetBodReport
 
             // 6. Auditor Productivity (Last 30 Days) (Filtered by stores)
             var auditorStats = await db.Submissions.AsNoTracking()
-                .Where(s => 
-                    s.Status == "completed" && 
-                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                    s.CompletedAt.HasValue && 
-                    s.CompletedAt >= start30DaysAgo && 
-                    s.CompletedAt <= now && 
+                .Where(s =>
+                    s.Status == "completed" &&
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                    s.CompletedAt.HasValue &&
+                    s.CompletedAt >= start30DaysAgo &&
+                    s.CompletedAt <= now &&
                     s.AuditorId.HasValue &&
                     s.StoreId.HasValue &&
                     filteredStoreIds.Contains(s.StoreId.Value))

@@ -107,6 +107,33 @@ class AnalyticsFilterSheet extends StatelessWidget {
               const SizedBox(height: 12),
 
               DropdownButtonFormField<String>(
+                initialValue: manager.selectedCategoryTag,
+                isExpanded: true,
+                decoration: const InputDecoration(
+                  labelText: 'Category Tag',
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text('All Categories'),
+                  ),
+                  ...(manager.data?.categoryTagNames ?? []).map(
+                    (t) => DropdownMenuItem(
+                      value: t,
+                      child: Text(t, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                ],
+                onChanged: (v) {
+                  manager.selectedCategoryTag = v;
+                  Navigator.pop(context);
+                  manager.load();
+                },
+              ),
+              const SizedBox(height: 12),
+
+              DropdownButtonFormField<String>(
                 initialValue: manager.selectedAuditor,
                 isExpanded: true,
                 decoration: const InputDecoration(

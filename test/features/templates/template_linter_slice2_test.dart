@@ -23,7 +23,8 @@ void main() {
     test('1. EmptyStructureCheck: Blocking Rule', () {
       final result = DartTemplateLinter.lint(
         sections: [],
-        scoringMode: 'penalty',
+        scoreDirection: 'down',
+        isWeighted: true,
         templateType: 'qc',
         progressiveRepeat: false,
       );
@@ -37,7 +38,8 @@ void main() {
       final section = EditableGroup(id: 'g1', title: '   ');
       final result = DartTemplateLinter.lint(
         sections: [section],
-        scoringMode: 'penalty',
+        scoreDirection: 'down',
+        isWeighted: true,
         templateType: 'qc',
         progressiveRepeat: false,
       );
@@ -57,7 +59,8 @@ void main() {
 
       final result = DartTemplateLinter.lint(
         sections: [sec1, sec2],
-        scoringMode: 'penalty',
+        scoreDirection: 'down',
+        isWeighted: true,
         templateType: 'qc',
         progressiveRepeat: false,
       );
@@ -75,7 +78,8 @@ void main() {
 
       final result = DartTemplateLinter.lint(
         sections: [sec1, sec2],
-        scoringMode: 'accumulation',
+        scoreDirection: 'up',
+        isWeighted: false,
         templateType: 'qc',
         progressiveRepeat: false,
       );
@@ -101,7 +105,8 @@ void main() {
 
       final result = DartTemplateLinter.lint(
         sections: [level1],
-        scoringMode: 'accumulation',
+        scoreDirection: 'up',
+        isWeighted: false,
         templateType: 'qc',
         progressiveRepeat: false,
       );
@@ -123,7 +128,8 @@ void main() {
 
       final result = DartTemplateLinter.lint(
         sections: [sec],
-        scoringMode: 'accumulation',
+        scoreDirection: 'up',
+        isWeighted: false,
         templateType: 'qc',
         progressiveRepeat: false,
       );
@@ -140,7 +146,8 @@ void main() {
 
       final result = DartTemplateLinter.lint(
         sections: [sec],
-        scoringMode: 'survey',
+        scoreDirection: 'none',
+        isWeighted: false,
         templateType: 'survey',
         progressiveRepeat: false,
       );
@@ -157,7 +164,8 @@ void main() {
 
       final result = DartTemplateLinter.lint(
         sections: [sec],
-        scoringMode: 'penalty',
+        scoreDirection: 'down',
+        isWeighted: true,
         templateType: 'qc',
         progressiveRepeat: true, // Progressive Repeat Penalty is enabled
       );

@@ -6,15 +6,14 @@ description: AI Orchestration, Workflow, and Handoff Standards.
 # Orchestration Standards
 ## 1. Artifacts & Naming
 - **Immutable Artifacts (Read-Only)**: PROHIBITED: Modifying/overwriting existing workflow artifacts (research, task, plan, etc.) created in past sessions. ALWAYS write a new file with fresh timestamp/ID.
-- **[ConversationID]**: The full UUID of the active conversation session (e.g., `c3563378-9cd7-4609-ae6d-2aba9f71c9ff`).
-- **Topic Folders**: Group by Epic/Issue ID (e.g., `F-123_auth`). Carry folder name forward across all session boundaries.
-- **Dynamic Naming**: Avoid collisions: `[type]_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` (e.g., `task_...`, `walkthrough_...`, `implementation_plan_...`).
-- **Enterprise Storage**: PROHIBITED: Saving artifacts to `brain/`. Write to absolute workspace paths:
-  - `.agents/active_tasks/[topic]/` (Tasks, walkthroughs)
-  - `docs/architecture/[topic]/` (Plans, analysis)
-  - `docs/product/` (Requirements, research)
-  - `docs/qa/[contracts|gates]/[topic]/` (Test specs, test logs)
-  - `docs/diagnostics/[topic]/` (Audits)
+- **3-Bucket Taxonomy**: Write files directly to their permanent location in these absolute workspace paths:
+  - **Epics**: `docs/epics/[epic_name]/slice_[N]/` (for multi-stage work)
+  - **Features**: `docs/features/[feature_name]/` (for standalone features/bugs)
+  - **Reports**: `docs/reports/[type]/[topic]/` (for audits, diagnostics, research)
+- **Epic Ledger**: For Epics, a mandatory `_epic_ledger.md` must be maintained at `docs/epics/[epic_name]/` serving as the single source of truth for progress, linking to the most recent plans and tasks.
+- **Deterministic Naming**: Files MUST use the format `[type]_[YYYYMMDD_HHMMSS].md` (e.g., `task_20260530_144500.md` or `3_task_...`). Do NOT include `ConversationID` in the filename.
+- **Metadata Preservation**: The `ConversationID` (e.g., `c3563378-9cd7-4609-ae6d-2aba9f71c9ff`) MUST be stored in the **YAML Frontmatter** of the file to keep filenames clean.
+- **No Scripts**: The AI is strictly PROHIBITED from moving or renaming files via PowerShell/Python scripts (e.g., `organize_docs.ps1`). Write files directly to their permanent path.
 ## 2. Output Formatting
 - **ASCII-First**: Markdown artifacts must start with a simple text diagram (e.g., `[UI] -> [API]`). Think inside `<latent_space_scratchpad>` first, then draw. No Mermaid/C4 unless requested.
 - **Absolute Paths**: Always output absolute paths (`C:\Users\...`) in handoff logs to prevent user path confusion.

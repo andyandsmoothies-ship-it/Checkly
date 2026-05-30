@@ -12,7 +12,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 
 ## Step 1: Intake & Context Alignment
 
-- [ ] **Task Tracking**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
+- [ ] **Task Tracking**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the standard schema. Include an `## Input Lineage` section tracking the origin idea or link.
 
 - [ ] **Skill Load**: Load the `shaping` skill, the `use-case-creator` skill, and the `use-case-slicing` skill from `.agents/skills/`.
 
@@ -74,7 +74,7 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 
 ## Step 4: Deliverable Generation
 
-- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` to the `docs/product/[topic]/` directory.
+- [ ] **Artifact Gen**: Use `write_to_file` to save `requirements_[YYYYMMDD_HHMMSS].md` to the `docs/features/[topic]/` directory.
 
 - [ ] **Payload Schema**:
 
@@ -96,12 +96,13 @@ description: Business Analysis Workflow. Define User Stories, Use Cases, and Bus
 
 - [ ] **Workspace Copy**: Copy the artifact to `.agents/tmp/research/` so the user can review it.
 
-> **Script Verification Gate (MANDATORY)**:
-
-> You MUST use the `run_command` tool to execute this script before considering the task complete.
-
+> **Document Cleanup (Required)**:
+> Automatically clean up and organize newly created markdown plans into their correct topic folders:
 > // turbo
 
+> **Script Verification Gate (MANDATORY)**:
+> You MUST use the `run_command` tool to execute this script before considering the task complete.
+> // turbo
 > `cmd /c python .agents/scripts/verify_workflow.py "{Absolute Path to your task tracker .md file}"`
 
 <mandatory_constraints>

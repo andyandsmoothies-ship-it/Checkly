@@ -1,0 +1,42 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Checkly.Api -> C:\Users\HP\Documents\GitHub\Checkly\server\bin\Debug\net10.0\Checkly.Api.dll
+  Checkly.Api.Tests -> C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll
+Test run for C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\bin\Debug\net10.0\Checkly.Api.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_WithHostileFieldInjection_IgnoresPrivilegedFields [84 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "penalty"
+Actual:   "checklist"
+           ↑ (pos 0)
+  Stack Trace:
+     at Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_WithHostileFieldInjection_IgnoresPrivilegedFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionMassAssignmentRedTeamTests.cs:line 139
+--- End of stack trace from previous location ---
+Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e766a89909e7c1\HP_DESKTOP-T6IM9HH_2026-05-30_08_06_03.trx
+
+Failed!  - Failed:     1, Passed:     6, Skipped:     0, Total:     7, Duration: 5 s - Checkly.Api.Tests.dll (net10.0)
+
+fail dotnet test: 6 passed, 1 failed, 0 skipped, 0 warnings in 1 projects (6.2 s)
+---------------------------------------
+
+Failed Tests:
+  Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_WithHostileFieldInjection_IgnoresPrivilegedFields
+    Error Message:
+    Assert.Equal() Failure: Strings differ
+    ↓ (pos 0)
+    Expected: "penalty"
+    Actual:   "checklist"
+    ↑ (pos 0)
+    Stack Trace:
+    at Checkly.Api.Tests.Submissions.SubmissionMassAssignmentRedTeamTests.FinalizeSubmission_WithHostileFieldInjection_IgnoresPrivilegedFields() in C:\Users\HP\Documents\GitHub\Checkly\server\tests\Checkly.Api.Tests\SubmissionMassAssignmentRedTeamTests.cs:line 139
+    --- End of stack trace from previous location ---
+    Results File: C:\Users\HP\AppData\Local\Temp\rtk_dotnet_testresults_19e766a89909e7c1\HP_DESKTOP-T6IM9HH_2026-05-30_08_06_03.trx
+    
+
+

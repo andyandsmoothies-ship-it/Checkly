@@ -6,7 +6,7 @@ description: Code quality audit — dead code, drift, conventions, and documenta
 > Read-Only analysis. Role: **Sentinel**. Target: "AI Slop", tech debt, formatting drift.
 ## Step 1: Scope & Skills
 - **Trigger**: Execute weekly or on-demand. (Use `/audit-infra` for DB/architecture health).
-- **Task Tracking**: MANDATORY: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
+- **Task Tracking**: MANDATORY: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` using the strict schema below BEFORE proceeding. List ONLY the audit artifact in the Artifact Inventory. Reserve target source code files for the subsequent implementation step.
 - **Skill Load**: Extract 2-3 keywords (e.g., "health", "refactoring") -> Search `.agents/skills/` -> Load Top 2. Explicitly output list.
 ```markdown
 # Task: [Code Audit Topic Name]
@@ -22,7 +22,7 @@ Workflow: /audit-code | Track: B1
 - [ ] Step 7: Deliverable Handoff
 ## Artifact Inventory
 | Status | File Path | Type |
-| [NEW]  | docs/diagnostics/audit_code_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Report |
+| [NEW]  | docs/reports/diagnostics/audit_code_report_[YYYYMMDD_HHMMSS].md | Report |
 ```
 ## Step 2: Code Quality Scan
 > [!TIP]
@@ -45,7 +45,7 @@ Workflow: /audit-code | Track: B1
 - **Duplication**: Detect copy-pasted validation/API logic. Flag for shared extraction.
 - **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Files breaking 250/400 thresholds? (2) Coverage gaps found? (3) Stale markers count?
 ## Step 5: Assessment Payload
-- **Artifact Gen**: Create `audit_code_report_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` in `docs/diagnostics/` folder. IF zero issues -> create `audit_code_pass_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md`.
+- **Artifact Gen**: Create `audit_code_report_[YYYYMMDD_HHMMSS].md` in `docs/reports/diagnostics/` folder. IF zero issues -> create `audit_code_pass_[YYYYMMDD_HHMMSS].md`.
 - **Severity Matrix**: `🔴 Critical` (Breaks build/Untestable) | `🟡 Warning` (Convention fail/Stale TODO) | `🟢 Optimization` (Dead code/Redundant).
 - **Actionable Fix & Trade-offs**: MANDATORY: Provide exact fix command or refactor snippet for EVERY finding.
   - **Complexity**: For each refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.

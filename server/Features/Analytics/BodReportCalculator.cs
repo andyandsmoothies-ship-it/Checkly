@@ -64,7 +64,7 @@ namespace Checkly.Api.Features.Analytics
 
             // Local end of the target date: 23:59:59.999
             var localEndOfDay = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59, 999, DateTimeKind.Unspecified);
-            
+
             // Convert to UTC DateTimeOffset
             DateTimeOffset targetDateTime;
             if (tz == TimeZoneInfo.Utc)
@@ -89,18 +89,18 @@ namespace Checkly.Api.Features.Analytics
             // 1. Chain KPIs
             try
             {
-                var totalAudits = await db.Submissions.CountAsync(s => 
-                    s.Status == "completed" && 
-                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                    s.CompletedAt.HasValue && 
+                var totalAudits = await db.Submissions.CountAsync(s =>
+                    s.Status == "completed" &&
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                    s.CompletedAt.HasValue &&
                     s.CompletedAt <= targetDateTime, ct);
 
-                var scoredQuery = db.Submissions.Where(s => 
-                    s.Status == "completed" && 
-                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                    s.CompletedAt.HasValue && 
-                    s.CompletedAt <= targetDateTime && 
-                    s.ScoringMode != "survey" && 
+                var scoredQuery = db.Submissions.Where(s =>
+                    s.Status == "completed" &&
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                    s.CompletedAt.HasValue &&
+                    s.CompletedAt <= targetDateTime &&
+                    s.ScoringMode != "survey" &&
                     s.TotalScore.HasValue);
 
                 var scoredCount = await scoredQuery.CountAsync(ct);
@@ -108,33 +108,33 @@ namespace Checkly.Api.Features.Analytics
                     ? Math.Round(await scoredQuery.AverageAsync(s => s.TotalScore!.Value, ct), 1)
                     : 0m;
 
-                var totalScheduled = await db.Submissions.CountAsync(s => 
-                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
+                var totalScheduled = await db.Submissions.CountAsync(s =>
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
                     s.CreatedAt <= targetDateTime, ct);
 
                 var completionRate = totalScheduled > 0
                     ? Math.Round((decimal)totalAudits / totalScheduled * 100m, 1)
                     : 0m;
 
-                var openActionPlans = await db.ActionPlans.CountAsync(ap => 
-                    ap.Status == "open" && 
+                var openActionPlans = await db.ActionPlans.CountAsync(ap =>
+                    ap.Status == "open" &&
                     ap.CreatedAt <= targetDateTime, ct);
 
-                var overdueActionPlans = await db.ActionPlans.CountAsync(ap => 
-                    ap.Status == "open" && 
-                    ap.CreatedAt <= targetDateTime && 
-                    ap.Deadline.HasValue && 
+                var overdueActionPlans = await db.ActionPlans.CountAsync(ap =>
+                    ap.Status == "open" &&
+                    ap.CreatedAt <= targetDateTime &&
+                    ap.Deadline.HasValue &&
                     ap.Deadline <= targetDateTime, ct);
 
-                var activeStores = await db.Stores.CountAsync(st => 
-                    st.IsActive == true && 
+                var activeStores = await db.Stores.CountAsync(st =>
+                    st.IsActive == true &&
                     st.CreatedAt <= targetDateTime, ct);
 
-                var totalAuditors = await db.Submissions.Where(s => 
-                    s.Status == "completed" && 
-                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                    s.CompletedAt.HasValue && 
-                    s.CompletedAt <= targetDateTime && 
+                var totalAuditors = await db.Submissions.Where(s =>
+                    s.Status == "completed" &&
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                    s.CompletedAt.HasValue &&
+                    s.CompletedAt <= targetDateTime &&
                     s.AuditorId.HasValue)
                     .Select(s => s.AuditorId!.Value)
                     .Distinct()
@@ -160,7 +160,7 @@ namespace Checkly.Api.Features.Analytics
             try
             {
                 var localFirstDay = new DateTime(date.Year, date.Month, 1, 0, 0, 0, DateTimeKind.Unspecified).AddMonths(-11);
-                
+
                 DateTimeOffset trendStartDate;
                 if (tz == TimeZoneInfo.Utc)
                 {
@@ -173,13 +173,13 @@ namespace Checkly.Api.Features.Analytics
                 }
 
                 var trendRaw = await db.Submissions.AsNoTracking()
-                    .Where(s => 
-                        s.Status == "completed" && 
-                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                        s.CompletedAt.HasValue && 
-                        s.CompletedAt >= trendStartDate && 
-                        s.CompletedAt <= targetDateTime && 
-                        s.ScoringMode != "survey" && 
+                    .Where(s =>
+                        s.Status == "completed" &&
+                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                        s.CompletedAt.HasValue &&
+                        s.CompletedAt >= trendStartDate &&
+                        s.CompletedAt <= targetDateTime &&
+                        s.ScoringMode != "survey" &&
                         s.TotalScore.HasValue)
                     .GroupBy(s => new { s.CompletedAt!.Value.Year, s.CompletedAt.Value.Month })
                     .Select(g => new
@@ -209,7 +209,7 @@ namespace Checkly.Api.Features.Analytics
             try
             {
                 var local30DaysAgo = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Unspecified).AddDays(-30);
-                
+
                 DateTimeOffset start30DaysAgo;
                 if (tz == TimeZoneInfo.Utc)
                 {
@@ -222,14 +222,14 @@ namespace Checkly.Api.Features.Analytics
                 }
 
                 var storeStats = await db.Submissions.AsNoTracking()
-                    .Where(s => 
-                        s.Status == "completed" && 
-                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                        s.CompletedAt.HasValue && 
-                        s.CompletedAt >= start30DaysAgo && 
-                        s.CompletedAt <= targetDateTime && 
-                        s.ScoringMode != "survey" && 
-                        s.TotalScore.HasValue && 
+                    .Where(s =>
+                        s.Status == "completed" &&
+                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                        s.CompletedAt.HasValue &&
+                        s.CompletedAt >= start30DaysAgo &&
+                        s.CompletedAt <= targetDateTime &&
+                        s.ScoringMode != "survey" &&
+                        s.TotalScore.HasValue &&
                         s.StoreId.HasValue &&
                         (s.TemplateId == null || s.Template!.Type == "QC"))
                     .GroupBy(s => new { s.StoreId!.Value, s.StoreName })
@@ -269,7 +269,7 @@ namespace Checkly.Api.Features.Analytics
             try
             {
                 var local90DaysAgo = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Unspecified).AddDays(-90);
-                
+
                 DateTimeOffset start90DaysAgo;
                 if (tz == TimeZoneInfo.Utc)
                 {
@@ -350,7 +350,7 @@ namespace Checkly.Api.Features.Analytics
             try
             {
                 var local30DaysAgo = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Unspecified).AddDays(-30);
-                
+
                 DateTimeOffset start30DaysAgo;
                 if (tz == TimeZoneInfo.Utc)
                 {
@@ -363,12 +363,12 @@ namespace Checkly.Api.Features.Analytics
                 }
 
                 var auditorStats = await db.Submissions.AsNoTracking()
-                    .Where(s => 
-                        s.Status == "completed" && 
-                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") && 
-                        s.CompletedAt.HasValue && 
-                        s.CompletedAt >= start30DaysAgo && 
-                        s.CompletedAt <= targetDateTime && 
+                    .Where(s =>
+                        s.Status == "completed" &&
+                        (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                        s.CompletedAt.HasValue &&
+                        s.CompletedAt >= start30DaysAgo &&
+                        s.CompletedAt <= targetDateTime &&
                         s.AuditorId.HasValue)
                     .GroupBy(s => new { s.AuditorId!.Value, s.AuditorName })
                     .Select(g => new

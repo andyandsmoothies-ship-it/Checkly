@@ -114,6 +114,17 @@ extension _TemplateListLogic on _TemplateListPageState {
     return items;
   }
 
+  String _normalizeType(String type) {
+    final t = type.toLowerCase().trim();
+    if (t == 'qc') return 'qc';
+    if (t == 'training') return 'training';
+    if (t == 'general') return 'general';
+    if (t == 'task force' || t == 'task_force' || t == 'taskforce') {
+      return 'task force';
+    }
+    return t;
+  }
+
   /// Groups filtered templates by type, respecting _typeOrder.
   /// Always includes all types from _typeOrder even if empty (Fix 4).
   Map<String, List<TemplateDto>> get _groupedByType {
@@ -123,7 +134,8 @@ extension _TemplateListLogic on _TemplateListPageState {
       for (final type in _typeOrder) type: [],
     };
     for (final t in items) {
-      groups.putIfAbsent(t.type, () => []).add(t);
+      final normalizedType = _normalizeType(t.type);
+      groups.putIfAbsent(normalizedType, () => []).add(t);
     }
     // Sort keys by _typeOrder, unknowns at end
     final sortedKeys = groups.keys.toList()

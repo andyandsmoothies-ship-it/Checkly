@@ -1,0 +1,27 @@
+This article describes the **Agent Quality Layer**. This layer is a set of rules and automated checks that stand between the coding agent and your production code. It ensures that the code written by an AI is high quality, safe, and does not break any rules.
+
+Here is a simple flowchart showing how this quality layer works:
+
+```text
+[AI Agent]
+    │
+    ▼ (Writes Code)
+[Agent Quality Layer] (Automatic Checks & Boundaries)
+    ├── Feedback Sensors (Compilers & Linters)
+    ├── Semantic Evals (Logic & Flow verification)
+    ├── Refactor Boundaries (Impact analysis & File constraints)
+    ├── Provenance Trails (Traceability & Artifact tracking)
+    └── Surface Inventory (MCP & Security control)
+    │
+    ▼ (Approved)
+[Human Review / PR]
+```
+
+---
+
+### How Checkly Already Applies These 5 Controls (with Proof)
+
+Checkly is already very advanced! It implements these 5 controls in the following ways:
+
+#### 1. Feedback Sensors (Mechanical Checks)
+<truncated 4475 bytes>

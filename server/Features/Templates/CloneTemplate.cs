@@ -52,6 +52,7 @@ public static class CloneTemplate
             Description = source.Description,
             ScoringLogicConfig = source.ScoringLogicConfig,
             DisplayNoun = source.DisplayNoun,
+            CategoryTag = source.CategoryTag,
             Version = 1,
             IsActive = true,
             CreatedBy = Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var uid) ? uid : null,
@@ -114,6 +115,7 @@ public static class CloneTemplate
             new TemplateDto(
                 newTemplate.Id, newTemplate.Title, newTemplate.Description, newTemplate.Type,
                 newTemplate.Version, newTemplate.ScoringLogicConfig, newTemplate.DisplayNoun,
+                newTemplate.CategoryTag,
                 newTemplate.IsActive, newTemplate.CreatedAt, newTemplate.UpdatedAt));
     }
 }

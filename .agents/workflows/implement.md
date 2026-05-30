@@ -16,7 +16,7 @@ description: The Core Builder Implementation Workflow
 
 - **Governance**: Run Pre-Flight check (`governance-rules.md`).
 
-- **Task Tracker**: Create `.agents/active_tasks/[topic]/task_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` BEFORE writing code:
+- **Task Tracker**: Create `docs/features/[topic]/task_[YYYYMMDD_HHMMSS].md` BEFORE writing code:
 
 ```markdown
 
@@ -52,9 +52,9 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 |---|---|---|
 
-| [NEW] | .agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Walkthrough |
+| [NEW] | docs/features/[topic]/walkthrough_[YYYYMMDD_HHMMSS].md | Walkthrough |
 
-| [NEW] | docs/qa/gates/[topic]/green_test_log_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md | Test Log |
+| [NEW] | docs/reports/qa/[topic]/green_test_log_[YYYYMMDD_HHMMSS].md | Test Log |
 
 ```
 
@@ -106,21 +106,26 @@ Workflow: /implement | Track: [A / B1 / B2 / C]
 
 - **Orphaned Stub Check**: MANDATORY: Execute `grep_search` to ensure absolutely NO `fail('Implement...')` or placeholder stubs (e.g., `onPressed: () {}`) remain from QA or UI building in the active slice.
 
+- **PBAC UI Validation Check**: MANDATORY: Run the PBAC UI checker to scan for unprotected widgets (advisory mode):
+  // turbo
+  `cmd /c python .agents/scripts/verify_pbac_ui.py --advisory`
+
 - **Anti-Collapse Gate**: IF any modified file >400 lines: STRICTLY PROHIBITED from handoff. You MUST halt and extract components.
 
 - **Handoff Trap**: IF Context Limit Approaching: Create `handoff.md` -> YIELD.
 
-- **Mandatory Scan**: Print checklist in response: (1) 6 angles reviewed? (2) State tests exist AND NO orphaned stubs remain? (3) Arch boundaries respected? (4) File lines <400?
+- **Mandatory Scan**: Print checklist in response: (1) 6 angles reviewed? (2) State tests exist AND NO orphaned stubs remain? (3) PBAC UI check executed? (4) Arch boundaries respected? (5) File lines <400?
 
 ## Step 4: Handoff
 
-- **Ship/Show (TDD Green, Blast Radius 0)**: Write full `walkthrough_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` + `green_test_log_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` -> Execute Verify Script.
+
+- **Ship/Show (TDD Green, Blast Radius 0)**: Write full `walkthrough_[YYYYMMDD_HHMMSS].md` + `green_test_log_[YYYYMMDD_HHMMSS].md` -> Execute Verify Script.
 
 - **Ask (Architecture/Security Change)**: Notify user BEFORE action and wait for approval.
 
 ### Walkthrough Schema
 
-- **Required Sections**: Walkthrough `.agents/active_tasks/[topic]/walkthrough_[YYYYMMDD_HHMMSS]_[topic]_[ConversationID].md` MUST contain:
+- **Required Sections**: Walkthrough `docs/features/[topic]/walkthrough_[YYYYMMDD_HHMMSS].md` MUST contain:
 
   1. `## Input Lineage`: Absolute path of implementation plan.
 

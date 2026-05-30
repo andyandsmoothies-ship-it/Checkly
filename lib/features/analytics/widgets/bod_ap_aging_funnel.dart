@@ -85,7 +85,8 @@ class BodApAgingFunnel extends StatelessWidget {
             children: [
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.sevenDays),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.sevenDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -99,7 +100,8 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.thirtyDays),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.thirtyDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -113,7 +115,8 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.ninetyDays),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.ninetyDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -127,7 +130,8 @@ class BodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.overdue),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.overdue),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,

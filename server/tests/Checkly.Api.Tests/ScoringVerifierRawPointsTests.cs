@@ -32,7 +32,7 @@ public class ScoringVerifierRawPointsTests
         // numericValue=0 → binary pass → earns full 15 points
         var answers = new[] { MakeAnswer(c1, numericValue: 0m, value: "pass") };
 
-        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoringMode: "accumulation");
+        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoreDirection: "up");
 
         Assert.Equal(15m, result.RawEarned);
         Assert.Equal(15m, result.RawMax);
@@ -50,7 +50,7 @@ public class ScoringVerifierRawPointsTests
         // numericValue=1 → binary fail → earns 0 points
         var answers = new[] { MakeAnswer(c1, numericValue: 1m, value: null) };
 
-        dynamic result = _sut.Verify(0m, answers, groups, criteria, scoringMode: "accumulation");
+        dynamic result = _sut.Verify(0m, answers, groups, criteria, scoreDirection: "up");
 
         Assert.Equal(0m, result.RawEarned);
         Assert.Equal(15m, result.RawMax);
@@ -67,7 +67,7 @@ public class ScoringVerifierRawPointsTests
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 5m) };
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "conform") };
 
-        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoringMode: "penalty");
+        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoreDirection: "down", isWeighted: true);
 
         Assert.Null(result.RawEarned);
         Assert.Null(result.RawMax);
@@ -83,7 +83,7 @@ public class ScoringVerifierRawPointsTests
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 5m) };
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "conform") };
 
-        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoringMode: "penalty");
+        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoreDirection: "down", isWeighted: true);
 
         Assert.Null(result.RawEarned);
         Assert.Null(result.RawMax);
@@ -99,10 +99,10 @@ public class ScoringVerifierRawPointsTests
         var criteria = new[] { MakeCriterion(c1, sectionId, points: 5m) };
         var answers = new[] { MakeAnswer(c1, numericValue: null, value: "conform") };
 
-        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoringMode: "checklist");
+        dynamic result = _sut.Verify(100m, answers, groups, criteria, scoreDirection: "down", isWeighted: false);
 
         Assert.Null(result.RawEarned);
         Assert.Null(result.RawMax);
-        Assert.Null(result.IsWeighted);
+        Assert.False(result.IsWeighted); // Checklist mode stamps IsWeighted=false per the new dispatch contract
     }
 }

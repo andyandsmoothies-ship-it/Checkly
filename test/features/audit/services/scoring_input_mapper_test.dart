@@ -160,5 +160,50 @@ void main() {
       expect(section.criteria.length, 1);
       expect(section.criteria.first.maxDeductionPoints, 3.5);
     });
+
+    group('parseScoringMode (Slice 3 Redesign)', () {
+      test('TC-01: down + weighted -> penalty', () {
+        final config = '{"scoreDirection":"down","isWeighted":true}';
+        expect(ScoringInputMapper.parseScoringMode(config), ScoringMode.penalty);
+      });
+
+      test('TC-02: down + unweighted -> checklist', () {
+        final config = '{"scoreDirection":"down","isWeighted":false}';
+        expect(ScoringInputMapper.parseScoringMode(config), ScoringMode.checklist);
+      });
+
+      test('TC-03: up -> accumulation', () {
+        final config = '{"scoreDirection":"up","isWeighted":false}';
+        expect(ScoringInputMapper.parseScoringMode(config), ScoringMode.accumulation);
+      });
+
+      test('TC-04: none -> survey', () {
+        final config = '{"scoreDirection":"none","isWeighted":false}';
+        expect(ScoringInputMapper.parseScoringMode(config), ScoringMode.survey);
+      });
+
+      test('TC-05: null input -> penalty default', () {
+        expect(ScoringInputMapper.parseScoringMode(null), ScoringMode.penalty);
+      });
+
+      test('TC-05b: malformed JSON -> penalty default', () {
+        expect(ScoringInputMapper.parseScoringMode('{ bad'), ScoringMode.penalty);
+      });
+
+      test('TC-06: legacy scoringMode key still works (accumulation)', () {
+        final config = '{"scoringMode":"accumulation"}';
+        expect(ScoringInputMapper.parseScoringMode(config), ScoringMode.accumulation);
+      });
+
+      test('TC-06b: legacy scoringMode key still works (checklist)', () {
+        final config = '{"scoringMode":"checklist"}';
+        expect(ScoringInputMapper.parseScoringMode(config), ScoringMode.checklist);
+      });
+
+      test('TC-07: scoreDirection present, isWeighted missing -> defaults false -> checklist', () {
+        final config = '{"scoreDirection":"down"}';
+        expect(ScoringInputMapper.parseScoringMode(config), ScoringMode.checklist);
+      });
+    });
   });
 }

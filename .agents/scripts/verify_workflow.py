@@ -438,6 +438,33 @@ def check_workspace_visibility(session_dir: str) -> None:
 
 
 
+def check_modularity_index() -> None:
+    print("\n[CHECK 6] Scanning files and functions for size limits (Modularity)...")
+    import subprocess
+    script_path = os.path.join(os.path.dirname(__file__), "modularity_index.py")
+    if os.path.exists(script_path):
+        res = subprocess.run([sys.executable, script_path, "--advisory"], capture_output=True, text=True, encoding="utf-8")
+        print(res.stdout)
+        if res.returncode != 0:
+            fail("Modularity Index Checker failed to run.")
+    else:
+        warn("modularity_index.py script not found.")
+
+
+def check_sync_contracts() -> None:
+    print("\n[CHECK 7] Scanning database and DTO contracts for alignment...")
+    import subprocess
+    script_path = os.path.join(os.path.dirname(__file__), "verify_sync_contracts.py")
+    if os.path.exists(script_path):
+        res = subprocess.run([sys.executable, script_path, "--advisory"], capture_output=True, text=True, encoding="utf-8")
+        print(res.stdout)
+        if res.returncode != 0:
+            fail("Sync Contract Checker failed to run.")
+    else:
+        warn("verify_sync_contracts.py script not found.")
+
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
@@ -477,6 +504,8 @@ def main() -> None:
     check_artifact_sections(session_dir)
     check_forensic_evidence(session_dir)
     check_workspace_visibility(session_dir)
+    check_modularity_index()
+    check_sync_contracts()
 
     print(f"\n{'='*60}")
 
