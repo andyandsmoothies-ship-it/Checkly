@@ -18,31 +18,55 @@ The scoring logic operates on a two-level hierarchy:
 
 ## 2. Core Formulas
 
-### A. Criteria Deduction
-Each criterion calculates its deductions based on faults found.
-- **Base Deduction** = `(Faults × Minus Per Fault) + (Repeated Faults × Minus Per Fault)`
-- **Progressive Repeat Penalty** (optional, per-template): When enabled, repeated faults use **quadratic escalation** instead of linear:
-  - `Repeat Deduction = Repeated Faults² × Minus Per Fault`
-  - Controlled by `scoring_logic_config.features.progressive_repeat_penalty` (default: `false`)
-- **Criteria Cap**: The total deduction for a single criterion is capped by its `max_deduction_points` (or `points_weight`).
-- **Total Criteria Deduction** = `MIN(Base Deduction, Criteria Cap)`
+### A. Criteria Deduction / Earned Points
+Each criterion calculates its scoring contribution based on answers and faults.
+- **Deduction (Down Scoring)**:
+  - **Base Deduction** = `(Faults × Minus Per Fault) + (Repeated Faults × Minus Per Fault)`
+  - **Progressive Repeat Penalty** (optional, per-template): When enabled, repeated faults use **quadratic escalation** instead of linear:
+    - `Repeat Deduction = Repeated Faults² × Minus Per Fault`
+    - Controlled by `scoring_logic_config.features.progressive_repeat_penalty` (default: `false`)
+  - **Criteria Cap**: The total deduction for a single criterion is capped by its `max_deduction_points` (or `points_weight`).
+  - **Total Criteria Deduction** = `MIN(Base Deduction, Criteria Cap)`
+- **Earned Points (Up Scoring / Accumulation)**:
+  - For **scale** input types: The earned score is the selected scale option's point value directly (`numericValue`).
+  - For **binary/numeric** input types: If the criterion has 0 faults, is not `non_conform`, and has 0 repeated faults, it earns full `points_weight`. Otherwise, it earns `0` points.
+
+---
 
 ### B. Section Score (Top-Level Group)
-A section's score is a percentage representing the health of that section.
+A section's score is a ratio representing the health or earned contribution of that section.
+
+#### 1. Down Scoring (Checklist / Penalty)
 - **Section Before** = `SUM(All Criteria Caps within the Section)`
 - **Section Deduction** = `SUM(All Total Criteria Deductions within the Section)`
 - **Section After** = `Section Before - Section Deduction`
 - **Section Ratio** = `Section After / Section Before`
 
-### C. Total Weighted Score (Percentage)
-The final audit score is a **Normalized Weighted Average** of all section ratios.
+#### 2. Up Scoring (Accumulation)
+- **Section Possible** = `SUM(All Points Weights within the Section)`
+- **Section Earned** = `SUM(All Criteria Earned Points within the Section)`
+- **Section Ratio** = `Section Earned / Section Possible` (forced to `0` if a CCP is failed in that section)
+
+---
+
+### C. Final Score Calculation (Percentage)
+The final audit score is calculated depending on the scoring direction and weight configurations:
+
+#### 1. Penalty (Weighted Down) — `scoreDirection = 'down'`, `isWeighted = true`
 - **Weighted Score** = `SUM(Section Ratio * Section Density Weight)`
 - **Total Possible Weight** = `SUM(All Section Weights)`
-- **Final Result**:
-    - If `Total Possible Weight > 0`: `(Weighted Score / Total Possible Weight) * 100`
-    - If `Total Possible Weight = 0`: `100 - SUM(All Raw Points Deductions)`
+- **Final Result**: `(Weighted Score / Total Possible Weight) * 100`
 
-This ensures that templates with no points or weights assigned still start at **100%** and lose points incrementally for faults.
+#### 2. Checklist (Simple Down) — `scoreDirection = 'down'`, `isWeighted = false`
+- **Final Result**: `MAX(0, 100 - SUM(All Criteria Deductions))`
+
+#### 3. Accumulation (Weighted Up) — `scoreDirection = 'up'`, `isWeighted = true`
+- **Weighted Score** = `SUM(Section Ratio * Section Density Weight)`
+- **Total Possible Weight** = `SUM(All Section Weights)`
+- **Final Result**: `(Weighted Score / Total Possible Weight) * 100`
+
+#### 4. Accumulation (Simple Up) — `scoreDirection = 'up'`, `isWeighted = false`
+- **Final Result**: `(SUM(All Section Earned Points) / SUM(All Section Possible Points)) * 100`
 
 ---
 
@@ -108,12 +132,14 @@ When a template is created as 'No Score' (survey) or 'Flat Points' (checklist):
 - **Choice input types**: `single_choice` (pick one) and `multi_choice` (select all that apply) — options stored in `criteria.metadata` as `{"options": ["A","B","C"]}`
 - **History badge**: Completed survey submissions show a purple **SURVEY** badge instead of a score
 
----
-
 ## 6. Technical Implementation
 
 ### Flutter Mobile (Primary)
 - **Scoring Engine**: `lib/_shared/services/scoring_engine.dart`
+- **Simple Accumulation Calculator**: `lib/_shared/services/accumulation_calculator.dart`
+- **Weighted Accumulation Calculator**: `lib/_shared/services/weighted_accumulation_calculator.dart`
+- **Penalty Calculator**: `lib/_shared/services/penalty_calculator.dart`
+- **Checklist Calculator**: `lib/_shared/services/checklist_calculator.dart`
 - **Audit Manager**: `lib/features/audit/manager/audit_manager.dart`
 - **Audit Form Page**: `lib/features/audit/pages/audit_form_page.dart`
 - **Template Builder**: `lib/features/templates/pages/template_builder_page.dart`
@@ -132,6 +158,7 @@ The `CreateSubmission` and `FinalizeSubmission` endpoints include **synchronous 
 | Component | Purpose |
 |:---|:---|
 | `ScoringVerifier.cs` | Re-computes from template + answers, mimicking `scoring_engine.dart` |
+| `ScoringCalculators.cs` | Houses pure functions for calculation execution (`VerifyAccumulation`, `VerifyAccumulationWeighted`, `VerifyChecklist`, `VerifyPenalty`) |
 | `ScoringConfigParser.cs` | Safe extraction of `scoreDirection`, `isWeighted`, and `progressiveRepeat` from JSON configs, with logging on parse failure to prevent silent fallbacks. |
 | `scoring_input_mapper.dart` | Client-side mapper. Applies a case-insensitive check for `non_conform` answers to assign a default `numericValue=1`, ensuring parity with C#. |
 

@@ -14,7 +14,6 @@ public sealed class Template
     public int Version { get; set; }
     public string? ScoringLogicConfig { get; set; }
     public string? DisplayNoun { get; set; }
-    public string? CategoryTag { get; set; }
     public bool IsActive { get; set; }
     public Guid? CreatedBy { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

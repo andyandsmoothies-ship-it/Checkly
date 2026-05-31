@@ -93,7 +93,7 @@ Future<bool?> showSubmitConfirmDialog(
           if (answered < total) ...[
             const SizedBox(height: 12),
             Text(
-              '⚠ ${total - answered} criteria unanswered',
+              'Please note: ${total - answered} questions are still unanswered.',
               style: TextStyle(
                 color: Theme.of(ctx).colorScheme.error,
                 fontWeight: FontWeight.w500,
@@ -138,8 +138,8 @@ Future<void> checkAndSetGps(BuildContext context, AuditManager manager) async {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Unverified location — ${result.distance}m from store '
-                '(max ${GpsService.maxDistanceMeters}m)',
+                'Location verification failed — you are ${result.distance} meters away from the store '
+                '(max ${GpsService.maxDistanceMeters} meters).',
               ),
               backgroundColor: AppTheme.warning,
               duration: const Duration(seconds: 4),
@@ -152,7 +152,7 @@ Future<void> checkAndSetGps(BuildContext context, AuditManager manager) async {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('📍 Location unavailable — submitting without GPS'),
+          content: Text('📍 Location services are unavailable. Your audit will be saved without coordinate pinning.'),
         ),
       );
     }

@@ -231,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                     key: const Key('forgotPasswordButton'),
                     onPressed: _showForgotPasswordDialog,
                     child: const Text(
-                      'Forgot Password?',
+                      'Reset Password',
                       style: TextStyle(
                         color: AppColors.wolf,
                         fontWeight: FontWeight.w700,
@@ -260,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text(
-              'Got it',
+              'Continue',
               style: TextStyle(
                 color: AppColors.macaw,
                 fontWeight: FontWeight.w800,

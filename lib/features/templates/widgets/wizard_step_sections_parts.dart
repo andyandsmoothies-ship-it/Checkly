@@ -98,6 +98,9 @@ class WizardSectionProgressHeader extends StatelessWidget {
   final int currentIdx;
   final int sectionCount;
   final String countLabel;
+  final bool densityEnabled;
+  final EditableGroup? section;
+  final VoidCallback? onChanged;
 
   const WizardSectionProgressHeader({
     super.key,
@@ -105,6 +108,9 @@ class WizardSectionProgressHeader extends StatelessWidget {
     required this.currentIdx,
     required this.sectionCount,
     required this.countLabel,
+    this.densityEnabled = false,
+    this.section,
+    this.onChanged,
   });
 
   @override
@@ -140,6 +146,70 @@ class WizardSectionProgressHeader extends StatelessWidget {
             ],
           ),
         ),
+        if (densityEnabled && section != null) ...[
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Weight',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                width: 64,
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: section!.weightCtrl,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                          fontSize: theme.textTheme.bodySmall?.fontSize,
+                          color: theme.colorScheme.primary,
+                          fontFamily: 'Outfit',
+                          fontWeight: FontWeight.bold,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: '0',
+                          isDense: true,
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        onTap: () => section!.weightCtrl.selection = TextSelection(
+                          baseOffset: 0,
+                          extentOffset: section!.weightCtrl.text.length,
+                        ),
+                        onChanged: (_) => onChanged?.call(),
+                      ),
+                    ),
+                    Text(
+                      '%',
+                      style: TextStyle(
+                        fontSize: theme.textTheme.bodySmall?.fontSize,
+                        color: theme.colorScheme.primary,
+                        fontFamily: 'Outfit',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

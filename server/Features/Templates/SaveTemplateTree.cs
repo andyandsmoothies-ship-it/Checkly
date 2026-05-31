@@ -24,7 +24,6 @@ public static class SaveTemplateTree
         string? ScoringLogicConfig,
         string? DisplayNoun,
         int Version,
-        string? CategoryTag,
         List<SaveGroupRequest> Groups);
 
     public record SaveGroupRequest(
@@ -133,7 +132,6 @@ public static class SaveTemplateTree
         template.Description = request.Description;
         template.ScoringLogicConfig = request.ScoringLogicConfig;
         template.DisplayNoun = request.DisplayNoun;
-        template.CategoryTag = request.CategoryTag;
         template.Version++;
         template.UpdatedAt = now;
 
@@ -193,7 +191,6 @@ public static class SaveTemplateTree
         var dto = new TemplateTreeDto(
             template.Id, template.Title, template.Description, template.Type,
             template.Version, template.ScoringLogicConfig, template.DisplayNoun,
-            template.CategoryTag,
             template.IsActive, template.CreatedAt, template.UpdatedAt, tree,
             lintResult);
 

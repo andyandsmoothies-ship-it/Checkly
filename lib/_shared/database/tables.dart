@@ -13,7 +13,6 @@ class CachedTemplates extends Table {
   IntColumn get version => integer().withDefault(const Constant(1))();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   TextColumn get scoringLogicConfig => text().nullable()();
-  TextColumn get categoryTag => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 

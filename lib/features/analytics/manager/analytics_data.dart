@@ -72,7 +72,6 @@ class AnalyticsData {
   final List<String> templateTypes;
   final List<String> provinceNames;
   final List<String> auditorNames;
-  final List<String> categoryTagNames;
   final List<ActionableInsight> insights;
   final RadarData? radarData;
   final bool insightsStale;
@@ -89,7 +88,6 @@ class AnalyticsData {
     required this.templateTypes,
     required this.provinceNames,
     required this.auditorNames,
-    this.categoryTagNames = const [],
     this.insights = const [],
     this.radarData,
     this.insightsStale = false,

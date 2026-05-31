@@ -220,7 +220,6 @@ class TemplateDao {
       version: t.version,
       scoringLogicConfig: t.scoringLogicConfig,
       isActive: t.isActive,
-      categoryTag: t.categoryTag,
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
       groups: buildTree(rootGroups),
@@ -237,7 +236,6 @@ class TemplateDao {
     version: row.version,
     scoringLogicConfig: row.scoringLogicConfig,
     isActive: row.isActive,
-    categoryTag: row.categoryTag,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   );
@@ -251,7 +249,6 @@ class TemplateDao {
         version: Value(dto.version),
         isActive: Value(dto.isActive),
         scoringLogicConfig: Value(dto.scoringLogicConfig),
-        categoryTag: Value(dto.categoryTag),
         createdAt: dto.createdAt,
         updatedAt: dto.updatedAt,
       );

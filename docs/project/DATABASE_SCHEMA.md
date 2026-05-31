@@ -119,7 +119,6 @@ Audit templates define the structure of an audit (what to check).
 | `type` | text? | Category: `qc`, `training`, `general`, `task force` |
 | `is_active` | boolean | Soft delete flag |
 | `version` | integer | Template version counter — incremented on every template/group/criterion update. Used for snapshot versioning |
-| `category_tag` | text | Audit category tag (e.g. `routine`, `compliance`) |
 | `scoring_logic_config` | jsonb? | Scoring rules: `scoreDirection` (`down`/`up`/`none`), `isWeighted`, density flags, repeat config, `actionPlanDeadlineDays`, and `confirm_required` |
 | `display_noun` | text? | Custom terminology override (e.g., "Inspection" instead of default derived from scoring mode) |
 | `created_by` | UUID? (FK → AspNetUsers) | Admin who created the template |
@@ -188,7 +187,6 @@ A completed (or in-progress) audit execution.
 | `total_score` | decimal? | Final calculated score (0-100). Null when score_direction is none |
 | `score_direction` | text | Direction of scoring: `down`, `up`, or `none` |
 | `is_weighted` | boolean | True if points are weighted as percentages |
-| `category_tag` | text | Denormalized category tag for fast filtering |
 | `section_scores` | jsonb? | Per-section score breakdown: `{"Section": {"score": 82, "maxScore": 100}}` |
 | `status` | text | `draft`, `completed`, `approved`, `rejected` |
 | `review_status` | text? | Admin/AM review disposition |

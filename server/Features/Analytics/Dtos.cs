@@ -41,6 +41,5 @@ public sealed record AnalyticsResponse(
     List<SectionScore> SectionBreakdown,
     List<ActionableInsight>? Insights = null,
     RadarData? RadarData = null,
-    bool InsightsStale = false,
-    List<string>? CategoryTagNames = null);
+    bool InsightsStale = false);
 

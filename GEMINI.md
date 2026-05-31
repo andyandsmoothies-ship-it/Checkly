@@ -148,6 +148,8 @@
   - **Fix:** Always cast progressive repeat fault counts to `decimal` *before* multiplication (`(decimal)repeatedFaults * (decimal)repeatedFaults`) to prevent 32-bit integer overflow exceptions on high fault counts (above 46,340 faults).
 - **Gotcha: PowerShell UTF-8 ANSI Double-Encoding (Vietnamese/Unicode Corruption)**
   - **Fix:** Windows PowerShell 5.1 loads files in ANSI by default if they lack a BOM, which corrupts multi-byte UTF-8 sequences (like Vietnamese `Đ` and `á`) during seeder generation. To prevent string corruption, NEVER use raw non-ASCII unicode literal strings in script templates or heredocs. Always express non-ASCII characters inside string literals using their safe C# escape sequence representation (e.g., `\u0110\u00e1nh gi\u00e1` for `Đánh giá`).
+- **Gotcha: Viewport Off-Screen Test Failure**
+  - **Fix:** If a newly added list/grid item pushes other elements off-screen in widget tests, the lazy-loading widgets (like GridView/ListView) will not build them, causing finders to fail. Always set `tester.view.physicalSize` to a larger size (e.g. `const Size(800, 1200)`) and restore it inside `addTearDown` to ensure all elements fit in the test viewport.
 
 
 

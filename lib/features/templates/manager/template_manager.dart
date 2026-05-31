@@ -108,7 +108,6 @@ class TemplateManager extends ChangeNotifier {
             version: fresh.version,
             scoringLogicConfig: fresh.scoringLogicConfig,
             isActive: fresh.isActive,
-            categoryTag: fresh.categoryTag,
             createdAt: fresh.createdAt,
             updatedAt: fresh.updatedAt,
           ),
@@ -138,7 +137,6 @@ class TemplateManager extends ChangeNotifier {
     String? description,
     String? scoringLogicConfig,
     String? displayNoun,
-    String? categoryTag,
     int version = 0,
     List<Map<String, dynamic>> groups = const [],
   }) async {
@@ -151,7 +149,6 @@ class TemplateManager extends ChangeNotifier {
         type: type,
         description: description,
         scoringLogicConfig: scoringLogicConfig,
-        categoryTag: categoryTag,
       );
       templateId = result['id'] as String;
       // Sync the server-initialized version (server sets Version = 1 on creation)
@@ -169,7 +166,6 @@ class TemplateManager extends ChangeNotifier {
         description: description,
         scoringLogicConfig: scoringLogicConfig,
         displayNoun: displayNoun,
-        categoryTag: categoryTag,
         version: version,
         groups: groups,
       );

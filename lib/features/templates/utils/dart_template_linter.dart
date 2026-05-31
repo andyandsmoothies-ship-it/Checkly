@@ -30,6 +30,35 @@ class DartTemplateLinter {
       return LintResult(errors: errors, warnings: warnings);
     }
 
+    // CategoryTypeMismatch Rule
+    bool hasCcpOrRisk = false;
+    void scanCcpOrRisk(EditableGroup group) {
+      if (group.criteria.any((c) => c.isCcp || c.isRisk)) {
+        hasCcpOrRisk = true;
+        return;
+      }
+      for (final sub in group.subSections) {
+        scanCcpOrRisk(sub);
+        if (hasCcpOrRisk) return;
+      }
+    }
+    for (final sec in sections) {
+      scanCcpOrRisk(sec);
+      if (hasCcpOrRisk) break;
+    }
+
+    if (hasCcpOrRisk &&
+        templateType.toLowerCase().trim() != 'qc' &&
+        templateType.toLowerCase().trim() != 'survey') {
+      errors.add(
+        LintIssue(
+          ruleId: 'CategoryTypeMismatch',
+          message: 'Template with CCP or Fatal Risk checkpoints must be categorized as Quality Control (qc).',
+          severity: 'Error',
+        ),
+      );
+    }
+
     // Traverse all elements helper
     final List<String> allIds = [];
 

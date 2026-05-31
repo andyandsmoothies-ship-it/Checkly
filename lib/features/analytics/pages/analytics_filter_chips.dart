@@ -60,17 +60,7 @@ class AnalyticsFilterChips extends StatelessWidget {
                 },
               ),
             ),
-          if (manager.selectedCategoryTag != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: InputChip(
-                label: Text('Category: ${manager.selectedCategoryTag}'),
-                onDeleted: () {
-                  manager.selectedCategoryTag = null;
-                  manager.load();
-                },
-              ),
-            ),
+
           if (manager.selectedAuditor != null)
             Padding(
               padding: const EdgeInsets.only(right: 8),

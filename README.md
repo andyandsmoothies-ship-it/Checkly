@@ -8,13 +8,13 @@
 
 **Mobile-first audit & inspection platform** — build dynamic templates, run audits offline, score automatically, and track corrective actions. Built with Flutter and a self-hosted ASP.NET Core API backed by PostgreSQL. 
 
-> **Last Updated:** May 13, 2026
+> **Last Updated:** May 31, 2026
 
 ---
 
 ## Key Features
 
-- **Dynamic Template Engine** — 4 scoring modes (Penalty, Accumulation, Checklist, Survey), 5 input types, nested sections, CCP/RISK overrides, and weighted density. One engine powering food safety audits, mystery shops, training quizzes, daily checklists, and employee surveys.
+- **Dynamic Template Engine** — 5 scoring configurations (Survey, Accumulation Simple/Weighted, Penalty, Checklist), 5 input types, nested sections, CCP/RISK overrides, and weighted density. One engine powering food safety audits, mystery shops, training quizzes, daily checklists, and employee surveys.
 - **Programs & Campaigns** — Assign specific templates to target stores or areas with strict deadlines. Program assignments sync automatically to offline devices for execution.
 - **Offline-First** — Complete audits without internet. Data is persisted to a local SQLite database (Drift) and synced via a resilient, plugin-based background Sync Engine featuring exponential backoff when connectivity returns.
 - **Real-Time Scoring** — Live score HUD during audits with section breakdowns, progressive repeat penalties, and confirm-correct mode.
@@ -160,6 +160,8 @@ flutter run -d <DEVICE_ID> --dart-define=API_BASE_URL=http://<YOUR_LAN_IP>:5288/
 ## 📚 Documentation
 - [Product Requirements (PRD)](docs/project/PRD_checkly_mobile.md)
 - [Database Schema (PBAC)](docs/project/DATABASE_SCHEMA.md)
+- [Audit Template Engine Requirements (V5)](docs/project/requirements_20260527_122500_c3563378_audit_template_full_scope_v5.md)
+- [Boardroom Analytics Requirements (V4)](docs/project/requirements_20260527_171654_c3563378_bod_analytics_full_scope_v4.md)
 - [Supported Use Cases (Scoring Modes)](docs/reference/SUPPORTED_USE_CASES.md)
 - [Core Workflows & State Machines](docs/reference/CORE_WORKFLOWS.md)
 - [Scoring Logic Architecture](docs/reference/SCORING_LOGIC.md)

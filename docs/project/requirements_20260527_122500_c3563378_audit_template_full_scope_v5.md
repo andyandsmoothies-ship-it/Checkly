@@ -127,9 +127,10 @@ The engine supports mandatory Corrective and Preventive Actions (CAPA) triggered
 Cross-Template Category Tagging is fully implemented across both client and server:
 * Both `Group` and `Criterion` support a string array of `CategoryTags` (e.g. `["Food Safety", "Hygiene"]`).
 * On the backend, this is mapped in EF Core using PG-native array string types (`category_tags`) via `AddCategoryTagsToGroupsAndCriteria` database migration.
-* On the frontend, this is serialized down as a `TextColumn` inside SQLite (Drift cached database version 31). Lists are serialized as comma-separated values upon insert/update.
+* On the frontend, this is serialized down as a `TextColumn` inside SQLite (Drift cached database version 8). Lists are serialized as comma-separated values upon insert/update.
 * Sanitization rules automatically clean empty items or whitespaces from parsed tags list values before visual binding.
 * These tag strings are projected down inside sync endpoints (`/api/sync/templates`), enabling consistent and highly-performant cross-template executive boardroom analytics (BOD) even if sections are renamed across different templates.
+* **Purge of Singular Category Tag**: Previously, a singular free-text `category_tag` existed on templates and submissions. This field was highly error-prone, causing data inconsistency and search fragmentation. It was completely deprecated and purged from both the backend (PostgreSQL database schema) and the frontend mobile client (Drift SQLite schema upgraded from version 7 to 8). All dashboard, templating, and search filtering are now driven strictly by structural template `type` (e.g. `qc`, `training`, `general`) or granular plural `CategoryTags`.
 
 ### Branching & Conditional Logic
 To keep offline sync lightweight, the engine employs a "Linear by Default, Branched by Metadata" strategy.

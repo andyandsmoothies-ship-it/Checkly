@@ -24,7 +24,6 @@ public static class GetTemplate
                 t.Version,
                 t.ScoringLogicConfig,
                 t.DisplayNoun,
-                t.CategoryTag,
                 t.IsActive,
                 t.CreatedAt,
                 t.UpdatedAt
@@ -48,7 +47,7 @@ public static class GetTemplate
 
         var dto = new TemplateTreeDto(
             template.Id, template.Title, template.Description, template.Type,
-            template.Version, template.ScoringLogicConfig, template.DisplayNoun, template.CategoryTag, template.IsActive,
+            template.Version, template.ScoringLogicConfig, template.DisplayNoun, template.IsActive,
             template.CreatedAt, template.UpdatedAt, tree);
 
         return TypedResults.Ok(dto);

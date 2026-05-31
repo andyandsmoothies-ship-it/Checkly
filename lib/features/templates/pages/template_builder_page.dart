@@ -61,7 +61,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
   // ── Form state ──
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  final _categoryTagCtrl = TextEditingController();
   String _type = 'qc';
 
   // Scoring rules
@@ -109,7 +108,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     // Track text controller changes for dirty state and trigger linter
     _titleCtrl.addListener(_markDirty);
     _descCtrl.addListener(_markDirty);
-    _categoryTagCtrl.addListener(_markDirty);
     _deadlineCtrl.addListener(_markDirty);
     _reminderCtrl.addListener(_markDirty);
     if (!_isNew) {
@@ -132,10 +130,21 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     _lintTimer?.cancel();
     _titleCtrl.dispose();
     _descCtrl.dispose();
-    _categoryTagCtrl.dispose();
     _deadlineCtrl.dispose();
     _reminderCtrl.dispose();
     super.dispose();
+  }
+
+  bool _hasCcpOrRisk(EditableGroup group) {
+    if (group.criteria.any((c) => c.isCcp || c.isRisk)) {
+      return true;
+    }
+    for (final sub in group.subSections) {
+      if (_hasCcpOrRisk(sub)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -144,6 +153,11 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth >= 800;
 
+    final isTypeLocked = _sections.any((s) => _hasCcpOrRisk(s));
+    if (isTypeLocked && _type != 'qc') {
+      _type = 'qc';
+    }
+
     Widget buildMainForm() {
       return ListView(
         padding: const EdgeInsets.all(16),
@@ -151,7 +165,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
           MetadataFormCard(
             titleCtrl: _titleCtrl,
             descCtrl: _descCtrl,
-            categoryTagCtrl: _categoryTagCtrl,
             type: _type,
             onTypeChanged: (v) => setState(() {
               _type = v ?? _type;
@@ -168,6 +181,7 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
               _weightedDensity = v;
               _triggerLinter();
             }),
+            isTypeLocked: isTypeLocked,
           ),
 
           const SizedBox(height: 16),
@@ -209,35 +223,19 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
           const SizedBox(height: 16),
 
           // ── Error Banner ──
-          if (_validationErrors?.hasAny == true)
+          if (_validationErrors?.hasAny == true) ...[
             BuilderValidationBanner(
               errorCount: _validationErrors!.totalCount,
               onDismiss: () => setState(() => _validationErrors = null),
             ),
-
-          if (!isWide) ...[
-            TemplateLinterPanel(
-              lintResult: _lintResult,
-              bypassLinter: _bypassLinter,
-              onBypassChanged: (v) => setState(() => _bypassLinter = v),
-              onScrollToTarget: (targetId) {
-                final gk = _errorKeys[targetId];
-                if (gk?.currentContext != null) {
-                  Scrollable.ensureVisible(
-                    gk!.currentContext!,
-                    duration: const Duration(milliseconds: 350),
-                    curve: Curves.easeInOut,
-                    alignment: 0.3,
-                  );
-                }
-              },
-            ),
             const SizedBox(height: 16),
           ],
 
+
+
           // ── Sections Editor (AC-7) ──
           const SectionHeader('SECTIONS'),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
 
           ..._sections.asMap().entries.map((e) {
             final i = e.key;

@@ -50,7 +50,6 @@ public class ScoringRedesignSlice5Tests : IClassFixture<TestWebApplicationFactor
             ScoreDirection = "down",
             IsWeighted = true,
             TotalScore = 85.0m,
-            CategoryTag = "compliance",
             Status = "completed",
             CompletedAt = DateTimeOffset.UtcNow,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -67,7 +66,6 @@ public class ScoringRedesignSlice5Tests : IClassFixture<TestWebApplicationFactor
             ScoreDirection = "down",
             IsWeighted = false,
             TotalScore = 60.0m,
-            CategoryTag = "routine",
             Status = "completed",
             CompletedAt = DateTimeOffset.UtcNow,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -84,7 +82,6 @@ public class ScoringRedesignSlice5Tests : IClassFixture<TestWebApplicationFactor
             ScoreDirection = "none",
             IsWeighted = false,
             TotalScore = null,
-            CategoryTag = "compliance",
             Status = "completed",
             CompletedAt = DateTimeOffset.UtcNow,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -101,7 +98,6 @@ public class ScoringRedesignSlice5Tests : IClassFixture<TestWebApplicationFactor
             ScoreDirection = "none",
             IsWeighted = false,
             TotalScore = null,
-            CategoryTag = null,
             Status = "completed",
             CompletedAt = DateTimeOffset.UtcNow,
             CreatedAt = DateTimeOffset.UtcNow,
@@ -125,33 +121,6 @@ public class ScoringRedesignSlice5Tests : IClassFixture<TestWebApplicationFactor
             var content = await response.Content.ReadAsStringAsync();
             Assert.Fail($"HTTP {response.StatusCode} failed. Body: {content}");
         }
-    }
-
-    [Fact]
-    public async Task TC01_CategoryFilter_ReturnsOnlyMatchingSubmissions()
-    {
-        // Arrange
-        await SeedTestDataAsync();
-        var client = await CreateAdminClientAsync();
-
-        // Act
-        var response = await client.GetAsync("/api/analytics?categoryTag=compliance");
-        await EnsureSuccessAsync(response);
-
-        // Assert
-        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var kpis = body.GetProperty("kpis");
-        var totalAudits = kpis.GetProperty("totalAudits").GetInt32();
-        var totalScored = kpis.GetProperty("totalScored").GetInt32();
-        var totalSurveys = kpis.GetProperty("totalSurveys").GetInt32();
-
-        // Under 'compliance' category filter:
-        // Fixture A (compliance, scored)
-        // Fixture C (compliance, survey)
-        // Expected: 2 audits, 1 scored, 1 survey
-        Assert.Equal(2, totalAudits);
-        Assert.Equal(1, totalScored);
-        Assert.Equal(1, totalSurveys);
     }
 
     [Fact]
@@ -196,52 +165,5 @@ public class ScoringRedesignSlice5Tests : IClassFixture<TestWebApplicationFactor
         // Surveys: Fixture C (compliance, scoreDirection = none), Fixture D (null category, scoreDirection = none) -> 2
         Assert.Equal(2, totalScored);
         Assert.Equal(2, totalSurveys);
-    }
-
-    [Fact]
-    public async Task TC04_Averages_AreNotDistorted()
-    {
-        // Arrange
-        await SeedTestDataAsync();
-        var client = await CreateAdminClientAsync();
-
-        // Act
-        var response = await client.GetAsync("/api/analytics?categoryTag=compliance");
-        await EnsureSuccessAsync(response);
-
-        // Assert
-        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var kpis = body.GetProperty("kpis");
-        var avgScore = kpis.GetProperty("avgScore").GetDouble();
-
-        // Scored compliance submission is Fixture A (score 85.0).
-        // Expected average = 85.0
-        Assert.Equal(85.0, avgScore);
-    }
-
-    [Fact]
-    public async Task ACGAP01_NullAndEmptyCategoryTags_AreHandledGracefully()
-    {
-        // Arrange
-        await SeedTestDataAsync();
-        var client = await CreateAdminClientAsync();
-
-        // Act
-        var response = await client.GetAsync("/api/analytics");
-        await EnsureSuccessAsync(response);
-
-        // Assert
-        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-        var categoryTagNamesElement = body.GetProperty("categoryTagNames");
-        
-        var tags = categoryTagNamesElement.EnumerateArray()
-            .Select(x => x.GetString())
-            .ToList();
-
-        // Expected distinct non-null categories: ["compliance", "routine"]
-        Assert.Contains("compliance", tags);
-        Assert.Contains("routine", tags);
-        Assert.DoesNotContain(null, tags);
-        Assert.DoesNotContain("", tags);
     }
 }

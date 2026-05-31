@@ -19,7 +19,6 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.Property(x => x.Status).HasColumnName("status").HasDefaultValue("draft");
         e.Property(x => x.ScoringMode).HasColumnName("scoring_mode").IsRequired(false).HasDefaultValue("penalty");
         e.Property(x => x.ScoreDirection).HasColumnName("score_direction").IsRequired().HasMaxLength(20).HasDefaultValue("down");
-        e.Property(x => x.CategoryTag).HasColumnName("category_tag");
         e.Property(x => x.TotalScore).HasColumnName("total_score");
         e.Property(x => x.SectionScores).HasColumnName("section_scores").HasColumnType("jsonb");
         e.Property(x => x.GpsLat).HasColumnName("gps_lat");

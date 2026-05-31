@@ -47,42 +47,6 @@ public class ScoringRedesignSlice1Tests : IClassFixture<TestWebApplicationFactor
     }
 
     [Fact]
-    public async Task TC_SL1_02_DbSchema_HasCategoryTagColumns()
-    {
-        // 1. Arrange
-        using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        // 2. Act
-        using var connection = db.Database.GetDbConnection();
-        await connection.OpenAsync();
-        
-        // Check templates
-        using var cmdTemplates = connection.CreateCommand();
-        cmdTemplates.CommandText = """
-            SELECT EXISTS (
-                SELECT 1 FROM information_schema.columns 
-                WHERE table_name = 'templates' AND column_name = 'category_tag'
-            );
-            """;
-        var hasTemplateTag = (bool)(await cmdTemplates.ExecuteScalarAsync() ?? false);
-
-        // Check submissions
-        using var cmdSubmissions = connection.CreateCommand();
-        cmdSubmissions.CommandText = """
-            SELECT EXISTS (
-                SELECT 1 FROM information_schema.columns 
-                WHERE table_name = 'submissions' AND column_name = 'category_tag'
-            );
-            """;
-        var hasSubmissionTag = (bool)(await cmdSubmissions.ExecuteScalarAsync() ?? false);
-
-        // 3. Assert
-        Assert.True(hasTemplateTag, "The column 'category_tag' does not exist in the 'templates' table.");
-        Assert.True(hasSubmissionTag, "The column 'category_tag' does not exist in the 'submissions' table.");
-    }
-
-    [Fact]
     public async Task TC_SL1_03_DbSchema_CompositeIndexExists()
     {
         // 1. Arrange
@@ -129,7 +93,7 @@ public class ScoringRedesignSlice1Tests : IClassFixture<TestWebApplicationFactor
             SELECT column_name, is_nullable, column_default 
             FROM information_schema.columns 
             WHERE table_name IN ('submissions', 'templates') 
-              AND column_name IN ('score_direction', 'category_tag', 'scoring_mode', 'is_weighted');
+              AND column_name IN ('score_direction', 'scoring_mode', 'is_weighted');
             """;
         
         using var reader = await command.ExecuteReaderAsync();
@@ -146,7 +110,7 @@ public class ScoringRedesignSlice1Tests : IClassFixture<TestWebApplicationFactor
             SELECT table_name, column_name, is_nullable, column_default 
             FROM information_schema.columns 
             WHERE table_name IN ('submissions', 'templates') 
-              AND column_name IN ('score_direction', 'category_tag', 'scoring_mode', 'is_weighted');
+              AND column_name IN ('score_direction', 'scoring_mode', 'is_weighted');
             """;
         
         using var reader2 = await command.ExecuteReaderAsync();
@@ -165,16 +129,6 @@ public class ScoringRedesignSlice1Tests : IClassFixture<TestWebApplicationFactor
             "Column 'score_direction' not found on 'submissions' table.");
         Assert.Equal("NO", scoreDirectionDetails.IsNullable);
         Assert.Contains("down", scoreDirectionDetails.Default ?? "");
-
-        // category_tag in templates must be nullable
-        Assert.True(columnDetails.TryGetValue(("templates", "category_tag"), out var templateTagDetails), 
-            "Column 'category_tag' not found on 'templates' table.");
-        Assert.Equal("YES", templateTagDetails.IsNullable);
-
-        // category_tag in submissions must be nullable
-        Assert.True(columnDetails.TryGetValue(("submissions", "category_tag"), out var submissionTagDetails), 
-            "Column 'category_tag' not found on 'submissions' table.");
-        Assert.Equal("YES", submissionTagDetails.IsNullable);
 
         // scoring_mode in submissions must be nullable
         Assert.True(columnDetails.TryGetValue(("submissions", "scoring_mode"), out var scoringModeDetails), 
@@ -215,14 +169,6 @@ public class ScoringRedesignSlice1Tests : IClassFixture<TestWebApplicationFactor
         Assert.NotNull(isWeightedProp);
         Assert.True(isWeightedProp.IsNullable);
 
-        var categoryTagProp = entityType.FindProperty("CategoryTag");
-        Assert.NotNull(categoryTagProp);
-        Assert.True(categoryTagProp.IsNullable);
-
-        var templateEntityType = db.Model.FindEntityType("Checkly.Api.Common.Persistence.Entities.Template");
-        Assert.NotNull(templateEntityType);
-        var templateCategoryTagProp = templateEntityType.FindProperty("CategoryTag");
-        Assert.NotNull(templateCategoryTagProp);
-        Assert.True(templateCategoryTagProp.IsNullable);
+        await Task.CompletedTask;
     }
 }

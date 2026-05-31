@@ -22,8 +22,8 @@ class WizardStepSections extends StatefulWidget {
   final int currentSectionIndex;
   final bool ccpEnabled; // gates CCP toggle in criterion drawer
   final bool riskEnabled; // gates Risk toggle in criterion drawer
-  final bool
-  confirmRequired; // when true, locks Required toggle ON in criterion drawer
+  final bool confirmRequired; // when true, locks Required toggle ON in criterion drawer
+  final bool weightedDensity;
   final VoidCallback onChanged;
   final ValueChanged<int> onSectionChanged;
 
@@ -35,6 +35,7 @@ class WizardStepSections extends StatefulWidget {
     this.ccpEnabled = false,
     this.riskEnabled = false,
     this.confirmRequired = false,
+    this.weightedDensity = false,
     required this.onChanged,
     required this.onSectionChanged,
   });
@@ -210,6 +211,12 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 currentIdx: currentIdx,
                 sectionCount: sectionCount,
                 countLabel: _buildCountLabel(section, hasSubSections),
+                densityEnabled: widget.weightedDensity,
+                section: section,
+                onChanged: () {
+                  setState(() {});
+                  widget.onChanged();
+                },
               ),
               const SizedBox(height: 12),
 
@@ -230,7 +237,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                 index: currentIdx,
                 section: section,
                 depth: 0,
-                densityEnabled: false,
+                densityEnabled: widget.weightedDensity,
                 isWizardMode: true,
                 scoringMode: widget.scoringMode,
                 globalCcpEnabled: widget.ccpEnabled,

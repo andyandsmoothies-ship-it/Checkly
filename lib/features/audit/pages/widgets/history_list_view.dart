@@ -46,7 +46,7 @@ class HistoryListView extends StatelessWidget {
     if (submission.id.startsWith('local_outbox_')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('This audit is syncing. Please wait a moment.'),
+          content: Text('We are saving your audit. Please wait a moment.'),
         ),
       );
       return;
@@ -78,8 +78,7 @@ class HistoryListView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'This will permanently void "${submission.templateTitle ?? 'this audit'}". '
-              'The auditor will no longer see it as an active task.',
+              'Are you sure you want to void "${submission.templateTitle ?? 'this audit'}"? This action is permanent and it will be removed from active tasks.',
               style: Theme.of(dialogCtx).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),

@@ -89,7 +89,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'This will permanently void "${sub.templateTitle ?? 'this audit'}". The auditor will no longer see it as an active task.',
+              'Are you sure you want to void "${sub.templateTitle ?? 'this audit'}"? This action is permanent and it will be removed from active tasks.',
               style: Theme.of(dialogCtx).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
@@ -195,7 +195,7 @@ class _SubmissionRowState extends State<SubmissionRow> {
                 ScaffoldMessenger.of(widget.context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                      'This audit is syncing. Please wait a moment.',
+                      'We are saving your audit. Please wait a moment.',
                     ),
                   ),
                 );

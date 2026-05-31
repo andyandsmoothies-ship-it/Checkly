@@ -8,7 +8,6 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
     if (tree != null) {
       _titleCtrl.text = tree.title;
       _descCtrl.text = tree.description ?? '';
-      _categoryTagCtrl.text = tree.categoryTag ?? '';
       _type = tree.type;
       _version = tree.version;
       _sections = tree.groups.map((g) => EditableGroup.fromDto(g)).toList();
@@ -99,9 +98,6 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
         description: _descCtrl.text.trim().isEmpty
             ? null
             : _descCtrl.text.trim(),
-        categoryTag: _categoryTagCtrl.text.trim().isEmpty
-            ? null
-            : _categoryTagCtrl.text.trim(),
         scoringLogicConfig: _buildScoringConfig(),
         version: _version,
         groups: _buildGroups(),

@@ -184,6 +184,7 @@ class _TemplateWizardPageState extends State<TemplateWizardPage> {
                 ccpEnabled: _ccpOverride,
                 riskEnabled: _riskOverride,
                 confirmRequired: _confirmCorrect,
+                weightedDensity: _weightedDensity,
                 onChanged: _markDirty,
                 onSectionChanged: (i) =>
                     setState(() => _currentSectionIndex = i),

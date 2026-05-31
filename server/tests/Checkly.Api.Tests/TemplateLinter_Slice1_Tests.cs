@@ -682,4 +682,99 @@ public class TemplateLinter_Slice1_Tests : IClassFixture<TestWebApplicationFacto
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+
+    // ─── Scenario 15: Category Type Mismatch Rule (Blocking Rule) ─────────────
+    [Fact]
+    public async Task SaveTemplateTree_WithCcpAndNonQcCategory_Returns422()
+    {
+        // Arrange
+        var admin = await GetAdminClientAsync();
+        var templateId = await CreateTemplateAsync(admin, "Mismatch Category Template", type: "safety");
+
+        var payload = new
+        {
+            Title = "Mismatch Category Template",
+            Type = "safety", // Mismatch category type (must be qc due to CCP/Risk)
+            Version = 1,
+            Groups = new[]
+            {
+                new
+                {
+                    Id = (Guid?)null,
+                    Title = "Safety Section",
+                    Weight = (decimal?)100.0m,
+                    OrderIndex = 0,
+                    Children = Array.Empty<object>(),
+                    Criteria = new[]
+                    {
+                        new
+                        {
+                            Id = (Guid?)null,
+                            Label = "Safety Checkpoint",
+                            InputType = "pass_fail",
+                            PointsWeight = (decimal?)5.0m,
+                            IsCcp = true, // Critical Control Point
+                            OrderIndex = 0
+                        }
+                    }
+                }
+            }
+        };
+
+        // Act
+        var response = await admin.PutAsJsonAsync($"/api/templates/{templateId}/tree", payload);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.True(body.TryGetProperty("errors", out var errorsObj));
+        Assert.True(errorsObj.TryGetProperty("lintResult", out var errorsList));
+        var list = errorsList.EnumerateArray().ToList();
+        Assert.Contains(list, x => x.GetProperty("ruleId").GetString() == "CategoryTypeMismatch");
+    }
+
+    [Fact]
+    public async Task SaveTemplateTree_WithCcpAndQcCategory_SavesSuccessfully()
+    {
+        // Arrange
+        var admin = await GetAdminClientAsync();
+        var templateId = await CreateTemplateAsync(admin, "Valid CCP Template", type: "qc");
+
+        var payload = new
+        {
+            Title = "Valid CCP Template",
+            Type = "qc", // Valid category type for CCP/Risk
+            Version = 1,
+            Groups = new[]
+            {
+                new
+                {
+                    Id = (Guid?)null,
+                    Title = "QC Section",
+                    Weight = (decimal?)100.0m,
+                    OrderIndex = 0,
+                    Children = Array.Empty<object>(),
+                    Criteria = new[]
+                    {
+                        new
+                        {
+                            Id = (Guid?)null,
+                            Label = "QC Critical Checkpoint",
+                            InputType = "pass_fail",
+                            PointsWeight = (decimal?)5.0m,
+                            IsCcp = true, // Critical Control Point
+                            OrderIndex = 0
+                        }
+                    }
+                }
+            }
+        };
+
+        // Act
+        var response = await admin.PutAsJsonAsync($"/api/templates/{templateId}/tree", payload);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
 }

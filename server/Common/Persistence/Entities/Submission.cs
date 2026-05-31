@@ -16,7 +16,6 @@ public sealed class Submission
     public string Status { get; set; } = "draft";
     public string? ScoringMode { get; set; }
     public string ScoreDirection { get; set; } = "down";
-    public string? CategoryTag { get; set; }
     public decimal? TotalScore { get; set; }
     public string? SectionScores { get; set; }
     public decimal? GpsLat { get; set; }

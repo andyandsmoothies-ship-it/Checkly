@@ -12,7 +12,7 @@ class BlueprintSelectionModal extends StatelessWidget {
       icon: Icons.grading_outlined,
       title: 'Audit & Inspection',
       tag: 'Best for compliance',
-      subtitle: 'Starts at 100% and deducts points for every fault found.',
+      subtitle: 'Deduct Points (Weighted): Start with a perfect 100% score. Points are deducted for mistakes. Different sections can have different weight/importance.',
       color: BlueprintColors.audit,
     ),
     (
@@ -20,24 +20,32 @@ class BlueprintSelectionModal extends StatelessWidget {
       icon: Icons.assignment_turned_in_outlined,
       title: 'Scored Assessment',
       tag: 'Best for evaluations',
-      subtitle: 'Builds from zero by earning points for each success.',
+      subtitle: 'Earn Points (Weighted): Start at 0% score. Points are earned for correct answers. Different sections can have different weight/importance.',
       color: BlueprintColors.assessment,
     ),
     (
-      mode: 'survey',
-      icon: Icons.dynamic_form_outlined,
-      title: 'Form & Survey',
-      tag: 'Best for data collection',
-      subtitle: 'Captures responses with no scores or grades calculated.',
-      color: BlueprintColors.survey,
+      mode: 'accumulation_unweighted',
+      icon: Icons.assignment_outlined,
+      title: 'Simple Scored Assessment',
+      tag: 'Best for training & quizzes',
+      subtitle: 'Earn Points (Simple): Start at 0% score. Points are earned for correct answers. The final score is a simple percentage of all correct answers.',
+      color: BlueprintColors.simpleAssessment,
     ),
     (
       mode: 'checklist',
       icon: Icons.fact_check_outlined,
       title: 'Basic Checklist',
       tag: 'Best for daily routines',
-      subtitle: 'Simple pass/fail checks with a completion report.',
+      subtitle: 'Deduct Points (Simple): Start with a perfect 100% score. Each failed item takes away the exact same amount of points from the total.',
       color: BlueprintColors.checklist,
+    ),
+    (
+      mode: 'survey',
+      icon: Icons.dynamic_form_outlined,
+      title: 'Form & Survey',
+      tag: 'Best for data collection',
+      subtitle: 'No Scoring (Survey): Gather answers without calculating any score. Perfect for general feedback, notes, and custom data collection.',
+      color: BlueprintColors.survey,
     ),
   ];
 
@@ -72,22 +80,39 @@ class BlueprintSelectionModal extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Expanded(
-                  child: GridView.count(
-                    crossAxisCount: size.width > 600 ? 2 : 1,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: size.width > 600 ? 1.8 : 2.6,
-                    children: _blueprints.map((bp) {
-                      return _BlueprintCard(
-                        icon: bp.icon,
-                        title: bp.title,
-                        tag: bp.tag,
-                        subtitle: bp.subtitle,
-                        color: bp.color,
-                        onTap: () => Navigator.pop(context, bp.mode),
-                      );
-                    }).toList(),
-                  ),
+                  child: size.width > 600
+                      ? GridView.count(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 1.8,
+                          children: _blueprints.map((bp) {
+                            return _BlueprintCard(
+                              icon: bp.icon,
+                              title: bp.title,
+                              tag: bp.tag,
+                              subtitle: bp.subtitle,
+                              color: bp.color,
+                              onTap: () => Navigator.pop(context, bp.mode),
+                            );
+                          }).toList(),
+                        )
+                      : ListView.separated(
+                          itemCount: _blueprints.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final bp = _blueprints[index];
+                            return _BlueprintCard(
+                              icon: bp.icon,
+                              title: bp.title,
+                              tag: bp.tag,
+                              subtitle: bp.subtitle,
+                              color: bp.color,
+                              onTap: () => Navigator.pop(context, bp.mode),
+                            );
+                          },
+                        ),
                 ),
               ],
             ),
@@ -168,7 +193,7 @@ class _BlueprintCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  maxLines: 2,
+                  maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,

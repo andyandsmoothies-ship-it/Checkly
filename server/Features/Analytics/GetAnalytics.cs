@@ -19,7 +19,6 @@ public static class GetAnalytics
         var storeId = httpContext.Request.Query["storeId"].FirstOrDefault();
         var province = httpContext.Request.Query["province"].FirstOrDefault();
         var type = httpContext.Request.Query["type"].FirstOrDefault();
-        var categoryTag = httpContext.Request.Query["categoryTag"].FirstOrDefault();
 
         // OBS-2: Read date range filter params sent by Flutter analytics_api_service.dart.
         // Without these, "Last 30 days" in the UI silently returns all-time data in online mode.
@@ -135,12 +134,7 @@ public static class GetAnalytics
             query = query.Where(s => s.TemplateId.HasValue && templateSubquery.Contains(s.TemplateId.Value));
         }
 
-        // Retrieve distinct category tags before filtering by categoryTag
         var distinctCategoriesQuery = query;
-
-        // Category tag filter
-        if (!string.IsNullOrEmpty(categoryTag))
-            query = query.Where(s => s.CategoryTag == categoryTag);
 
         // OBS-2: Apply date range filter. Both bounds are optional and independent.
         if (startDateFilter.HasValue)
@@ -181,9 +175,6 @@ public static class GetAnalytics
             else if (storeSubquery is not null)
                 apBase = apBase.Where(ap => ap.StoreId.HasValue && storeSubquery.Contains(ap.StoreId.Value));
         }
-
-        if (!string.IsNullOrEmpty(categoryTag))
-            apBase = apBase.Where(ap => ap.Submission != null && ap.Submission.CategoryTag == categoryTag);
 
         var openAPs = await apBase.CountAsync(ap => ap.Status == "open", ct);
         var overdueAPs = await apBase.CountAsync(
@@ -239,10 +230,6 @@ public static class GetAnalytics
         if (templateSubquery is not null)
             sectionScoreQuery = sectionScoreQuery.Where(ss => ss.TemplateId.HasValue && templateSubquery.Contains(ss.TemplateId.Value));
 
-        // Mirror categoryTag filter
-        if (!string.IsNullOrEmpty(categoryTag))
-            sectionScoreQuery = sectionScoreQuery.Where(ss => ss.Submission != null && ss.Submission.CategoryTag == categoryTag);
-
         var sectionRaw = await sectionScoreQuery
             .GroupBy(ss => ss.SectionTitle)
             .Select(g => new
@@ -266,20 +253,12 @@ public static class GetAnalytics
         var (insights, radarData, insightsStale) = await GetAnalyticsInsightsResolver.ResolveAsync(
             db, province, storeIdParsed, sid, sectionBreakdown, avgScore, totalAudits, overdueAPs, ct);
 
-        var categoryTagNames = await distinctCategoriesQuery
-            .Where(s => s.CategoryTag != null && s.CategoryTag != "")
-            .Select(s => s.CategoryTag!)
-            .Distinct()
-            .OrderBy(c => c)
-            .ToListAsync(ct);
-
         return TypedResults.Ok(new AnalyticsResponse(
             new AnalyticsKpis(totalAudits, scoredCount, totalSurveys, avgScore, openAPs, overdueAPs, completionRate),
             trend,
             sectionBreakdown,
             insights,
             radarData,
-            insightsStale,
-            categoryTagNames));
+            insightsStale));
     }
 }

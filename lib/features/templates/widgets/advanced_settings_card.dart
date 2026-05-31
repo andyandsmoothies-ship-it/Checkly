@@ -149,7 +149,7 @@ class _AdvancedSettingsCardState extends State<AdvancedSettingsCard> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'These settings affect how audits are scored. Change with care.',
+              'These settings adjust how audit scores are calculated. Please verify details before saving changes.',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: AppTheme.warning),

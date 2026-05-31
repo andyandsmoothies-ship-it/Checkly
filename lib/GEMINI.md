@@ -44,3 +44,5 @@
 ## Diagnostic & Layout Stability
 - **Gotcha 29: Unregistered Global Singletons (DI Crashes)**: `GetIt.instance<T>()` crashes the app if `T` isn't registered. Always verify `locator.dart` registers global services before consuming them. Never mock missing dependencies in tests if they don't exist in production.
 - **Gotcha 30: Infinite Layout Freezes in Rows**: Widgets defaulting to `double.infinity` width (like `ElevatedButton`, `TextFormField`) cause infinite layout loops inside an unconstrained horizontal `Row`. Always wrap them in `Expanded`, `Flexible`, or apply a bounded `minimumSize`.
+- **Gotcha 32: Mobile-First Layout Focus**: The Checkly app is designed exclusively for mobile viewports. Do not duplicate widgets across mobile-only views (e.g. rendering TemplateLinterPanel both inside a form and as a separate tab). Always prioritize clean, single-column scrollable forms and clear tab structures.
+

@@ -1099,10 +1099,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("auditor_name");
 
-                    b.Property<string>("CategoryTag")
-                        .HasColumnType("text")
-                        .HasColumnName("category_tag");
-
                     b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("completed_at");
@@ -1456,10 +1452,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("CategoryTag")
-                        .HasColumnType("text")
-                        .HasColumnName("category_tag");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()

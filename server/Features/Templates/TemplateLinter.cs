@@ -31,6 +31,19 @@ public static class TemplateLinter
         var flatCriteria = new List<SaveTemplateTree.SaveCriterionRequest>();
         Flatten(request.Groups, flatGroups, flatCriteria);
 
+        // CategoryTypeMismatch Rule
+        bool hasCcpOrRisk = flatCriteria.Any(c => c.IsCcp || c.IsRisk);
+        if (hasCcpOrRisk && 
+            !string.Equals(templateType, "qc", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(templateType, "survey", StringComparison.OrdinalIgnoreCase))
+        {
+            errors.Add(new LintIssue(
+                "CategoryTypeMismatch",
+                "Template with CCP or Fatal Risk checkpoints must be categorized as Quality Control (qc).",
+                null,
+                "Error"));
+        }
+
         // 2. Empty Section Name (Blocking Rule)
         foreach (var g in flatGroups)
         {

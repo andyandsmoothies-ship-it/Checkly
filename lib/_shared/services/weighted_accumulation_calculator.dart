@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'answer_input.dart';
 import 'scoring_input.dart';
 import 'scoring_result.dart';

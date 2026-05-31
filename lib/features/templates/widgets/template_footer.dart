@@ -87,7 +87,15 @@ class TemplateFooter extends StatelessWidget {
                 label: saving ? 'Saving...' : 'Save Template',
                 icon: saving
                     ? null
-                    : const Icon(Icons.save, color: Colors.white, size: 18),
+                    : Icon(
+                        Icons.save,
+                        color: canSave
+                            ? Colors.white
+                            : (Theme.of(context).brightness == Brightness.light
+                                ? AppColors.wolf
+                                : AppColors.hare),
+                        size: 18,
+                      ),
                 color: canSave ? AppColors.featherGreen : AppColors.swan,
                 isLoading: saving,
                 onPressed: (saving || !canSave) ? null : onSave,

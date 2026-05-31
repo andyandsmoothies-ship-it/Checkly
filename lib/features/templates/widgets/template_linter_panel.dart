@@ -35,7 +35,7 @@ class TemplateLinterPanel extends StatelessWidget {
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
-                  'Template Linter',
+                  'Template Compliance Check',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -55,7 +55,7 @@ class TemplateLinterPanel extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Bypass', style: Theme.of(context).textTheme.bodyMedium),
+            Text('Skip Checks', style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(width: 4),
             Checkbox(
               value: bypassLinter,
@@ -111,7 +111,7 @@ class TemplateLinterPanel extends StatelessWidget {
           // Errors list
           if (lintResult.errors.isNotEmpty) ...[
             Text(
-              'Blocking Errors',
+              'Compliance Issues',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: AppColors.cardinal,
                 fontWeight: FontWeight.bold,
@@ -126,7 +126,7 @@ class TemplateLinterPanel extends StatelessWidget {
           // Warnings list
           if (lintResult.warnings.isNotEmpty) ...[
             Text(
-              'Advisory Warnings',
+              'Improvement Suggestions',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: AppColors.fox,
                 fontWeight: FontWeight.bold,

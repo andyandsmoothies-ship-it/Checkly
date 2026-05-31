@@ -18,7 +18,6 @@ Future<AnalyticsData> loadFromDrift({
   required String? selectedAuditor,
   required String? selectedStatus,
   required String? selectedReviewStatus,
-  required String? selectedCategoryTag,
   required String dateRange,
   required DateTimeRange? customDateRange,
 }) async {
@@ -53,12 +52,8 @@ Future<AnalyticsData> loadFromDrift({
           .get();
   final templateTypes = templates.map((t) => t.type).toSet().toList()..sort();
   final templateTypeMap = <String, String>{};
-  final templateCategoryTagMap = <String, String>{};
   for (final t in templates) {
     templateTypeMap[t.id] = t.type;
-    if (t.categoryTag != null) {
-      templateCategoryTagMap[t.id] = t.categoryTag!;
-    }
   }
 
   final auditorNames =
@@ -111,23 +106,7 @@ Future<AnalyticsData> loadFromDrift({
     subs = subs.where((s) => s.createdAt.isAfter(cutoff)).toList();
   }
 
-  // Get all unique category tags from templates referenced by the active submissions in this scope
-  final categoryTagNames =
-      subs
-          .map((s) => templateCategoryTagMap[s.templateId])
-          .where((tag) => tag != null && tag.isNotEmpty)
-          .cast<String>()
-          .toSet()
-          .toList()
-        ..sort();
 
-  if (selectedCategoryTag != null) {
-    subs = subs
-        .where(
-          (s) => templateCategoryTagMap[s.templateId] == selectedCategoryTag,
-        )
-        .toList();
-  }
 
   final totalAudits = subs.length;
   final scored = subs.where((s) => s.totalScore != null).toList();
@@ -208,6 +187,5 @@ Future<AnalyticsData> loadFromDrift({
     templateTypes: templateTypes,
     provinceNames: provinceNames,
     auditorNames: auditorNames,
-    categoryTagNames: categoryTagNames,
   );
 }

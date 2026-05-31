@@ -15,8 +15,7 @@ public static class UpdateTemplate
         string? Title,
         string? Description,
         string? Type,
-        string? ScoringLogicConfig,
-        string? CategoryTag);
+        string? ScoringLogicConfig);
 
     public static async Task<IResult> HandleAsync(
         Guid id, Request request, ClaimsPrincipal user,
@@ -37,8 +36,6 @@ public static class UpdateTemplate
             template.Type = request.Type.Trim();
         if (request.ScoringLogicConfig != null)
             template.ScoringLogicConfig = request.ScoringLogicConfig;
-        if (request.CategoryTag != null)
-            template.CategoryTag = request.CategoryTag.Trim();
 
         template.Version++;
         template.UpdatedAt = DateTimeOffset.UtcNow;

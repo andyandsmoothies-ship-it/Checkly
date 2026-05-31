@@ -21,14 +21,20 @@ extension _TemplateWizardLogic on _TemplateWizardPageState {
     }
 
     setState(() {
-      _scoringMode = mode;
+      _scoringMode = mode == 'accumulation_unweighted' ? 'accumulation' : mode;
       _type = switch (mode) {
-        'accumulation' => 'training',
+        'accumulation' || 'accumulation_unweighted' => 'training',
         'survey' => 'general',
         'checklist' => 'general',
         _ => 'qc',
       };
-      // Slate 1 fix: start blank — user adds sections themselves
+      if (mode == 'accumulation') {
+        _weightedDensity = true;
+      } else if (mode == 'accumulation_unweighted') {
+        _weightedDensity = false;
+      } else {
+        _weightedDensity = false;
+      }
     });
   }
 

@@ -107,6 +107,7 @@ The owned `StoreAddress` configuration maps geographic boundaries natively (`Sto
   * `province` (string, optional)
   * `district` (string, optional)
 * **Response Model Schema**: Varies slightly depending on whether the baseline nightly snapshot is served or a live dynamic regional/date query is active. *(See V2 document for full schema example).*
+* **Dashboard Filtering Design**: The dashboard does not support filtering by a singular template-level category tag (which was purged). It supports filtering by store geography (Province/District), and aggregates results by structural template `type` (e.g., QC, Training) to separate operational categories at the boardroom level.
 
 ### 2. Store Executive Summary Endpoint
 * **Route**: `GET /api/analytics/stores/{storeId:guid}/bod-summary`
@@ -163,6 +164,9 @@ Protect background worker concurrency using PostgreSQL-native transaction-level 
 
 ### Gotcha 7: BOD Section Scores Key Mismatch
 The backend `SectionScoreExploder.cs` extracts the human-readable section title from the nested `"title"` property inside `SubmissionSectionScores` JSON.
+
+### Gotcha 8: Purged Singular Category Tag
+Never re-introduce a singular `category_tag` column or property to `Template` or `Submission` models. All group-level or criterion-level tags must use the plural `CategoryTags` (string arrays), and dashboard-level filtering of templates/audits must rely on the structured template `type` (QC, Training, General, etc.) rather than free-text tag strings.
 
 ---
 

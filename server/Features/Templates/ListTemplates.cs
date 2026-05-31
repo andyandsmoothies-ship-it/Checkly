@@ -54,7 +54,7 @@ public static class ListTemplates
             .Take(pageSize)
             .Select(t => new TemplateDto(
                 t.Id, t.Title, t.Description, t.Type, t.Version,
-                t.ScoringLogicConfig, t.DisplayNoun, t.CategoryTag, t.IsActive, t.CreatedAt, t.UpdatedAt))
+                t.ScoringLogicConfig, t.DisplayNoun, t.IsActive, t.CreatedAt, t.UpdatedAt))
             .ToListAsync(ct);
 
         return TypedResults.Ok(new PagedResult<TemplateDto>(templates, total, page, pageSize));

@@ -11,7 +11,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:checkly/_shared/services/scoring_engine.dart';
 import 'package:checkly/_shared/services/scoring_mode.dart';
 import 'package:checkly/_shared/services/criterion_input.dart';
-import 'package:checkly/_shared/services/subsection_input.dart';
 import 'package:checkly/_shared/services/section_input.dart';
 import 'package:checkly/_shared/services/answer_input.dart';
 import 'package:checkly/_shared/services/scoring_input.dart';

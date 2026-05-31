@@ -36,7 +36,7 @@ This workflow executes a deterministic, zero-hallucination UX audit on the Flutt
 
 ## Step 4: Reporting
 
-1. Generate an artifact named `ux_copywriting_report.md` in the `{App Data Directory}\brain\{Conversation ID}\` directory.
+1. Generate a report named `report_ux-copywriting_chunk[N]_[YYYYMMDD_HHMMSS].md` (e.g. `report_ux-copywriting_chunk1_20260531_071300.md`) directly in the `docs/reports/qa/ux-copywriting/` repository directory following the Orchestration Standards (3-Bucket Taxonomy & Deterministic Naming). Do not save it in the system brain folder.
 
 2. Format the report grouping violations by Dart file, showcasing a clear tabular comparison between the current string and the recommended rewrite.
 

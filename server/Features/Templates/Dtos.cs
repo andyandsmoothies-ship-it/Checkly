@@ -11,7 +11,6 @@ public sealed record TemplateDto(
     int Version,
     string? ScoringLogicConfig,
     string? DisplayNoun,
-    string? CategoryTag,
     bool IsActive,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
@@ -34,7 +33,6 @@ public sealed record TemplateTreeDto(
     int Version,
     string? ScoringLogicConfig,
     string? DisplayNoun,
-    string? CategoryTag,
     bool IsActive,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt,
@@ -73,5 +71,4 @@ public sealed record CreateTemplateRequest(
     string Type,
     string? Description,
     string? ScoringLogicConfig,
-    string? DisplayNoun,
-    string? CategoryTag);
+    string? DisplayNoun);

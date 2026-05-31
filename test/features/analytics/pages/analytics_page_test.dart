@@ -31,7 +31,6 @@ void main() {
     when(() => mockManager.selectedAuditor).thenReturn(null);
     when(() => mockManager.selectedStatus).thenReturn(null);
     when(() => mockManager.selectedReviewStatus).thenReturn(null);
-    when(() => mockManager.selectedCategoryTag).thenReturn(null);
     when(() => mockManager.dateRange).thenReturn('all');
     when(() => mockManager.customDateRange).thenReturn(null);
   });
@@ -123,100 +122,4 @@ void main() {
     expect(find.text('INSIGHTS'), findsNothing);
     expect(find.text('PERFORMANCE RADAR'), findsNothing);
   });
-
-  testWidgets('FL-11 Displays Category Tag chip and clears correctly', (
-    tester,
-  ) async {
-    final data = AnalyticsData(
-      totalAudits: 5,
-      avgScore: 90.0,
-      openAPs: 0,
-      overdueAPs: 0,
-      completionRate: 100.0,
-      trend: [],
-      categoryScores: [],
-      storeNames: [],
-      provinceNames: [],
-      templateTypes: [],
-      auditorNames: [],
-      categoryTagNames: ['compliance', 'routine'],
-      insightsStale: false,
-      insights: [],
-      radarData: null,
-    );
-
-    when(() => mockManager.data).thenReturn(data);
-    when(() => mockManager.selectedCategoryTag).thenReturn('compliance');
-    when(() => mockManager.selectedCategoryTag = any()).thenAnswer((_) {});
-
-    await tester.pumpWidget(buildTestWidget());
-
-    // Should render the Category Tag InputChip
-    expect(find.text('Category: compliance'), findsOneWidget);
-
-    // Find dynamic chip deletion button
-    final deleteButton = find.descendant(
-      of: find.byType(InputChip),
-      matching: find.byType(Icon),
-    );
-    expect(deleteButton, findsOneWidget);
-
-    await tester.tap(deleteButton);
-    await tester.pump();
-
-    // Verify manager.selectedCategoryTag was cleared and load was triggered
-    verify(() => mockManager.selectedCategoryTag = null).called(greaterThan(0));
-    verify(() => mockManager.load()).called(greaterThan(0));
-  });
-
-  testWidgets(
-    'FL-12 Filter Sheet displays Category Tag dropdown and updates state',
-    (tester) async {
-      final data = AnalyticsData(
-        totalAudits: 5,
-        avgScore: 90.0,
-        openAPs: 0,
-        overdueAPs: 0,
-        completionRate: 100.0,
-        trend: [],
-        categoryScores: [],
-        storeNames: [],
-        provinceNames: [],
-        templateTypes: [],
-        auditorNames: [],
-        categoryTagNames: ['compliance', 'routine'],
-        insightsStale: false,
-        insights: [],
-        radarData: null,
-      );
-
-      when(() => mockManager.data).thenReturn(data);
-      when(() => mockManager.selectedCategoryTag).thenReturn(null);
-      when(() => mockManager.selectedCategoryTag = any()).thenAnswer((_) {});
-
-      await tester.pumpWidget(buildTestWidget());
-
-      // Tap "Filters" chip to open filter sheet
-      await tester.tap(find.text('Filters'));
-      await tester.pumpAndSettle();
-
-      // The filter bottom sheet is open. Find Category Tag dropdown.
-      expect(find.text('Category Tag'), findsOneWidget);
-      expect(find.text('All Categories'), findsOneWidget);
-
-      // Tap the dropdown to show items
-      await tester.tap(find.text('All Categories'));
-      await tester.pumpAndSettle();
-
-      // Tap 'compliance' dropdown item
-      await tester.tap(find.text('compliance').last);
-      await tester.pumpAndSettle();
-
-      // Verify selectedCategoryTag was updated to compliance and load was triggered
-      verify(
-        () => mockManager.selectedCategoryTag = 'compliance',
-      ).called(greaterThan(0));
-      verify(() => mockManager.load()).called(greaterThan(0));
-    },
-  );
 }
