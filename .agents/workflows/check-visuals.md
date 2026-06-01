@@ -38,7 +38,7 @@ description: Execute a screenshot-based visual and aesthetic audit using AI visi
 
 ## Step 4: Reporting & Red Teaming
 
-- [ ] Generate a markdown artifact `visual_qa_report.md` in the `{App Data Directory}\brain\{Conversation ID}\` directory.
+- [ ] Generate a markdown artifact `report_visual-qa_[YYYYMMDD_HHMMSS].md` in the `docs/reports/qa/visual-qa/` repository directory following the Orchestration Standards (3-Bucket Taxonomy & Deterministic Naming). Do not save it in the system brain folder.
 
 - [ ] For every identified flaw, map it directly back to the exact code file requiring editing.
 
@@ -54,7 +54,7 @@ description: Execute a screenshot-based visual and aesthetic audit using AI visi
 
 1. **Fix** → Send the Builder Agent (`/implement`) this exact path:
 
-`{Absolute_Path_to_visual_qa_report.md}`
+`docs/reports/qa/visual-qa/report_visual-qa_[YYYYMMDD_HHMMSS].md`
 
 2. **Automate** → Write an automated visual Golden/Snapshot test (e.g. `matchesGoldenFile` inside `test/goldens/` for Flutter, or standard visual snapshot assertions like `toHaveScreenshot()` inside Playwright/Jest for Web) to lock in the approved visual state.
 

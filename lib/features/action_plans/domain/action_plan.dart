@@ -42,7 +42,7 @@ class ActionPlan {
     String? photoPath,
   }) {
     _assertNotTerminal();
-    _assertRole(role, [UserPersona.storeManager], 'submit evidence');
+    _assertRole(role, [UserPersona.storeManager, UserPersona.admin], 'submit evidence');
     _assertStatus('open', 'pending_verify');
 
     final optimisticDto = ActionPlanDto(

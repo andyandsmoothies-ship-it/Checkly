@@ -184,6 +184,25 @@ void main() {
       },
     );
 
+    test(
+      'submitEvidence() returns a new ActionPlan with status = pending_verify when role is admin',
+      () {
+        final plan = ActionPlan(baseDto);
+        final newPlan = plan.submitEvidence(
+          role: 'admin',
+          correctionPlan: 'Cleaned the floor thoroughly',
+          currentUserName: 'Admin1',
+          evidenceNote: 'Floor is clean',
+          photoPath: 'path/to/photo.jpg',
+        );
+
+        expect(newPlan.dto.status, 'pending_verify');
+        expect(newPlan.dto.correctionPlan, 'Cleaned the floor thoroughly');
+        expect(newPlan.dto.evidenceSubmittedByName, 'Admin1');
+        expect(newPlan.dto.id, 'plan-123'); // Unchanged
+      },
+    );
+
     // TC-11-09
     test(
       'closePlan() returns a new ActionPlan with status = closed and verifierName set',

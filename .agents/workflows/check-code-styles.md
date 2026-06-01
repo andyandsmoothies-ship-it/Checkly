@@ -42,7 +42,7 @@ description: Execute a deterministic Python sweep on the Flutter UI codebase to 
 
 ## Step 4: Reporting
 
-- [ ] Generate an artifact named `a11y_compliance_report.md` in the `{App Data Directory}\brain\{Conversation ID}\` directory.
+- [ ] Generate an artifact named `report_a11y_compliance_[YYYYMMDD_HHMMSS].md` directly in the `docs/reports/qa/a11y/` repository directory following the Orchestration Standards (3-Bucket Taxonomy & Deterministic Naming). Do not save it in the system brain folder.
 
 ## Step 5: Guided Handoff (MANDATORY)
 
@@ -52,7 +52,7 @@ description: Execute a deterministic Python sweep on the Flutter UI codebase to 
 
 **✅ Chunk [N] scan done. Next steps:**
 
-1. **Fix** → Send `a11y_compliance_report.md` to the Builder Agent (`/implement`).
+1. **Fix** → Send `report_a11y_compliance_[YYYYMMDD_HHMMSS].md` to the Builder Agent (`/implement`).
 
 2. **Verify** → After the fix, run: `python .agents\scripts\scrape_a11y.py --dir [CHUNK_DIR] --out .agents\tmp\a11y_v2.json` → expect `Found 0 violations`.
 

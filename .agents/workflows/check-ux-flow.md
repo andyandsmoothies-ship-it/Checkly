@@ -62,11 +62,11 @@ description: Structured UX heuristic evaluation based on Nielsen Norman Group me
 
 | **Aggregation** | Group issues. Sort by severity. Extract Top 3 Impact Fixes. |
 
-| **Artifact Gen** | Create `ux_heuristic_eval_[scope].md` in the `{App Data Directory}\brain\{Conversation ID}\` directory. |
+| **Artifact Gen** | Create `report_ux-heuristic-eval_[scope]_[YYYYMMDD_HHMMSS].md` in the `docs/reports/qa/ux-heuristic-eval/` repository directory following the Orchestration Standards (3-Bucket Taxonomy & Deterministic Naming). Do not save it in the system brain folder. |
 
 | **Payload Schema**| `Summary` | `Scorecard (✅/⚠️/❌)` | `Sorted Findings` | `Top 3 Fix Priorities` | `Tradeoffs`. |
 
-| **Routing** | Output message: *"Route fixes through Feature Analysis -> Implementation using this exact path: `{Absolute_Path_to_ux_heuristic_eval.md}`"* -> YIELD. |
+| **Routing** | Output message: *"Route fixes through Feature Analysis -> Implementation using this exact path: `docs/reports/qa/ux-heuristic-eval/report_ux-heuristic-eval_[scope]_[YYYYMMDD_HHMMSS].md`"* -> YIELD. |
 
 > [!IMPORTANT]
 

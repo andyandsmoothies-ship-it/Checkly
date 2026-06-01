@@ -54,7 +54,7 @@ Workflow: /audit-infra | Track: B2
   - **Complexity**: For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.
   - **Trade-offs / Pros & Cons**: When proposing a fix, you MUST explicitly present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation.
 ## Step 6: Deliverable Handoff
-- **Verification**: Execute `list_dir` on brain directory -> Confirm report written securely.
+- **Verification**: Execute `list_dir` on `docs/reports/diagnostics/` -> Confirm report written securely.
 - **Routing Map**:
   - `🔴 Critical` -> route to `/analyze-epic` or `/analyze-feature` (Arch change).
   - `🟡 Warning` -> route to `/implement` directly.

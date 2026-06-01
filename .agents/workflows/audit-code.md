@@ -51,7 +51,7 @@ Workflow: /audit-code | Track: B1
   - **Complexity**: For each refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.
   - **Trade-offs / Pros & Cons**: You MUST present the **Trade-offs / Pros & Cons** of the solution. Yield to the user to make the final executive decision before jumping to implementation.
 ## Step 6: Deliverable Handoff
-- **Verification**: Execute `list_dir` on brain directory -> Confirm report written securely.
+- **Verification**: Execute `list_dir` on `docs/reports/diagnostics/` -> Confirm report written securely.
 - **Routing**: Output message: *"Pass audit report to Builder agent (@Forge) for implementation (Track B)."* -> YIELD.
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]

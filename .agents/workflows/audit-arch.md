@@ -48,7 +48,7 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
   - **Complexity**: For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.
   - **Trade-offs / Pros & Cons**: Present the **Trade-offs / Pros & Cons** of the solution (e.g., "Pro: Solves OOM. Con: Adds 200ms latency."). Yield for the user to make the final executive decision before writing code.
 ## Step 4: Deliverable Handoff
-- **Verification**: Execute `list_dir` on brain directory -> Confirm report written securely.
+- **Verification**: Execute `list_dir` on `docs/reports/diagnostics/` -> Confirm report written securely.
 - **Routing Map**: All findings mandate a shift to the `/research` or `/analyze-epic` workflow to formally redesign the component before any code is written.
 ### Final Generation Mandate (Suffix)
 > [!IMPORTANT]
