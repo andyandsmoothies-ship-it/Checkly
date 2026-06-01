@@ -123,8 +123,8 @@ String buildScoringLogicConfig({
   final String scoringMode = scoreDirection == 'none'
       ? 'survey'
       : (scoreDirection == 'up'
-          ? 'accumulation'
-          : (isWeighted ? 'penalty' : 'checklist'));
+            ? 'accumulation'
+            : (isWeighted ? 'penalty' : 'checklist'));
 
   return json.encode({
     'scoreDirection': scoreDirection,

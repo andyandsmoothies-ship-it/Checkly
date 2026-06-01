@@ -74,7 +74,9 @@ class BlueprintColors {
 
   static const audit = Color(0xFF1565C0); // Blue  — Audit & Inspection
   static const assessment = Color(0xFF2E7D32); // Green — Scored Assessment
-  static const simpleAssessment = Color(0xFF00838F); // Teal — Simple Scored Assessment
+  static const simpleAssessment = Color(
+    0xFF00838F,
+  ); // Teal — Simple Scored Assessment
   static const survey = Color(0xFF7B1FA2); // Purple — Form & Survey
   static const checklist = Color(0xFFE65100); // Deep Orange — Basic Checklist
 }

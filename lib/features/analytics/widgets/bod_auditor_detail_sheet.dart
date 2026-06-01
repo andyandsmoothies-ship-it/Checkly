@@ -97,7 +97,7 @@ class _BodAuditorDetailSheetState extends State<BodAuditorDetailSheet> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: AppColors.wolf),
+                      icon: const Icon(Icons.close_rounded, color: AppColors.wolf),
                       onPressed: () => Navigator.maybePop(context),
                     ),
                   ],

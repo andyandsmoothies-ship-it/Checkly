@@ -258,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
+            onPressed: () => Navigator.maybePop(ctx),
             child: const Text(
               'Continue',
               style: TextStyle(

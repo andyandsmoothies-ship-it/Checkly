@@ -54,9 +54,7 @@ class AreaBodDashboardBody extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Panel 4: Category Weakness Analysis
-            AreaBodCategoryWeakness(
-              weaknesses: report.weaknesses,
-            ),
+            AreaBodCategoryWeakness(weaknesses: report.weaknesses),
             const SizedBox(height: 16),
 
             // Panel 5: AP Aging Funnel
@@ -68,9 +66,7 @@ class AreaBodDashboardBody extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Panel 6: Auditor Scatter Chart & Productivity List
-            AreaBodAuditorScatter(
-              auditors: report.auditorProductivity,
-            ),
+            AreaBodAuditorScatter(auditors: report.auditorProductivity),
           ],
         ),
       ),

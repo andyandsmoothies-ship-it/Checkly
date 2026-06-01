@@ -44,7 +44,7 @@ class BuilderValidationBanner extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close, size: 18),
+            icon: const Icon(Icons.close_rounded, size: 18),
             onPressed: onDismiss,
             constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
             padding: EdgeInsets.zero,

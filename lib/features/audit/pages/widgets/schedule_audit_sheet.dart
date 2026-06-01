@@ -16,6 +16,8 @@ void showScheduleSheet(BuildContext context) {
     isScrollControlled: true,
     useSafeArea: true,
     useRootNavigator: true,
+    isDismissible: false,
+    enableDrag: false,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -23,21 +25,25 @@ void showScheduleSheet(BuildContext context) {
       heightFactor: 0.9,
       child: Column(
         children: [
-          // Drag handle
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 8, top: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Assign Task',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => Navigator.maybePop(sheetContext),
+                ),
+              ],
             ),
-          ),
-          Text(
-            'Assign Task',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Expanded(

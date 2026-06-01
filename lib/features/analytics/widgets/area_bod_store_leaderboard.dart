@@ -18,10 +18,12 @@ class AreaBodStoreLeaderboard extends StatefulWidget {
   });
 
   @override
-  State<AreaBodStoreLeaderboard> createState() => _AreaBodStoreLeaderboardState();
+  State<AreaBodStoreLeaderboard> createState() =>
+      _AreaBodStoreLeaderboardState();
 }
 
-class _AreaBodStoreLeaderboardState extends State<AreaBodStoreLeaderboard> with SingleTickerProviderStateMixin {
+class _AreaBodStoreLeaderboardState extends State<AreaBodStoreLeaderboard>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -49,11 +51,7 @@ class _AreaBodStoreLeaderboardState extends State<AreaBodStoreLeaderboard> with 
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.store,
-                color: AppColors.macaw,
-                size: 24,
-              ),
+              const Icon(Icons.store, color: AppColors.macaw, size: 24),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -81,8 +79,12 @@ class _AreaBodStoreLeaderboardState extends State<AreaBodStoreLeaderboard> with 
             labelColor: AppColors.macaw,
             unselectedLabelColor: subTextCol,
             indicatorColor: AppColors.macaw,
-            labelStyle: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w900),
-            unselectedLabelStyle: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            labelStyle: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+            unselectedLabelStyle: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
             tabs: const [
               Tab(text: 'Top Performers'),
               Tab(text: 'Under Performers'),
@@ -125,22 +127,21 @@ class _AreaBodStoreLeaderboardState extends State<AreaBodStoreLeaderboard> with 
     return ListView.separated(
       shrinkWrap: true,
       itemCount: stores.length,
-      separatorBuilder: (context, index) => const Divider(
-        height: 16,
-        thickness: 1,
-        color: AppColors.swan,
-      ),
+      separatorBuilder: (context, index) =>
+          const Divider(height: 16, thickness: 1, color: AppColors.swan),
       itemBuilder: (context, index) {
         final row = stores[index];
         final score = row.avgScore;
-        final isGolden = widget.goldenStore != null &&
+        final isGolden =
+            widget.goldenStore != null &&
             row.storeName.toLowerCase().trim() ==
                 widget.goldenStore!.storeName.toLowerCase().trim();
 
         Color scoreColor = AppColors.macaw;
         if (isGolden) {
           scoreColor = AppColors.featherGreen;
-        } else if (widget.goldenStore != null && widget.goldenStore!.avgScore > 0) {
+        } else if (widget.goldenStore != null &&
+            widget.goldenStore!.avgScore > 0) {
           final pctOfGolden = score / widget.goldenStore!.avgScore;
           if (pctOfGolden >= 0.95) {
             scoreColor = AppColors.featherGreen;
@@ -232,7 +233,9 @@ class _AreaBodStoreLeaderboardState extends State<AreaBodStoreLeaderboard> with 
                     color: scoreColor,
                   ),
                 ),
-                if (widget.goldenStore != null && !isGolden && widget.goldenStore!.avgScore > 0) ...[
+                if (widget.goldenStore != null &&
+                    !isGolden &&
+                    widget.goldenStore!.avgScore > 0) ...[
                   const SizedBox(height: 2),
                   Text(
                     '${((score / widget.goldenStore!.avgScore) * 100).toStringAsFixed(0)}% of flagship',

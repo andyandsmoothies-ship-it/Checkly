@@ -24,13 +24,15 @@ extension _TemplateBuilderLogic on _TemplateBuilderPageState {
           _confirmCorrect = config['confirmCorrect'] == true;
           _progressiveRepeat = config['progressiveRepeat'] == true;
 
-          _scoreDirection = (config['scoreDirection'] as String?) ??
+          _scoreDirection =
+              (config['scoreDirection'] as String?) ??
               ((config['scoringMode'] as String?) == 'survey'
                   ? 'none'
                   : ((config['scoringMode'] as String?) == 'accumulation'
-                      ? 'up'
-                      : 'down'));
-          _isWeighted = config['isWeighted'] == true ||
+                        ? 'up'
+                        : 'down'));
+          _isWeighted =
+              config['isWeighted'] == true ||
               (config['scoringMode'] as String?) == 'penalty';
 
           if (config['deadlineDays'] != null) {

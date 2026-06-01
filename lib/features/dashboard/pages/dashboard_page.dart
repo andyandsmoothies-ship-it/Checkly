@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
@@ -45,6 +46,8 @@ class _DashboardPageState extends State<DashboardPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       useSafeArea: true,
       useRootNavigator: true,
       shape: const RoundedRectangleBorder(
@@ -54,26 +57,32 @@ class _DashboardPageState extends State<DashboardPage> {
         heightFactor: 0.9,
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Assign Task',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(sheetContext),
+                  ),
+                ],
               ),
             ),
-            Text(
-              'Assign Task',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
             Expanded(
               child: ScheduleAuditForm(
                 onSuccess: () {
-                  Navigator.pop(sheetContext);
+                  Navigator.maybePop(sheetContext);
                   _manager.loadStats();
                 },
               ),
@@ -104,7 +113,11 @@ class _DashboardPageState extends State<DashboardPage> {
             bottom: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              child: Greeting(persona: persona),
+              child: ListenableBuilder(
+                listenable: _manager,
+                builder: (context, _) =>
+                    Greeting(persona: persona, isSyncing: _manager.isSyncing, lastSync: _manager.lastSync),
+              ),
             ),
           ),
           // ── Role-scoped body ──
@@ -146,7 +159,9 @@ class _DashboardPageState extends State<DashboardPage> {
 @visibleForTesting
 class Greeting extends StatelessWidget {
   final UserPersona persona;
-  const Greeting({required this.persona, super.key});
+  final bool isSyncing;
+  final DateTime? lastSync;
+  const Greeting({required this.persona, this.isSyncing = false, this.lastSync, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -170,14 +185,49 @@ class Greeting extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          personalizedGreeting.toUpperCase(),
-          style: AppFonts.displayStyle(
-            fontSize: 11,
-            color: AppColors.wolf,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.5,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              personalizedGreeting.toUpperCase(),
+              style: AppFonts.displayStyle(
+                fontSize: 11,
+                color: AppColors.wolf,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.5,
+              ),
+            ),
+            if (isSyncing)
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 10,
+                    height: 10,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'SYNCING',
+                    style: AppFonts.displayStyle(
+                      fontSize: 10,
+                      color: AppColors.wolf,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ],
+              )
+            else if (lastSync != null)
+              Text(
+                'LAST UPDATED: ${DateFormat('h:mm a').format(lastSync!)}',
+                style: AppFonts.displayStyle(
+                  fontSize: 10,
+                  color: AppColors.wolf,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 6),
         Text(

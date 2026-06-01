@@ -22,7 +22,8 @@ class WizardStepSections extends StatefulWidget {
   final int currentSectionIndex;
   final bool ccpEnabled; // gates CCP toggle in criterion drawer
   final bool riskEnabled; // gates Risk toggle in criterion drawer
-  final bool confirmRequired; // when true, locks Required toggle ON in criterion drawer
+  final bool
+  confirmRequired; // when true, locks Required toggle ON in criterion drawer
   final bool weightedDensity;
   final VoidCallback onChanged;
   final ValueChanged<int> onSectionChanged;
@@ -81,6 +82,8 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -95,11 +98,22 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Batch Add Criteria',
-              style: Theme.of(
-                ctx,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Batch Add Criteria',
+                    style: Theme.of(
+                      ctx,
+                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => Navigator.maybePop(ctx),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Text(
@@ -143,7 +157,7 @@ class _WizardStepSectionsState extends State<WizardStepSections> {
                     }
                   });
                   widget.onChanged();
-                  Navigator.pop(ctx);
+                  Navigator.maybePop(ctx);
                   if (capped && mounted) {
                     GetIt.instance<ErrorDisplayService>().show(
                       const AppError(

@@ -59,17 +59,6 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
       builder: (context, scrollController) {
         return Column(
           children: [
-            // Drag handle
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-
             // Title row
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
@@ -84,9 +73,8 @@ class _AuditPreviewSheetState extends State<AuditPreviewSheet> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                    iconSize: 20,
+                    onPressed: () => Navigator.maybePop(context),
+                    icon: const Icon(Icons.close_rounded),
                   ),
                 ],
               ),

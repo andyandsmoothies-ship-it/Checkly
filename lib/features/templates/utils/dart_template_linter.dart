@@ -12,8 +12,8 @@ class DartTemplateLinter {
     final String scoringMode = scoreDirection == 'none'
         ? 'survey'
         : (scoreDirection == 'up'
-            ? 'accumulation'
-            : (isWeighted ? 'penalty' : 'checklist'));
+              ? 'accumulation'
+              : (isWeighted ? 'penalty' : 'checklist'));
 
     final List<LintIssue> errors = [];
     final List<LintIssue> warnings = [];
@@ -42,6 +42,7 @@ class DartTemplateLinter {
         if (hasCcpOrRisk) return;
       }
     }
+
     for (final sec in sections) {
       scanCcpOrRisk(sec);
       if (hasCcpOrRisk) break;
@@ -53,7 +54,8 @@ class DartTemplateLinter {
       errors.add(
         LintIssue(
           ruleId: 'CategoryTypeMismatch',
-          message: 'Template with CCP or Fatal Risk checkpoints must be categorized as Quality Control (qc).',
+          message:
+              'Template with CCP or Fatal Risk checkpoints must be categorized as Quality Control (qc).',
           severity: 'Error',
         ),
       );

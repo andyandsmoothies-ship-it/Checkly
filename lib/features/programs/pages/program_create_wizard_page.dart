@@ -81,6 +81,8 @@ class _ProgramCreateWizardPageState extends State<ProgramCreateWizardPage> {
 
     await showModalBottomSheet<void>(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       builder: (ctx) => TemplatePicker(
         templateManager: _templateManager,
         onSelected: (t) {
@@ -88,7 +90,7 @@ class _ProgramCreateWizardPageState extends State<ProgramCreateWizardPage> {
             _draft.templateId = t.id;
             _draft.templateTitle = t.title;
           });
-          Navigator.of(ctx).pop();
+          Navigator.maybePop(ctx);
         },
       ),
     );
@@ -136,8 +138,8 @@ class _ProgramCreateWizardPageState extends State<ProgramCreateWizardPage> {
             : null,
         actions: [
           IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.close_rounded),
+            onPressed: () => Navigator.maybePop(context),
           ),
         ],
       ),

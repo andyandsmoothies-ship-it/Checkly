@@ -104,7 +104,7 @@ mixin StoreFormSaveLogic<T extends StatefulWidget> on State<T> {
 
       if (mounted) {
         isDirty = false;
-        Navigator.of(context).pop();
+        Navigator.maybePop(context);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

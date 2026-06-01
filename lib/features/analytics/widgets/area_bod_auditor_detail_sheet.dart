@@ -17,7 +17,8 @@ class AreaBodAuditorDetailSheet extends StatefulWidget {
   });
 
   @override
-  State<AreaBodAuditorDetailSheet> createState() => _AreaBodAuditorDetailSheetState();
+  State<AreaBodAuditorDetailSheet> createState() =>
+      _AreaBodAuditorDetailSheetState();
 }
 
 class _AreaBodAuditorDetailSheetState extends State<AreaBodAuditorDetailSheet> {
@@ -98,7 +99,7 @@ class _AreaBodAuditorDetailSheetState extends State<AreaBodAuditorDetailSheet> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close, color: subTextCol),
+                      icon: Icon(Icons.close_rounded, color: subTextCol),
                       onPressed: () => Navigator.maybePop(context),
                     ),
                   ],
@@ -164,13 +165,15 @@ class _AreaBodAuditorDetailSheetState extends State<AreaBodAuditorDetailSheet> {
                               decoration: BoxDecoration(
                                 color: isLight
                                     ? AppColors.walkingFish
-                                    : AppColors.walkingFish.withValues(alpha: 0.2),
+                                    : AppColors.walkingFish.withValues(
+                                        alpha: 0.2,
+                                      ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(
-                                  Icons.assignment_ind,
-                                  color: AppColors.cardinal,
-                                ),
+                                Icons.assignment_ind,
+                                color: AppColors.cardinal,
+                              ),
                             ),
                             badges: [
                               PillChip(
@@ -194,9 +197,9 @@ class _AreaBodAuditorDetailSheetState extends State<AreaBodAuditorDetailSheet> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(
-                                  Icons.tune,
-                                  color: AppColors.humpback,
-                                ),
+                                Icons.tune,
+                                color: AppColors.humpback,
+                              ),
                             ),
                             badges: [
                               PillChip(label: computedBias, type: biasChipType),
@@ -213,13 +216,15 @@ class _AreaBodAuditorDetailSheetState extends State<AreaBodAuditorDetailSheet> {
                               decoration: BoxDecoration(
                                 color: isLight
                                     ? AppColors.seaSponge
-                                    : AppColors.seaSponge.withValues(alpha: 0.2),
+                                    : AppColors.seaSponge.withValues(
+                                        alpha: 0.2,
+                                      ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(
-                                  Icons.trending_up,
-                                  color: Color(0xFF388E3C),
-                                ),
+                                Icons.trending_up,
+                                color: Color(0xFF388E3C),
+                              ),
                             ),
                           ),
                         ],

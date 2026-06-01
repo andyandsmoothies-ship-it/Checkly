@@ -16,9 +16,38 @@ class TemplatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: templateManager,
-      builder: (context, _) {
+    final theme = Theme.of(context);
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  'Select Template',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () => Navigator.maybePop(context),
+              ),
+            ],
+          ),
+        ),
+        const Divider(),
+        
+        Flexible(
+          child: ListenableBuilder(
+            listenable: templateManager,
+            builder: (context, _) {
         if (templateManager.isLoading.value) {
           return const Padding(
             padding: EdgeInsets.all(32),
@@ -67,6 +96,9 @@ class TemplatePicker extends StatelessWidget {
           },
         );
       },
+    ),
+    ),
+      ],
     );
   }
 }

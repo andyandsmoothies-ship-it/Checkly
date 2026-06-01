@@ -19,11 +19,22 @@ class AnalyticsFilterSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Filters',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Filters',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(context),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
@@ -49,7 +60,7 @@ class AnalyticsFilterSheet extends StatelessWidget {
                 onChanged: (v) {
                   manager.selectedProvince = v;
                   manager.selectedStore = null; // cascade reset
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                   manager.load();
                 },
               ),
@@ -76,7 +87,7 @@ class AnalyticsFilterSheet extends StatelessWidget {
                 ],
                 onChanged: (v) {
                   manager.selectedStore = v;
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                   manager.load();
                 },
               ),
@@ -100,7 +111,7 @@ class AnalyticsFilterSheet extends StatelessWidget {
                 ],
                 onChanged: (v) {
                   manager.selectedType = v;
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                   manager.load();
                 },
               ),
@@ -128,7 +139,7 @@ class AnalyticsFilterSheet extends StatelessWidget {
                 ],
                 onChanged: (v) {
                   manager.selectedAuditor = v;
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                   manager.load();
                 },
               ),
@@ -154,7 +165,7 @@ class AnalyticsFilterSheet extends StatelessWidget {
                 ],
                 onChanged: (v) {
                   manager.selectedStatus = v;
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                   manager.load();
                 },
               ),
@@ -177,7 +188,7 @@ class AnalyticsFilterSheet extends StatelessWidget {
                 ],
                 onChanged: (v) {
                   manager.selectedReviewStatus = v;
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                   manager.load();
                 },
               ),

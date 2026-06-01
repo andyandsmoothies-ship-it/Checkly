@@ -112,7 +112,7 @@ class _ProgramExecutionPageState extends State<ProgramExecutionPage> {
                   ),
                   const SizedBox(height: 16),
                   TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.maybePop(context),
                     child: const Text('Go back'),
                   ),
                 ],

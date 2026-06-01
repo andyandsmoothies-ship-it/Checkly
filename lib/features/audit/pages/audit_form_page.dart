@@ -323,7 +323,7 @@ class _AuditFormPageState extends State<AuditFormPage> {
             );
             if (shouldLeave == true && context.mounted) {
               await _di<AuditManager>().forceSave();
-              if (context.mounted) Navigator.pop(context);
+              if (context.mounted) Navigator.maybePop(context);
             }
           },
           child: Scaffold(

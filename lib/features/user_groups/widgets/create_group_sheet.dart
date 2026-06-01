@@ -45,11 +45,22 @@ class _CreateGroupSheetState extends State<CreateGroupSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Create User Group',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Create User Group',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, color: AppColors.wolf),
+                  onPressed: () => Navigator.maybePop(context),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             TextFormField(
@@ -109,7 +120,7 @@ class _CreateGroupSheetState extends State<CreateGroupSheet> {
     setState(() => _isSaving = false);
 
     if (success) {
-      Navigator.of(context).pop();
+      Navigator.maybePop(context);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Group "$name" created.')));

@@ -57,7 +57,7 @@ class TemplateCard extends StatelessWidget {
         content: Text('Delete "${template.title}"? This cannot be undone.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => Navigator.maybePop(ctx),
             child: const Text(
               'Cancel',
               style: TextStyle(
@@ -75,7 +75,7 @@ class TemplateCard extends StatelessWidget {
               color: AppColors.cardinal,
               height: 36,
               onPressed: () async {
-                Navigator.pop(ctx);
+                Navigator.maybePop(ctx);
                 try {
                   await GetIt.instance<TemplateManager>().deleteTemplate(
                     template.id,

@@ -32,6 +32,8 @@ class CriterionEditor extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
@@ -43,7 +45,7 @@ class CriterionEditor extends StatelessWidget {
         globalConfirmRequired: globalConfirmRequired,
         onChanged: onChanged,
         onRequestRebuild: () {
-          Navigator.pop(context);
+          Navigator.maybePop(context);
           Future.microtask(() {
             if (context.mounted) _openDrawer(context);
           });

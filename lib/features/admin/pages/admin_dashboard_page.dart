@@ -6,11 +6,10 @@ import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/exceptions/app_error.dart';
 import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/services/policy_manager.dart';
-import '../../../_shared/theme/app_theme.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/section_header.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../manager/admin_dashboard_manager.dart';
-import '../../../_shared/widgets/compact_status_panel.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
 
 final _di = GetIt.instance;
@@ -61,7 +60,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final pm = _di<PolicyManager>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Dashboard')),
+      appBar: AppBar(title: const Text('System Management')),
       body: ListenableBuilder(
         listenable: Listenable.merge([_manager, _countsManager]),
         builder: (context, _) {
@@ -73,68 +72,125 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 600),
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  // Subtitle
-                  const SectionHeader('SYSTEM MANAGEMENT'),
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  _manager.loadStats(showLoading: false);
+                  _countsManager.loadCounts();
+                  await Future.delayed(const Duration(milliseconds: 500));
+                },
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    // Subtitle
+                    const SectionHeader('SYSTEM MANAGEMENT'),
+                    const SizedBox(height: 12),
 
-                  // Dense stats panel
-                  CompactStatusPanel(
-                    metrics: [
-                      StatRowData(
-                        icon: Icons.people,
-                        label: 'USERS',
-                        value: isLoading ? '—' : '${_countsManager.userCount}',
-                        iconColor: theme.colorScheme.primary,
+                    if (_countsManager.error != null && !isLoading)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: StrokeCard(
+                          color: const Color(0xFFFFEBEB),
+                          borderColor: AppColors.destructive,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.error_outline, color: AppColors.destructive),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Failed to load counts. Pull down to retry.',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.destructive,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.refresh, color: AppColors.destructive),
+                                onPressed: () {
+                                  _manager.loadStats(showLoading: false);
+                                  _countsManager.loadCounts();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      StatRowData(
-                        icon: Icons.store,
-                        label: 'STORES',
-                        value: isLoading ? '—' : '${_countsManager.storeCount}',
-                        iconColor: AppTheme.success,
-                      ),
-                      StatRowData(
-                        icon: Icons.description,
-                        label: 'TEMPLATES',
-                        value: isLoading
-                            ? '—'
-                            : '${_countsManager.templateCount}',
-                        iconColor: AppTheme.info,
-                      ),
-                      StatRowData(
-                        icon: Icons.hourglass_empty,
-                        label: 'OPEN PLANS',
-                        value: isLoading
-                            ? '—'
-                            : '${adminState?.openActionPlans ?? 0}',
-                        iconColor: AppTheme.warning,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
 
-                  // ── Group 1: Core Management ──
-                  const SectionHeader('CORE'),
-                  const SizedBox(height: 8),
-                  StrokeCard(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      children: _buildCoreMenuItems(context, theme, pm),
+                    // Premium 2x2 Grid of KPIs with prominent numbers and custom colors
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 1.4,
+                      children: [
+                        _KpiCard(
+                          icon: Icons.people,
+                          label: 'USERS',
+                          value: isLoading
+                              ? '—'
+                              : '${_countsManager.userCount}',
+                          iconColor: AppColors.humpback,
+                          backgroundColor: const Color(0xFFDDF4FF),
+                          borderColor: AppColors.blueJay,
+                        ),
+                        _KpiCard(
+                          icon: Icons.store,
+                          label: 'STORES',
+                          value: isLoading
+                              ? '—'
+                              : '${_countsManager.storeCount}',
+                          iconColor: const Color(0xFF388E3C),
+                          backgroundColor: AppColors.seaSponge,
+                          borderColor: AppColors.turtle,
+                        ),
+                        _KpiCard(
+                          icon: Icons.description,
+                          label: 'TEMPLATES',
+                          value: isLoading
+                              ? '—'
+                              : '${_countsManager.templateCount}',
+                          iconColor: AppColors.beetle,
+                          backgroundColor: const Color(0xFFFBE4FF),
+                          borderColor: AppColors.starfish,
+                        ),
+                        _KpiCard(
+                          icon: Icons.hourglass_empty,
+                          label: 'OPEN PLANS',
+                          value: isLoading
+                              ? '—'
+                              : '${adminState?.openActionPlans ?? 0}',
+                          iconColor: AppColors.fox,
+                          backgroundColor: AppColors.canary,
+                          borderColor: AppColors.duck,
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 24),
 
-                  // ── Group 2: Operations ──
-                  const SectionHeader('OPERATIONS'),
-                  const SizedBox(height: 8),
-                  StrokeCard(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      children: _buildOperationsMenuItems(context, theme, pm),
+                    // ── Group 1: Core Management ──
+                    const SectionHeader('CORE'),
+                    const SizedBox(height: 8),
+                    StrokeCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: _buildCoreMenuItems(context, theme, pm),
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+
+                    // ── Group 2: Operations ──
+                    const SectionHeader('OPERATIONS'),
+                    const SizedBox(height: 8),
+                    StrokeCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: _buildOperationsMenuItems(context, theme, pm),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -151,7 +207,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   ) {
     final divider = Divider(
       height: 1,
-      indent: 56,
+      indent: 64,
       color: theme.colorScheme.outlineVariant,
     );
     final gated = <({String? cap, _MenuItem item})>[
@@ -162,6 +218,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'User Management',
           subtitle: 'Manage auditors & managers',
           onTap: () => context.push('/admin/users'),
+          iconColor: AppColors.humpback,
+          backgroundColor: const Color(0xFFDDF4FF),
+          borderColor: AppColors.blueJay,
         ),
       ),
       (
@@ -171,6 +230,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'Store Management',
           subtitle: 'Manage store locations',
           onTap: () => context.push('/admin/stores'),
+          iconColor: const Color(0xFF388E3C),
+          backgroundColor: AppColors.seaSponge,
+          borderColor: AppColors.turtle,
         ),
       ),
       (
@@ -180,6 +242,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'Role Management',
           subtitle: 'Manage role capabilities',
           onTap: () => context.push('/admin/roles'),
+          iconColor: AppColors.beetle,
+          backgroundColor: const Color(0xFFFBE4FF),
+          borderColor: AppColors.starfish,
         ),
       ),
       (
@@ -189,6 +254,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'User Groups',
           subtitle: 'Manage user group assignments',
           onTap: () => context.push('/admin/user-groups'),
+          iconColor: AppColors.fox,
+          backgroundColor: AppColors.canary,
+          borderColor: AppColors.duck,
         ),
       ),
     ];
@@ -203,7 +271,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   ) {
     final divider = Divider(
       height: 1,
-      indent: 56,
+      indent: 64,
       color: theme.colorScheme.outlineVariant,
     );
     final gated = <({String? cap, _MenuItem item})>[
@@ -214,6 +282,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'Audit Approvals',
           subtitle: 'Review submitted audits',
           onTap: () => context.push('/admin/approvals'),
+          iconColor: const Color(0xFF388E3C),
+          backgroundColor: AppColors.seaSponge,
+          borderColor: AppColors.turtle,
         ),
       ),
       (
@@ -223,6 +294,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'Schedule Audit',
           subtitle: 'Delegate audits to auditors',
           onTap: () => context.push('/admin/schedule'),
+          iconColor: AppColors.humpback,
+          backgroundColor: const Color(0xFFDDF4FF),
+          borderColor: AppColors.blueJay,
         ),
       ),
       (
@@ -232,6 +306,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'Analytics',
           subtitle: 'View performance data',
           onTap: () => context.push('/analytics'),
+          iconColor: AppColors.cardinal,
+          backgroundColor: AppColors.walkingFish,
+          borderColor: AppColors.flamingo,
         ),
       ),
       (
@@ -241,6 +318,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'BOD Analytics',
           subtitle: 'View executive performance data',
           onTap: () => context.push('/analytics/bod'),
+          iconColor: AppColors.fox,
+          backgroundColor: AppColors.canary,
+          borderColor: AppColors.duck,
         ),
       ),
       (
@@ -250,6 +330,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'System Logs',
           subtitle: 'Monitor application events',
           onTap: () => context.push('/admin/logs'),
+          iconColor: AppColors.cardinal,
+          backgroundColor: AppColors.walkingFish,
+          borderColor: AppColors.flamingo,
         ),
       ),
       (
@@ -259,6 +342,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           title: 'Global Risk Management',
           subtitle: 'Configure risk categories for audits',
           onTap: () => context.push('/admin/global-risks'),
+          iconColor: AppColors.beetle,
+          backgroundColor: const Color(0xFFFBE4FF),
+          borderColor: AppColors.starfish,
         ),
       ),
     ];
@@ -284,17 +370,97 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 }
 
+/// A premium, distinct card representing a single boardroom KPI metric.
+class _KpiCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color iconColor;
+  final Color backgroundColor;
+  final Color borderColor;
+
+  const _KpiCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.iconColor,
+    required this.backgroundColor,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return StrokeCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(color: borderColor, width: 2),
+                ),
+                child: Icon(icon, color: iconColor, size: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: AppColors.eel,
+                height: 1.0,
+              ),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              color: theme.colorScheme.onSurfaceVariant,
+              letterSpacing: 0.6,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Styled admin dashboard action menu item.
 class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final Color iconColor;
+  final Color backgroundColor;
+  final Color borderColor;
 
   const _MenuItem({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    required this.iconColor,
+    required this.backgroundColor,
+    required this.borderColor,
   });
 
   @override
@@ -302,16 +468,21 @@ class _MenuItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(8),
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(color: borderColor, width: 2),
         ),
-        child: Icon(icon, color: theme.colorScheme.primary, size: 22),
+        child: Icon(icon, color: iconColor, size: 20),
       ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle),
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+      ),
+      subtitle: Text(subtitle, style: const TextStyle(fontSize: 13)),
       trailing: Icon(
         Icons.chevron_right,
         color: theme.colorScheme.onSurfaceVariant,

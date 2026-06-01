@@ -8,10 +8,7 @@ import '../manager/area_bod_data.dart';
 class AreaBodCategoryWeakness extends StatelessWidget {
   final List<AreaCategoryWeakness> weaknesses;
 
-  const AreaBodCategoryWeakness({
-    super.key,
-    required this.weaknesses,
-  });
+  const AreaBodCategoryWeakness({super.key, required this.weaknesses});
 
   @override
   Widget build(BuildContext context) {
@@ -89,13 +86,22 @@ class AreaBodCategoryWeakness extends StatelessWidget {
                 Color progressColor = AppColors.featherGreen;
 
                 if (score < 70) {
-                  statusChip = const PillChip(label: 'Critical Weakness', type: PillChipType.red);
+                  statusChip = const PillChip(
+                    label: 'Critical Weakness',
+                    type: PillChipType.red,
+                  );
                   progressColor = AppColors.cardinal;
                 } else if (score < 85) {
-                  statusChip = const PillChip(label: 'Needs Attention', type: PillChipType.yellow);
+                  statusChip = const PillChip(
+                    label: 'Needs Attention',
+                    type: PillChipType.yellow,
+                  );
                   progressColor = AppColors.macaw;
                 } else {
-                  statusChip = const PillChip(label: 'Strong', type: PillChipType.green);
+                  statusChip = const PillChip(
+                    label: 'Strong',
+                    type: PillChipType.green,
+                  );
                   progressColor = AppColors.featherGreen;
                 }
 
@@ -132,7 +138,9 @@ class AreaBodCategoryWeakness extends StatelessWidget {
                               backgroundColor: isLight
                                   ? AppColors.polar
                                   : AppColors.eel,
-                              valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                progressColor,
+                              ),
                             ),
                           ),
                         ),

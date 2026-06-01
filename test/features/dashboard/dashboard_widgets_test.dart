@@ -44,6 +44,7 @@ void main() {
 
     when(() => mockManager.loadStats()).thenAnswer((_) async {});
     when(() => mockManager.dashboardState).thenReturn(DashboardLoading());
+    when(() => mockManager.isSyncing).thenReturn(false);
     when(() => mockNotifications.loadNotifications()).thenAnswer((_) async {});
     when(() => mockNotifications.unreadCount).thenReturn(0);
     when(() => mockNotifications.addListener(any())).thenReturn(null);

@@ -69,14 +69,16 @@ class StoreFormBody extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  isEdit ? 'Edit Store' : 'Create Store',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                Expanded(
+                  child: Text(
+                    isEdit ? 'Edit Store' : 'Create Store',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                  ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.close_rounded),
                   onPressed: () => Navigator.maybePop(context),
                 ),
               ],
@@ -84,28 +86,36 @@ class StoreFormBody extends StatelessWidget {
             const SizedBox(height: 20),
 
             // Name
-            TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Store Name *',
-                border: OutlineInputBorder(),
+            _PremiumField(
+              label: 'Store Name *',
+              child: TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'Store Name *',
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (_) => onMarkDirty(),
+                enabled: !isSaving,
               ),
-              onChanged: (_) => onMarkDirty(),
-              enabled: !isSaving,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // Legacy free-text address (kept for backward compatibility — SL-1 additive)
-            TextField(
-              controller: addressCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Address',
-                border: OutlineInputBorder(),
+            _PremiumField(
+              label: 'Address',
+              child: TextField(
+                controller: addressCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'Address',
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (_) => onMarkDirty(),
+                enabled: !isSaving,
               ),
-              onChanged: (_) => onMarkDirty(),
-              enabled: !isSaving,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // SL-1: Province dropdown (replaces Area dropdown)
             provincesLoading
@@ -119,109 +129,142 @@ class StoreFormBody extends StatelessWidget {
                       ),
                     ),
                   )
-                : DropdownButtonFormField<String>(
-                    initialValue: provinces.contains(selectedProvince)
-                        ? selectedProvince
-                        : null,
-                    borderRadius: BorderRadius.circular(12),
-                    decoration: const InputDecoration(
-                      labelText: 'Province',
-                      border: OutlineInputBorder(),
+                : _PremiumField(
+                    label: 'Province',
+                    child: DropdownButtonFormField<String>(
+                      initialValue: provinces.contains(selectedProvince)
+                          ? selectedProvince
+                          : null,
+                      borderRadius: BorderRadius.circular(12),
+                      decoration: const InputDecoration(
+                        hintText: 'Province',
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('— Select Province —'),
+                        ),
+                        ...provinces.map(
+                          (p) => DropdownMenuItem(value: p, child: Text(p)),
+                        ),
+                      ],
+                      onChanged: isSaving ? null : onProvinceChanged,
                     ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('— Select Province —'),
-                      ),
-                      ...provinces.map(
-                        (p) => DropdownMenuItem(value: p, child: Text(p)),
-                      ),
-                    ],
-                    onChanged: isSaving ? null : onProvinceChanged,
                   ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // SL-1: District (free text)
-            TextField(
-              controller: districtCtrl,
-              decoration: const InputDecoration(
-                labelText: 'District',
-                border: OutlineInputBorder(),
+            _PremiumField(
+              label: 'District',
+              child: TextField(
+                controller: districtCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'District',
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (_) => onMarkDirty(),
+                enabled: !isSaving,
+                maxLength: 100,
               ),
-              onChanged: (_) => onMarkDirty(),
-              enabled: !isSaving,
-              maxLength: 100,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 20),
 
             // SL-1: Ward (free text)
-            TextField(
-              controller: wardCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Ward',
-                border: OutlineInputBorder(),
+            _PremiumField(
+              label: 'Ward',
+              child: TextField(
+                controller: wardCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'Ward',
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (_) => onMarkDirty(),
+                enabled: !isSaving,
+                maxLength: 100,
               ),
-              onChanged: (_) => onMarkDirty(),
-              enabled: !isSaving,
-              maxLength: 100,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 20),
 
             // SL-1: Street (free text)
-            TextField(
-              controller: streetCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Street',
-                border: OutlineInputBorder(),
+            _PremiumField(
+              label: 'Street',
+              child: TextField(
+                controller: streetCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'Street',
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (_) => onMarkDirty(),
+                enabled: !isSaving,
+                maxLength: 200,
               ),
-              onChanged: (_) => onMarkDirty(),
-              enabled: !isSaving,
-              maxLength: 200,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // GPS fields (side by side)
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: latCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Latitude',
-                      border: OutlineInputBorder(),
+                  child: _PremiumField(
+                    label: 'Latitude',
+                    child: TextField(
+                      controller: latCtrl,
+                      decoration: const InputDecoration(
+                        hintText: 'Latitude',
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: true,
+                      ),
+                      enabled: !isSaving,
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    enabled: !isSaving,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
-                    controller: lngCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Longitude',
-                      border: OutlineInputBorder(),
+                  child: _PremiumField(
+                    label: 'Longitude',
+                    child: TextField(
+                      controller: lngCtrl,
+                      decoration: const InputDecoration(
+                        hintText: 'Longitude',
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: true,
+                      ),
+                      enabled: !isSaving,
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    enabled: !isSaving,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // Interactive map (extracted widget)
-            StoreLocationMapWidget(
-              markerPos: markerPos,
-              mapController: mapController,
-              isSaving: isSaving,
-              onTap: onMapTap,
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.shade300),
+              ),
+              clipBehavior: Clip.antiAlias,
+              margin: EdgeInsets.zero,
+              child: StoreLocationMapWidget(
+                markerPos: markerPos,
+                mapController: mapController,
+                isSaving: isSaving,
+                onTap: onMapTap,
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -252,6 +295,34 @@ class StoreFormBody extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PremiumField extends StatelessWidget {
+  final String label;
+  final Widget child;
+
+  const _PremiumField({required this.label, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey.shade700,
+                  letterSpacing: 0.3,
+                ),
+          ),
+        ),
+        child,
+      ],
     );
   }
 }

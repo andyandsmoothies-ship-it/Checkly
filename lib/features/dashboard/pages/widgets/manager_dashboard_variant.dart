@@ -80,7 +80,9 @@ class ManagerDashboardVariant extends StatelessWidget {
                 label: isArea ? 'Area Avg Score' : 'Store Avg Score',
                 value: avgFormatted,
                 iconColor: AppTheme.success,
-                onTap: () => context.push('/analytics'),
+                onTap: () => state.storeId != null && !isArea
+                    ? context.push('/stores/${state.storeId}/dashboard')
+                    : context.push('/analytics'),
               ),
               // Approvals quick-link: visible only if user holds submissions:review.
               // Area Managers with this capability can reach /admin/approvals

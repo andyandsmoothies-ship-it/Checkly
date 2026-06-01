@@ -194,20 +194,7 @@ class _PickerSheetState extends State<_PickerSheet> {
         ),
         child: Column(
           children: [
-            // Drag handle
-            const SizedBox(height: 8),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.3,
-                ),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
             const SizedBox(height: 12),
-
             // Sheet title
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -219,11 +206,17 @@ class _PickerSheetState extends State<_PickerSheet> {
                     size: 20,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    'Select ${widget.label.toLowerCase().split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : w).join(' ')}',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                  Expanded(
+                    child: Text(
+                      'Select ${widget.label.toLowerCase().split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : w).join(' ')}',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(context),
                   ),
                 ],
               ),

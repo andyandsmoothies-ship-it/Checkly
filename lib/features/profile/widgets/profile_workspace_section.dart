@@ -68,7 +68,7 @@ class ProfileWorkspaceSection extends StatelessWidget {
       children: [
         const AdminCommandCard(
           icon: Icons.admin_panel_settings,
-          title: 'Admin Dashboard',
+          title: 'System Management',
           subtitle: 'Users · Stores · Approvals · Logs',
           route: '/admin/dashboard',
         ),

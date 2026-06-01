@@ -139,6 +139,11 @@ class DashboardManager extends ChangeNotifier {
   bool get isLoading => _state is DashboardLoading;
   bool _isSyncingStores = false;
 
+  bool _isSyncing = false;
+  bool get isSyncing => _isSyncing;
+  DateTime? _lastSync;
+  DateTime? get lastSync => _lastSync;
+
   // ---------- Void Audit (admin-only) ----------
   Future<void> voidAudit(String submissionId, String reason) async {
     await _di<SubmissionApiService>().voidSubmission(submissionId, reason);
@@ -171,6 +176,9 @@ class DashboardManager extends ChangeNotifier {
         } else {
           // Cache has data — sync in background and quietly reload when done
           unawaited(() async {
+            if (_isSyncing) return;
+            _isSyncing = true;
+            notifyListeners();
             try {
               await _di<SyncEngine>().requestSync();
               await Future.wait([
@@ -179,8 +187,11 @@ class DashboardManager extends ChangeNotifier {
                 if (_di.isRegistered<ActionPlanManager>())
                   _di<ActionPlanManager>().loadActionPlans(),
               ]);
-            } finally {
+              _lastSync = DateTime.now();
               loadStats(showLoading: false);
+            } finally {
+              _isSyncing = false;
+              notifyListeners();
             }
           }());
         }

@@ -153,10 +153,7 @@ class AreaApAgingBucket {
   final String bucket;
   final int count;
 
-  AreaApAgingBucket({
-    required this.bucket,
-    required this.count,
-  });
+  AreaApAgingBucket({required this.bucket, required this.count});
 
   factory AreaApAgingBucket.fromJson(Map<String, dynamic> json) {
     return AreaApAgingBucket(
@@ -216,39 +213,61 @@ class AreaBodResponse {
   factory AreaBodResponse.fromJson(Map<String, dynamic> json) {
     return AreaBodResponse(
       isLiveData: json['isLiveData'] ?? true,
-      kpis: AreaBodKpis.fromJson(
-        Map<String, dynamic>.from(json['kpis'] ?? {}),
-      ),
+      kpis: AreaBodKpis.fromJson(Map<String, dynamic>.from(json['kpis'] ?? {})),
       goldenStore: json['goldenStore'] != null
           ? AreaGoldenStore.fromJson(
               Map<String, dynamic>.from(json['goldenStore']),
             )
           : null,
-      trend: (json['trend'] as List<dynamic>?)
-              ?.map((e) => AreaTrendPoint.fromJson(Map<String, dynamic>.from(e)))
+      trend:
+          (json['trend'] as List<dynamic>?)
+              ?.map(
+                (e) => AreaTrendPoint.fromJson(Map<String, dynamic>.from(e)),
+              )
               .toList() ??
           [],
-      topStores: (json['topStores'] as List<dynamic>?)
-              ?.map((e) => AreaStoreRankEntry.fromJson(Map<String, dynamic>.from(e)))
+      topStores:
+          (json['topStores'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    AreaStoreRankEntry.fromJson(Map<String, dynamic>.from(e)),
+              )
               .toList() ??
           [],
-      bottomStores: (json['bottomStores'] as List<dynamic>?)
-              ?.map((e) => AreaStoreRankEntry.fromJson(Map<String, dynamic>.from(e)))
+      bottomStores:
+          (json['bottomStores'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    AreaStoreRankEntry.fromJson(Map<String, dynamic>.from(e)),
+              )
               .toList() ??
           [],
-      weaknesses: (json['weaknesses'] as List<dynamic>?)
-              ?.map((e) => AreaCategoryWeakness.fromJson(Map<String, dynamic>.from(e)))
+      weaknesses:
+          (json['weaknesses'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    AreaCategoryWeakness.fromJson(Map<String, dynamic>.from(e)),
+              )
               .toList() ??
           [],
-      actionPlanAging: (json['actionPlanAging'] as List<dynamic>?)
-              ?.map((e) => AreaApAgingBucket.fromJson(Map<String, dynamic>.from(e)))
+      actionPlanAging:
+          (json['actionPlanAging'] as List<dynamic>?)
+              ?.map(
+                (e) => AreaApAgingBucket.fromJson(Map<String, dynamic>.from(e)),
+              )
               .toList() ??
           [],
-      auditorProductivity: (json['auditorProductivity'] as List<dynamic>?)
-              ?.map((e) => AreaAuditorProductivity.fromJson(Map<String, dynamic>.from(e)))
+      auditorProductivity:
+          (json['auditorProductivity'] as List<dynamic>?)
+              ?.map(
+                (e) => AreaAuditorProductivity.fromJson(
+                  Map<String, dynamic>.from(e),
+                ),
+              )
               .toList() ??
           [],
-      allowedActions: (json['allowedActions'] as List<dynamic>?)
+      allowedActions:
+          (json['allowedActions'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],

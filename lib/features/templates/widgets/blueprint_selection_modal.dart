@@ -12,7 +12,8 @@ class BlueprintSelectionModal extends StatelessWidget {
       icon: Icons.grading_outlined,
       title: 'Audit & Inspection',
       tag: 'Best for compliance',
-      subtitle: 'Deduct Points (Weighted): Start with a perfect 100% score. Points are deducted for mistakes. Different sections can have different weight/importance.',
+      subtitle:
+          'Deduct Points (Weighted): Start with a perfect 100% score. Points are deducted for mistakes. Different sections can have different weight/importance.',
       color: BlueprintColors.audit,
     ),
     (
@@ -20,7 +21,8 @@ class BlueprintSelectionModal extends StatelessWidget {
       icon: Icons.assignment_turned_in_outlined,
       title: 'Scored Assessment',
       tag: 'Best for evaluations',
-      subtitle: 'Earn Points (Weighted): Start at 0% score. Points are earned for correct answers. Different sections can have different weight/importance.',
+      subtitle:
+          'Earn Points (Weighted): Start at 0% score. Points are earned for correct answers. Different sections can have different weight/importance.',
       color: BlueprintColors.assessment,
     ),
     (
@@ -28,7 +30,8 @@ class BlueprintSelectionModal extends StatelessWidget {
       icon: Icons.assignment_outlined,
       title: 'Simple Scored Assessment',
       tag: 'Best for training & quizzes',
-      subtitle: 'Earn Points (Simple): Start at 0% score. Points are earned for correct answers. The final score is a simple percentage of all correct answers.',
+      subtitle:
+          'Earn Points (Simple): Start at 0% score. Points are earned for correct answers. The final score is a simple percentage of all correct answers.',
       color: BlueprintColors.simpleAssessment,
     ),
     (
@@ -36,7 +39,8 @@ class BlueprintSelectionModal extends StatelessWidget {
       icon: Icons.fact_check_outlined,
       title: 'Basic Checklist',
       tag: 'Best for daily routines',
-      subtitle: 'Deduct Points (Simple): Start with a perfect 100% score. Each failed item takes away the exact same amount of points from the total.',
+      subtitle:
+          'Deduct Points (Simple): Start with a perfect 100% score. Each failed item takes away the exact same amount of points from the total.',
       color: BlueprintColors.checklist,
     ),
     (
@@ -44,7 +48,8 @@ class BlueprintSelectionModal extends StatelessWidget {
       icon: Icons.dynamic_form_outlined,
       title: 'Form & Survey',
       tag: 'Best for data collection',
-      subtitle: 'No Scoring (Survey): Gather answers without calculating any score. Perfect for general feedback, notes, and custom data collection.',
+      subtitle:
+          'No Scoring (Survey): Gather answers without calculating any score. Perfect for general feedback, notes, and custom data collection.',
       color: BlueprintColors.survey,
     ),
   ];
@@ -61,8 +66,8 @@ class BlueprintSelectionModal extends StatelessWidget {
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close_rounded),
+              onPressed: () => Navigator.maybePop(context),
             ),
           ],
         ),

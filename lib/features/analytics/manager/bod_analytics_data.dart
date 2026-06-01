@@ -333,10 +333,7 @@ class SlaOverdueSegment {
   final String bucket;
   final int count;
 
-  SlaOverdueSegment({
-    required this.bucket,
-    required this.count,
-  });
+  SlaOverdueSegment({required this.bucket, required this.count});
 
   factory SlaOverdueSegment.fromJson(Map<String, dynamic> json) {
     return SlaOverdueSegment(
@@ -346,10 +343,7 @@ class SlaOverdueSegment {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'bucket': bucket,
-      'count': count,
-    };
+    return {'bucket': bucket, 'count': count};
   }
 }
 
@@ -393,9 +387,7 @@ class StoreBodSummary {
           ? (json['regionalAvgScore'] as num).toDouble()
           : null,
       slaOverdueBuckets: (json['slaOverdueBuckets'] as List<dynamic>?)
-          ?.map(
-            (e) => SlaOverdueSegment.fromJson(Map<String, dynamic>.from(e)),
-          )
+          ?.map((e) => SlaOverdueSegment.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
     );
   }

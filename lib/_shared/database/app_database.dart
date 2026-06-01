@@ -250,7 +250,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 33) {
         // v33: Purge legacy categoryTag column from cached_templates
         try {
-          await customStatement('ALTER TABLE cached_templates DROP COLUMN category_tag');
+          await customStatement(
+            'ALTER TABLE cached_templates DROP COLUMN category_tag',
+          );
         } catch (e) {
           // ignore
         }
@@ -259,11 +261,26 @@ class AppDatabase extends _$AppDatabase {
         // v34: Smart Audit Safeguards
         await m.addColumn(cachedTemplates, cachedTemplates.displayNoun);
         await m.addColumn(cachedTemplates, cachedTemplates.geofenceMode);
-        await m.addColumn(cachedTemplates, cachedTemplates.geofenceRadiusMeters);
-        await m.addColumn(cachedSubmissions, cachedSubmissions.isGeofenceBypassed);
-        await m.addColumn(cachedSubmissions, cachedSubmissions.distanceMetersOff);
-        await m.addColumn(pendingSubmissions, pendingSubmissions.isGeofenceBypassed);
-        await m.addColumn(pendingSubmissions, pendingSubmissions.distanceMetersOff);
+        await m.addColumn(
+          cachedTemplates,
+          cachedTemplates.geofenceRadiusMeters,
+        );
+        await m.addColumn(
+          cachedSubmissions,
+          cachedSubmissions.isGeofenceBypassed,
+        );
+        await m.addColumn(
+          cachedSubmissions,
+          cachedSubmissions.distanceMetersOff,
+        );
+        await m.addColumn(
+          pendingSubmissions,
+          pendingSubmissions.isGeofenceBypassed,
+        );
+        await m.addColumn(
+          pendingSubmissions,
+          pendingSubmissions.distanceMetersOff,
+        );
       }
     },
     beforeOpen: (details) async {

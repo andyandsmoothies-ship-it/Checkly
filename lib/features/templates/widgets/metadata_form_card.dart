@@ -33,41 +33,41 @@ class MetadataFormCard extends StatelessWidget {
   Widget _buildBlueprintInfoBox(BuildContext context) {
     final (title, subtitle, icon, color) = switch (scoreDirection) {
       'none' => (
-          'No Scoring (Survey)',
-          'No Scoring (Survey): Gather answers without calculating any score. Perfect for general feedback, notes, and custom data collection.',
-          Icons.dynamic_form_outlined,
-          BlueprintColors.survey,
-        ),
+        'No Scoring (Survey)',
+        'No Scoring (Survey): Gather answers without calculating any score. Perfect for general feedback, notes, and custom data collection.',
+        Icons.dynamic_form_outlined,
+        BlueprintColors.survey,
+      ),
       'up' when isWeighted => (
-          'Scored Assessment',
-          'Earn Points (Weighted): Start at 0% score. Points are earned for correct answers. Different sections can have different weight/importance.',
-          Icons.assignment_turned_in_outlined,
-          BlueprintColors.assessment,
-        ),
+        'Scored Assessment',
+        'Earn Points (Weighted): Start at 0% score. Points are earned for correct answers. Different sections can have different weight/importance.',
+        Icons.assignment_turned_in_outlined,
+        BlueprintColors.assessment,
+      ),
       'up' when !isWeighted => (
-          'Simple Scored Assessment',
-          'Earn Points (Simple): Start at 0% score. Points are earned for correct answers. The final score is a simple percentage of all correct answers.',
-          Icons.assignment_outlined,
-          BlueprintColors.simpleAssessment,
-        ),
+        'Simple Scored Assessment',
+        'Earn Points (Simple): Start at 0% score. Points are earned for correct answers. The final score is a simple percentage of all correct answers.',
+        Icons.assignment_outlined,
+        BlueprintColors.simpleAssessment,
+      ),
       'down' when isWeighted => (
-          'Audit & Inspection',
-          'Deduct Points (Weighted): Start with a perfect 100% score. Points are deducted for mistakes. Different sections can have different weight/importance.',
-          Icons.grading_outlined,
-          BlueprintColors.audit,
-        ),
+        'Audit & Inspection',
+        'Deduct Points (Weighted): Start with a perfect 100% score. Points are deducted for mistakes. Different sections can have different weight/importance.',
+        Icons.grading_outlined,
+        BlueprintColors.audit,
+      ),
       'down' when !isWeighted => (
-          'Basic Checklist',
-          'Deduct Points (Simple): Start with a perfect 100% score. Each failed item takes away the exact same amount of points from the total.',
-          Icons.fact_check_outlined,
-          BlueprintColors.checklist,
-        ),
+        'Basic Checklist',
+        'Deduct Points (Simple): Start with a perfect 100% score. Each failed item takes away the exact same amount of points from the total.',
+        Icons.fact_check_outlined,
+        BlueprintColors.checklist,
+      ),
       _ => (
-          'Unknown Mode',
-          'Select a scoring mode to see how it works.',
-          Icons.help_outline,
-          Colors.grey,
-        ),
+        'Unknown Mode',
+        'Select a scoring mode to see how it works.',
+        Icons.help_outline,
+        Colors.grey,
+      ),
     };
 
     return Container(
@@ -76,10 +76,7 @@ class MetadataFormCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha: 0.25),
-          width: 1.5,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +107,9 @@ class MetadataFormCard extends StatelessWidget {
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
                     height: 1.4,
                   ),
                 ),
@@ -291,7 +290,9 @@ class _CustomOptionButton extends StatelessWidget {
         ? activeColor
         : theme.textTheme.bodyMedium?.color;
 
-    final iconColor = isSelected ? activeColor : theme.iconTheme.color?.withValues(alpha: 0.6);
+    final iconColor = isSelected
+        ? activeColor
+        : theme.iconTheme.color?.withValues(alpha: 0.6);
 
     return Expanded(
       child: StrokeCard(
@@ -312,11 +313,7 @@ class _CustomOptionButton extends StatelessWidget {
                     : Colors.transparent,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 24,
-              ),
+              child: Icon(icon, color: iconColor, size: 24),
             ),
             const SizedBox(height: 8),
             Text(
@@ -345,4 +342,3 @@ class _CustomOptionButton extends StatelessWidget {
     );
   }
 }
-

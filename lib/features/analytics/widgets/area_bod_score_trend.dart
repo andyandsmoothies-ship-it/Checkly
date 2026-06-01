@@ -9,11 +9,7 @@ class AreaBodScoreTrend extends StatelessWidget {
   final List<AreaTrendPoint> trend;
   final AreaGoldenStore? goldenStore;
 
-  const AreaBodScoreTrend({
-    super.key,
-    required this.trend,
-    this.goldenStore,
-  });
+  const AreaBodScoreTrend({super.key, required this.trend, this.goldenStore});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +49,8 @@ class AreaBodScoreTrend extends StatelessWidget {
           trajectoryChip = FittedBox(
             fit: BoxFit.scaleDown,
             child: PillChip(
-              label: '📈 Trend: Going up (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
+              label:
+                  '📈 Trend: Going up (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
               type: PillChipType.green,
             ),
           );
@@ -61,7 +58,8 @@ class AreaBodScoreTrend extends StatelessWidget {
           trajectoryChip = FittedBox(
             fit: BoxFit.scaleDown,
             child: PillChip(
-              label: '📉 Trend: Going down (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
+              label:
+                  '📉 Trend: Going down (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
               type: PillChipType.red,
             ),
           );
@@ -69,7 +67,8 @@ class AreaBodScoreTrend extends StatelessWidget {
           trajectoryChip = FittedBox(
             fit: BoxFit.scaleDown,
             child: PillChip(
-              label: '📈 Trend: Steady (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
+              label:
+                  '📈 Trend: Steady (Smoothed: ${currentSma.toStringAsFixed(1)}%)',
               type: PillChipType.blue,
             ),
           );

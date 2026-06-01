@@ -231,8 +231,6 @@ class _TemplateBuilderPageState extends State<TemplateBuilderPage> {
             const SizedBox(height: 16),
           ],
 
-
-
           // ── Sections Editor (AC-7) ──
           const SectionHeader('SECTIONS'),
           const SizedBox(height: 12),

@@ -18,10 +18,12 @@ class AreaBodApBucketDetailSheet extends StatefulWidget {
   });
 
   @override
-  State<AreaBodApBucketDetailSheet> createState() => _AreaBodApBucketDetailSheetState();
+  State<AreaBodApBucketDetailSheet> createState() =>
+      _AreaBodApBucketDetailSheetState();
 }
 
-class _AreaBodApBucketDetailSheetState extends State<AreaBodApBucketDetailSheet> {
+class _AreaBodApBucketDetailSheetState
+    extends State<AreaBodApBucketDetailSheet> {
   @override
   void initState() {
     super.initState();
@@ -80,7 +82,7 @@ class _AreaBodApBucketDetailSheetState extends State<AreaBodApBucketDetailSheet>
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.close, color: subTextCol),
+                    icon: Icon(Icons.close_rounded, color: subTextCol),
                     onPressed: () => Navigator.maybePop(context),
                   ),
                 ],
@@ -111,7 +113,8 @@ class _AreaBodApBucketDetailSheetState extends State<AreaBodApBucketDetailSheet>
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: items.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 8),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final ApDetailEntry item = items[index];
                       final int overdue = item.ageInDays;
@@ -161,7 +164,8 @@ class _SkeletonItem extends StatefulWidget {
   State<_SkeletonItem> createState() => _SkeletonItemState();
 }
 
-class _SkeletonItemState extends State<_SkeletonItem> with SingleTickerProviderStateMixin {
+class _SkeletonItemState extends State<_SkeletonItem>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -185,7 +189,9 @@ class _SkeletonItemState extends State<_SkeletonItem> with SingleTickerProviderS
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
     final bgCol = isLight ? AppColors.polar : AppColors.eel;
-    final borderCol = isLight ? AppColors.swan : AppColors.swan.withValues(alpha: 0.2);
+    final borderCol = isLight
+        ? AppColors.swan
+        : AppColors.swan.withValues(alpha: 0.2);
 
     if (disableAnimations) {
       return StrokeCard(

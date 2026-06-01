@@ -152,7 +152,9 @@ Future<void> checkAndSetGps(BuildContext context, AuditManager manager) async {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('📍 Location services are unavailable. Your audit will be saved without coordinate pinning.'),
+          content: Text(
+            '📍 Location services are unavailable. Your audit will be saved without coordinate pinning.',
+          ),
         ),
       );
     }
@@ -214,7 +216,7 @@ Future<void> showGeofenceBlockDialog({
       ),
       actions: [
         FilledButton(
-          onPressed: () => Navigator.pop(ctx),
+          onPressed: () => Navigator.maybePop(ctx),
           style: FilledButton.styleFrom(
             backgroundColor: Theme.of(ctx).colorScheme.error,
             foregroundColor: Theme.of(ctx).colorScheme.onError,
@@ -238,11 +240,7 @@ Future<bool?> showGeofenceWarningDialog({
     builder: (ctx) => AlertDialog(
       title: const Row(
         children: [
-          Icon(
-            Icons.warning_amber_rounded,
-            color: AppTheme.warning,
-            size: 28,
-          ),
+          Icon(Icons.warning_amber_rounded, color: AppTheme.warning, size: 28),
           SizedBox(width: 8),
           Expanded(
             child: Text(

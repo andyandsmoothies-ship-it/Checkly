@@ -138,7 +138,7 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
         forceReassign: forceReassign,
       );
       if (mounted) {
-        Navigator.of(context).pop(true); // Signal page to refresh
+        Navigator.maybePop(context, true); // Signal page to refresh
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('User created successfully'),

@@ -29,6 +29,8 @@ Future<void> showAuditCriterionSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    isDismissible: false,
+    enableDrag: false,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -51,19 +53,6 @@ Future<void> showAuditCriterionSheet(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Drag handle
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.outlineVariant,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-
                       // Title
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,9 +89,9 @@ Future<void> showAuditCriterionSheet(
                               },
                             ),
                           IconButton(
-                            icon: const Icon(Icons.close),
+                            icon: const Icon(Icons.close_rounded),
                             iconSize: 20,
-                            onPressed: () => Navigator.of(ctx).pop(),
+                            onPressed: () => Navigator.maybePop(ctx),
                           ),
                         ],
                       ),

@@ -63,7 +63,7 @@ class UnsavedChangesGuard extends StatelessWidget {
           ),
         );
         if (discard == true && context.mounted) {
-          Navigator.of(context).pop();
+          Navigator.maybePop(context);
         }
       },
       child: child,

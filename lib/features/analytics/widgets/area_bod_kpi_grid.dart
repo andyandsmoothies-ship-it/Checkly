@@ -47,7 +47,10 @@ class AreaBodKpiGrid extends StatelessWidget {
       if (rawAvgTtrDays <= 7.0) {
         avgTtrPill = const PillChip(label: 'Fast', type: PillChipType.green);
       } else if (rawAvgTtrDays <= 14.0) {
-        avgTtrPill = const PillChip(label: 'On Pace', type: PillChipType.yellow);
+        avgTtrPill = const PillChip(
+          label: 'On Pace',
+          type: PillChipType.yellow,
+        );
       } else {
         avgTtrPill = const PillChip(label: 'Slow', type: PillChipType.red);
       }
@@ -217,7 +220,9 @@ class AreaBodKpiGrid extends StatelessWidget {
         color: bgCol,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isLight ? AppColors.swan : AppColors.swan.withValues(alpha: 0.2),
+          color: isLight
+              ? AppColors.swan
+              : AppColors.swan.withValues(alpha: 0.2),
           width: 1,
         ),
       ),

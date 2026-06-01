@@ -169,7 +169,6 @@ class AnalyticsManager extends ChangeNotifier {
       }
       // ──────────────────────────────────────────────────────────────────────
 
-
       final kpis = (json['kpis'] as Map<String, dynamic>?) ?? {};
       data = AnalyticsData(
         totalAudits: kpis['totalAudits'] ?? 0,

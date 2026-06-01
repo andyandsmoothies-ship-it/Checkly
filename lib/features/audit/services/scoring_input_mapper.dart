@@ -107,10 +107,7 @@ class ScoringInputMapper {
         'progressiveRepeat',
       ),
       hasGlobalRisk: hasGlobalRisk,
-      isWeighted: _parseBoolConfig(
-        template.scoringLogicConfig,
-        'isWeighted',
-      ),
+      isWeighted: _parseBoolConfig(template.scoringLogicConfig, 'isWeighted'),
     );
   }
 

@@ -27,16 +27,15 @@ class Program {
         }
 
         await writer.WriteLineAsync("\n=== COLUMNS FOR KEY TABLES ===");
-        string[] tables = { "AspNetUsers", "profile_store_assignments", "stores", "submissions", "action_plans", "submission_section_scores" };
+        string[] tables = ["AspNetUsers", "profile_store_assignments", "stores", "submissions", "action_plans", "submission_section_scores"];
         foreach (var t in tables) {
             await writer.WriteLineAsync($"\nTable: {t}");
-            using (var cmd = new NpgsqlCommand($"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{t}' ORDER BY ordinal_position", conn))
-            using (var reader = await cmd.ExecuteReaderAsync()) {
-                while (await reader.ReadAsync()) {
-                    var colName = reader.GetString(0);
-                    var dataType = reader.GetString(1);
-                    await writer.WriteLineAsync($"  * Column: {colName} ({dataType})");
-                }
+            using var cmd = new NpgsqlCommand($"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{t}' ORDER BY ordinal_position", conn);
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) {
+                var colName = reader.GetString(0);
+                var dataType = reader.GetString(1);
+                await writer.WriteLineAsync($"  * Column: {colName} ({dataType})");
             }
         }
 

@@ -207,7 +207,7 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
                 ),
                 if (_dateRange != null)
                   IconButton(
-                    icon: const Icon(Icons.close, size: 16),
+                    icon: const Icon(Icons.close_rounded, size: 16),
                     tooltip: 'Clear dates',
                     onPressed: _clearDateRange,
                     padding: EdgeInsets.zero,

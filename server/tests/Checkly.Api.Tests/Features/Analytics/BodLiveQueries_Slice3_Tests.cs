@@ -25,7 +25,7 @@ namespace Checkly.Api.Tests.Features.Analytics
             _factory.EnsureDatabaseCreated();
         }
 
-        private async Task ClearDatabaseAsync(AppDbContext db)
+        private static async Task ClearDatabaseAsync(AppDbContext db)
         {
             await db.Database.ExecuteSqlRawAsync("DELETE FROM profile_store_assignments");
             await db.Database.ExecuteSqlRawAsync("DELETE FROM program_assignments");
@@ -208,7 +208,7 @@ namespace Checkly.Api.Tests.Features.Analytics
             // AC-IndexFriendly: Replaces (CompletedAt ?? CreatedAt) range queries with index-friendly CompletedAt direct filters
             // Arrange
             var projectRoot = AppContext.BaseDirectory;
-            string codePath = null;
+            string? codePath = null;
 
             // Resolve the source file location relative to build directory
             var currentDir = new DirectoryInfo(projectRoot);

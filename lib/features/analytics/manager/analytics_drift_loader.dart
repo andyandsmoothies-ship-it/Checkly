@@ -106,8 +106,6 @@ Future<AnalyticsData> loadFromDrift({
     subs = subs.where((s) => s.createdAt.isAfter(cutoff)).toList();
   }
 
-
-
   final totalAudits = subs.length;
   final scored = subs.where((s) => s.totalScore != null).toList();
   final avgScore = scored.isNotEmpty

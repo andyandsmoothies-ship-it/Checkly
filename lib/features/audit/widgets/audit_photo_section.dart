@@ -82,7 +82,7 @@ class AuditPhotoSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
-                      Icons.close,
+                      Icons.close_rounded,
                       size: 14,
                       color: Colors.white,
                     ),

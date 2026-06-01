@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:checkly/features/analytics/manager/area_bod_data.dart';
-import 'package:checkly/features/analytics/manager/bod_analytics_data.dart' show BodAgingBucket, ApDetailEntry, StoreBodSummary, CategoryStoreEntry;
+import 'package:checkly/features/analytics/manager/bod_analytics_data.dart'
+    show BodAgingBucket, ApDetailEntry, StoreBodSummary, CategoryStoreEntry;
 import 'package:checkly/features/analytics/services/area_bod_api_service.dart';
 
 class AreaBodManager extends ChangeNotifier {
@@ -100,7 +101,10 @@ class AreaBodManager extends ChangeNotifier {
 
     try {
       final res = _isLiveMode && _activeProvince != null
-          ? await _api.getFilteredReport(_activeProvince!, _activeDistrict ?? '')
+          ? await _api.getFilteredReport(
+              _activeProvince!,
+              _activeDistrict ?? '',
+            )
           : await _api.getReport();
       _update(() {
         _report = res;

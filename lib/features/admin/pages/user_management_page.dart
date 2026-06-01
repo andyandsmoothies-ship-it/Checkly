@@ -93,6 +93,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       context: context,
       isScrollControlled: true,
       isDismissible: false,
+      enableDrag: false,
       builder: (_) => UserEditSheet(
         user: user,
         loadStores: _manager.loadStores,
@@ -123,7 +124,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     String? storeId,
     List<String>? assignedStoreIds,
   }) async {
-    Navigator.of(context).pop(); // Close sheet first
+    Navigator.maybePop(context); // Close sheet first
 
     try {
       await _manager.saveUser(
@@ -194,6 +195,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       context: context,
       isScrollControlled: true,
       isDismissible: false,
+      enableDrag: false,
       builder: (_) => UserCreateSheet(
         loadStores: _manager.loadStores,
         onCreate:

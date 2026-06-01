@@ -134,9 +134,10 @@ class _WizardStepReviewState extends State<WizardStepReview> {
   String get _modeLabel {
     return switch (widget.scoringMode) {
       ScoringMode.penalty => 'Compliance Audit (Penalty)',
-      ScoringMode.accumulation => widget.weightedDensity
-          ? 'Training Assessment (Accumulation Weighted)'
-          : 'Training Assessment (Accumulation Simple)',
+      ScoringMode.accumulation =>
+        widget.weightedDensity
+            ? 'Training Assessment (Accumulation Weighted)'
+            : 'Training Assessment (Accumulation Simple)',
       ScoringMode.checklist => 'Custom Checklist',
       ScoringMode.survey => 'Feedback Survey',
     };

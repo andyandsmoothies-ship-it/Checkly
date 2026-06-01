@@ -64,10 +64,10 @@ public static class ListSystemLogs
                 l.EntityId.ToString() == search);
 
         if (DateTimeOffset.TryParse(startDateStr, out var startDate))
-            query = query.Where(l => l.CreatedAt >= startDate);
+            query = query.Where(l => l.CreatedAt >= startDate.ToUniversalTime());
 
         if (DateTimeOffset.TryParse(endDateStr, out var endDate))
-            query = query.Where(l => l.CreatedAt <= endDate);
+            query = query.Where(l => l.CreatedAt <= endDate.ToUniversalTime());
 
         var totalCount = await query.CountAsync(ct);
 

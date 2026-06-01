@@ -25,10 +25,8 @@ class AreaBodApAgingFunnel extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AreaBodApBucketDetailSheet(
-        bucket: bucket,
-        manager: manager,
-      ),
+      builder: (context) =>
+          AreaBodApBucketDetailSheet(bucket: bucket, manager: manager),
     );
   }
 
@@ -41,7 +39,9 @@ class AreaBodApAgingFunnel extends StatelessWidget {
     // Helper to find count by bucket label prefix
     int getCountForBucket(String bucketPrefix) {
       final match = apAging.firstWhere(
-        (b) => b.bucket.startsWith(bucketPrefix) || b.bucket.contains(bucketPrefix),
+        (b) =>
+            b.bucket.startsWith(bucketPrefix) ||
+            b.bucket.contains(bucketPrefix),
         orElse: () => AreaApAgingBucket(bucket: bucketPrefix, count: 0),
       );
       return match.count;
@@ -53,10 +53,18 @@ class AreaBodApAgingFunnel extends StatelessWidget {
     final ageOver = getCountForBucket('90+') + getCountForBucket('overdue');
 
     // Safe fallbacks to keep it aesthetic if empty
-    final displayAge7 = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0 ? 12 : age7;
-    final displayAge30 = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0 ? 5 : age30;
-    final displayAge90 = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0 ? 3 : age90;
-    final displayAgeOver = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0 ? 1 : ageOver;
+    final displayAge7 = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0
+        ? 12
+        : age7;
+    final displayAge30 = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0
+        ? 5
+        : age30;
+    final displayAge90 = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0
+        ? 3
+        : age90;
+    final displayAgeOver = age7 == 0 && age30 == 0 && age90 == 0 && ageOver == 0
+        ? 1
+        : ageOver;
 
     return StrokeCard(
       child: Column(
@@ -84,7 +92,9 @@ class AreaBodApAgingFunnel extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   child: PillChip(
                     label: 'Avg TTR: ${avgTtrDays.toStringAsFixed(1)} Days',
-                    type: avgTtrDays <= 7.0 ? PillChipType.green : PillChipType.red,
+                    type: avgTtrDays <= 7.0
+                        ? PillChipType.green
+                        : PillChipType.red,
                     icon: const Icon(
                       Icons.speed,
                       size: 16,
@@ -99,7 +109,8 @@ class AreaBodApAgingFunnel extends StatelessWidget {
             children: [
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.sevenDays),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.sevenDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -113,7 +124,8 @@ class AreaBodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.thirtyDays),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.thirtyDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -127,7 +139,8 @@ class AreaBodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.ninetyDays),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.ninetyDays),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,
@@ -141,7 +154,8 @@ class AreaBodApAgingFunnel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openBucketDetails(context, BodAgingBucket.overdue),
+                  onTap: () =>
+                      _openBucketDetails(context, BodAgingBucket.overdue),
                   borderRadius: BorderRadius.circular(12),
                   child: _buildAgingBox(
                     context,

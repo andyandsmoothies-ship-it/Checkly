@@ -188,10 +188,11 @@ class WizardSectionProgressHeader extends StatelessWidget {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
-                        onTap: () => section!.weightCtrl.selection = TextSelection(
-                          baseOffset: 0,
-                          extentOffset: section!.weightCtrl.text.length,
-                        ),
+                        onTap: () =>
+                            section!.weightCtrl.selection = TextSelection(
+                              baseOffset: 0,
+                              extentOffset: section!.weightCtrl.text.length,
+                            ),
                         onChanged: (_) => onChanged?.call(),
                       ),
                     ),

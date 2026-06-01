@@ -76,7 +76,7 @@ class _BodApBucketDetailSheetState extends State<BodApBucketDetailSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: AppColors.wolf),
+                    icon: const Icon(Icons.close_rounded, color: AppColors.wolf),
                     onPressed: () => Navigator.maybePop(context),
                   ),
                 ],

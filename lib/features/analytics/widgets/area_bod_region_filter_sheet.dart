@@ -9,7 +9,8 @@ class AreaBodRegionFilterSheet extends StatefulWidget {
   const AreaBodRegionFilterSheet({super.key, required this.manager});
 
   @override
-  State<AreaBodRegionFilterSheet> createState() => _AreaBodRegionFilterSheetState();
+  State<AreaBodRegionFilterSheet> createState() =>
+      _AreaBodRegionFilterSheetState();
 }
 
 class _AreaBodRegionFilterSheetState extends State<AreaBodRegionFilterSheet> {
@@ -33,12 +34,12 @@ class _AreaBodRegionFilterSheetState extends State<AreaBodRegionFilterSheet> {
     if (_selectedProvince != null && _selectedDistrict != null) {
       widget.manager.applyFilter(_selectedProvince!, _selectedDistrict!);
     }
-    Navigator.of(context).pop();
+    Navigator.maybePop(context);
   }
 
   void _handleClear() {
     widget.manager.clearFilter();
-    Navigator.of(context).pop();
+    Navigator.maybePop(context);
   }
 
   @override
@@ -80,13 +81,14 @@ class _AreaBodRegionFilterSheetState extends State<AreaBodRegionFilterSheet> {
           ),
           // Header Row with Status Badge
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Filter Region',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: textCol,
+              Expanded(
+                child: Text(
+                  'Filter Region',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: textCol,
+                  ),
                 ),
               ),
               // Status Badge
@@ -127,6 +129,12 @@ class _AreaBodRegionFilterSheetState extends State<AreaBodRegionFilterSheet> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () => Navigator.maybePop(context),
+                tooltip: 'Close',
               ),
             ],
           ),

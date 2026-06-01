@@ -92,8 +92,8 @@ class TemplateFooter extends StatelessWidget {
                         color: canSave
                             ? Colors.white
                             : (Theme.of(context).brightness == Brightness.light
-                                ? AppColors.wolf
-                                : AppColors.hare),
+                                  ? AppColors.wolf
+                                  : AppColors.hare),
                         size: 18,
                       ),
                 color: canSave ? AppColors.featherGreen : AppColors.swan,

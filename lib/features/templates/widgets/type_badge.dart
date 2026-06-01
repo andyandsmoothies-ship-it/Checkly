@@ -11,7 +11,9 @@ class TypeBadge extends StatelessWidget {
     if (t == 'qc') return 'qc';
     if (t == 'training') return 'training';
     if (t == 'general') return 'general';
-    if (t == 'task force' || t == 'task_force' || t == 'taskforce') return 'task force';
+    if (t == 'task force' || t == 'task_force' || t == 'taskforce') {
+      return 'task force';
+    }
     return t;
   }
 

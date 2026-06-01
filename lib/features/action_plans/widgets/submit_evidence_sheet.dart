@@ -91,7 +91,7 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
           _correctionCtrl.clear();
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) Navigator.pop(context);
+          if (mounted) Navigator.maybePop(context);
         });
       }
     } on RoleGuardException catch (_) {
@@ -134,35 +134,26 @@ class _SubmitEvidenceSheetState extends State<SubmitEvidenceSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Submit Evidence',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Text(
+                      'Submit Evidence',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close_rounded),
                     onPressed: _isSubmitting
                         ? null
                         : () {
                             if (_isDirty || _computedDirty) {
                               Navigator.maybePop(context);
                             } else {
-                              Navigator.pop(context);
+                              Navigator.maybePop(context);
                             }
                           },
                   ),

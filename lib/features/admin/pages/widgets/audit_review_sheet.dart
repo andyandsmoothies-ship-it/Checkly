@@ -17,6 +17,8 @@ void showAuditReviewSheet({
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    isDismissible: false,
+    enableDrag: false,
     builder: (ctx) =>
         AuditReviewSheet(item: item, onApprove: onApprove, onReject: onReject),
   );
@@ -73,12 +75,22 @@ class AuditReviewSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
-          Text(
-            'Audit Review',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  'Audit Review',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () => Navigator.maybePop(context),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 
@@ -185,12 +197,12 @@ class AuditReviewSheet extends StatelessWidget {
                     label: 'Reject',
                     color: theme.colorScheme.error,
                     icon: const Icon(
-                      Icons.close,
+                      Icons.close_rounded,
                       size: 16,
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.maybePop(context);
                       onReject();
                     },
                     height: 40,
@@ -207,7 +219,7 @@ class AuditReviewSheet extends StatelessWidget {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.maybePop(context);
                       onApprove();
                     },
                     height: 40,

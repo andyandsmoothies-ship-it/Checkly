@@ -20,6 +20,7 @@ void showStoreFormSheet({
     isScrollControlled: true,
     useRootNavigator: true,
     isDismissible: false,
+    enableDrag: false,
     builder: (ctx) => StoreFormSheet(store: store, onSaved: onSaved),
   );
 }

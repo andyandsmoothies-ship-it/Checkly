@@ -17,7 +17,8 @@ class AreaBodStoreDetailSheet extends StatefulWidget {
   });
 
   @override
-  State<AreaBodStoreDetailSheet> createState() => _AreaBodStoreDetailSheetState();
+  State<AreaBodStoreDetailSheet> createState() =>
+      _AreaBodStoreDetailSheetState();
 }
 
 class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
@@ -83,7 +84,7 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close, color: subTextCol),
+                      icon: Icon(Icons.close_rounded, color: subTextCol),
                       onPressed: () => Navigator.maybePop(context),
                     ),
                   ],
@@ -134,7 +135,8 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (detail.quartileLabel != null || detail.regionalAvgScore != null) ...[
+                          if (detail.quartileLabel != null ||
+                              detail.regionalAvgScore != null) ...[
                             StrokeCard(
                               color: theme.colorScheme.surface,
                               borderColor: AppColors.swan,
@@ -143,52 +145,74 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(Icons.analytics_outlined, color: AppColors.macaw, size: 20),
+                                      const Icon(
+                                        Icons.analytics_outlined,
+                                        color: AppColors.macaw,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
                                           'Regional Benchmarking',
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            fontWeight: FontWeight.w900,
-                                            color: textCol,
-                                          ),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w900,
+                                                color: textCol,
+                                              ),
                                         ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 12),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       if (detail.quartileLabel != null)
                                         PillChip(
                                           label: detail.quartileLabel!,
-                                          type: detail.quartileLabel!.contains('Top 25%') || detail.quartileLabel!.contains('Top 50%')
+                                          type:
+                                              detail.quartileLabel!.contains(
+                                                    'Top 25%',
+                                                  ) ||
+                                                  detail.quartileLabel!
+                                                      .contains('Top 50%')
                                               ? PillChipType.green
                                               : PillChipType.yellow,
                                         ),
                                       if (detail.regionalAvgScore != null)
                                         Text(
                                           'Regional Avg: ${detail.regionalAvgScore!.toStringAsFixed(1)}%',
-                                          style: theme.textTheme.bodySmall?.copyWith(
-                                            color: subTextCol,
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: subTextCol,
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                         ),
                                     ],
                                   ),
-                                  if (detail.recentAudits.isNotEmpty && detail.regionalAvgScore != null) ...[
+                                  if (detail.recentAudits.isNotEmpty &&
+                                      detail.regionalAvgScore != null) ...[
                                     const SizedBox(height: 8),
                                     Builder(
                                       builder: (context) {
-                                        final storeAvg = detail.recentAudits.map((e) => e.score).reduce((a, b) => a + b) / detail.recentAudits.length;
-                                        final diff = storeAvg - detail.regionalAvgScore!;
+                                        final storeAvg =
+                                            detail.recentAudits
+                                                .map((e) => e.score)
+                                                .reduce((a, b) => a + b) /
+                                            detail.recentAudits.length;
+                                        final diff =
+                                            storeAvg - detail.regionalAvgScore!;
                                         final isAbove = diff >= 0;
                                         return Row(
                                           children: [
                                             Icon(
-                                              isAbove ? Icons.trending_up : Icons.trending_down,
-                                              color: isAbove ? AppColors.macaw : AppColors.cardinal,
+                                              isAbove
+                                                  ? Icons.trending_up
+                                                  : Icons.trending_down,
+                                              color: isAbove
+                                                  ? AppColors.macaw
+                                                  : AppColors.cardinal,
                                               size: 16,
                                             ),
                                             const SizedBox(width: 4),
@@ -196,10 +220,13 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                                               isAbove
                                                   ? '${diff.toStringAsFixed(1)}% above regional average'
                                                   : '${diff.abs().toStringAsFixed(1)}% below regional average',
-                                              style: theme.textTheme.bodySmall?.copyWith(
-                                                color: isAbove ? AppColors.macaw : AppColors.cardinal,
-                                                fontWeight: FontWeight.w700,
-                                              ),
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                    color: isAbove
+                                                        ? AppColors.macaw
+                                                        : AppColors.cardinal,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
                                             ),
                                           ],
                                         );
@@ -211,7 +238,8 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                             ),
                             const SizedBox(height: 16),
                           ],
-                          if (detail.slaOverdueBuckets != null && detail.slaOverdueBuckets!.isNotEmpty) ...[
+                          if (detail.slaOverdueBuckets != null &&
+                              detail.slaOverdueBuckets!.isNotEmpty) ...[
                             StrokeCard(
                               color: theme.colorScheme.surface,
                               borderColor: AppColors.swan,
@@ -220,74 +248,97 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(Icons.assignment_late_outlined, color: AppColors.cardinal, size: 20),
+                                      const Icon(
+                                        Icons.assignment_late_outlined,
+                                        color: AppColors.cardinal,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
                                           'SLA Overdue Action Plans',
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            fontWeight: FontWeight.w900,
-                                            color: textCol,
-                                          ),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w900,
+                                                color: textCol,
+                                              ),
                                         ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 12),
                                   Row(
-                                    children: detail.slaOverdueBuckets!.map((segment) {
+                                    children: detail.slaOverdueBuckets!.map((
+                                      segment,
+                                    ) {
                                       Color countColor;
                                       if (segment.bucket.contains('31+')) {
                                         countColor = AppColors.cardinal;
-                                      } else if (segment.bucket.contains('8-30')) {
+                                      } else if (segment.bucket.contains(
+                                        '8-30',
+                                      )) {
                                         countColor = AppColors.fox;
                                       } else {
                                         countColor = AppColors.macaw;
                                       }
                                       return Expanded(
                                         child: Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                                          margin: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 4,
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: AppColors.walkingFish.withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.circular(12),
+                                            color: AppColors.walkingFish
+                                                .withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           child: Column(
                                             children: [
                                               Text(
                                                 '${segment.count}',
-                                                style: theme.textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.w900,
-                                                  color: countColor,
-                                                ),
+                                                style: theme
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                      color: countColor,
+                                                    ),
                                               ),
                                               const SizedBox(height: 2),
                                               Text(
                                                 segment.bucket,
-                                                style: theme.textTheme.bodySmall?.copyWith(
-                                                  color: subTextCol,
-                                                  fontWeight: FontWeight.w800,
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                      color: subTextCol,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                    ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ],
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (detail.categoryBreakdown.isNotEmpty) ...[
-                          Text(
-                            'Category Performance',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              color: textCol,
+                            const SizedBox(height: 16),
+                          ],
+                          if (detail.categoryBreakdown.isNotEmpty) ...[
+                            Text(
+                              'Category Performance',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: textCol,
+                              ),
                             ),
-                          ),
                             const SizedBox(height: 8),
                             ...detail.categoryBreakdown.map((cat) {
                               return Padding(
@@ -301,7 +352,9 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                                     decoration: BoxDecoration(
                                       color: isLight
                                           ? AppColors.walkingFish
-                                          : AppColors.walkingFish.withValues(alpha: 0.2),
+                                          : AppColors.walkingFish.withValues(
+                                              alpha: 0.2,
+                                            ),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: const Icon(
@@ -342,7 +395,9 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                                   decoration: BoxDecoration(
                                     color: isLight
                                         ? AppColors.walkingFish
-                                        : AppColors.walkingFish.withValues(alpha: 0.2),
+                                        : AppColors.walkingFish.withValues(
+                                            alpha: 0.2,
+                                          ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(

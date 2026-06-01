@@ -109,25 +109,21 @@ class InputTypeBottomSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 32,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(
-                    alpha: 0.4,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Select Input Type',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(2),
                 ),
-              ),
-            ),
-            Text(
-              'Select Input Type',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => Navigator.maybePop(context),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Expanded(

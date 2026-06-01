@@ -153,7 +153,7 @@ class _WizardStepStructureState extends State<WizardStepStructure> {
             ),
             const SizedBox(width: 8),
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close_rounded),
               onPressed: () => _removeSection(i),
               tooltip: 'Remove section',
             ),

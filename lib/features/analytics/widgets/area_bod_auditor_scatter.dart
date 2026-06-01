@@ -8,10 +8,7 @@ import '../manager/area_bod_data.dart';
 class AreaBodAuditorScatter extends StatelessWidget {
   final List<AreaAuditorProductivity> auditors;
 
-  const AreaBodAuditorScatter({
-    super.key,
-    required this.auditors,
-  });
+  const AreaBodAuditorScatter({super.key, required this.auditors});
 
   @override
   Widget build(BuildContext context) {
@@ -101,21 +98,36 @@ class AreaBodAuditorScatter extends StatelessWidget {
 
                 final PillChip productivityChip;
                 if (count >= 10) {
-                  productivityChip = const PillChip(label: 'High Output', type: PillChipType.green);
+                  productivityChip = const PillChip(
+                    label: 'High Output',
+                    type: PillChipType.green,
+                  );
                 } else if (count >= 5) {
-                  productivityChip = const PillChip(label: 'Medium Output', type: PillChipType.blue);
+                  productivityChip = const PillChip(
+                    label: 'Medium Output',
+                    type: PillChipType.blue,
+                  );
                 } else {
-                  productivityChip = const PillChip(label: 'Low Output', type: PillChipType.yellow);
+                  productivityChip = const PillChip(
+                    label: 'Low Output',
+                    type: PillChipType.yellow,
+                  );
                 }
 
                 return Row(
                   children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundColor: isLight ? AppColors.polar : AppColors.eel,
+                      backgroundColor: isLight
+                          ? AppColors.polar
+                          : AppColors.eel,
                       child: Text(
                         auditor.auditorName.isNotEmpty
-                            ? auditor.auditorName.trim().characters.first.toUpperCase()
+                            ? auditor.auditorName
+                                  .trim()
+                                  .characters
+                                  .first
+                                  .toUpperCase()
                             : 'A',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w900,
@@ -164,7 +176,9 @@ class AreaBodAuditorScatter extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                         color: score >= 85
                             ? AppColors.featherGreen
-                            : (score >= 70 ? AppColors.macaw : AppColors.cardinal),
+                            : (score >= 70
+                                  ? AppColors.macaw
+                                  : AppColors.cardinal),
                       ),
                     ),
                   ],
@@ -177,10 +191,15 @@ class AreaBodAuditorScatter extends StatelessWidget {
     );
   }
 
-  Widget _buildVisualScatterGrid(BuildContext context, List<AreaAuditorProductivity> list) {
+  Widget _buildVisualScatterGrid(
+    BuildContext context,
+    List<AreaAuditorProductivity> list,
+  ) {
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
-    final gridLineColor = isLight ? AppColors.swan : AppColors.swan.withValues(alpha: 0.2);
+    final gridLineColor = isLight
+        ? AppColors.swan
+        : AppColors.swan.withValues(alpha: 0.2);
 
     // Find limits for mapping coordinates
     double maxScore = 100.0;
@@ -213,7 +232,9 @@ class AreaBodAuditorScatter extends StatelessWidget {
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: index == 3 ? Colors.transparent : gridLineColor.withValues(alpha: 0.5),
+                        color: index == 3
+                            ? Colors.transparent
+                            : gridLineColor.withValues(alpha: 0.5),
                         width: 0.5,
                       ),
                     ),
@@ -229,19 +250,23 @@ class AreaBodAuditorScatter extends StatelessWidget {
                 children: list.map((auditor) {
                   // Map average score to X coordinate (minScore to maxScore -> 0 to width)
                   final double scorePercent =
-                      ((auditor.avgScore - minScore) / (maxScore - minScore)).clamp(0.0, 1.0);
+                      ((auditor.avgScore - minScore) / (maxScore - minScore))
+                          .clamp(0.0, 1.0);
                   // Map completed count to Y coordinate (0 to maxCount -> height to 0)
                   final double countPercent =
                       (auditor.completedCount / maxCount).clamp(0.0, 1.0);
 
-                  final double xPos = scorePercent * (constraints.maxWidth - 24);
-                  final double yPos = (1.0 - countPercent) * (constraints.maxHeight - 24);
+                  final double xPos =
+                      scorePercent * (constraints.maxWidth - 24);
+                  final double yPos =
+                      (1.0 - countPercent) * (constraints.maxHeight - 24);
 
                   return Positioned(
                     left: xPos,
                     top: yPos,
                     child: Tooltip(
-                      message: '${auditor.auditorName}\nScore: ${auditor.avgScore.toStringAsFixed(1)}%\nAudits: ${auditor.completedCount}',
+                      message:
+                          '${auditor.auditorName}\nScore: ${auditor.avgScore.toStringAsFixed(1)}%\nAudits: ${auditor.completedCount}',
                       child: Container(
                         width: 20,
                         height: 20,

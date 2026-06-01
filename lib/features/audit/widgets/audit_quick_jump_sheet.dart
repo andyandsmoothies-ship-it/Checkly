@@ -55,12 +55,23 @@ class AuditQuickJumpSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-            child: Text(
-              'Jump to Section',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 16, 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Jump to Section',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => Navigator.maybePop(context),
+                ),
+              ],
             ),
           ),
           Flexible(
@@ -119,7 +130,7 @@ class AuditQuickJumpSheet extends StatelessWidget {
                     ),
                     selected: isCurrent,
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.maybePop(context);
                       onSectionSelected(i);
                     },
                   );

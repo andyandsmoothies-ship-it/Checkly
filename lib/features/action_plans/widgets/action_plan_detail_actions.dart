@@ -19,7 +19,8 @@ class ActionPlanDetailActions {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: true,
+      isDismissible: false,
+      enableDrag: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -47,12 +48,12 @@ class ActionPlanDetailActions {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => Navigator.maybePop(ctx),
             child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () async {
-              Navigator.pop(ctx);
+              Navigator.maybePop(ctx);
               await _callManager(
                 context: context,
                 manager: manager,
@@ -85,7 +86,7 @@ class ActionPlanDetailActions {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => Navigator.maybePop(ctx),
             child: const Text('Cancel'),
           ),
           FilledButton(
@@ -93,7 +94,7 @@ class ActionPlanDetailActions {
               backgroundColor: Theme.of(ctx).colorScheme.error,
             ),
             onPressed: () async {
-              Navigator.pop(ctx);
+              Navigator.maybePop(ctx);
               await _callManager(
                 context: context,
                 manager: manager,

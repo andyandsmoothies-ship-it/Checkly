@@ -156,7 +156,7 @@ class ReviewCard extends StatelessWidget {
                     label: 'Reject',
                     color: theme.colorScheme.error,
                     icon: const Icon(
-                      Icons.close,
+                      Icons.close_rounded,
                       size: 16,
                       color: Colors.white,
                     ),

@@ -42,8 +42,8 @@ class ProgramEvidenceViewerDialog extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(context),
                     tooltip: 'Close',
                   ),
                 ],

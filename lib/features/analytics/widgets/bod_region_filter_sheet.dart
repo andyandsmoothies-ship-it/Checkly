@@ -33,12 +33,12 @@ class _BodRegionFilterSheetState extends State<BodRegionFilterSheet> {
     if (_selectedProvince != null && _selectedDistrict != null) {
       widget.manager.applyFilter(_selectedProvince!, _selectedDistrict!);
     }
-    Navigator.of(context).pop();
+    Navigator.maybePop(context);
   }
 
   void _handleClear() {
     widget.manager.clearFilter();
-    Navigator.of(context).pop();
+    Navigator.maybePop(context);
   }
 
   @override
@@ -80,13 +80,14 @@ class _BodRegionFilterSheetState extends State<BodRegionFilterSheet> {
           ),
           // Header Row with Status Badge
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Filter Region',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: textCol,
+              Expanded(
+                child: Text(
+                  'Filter Region',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: textCol,
+                  ),
                 ),
               ),
               // Status Badge
@@ -127,6 +128,12 @@ class _BodRegionFilterSheetState extends State<BodRegionFilterSheet> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () => Navigator.maybePop(context),
+                tooltip: 'Close',
               ),
             ],
           ),

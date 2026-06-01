@@ -21,6 +21,7 @@ void showRiskFormSheet({
     isScrollControlled: true,
     useRootNavigator: true,
     isDismissible: false,
+    enableDrag: false,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -89,15 +90,17 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  isEdit ? 'Edit Global Risk' : 'New Global Risk',
-                  style: AppFonts.displayStyle(
-                    fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
-                    fontWeight: FontWeight.w700,
+                Expanded(
+                  child: Text(
+                    isEdit ? 'Edit Global Risk' : 'New Global Risk',
+                    style: AppFonts.displayStyle(
+                      fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.close_rounded),
                   onPressed: () => Navigator.maybePop(context),
                 ),
               ],
@@ -150,7 +153,7 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                       description: desc,
                     );
                     if (context.mounted) {
-                      Navigator.pop(context);
+                      Navigator.maybePop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Global risk updated'),
@@ -188,7 +191,7 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                       description: desc.isNotEmpty ? desc : null,
                     );
                     if (context.mounted) {
-                      Navigator.pop(context);
+                      Navigator.maybePop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Global risk created'),
@@ -253,7 +256,7 @@ class _RiskFormSheetState extends State<RiskFormSheet> {
                         widget.risk!['id'] as String,
                       );
                       if (context.mounted) {
-                        Navigator.pop(context);
+                        Navigator.maybePop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Risk deactivated')),
                         );

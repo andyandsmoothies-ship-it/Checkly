@@ -25,9 +25,9 @@ public static class GetAnalytics
         DateTimeOffset? startDateFilter = null;
         DateTimeOffset? endDateFilter = null;
         if (DateTimeOffset.TryParse(httpContext.Request.Query["startDate"].FirstOrDefault(), out var parsedStart))
-            startDateFilter = parsedStart;
+            startDateFilter = parsedStart.ToUniversalTime();
         if (DateTimeOffset.TryParse(httpContext.Request.Query["endDate"].FirstOrDefault(), out var parsedEnd))
-            endDateFilter = parsedEnd;
+            endDateFilter = parsedEnd.ToUniversalTime();
 
 
         // Pre-declared for AM tenancy: populated in the area_manager block below, consumed after query init.

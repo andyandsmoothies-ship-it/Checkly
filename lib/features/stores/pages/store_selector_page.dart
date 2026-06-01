@@ -8,6 +8,7 @@ import '../../../_shared/theme/app_fonts.dart';
 import '../../../_shared/theme/app_theme.dart';
 import '../manager/store_manager.dart';
 import '../model/store_dto.dart';
+import '../../../_shared/theme/app_colors.dart';
 
 final _di = GetIt.instance;
 
@@ -61,11 +62,22 @@ class _StoreSelectorPageState extends State<StoreSelectorPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                store.name,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      store.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: AppColors.wolf),
+                    onPressed: () => Navigator.maybePop(sheetContext),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               Row(

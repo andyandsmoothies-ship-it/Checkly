@@ -1,7 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:checkly/features/analytics/manager/area_bod_data.dart';
-import 'package:checkly/features/analytics/manager/bod_analytics_data.dart' show ApDetailEntry, StoreBodSummary, CategoryStoreEntry, RecentAuditEntry, CategoryScoreEntry;
+import 'package:checkly/features/analytics/manager/bod_analytics_data.dart'
+    show
+        ApDetailEntry,
+        StoreBodSummary,
+        CategoryStoreEntry,
+        RecentAuditEntry,
+        CategoryScoreEntry;
 
 class AreaBodApiService {
   final Dio _dio;
@@ -125,7 +131,7 @@ class AreaBodApiService {
           "storeName": "Area Store B (Landmark 81)",
           "avgScore": 89.0,
           "auditCount": 11,
-        }
+        },
       ],
       "bottomStores": [
         {
@@ -139,7 +145,7 @@ class AreaBodApiService {
           "storeName": "Area Store D (Bui Vien)",
           "avgScore": 79.5,
           "auditCount": 11,
-        }
+        },
       ],
       "weaknesses": [
         {
@@ -153,18 +159,18 @@ class AreaBodApiService {
           "templateName": "Basic checklist",
           "avgScore": 83.1,
           "auditCount": 20,
-        }
+        },
       ],
       "goldenStore": {
         "storeName": "Area Store A (Nguyen Hue)",
         "avgScore": 92.5,
-        "province": "Hanoi"
+        "province": "Hanoi",
       },
       "actionPlanAging": [
         {"bucket": "0-7d", "count": 3},
         {"bucket": "8-30d", "count": 4},
         {"bucket": "31-90d", "count": 3},
-        {"bucket": "90d+", "count": 2}
+        {"bucket": "90d+", "count": 2},
       ],
       "auditorProductivity": [
         {
@@ -176,9 +182,9 @@ class AreaBodApiService {
           "auditorName": "Area Auditor 2",
           "completedCount": 20,
           "avgScore": 86.2,
-        }
+        },
       ],
-      "allowedActions": ["refresh"]
+      "allowedActions": ["refresh"],
     });
   }
 
@@ -190,7 +196,7 @@ class AreaBodApiService {
         storeName: 'Area Store D (Bui Vien)',
         managerName: 'Manager Bui Vien',
         ageInDays: bucket.contains('0-7') ? 3 : 15,
-      )
+      ),
     ];
   }
 
@@ -198,10 +204,14 @@ class AreaBodApiService {
     return StoreBodSummary(
       storeName: 'Area Store A (Nguyen Hue)',
       recentAudits: [
-        RecentAuditEntry(date: '2026-05-20', score: 92.5, auditorName: 'Area Auditor 1')
+        RecentAuditEntry(
+          date: '2026-05-20',
+          score: 92.5,
+          auditorName: 'Area Auditor 1',
+        ),
       ],
       categoryBreakdown: [
-        CategoryScoreEntry(categoryName: 'Daily Operations', avgScore: 92.0)
+        CategoryScoreEntry(categoryName: 'Daily Operations', avgScore: 92.0),
       ],
     );
   }
@@ -213,7 +223,7 @@ class AreaBodApiService {
         avgScore: 79.5,
         auditCount: 11,
         failureCount: 4,
-      )
+      ),
     ];
   }
 
@@ -223,7 +233,7 @@ class AreaBodApiService {
         auditorName: 'Area Auditor 1',
         completedCount: 25,
         avgScore: 88.0,
-      )
+      ),
     ];
   }
 }

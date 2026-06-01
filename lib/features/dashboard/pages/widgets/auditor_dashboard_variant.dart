@@ -32,18 +32,25 @@ class AuditorDashboardVariant extends StatelessWidget {
         children: [
           const SizedBox(height: 24),
 
-          // ── Hero: Resume Draft ──
-          if (state.draftCount > 0)
-            HeroCard(
-              icon: Icons.edit_outlined,
-              title:
-                  '${state.draftCount} Draft${state.draftCount > 1 ? 's' : ''} in Progress',
-              subtitle: 'Tap to resume your latest audit',
-              color: theme.colorScheme.primaryContainer,
-              onTap: () => context.go('/activity?filter=draft'),
-            ),
+          // ── Hero: Resume Draft or Start Audit ──
+          state.draftCount > 0
+              ? HeroCard(
+                  icon: Icons.edit_outlined,
+                  title:
+                      '${state.draftCount} Draft${state.draftCount > 1 ? 's' : ''} in Progress',
+                  subtitle: 'Tap to resume your latest audit',
+                  color: theme.colorScheme.primaryContainer,
+                  onTap: () => context.go('/activity?filter=draft'),
+                )
+              : HeroCard(
+                  icon: Icons.add_circle_outline,
+                  title: 'Start New Audit',
+                  subtitle: 'Select a template to begin',
+                  color: theme.colorScheme.secondaryContainer,
+                  onTap: () => context.push('/templates'),
+                ),
 
-          if (state.draftCount > 0) const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // ── Compact Status Panel: Vitals ──
           CompactStatusPanel(

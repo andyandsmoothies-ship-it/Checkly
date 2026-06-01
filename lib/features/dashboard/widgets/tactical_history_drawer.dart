@@ -42,17 +42,6 @@ class TacticalHistoryDrawer extends StatelessWidget {
       builder: (context, scrollController) {
         return Column(
           children: [
-            // Handle bar
-            Container(
-              margin: const EdgeInsets.only(top: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-
             // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -67,6 +56,10 @@ class TacticalHistoryDrawer extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(context),
                   ),
                 ],
               ),
@@ -94,7 +87,7 @@ class TacticalHistoryDrawer extends StatelessWidget {
                         return _AuditCard(
                           audit: audit,
                           onTap: () {
-                            Navigator.pop(context);
+                            Navigator.maybePop(context);
                             final id = audit['id'] as String?;
                             if (id != null) {
                               context.push('/activity/$id');

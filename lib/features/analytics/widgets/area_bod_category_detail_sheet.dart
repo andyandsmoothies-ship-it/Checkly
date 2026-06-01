@@ -18,10 +18,12 @@ class AreaBodCategoryDetailSheet extends StatefulWidget {
   });
 
   @override
-  State<AreaBodCategoryDetailSheet> createState() => _AreaBodCategoryDetailSheetState();
+  State<AreaBodCategoryDetailSheet> createState() =>
+      _AreaBodCategoryDetailSheetState();
 }
 
-class _AreaBodCategoryDetailSheetState extends State<AreaBodCategoryDetailSheet> {
+class _AreaBodCategoryDetailSheetState
+    extends State<AreaBodCategoryDetailSheet> {
   @override
   void initState() {
     super.initState();
@@ -87,7 +89,7 @@ class _AreaBodCategoryDetailSheetState extends State<AreaBodCategoryDetailSheet>
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close, color: subTextCol),
+                      icon: Icon(Icons.close_rounded, color: subTextCol),
                       onPressed: () => Navigator.maybePop(context),
                     ),
                   ],
@@ -150,7 +152,9 @@ class _AreaBodCategoryDetailSheetState extends State<AreaBodCategoryDetailSheet>
                                 decoration: BoxDecoration(
                                   color: isLight
                                       ? AppColors.walkingFish
-                                      : AppColors.walkingFish.withValues(alpha: 0.2),
+                                      : AppColors.walkingFish.withValues(
+                                          alpha: 0.2,
+                                        ),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(
@@ -160,13 +164,13 @@ class _AreaBodCategoryDetailSheetState extends State<AreaBodCategoryDetailSheet>
                               ),
                               badges: [
                                 PillChip(
-                                    label: '${item.avgScore.toStringAsFixed(1)}%',
-                                    type: item.avgScore < 70
-                                        ? PillChipType.red
-                                        : item.avgScore < 85
-                                        ? PillChipType.blue
-                                        : PillChipType.green,
-                                  ),
+                                  label: '${item.avgScore.toStringAsFixed(1)}%',
+                                  type: item.avgScore < 70
+                                      ? PillChipType.red
+                                      : item.avgScore < 85
+                                      ? PillChipType.blue
+                                      : PillChipType.green,
+                                ),
                               ],
                             ),
                           );

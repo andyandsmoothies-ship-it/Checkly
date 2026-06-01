@@ -17,7 +17,8 @@ class CachedTemplates extends Table {
   DateTimeColumn get updatedAt => dateTime()();
   TextColumn get displayNoun => text().nullable()();
   TextColumn get geofenceMode => text().withDefault(const Constant('none'))();
-  IntColumn get geofenceRadiusMeters => integer().withDefault(const Constant(100))();
+  IntColumn get geofenceRadiusMeters =>
+      integer().withDefault(const Constant(100))();
 
   @override
   Set<Column> get primaryKey => {id};
