@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/checkly_theme_tokens.dart';
 
 /// A custom check box that performs a playful elastic scale-up pop
 /// when checked, accompanied by tactile haptic feedback.
@@ -131,15 +132,20 @@ class BouncyCheckboxState extends State<BouncyCheckbox>
     final checkedColor = AppColors.featherGreen;
     final uncheckedBorderColor = AppColors.swan;
 
+    // Resolve dynamic check box corner radius and border width proportional to cardTokens
+    final tokens = Theme.of(context).extension<ChecklyThemeTokens>();
+    final resolvedRadius = (tokens?.cardRadius ?? 16.0) / 2.0;
+    final resolvedBorderWidth = tokens?.cardBorderWidth ?? 2.0;
+
     return Container(
       width: widget.size,
       height: widget.size,
       decoration: BoxDecoration(
         color: widget.isChecked ? checkedColor : Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(resolvedRadius),
         border: Border.all(
           color: widget.isChecked ? checkedColor : uncheckedBorderColor,
-          width: 2.0,
+          width: resolvedBorderWidth,
         ),
       ),
       child: widget.isChecked

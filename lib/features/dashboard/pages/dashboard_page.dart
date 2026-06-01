@@ -112,7 +112,7 @@ class _DashboardPageState extends State<DashboardPage> {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
               child: ListenableBuilder(
                 listenable: _manager,
                 builder: (context, _) =>
@@ -187,6 +187,7 @@ class Greeting extends StatelessWidget {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               personalizedGreeting.toUpperCase(),
@@ -198,38 +199,65 @@ class Greeting extends StatelessWidget {
               ),
             ),
             if (isSyncing)
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'SYNCING',
-                    style: AppFonts.displayStyle(
-                      fontSize: 10,
-                      color: AppColors.wolf,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.0,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.seaSponge,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.turtle, width: 1.5),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
+                      width: 8,
+                      height: 8,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: Color(0xFF388E3C),
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Text(
+                      'SYNCING',
+                      style: AppFonts.displayStyle(
+                        fontSize: 9,
+                        color: const Color(0xFF388E3C),
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
               )
             else if (lastSync != null)
-              Text(
-                'LAST UPDATED: ${DateFormat('h:mm a').format(lastSync!)}',
-                style: AppFonts.displayStyle(
-                  fontSize: 10,
-                  color: AppColors.wolf,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.0,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F4F8),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.blueJay.withValues(alpha: 0.5), width: 1.5),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.sync, size: 10, color: AppColors.humpback),
+                    const SizedBox(width: 4),
+                    Text(
+                      DateFormat('h:mm a').format(lastSync!),
+                      style: AppFonts.displayStyle(
+                        fontSize: 9,
+                        color: AppColors.humpback,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 2),
         Text(
           title,
           style: AppFonts.displayStyle(

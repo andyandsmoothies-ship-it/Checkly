@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/checkly_theme_tokens.dart';
 
 enum PillChipType { green, blue, red, yellow, purple }
 
@@ -26,6 +27,10 @@ class PillChip extends StatelessWidget {
     Color backgroundColor;
     Color textColor;
     Color borderColor;
+
+    // Resolve dynamic cardBorderWidth from design tokens
+    final tokens = Theme.of(context).extension<ChecklyThemeTokens>();
+    final resolvedBorderWidth = tokens?.cardBorderWidth ?? 2.0;
 
     switch (type) {
       case PillChipType.green:
@@ -60,7 +65,7 @@ class PillChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(100),
-        border: Border.all(color: borderColor, width: 2),
+        border: Border.all(color: borderColor, width: resolvedBorderWidth),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

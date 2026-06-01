@@ -5,7 +5,7 @@ import '../manager/program_manager.dart';
 import '../services/program_api_service.dart'; // DTOs only
 import '../model/assignment_status.dart';
 import '../../../_shared/theme/app_fonts.dart';
-import '../../../_shared/widgets/warm_chip.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
 import '../../../_shared/widgets/primitives/pill_chip.dart';
 import 'widgets/program_bar_chart.dart';
@@ -35,14 +35,7 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
   ProgramSummaryResponse? _summary;
   String? _statusFilter;
 
-  static const _filterOptions = [
-    (label: 'All', value: null),
-    (label: 'Pending', value: 'pending'),
-    (label: 'Submitted', value: 'submitted'),
-    (label: 'Needs Rev', value: 'needs_revision'),
-    (label: 'Verified', value: 'verified'),
-    (label: 'Overdue', value: 'overdue'),
-  ];
+
 
   @override
   void initState() {
@@ -148,27 +141,46 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
             const SizedBox(height: 24),
           ],
 
-          // ── Status filter chips ──
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          // ── Status filter dropdown pill ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 12),
             child: Row(
-              children: _filterOptions.map((opt) {
-                final selected = _statusFilter == opt.value;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: WarmChip(
-                    label: opt.label,
-                    selected: selected,
-                    onTap: () {
-                      setState(() => _statusFilter = opt.value);
+              children: [
+                DropdownFilterPill(
+                  label: 'Status',
+                  value: switch (_statusFilter) {
+                    'pending' => 'Pending',
+                    'submitted' => 'Submitted',
+                    'needs_revision' => 'Needs Rev',
+                    'verified' => 'Verified',
+                    'overdue' => 'Overdue',
+                    _ => 'All',
+                  },
+                  active: _statusFilter != null,
+                  onTap: () => showProgramAssignmentStatusFilterSheet(
+                    context: context,
+                    currentFilter: _statusFilter,
+                    countByFilter: (status) {
+                      if (_summary == null) return 0;
+                      if (status == null) return _summary!.total;
+                      return switch (status) {
+                        'pending' => _summary!.pending,
+                        'submitted' => _summary!.submitted,
+                        'needs_revision' => _summary!.needsRevision,
+                        'verified' => _summary!.verified,
+                        'overdue' => _summary!.overdue,
+                        _ => 0,
+                      };
+                    },
+                    onSelected: (val) {
+                      setState(() => _statusFilter = val);
                       _load();
                     },
                   ),
-                );
-              }).toList(),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
 
           // ── Assignment list ──
           if (_assignments.isEmpty)
@@ -260,4 +272,184 @@ class _ProgramDashboardPageState extends State<ProgramDashboardPage> {
         return PillChipType.purple;
     }
   }
+}
+
+class DropdownFilterPill extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool active;
+  final VoidCallback onTap;
+
+  const DropdownFilterPill({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? AppColors.featherGreen : Colors.white,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: active ? AppColors.featherGreen : AppColors.swan,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$label: $value',
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ).copyWith(
+                color: active ? Colors.white : AppColors.eel,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 16,
+              color: active ? Colors.white : AppColors.eel,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void showProgramAssignmentStatusFilterSheet({
+  required BuildContext context,
+  required String? currentFilter,
+  required int Function(String?) countByFilter,
+  required ValueChanged<String?> onSelected,
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) {
+      final statuses = [
+        {'id': null, 'label': 'All Assignments', 'count': countByFilter(null)},
+        {'id': 'pending', 'label': 'Pending', 'count': countByFilter('pending')},
+        {'id': 'submitted', 'label': 'Submitted', 'count': countByFilter('submitted')},
+        {'id': 'needs_revision', 'label': 'Needs Revision', 'count': countByFilter('needs_revision')},
+        {'id': 'verified', 'label': 'Verified', 'count': countByFilter('verified')},
+        {'id': 'overdue', 'label': 'Overdue', 'count': countByFilter('overdue')},
+      ];
+
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Filter by Status',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.eel,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ...statuses.map((status) {
+                final isSelected = currentFilter == status['id'];
+                return InkWell(
+                  onTap: () {
+                    onSelected(status['id'] as String?);
+                    Navigator.maybePop(ctx);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.featherGreen.withValues(alpha: 0.08)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected ? AppColors.featherGreen : Colors.transparent,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              status['label'] as String,
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
+                                fontSize: 15,
+                                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                color: isSelected ? AppColors.featherGreen : AppColors.eel,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppColors.featherGreen
+                                    : AppColors.swan.withValues(alpha: 0.4),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Text(
+                                '${status['count']}',
+                                style: TextStyle(
+                                  fontFamily: 'Nunito',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: isSelected ? Colors.white : AppColors.eel.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (isSelected)
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.featherGreen,
+                            size: 20,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

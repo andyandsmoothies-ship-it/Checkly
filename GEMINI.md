@@ -156,6 +156,9 @@
   - **Fix:** When extending DTO parameters, make new parameters optional in default constructors with safe fallbacks rather than strictly `required` to prevent breaking existing test cases, seeder models, and mock builders.
 - **Gotcha: Geofence Count Semantics**
   - **Fix:** Geofence warning alerts trigger in the frontend only when `geofenceBypassCount > 0`. The card renders next to `Total Auditors` in Row 4 of `BodKpiGrid`.
+- **Gotcha: Token-Driven UI Primitives (ThemeSpirit & ChecklyThemeTokens)**
+  - **Fix:** When creating or editing highly custom widgets like `StrokeCard` or `BubblyButton`, never hardcode visual aesthetics (radius, depth, border widths). Always query `Theme.of(context).extension<ChecklyThemeTokens>()` to load values dynamically. To avoid null-pointer crashes in headless unit and widget tests where the theme extension is not explicitly loaded, you must always provide safe hardcoded fallback values using null-coalescing (e.g. `tokens?.cardRadius ?? 16.0`).
+
 
 
 

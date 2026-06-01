@@ -4,9 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import 'system_log_detail_page.dart';
 import '../widgets/log_card.dart';
+
 
 final _di = GetIt.instance;
 
@@ -32,8 +34,6 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
   Timer? _debounce;
 
   final _searchController = TextEditingController();
-
-  static const _levels = ['all', 'info', 'warn', 'error'];
 
   @override
   void initState() {
@@ -162,74 +162,78 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
         children: [
           // ── Investigate Toolbar: search ──
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
               controller: _searchController,
               onChanged: _onSearchChanged,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+                color: AppColors.eel,
+              ),
               decoration: InputDecoration(
                 hintText: 'Search email, message, entity ID…',
-                prefixIcon: const Icon(Icons.search, size: 20),
+                hintStyle: const TextStyle(
+                  fontFamily: 'Nunito',
+                  color: AppColors.wolf,
+                ),
+                prefixIcon: const Icon(Icons.search, color: AppColors.wolf),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
+                        icon: const Icon(Icons.clear, color: AppColors.wolf),
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
                         },
                       )
                     : null,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: AppColors.swan, width: 2),
                 ),
-                border: const OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: AppColors.featherGreen, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
           ),
           // ── Date range + level chips ──
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
-            child: Row(
-              children: [
-                TextButton.icon(
-                  style: TextButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  icon: const Icon(Icons.date_range, size: 16),
-                  label: Text(
-                    _dateRange == null
-                        ? 'Date Range'
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  DropdownFilterPill(
+                    label: 'Date',
+                    value: _dateRange == null
+                        ? 'All'
                         : '${_fmt(_dateRange!.start)} – ${_fmt(_dateRange!.end)}',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  onPressed: _pickDateRange,
-                ),
-                if (_dateRange != null)
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded, size: 16),
-                    tooltip: 'Clear dates',
-                    onPressed: _clearDateRange,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                const Spacer(),
-                ..._levels.map(
-                  (level) => Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: FilterChip(
-                      label: Text(
-                        level.toUpperCase(),
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                      selected: _levelFilter == level,
-                      onSelected: (_) => _onLevelChanged(level),
-                      padding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
+                    active: _dateRange != null,
+                    onTap: () => showLogDateFilterSheet(
+                      context: context,
+                      currentRange: _dateRange,
+                      onPickRange: _pickDateRange,
+                      onClear: _clearDateRange,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  DropdownFilterPill(
+                    label: 'Level',
+                    value: _levelFilter == 'all' ? 'All' : _levelFilter.toUpperCase(),
+                    active: _levelFilter != 'all',
+                    onTap: () => showLogLevelFilterSheet(
+                      context: context,
+                      currentFilter: _levelFilter,
+                      onSelected: _onLevelChanged,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           // ── Content ──
@@ -292,4 +296,285 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
       ),
     );
   }
+}
+
+
+class DropdownFilterPill extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool active;
+  final VoidCallback onTap;
+
+  const DropdownFilterPill({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? AppColors.featherGreen : Colors.white,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: active ? AppColors.featherGreen : AppColors.swan,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$label: $value',
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ).copyWith(
+                color: active ? Colors.white : AppColors.eel,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 16,
+              color: active ? Colors.white : AppColors.eel,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void showLogLevelFilterSheet({
+  required BuildContext context,
+  required String currentFilter,
+  required ValueChanged<String> onSelected,
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) {
+      final levels = [
+        {'id': 'all', 'label': 'All Levels', 'color': AppColors.eel},
+        {'id': 'info', 'label': 'INFO', 'color': AppColors.macaw},
+        {'id': 'warn', 'label': 'WARN', 'color': AppColors.fox},
+        {'id': 'error', 'label': 'ERROR', 'color': AppColors.cardinal},
+      ];
+
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Filter by Log Level',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.eel,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ...levels.map((lvl) {
+                final isSelected = currentFilter == lvl['id'];
+                return InkWell(
+                  onTap: () {
+                    onSelected(lvl['id'] as String);
+                    Navigator.maybePop(ctx);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.featherGreen.withValues(alpha: 0.1) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected ? AppColors.featherGreen : AppColors.swan,
+                        width: 2,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          lvl['label'] as String,
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 16,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                            color: lvl['color'] as Color,
+                          ),
+                        ),
+                        if (isSelected)
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.featherGreen,
+                            size: 20,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void showLogDateFilterSheet({
+  required BuildContext context,
+  required DateTimeRange? currentRange,
+  required VoidCallback onPickRange,
+  required VoidCallback onClear,
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Filter by Date',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.eel,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: () {
+                  Navigator.maybePop(ctx);
+                  onPickRange();
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: currentRange != null ? AppColors.featherGreen.withValues(alpha: 0.1) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: currentRange != null ? AppColors.featherGreen : AppColors.swan,
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        currentRange == null
+                            ? 'Select Date Range'
+                            : 'Change Date Range',
+                        style: const TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.eel,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.date_range_rounded,
+                        color: AppColors.featherGreen,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (currentRange != null) ...[
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: () {
+                    Navigator.maybePop(ctx);
+                    onClear();
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.cardinal,
+                        width: 2,
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Clear Date Filter',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.cardinal,
+                          ),
+                        ),
+                        Icon(
+                          Icons.delete_sweep_rounded,
+                          color: AppColors.cardinal,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

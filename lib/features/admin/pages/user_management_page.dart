@@ -7,8 +7,8 @@ import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/exceptions/app_error.dart';
 import '../../../_shared/services/error_display_service.dart';
 import '../../../_shared/services/policy_manager.dart';
+import '../../../_shared/theme/app_colors.dart';
 import '../../../_shared/theme/app_theme.dart';
-import '../../../_shared/widgets/warm_chip.dart';
 import '../manager/admin_user_manager.dart';
 import '../widgets/user_create_sheet.dart';
 import '../widgets/user_edit_sheet.dart';
@@ -30,14 +30,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
   final _searchController = TextEditingController();
   late final AdminUserManager _manager;
   String _selectedRole = 'all';
-
-  static const _roleTabs = [
-    ('all', 'All'),
-    ('admin', 'Admin'),
-    ('auditor', 'Auditor'),
-    ('area_manager', 'Area Mgr'),
-    ('store_manager', 'Store Mgr'),
-  ];
 
   @override
   void initState() {
@@ -230,16 +222,19 @@ class _UserManagementPageState extends State<UserManagementPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Management'),
-        actions: [
-          if (canManage)
-            IconButton(
-              icon: const Icon(Icons.person_add),
-              onPressed: _showCreateUserSheet,
-              tooltip: 'Add User',
-            ),
-        ],
       ),
-      floatingActionButton: null,
+      floatingActionButton: canManage
+          ? FloatingActionButton(
+              key: const Key('create_user_fab'),
+              tooltip: 'Add User',
+              backgroundColor: AppColors.featherGreen,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: const CircleBorder(),
+              onPressed: _showCreateUserSheet,
+              child: const Icon(Icons.add, size: 28),
+            )
+          : null,
       body: ListenableBuilder(
         listenable: _manager,
         builder: (context, _) {
@@ -247,52 +242,74 @@ class _UserManagementPageState extends State<UserManagementPage> {
             children: [
               // Search bar
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: TextField(
                   controller: _searchController,
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.eel,
+                  ),
                   decoration: InputDecoration(
                     hintText: 'Search by name or email...',
-                    prefixIcon: const Icon(Icons.search),
+                    hintStyle: const TextStyle(
+                      fontFamily: 'Nunito',
+                      color: AppColors.wolf,
+                    ),
+                    prefixIcon: const Icon(Icons.search, color: AppColors.wolf),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear),
+                            icon: const Icon(Icons.clear, color: AppColors.wolf),
                             onPressed: () {
                               _searchController.clear();
                               _onSearch('');
                             },
                           )
                         : null,
-                    border: const OutlineInputBorder(),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: AppColors.swan, width: 2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: AppColors.featherGreen, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                   onSubmitted: _onSearch,
                   textInputAction: TextInputAction.search,
                 ),
               ),
 
-              // Role tabs
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
-                ),
+              // Role dropdown filter pill
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
                 child: Row(
-                  children: _roleTabs.map((tab) {
-                    final (role, label) = tab;
-                    final count = role == 'all'
-                        ? _manager.users.length
-                        : _manager.users.where((u) => u['role'] == role).length;
-                    final isSelected = _selectedRole == role;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: WarmChip(
-                        label: '$label ($count)',
-                        selected: isSelected,
-                        onTap: () => setState(() => _selectedRole = role),
+                  children: [
+                    DropdownFilterPill(
+                      label: 'Role',
+                      value: switch (_selectedRole) {
+                        'all' => 'All',
+                        'admin' => 'Admin',
+                        'auditor' => 'Auditor',
+                        'area_manager' => 'Area Mgr',
+                        'store_manager' => 'Store Mgr',
+                        _ => _selectedRole,
+                      },
+                      active: _selectedRole != 'all',
+                      onTap: () => showUserRoleFilterSheet(
+                        context: context,
+                        currentFilter: _selectedRole,
+                        countByRole: (role) {
+                          if (role == 'all') return _manager.users.length;
+                          return _manager.users.where((u) => u['role'] == role).length;
+                        },
+                        onSelected: (val) => setState(() => _selectedRole = val),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 ),
               ),
 
@@ -319,4 +336,183 @@ class _UserManagementPageState extends State<UserManagementPage> {
       ),
     );
   }
+}
+
+class DropdownFilterPill extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool active;
+  final VoidCallback onTap;
+
+  const DropdownFilterPill({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? AppColors.featherGreen : Colors.white,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: active ? AppColors.featherGreen : AppColors.swan,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$label: $value',
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ).copyWith(
+                color: active ? Colors.white : AppColors.eel,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 16,
+              color: active ? Colors.white : AppColors.eel,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void showUserRoleFilterSheet({
+  required BuildContext context,
+  required String currentFilter,
+  required int Function(String) countByRole,
+  required ValueChanged<String> onSelected,
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) {
+      final roles = [
+        {'id': 'all', 'label': 'All Users', 'count': countByRole('all')},
+        {'id': 'admin', 'label': 'Admin', 'count': countByRole('admin')},
+        {'id': 'auditor', 'label': 'Auditor', 'count': countByRole('auditor')},
+        {'id': 'area_manager', 'label': 'Area Manager', 'count': countByRole('area_manager')},
+        {'id': 'store_manager', 'label': 'Store Manager', 'count': countByRole('store_manager')},
+      ];
+
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Filter by Role',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.eel,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.maybePop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ...roles.map((role) {
+                final isSelected = currentFilter == role['id'];
+                return InkWell(
+                  onTap: () {
+                    onSelected(role['id'] as String);
+                    Navigator.maybePop(ctx);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.featherGreen.withValues(alpha: 0.08)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected ? AppColors.featherGreen : Colors.transparent,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              role['label'] as String,
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
+                                fontSize: 15,
+                                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                color: isSelected ? AppColors.featherGreen : AppColors.eel,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppColors.featherGreen
+                                    : AppColors.swan.withValues(alpha: 0.4),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Text(
+                                '${role['count']}',
+                                style: TextStyle(
+                                  fontFamily: 'Nunito',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: isSelected ? Colors.white : AppColors.eel.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (isSelected)
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.featherGreen,
+                            size: 20,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

@@ -5,14 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../../../_shared/constants/app_capabilities.dart';
 import '../../../_shared/services/policy_manager.dart';
 import '../../../_shared/widgets/checkly_fab.dart';
-import '../../../_shared/widgets/warm_chip.dart';
+import 'widgets/history_filter_widgets.dart';
 
 import '../manager/history_manager.dart';
 import '../model/submission_dto.dart';
 import '../utils/category_utils.dart';
-import '../pages/widgets/cloud_archive_banner.dart';
-import '../pages/widgets/history_list_view.dart';
-import '../pages/widgets/schedule_audit_sheet.dart';
+import 'widgets/cloud_archive_banner.dart';
+import 'widgets/history_list_view.dart';
+import 'widgets/schedule_audit_sheet.dart';
 
 final _di = GetIt.instance;
 
@@ -174,6 +174,23 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
+  String _getFilterLabel(String filter) {
+    switch (filter) {
+      case 'all':
+        return 'All';
+      case 'todo':
+        return 'Todo';
+      case 'doing':
+        return 'Doing';
+      case 'submitted':
+        return 'Submitted';
+      case 'overdue':
+        return 'Overdue';
+      default:
+        return filter;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -233,76 +250,42 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ),
 
-              // Filter chips
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+              // Dropdown filter pills (Google/Airbnb Style)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Row(
                   children: [
-                    WarmChip(
-                      label: 'All',
-                      count: _countByStatus('all'),
-                      selected: _filter == 'all',
-                      onTap: () => setState(() => _filter = 'all'),
-                    ),
-                    const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Todo',
-                      count: _countByStatus('todo'),
-                      selected: _filter == 'todo',
-                      onTap: () => setState(() => _filter = 'todo'),
-                    ),
-                    const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Doing',
-                      count: _countByStatus('doing'),
-                      selected: _filter == 'doing',
-                      onTap: () => setState(() => _filter = 'doing'),
-                    ),
-                    const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Submitted',
-                      count: _countByStatus('submitted'),
-                      selected: _filter == 'submitted',
-                      onTap: () => setState(() => _filter = 'submitted'),
-                    ),
-                    const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Overdue',
-                      count: _countByStatus('overdue'),
-                      selected: _filter == 'overdue',
-                      onTap: () => setState(() => _filter = 'overdue'),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Category filter chips (only shown when >1 type is in the list)
-              if (_availableCategories.length > 1)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Row(
-                    children: [
-                      WarmChip(
-                        label: 'All categories',
-                        selected: _categoryFilter == 'all',
-                        onTap: () => setState(() => _categoryFilter = 'all'),
+                    DropdownFilterPill(
+                      label: 'Status',
+                      value: _getFilterLabel(_filter),
+                      active: _filter != 'all',
+                      onTap: () => showStatusFilterSheet(
+                        context: context,
+                        currentFilter: _filter,
+                        countByStatus: _countByStatus,
+                        onSelected: (val) => setState(() => _filter = val),
                       ),
-                      ..._availableCategories.map(
-                        (type) => Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: WarmChip(
-                            label: formatCategory(type),
-                            selected: _categoryFilter == type,
-                            onTap: () => setState(() => _categoryFilter = type),
-                          ),
+                    ),
+                    if (_availableCategories.length > 1) ...[
+                      const SizedBox(width: 8),
+                      DropdownFilterPill(
+                        label: 'Category',
+                        value: _categoryFilter == 'all'
+                            ? 'All'
+                            : formatCategory(_categoryFilter),
+                        active: _categoryFilter != 'all',
+                        onTap: () => showCategoryFilterSheet(
+                          context: context,
+                          currentFilter: _categoryFilter,
+                          availableCategories: _availableCategories,
+                          formatCategory: formatCategory,
+                          onSelected: (val) => setState(() => _categoryFilter = val),
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
+              ),
 
               // ── Cloud Archive Banner (GC Pillar A) ──
               const CloudArchiveBanner(),

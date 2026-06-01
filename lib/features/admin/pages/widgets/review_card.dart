@@ -58,6 +58,10 @@ class ReviewCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: scoreColor.withValues(alpha: 0.1),
           shape: BoxShape.circle,
+          border: Border.all(
+            color: scoreColor.withValues(alpha: 0.35),
+            width: 2.0,
+          ),
         ),
         child: Center(
           child: Text(
@@ -155,10 +159,11 @@ class ReviewCard extends StatelessWidget {
                   child: BubblyButton(
                     label: 'Reject',
                     color: theme.colorScheme.error,
-                    icon: const Icon(
+                    isOutline: true,
+                    icon: Icon(
                       Icons.close_rounded,
                       size: 16,
-                      color: Colors.white,
+                      color: theme.colorScheme.error,
                     ),
                     onPressed: onReject,
                     height: 40,
@@ -169,10 +174,11 @@ class ReviewCard extends StatelessWidget {
                   child: BubblyButton(
                     label: 'Approve',
                     color: AppTheme.success,
+                    isOutline: true,
                     icon: const Icon(
                       Icons.check,
                       size: 16,
-                      color: Colors.white,
+                      color: AppTheme.success,
                     ),
                     onPressed: onApprove,
                     height: 40,

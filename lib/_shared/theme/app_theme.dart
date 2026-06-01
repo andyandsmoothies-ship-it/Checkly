@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
+import 'checkly_theme_tokens.dart';
+
+/// Defines the overall design theme/spirit for the Checkly application.
+enum ThemeSpirit {
+  /// Signature gamified look with 3D tactile layers and rounded shapes
+  duolingo,
+
+  /// Flat, sleek, modern layout with narrow borders and sharp corners
+  minimalist,
+}
 
 /// Checkly design system — "Apothecary" Editorial Utilitarian aesthetic.
 ///
@@ -9,6 +19,9 @@ import 'app_colors.dart';
 /// This file builds ThemeData from those primitives.
 class AppTheme {
   AppTheme._();
+
+  /// Global switch to swap the design spirit of the entire application.
+  static ThemeSpirit activeSpirit = ThemeSpirit.duolingo;
 
   // ── Re-exports for backward compatibility ──
   // Pages can use AppTheme.oatmeal or AppColors.oatmeal interchangeably.
@@ -44,13 +57,27 @@ class AppTheme {
     final textTheme = GoogleFonts.nunitoTextTheme(baseTextTheme);
     final isLight = colorScheme.brightness == Brightness.light;
 
+    // Resolve our active design tokens based on the global spirit selection
+    final tokens = activeSpirit == ThemeSpirit.duolingo
+        ? const ChecklyThemeTokens(
+            cardRadius: 16.0,
+            button3dDepth: 4.0,
+            cardBorderWidth: 2.0,
+          )
+        : const ChecklyThemeTokens(
+            cardRadius: 4.0,
+            button3dDepth: 0.0,
+            cardBorderWidth: 1.0,
+          );
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       textTheme: textTheme,
       scaffoldBackgroundColor: isLight ? AppColors.snow : colorScheme.surface,
+      extensions: [tokens], // Register our custom design system tokens
 
-      // AppBar — flat white with 2px Swan bottom border
+      // AppBar — flat white with outline matching our border width token
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
@@ -59,7 +86,7 @@ class AppTheme {
         shape: Border(
           bottom: BorderSide(
             color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
-            width: 2,
+            width: tokens.cardBorderWidth,
           ),
         ),
         titleTextStyle: textTheme.titleLarge?.copyWith(
@@ -68,28 +95,28 @@ class AppTheme {
         ),
       ),
 
-      // Cards — flat with 2px Swan border, zero elevation
+      // Cards — flat with outline matching our corner radius and border width tokens
       cardTheme: CardThemeData(
         elevation: 0,
         margin: EdgeInsets.zero,
         color: isLight ? AppColors.snow : colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
           side: BorderSide(
             color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
-            width: 2,
+            width: tokens.cardBorderWidth,
           ),
         ),
       ),
 
-      // Buttons — Rounded, bold styles
+      // Buttons — Corner radius matching tokens
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(tokens.cardRadius),
           ),
           textStyle: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
@@ -97,7 +124,7 @@ class AppTheme {
         ),
       ),
 
-      // Input fields — Flat, thick Swan borders, focused to Macaw Blue
+      // Input fields — Flat, custom Swan borders, focused to Macaw Blue
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isLight
@@ -108,26 +135,26 @@ class AppTheme {
           vertical: 16,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
           borderSide: BorderSide(
             color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
-            width: 2,
+            width: tokens.cardBorderWidth,
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
           borderSide: BorderSide(
             color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
-            width: 2,
+            width: tokens.cardBorderWidth,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.macaw, width: 2),
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
+          borderSide: BorderSide(color: AppColors.macaw, width: tokens.cardBorderWidth),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.cardinal, width: 2),
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
+          borderSide: BorderSide(color: AppColors.cardinal, width: tokens.cardBorderWidth),
         ),
       ),
 
@@ -147,10 +174,10 @@ class AppTheme {
           color: colorScheme.onSurface,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(tokens.cardRadius + 4.0),
           side: BorderSide(
             color: isLight ? AppColors.swan : AppColors.swan.withAlpha(40),
-            width: 2,
+            width: tokens.cardBorderWidth,
           ),
         ),
       ),

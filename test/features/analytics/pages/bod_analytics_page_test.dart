@@ -483,7 +483,7 @@ void main() {
         expect(find.text('12 Days Overdue'), findsOneWidget);
 
         // Close sheet
-        await tester.tap(find.byIcon(Icons.close));
+        await tester.tap(find.byIcon(Icons.close_rounded));
         await tester.pumpAndSettle();
       },
     );

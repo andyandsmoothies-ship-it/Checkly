@@ -31,17 +31,24 @@ class StoreCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       onTap: onEdit,
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
           color: isActive
-              ? theme.colorScheme.primaryContainer
+              ? AppColors.seaSponge
               : Colors.grey.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(8),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isActive ? AppColors.turtle : Colors.grey.withValues(alpha: 0.3),
+            width: 2.0,
+          ),
         ),
-        child: Icon(
-          Icons.store,
-          color: isActive ? theme.colorScheme.primary : Colors.grey,
-          size: 22,
+        child: Center(
+          child: Icon(
+            Icons.store,
+            color: isActive ? const Color(0xFF388E3C) : Colors.grey,
+            size: 20,
+          ),
         ),
       ),
       badges: [

@@ -28,9 +28,9 @@ class AuditorDashboardVariant extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh ?? () async {},
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
           // ── Hero: Resume Draft or Start Audit ──
           state.draftCount > 0
@@ -50,7 +50,7 @@ class AuditorDashboardVariant extends StatelessWidget {
                   onTap: () => context.push('/templates'),
                 ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
           // ── Compact Status Panel: Vitals ──
           CompactStatusPanel(
@@ -73,11 +73,11 @@ class AuditorDashboardVariant extends StatelessWidget {
           ),
 
           if (state.nearestDeadline != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             DeadlineBanner(deadline: state.nearestDeadline!),
           ],
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
           SubmissionFeedSection(
             submissions: state.recentSubmissions,
             context: context,

@@ -138,6 +138,9 @@ class _UserCreateSheetState extends State<UserCreateSheet> {
         forceReassign: forceReassign,
       );
       if (mounted) {
+        setState(() {
+          isSubmitting = false;
+        });
         Navigator.maybePop(context, true); // Signal page to refresh
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

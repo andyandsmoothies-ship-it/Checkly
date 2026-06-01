@@ -80,7 +80,7 @@ class _BodStoreDetailSheetState extends State<BodStoreDetailSheet> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close_rounded, color: AppColors.wolf),
+                      icon: const Icon(Icons.close, color: AppColors.wolf),
                       onPressed: () => Navigator.maybePop(context),
                     ),
                   ],

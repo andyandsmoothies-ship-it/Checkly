@@ -13,6 +13,7 @@ import '../manager/admin_audit_manager.dart';
 import 'widgets/audit_review_sheet.dart';
 import 'widgets/review_card.dart';
 import '../../../_shared/constants/review_status.dart';
+import '../../../_shared/theme/app_colors.dart';
 
 final _di = GetIt.instance;
 
@@ -223,29 +224,41 @@ class _AuditApprovalPageState extends State<AuditApprovalPage>
           : Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                   child: TextField(
                     controller: _search,
+                    style: const TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.eel,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Search by store, template, or auditor...',
-                      prefixIcon: const Icon(Icons.search),
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Nunito',
+                        color: AppColors.wolf,
+                      ),
+                      prefixIcon: const Icon(Icons.search, color: AppColors.wolf),
                       suffixIcon: _search.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear),
+                              icon: const Icon(Icons.clear, color: AppColors.wolf),
                               onPressed: () {
                                 _search.clear();
                                 setState(() {});
                               },
                             )
                           : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
                       filled: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 0,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(color: AppColors.swan, width: 2),
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(color: AppColors.featherGreen, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                     onChanged: (_) => setState(() {}),
                   ),

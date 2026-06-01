@@ -123,7 +123,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 1.4,
+                      childAspectRatio: 1.55,
                       children: [
                         _KpiCard(
                           icon: Icons.people,

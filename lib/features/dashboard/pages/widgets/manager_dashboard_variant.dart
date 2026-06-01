@@ -41,9 +41,9 @@ class ManagerDashboardVariant extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh ?? () async {},
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
           // ── Programs: Action Required or Campaign Progress Banner ──
           if (isArea)
@@ -63,7 +63,7 @@ class ManagerDashboardVariant extends StatelessWidget {
               onTap: () => context.go('/plans?sort=urgent'),
             ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
           // ── Compact Status Panel ──
           CompactStatusPanel(
@@ -101,11 +101,11 @@ class ManagerDashboardVariant extends StatelessWidget {
           ),
 
           if (state.nearestDeadline != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             DeadlineBanner(deadline: state.nearestDeadline!),
           ],
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
           SubmissionFeedSection(
             submissions: state.recentSubmissions,
             context: context,

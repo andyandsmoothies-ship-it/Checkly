@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/checkly_theme_tokens.dart';
 
 /// A playful, bubbly 3D button widget designed to match the gamified reskin.
 ///
@@ -16,6 +17,7 @@ class BubblyButton extends StatefulWidget {
   final Widget? icon;
   final bool isLoading;
   final double height;
+  final bool isOutline;
 
   const BubblyButton({
     super.key,
@@ -27,6 +29,7 @@ class BubblyButton extends StatefulWidget {
     this.icon,
     this.isLoading = false,
     this.height = 50.0,
+    this.isOutline = false,
   }) : assert(
          label != null || child != null,
          'Either label or child must be provided',
@@ -44,6 +47,12 @@ class _BubblyButtonState extends State<BubblyButton> {
     final isEnabled = widget.onPressed != null && !widget.isLoading;
     final isLight = Theme.of(context).brightness == Brightness.light;
 
+    // Resolve our active design tokens from theme, with safe fallback to Duolingo defaults
+    final tokens = Theme.of(context).extension<ChecklyThemeTokens>();
+    final cardRadius = tokens?.cardRadius ?? 16.0;
+    final depth3d = tokens?.button3dDepth ?? 4.0;
+    final borderWidth = tokens?.cardBorderWidth ?? 2.0;
+
     // Resolve base button color: fallback to primary seed (featherGreen) or swan if disabled
     final baseColor =
         widget.color ??
@@ -52,16 +61,19 @@ class _BubblyButtonState extends State<BubblyButton> {
             : (isLight ? AppColors.swan : AppColors.charcoal));
 
     // Dynamically generate the darker 3D shadow color by lerping toward black
-    final shadowColor =
-        Color.lerp(baseColor, Colors.black, 0.25) ?? baseColor.withAlpha(200);
+    final shadowColor = widget.isOutline
+        ? (Color.lerp(baseColor, Colors.black, 0.1) ?? baseColor)
+        : (Color.lerp(baseColor, Colors.black, 0.25) ?? baseColor.withAlpha(200));
 
     final textStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
       fontWeight: FontWeight.w800,
       color:
           widget.textColor ??
-          (isEnabled
-              ? Colors.white
-              : (isLight ? AppColors.wolf : AppColors.hare)),
+          (widget.isOutline
+              ? (isEnabled ? baseColor : (isLight ? AppColors.wolf : AppColors.hare))
+              : (isEnabled
+                  ? Colors.white
+                  : (isLight ? AppColors.wolf : AppColors.hare))),
     );
 
     final disableAnimations = MediaQuery.disableAnimationsOf(context);
@@ -88,48 +100,52 @@ class _BubblyButtonState extends State<BubblyButton> {
           : null,
       onTapCancel: isEnabled ? () => setState(() => _isPressed = false) : null,
       child: SizedBox(
-        height: widget.height + 4.0, // Base height + 4px 3D shadow depth
+        height: widget.height + depth3d, // Base height + 3D shadow depth token
         width: double.infinity,
         child: Stack(
           children: [
-            // The 3D Shadow/Background Layer
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              top: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: shadowColor,
-                  borderRadius: BorderRadius.circular(16),
+            // The 3D Shadow/Background Layer (only rendered if depth > 0)
+            if (depth3d > 0)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: depth3d,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: shadowColor,
+                    borderRadius: BorderRadius.circular(cardRadius),
+                  ),
                 ),
               ),
-            ),
             // The Interactive Button Face Layer
             AnimatedPositioned(
               duration: positionDuration,
               left: 0,
               right: 0,
-              top: _isPressed ? 4 : 0,
-              bottom: _isPressed ? 0 : 4,
+              top: _isPressed ? depth3d : 0,
+              bottom: _isPressed ? 0 : depth3d,
               child: AnimatedScale(
                 scale: _isPressed ? 0.95 : 1.0,
                 duration: scaleDuration,
                 curve: scaleCurve,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: baseColor,
-                    borderRadius: BorderRadius.circular(16),
+                    color: widget.isOutline ? Colors.white : baseColor,
+                    border: widget.isOutline
+                        ? Border.all(color: baseColor, width: borderWidth)
+                        : null,
+                    borderRadius: BorderRadius.circular(cardRadius),
                   ),
                   child: Center(
                     child: widget.isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+                                widget.isOutline ? baseColor : Colors.white,
                               ),
                             ),
                           )

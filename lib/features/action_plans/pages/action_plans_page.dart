@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
-import '../../../_shared/widgets/warm_chip.dart';
 import '../../../_shared/widgets/checkly_empty_state.dart';
 import '../manager/action_plan_manager.dart';
 import '../model/action_plan_dto.dart';
 import '../../../_shared/widgets/primitives/primitives.dart';
 import '../widgets/action_plan_card.dart';
+import 'widgets/action_plans_filter_widgets.dart';
 
 final _di = GetIt.instance;
 
@@ -126,31 +126,6 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Action Plans'),
-        actions: [
-          ListenableBuilder(
-            listenable: _manager,
-            builder: (context, _) {
-              if (_countByStatus('all') == 0) return const SizedBox.shrink();
-              return PopupMenuButton<String>(
-                icon: const Icon(Icons.sort),
-                tooltip: 'Sort Action Plans',
-                onSelected: (value) => setState(() => _sort = value),
-                itemBuilder: (context) => [
-                  CheckedPopupMenuItem(
-                    value: 'newest',
-                    checked: _sort == 'newest',
-                    child: const Text('Newest First'),
-                  ),
-                  CheckedPopupMenuItem(
-                    value: 'urgent',
-                    checked: _sort == 'urgent',
-                    child: const Text('Urgent First'),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
       ),
       body: ListenableBuilder(
         listenable: _manager,
@@ -204,38 +179,38 @@ class _ActionPlansPageState extends State<ActionPlansPage> {
                 ),
               ),
 
-              // Filter chips
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+              // Filter & Sort dropdown pills
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Row(
                   children: [
-                    WarmChip(
-                      label: 'All',
-                      count: _countByStatus('all'),
-                      selected: _filter == 'all',
-                      onTap: () => setState(() => _filter = 'all'),
+                    DropdownFilterPill(
+                      label: 'Status',
+                      value: switch (_filter) {
+                        'all' => 'All',
+                        'open' => 'Open',
+                        'pending_verify' => 'Verify',
+                        'closed' => 'Done',
+                        _ => _filter,
+                      },
+                      active: _filter != 'all',
+                      onTap: () => showActionPlanStatusSheet(
+                        context: context,
+                        currentFilter: _filter,
+                        countByStatus: _countByStatus,
+                        onSelected: (val) => setState(() => _filter = val),
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Open',
-                      count: _countByStatus('open'),
-                      selected: _filter == 'open',
-                      onTap: () => setState(() => _filter = 'open'),
-                    ),
-                    const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Verify',
-                      count: _countByStatus('pending_verify'),
-                      selected: _filter == 'pending_verify',
-                      onTap: () => setState(() => _filter = 'pending_verify'),
-                    ),
-                    const SizedBox(width: 8),
-                    WarmChip(
-                      label: 'Done',
-                      count: _countByStatus('closed'),
-                      selected: _filter == 'closed',
-                      onTap: () => setState(() => _filter = 'closed'),
+                    DropdownFilterPill(
+                      label: 'Sort',
+                      value: _sort == 'urgent' ? 'Urgent' : 'Newest',
+                      active: _sort == 'urgent',
+                      onTap: () => showActionPlanSortSheet(
+                        context: context,
+                        currentSort: _sort,
+                        onSelected: (val) => setState(() => _sort = val),
+                      ),
                     ),
                   ],
                 ),

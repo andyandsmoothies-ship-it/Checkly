@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/checkly_theme_tokens.dart';
 
 /// A custom, highly animated 3D switch designed to feel tactile and playful.
 ///
@@ -13,6 +14,11 @@ class BubblySwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Resolve dynamic 3D depth from theme tokens
+    final tokens = Theme.of(context).extension<ChecklyThemeTokens>();
+    final depth3d = tokens?.button3dDepth ?? 4.0;
+    final switchDepth = depth3d > 0 ? 2.0 : 0.0;
+
     final trackColor = value ? AppColors.featherGreen : AppColors.swan;
     // Solid bottom border for a tactile 3D slot appearance
     final bottomBorderColor = value
@@ -29,24 +35,25 @@ class BubblySwitch extends StatelessWidget {
           height: 36,
           child: Stack(
             children: [
-              // Track shadow/3D slot layer
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                top: 2,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: bottomBorderColor,
-                    borderRadius: BorderRadius.circular(100),
+              // Track shadow/3D slot layer (only if switchDepth > 0)
+              if (switchDepth > 0)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  top: switchDepth,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: bottomBorderColor,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
                   ),
                 ),
-              ),
               // Track face layer
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: 2,
+                bottom: switchDepth,
                 top: 0,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
@@ -79,7 +86,7 @@ class BubblySwitch extends StatelessWidget {
                                   color: Colors.black.withAlpha(50),
                                   offset: const Offset(0, 2),
                                   blurRadius: 2,
-                                ),
+                                )
                               ],
                             ),
                           ),

@@ -9,7 +9,6 @@ import '../../../../_shared/exceptions/app_error.dart';
 import '../../../../_shared/services/error_display_service.dart';
 import '../../../../_shared/services/policy_manager.dart';
 import '../../../../_shared/theme/app_colors.dart';
-import '../../../../_shared/theme/app_fonts.dart';
 import '../../../../_shared/widgets/primitives/primitives.dart';
 import '../../../../_shared/utils/date_format_utils.dart';
 import '../../../audit/model/submission_dto.dart';
@@ -178,13 +177,6 @@ class _SubmissionRowState extends State<SubmissionRow> {
       shortForm: true,
     );
 
-    final semanticColor = score != null
-        ? (score >= 80
-              ? AppColors.featherGreen
-              : score >= 60
-              ? AppColors.fox
-              : AppColors.cardinal)
-        : AppColors.wolf;
 
     return UniversalListCard(
       margin: const EdgeInsets.only(bottom: 8),
@@ -300,13 +292,15 @@ class _SubmissionRowState extends State<SubmissionRow> {
                           label: 'SURVEY',
                           type: PillChipType.purple,
                         )
-                      : Text(
-                          scoreText,
-                          style: AppFonts.displayStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: semanticColor,
-                          ),
+                      : PillChip(
+                          label: scoreText,
+                          type: score != null
+                              ? (score >= 80
+                                  ? PillChipType.green
+                                  : score >= 60
+                                      ? PillChipType.yellow
+                                      : PillChipType.red)
+                              : PillChipType.blue,
                         ))
                 : Builder(
                     builder: (_) {

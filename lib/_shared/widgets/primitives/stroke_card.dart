@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/checkly_theme_tokens.dart';
 
 /// A flat card widget with rounded corners and a prominent 2px Swan border.
 ///
@@ -37,6 +38,14 @@ class _StrokeCardState extends State<StrokeCard> {
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
+
+    // Resolve our active design tokens from theme, with safe fallback to defaults
+    final tokens = Theme.of(context).extension<ChecklyThemeTokens>();
+    final resolvedRadius = widget.borderRadius == 16.0
+        ? (tokens?.cardRadius ?? 16.0)
+        : widget.borderRadius;
+    final resolvedBorderWidth = tokens?.cardBorderWidth ?? 2.0;
+
     final cardColor =
         widget.color ??
         (isLight
@@ -47,8 +56,8 @@ class _StrokeCardState extends State<StrokeCard> {
         (isLight ? AppColors.swan : AppColors.swan.withAlpha(40));
 
     final cardShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(widget.borderRadius),
-      side: BorderSide(color: borderCol, width: 2.0),
+      borderRadius: BorderRadius.circular(resolvedRadius),
+      side: BorderSide(color: borderCol, width: resolvedBorderWidth),
     );
 
     if (widget.onTap != null) {

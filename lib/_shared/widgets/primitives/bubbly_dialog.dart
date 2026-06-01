@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/checkly_theme_tokens.dart';
 
 /// A custom, flat modal dialog featuring heavy rounded corners and high contrast borders.
 ///
@@ -19,12 +20,17 @@ class BubblyDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Resolve dynamic dialog corner radius and border width from design tokens
+    final tokens = Theme.of(context).extension<ChecklyThemeTokens>();
+    final resolvedRadius = (tokens?.cardRadius ?? 16.0) * 1.5;
+    final resolvedBorderWidth = tokens?.cardBorderWidth ?? 2.0;
+
     return Dialog(
       backgroundColor: Colors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: const BorderSide(color: AppColors.swan, width: 2),
+        borderRadius: BorderRadius.circular(resolvedRadius),
+        side: BorderSide(color: AppColors.swan, width: resolvedBorderWidth),
       ),
       child: Padding(
         padding: const EdgeInsets.all(24.0),

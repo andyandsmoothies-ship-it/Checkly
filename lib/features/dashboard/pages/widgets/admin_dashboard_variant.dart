@@ -22,9 +22,9 @@ class AdminDashboardVariant extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh ?? () async {},
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
           // Premium 2x2 Grid of KPIs
           GridView.count(
@@ -33,7 +33,7 @@ class AdminDashboardVariant extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 1.4,
+            childAspectRatio: 1.55,
             children: [
               _AdminKpiCard(
                 icon: Icons.assignment,
