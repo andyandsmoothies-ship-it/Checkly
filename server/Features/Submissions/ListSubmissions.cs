@@ -76,7 +76,9 @@ public static class ListSubmissions
                 s.RawEarnedPoints,
                 s.RawMaxPoints,
                 s.IsWeighted,
-                s.ScoringMode
+                s.ScoringMode,
+                s.IsGeofenceBypassed,
+                s.DistanceMetersOff
             })
             .ToListAsync(ct);
 
@@ -105,7 +107,9 @@ public static class ListSubmissions
                 s.TemplateVersion,
                 s.RawEarnedPoints, s.RawMaxPoints, s.IsWeighted,
                 s.ScoringMode,
-                AllowedActions: actions);
+                AllowedActions: actions,
+                IsGeofenceBypassed: s.IsGeofenceBypassed,
+                DistanceMetersOff: s.DistanceMetersOff);
         }).ToList();
 
         return TypedResults.Ok(new PagedResult<SubmissionDto>(submissions, total, page, pageSize));

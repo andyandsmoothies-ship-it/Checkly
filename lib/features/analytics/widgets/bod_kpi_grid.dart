@@ -38,6 +38,7 @@ class BodKpiGrid extends StatelessWidget {
     final overdueAPs = chainKpis['overdueAPs'] ?? 0;
     final activeStores = chainKpis['activeStores'] ?? 0;
     final totalAuditors = chainKpis['totalAuditors'] ?? 0;
+    final geofenceBypassCount = chainKpis['geofenceBypassCount'] ?? 0;
 
     final double? rawAvgTtrDays = chainKpis['avgTtrDays']?.toDouble();
     final String avgTtrDisplay;
@@ -207,7 +208,15 @@ class BodKpiGrid extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(child: SizedBox()),
+                  Expanded(
+                    child: _buildKpiCard(
+                      context,
+                      'Geofence Bypasses',
+                      '$geofenceBypassCount',
+                      description: 'Total audits completed outside geofence',
+                      isAlert: geofenceBypassCount > 0,
+                    ),
+                  ),
                 ],
               ),
             ],

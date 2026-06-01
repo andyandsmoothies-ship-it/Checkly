@@ -14,6 +14,10 @@ import '../../templates/models/template_dto.dart';
 import '../../../_shared/constants/app_capabilities.dart';
 import '../manager/audit_manager.dart';
 
+import '../../../_shared/services/gps_service.dart';
+import '../../../_shared/services/geofence_service.dart';
+import '../../stores/manager/store_manager.dart';
+
 import '../utils/audit_progress_utils.dart';
 import '../services/scoring_input_mapper.dart';
 import '../widgets/audit_form_app_bar.dart';
@@ -171,8 +175,59 @@ class _AuditFormPageState extends State<AuditFormPage> {
     // ── STEP 2: Lock UI, run GPS, then submit ────────────────────────────
     setState(() => _isSubmitting = true);
     try {
-      // Gap 5: GPS proximity warning (non-blocking) — deferred post-confirm
-      await checkAndSetGps(context, manager);
+      // 1. Resolve Store GPS location
+      final storeManager = _di<StoreManager>();
+      final stores = storeManager.stores.value;
+      final store = stores.where((s) => s.id == manager.storeId).firstOrNull;
+
+      // 2. Perform Geofence Validation via GeofenceService
+      final geofenceService = _di<GeofenceService>();
+      final geofenceResult = await geofenceService.validate(
+        storeLat: store?.gpsLat,
+        storeLng: store?.gpsLng,
+        geofenceMode: template.geofenceMode,
+        geofenceRadiusMeters: template.geofenceRadiusMeters,
+      );
+
+      // 3. Handle Strict mode blocking
+      if (geofenceResult.mustBlock) {
+        if (mounted) {
+          await showGeofenceBlockDialog(
+            context: context,
+            distanceMeters: geofenceResult.distanceMeters,
+            allowedRadius: template.geofenceRadiusMeters,
+            gpsFailed: geofenceResult.error != null,
+          );
+        }
+        return;
+      }
+
+      // 4. Handle Lax mode warning/bypass
+      if (geofenceResult.mustWarn) {
+        if (mounted) {
+          final bypass = await showGeofenceWarningDialog(
+            context: context,
+            distanceMeters: geofenceResult.distanceMeters,
+            allowedRadius: template.geofenceRadiusMeters,
+            gpsFailed: geofenceResult.error != null,
+          );
+          if (bypass != true) {
+            return;
+          }
+          manager.setGeofenceBypass(
+            isBypassed: true,
+            distanceMetersOff: geofenceResult.distanceMeters,
+          );
+        }
+      }
+
+      // 5. Capture precise user GPS coordinates for audit outbox pinning
+      try {
+        final pos = await _di<GpsService>().getCurrentPosition();
+        if (pos != null) {
+          manager.setGps(pos.latitude, pos.longitude);
+        }
+      } catch (_) {}
 
       await manager.submitAudit();
 

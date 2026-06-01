@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -22,75 +25,41 @@ namespace Checkly.Api.Tests.Features.Analytics
         }
 
         [Fact]
-        public async Task GetApBucketDetail_WithValidBucket_ReturnsOpenActionPlans()
+        public async Task GetStoreBodSummary_AsStoreManager_OwnStore_ReturnsStoreSummary()
         {
             // Arrange
             var client = _factory.CreateClient();
-            var adminToken = await _factory.LoginBootstrapAdminAsync(client);
-            var adminClient = _factory.CreateAuthenticatedClient(adminToken);
+            var (token, managerUserId) = await _factory.RegisterUserAsync(client, "sm-own@checkly.test", "Manager123!@", "SM Own Store", "store_manager");
+            var managerClient = _factory.CreateAuthenticatedClient(token);
 
-            var uniqueProvince = $"ProvinceAP-{Guid.NewGuid():N}";
-            Guid ap90Id;
-            Guid ap30Id;
+            Guid storeId = Guid.NewGuid();
 
             using (var scope = _factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+                // Seed store with manager profile
                 var store = new Store
                 {
-                    Id = Guid.NewGuid(),
-                    Name = "Action Plan Flagship Store",
-                    Address2 = new StoreAddress { Province = uniqueProvince },
+                    Id = storeId,
+                    Name = "SM Own Store Target",
                     CreatedAt = DateTimeOffset.UtcNow,
                     UpdatedAt = DateTimeOffset.UtcNow
                 };
                 db.Stores.Add(store);
 
-                var submission = new Submission
+                var profile = await db.Profiles.FirstOrDefaultAsync(p => p.Id == managerUserId);
+                if (profile != null)
                 {
-                    Id = Guid.NewGuid(),
-                    StoreId = store.Id,
-                    Status = "completed",
-                    TotalScore = 80.0m,
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    UpdatedAt = DateTimeOffset.UtcNow
-                };
-                db.Submissions.Add(submission);
-
-                // Seed open Action Plan created 100 days ago (Bucket: 90d+)
-                ap90Id = Guid.NewGuid();
-                var ap90 = new ActionPlan
-                {
-                    Id = ap90Id,
-                    StoreId = store.Id,
-                    SubmissionId = submission.Id,
-                    Status = "open",
-                    CriteriaLabel = "Electrical Safety Compliance",
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-100),
-                    ClosedAt = null
-                };
-                db.ActionPlans.Add(ap90);
-
-                // Seed open Action Plan created 10 days ago (Bucket: 8-30d)
-                ap30Id = Guid.NewGuid();
-                var ap30 = new ActionPlan
-                {
-                    Id = ap30Id,
-                    StoreId = store.Id,
-                    SubmissionId = submission.Id,
-                    Status = "open",
-                    CriteriaLabel = "Fire Alarm Systems Check",
-                    CreatedAt = DateTimeOffset.UtcNow.AddDays(-10),
-                    ClosedAt = null
-                };
-                db.ActionPlans.Add(ap30);
+                    profile.StoreId = storeId;
+                    db.Entry(profile).State = EntityState.Modified;
+                }
 
                 await db.SaveChangesAsync();
             }
 
-            // Act: Query AP bucket drill-down for 90d+
-            var response = await adminClient.GetAsync("/api/analytics/bod/ap/90d+");
+            // Act
+            var response = await managerClient.GetAsync($"/api/analytics/stores/{storeId}/bod-summary");
 
             // Assert
             if (!response.IsSuccessStatusCode)
@@ -102,58 +71,66 @@ namespace Checkly.Api.Tests.Features.Analytics
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-            Assert.Equal(JsonValueKind.Array, json.ValueKind);
+            Assert.Equal("SM Own Store Target", json.GetProperty("storeName").GetString());
+        }
 
-            // Verify that only the 90d+ action plan is returned
-            bool found90 = false;
-            bool found30 = false;
+        [Fact]
+        public async Task GetStoreBodSummary_AsStoreManager_DifferentStore_ReturnsForbidden()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var (token, managerUserId) = await _factory.RegisterUserAsync(client, "sm-diff@checkly.test", "Manager123!@", "SM Diff Store", "store_manager");
+            var managerClient = _factory.CreateAuthenticatedClient(token);
 
-            foreach (var item in json.EnumerateArray())
+            Guid storeIdA = Guid.NewGuid();
+            Guid storeIdB = Guid.NewGuid();
+
+            using (var scope = _factory.Services.CreateScope())
             {
-                var id = Guid.Parse(item.GetProperty("id").GetString()!);
-                if (id == ap90Id)
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                var storeA = new Store
                 {
-                    found90 = true;
-                    Assert.Equal("Electrical Safety Compliance", item.GetProperty("criteriaLabel").GetString());
-                    Assert.Equal("Action Plan Flagship Store", item.GetProperty("storeName").GetString());
-                    Assert.True(item.GetProperty("ageInDays").GetInt32() >= 100, "Age in days should be calculated properly");
-                }
-                if (id == ap30Id)
+                    Id = storeIdA,
+                    Name = "Store A",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                };
+                var storeB = new Store
                 {
-                    found30 = true;
+                    Id = storeIdB,
+                    Name = "Store B",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                };
+                db.Stores.AddRange(storeA, storeB);
+
+                var profile = await db.Profiles.FirstOrDefaultAsync(p => p.Id == managerUserId);
+                if (profile != null)
+                {
+                    profile.StoreId = storeIdA;
+                    db.Entry(profile).State = EntityState.Modified;
                 }
+
+                await db.SaveChangesAsync();
             }
 
-            Assert.True(found90, "Expected open action plan from 90d+ bucket to be returned");
-            Assert.False(found30, "Action plan from 8-30d bucket should not be returned in 90d+ endpoint");
+            // Act
+            var response = await managerClient.GetAsync($"/api/analytics/stores/{storeIdB}/bod-summary");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         [Fact]
-        public async Task GetApBucketDetail_WithInvalidBucket_ReturnsBadRequest()
+        public async Task GetStoreBodSummary_AsAreaManager_AssignedStore_ReturnsStoreSummary()
         {
             // Arrange
             var client = _factory.CreateClient();
-            var adminToken = await _factory.LoginBootstrapAdminAsync(client);
-            var adminClient = _factory.CreateAuthenticatedClient(adminToken);
+            var (token, managerUserId) = await _factory.RegisterUserAsync(client, "am-assigned@checkly.test", "Manager123!@", "AM Assigned Store", "area_manager");
+            var amClient = _factory.CreateAuthenticatedClient(token);
 
-            // Act: Query with an invalid bucket name to trigger validation/bad request
-            var response = await adminClient.GetAsync("/api/analytics/bod/ap/invalid_bucket_value");
-
-            // Assert (Gap Analysis validation AC)
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task GetAuditorProductivity_ReturnsAuditorsWithBiasCalibration()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-            var adminToken = await _factory.LoginBootstrapAdminAsync(client);
-            var adminClient = _factory.CreateAuthenticatedClient(adminToken);
-
-            var strictAuditorId = Guid.NewGuid();
-            var easyAuditorId = Guid.NewGuid();
-            var balancedAuditorId = Guid.NewGuid();
+            Guid storeId = Guid.NewGuid();
 
             using (var scope = _factory.Services.CreateScope())
             {
@@ -161,57 +138,26 @@ namespace Checkly.Api.Tests.Features.Analytics
 
                 var store = new Store
                 {
-                    Id = Guid.NewGuid(),
-                    Name = "Audit Center Store",
+                    Id = storeId,
+                    Name = "AM Assigned Store Target",
                     CreatedAt = DateTimeOffset.UtcNow,
                     UpdatedAt = DateTimeOffset.UtcNow
                 };
                 db.Stores.Add(store);
 
-                // Seed strict auditor (Avg score = 75.0%)
-                db.Submissions.Add(new Submission
+                var assignment = new ProfileStoreAssignment
                 {
-                    Id = Guid.NewGuid(),
-                    StoreId = store.Id,
-                    Status = "completed",
-                    TotalScore = 75.0m,
-                    AuditorId = strictAuditorId,
-                    AuditorName = "Strict Auditor",
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    UpdatedAt = DateTimeOffset.UtcNow
-                });
-
-                // Seed easy auditor (Avg score = 95.0%)
-                db.Submissions.Add(new Submission
-                {
-                    Id = Guid.NewGuid(),
-                    StoreId = store.Id,
-                    Status = "completed",
-                    TotalScore = 95.0m,
-                    AuditorId = easyAuditorId,
-                    AuditorName = "Easy Auditor",
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    UpdatedAt = DateTimeOffset.UtcNow
-                });
-
-                // Seed balanced auditor (Avg score = 85.0%)
-                db.Submissions.Add(new Submission
-                {
-                    Id = Guid.NewGuid(),
-                    StoreId = store.Id,
-                    Status = "completed",
-                    TotalScore = 85.0m,
-                    AuditorId = balancedAuditorId,
-                    AuditorName = "Balanced Auditor",
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    UpdatedAt = DateTimeOffset.UtcNow
-                });
+                    ProfileId = managerUserId,
+                    StoreId = storeId,
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+                db.ProfileStoreAssignments.Add(assignment);
 
                 await db.SaveChangesAsync();
             }
 
             // Act
-            var response = await adminClient.GetAsync("/api/analytics/auditors/productivity");
+            var response = await amClient.GetAsync($"/api/analytics/stores/{storeId}/bod-summary");
 
             // Assert
             if (!response.IsSuccessStatusCode)
@@ -223,64 +169,216 @@ namespace Checkly.Api.Tests.Features.Analytics
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-            Assert.Equal(JsonValueKind.Array, json.ValueKind);
-
-            bool strictChecked = false;
-            bool easyChecked = false;
-            bool balancedChecked = false;
-
-            foreach (var auditor in json.EnumerateArray())
-            {
-                var auditorId = Guid.Parse(auditor.GetProperty("auditorId").GetString()!);
-                if (auditorId == strictAuditorId)
-                {
-                    strictChecked = true;
-                    Assert.Equal("Strict Auditor", auditor.GetProperty("auditorName").GetString());
-                    Assert.Equal(1, auditor.GetProperty("completedAudits").GetInt32());
-                    Assert.Equal(75.0m, auditor.GetProperty("avgScore").GetDecimal());
-                    Assert.Equal("Strict", auditor.GetProperty("biasRating").GetString());
-                }
-                else if (auditorId == easyAuditorId)
-                {
-                    easyChecked = true;
-                    Assert.Equal("Easy Auditor", auditor.GetProperty("auditorName").GetString());
-                    Assert.Equal(1, auditor.GetProperty("completedAudits").GetInt32());
-                    Assert.Equal(95.0m, auditor.GetProperty("avgScore").GetDecimal());
-                    Assert.Equal("Generous", auditor.GetProperty("biasRating").GetString());
-                }
-                else if (auditorId == balancedAuditorId)
-                {
-                    balancedChecked = true;
-                    Assert.Equal("Balanced Auditor", auditor.GetProperty("auditorName").GetString());
-                    Assert.Equal(1, auditor.GetProperty("completedAudits").GetInt32());
-                    Assert.Equal(85.0m, auditor.GetProperty("avgScore").GetDecimal());
-                    Assert.Equal("Balanced", auditor.GetProperty("biasRating").GetString());
-                }
-            }
-
-            Assert.True(strictChecked, "Strict Auditor not found or rated incorrectly");
-            Assert.True(easyChecked, "Easy/Generous Auditor not found or rated incorrectly");
-            Assert.True(balancedChecked, "Balanced Auditor not found or rated incorrectly");
+            Assert.Equal("AM Assigned Store Target", json.GetProperty("storeName").GetString());
         }
 
         [Fact]
-        public async Task GetAuditorProductivity_ZeroSubmissions_Safeguard()
+        public async Task GetStoreBodSummary_AsAreaManager_UnassignedStore_ReturnsForbidden()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var (token, _) = await _factory.RegisterUserAsync(client, "am-unassigned@checkly.test", "Manager123!@", "AM Unassigned Store", "area_manager");
+            var amClient = _factory.CreateAuthenticatedClient(token);
+
+            Guid storeId = Guid.NewGuid();
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                var store = new Store
+                {
+                    Id = storeId,
+                    Name = "AM Unassigned Store Target",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                };
+                db.Stores.Add(store);
+
+                await db.SaveChangesAsync();
+            }
+
+            // Act
+            var response = await amClient.GetAsync($"/api/analytics/stores/{storeId}/bod-summary");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetStoreBodSummary_QuartileCalculation_FourPeers_ReturnsCorrectQuartileLabel()
         {
             // Arrange
             var client = _factory.CreateClient();
             var adminToken = await _factory.LoginBootstrapAdminAsync(client);
             var adminClient = _factory.CreateAuthenticatedClient(adminToken);
 
-            // We do not seed any submissions. The database should be clear of submissions for this test instance.
+            Guid targetStoreId = Guid.NewGuid();
+            string provinceName = $"Province-{Guid.NewGuid():N}";
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                // Create 4 active stores in the same province
+                // Store A: 90.0m
+                var storeA = new Store { Id = Guid.NewGuid(), Name = "Regional Store A", Address2 = new StoreAddress { Province = provinceName }, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+                // Store B (Target): 80.0m
+                var storeB = new Store { Id = targetStoreId, Name = "Regional Store Target B", Address2 = new StoreAddress { Province = provinceName }, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+                // Store C: 70.0m
+                var storeC = new Store { Id = Guid.NewGuid(), Name = "Regional Store C", Address2 = new StoreAddress { Province = provinceName }, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+                // Store D: 60.0m
+                var storeD = new Store { Id = Guid.NewGuid(), Name = "Regional Store D", Address2 = new StoreAddress { Province = provinceName }, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+
+                db.Stores.AddRange(storeA, storeB, storeC, storeD);
+
+                // Add snapshots
+                db.StoreAnalyticsSnapshots.AddRange(
+                    new StoreAnalyticsSnapshot { StoreId = storeA.Id, AvgScore30d = 90.0m, UpdatedAt = DateTimeOffset.UtcNow },
+                    new StoreAnalyticsSnapshot { StoreId = storeB.Id, AvgScore30d = 80.0m, UpdatedAt = DateTimeOffset.UtcNow },
+                    new StoreAnalyticsSnapshot { StoreId = storeC.Id, AvgScore30d = 70.0m, UpdatedAt = DateTimeOffset.UtcNow },
+                    new StoreAnalyticsSnapshot { StoreId = storeD.Id, AvgScore30d = 60.0m, UpdatedAt = DateTimeOffset.UtcNow }
+                );
+
+                await db.SaveChangesAsync();
+            }
+
             // Act
-            var response = await adminClient.GetAsync("/api/analytics/auditors/productivity");
+            var response = await adminClient.GetAsync($"/api/analytics/stores/{targetStoreId}/bod-summary");
 
             // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Status: {response.StatusCode}. Body: {errorBody}");
+            }
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-            Assert.Equal(JsonValueKind.Array, json.ValueKind);
-            Assert.Equal(0, json.GetArrayLength()); // Should gracefully return an empty array with 0 errors
+            Assert.Equal("Top 50% in Region", json.GetProperty("quartileLabel").GetString());
+            // Regional average: (90 + 80 + 70 + 60) / 4 = 75.0
+            Assert.Equal(75.0m, json.GetProperty("regionalAvgScore").GetDecimal());
+        }
+
+        [Fact]
+        public async Task GetStoreBodSummary_QuartileCalculation_LessThanFourPeers_ReturnsNullQuartileLabel()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+            var adminClient = _factory.CreateAuthenticatedClient(adminToken);
+
+            Guid targetStoreId = Guid.NewGuid();
+            string provinceName = $"Province-{Guid.NewGuid():N}";
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                // Create only 3 active stores in the province
+                var storeA = new Store { Id = Guid.NewGuid(), Name = "Regional Store A", Address2 = new StoreAddress { Province = provinceName }, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+                var storeB = new Store { Id = targetStoreId, Name = "Regional Store Target B", Address2 = new StoreAddress { Province = provinceName }, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+                var storeC = new Store { Id = Guid.NewGuid(), Name = "Regional Store C", Address2 = new StoreAddress { Province = provinceName }, IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+
+                db.Stores.AddRange(storeA, storeB, storeC);
+
+                db.StoreAnalyticsSnapshots.AddRange(
+                    new StoreAnalyticsSnapshot { StoreId = storeA.Id, AvgScore30d = 90.0m, UpdatedAt = DateTimeOffset.UtcNow },
+                    new StoreAnalyticsSnapshot { StoreId = storeB.Id, AvgScore30d = 80.0m, UpdatedAt = DateTimeOffset.UtcNow },
+                    new StoreAnalyticsSnapshot { StoreId = storeC.Id, AvgScore30d = 70.0m, UpdatedAt = DateTimeOffset.UtcNow }
+                );
+
+                await db.SaveChangesAsync();
+            }
+
+            // Act
+            var response = await adminClient.GetAsync($"/api/analytics/stores/{targetStoreId}/bod-summary");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Status: {response.StatusCode}. Body: {errorBody}");
+            }
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+            Assert.Null(json.GetProperty("quartileLabel").GetString());
+            // Regional average: (90 + 80 + 70) / 3 = 80.0
+            Assert.Equal(80.0m, json.GetProperty("regionalAvgScore").GetDecimal());
+        }
+
+        [Fact]
+        public async Task GetStoreBodSummary_SlaOverdueActionPlans_BucketsOpenOverdueAPs()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var adminToken = await _factory.LoginBootstrapAdminAsync(client);
+            var adminClient = _factory.CreateAuthenticatedClient(adminToken);
+
+            Guid storeId = Guid.NewGuid();
+            var now = DateTimeOffset.UtcNow;
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                var store = new Store
+                {
+                    Id = storeId,
+                    Name = "Store Action Plans",
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                };
+                db.Stores.Add(store);
+
+                // Overdue 0-7 days: deadline 5 days ago
+                var ap1 = new ActionPlan { Id = Guid.NewGuid(), StoreId = storeId, Status = "open", Deadline = now.AddDays(-5), CreatedAt = now.AddDays(-10), UpdatedAt = now };
+                // Overdue 8-30 days: deadline 15 days ago
+                var ap2 = new ActionPlan { Id = Guid.NewGuid(), StoreId = storeId, Status = "open", Deadline = now.AddDays(-15), CreatedAt = now.AddDays(-20), UpdatedAt = now };
+                // Overdue 31+ days: deadline 45 days ago
+                var ap3 = new ActionPlan { Id = Guid.NewGuid(), StoreId = storeId, Status = "open", Deadline = now.AddDays(-45), CreatedAt = now.AddDays(-50), UpdatedAt = now };
+                // Excluded: deadline in the future
+                var ap4 = new ActionPlan { Id = Guid.NewGuid(), StoreId = storeId, Status = "open", Deadline = now.AddDays(5), CreatedAt = now.AddDays(-5), UpdatedAt = now };
+                // Excluded: status is closed
+                var ap5 = new ActionPlan { Id = Guid.NewGuid(), StoreId = storeId, Status = "closed", Deadline = now.AddDays(-5), CreatedAt = now.AddDays(-10), UpdatedAt = now };
+
+                db.ActionPlans.AddRange(ap1, ap2, ap3, ap4, ap5);
+
+                await db.SaveChangesAsync();
+            }
+
+            // Act
+            var response = await adminClient.GetAsync($"/api/analytics/stores/{storeId}/bod-summary");
+
+            // Assert
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                Assert.Fail($"Status: {response.StatusCode}. Body: {errorBody}");
+            }
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var buckets = json.GetProperty("slaOverdueBuckets");
+            Assert.Equal(JsonValueKind.Array, buckets.ValueKind);
+            Assert.Equal(3, buckets.GetArrayLength());
+
+            // 0-7d, 8-30d, 31+d
+            var bucket0To7 = buckets[0];
+            Assert.Equal("0-7d", bucket0To7.GetProperty("bucket").GetString());
+            Assert.Equal(1, bucket0To7.GetProperty("count").GetInt32());
+
+            var bucket8To30 = buckets[1];
+            Assert.Equal("8-30d", bucket8To30.GetProperty("bucket").GetString());
+            Assert.Equal(1, bucket8To30.GetProperty("count").GetInt32());
+
+            var bucket31Plus = buckets[2];
+            Assert.Equal("31+d", bucket31Plus.GetProperty("bucket").GetString());
+            Assert.Equal(1, bucket31Plus.GetProperty("count").GetInt32());
         }
     }
 }

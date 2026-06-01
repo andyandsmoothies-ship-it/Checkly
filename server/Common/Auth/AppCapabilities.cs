@@ -36,6 +36,7 @@ public static class AppCapabilities
     public const string AnalyticsAdmin = "analytics:admin";
     public const string AnalyticsView = "analytics:view";
     public const string AnalyticsBod = "analytics:bod";
+    public const string AnalyticsArea = "analytics:area";
     public const string AnalyticsMyStats = "analytics:my_stats"; // OBS-5: auditor personal stats
 
     public const string SubmissionsList = "submissions:list";

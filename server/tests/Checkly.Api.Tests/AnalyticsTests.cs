@@ -532,7 +532,12 @@ public class AnalyticsTests : IClassFixture<TestWebApplicationFactory>
         var storeId = await CreateStoreAsync(adminClient, "SC-A7 Store");
 
         // Custom template: C1 is pass_fail, C2 is numeric.
-        var tResp = await adminClient.PostAsJsonAsync("/api/templates", new { title = "A7", type = "qc" });
+        var tResp = await adminClient.PostAsJsonAsync("/api/templates", new
+        {
+            title = "A7",
+            type = "qc",
+            scoringLogicConfig = "{\"scoringMode\":\"penalty\"}"
+        });
         var templateId = Guid.Parse((await tResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetString()!);
         var gId = await CreateGroupAsync(adminClient, templateId, "G1", 100m, 10m, 5m, 0);
 

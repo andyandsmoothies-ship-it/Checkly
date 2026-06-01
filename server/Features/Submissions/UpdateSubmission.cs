@@ -91,6 +91,9 @@ public static class UpdateSubmission
             submission.StoreId, submission.StoreName, submission.AuditorId,
             submission.AuditorName, submission.Status, submission.TotalScore,
             submission.SectionScores, submission.Notes,
-            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt));
+            submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
+            submission.TemplateVersion,
+            IsGeofenceBypassed: submission.IsGeofenceBypassed,
+            DistanceMetersOff: submission.DistanceMetersOff));
     }
 }

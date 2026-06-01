@@ -146,6 +146,53 @@ void main() {
 
       expect(find.text('No audit history available'), findsOneWidget);
     });
+
+    testWidgets('C3-TEST-09: Store Detail Regional Benchmarking and SLA Overdue success rendering', (tester) async {
+      final mockData = StoreBodSummary(
+        storeName: 'Airport Express',
+        recentAudits: [
+          RecentAuditEntry(
+            date: '2026-05-24T14:30:00Z',
+            score: 85.0,
+            auditorName: 'Alice',
+          ),
+        ],
+        categoryBreakdown: [
+          CategoryScoreEntry(categoryName: 'Food Safety', avgScore: 62.5),
+        ],
+        quartileLabel: 'Top 25% in Region',
+        regionalAvgScore: 80.0,
+        slaOverdueBuckets: [
+          SlaOverdueSegment(bucket: '0-7 Days', count: 2),
+          SlaOverdueSegment(bucket: '8-30 Days', count: 1),
+          SlaOverdueSegment(bucket: '31+ Days', count: 0),
+        ],
+      );
+
+      when(() => mockManager.loadStoreDetail(any())).thenAnswer((_) async {});
+      when(() => mockManager.isStoreDetailLoading).thenReturn(false);
+      when(() => mockManager.storeDetail).thenReturn(mockData);
+      when(() => mockManager.error).thenReturn(null);
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          BodStoreDetailSheet(storeId: 's-1', manager: mockManager),
+        ),
+      );
+
+      expect(find.text('Regional Benchmarking'), findsOneWidget);
+      expect(find.text('Top 25% in Region'), findsOneWidget);
+      expect(find.text('Regional Avg: 80.0%'), findsOneWidget);
+      expect(find.text('5.0% above regional average'), findsOneWidget);
+
+      expect(find.text('SLA Overdue Action Plans'), findsOneWidget);
+      expect(find.text('0-7 Days'), findsOneWidget);
+      expect(find.text('8-30 Days'), findsOneWidget);
+      expect(find.text('31+ Days'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('0'), findsOneWidget);
+    });
   });
 
   group('BodCategoryDetailSheet TDD Tests', () {

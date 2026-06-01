@@ -1113,6 +1113,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("display_noun");
 
+                    b.Property<int?>("DistanceMetersOff")
+                        .HasColumnType("integer")
+                        .HasColumnName("distance_meters_off");
+
                     b.Property<decimal?>("GpsLat")
                         .HasColumnType("numeric")
                         .HasColumnName("gps_lat");
@@ -1128,6 +1132,10 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<string>("IdempotencyKey")
                         .HasColumnType("text")
                         .HasColumnName("idempotency_key");
+
+                    b.Property<bool?>("IsGeofenceBypassed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_geofence_bypassed");
 
                     b.Property<bool?>("IsWeighted")
                         .HasColumnType("boolean")
@@ -1470,6 +1478,19 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.Property<string>("DisplayNoun")
                         .HasColumnType("text")
                         .HasColumnName("display_noun");
+
+                    b.Property<string>("GeofenceMode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("none")
+                        .HasColumnName("geofence_mode");
+
+                    b.Property<int>("GeofenceRadiusMeters")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(100)
+                        .HasColumnName("geofence_radius_meters");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()

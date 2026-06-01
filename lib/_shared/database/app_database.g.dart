@@ -107,6 +107,40 @@ class $CachedTemplatesTable extends CachedTemplates
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _displayNounMeta = const VerificationMeta(
+    'displayNoun',
+  );
+  @override
+  late final GeneratedColumn<String> displayNoun = GeneratedColumn<String>(
+    'display_noun',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _geofenceModeMeta = const VerificationMeta(
+    'geofenceMode',
+  );
+  @override
+  late final GeneratedColumn<String> geofenceMode = GeneratedColumn<String>(
+    'geofence_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('none'),
+  );
+  static const VerificationMeta _geofenceRadiusMetersMeta =
+      const VerificationMeta('geofenceRadiusMeters');
+  @override
+  late final GeneratedColumn<int> geofenceRadiusMeters = GeneratedColumn<int>(
+    'geofence_radius_meters',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(100),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -118,6 +152,9 @@ class $CachedTemplatesTable extends CachedTemplates
     scoringLogicConfig,
     createdAt,
     updatedAt,
+    displayNoun,
+    geofenceMode,
+    geofenceRadiusMeters,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -198,6 +235,33 @@ class $CachedTemplatesTable extends CachedTemplates
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('display_noun')) {
+      context.handle(
+        _displayNounMeta,
+        displayNoun.isAcceptableOrUnknown(
+          data['display_noun']!,
+          _displayNounMeta,
+        ),
+      );
+    }
+    if (data.containsKey('geofence_mode')) {
+      context.handle(
+        _geofenceModeMeta,
+        geofenceMode.isAcceptableOrUnknown(
+          data['geofence_mode']!,
+          _geofenceModeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('geofence_radius_meters')) {
+      context.handle(
+        _geofenceRadiusMetersMeta,
+        geofenceRadiusMeters.isAcceptableOrUnknown(
+          data['geofence_radius_meters']!,
+          _geofenceRadiusMetersMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -243,6 +307,18 @@ class $CachedTemplatesTable extends CachedTemplates
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      displayNoun: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_noun'],
+      ),
+      geofenceMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}geofence_mode'],
+      )!,
+      geofenceRadiusMeters: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}geofence_radius_meters'],
+      )!,
     );
   }
 
@@ -262,6 +338,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
   final String? scoringLogicConfig;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? displayNoun;
+  final String geofenceMode;
+  final int geofenceRadiusMeters;
   const CachedTemplate({
     required this.id,
     required this.title,
@@ -272,6 +351,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     this.scoringLogicConfig,
     required this.createdAt,
     required this.updatedAt,
+    this.displayNoun,
+    required this.geofenceMode,
+    required this.geofenceRadiusMeters,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -289,6 +371,11 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || displayNoun != null) {
+      map['display_noun'] = Variable<String>(displayNoun);
+    }
+    map['geofence_mode'] = Variable<String>(geofenceMode);
+    map['geofence_radius_meters'] = Variable<int>(geofenceRadiusMeters);
     return map;
   }
 
@@ -307,6 +394,11 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
           : Value(scoringLogicConfig),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      displayNoun: displayNoun == null && nullToAbsent
+          ? const Value.absent()
+          : Value(displayNoun),
+      geofenceMode: Value(geofenceMode),
+      geofenceRadiusMeters: Value(geofenceRadiusMeters),
     );
   }
 
@@ -327,6 +419,11 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
       ),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      displayNoun: serializer.fromJson<String?>(json['displayNoun']),
+      geofenceMode: serializer.fromJson<String>(json['geofenceMode']),
+      geofenceRadiusMeters: serializer.fromJson<int>(
+        json['geofenceRadiusMeters'],
+      ),
     );
   }
   @override
@@ -342,6 +439,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
       'scoringLogicConfig': serializer.toJson<String?>(scoringLogicConfig),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'displayNoun': serializer.toJson<String?>(displayNoun),
+      'geofenceMode': serializer.toJson<String>(geofenceMode),
+      'geofenceRadiusMeters': serializer.toJson<int>(geofenceRadiusMeters),
     };
   }
 
@@ -355,6 +455,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     Value<String?> scoringLogicConfig = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
+    Value<String?> displayNoun = const Value.absent(),
+    String? geofenceMode,
+    int? geofenceRadiusMeters,
   }) => CachedTemplate(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -367,6 +470,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
         : this.scoringLogicConfig,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    displayNoun: displayNoun.present ? displayNoun.value : this.displayNoun,
+    geofenceMode: geofenceMode ?? this.geofenceMode,
+    geofenceRadiusMeters: geofenceRadiusMeters ?? this.geofenceRadiusMeters,
   );
   CachedTemplate copyWithCompanion(CachedTemplatesCompanion data) {
     return CachedTemplate(
@@ -383,6 +489,15 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
           : this.scoringLogicConfig,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      displayNoun: data.displayNoun.present
+          ? data.displayNoun.value
+          : this.displayNoun,
+      geofenceMode: data.geofenceMode.present
+          ? data.geofenceMode.value
+          : this.geofenceMode,
+      geofenceRadiusMeters: data.geofenceRadiusMeters.present
+          ? data.geofenceRadiusMeters.value
+          : this.geofenceRadiusMeters,
     );
   }
 
@@ -397,7 +512,10 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
           ..write('isActive: $isActive, ')
           ..write('scoringLogicConfig: $scoringLogicConfig, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('displayNoun: $displayNoun, ')
+          ..write('geofenceMode: $geofenceMode, ')
+          ..write('geofenceRadiusMeters: $geofenceRadiusMeters')
           ..write(')'))
         .toString();
   }
@@ -413,6 +531,9 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
     scoringLogicConfig,
     createdAt,
     updatedAt,
+    displayNoun,
+    geofenceMode,
+    geofenceRadiusMeters,
   );
   @override
   bool operator ==(Object other) =>
@@ -426,7 +547,10 @@ class CachedTemplate extends DataClass implements Insertable<CachedTemplate> {
           other.isActive == this.isActive &&
           other.scoringLogicConfig == this.scoringLogicConfig &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.displayNoun == this.displayNoun &&
+          other.geofenceMode == this.geofenceMode &&
+          other.geofenceRadiusMeters == this.geofenceRadiusMeters);
 }
 
 class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
@@ -439,6 +563,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
   final Value<String?> scoringLogicConfig;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<String?> displayNoun;
+  final Value<String> geofenceMode;
+  final Value<int> geofenceRadiusMeters;
   final Value<int> rowid;
   const CachedTemplatesCompanion({
     this.id = const Value.absent(),
@@ -450,6 +577,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     this.scoringLogicConfig = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.displayNoun = const Value.absent(),
+    this.geofenceMode = const Value.absent(),
+    this.geofenceRadiusMeters = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedTemplatesCompanion.insert({
@@ -462,6 +592,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     this.scoringLogicConfig = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.displayNoun = const Value.absent(),
+    this.geofenceMode = const Value.absent(),
+    this.geofenceRadiusMeters = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
@@ -478,6 +611,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     Expression<String>? scoringLogicConfig,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<String>? displayNoun,
+    Expression<String>? geofenceMode,
+    Expression<int>? geofenceRadiusMeters,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -491,6 +627,10 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
         'scoring_logic_config': scoringLogicConfig,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (displayNoun != null) 'display_noun': displayNoun,
+      if (geofenceMode != null) 'geofence_mode': geofenceMode,
+      if (geofenceRadiusMeters != null)
+        'geofence_radius_meters': geofenceRadiusMeters,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -505,6 +645,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     Value<String?>? scoringLogicConfig,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<String?>? displayNoun,
+    Value<String>? geofenceMode,
+    Value<int>? geofenceRadiusMeters,
     Value<int>? rowid,
   }) {
     return CachedTemplatesCompanion(
@@ -517,6 +660,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
       scoringLogicConfig: scoringLogicConfig ?? this.scoringLogicConfig,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      displayNoun: displayNoun ?? this.displayNoun,
+      geofenceMode: geofenceMode ?? this.geofenceMode,
+      geofenceRadiusMeters: geofenceRadiusMeters ?? this.geofenceRadiusMeters,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -551,6 +697,15 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (displayNoun.present) {
+      map['display_noun'] = Variable<String>(displayNoun.value);
+    }
+    if (geofenceMode.present) {
+      map['geofence_mode'] = Variable<String>(geofenceMode.value);
+    }
+    if (geofenceRadiusMeters.present) {
+      map['geofence_radius_meters'] = Variable<int>(geofenceRadiusMeters.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -569,6 +724,9 @@ class CachedTemplatesCompanion extends UpdateCompanion<CachedTemplate> {
           ..write('scoringLogicConfig: $scoringLogicConfig, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('displayNoun: $displayNoun, ')
+          ..write('geofenceMode: $geofenceMode, ')
+          ..write('geofenceRadiusMeters: $geofenceRadiusMeters, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3285,6 +3443,30 @@ class $CachedSubmissionsTable extends CachedSubmissions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isGeofenceBypassedMeta =
+      const VerificationMeta('isGeofenceBypassed');
+  @override
+  late final GeneratedColumn<bool> isGeofenceBypassed = GeneratedColumn<bool>(
+    'is_geofence_bypassed',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_geofence_bypassed" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _distanceMetersOffMeta = const VerificationMeta(
+    'distanceMetersOff',
+  );
+  @override
+  late final GeneratedColumn<int> distanceMetersOff = GeneratedColumn<int>(
+    'distance_meters_off',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3306,6 +3488,8 @@ class $CachedSubmissionsTable extends CachedSubmissions
     templateVersion,
     voidReason,
     voidedAt,
+    isGeofenceBypassed,
+    distanceMetersOff,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3460,6 +3644,24 @@ class $CachedSubmissionsTable extends CachedSubmissions
         voidedAt.isAcceptableOrUnknown(data['voided_at']!, _voidedAtMeta),
       );
     }
+    if (data.containsKey('is_geofence_bypassed')) {
+      context.handle(
+        _isGeofenceBypassedMeta,
+        isGeofenceBypassed.isAcceptableOrUnknown(
+          data['is_geofence_bypassed']!,
+          _isGeofenceBypassedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('distance_meters_off')) {
+      context.handle(
+        _distanceMetersOffMeta,
+        distanceMetersOff.isAcceptableOrUnknown(
+          data['distance_meters_off']!,
+          _distanceMetersOffMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3545,6 +3747,14 @@ class $CachedSubmissionsTable extends CachedSubmissions
         DriftSqlType.dateTime,
         data['${effectivePrefix}voided_at'],
       ),
+      isGeofenceBypassed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_geofence_bypassed'],
+      ),
+      distanceMetersOff: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}distance_meters_off'],
+      ),
     );
   }
 
@@ -3575,6 +3785,8 @@ class CachedSubmission extends DataClass
   final int? templateVersion;
   final String? voidReason;
   final DateTime? voidedAt;
+  final bool? isGeofenceBypassed;
+  final int? distanceMetersOff;
   const CachedSubmission({
     required this.id,
     this.templateId,
@@ -3595,6 +3807,8 @@ class CachedSubmission extends DataClass
     this.templateVersion,
     this.voidReason,
     this.voidedAt,
+    this.isGeofenceBypassed,
+    this.distanceMetersOff,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3649,6 +3863,12 @@ class CachedSubmission extends DataClass
     }
     if (!nullToAbsent || voidedAt != null) {
       map['voided_at'] = Variable<DateTime>(voidedAt);
+    }
+    if (!nullToAbsent || isGeofenceBypassed != null) {
+      map['is_geofence_bypassed'] = Variable<bool>(isGeofenceBypassed);
+    }
+    if (!nullToAbsent || distanceMetersOff != null) {
+      map['distance_meters_off'] = Variable<int>(distanceMetersOff);
     }
     return map;
   }
@@ -3706,6 +3926,12 @@ class CachedSubmission extends DataClass
       voidedAt: voidedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(voidedAt),
+      isGeofenceBypassed: isGeofenceBypassed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isGeofenceBypassed),
+      distanceMetersOff: distanceMetersOff == null && nullToAbsent
+          ? const Value.absent()
+          : Value(distanceMetersOff),
     );
   }
 
@@ -3734,6 +3960,10 @@ class CachedSubmission extends DataClass
       templateVersion: serializer.fromJson<int?>(json['templateVersion']),
       voidReason: serializer.fromJson<String?>(json['voidReason']),
       voidedAt: serializer.fromJson<DateTime?>(json['voidedAt']),
+      isGeofenceBypassed: serializer.fromJson<bool?>(
+        json['isGeofenceBypassed'],
+      ),
+      distanceMetersOff: serializer.fromJson<int?>(json['distanceMetersOff']),
     );
   }
   @override
@@ -3759,6 +3989,8 @@ class CachedSubmission extends DataClass
       'templateVersion': serializer.toJson<int?>(templateVersion),
       'voidReason': serializer.toJson<String?>(voidReason),
       'voidedAt': serializer.toJson<DateTime?>(voidedAt),
+      'isGeofenceBypassed': serializer.toJson<bool?>(isGeofenceBypassed),
+      'distanceMetersOff': serializer.toJson<int?>(distanceMetersOff),
     };
   }
 
@@ -3782,6 +4014,8 @@ class CachedSubmission extends DataClass
     Value<int?> templateVersion = const Value.absent(),
     Value<String?> voidReason = const Value.absent(),
     Value<DateTime?> voidedAt = const Value.absent(),
+    Value<bool?> isGeofenceBypassed = const Value.absent(),
+    Value<int?> distanceMetersOff = const Value.absent(),
   }) => CachedSubmission(
     id: id ?? this.id,
     templateId: templateId.present ? templateId.value : this.templateId,
@@ -3810,6 +4044,12 @@ class CachedSubmission extends DataClass
         : this.templateVersion,
     voidReason: voidReason.present ? voidReason.value : this.voidReason,
     voidedAt: voidedAt.present ? voidedAt.value : this.voidedAt,
+    isGeofenceBypassed: isGeofenceBypassed.present
+        ? isGeofenceBypassed.value
+        : this.isGeofenceBypassed,
+    distanceMetersOff: distanceMetersOff.present
+        ? distanceMetersOff.value
+        : this.distanceMetersOff,
   );
   CachedSubmission copyWithCompanion(CachedSubmissionsCompanion data) {
     return CachedSubmission(
@@ -3854,6 +4094,12 @@ class CachedSubmission extends DataClass
           ? data.voidReason.value
           : this.voidReason,
       voidedAt: data.voidedAt.present ? data.voidedAt.value : this.voidedAt,
+      isGeofenceBypassed: data.isGeofenceBypassed.present
+          ? data.isGeofenceBypassed.value
+          : this.isGeofenceBypassed,
+      distanceMetersOff: data.distanceMetersOff.present
+          ? data.distanceMetersOff.value
+          : this.distanceMetersOff,
     );
   }
 
@@ -3878,13 +4124,15 @@ class CachedSubmission extends DataClass
           ..write('templateSnapshot: $templateSnapshot, ')
           ..write('templateVersion: $templateVersion, ')
           ..write('voidReason: $voidReason, ')
-          ..write('voidedAt: $voidedAt')
+          ..write('voidedAt: $voidedAt, ')
+          ..write('isGeofenceBypassed: $isGeofenceBypassed, ')
+          ..write('distanceMetersOff: $distanceMetersOff')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     templateId,
     templateTitle,
@@ -3904,7 +4152,9 @@ class CachedSubmission extends DataClass
     templateVersion,
     voidReason,
     voidedAt,
-  );
+    isGeofenceBypassed,
+    distanceMetersOff,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3927,7 +4177,9 @@ class CachedSubmission extends DataClass
           other.templateSnapshot == this.templateSnapshot &&
           other.templateVersion == this.templateVersion &&
           other.voidReason == this.voidReason &&
-          other.voidedAt == this.voidedAt);
+          other.voidedAt == this.voidedAt &&
+          other.isGeofenceBypassed == this.isGeofenceBypassed &&
+          other.distanceMetersOff == this.distanceMetersOff);
 }
 
 class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
@@ -3950,6 +4202,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
   final Value<int?> templateVersion;
   final Value<String?> voidReason;
   final Value<DateTime?> voidedAt;
+  final Value<bool?> isGeofenceBypassed;
+  final Value<int?> distanceMetersOff;
   final Value<int> rowid;
   const CachedSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -3971,6 +4225,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.templateVersion = const Value.absent(),
     this.voidReason = const Value.absent(),
     this.voidedAt = const Value.absent(),
+    this.isGeofenceBypassed = const Value.absent(),
+    this.distanceMetersOff = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedSubmissionsCompanion.insert({
@@ -3993,6 +4249,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     this.templateVersion = const Value.absent(),
     this.voidReason = const Value.absent(),
     this.voidedAt = const Value.absent(),
+    this.isGeofenceBypassed = const Value.absent(),
+    this.distanceMetersOff = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        status = Value(status),
@@ -4017,6 +4275,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Expression<int>? templateVersion,
     Expression<String>? voidReason,
     Expression<DateTime>? voidedAt,
+    Expression<bool>? isGeofenceBypassed,
+    Expression<int>? distanceMetersOff,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4039,6 +4299,9 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       if (templateVersion != null) 'template_version': templateVersion,
       if (voidReason != null) 'void_reason': voidReason,
       if (voidedAt != null) 'voided_at': voidedAt,
+      if (isGeofenceBypassed != null)
+        'is_geofence_bypassed': isGeofenceBypassed,
+      if (distanceMetersOff != null) 'distance_meters_off': distanceMetersOff,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4063,6 +4326,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     Value<int?>? templateVersion,
     Value<String?>? voidReason,
     Value<DateTime?>? voidedAt,
+    Value<bool?>? isGeofenceBypassed,
+    Value<int?>? distanceMetersOff,
     Value<int>? rowid,
   }) {
     return CachedSubmissionsCompanion(
@@ -4085,6 +4350,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
       templateVersion: templateVersion ?? this.templateVersion,
       voidReason: voidReason ?? this.voidReason,
       voidedAt: voidedAt ?? this.voidedAt,
+      isGeofenceBypassed: isGeofenceBypassed ?? this.isGeofenceBypassed,
+      distanceMetersOff: distanceMetersOff ?? this.distanceMetersOff,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4149,6 +4416,12 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
     if (voidedAt.present) {
       map['voided_at'] = Variable<DateTime>(voidedAt.value);
     }
+    if (isGeofenceBypassed.present) {
+      map['is_geofence_bypassed'] = Variable<bool>(isGeofenceBypassed.value);
+    }
+    if (distanceMetersOff.present) {
+      map['distance_meters_off'] = Variable<int>(distanceMetersOff.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4177,6 +4450,8 @@ class CachedSubmissionsCompanion extends UpdateCompanion<CachedSubmission> {
           ..write('templateVersion: $templateVersion, ')
           ..write('voidReason: $voidReason, ')
           ..write('voidedAt: $voidedAt, ')
+          ..write('isGeofenceBypassed: $isGeofenceBypassed, ')
+          ..write('distanceMetersOff: $distanceMetersOff, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -7868,6 +8143,30 @@ class $PendingSubmissionsTable extends PendingSubmissions
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _isGeofenceBypassedMeta =
+      const VerificationMeta('isGeofenceBypassed');
+  @override
+  late final GeneratedColumn<bool> isGeofenceBypassed = GeneratedColumn<bool>(
+    'is_geofence_bypassed',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_geofence_bypassed" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _distanceMetersOffMeta = const VerificationMeta(
+    'distanceMetersOff',
+  );
+  @override
+  late final GeneratedColumn<int> distanceMetersOff = GeneratedColumn<int>(
+    'distance_meters_off',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7886,6 +8185,8 @@ class $PendingSubmissionsTable extends PendingSubmissions
     createdAt,
     targetSubmissionId,
     programAssignmentId,
+    isGeofenceBypassed,
+    distanceMetersOff,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -8022,6 +8323,24 @@ class $PendingSubmissionsTable extends PendingSubmissions
         ),
       );
     }
+    if (data.containsKey('is_geofence_bypassed')) {
+      context.handle(
+        _isGeofenceBypassedMeta,
+        isGeofenceBypassed.isAcceptableOrUnknown(
+          data['is_geofence_bypassed']!,
+          _isGeofenceBypassedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('distance_meters_off')) {
+      context.handle(
+        _distanceMetersOffMeta,
+        distanceMetersOff.isAcceptableOrUnknown(
+          data['distance_meters_off']!,
+          _distanceMetersOffMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -8095,6 +8414,14 @@ class $PendingSubmissionsTable extends PendingSubmissions
         DriftSqlType.string,
         data['${effectivePrefix}program_assignment_id'],
       ),
+      isGeofenceBypassed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_geofence_bypassed'],
+      ),
+      distanceMetersOff: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}distance_meters_off'],
+      ),
     );
   }
 
@@ -8128,6 +8455,8 @@ class PendingSubmission extends DataClass
 
   /// The UUID of the ProgramAssignment this submission is linked to (if any).
   final String? programAssignmentId;
+  final bool? isGeofenceBypassed;
+  final int? distanceMetersOff;
   const PendingSubmission({
     required this.id,
     required this.templateId,
@@ -8145,6 +8474,8 @@ class PendingSubmission extends DataClass
     required this.createdAt,
     this.targetSubmissionId,
     this.programAssignmentId,
+    this.isGeofenceBypassed,
+    this.distanceMetersOff,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -8180,6 +8511,12 @@ class PendingSubmission extends DataClass
     }
     if (!nullToAbsent || programAssignmentId != null) {
       map['program_assignment_id'] = Variable<String>(programAssignmentId);
+    }
+    if (!nullToAbsent || isGeofenceBypassed != null) {
+      map['is_geofence_bypassed'] = Variable<bool>(isGeofenceBypassed);
+    }
+    if (!nullToAbsent || distanceMetersOff != null) {
+      map['distance_meters_off'] = Variable<int>(distanceMetersOff);
     }
     return map;
   }
@@ -8218,6 +8555,12 @@ class PendingSubmission extends DataClass
       programAssignmentId: programAssignmentId == null && nullToAbsent
           ? const Value.absent()
           : Value(programAssignmentId),
+      isGeofenceBypassed: isGeofenceBypassed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isGeofenceBypassed),
+      distanceMetersOff: distanceMetersOff == null && nullToAbsent
+          ? const Value.absent()
+          : Value(distanceMetersOff),
     );
   }
 
@@ -8247,6 +8590,10 @@ class PendingSubmission extends DataClass
       programAssignmentId: serializer.fromJson<String?>(
         json['programAssignmentId'],
       ),
+      isGeofenceBypassed: serializer.fromJson<bool?>(
+        json['isGeofenceBypassed'],
+      ),
+      distanceMetersOff: serializer.fromJson<int?>(json['distanceMetersOff']),
     );
   }
   @override
@@ -8269,6 +8616,8 @@ class PendingSubmission extends DataClass
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'targetSubmissionId': serializer.toJson<String?>(targetSubmissionId),
       'programAssignmentId': serializer.toJson<String?>(programAssignmentId),
+      'isGeofenceBypassed': serializer.toJson<bool?>(isGeofenceBypassed),
+      'distanceMetersOff': serializer.toJson<int?>(distanceMetersOff),
     };
   }
 
@@ -8289,6 +8638,8 @@ class PendingSubmission extends DataClass
     DateTime? createdAt,
     Value<String?> targetSubmissionId = const Value.absent(),
     Value<String?> programAssignmentId = const Value.absent(),
+    Value<bool?> isGeofenceBypassed = const Value.absent(),
+    Value<int?> distanceMetersOff = const Value.absent(),
   }) => PendingSubmission(
     id: id ?? this.id,
     templateId: templateId ?? this.templateId,
@@ -8312,6 +8663,12 @@ class PendingSubmission extends DataClass
     programAssignmentId: programAssignmentId.present
         ? programAssignmentId.value
         : this.programAssignmentId,
+    isGeofenceBypassed: isGeofenceBypassed.present
+        ? isGeofenceBypassed.value
+        : this.isGeofenceBypassed,
+    distanceMetersOff: distanceMetersOff.present
+        ? distanceMetersOff.value
+        : this.distanceMetersOff,
   );
   PendingSubmission copyWithCompanion(PendingSubmissionsCompanion data) {
     return PendingSubmission(
@@ -8349,6 +8706,12 @@ class PendingSubmission extends DataClass
       programAssignmentId: data.programAssignmentId.present
           ? data.programAssignmentId.value
           : this.programAssignmentId,
+      isGeofenceBypassed: data.isGeofenceBypassed.present
+          ? data.isGeofenceBypassed.value
+          : this.isGeofenceBypassed,
+      distanceMetersOff: data.distanceMetersOff.present
+          ? data.distanceMetersOff.value
+          : this.distanceMetersOff,
     );
   }
 
@@ -8370,7 +8733,9 @@ class PendingSubmission extends DataClass
           ..write('nextRetryAt: $nextRetryAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('targetSubmissionId: $targetSubmissionId, ')
-          ..write('programAssignmentId: $programAssignmentId')
+          ..write('programAssignmentId: $programAssignmentId, ')
+          ..write('isGeofenceBypassed: $isGeofenceBypassed, ')
+          ..write('distanceMetersOff: $distanceMetersOff')
           ..write(')'))
         .toString();
   }
@@ -8393,6 +8758,8 @@ class PendingSubmission extends DataClass
     createdAt,
     targetSubmissionId,
     programAssignmentId,
+    isGeofenceBypassed,
+    distanceMetersOff,
   );
   @override
   bool operator ==(Object other) =>
@@ -8413,7 +8780,9 @@ class PendingSubmission extends DataClass
           other.nextRetryAt == this.nextRetryAt &&
           other.createdAt == this.createdAt &&
           other.targetSubmissionId == this.targetSubmissionId &&
-          other.programAssignmentId == this.programAssignmentId);
+          other.programAssignmentId == this.programAssignmentId &&
+          other.isGeofenceBypassed == this.isGeofenceBypassed &&
+          other.distanceMetersOff == this.distanceMetersOff);
 }
 
 class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
@@ -8433,6 +8802,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
   final Value<DateTime> createdAt;
   final Value<String?> targetSubmissionId;
   final Value<String?> programAssignmentId;
+  final Value<bool?> isGeofenceBypassed;
+  final Value<int?> distanceMetersOff;
   final Value<int> rowid;
   const PendingSubmissionsCompanion({
     this.id = const Value.absent(),
@@ -8451,6 +8822,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     this.createdAt = const Value.absent(),
     this.targetSubmissionId = const Value.absent(),
     this.programAssignmentId = const Value.absent(),
+    this.isGeofenceBypassed = const Value.absent(),
+    this.distanceMetersOff = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PendingSubmissionsCompanion.insert({
@@ -8470,6 +8843,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     required DateTime createdAt,
     this.targetSubmissionId = const Value.absent(),
     this.programAssignmentId = const Value.absent(),
+    this.isGeofenceBypassed = const Value.absent(),
+    this.distanceMetersOff = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        templateId = Value(templateId),
@@ -8494,6 +8869,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Expression<DateTime>? createdAt,
     Expression<String>? targetSubmissionId,
     Expression<String>? programAssignmentId,
+    Expression<bool>? isGeofenceBypassed,
+    Expression<int>? distanceMetersOff,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -8515,6 +8892,9 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
         'target_submission_id': targetSubmissionId,
       if (programAssignmentId != null)
         'program_assignment_id': programAssignmentId,
+      if (isGeofenceBypassed != null)
+        'is_geofence_bypassed': isGeofenceBypassed,
+      if (distanceMetersOff != null) 'distance_meters_off': distanceMetersOff,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -8536,6 +8916,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
     Value<DateTime>? createdAt,
     Value<String?>? targetSubmissionId,
     Value<String?>? programAssignmentId,
+    Value<bool?>? isGeofenceBypassed,
+    Value<int?>? distanceMetersOff,
     Value<int>? rowid,
   }) {
     return PendingSubmissionsCompanion(
@@ -8555,6 +8937,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
       createdAt: createdAt ?? this.createdAt,
       targetSubmissionId: targetSubmissionId ?? this.targetSubmissionId,
       programAssignmentId: programAssignmentId ?? this.programAssignmentId,
+      isGeofenceBypassed: isGeofenceBypassed ?? this.isGeofenceBypassed,
+      distanceMetersOff: distanceMetersOff ?? this.distanceMetersOff,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -8612,6 +8996,12 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
         programAssignmentId.value,
       );
     }
+    if (isGeofenceBypassed.present) {
+      map['is_geofence_bypassed'] = Variable<bool>(isGeofenceBypassed.value);
+    }
+    if (distanceMetersOff.present) {
+      map['distance_meters_off'] = Variable<int>(distanceMetersOff.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -8637,6 +9027,8 @@ class PendingSubmissionsCompanion extends UpdateCompanion<PendingSubmission> {
           ..write('createdAt: $createdAt, ')
           ..write('targetSubmissionId: $targetSubmissionId, ')
           ..write('programAssignmentId: $programAssignmentId, ')
+          ..write('isGeofenceBypassed: $isGeofenceBypassed, ')
+          ..write('distanceMetersOff: $distanceMetersOff, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -11727,6 +12119,9 @@ typedef $$CachedTemplatesTableCreateCompanionBuilder =
       Value<String?> scoringLogicConfig,
       required DateTime createdAt,
       required DateTime updatedAt,
+      Value<String?> displayNoun,
+      Value<String> geofenceMode,
+      Value<int> geofenceRadiusMeters,
       Value<int> rowid,
     });
 typedef $$CachedTemplatesTableUpdateCompanionBuilder =
@@ -11740,6 +12135,9 @@ typedef $$CachedTemplatesTableUpdateCompanionBuilder =
       Value<String?> scoringLogicConfig,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
+      Value<String?> displayNoun,
+      Value<String> geofenceMode,
+      Value<int> geofenceRadiusMeters,
       Value<int> rowid,
     });
 
@@ -11828,6 +12226,21 @@ class $$CachedTemplatesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get displayNoun => $composableBuilder(
+    column: $table.displayNoun,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get geofenceMode => $composableBuilder(
+    column: $table.geofenceMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get geofenceRadiusMeters => $composableBuilder(
+    column: $table.geofenceRadiusMeters,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> cachedGroupsRefs(
     Expression<bool> Function($$CachedGroupsTableFilterComposer f) f,
   ) {
@@ -11907,6 +12320,21 @@ class $$CachedTemplatesTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get displayNoun => $composableBuilder(
+    column: $table.displayNoun,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get geofenceMode => $composableBuilder(
+    column: $table.geofenceMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get geofenceRadiusMeters => $composableBuilder(
+    column: $table.geofenceRadiusMeters,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedTemplatesTableAnnotationComposer
@@ -11948,6 +12376,21 @@ class $$CachedTemplatesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get displayNoun => $composableBuilder(
+    column: $table.displayNoun,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get geofenceMode => $composableBuilder(
+    column: $table.geofenceMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get geofenceRadiusMeters => $composableBuilder(
+    column: $table.geofenceRadiusMeters,
+    builder: (column) => column,
+  );
 
   Expression<T> cachedGroupsRefs<T extends Object>(
     Expression<T> Function($$CachedGroupsTableAnnotationComposer a) f,
@@ -12014,6 +12457,9 @@ class $$CachedTemplatesTableTableManager
                 Value<String?> scoringLogicConfig = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<String?> displayNoun = const Value.absent(),
+                Value<String> geofenceMode = const Value.absent(),
+                Value<int> geofenceRadiusMeters = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedTemplatesCompanion(
                 id: id,
@@ -12025,6 +12471,9 @@ class $$CachedTemplatesTableTableManager
                 scoringLogicConfig: scoringLogicConfig,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                displayNoun: displayNoun,
+                geofenceMode: geofenceMode,
+                geofenceRadiusMeters: geofenceRadiusMeters,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12038,6 +12487,9 @@ class $$CachedTemplatesTableTableManager
                 Value<String?> scoringLogicConfig = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<String?> displayNoun = const Value.absent(),
+                Value<String> geofenceMode = const Value.absent(),
+                Value<int> geofenceRadiusMeters = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedTemplatesCompanion.insert(
                 id: id,
@@ -12049,6 +12501,9 @@ class $$CachedTemplatesTableTableManager
                 scoringLogicConfig: scoringLogicConfig,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                displayNoun: displayNoun,
+                geofenceMode: geofenceMode,
+                geofenceRadiusMeters: geofenceRadiusMeters,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -13619,6 +14074,8 @@ typedef $$CachedSubmissionsTableCreateCompanionBuilder =
       Value<int?> templateVersion,
       Value<String?> voidReason,
       Value<DateTime?> voidedAt,
+      Value<bool?> isGeofenceBypassed,
+      Value<int?> distanceMetersOff,
       Value<int> rowid,
     });
 typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
@@ -13642,6 +14099,8 @@ typedef $$CachedSubmissionsTableUpdateCompanionBuilder =
       Value<int?> templateVersion,
       Value<String?> voidReason,
       Value<DateTime?> voidedAt,
+      Value<bool?> isGeofenceBypassed,
+      Value<int?> distanceMetersOff,
       Value<int> rowid,
     });
 
@@ -13746,6 +14205,16 @@ class $$CachedSubmissionsTableFilterComposer
 
   ColumnFilters<DateTime> get voidedAt => $composableBuilder(
     column: $table.voidedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isGeofenceBypassed => $composableBuilder(
+    column: $table.isGeofenceBypassed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get distanceMetersOff => $composableBuilder(
+    column: $table.distanceMetersOff,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -13853,6 +14322,16 @@ class $$CachedSubmissionsTableOrderingComposer
     column: $table.voidedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isGeofenceBypassed => $composableBuilder(
+    column: $table.isGeofenceBypassed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get distanceMetersOff => $composableBuilder(
+    column: $table.distanceMetersOff,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedSubmissionsTableAnnotationComposer
@@ -13942,6 +14421,16 @@ class $$CachedSubmissionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get voidedAt =>
       $composableBuilder(column: $table.voidedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isGeofenceBypassed => $composableBuilder(
+    column: $table.isGeofenceBypassed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get distanceMetersOff => $composableBuilder(
+    column: $table.distanceMetersOff,
+    builder: (column) => column,
+  );
 }
 
 class $$CachedSubmissionsTableTableManager
@@ -14003,6 +14492,8 @@ class $$CachedSubmissionsTableTableManager
                 Value<int?> templateVersion = const Value.absent(),
                 Value<String?> voidReason = const Value.absent(),
                 Value<DateTime?> voidedAt = const Value.absent(),
+                Value<bool?> isGeofenceBypassed = const Value.absent(),
+                Value<int?> distanceMetersOff = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion(
                 id: id,
@@ -14024,6 +14515,8 @@ class $$CachedSubmissionsTableTableManager
                 templateVersion: templateVersion,
                 voidReason: voidReason,
                 voidedAt: voidedAt,
+                isGeofenceBypassed: isGeofenceBypassed,
+                distanceMetersOff: distanceMetersOff,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -14047,6 +14540,8 @@ class $$CachedSubmissionsTableTableManager
                 Value<int?> templateVersion = const Value.absent(),
                 Value<String?> voidReason = const Value.absent(),
                 Value<DateTime?> voidedAt = const Value.absent(),
+                Value<bool?> isGeofenceBypassed = const Value.absent(),
+                Value<int?> distanceMetersOff = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedSubmissionsCompanion.insert(
                 id: id,
@@ -14068,6 +14563,8 @@ class $$CachedSubmissionsTableTableManager
                 templateVersion: templateVersion,
                 voidReason: voidReason,
                 voidedAt: voidedAt,
+                isGeofenceBypassed: isGeofenceBypassed,
+                distanceMetersOff: distanceMetersOff,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -15874,6 +16371,8 @@ typedef $$PendingSubmissionsTableCreateCompanionBuilder =
       required DateTime createdAt,
       Value<String?> targetSubmissionId,
       Value<String?> programAssignmentId,
+      Value<bool?> isGeofenceBypassed,
+      Value<int?> distanceMetersOff,
       Value<int> rowid,
     });
 typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
@@ -15894,6 +16393,8 @@ typedef $$PendingSubmissionsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<String?> targetSubmissionId,
       Value<String?> programAssignmentId,
+      Value<bool?> isGeofenceBypassed,
+      Value<int?> distanceMetersOff,
       Value<int> rowid,
     });
 
@@ -16044,6 +16545,16 @@ class $$PendingSubmissionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get isGeofenceBypassed => $composableBuilder(
+    column: $table.isGeofenceBypassed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get distanceMetersOff => $composableBuilder(
+    column: $table.distanceMetersOff,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> pendingAnswersRefs(
     Expression<bool> Function($$PendingAnswersTableFilterComposer f) f,
   ) {
@@ -16183,6 +16694,16 @@ class $$PendingSubmissionsTableOrderingComposer
     column: $table.programAssignmentId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isGeofenceBypassed => $composableBuilder(
+    column: $table.isGeofenceBypassed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get distanceMetersOff => $composableBuilder(
+    column: $table.distanceMetersOff,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PendingSubmissionsTableAnnotationComposer
@@ -16257,6 +16778,16 @@ class $$PendingSubmissionsTableAnnotationComposer
 
   GeneratedColumn<String> get programAssignmentId => $composableBuilder(
     column: $table.programAssignmentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isGeofenceBypassed => $composableBuilder(
+    column: $table.isGeofenceBypassed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get distanceMetersOff => $composableBuilder(
+    column: $table.distanceMetersOff,
     builder: (column) => column,
   );
 
@@ -16363,6 +16894,8 @@ class $$PendingSubmissionsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<String?> targetSubmissionId = const Value.absent(),
                 Value<String?> programAssignmentId = const Value.absent(),
+                Value<bool?> isGeofenceBypassed = const Value.absent(),
+                Value<int?> distanceMetersOff = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion(
                 id: id,
@@ -16381,6 +16914,8 @@ class $$PendingSubmissionsTableTableManager
                 createdAt: createdAt,
                 targetSubmissionId: targetSubmissionId,
                 programAssignmentId: programAssignmentId,
+                isGeofenceBypassed: isGeofenceBypassed,
+                distanceMetersOff: distanceMetersOff,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -16401,6 +16936,8 @@ class $$PendingSubmissionsTableTableManager
                 required DateTime createdAt,
                 Value<String?> targetSubmissionId = const Value.absent(),
                 Value<String?> programAssignmentId = const Value.absent(),
+                Value<bool?> isGeofenceBypassed = const Value.absent(),
+                Value<int?> distanceMetersOff = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PendingSubmissionsCompanion.insert(
                 id: id,
@@ -16419,6 +16956,8 @@ class $$PendingSubmissionsTableTableManager
                 createdAt: createdAt,
                 targetSubmissionId: targetSubmissionId,
                 programAssignmentId: programAssignmentId,
+                isGeofenceBypassed: isGeofenceBypassed,
+                distanceMetersOff: distanceMetersOff,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

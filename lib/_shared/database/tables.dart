@@ -15,6 +15,9 @@ class CachedTemplates extends Table {
   TextColumn get scoringLogicConfig => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
+  TextColumn get displayNoun => text().nullable()();
+  TextColumn get geofenceMode => text().withDefault(const Constant('none'))();
+  IntColumn get geofenceRadiusMeters => integer().withDefault(const Constant(100))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -113,6 +116,8 @@ class CachedSubmissions extends Table {
   IntColumn get templateVersion => integer().nullable()();
   TextColumn get voidReason => text().nullable()();
   DateTimeColumn get voidedAt => dateTime().nullable()();
+  BoolColumn get isGeofenceBypassed => boolean().nullable()();
+  IntColumn get distanceMetersOff => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -223,6 +228,8 @@ class PendingSubmissions extends Table {
 
   /// The UUID of the ProgramAssignment this submission is linked to (if any).
   TextColumn get programAssignmentId => text().nullable()();
+  BoolColumn get isGeofenceBypassed => boolean().nullable()();
+  IntColumn get distanceMetersOff => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

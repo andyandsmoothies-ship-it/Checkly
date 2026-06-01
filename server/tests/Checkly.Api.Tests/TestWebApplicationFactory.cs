@@ -158,6 +158,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                        (gen_random_uuid(), 'area_manager',  'action_plans:verify',         now()),
                        (gen_random_uuid(), 'admin',         'action_plans:verify',         now()),
                        (gen_random_uuid(), 'admin',         'analytics:bod',               now()),
+                       (gen_random_uuid(), 'admin',         'analytics:area',              now()),
+                       (gen_random_uuid(), 'area_manager',  'analytics:area',              now()),
                        (gen_random_uuid(), 'auditor',       'analytics:view',              now()),
                        (gen_random_uuid(), 'admin',         'templates:create',            now()),
                        (gen_random_uuid(), 'admin',         'templates:update',            now()),

@@ -18,7 +18,9 @@ public sealed record CreateSubmissionRequest(
     Guid? AssignToAuditorId = null,
     bool HasGlobalRisk = false,
     Guid? Id = null,
-    Guid? ProgramAssignmentId = null);  // Program bridge: links submission to a ProgramAssignment
+    Guid? ProgramAssignmentId = null,
+    bool? IsGeofenceBypassed = null,
+    int? DistanceMetersOff = null);  // Program bridge: links submission to a ProgramAssignment
 
 
 public sealed record AnswerInput(
@@ -54,7 +56,9 @@ public sealed record SubmissionDto(
     decimal? RawMaxPoints = null,
     bool? IsWeighted = null,
     string? ScoringMode = null,
-    List<string>? AllowedActions = null);
+    List<string>? AllowedActions = null,
+    bool? IsGeofenceBypassed = null,
+    int? DistanceMetersOff = null);
 
 public sealed record SubmissionDetailDto(
     Guid Id,
@@ -81,7 +85,9 @@ public sealed record SubmissionDetailDto(
     decimal? RawMaxPoints = null,
     bool? IsWeighted = null,
     string? ScoringMode = null,
-    List<string>? AllowedActions = null);
+    List<string>? AllowedActions = null,
+    bool? IsGeofenceBypassed = null,
+    int? DistanceMetersOff = null);
 
 public sealed record AnswerDto(
     Guid Id,

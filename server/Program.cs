@@ -350,6 +350,8 @@ try
                 
                 -- BOD Analytics Module
                 (gen_random_uuid(), 'admin', 'analytics:bod', now()),
+                (gen_random_uuid(), 'admin', 'analytics:area', now()),
+                (gen_random_uuid(), 'area_manager', 'analytics:area', now()),
                 (gen_random_uuid(), 'auditor', 'analytics:view', now())
             ON CONFLICT (role, capability) DO NOTHING;
             """);

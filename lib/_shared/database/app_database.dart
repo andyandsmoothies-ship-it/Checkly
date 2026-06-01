@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 33;
+  int get schemaVersion => 34;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -254,6 +254,16 @@ class AppDatabase extends _$AppDatabase {
         } catch (e) {
           // ignore
         }
+      }
+      if (from < 34) {
+        // v34: Smart Audit Safeguards
+        await m.addColumn(cachedTemplates, cachedTemplates.displayNoun);
+        await m.addColumn(cachedTemplates, cachedTemplates.geofenceMode);
+        await m.addColumn(cachedTemplates, cachedTemplates.geofenceRadiusMeters);
+        await m.addColumn(cachedSubmissions, cachedSubmissions.isGeofenceBypassed);
+        await m.addColumn(cachedSubmissions, cachedSubmissions.distanceMetersOff);
+        await m.addColumn(pendingSubmissions, pendingSubmissions.isGeofenceBypassed);
+        await m.addColumn(pendingSubmissions, pendingSubmissions.distanceMetersOff);
       }
     },
     beforeOpen: (details) async {

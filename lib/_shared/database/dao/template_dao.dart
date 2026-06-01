@@ -222,6 +222,8 @@ class TemplateDao {
       isActive: t.isActive,
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
+      geofenceMode: t.geofenceMode,
+      geofenceRadiusMeters: t.geofenceRadiusMeters,
       groups: buildTree(rootGroups),
     );
   }
@@ -238,6 +240,8 @@ class TemplateDao {
     isActive: row.isActive,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    geofenceMode: row.geofenceMode,
+    geofenceRadiusMeters: row.geofenceRadiusMeters,
   );
 
   CachedTemplatesCompanion _templateToCompanion(TemplateDto dto) =>
@@ -251,5 +255,7 @@ class TemplateDao {
         scoringLogicConfig: Value(dto.scoringLogicConfig),
         createdAt: dto.createdAt,
         updatedAt: dto.updatedAt,
+        geofenceMode: Value(dto.geofenceMode),
+        geofenceRadiusMeters: Value(dto.geofenceRadiusMeters),
       );
 }

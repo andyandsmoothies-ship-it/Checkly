@@ -140,6 +140,13 @@ namespace Checkly.Api.Features.Analytics
                     .Distinct()
                     .CountAsync(ct);
 
+                var geofenceBypassCount = await db.Submissions.CountAsync(s =>
+                    s.Status == "completed" &&
+                    (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                    s.CompletedAt.HasValue &&
+                    s.CompletedAt <= targetDateTime &&
+                    s.IsGeofenceBypassed == true, ct);
+
                 kpis = new BodChainKpis(
                     totalAudits,
                     avgScore,
@@ -147,7 +154,9 @@ namespace Checkly.Api.Features.Analytics
                     openActionPlans,
                     overdueActionPlans,
                     activeStores,
-                    totalAuditors
+                    totalAuditors,
+                    0m,
+                    geofenceBypassCount
                 );
             }
             catch (Exception ex)

@@ -13,6 +13,8 @@ Future<void> _submitAuditLogic(AuditManager manager) async {
   manager._wasQueuedOffline = false;
   // Cancel any pending draft save before submit
   manager._draftService.dispose();
+  manager._scoreDebounceTimer?.cancel();
+  manager._scoreDebounceTimer = null;
   manager.notifyListeners();
 
   try {
@@ -78,6 +80,8 @@ Future<void> _submitAuditLogic(AuditManager manager) async {
         syncStatus: Value('pending'),
         targetSubmissionId: Value(manager._targetSubmissionId),
         programAssignmentId: Value(manager._programAssignmentId),
+        isGeofenceBypassed: Value(manager._isGeofenceBypassed),
+        distanceMetersOff: Value(manager._distanceMetersOff),
       ),
       answerCompanions,
       photos,

@@ -7,6 +7,7 @@ class BodChainKpis {
   final int overdueAPs;
   final int activeStores;
   final int totalAuditors;
+  final int geofenceBypassCount;
 
   const BodChainKpis({
     required this.totalAudits,
@@ -17,6 +18,7 @@ class BodChainKpis {
     this.overdueAPs = 0,
     this.activeStores = 0,
     this.totalAuditors = 0,
+    this.geofenceBypassCount = 0,
   });
 
   factory BodChainKpis.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class BodChainKpis {
       overdueAPs: json['overdueActionPlans'] ?? json['overdueAPs'] ?? 0,
       activeStores: json['activeStores'] ?? 0,
       totalAuditors: json['totalAuditors'] ?? 0,
+      geofenceBypassCount: json['geofenceBypassCount'] ?? 0,
     );
   }
 
@@ -48,6 +51,7 @@ class BodChainKpis {
       'overdueAPs': overdueAPs,
       'activeStores': activeStores,
       'totalAuditors': totalAuditors,
+      'geofenceBypassCount': geofenceBypassCount,
     };
   }
 }
@@ -325,15 +329,45 @@ class CategoryScoreEntry {
   }
 }
 
+class SlaOverdueSegment {
+  final String bucket;
+  final int count;
+
+  SlaOverdueSegment({
+    required this.bucket,
+    required this.count,
+  });
+
+  factory SlaOverdueSegment.fromJson(Map<String, dynamic> json) {
+    return SlaOverdueSegment(
+      bucket: json['bucket'] ?? '',
+      count: json['count'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'bucket': bucket,
+      'count': count,
+    };
+  }
+}
+
 class StoreBodSummary {
   final String storeName;
   final List<RecentAuditEntry> recentAudits;
   final List<CategoryScoreEntry> categoryBreakdown;
+  final String? quartileLabel;
+  final double? regionalAvgScore;
+  final List<SlaOverdueSegment>? slaOverdueBuckets;
 
   StoreBodSummary({
     required this.storeName,
     required this.recentAudits,
     required this.categoryBreakdown,
+    this.quartileLabel,
+    this.regionalAvgScore,
+    this.slaOverdueBuckets,
   });
 
   factory StoreBodSummary.fromJson(Map<String, dynamic> json) {
@@ -354,6 +388,15 @@ class StoreBodSummary {
               )
               .toList() ??
           [],
+      quartileLabel: json['quartileLabel'],
+      regionalAvgScore: json['regionalAvgScore'] != null
+          ? (json['regionalAvgScore'] as num).toDouble()
+          : null,
+      slaOverdueBuckets: (json['slaOverdueBuckets'] as List<dynamic>?)
+          ?.map(
+            (e) => SlaOverdueSegment.fromJson(Map<String, dynamic>.from(e)),
+          )
+          .toList(),
     );
   }
 }

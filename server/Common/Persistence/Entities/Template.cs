@@ -14,6 +14,8 @@ public sealed class Template
     public int Version { get; set; }
     public string? ScoringLogicConfig { get; set; }
     public string? DisplayNoun { get; set; }
+    public string GeofenceMode { get; set; } = "none";
+    public int GeofenceRadiusMeters { get; set; } = 100;
     public bool IsActive { get; set; }
     public Guid? CreatedBy { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

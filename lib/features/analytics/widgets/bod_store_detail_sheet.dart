@@ -131,6 +131,152 @@ class _BodStoreDetailSheetState extends State<BodStoreDetailSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          if (detail.quartileLabel != null || detail.regionalAvgScore != null) ...[
+                            StrokeCard(
+                              color: theme.colorScheme.surface,
+                              borderColor: AppColors.swan,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.analytics_outlined, color: AppColors.macaw, size: 20),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'Regional Benchmarking',
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                            color: AppColors.eel,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      if (detail.quartileLabel != null)
+                                        PillChip(
+                                          label: detail.quartileLabel!,
+                                          type: detail.quartileLabel!.contains('Top 25%') || detail.quartileLabel!.contains('Top 50%')
+                                              ? PillChipType.green
+                                              : PillChipType.yellow,
+                                        ),
+                                      if (detail.regionalAvgScore != null)
+                                        Text(
+                                          'Regional Avg: ${detail.regionalAvgScore!.toStringAsFixed(1)}%',
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: AppColors.wolf,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  if (detail.recentAudits.isNotEmpty && detail.regionalAvgScore != null) ...[
+                                    const SizedBox(height: 8),
+                                    Builder(
+                                      builder: (context) {
+                                        final storeAvg = detail.recentAudits.map((e) => e.score).reduce((a, b) => a + b) / detail.recentAudits.length;
+                                        final diff = storeAvg - detail.regionalAvgScore!;
+                                        final isAbove = diff >= 0;
+                                        return Row(
+                                          children: [
+                                            Icon(
+                                              isAbove ? Icons.trending_up : Icons.trending_down,
+                                              color: isAbove ? AppColors.macaw : AppColors.cardinal,
+                                              size: 16,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              isAbove
+                                                  ? '${diff.toStringAsFixed(1)}% above regional average'
+                                                  : '${diff.abs().toStringAsFixed(1)}% below regional average',
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: isAbove ? AppColors.macaw : AppColors.cardinal,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                          if (detail.slaOverdueBuckets != null && detail.slaOverdueBuckets!.isNotEmpty) ...[
+                            StrokeCard(
+                              color: theme.colorScheme.surface,
+                              borderColor: AppColors.swan,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.assignment_late_outlined, color: AppColors.cardinal, size: 20),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'SLA Overdue Action Plans',
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                            color: AppColors.eel,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: detail.slaOverdueBuckets!.map((segment) {
+                                      Color countColor;
+                                      if (segment.bucket.contains('31+')) {
+                                        countColor = AppColors.cardinal;
+                                      } else if (segment.bucket.contains('8-30')) {
+                                        countColor = AppColors.fox;
+                                      } else {
+                                        countColor = AppColors.macaw;
+                                      }
+                                      return Expanded(
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.walkingFish.withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                '${segment.count}',
+                                                style: theme.textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.w900,
+                                                  color: countColor,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                segment.bucket,
+                                                style: theme.textTheme.bodySmall?.copyWith(
+                                                  color: AppColors.wolf,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
                           if (detail.categoryBreakdown.isNotEmpty) ...[
                             Text(
                               'Category Performance',

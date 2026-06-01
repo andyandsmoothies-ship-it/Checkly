@@ -203,5 +203,40 @@ void main() {
         expect(manager.isSubmitting, isFalse);
       },
     );
+
+    test('TC-11-06: setGeofenceBypass correctly updates bypass flags and reset clears them', () async {
+      await manager.startAudit(template, 'store-1');
+      expect(manager.isGeofenceBypassed, isFalse);
+      expect(manager.distanceMetersOff, isNull);
+
+      manager.setGeofenceBypass(isBypassed: true, distanceMetersOff: 145);
+      expect(manager.isGeofenceBypassed, isTrue);
+      expect(manager.distanceMetersOff, 145);
+
+      manager.reset();
+      expect(manager.isGeofenceBypassed, isFalse);
+      expect(manager.distanceMetersOff, isNull);
+    });
+
+    test('TC-11-07: submitAudit forwards geofence bypass telemetry to the outbox', () async {
+      when(() => mockConnectivity.isOnline).thenReturn(true);
+      
+      PendingSubmissionsCompanion? capturedCompanion;
+      when(
+        () => mockOutboxDao.insertSubmissionWithAnswers(any(), any()),
+      ).thenAnswer((invocation) async {
+        capturedCompanion = invocation.positionalArguments[0] as PendingSubmissionsCompanion;
+      });
+
+      await manager.startAudit(template, 'store-1');
+      manager.setAnswer('c-1', value: 'yes');
+      
+      manager.setGeofenceBypass(isBypassed: true, distanceMetersOff: 280);
+      await manager.submitAudit();
+
+      expect(capturedCompanion, isNotNull);
+      expect(capturedCompanion!.isGeofenceBypassed.value, isTrue);
+      expect(capturedCompanion!.distanceMetersOff.value, 280);
+    });
   });
 }

@@ -49,6 +49,8 @@ public sealed class Submission
     public decimal? RawEarnedPoints { get; set; }
     public decimal? RawMaxPoints { get; set; }
     public bool? IsWeighted { get; set; }
+    public bool? IsGeofenceBypassed { get; set; }
+    public int? DistanceMetersOff { get; set; }
 
     public string? VoidReason { get; set; }
     public DateTimeOffset? VoidedAt { get; set; }

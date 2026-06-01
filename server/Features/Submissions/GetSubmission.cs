@@ -77,7 +77,9 @@ public static class GetSubmission
             submission.TemplateVersion,
             submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted,
             submission.ScoringMode,
-            AllowedActions: allowedActions);
+            AllowedActions: allowedActions,
+            IsGeofenceBypassed: submission.IsGeofenceBypassed,
+            DistanceMetersOff: submission.DistanceMetersOff);
 
         return TypedResults.Ok(dto);
     }

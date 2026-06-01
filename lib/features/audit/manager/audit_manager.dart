@@ -99,6 +99,12 @@ class AuditManager extends ChangeNotifier {
   double? _gpsLat;
   double? _gpsLng;
 
+  bool _isGeofenceBypassed = false;
+  bool get isGeofenceBypassed => _isGeofenceBypassed;
+
+  int? _distanceMetersOff;
+  int? get distanceMetersOff => _distanceMetersOff;
+
   /// Whether the last submit was queued offline (not sent to API).
   bool _wasQueuedOffline = false;
   bool get wasQueuedOffline => _wasQueuedOffline;
@@ -117,6 +123,8 @@ class AuditManager extends ChangeNotifier {
 
   /// Last draft save timestamp (for UI indicator).
   DateTime? get draftSavedAt => _draftSavedAt;
+
+  Timer? _scoreDebounceTimer;
 
   // ---------- Resume Resume State ----------
   /// When non-null, this audit is finalizing an EXISTING server-side draft.
@@ -142,6 +150,8 @@ class AuditManager extends ChangeNotifier {
     _notes = null;
     _gpsLat = null;
     _gpsLng = null;
+    _isGeofenceBypassed = false;
+    _distanceMetersOff = null;
     _wasQueuedOffline = false;
     _draftSavedAt = null;
     _targetSubmissionId = targetSubmissionId;
@@ -149,10 +159,15 @@ class AuditManager extends ChangeNotifier {
     _pendingSubmissionId = _uuid.v4(); // Stable ID for this local session
     _triggeredRiskIds.clear();
 
+    _scoreDebounceTimer?.cancel();
+    _scoreDebounceTimer = null;
+
     // Pre-populate answers for all criteria
     for (final group in template.groups) {
       _initGroupAnswers(group);
     }
+
+    _recalculateScore();
 
     // Compute draft key
     String? userId;
@@ -186,7 +201,6 @@ class AuditManager extends ChangeNotifier {
       }
     }
 
-    _recalculateScore();
     notifyListeners();
   }
 
@@ -211,7 +225,7 @@ class AuditManager extends ChangeNotifier {
     if (value != null) answer.value = value;
     if (numericValue != null) answer.numericValue = numericValue;
 
-    _recalculateScore();
+    _recalculateScoreDebounced();
     _scheduleDraftSave();
     notifyListeners();
   }
@@ -219,7 +233,7 @@ class AuditManager extends ChangeNotifier {
   void clearAnswerValue(String criteriaId) {
     if (_answers[criteriaId] != null) {
       _answers[criteriaId]!.value = null;
-      _recalculateScore();
+      _recalculateScoreDebounced();
       _scheduleDraftSave();
       notifyListeners();
     }
@@ -254,14 +268,14 @@ class AuditManager extends ChangeNotifier {
 
   void setCcp(String criteriaId, bool value) {
     _answers[criteriaId]?.isCcp = value;
-    _recalculateScore();
+    _recalculateScoreDebounced();
     _scheduleDraftSave();
     notifyListeners();
   }
 
   void setRisk(String criteriaId, bool value) {
     _answers[criteriaId]?.isRisk = value;
-    _recalculateScore();
+    _recalculateScoreDebounced();
     _scheduleDraftSave();
     notifyListeners();
   }
@@ -316,7 +330,7 @@ class AuditManager extends ChangeNotifier {
     _triggeredRiskIds.add(globalRiskId);
     await _riskOutboxDao.enqueueRisk(_pendingSubmissionId!, globalRiskId);
 
-    _recalculateScore();
+    _recalculateScoreDebounced();
     notifyListeners();
   }
 
@@ -326,8 +340,16 @@ class AuditManager extends ChangeNotifier {
     _triggeredRiskIds.remove(globalRiskId);
     await _riskOutboxDao.removeByRiskId(_pendingSubmissionId!, globalRiskId);
 
-    _recalculateScore();
+    _recalculateScoreDebounced();
     notifyListeners();
+  }
+
+  void _recalculateScoreDebounced() {
+    _scoreDebounceTimer?.cancel();
+    _scoreDebounceTimer = Timer(const Duration(milliseconds: 200), () {
+      _recalculateScore();
+      notifyListeners();
+    });
   }
 
   // ---------- Pending count (syncable-only — excludes exhausted) ----------
@@ -342,8 +364,16 @@ class AuditManager extends ChangeNotifier {
   void restoreDraft() => _restoreDraftLogic(this);
   void discardDraft() => _discardDraftLogic(this);
 
+  void setGeofenceBypass({required bool isBypassed, int? distanceMetersOff}) {
+    _isGeofenceBypassed = isBypassed;
+    _distanceMetersOff = distanceMetersOff;
+    notifyListeners();
+  }
+
   // ---------- Reset ----------
   void reset() {
+    _scoreDebounceTimer?.cancel();
+    _scoreDebounceTimer = null;
     _draftService.dispose();
     _template = null;
     _storeId = null;
@@ -354,6 +384,8 @@ class AuditManager extends ChangeNotifier {
     _notes = null;
     _gpsLat = null;
     _gpsLng = null;
+    _isGeofenceBypassed = false;
+    _distanceMetersOff = null;
     _wasQueuedOffline = false;
     _draftKey = null;
     _pendingDraft = null;
@@ -364,5 +396,12 @@ class AuditManager extends ChangeNotifier {
     _triggeredRiskIds.clear();
     _availableRisks = [];
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _scoreDebounceTimer?.cancel();
+    _scoreDebounceTimer = null;
+    super.dispose();
   }
 }

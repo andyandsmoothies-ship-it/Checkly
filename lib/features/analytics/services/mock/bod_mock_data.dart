@@ -12,6 +12,7 @@ class BodMockData {
         "activeStores": 10,
         "totalAuditors": 2,
         "avgTtrDays": 0.0,
+        "geofenceBypassCount": 14,
       },
       "trend": [
         {"month": "2026-01", "avgScore": 84.2, "count": 25},
@@ -269,6 +270,13 @@ class BodMockData {
         CategoryScoreEntry(categoryName: 'Daily Operations', avgScore: 92.0),
         CategoryScoreEntry(categoryName: 'Opening Tasks', avgScore: 90.5),
         CategoryScoreEntry(categoryName: 'Closing Tasks', avgScore: 94.2),
+      ],
+      quartileLabel: 'Top 25% in Region',
+      regionalAvgScore: 88.5,
+      slaOverdueBuckets: [
+        SlaOverdueSegment(bucket: '0-7d', count: 2),
+        SlaOverdueSegment(bucket: '8-30d', count: 4),
+        SlaOverdueSegment(bucket: '31+d', count: 1),
       ],
     );
   }

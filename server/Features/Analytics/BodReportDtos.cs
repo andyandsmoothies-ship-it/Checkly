@@ -20,7 +20,8 @@ namespace Checkly.Api.Features.Analytics
         int OverdueActionPlans,
         int ActiveStores,
         int TotalAuditors,
-        decimal AvgTtrDays = 0m);
+        decimal AvgTtrDays = 0m,
+        int GeofenceBypassCount = 0);
 
 
     public record BodStoreRankEntry(Guid StoreId, string StoreName, decimal AvgScore, int AuditCount, DateTimeOffset? LastSyncedAt);
@@ -36,7 +37,13 @@ namespace Checkly.Api.Features.Analytics
 
     public record AuditorProductivityEntry(Guid AuditorId, string AuditorName, int CompletedAudits, decimal AvgScore, string BiasRating);
 
-    public record StoreBodSummary(string StoreName, List<RecentAuditEntry> RecentAudits, List<CategoryScoreEntry> CategoryBreakdown);
+    public record StoreBodSummary(
+        string StoreName, 
+        List<RecentAuditEntry> RecentAudits, 
+        List<CategoryScoreEntry> CategoryBreakdown,
+        string? QuartileLabel = null,
+        decimal RegionalAvgScore = 0m,
+        List<BodApAgingBucket>? SlaOverdueBuckets = null);
     public record RecentAuditEntry(DateTimeOffset Date, decimal Score, string AuditorName);
     public record CategoryScoreEntry(string CategoryName, decimal AvgScore);
     public record CategoryStoreEntry(string StoreName, decimal AvgScore, int AuditCount, int FailureCount);

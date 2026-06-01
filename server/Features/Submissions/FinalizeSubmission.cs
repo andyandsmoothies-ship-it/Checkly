@@ -22,7 +22,9 @@ public static class FinalizeSubmission
         string? Notes,
         decimal? GpsLat,
         decimal? GpsLng,
-        List<AnswerInput>? Answers);
+        List<AnswerInput>? Answers,
+        bool? IsGeofenceBypassed = null,
+        int? DistanceMetersOff = null);
 
     public static async Task<IResult> HandleAsync(
         Guid id,
@@ -202,6 +204,8 @@ public static class FinalizeSubmission
         submission.GpsVerifiedAt = request.GpsLat.HasValue ? now : null;
         submission.CompletedAt = now;
         submission.UpdatedAt = now;
+        submission.IsGeofenceBypassed = request.IsGeofenceBypassed;
+        submission.DistanceMetersOff = request.DistanceMetersOff;
         submission.DisplayNoun = snapshotDisplayNoun;
 
         // 6. Delete any existing draft answers (if any) then create new
@@ -283,7 +287,9 @@ public static class FinalizeSubmission
                 submission.SectionScores, submission.Notes,
                 submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
                 submission.TemplateVersion,
-                submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted));
+                submission.RawEarnedPoints, submission.RawMaxPoints, submission.IsWeighted,
+                IsGeofenceBypassed: submission.IsGeofenceBypassed,
+                DistanceMetersOff: submission.DistanceMetersOff));
         });
 
         // 10. Insert domain notification outside the primary transaction, only on success

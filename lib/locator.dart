@@ -12,6 +12,7 @@ import '_shared/database/dao/program_outbox_dao.dart';
 import '_shared/services/connectivity_service.dart';
 import '_shared/services/connectivity_service_impl.dart';
 import '_shared/services/gps_service.dart';
+import '_shared/services/geofence_service.dart';
 import '_shared/services/sync_engine.dart';
 import '_shared/services/service_adapters.dart';
 import 'features/audit/services/core_audit_sync_module.dart';
@@ -56,6 +57,8 @@ import 'features/analytics/services/analytics_api_service.dart';
 import 'features/analytics/manager/analytics_manager.dart';
 import 'features/analytics/services/bod_analytics_api_service.dart';
 import 'features/analytics/manager/bod_analytics_manager.dart';
+import 'features/analytics/services/area_bod_api_service.dart';
+import 'features/analytics/manager/area_bod_manager.dart';
 import 'features/stores/manager/store_dashboard_manager.dart';
 import 'features/profile/manager/profile_manager.dart';
 import 'features/user_groups/services/user_group_api_service.dart';
@@ -92,6 +95,9 @@ void configureDependencies() {
     () => ProgramOutboxDao(di<DatabaseService>().db),
   );
   di.registerLazySingleton<GpsService>(() => GpsService());
+  di.registerLazySingleton<GeofenceService>(
+    () => GeofenceService(di<GpsService>()),
+  );
 
   // ---------- Auth (Slice 2 + PBAC Slice 4) ----------
   di.registerLazySingleton<SecureStorageService>(() => SecureStorageService());
@@ -281,6 +287,12 @@ void configureDependencies() {
   );
   di.registerLazySingleton<BodAnalyticsManager>(
     () => BodAnalyticsManager(di<BodAnalyticsApiService>()),
+  );
+  di.registerLazySingleton<AreaBodApiService>(
+    () => AreaBodApiService(di<Dio>()),
+  );
+  di.registerLazySingleton<AreaBodManager>(
+    () => AreaBodManager(di<AreaBodApiService>()),
   );
 
   // ---------- Store Dashboard ----------

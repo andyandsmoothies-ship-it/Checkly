@@ -116,7 +116,9 @@ public static class CreateSubmission
                     existing.AuditorName, existing.Status, existing.TotalScore,
                     existing.SectionScores, existing.Notes,
                     existing.CreatedAt, existing.CompletedAt, existing.ScheduledAt,
-                    existing.TemplateVersion));
+                    existing.TemplateVersion,
+                    IsGeofenceBypassed: existing.IsGeofenceBypassed,
+                    DistanceMetersOff: existing.DistanceMetersOff));
             }
         }
 
@@ -288,7 +290,9 @@ public static class CreateSubmission
             IdempotencyKey = request.IdempotencyKey,
             TemplateSnapshot = templateSnapshotJson,
             TemplateVersion = template.Version,
-            ProgramAssignmentId = request.ProgramAssignmentId
+            ProgramAssignmentId = request.ProgramAssignmentId,
+            IsGeofenceBypassed = request.IsGeofenceBypassed,
+            DistanceMetersOff = request.DistanceMetersOff
         };
 
         var strategy = db.Database.CreateExecutionStrategy();
@@ -373,7 +377,9 @@ public static class CreateSubmission
                 submission.AuditorName, submission.Status, submission.TotalScore,
                 submission.SectionScores, submission.Notes,
                 submission.CreatedAt, submission.CompletedAt, submission.ScheduledAt,
-                submission.TemplateVersion));
+                submission.TemplateVersion,
+                IsGeofenceBypassed: submission.IsGeofenceBypassed,
+                DistanceMetersOff: submission.DistanceMetersOff));
         });
     }
 }

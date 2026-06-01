@@ -26,6 +26,10 @@ public static class AnalyticsEndpoints
             .WithName("GetBodReport")
             .RequireCapability(AppCapabilities.AnalyticsBod);
 
+        group.MapGet("/bod/area", GetAreaBodReport.HandleAsync)
+            .WithName("GetAreaBodReport")
+            .RequireCapability(AppCapabilities.AnalyticsArea);
+
         group.MapGet("/bod/ap/{bucket}", GetApBucketDetail.HandleAsync)
             .WithName("GetApBucketDetail")
             .RequireCapability(AppCapabilities.AnalyticsBod);
@@ -39,8 +43,7 @@ public static class AnalyticsEndpoints
             .RequireCapability(AppCapabilities.AnalyticsBod);
 
         group.MapGet("/stores/{storeId:guid}/bod-summary", GetStoreBodSummary.HandleAsync)
-            .WithName("GetStoreBodSummary")
-            .RequireCapability(AppCapabilities.AnalyticsBod);
+            .WithName("GetStoreBodSummary");
 
         group.MapGet("/bod/category/{name}", GetCategoryDetail.HandleAsync)
             .WithName("GetCategoryDetail")

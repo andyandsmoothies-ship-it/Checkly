@@ -158,3 +158,142 @@ Future<void> checkAndSetGps(BuildContext context, AuditManager manager) async {
     }
   }
 }
+
+Future<void> showGeofenceBlockDialog({
+  required BuildContext context,
+  required int? distanceMeters,
+  required int allowedRadius,
+  required bool gpsFailed,
+}) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      title: Row(
+        children: [
+          Icon(
+            Icons.location_off_rounded,
+            color: Theme.of(ctx).colorScheme.error,
+            size: 28,
+          ),
+          const SizedBox(width: 8),
+          const Expanded(
+            child: Text(
+              'Submission Blocked',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'This audit enforces strict geofencing. Submission is blocked because:',
+            style: TextStyle(fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 12),
+          if (gpsFailed)
+            const Text(
+              '• GPS coordinates could not be resolved. A precise GPS signal is required to submit this audit.',
+            )
+          else
+            Text(
+              '• You are located $distanceMeters meters away from the store. The maximum allowed geofence boundary is $allowedRadius meters.',
+            ),
+          const SizedBox(height: 16),
+          Text(
+            'Please move inside the store boundaries and try again.',
+            style: TextStyle(
+              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx),
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(ctx).colorScheme.error,
+            foregroundColor: Theme.of(ctx).colorScheme.onError,
+          ),
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+Future<bool?> showGeofenceWarningDialog({
+  required BuildContext context,
+  required int? distanceMeters,
+  required int allowedRadius,
+  required bool gpsFailed,
+}) async {
+  return showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      title: const Row(
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            color: AppTheme.warning,
+            size: 28,
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Geofence Warning',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'You are outside the store boundaries. Would you like to bypass this warning and submit anyway?',
+            style: TextStyle(fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 12),
+          if (gpsFailed)
+            const Text(
+              '• GPS coordinates could not be resolved. This submission will be marked as bypassed without a distance measurement.',
+            )
+          else
+            Text(
+              '• You are located $distanceMeters meters away from the store (maximum allowed: $allowedRadius meters).',
+            ),
+          const SizedBox(height: 16),
+          Text(
+            'Note: Your GPS coordinates and bypass actions will be logged in the database outbox telemetry.',
+            style: TextStyle(
+              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel Submission'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          style: FilledButton.styleFrom(
+            backgroundColor: AppTheme.warning,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Bypass & Submit'),
+        ),
+      ],
+    ),
+  );
+}

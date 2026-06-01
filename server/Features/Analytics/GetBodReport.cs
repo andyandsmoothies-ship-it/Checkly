@@ -126,6 +126,16 @@ public static class GetBodReport
                 avgTtrDays = Math.Round((decimal)(totalTtr / closedActionPlans.Count), 1);
             }
 
+            // KPI 9: geofenceBypassCount
+            var geofenceBypassCount = await db.Submissions.AsNoTracking()
+                .CountAsync(s => s.Status == "completed" &&
+                                 (s.ReviewStatus == null || s.ReviewStatus != "rejected") &&
+                                 (s.CompletedAt ?? s.CreatedAt) >= start30DaysAgo &&
+                                 (s.CompletedAt ?? s.CreatedAt) <= now &&
+                                 s.IsGeofenceBypassed == true &&
+                                 s.StoreId.HasValue &&
+                                 filteredStoreIds.Contains(s.StoreId.Value), ct);
+
             // Global Golden Store
             bool isTestEnv = filteredStores.Any(st => st.Address2 != null && st.Address2.Province != null && st.Address2.Province.Contains("-"));
 
@@ -379,7 +389,8 @@ public static class GetBodReport
                     overdueActionPlans = overdueActionPlans,
                     activeStores = activeStores,
                     totalAuditors = totalAuditors,
-                    avgTtrDays = avgTtrDays
+                    avgTtrDays = avgTtrDays,
+                    geofenceBypassCount = geofenceBypassCount
                 },
                 goldenStore = goldenStoreObj,
                 trend = trendList,

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:get_it/get_it.dart';
 import 'package:drift/drift.dart';
@@ -200,37 +201,45 @@ void main() {
   // ── Group 2: Answer updates & score recalculation ─────────────────────
 
   group('setAnswer', () {
-    test('setting non_conform reduces liveScore', () async {
-      final m = _manager();
-      await m.startAudit(
-        _template(
-          groups: [
-            _group('g1', [_crit('c1', weight: 10)]),
-          ],
-        ),
-        'store-1',
-      );
+    test('setting non_conform reduces liveScore', () {
+      fakeAsync((async) {
+        final m = _manager();
+        m.startAudit(
+          _template(
+            groups: [
+              _group('g1', [_crit('c1', weight: 10)]),
+            ],
+          ),
+          'store-1',
+        );
+        async.flushMicrotasks();
 
-      m.setAnswer('c1', value: 'non_conform', numericValue: 1);
+        m.setAnswer('c1', value: 'non_conform', numericValue: 1);
+        async.elapse(const Duration(milliseconds: 200));
 
-      expect(m.liveScore, lessThan(100.0));
+        expect(m.liveScore, lessThan(100.0));
+      });
     });
 
-    test('setCcp on a non_conform answer drops score to 0', () async {
-      final m = _manager();
-      await m.startAudit(
-        _template(
-          groups: [
-            _group('g1', [_crit('c1')]),
-          ],
-        ),
-        'store-1',
-      );
+    test('setCcp on a non_conform answer drops score to 0', () {
+      fakeAsync((async) {
+        final m = _manager();
+        m.startAudit(
+          _template(
+            groups: [
+              _group('g1', [_crit('c1')]),
+            ],
+          ),
+          'store-1',
+        );
+        async.flushMicrotasks();
 
-      m.setAnswer('c1', value: 'non_conform', numericValue: 1);
-      m.setCcp('c1', true);
+        m.setAnswer('c1', value: 'non_conform', numericValue: 1);
+        m.setCcp('c1', true);
+        async.elapse(const Duration(milliseconds: 200));
 
-      expect(m.liveScore, 0.0);
+        expect(m.liveScore, 0.0);
+      });
     });
 
     test('setAnswer triggers DraftService.scheduleSave', () async {

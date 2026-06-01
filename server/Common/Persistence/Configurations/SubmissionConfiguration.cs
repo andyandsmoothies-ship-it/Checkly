@@ -46,6 +46,8 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.Property(x => x.RawEarnedPoints).HasColumnName("raw_earned_points");
         e.Property(x => x.RawMaxPoints).HasColumnName("raw_max_points");
         e.Property(x => x.IsWeighted).HasColumnName("is_weighted");
+        e.Property(x => x.IsGeofenceBypassed).HasColumnName("is_geofence_bypassed").IsRequired(false);
+        e.Property(x => x.DistanceMetersOff).HasColumnName("distance_meters_off").IsRequired(false);
         e.Property(x => x.VoidReason).HasColumnName("void_reason");
         e.Property(x => x.VoidedAt).HasColumnName("voided_at");
 

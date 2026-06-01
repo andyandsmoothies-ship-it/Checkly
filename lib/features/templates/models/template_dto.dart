@@ -25,6 +25,9 @@ class TemplateDto {
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String geofenceMode;
+  final int geofenceRadiusMeters;
+
   const TemplateDto({
     required this.id,
     required this.title,
@@ -36,6 +39,8 @@ class TemplateDto {
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
+    this.geofenceMode = 'none',
+    this.geofenceRadiusMeters = 100,
   });
 
   factory TemplateDto.fromJson(Map<String, dynamic> json) => TemplateDto(
@@ -49,6 +54,8 @@ class TemplateDto {
     isActive: json['isActive'] as bool,
     createdAt: DateTime.parse(json['createdAt'] as String),
     updatedAt: DateTime.parse(json['updatedAt'] as String),
+    geofenceMode: json['geofenceMode'] as String? ?? 'none',
+    geofenceRadiusMeters: json['geofenceRadiusMeters'] as int? ?? 100,
   );
 }
 
@@ -64,6 +71,8 @@ class TemplateTreeDto {
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String geofenceMode;
+  final int geofenceRadiusMeters;
   final List<GroupDto> groups;
 
   const TemplateTreeDto({
@@ -77,6 +86,8 @@ class TemplateTreeDto {
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
+    this.geofenceMode = 'none',
+    this.geofenceRadiusMeters = 100,
     required this.groups,
   });
 
@@ -92,6 +103,8 @@ class TemplateTreeDto {
         isActive: json['isActive'] as bool,
         createdAt: DateTime.parse(json['createdAt'] as String),
         updatedAt: DateTime.parse(json['updatedAt'] as String),
+        geofenceMode: json['geofenceMode'] as String? ?? 'none',
+        geofenceRadiusMeters: json['geofenceRadiusMeters'] as int? ?? 100,
         groups: (json['groups'] as List<dynamic>)
             .map((g) => GroupDto.fromJson(g as Map<String, dynamic>))
             .toList(),

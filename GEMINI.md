@@ -150,6 +150,12 @@
   - **Fix:** Windows PowerShell 5.1 loads files in ANSI by default if they lack a BOM, which corrupts multi-byte UTF-8 sequences (like Vietnamese `Đ` and `á`) during seeder generation. To prevent string corruption, NEVER use raw non-ASCII unicode literal strings in script templates or heredocs. Always express non-ASCII characters inside string literals using their safe C# escape sequence representation (e.g., `\u0110\u00e1nh gi\u00e1` for `Đánh giá`).
 - **Gotcha: Viewport Off-Screen Test Failure**
   - **Fix:** If a newly added list/grid item pushes other elements off-screen in widget tests, the lazy-loading widgets (like GridView/ListView) will not build them, causing finders to fail. Always set `tester.view.physicalSize` to a larger size (e.g. `const Size(800, 1200)`) and restore it inside `addTearDown` to ensure all elements fit in the test viewport.
+- **Gotcha: Bimodal Geofence Proximity validation flow**
+  - **Fix:** Geofence checks must run synchronously before GPS is resolved for final audit outbox pinning, preventing race conditions or premature submissions before geofence warning/blocking dialogs are rendered.
+- **Gotcha: TemplateDto and TemplateTreeDto optional params**
+  - **Fix:** When extending DTO parameters, make new parameters optional in default constructors with safe fallbacks rather than strictly `required` to prevent breaking existing test cases, seeder models, and mock builders.
+- **Gotcha: Geofence Count Semantics**
+  - **Fix:** Geofence warning alerts trigger in the frontend only when `geofenceBypassCount > 0`. The card renders next to `Total Auditors` in Row 4 of `BodKpiGrid`.
 
 
 
