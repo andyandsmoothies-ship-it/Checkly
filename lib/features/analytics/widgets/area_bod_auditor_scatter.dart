@@ -99,7 +99,7 @@ class AreaBodAuditorScatter extends StatelessWidget {
                 final score = auditor.avgScore;
                 final count = auditor.completedCount;
 
-                PillChip? productivityChip;
+                final PillChip productivityChip;
                 if (count >= 10) {
                   productivityChip = const PillChip(label: 'High Output', type: PillChipType.green);
                 } else if (count >= 5) {
@@ -142,7 +142,7 @@ class AreaBodAuditorScatter extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              if (productivityChip != null) productivityChip,
+                              productivityChip,
                             ],
                           ),
                           const SizedBox(height: 2),

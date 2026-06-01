@@ -37,7 +37,6 @@ class AreaBodApAgingFunnel extends StatelessWidget {
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
     final textCol = isLight ? AppColors.eel : AppColors.snow;
-    final subTextCol = isLight ? AppColors.wolf : AppColors.hare;
 
     // Helper to find count by bucket label prefix
     int getCountForBucket(String bucketPrefix) {

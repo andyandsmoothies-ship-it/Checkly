@@ -246,7 +246,7 @@ class _BodStoreDetailSheetState extends State<BodStoreDetailSheet> {
                                           margin: const EdgeInsets.symmetric(horizontal: 4),
                                           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                                           decoration: BoxDecoration(
-                                            color: AppColors.walkingFish.withOpacity(0.2),
+                                            color: AppColors.walkingFish.withValues(alpha: 0.2),
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: Column(

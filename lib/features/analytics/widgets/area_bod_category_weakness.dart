@@ -85,7 +85,7 @@ class AreaBodCategoryWeakness extends StatelessWidget {
                 final score = item.avgScore;
                 final auditCount = item.auditCount;
 
-                PillChip? statusChip;
+                final PillChip statusChip;
                 Color progressColor = AppColors.featherGreen;
 
                 if (score < 70) {
@@ -116,10 +116,8 @@ class AreaBodCategoryWeakness extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (statusChip != null) ...[
-                          const SizedBox(width: 8),
-                          statusChip,
-                        ],
+                        const SizedBox(width: 8),
+                        statusChip,
                       ],
                     ),
                     const SizedBox(height: 6),

@@ -105,7 +105,7 @@ class AreaBodScoreTrend extends StatelessWidget {
                   color: textCol,
                 ),
               ),
-              if (trajectoryChip != null) trajectoryChip,
+              ?trajectoryChip,
             ],
           ),
           const SizedBox(height: 4),
