@@ -38,9 +38,6 @@ public static class AnalyticsEndpoints
             .WithName("GetAuditorProductivity")
             .RequireCapability(AppCapabilities.AnalyticsBod);
 
-        group.MapPost("/bod/refresh", RefreshBodReport.HandleAsync)
-            .WithName("RefreshBodReport")
-            .RequireCapability(AppCapabilities.AnalyticsBod);
 
         group.MapGet("/stores/{storeId:guid}/bod-summary", GetStoreBodSummary.HandleAsync)
             .WithName("GetStoreBodSummary");

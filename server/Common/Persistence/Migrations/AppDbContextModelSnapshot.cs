@@ -143,6 +143,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("UpdatedAt");
 
+                    b.HasIndex("Status", "Deadline");
+
                     b.HasIndex("StoreId", "Status");
 
                     b.HasIndex("SubmissionId", "AnswerId")
@@ -319,41 +321,6 @@ namespace Checkly.Api.Common.Persistence.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.BodReportSnapshot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTimeOffset>("ComputedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("computed_at");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date")
-                        .HasColumnName("date");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("payload");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("status");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Date")
-                        .IsUnique();
-
-                    b.ToTable("bod_report_snapshots", (string)null);
                 });
 
             modelBuilder.Entity("Checkly.Api.Common.Persistence.Entities.ChecklyProgram", b =>
@@ -1262,6 +1229,9 @@ namespace Checkly.Api.Common.Persistence.Migrations
 
                     b.HasIndex("UpdatedAt");
 
+                    b.HasIndex("Status", "CompletedAt")
+                        .IsDescending(false, true);
+
                     b.HasIndex("Status", "ReviewStatus");
 
                     b.HasIndex("StoreId", "CreatedAt")
@@ -1270,6 +1240,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("TemplateId", "ScoreDirection");
 
                     b.HasIndex("AuditorId", "Status", "CreatedAt");
+
+                    b.HasIndex("Status", "StoreId", "CompletedAt");
 
                     b.ToTable("submissions", (string)null);
                 });
@@ -1378,6 +1350,8 @@ namespace Checkly.Api.Common.Persistence.Migrations
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("SubmissionId");
+
+                    b.HasIndex("CreatedAt", "StoreId");
 
                     b.HasIndex("StoreId", "SectionTitle");
 

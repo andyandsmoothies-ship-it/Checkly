@@ -240,7 +240,7 @@ namespace Checkly.Api.Features.Analytics
                         s.ScoringMode != "survey" &&
                         s.TotalScore.HasValue &&
                         s.StoreId.HasValue &&
-                        (s.TemplateId == null || s.Template!.Type == "QC"))
+                        (s.TemplateId == null || s.Template!.Type == "QC" || s.Template!.Type == "qc"))
                     .GroupBy(s => new { s.StoreId!.Value, s.StoreName })
                     .Select(g => new
                     {

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj": {}
+    "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj": {}
   },
   "projects": {
-    "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj": {
+    "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj",
         "projectName": "dbquery",
-        "projectPath": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj",
+        "projectPath": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\dbquery.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\obj\\",
+        "outputPath": "C:\\Users\\HP\\Documents\\GitHub\\Checkly\\dbquery\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config"

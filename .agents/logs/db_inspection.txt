@@ -1,142 +1,155 @@
-﻿==================== DATABASE: checkly ====================
---- templates ---
-Template ID: b5617868-2aeb-4c5d-bd68-a0f03653b393 | Title: Taskforce Audit Template | Type: task force | Config: {"scoringMode": "checklist"}
-  -- Groups --
-    Group ID: e3727b38-8389-4cff-8c33-42263a9e1a3e | Title: Section A: Core Check | Weight: NULL | Parent: NULL | MaxDeduction: NULL
-      -- Criteria --
-        Crit ID: 52178e14-8f64-48da-a11a-b5cb29afab2c | Label: Criterion 1.1: Quality compliance check | Type: pass_fail | PtsWeight: 1.0 | MinusImp: NULL | MaxDeduction: NULL | CCP: False | Risk: False
-        Crit ID: febcfd46-6eb6-40ab-a7b5-481e4827acac | Label: Criterion 1.2: Safety and procedure check | Type: pass_fail | PtsWeight: 1.0 | MinusImp: NULL | MaxDeduction: NULL | CCP: False | Risk: False
+﻿=== TEMPLATES ===
+Template ID: d1c26713-d9fe-4550-bca2-7608f969eb1d | Title: Basic checklist | Type: qc | ScoringConfig: {"ccpOverride": false, "scoringMode": "checklist", "deadlineDays": 7, "reminderDays": 2, "riskOverride": false, "confirmCorrect": false, "weightedDensity": false, "progressiveRepeat": false}
+Template ID: 2d98d800-cbfc-42c8-879d-b5064d356e65 | Title: General Audit Template | Type: general | ScoringConfig: {"scoringMode": "penalty"}
+Template ID: b5617868-2aeb-4c5d-bd68-a0f03653b393 | Title: Taskforce Audit Template | Type: task force | ScoringConfig: {"scoringMode": "checklist"}
+Template ID: 82399c06-63e8-469b-b352-48b10c068ac5 | Title: test | Type: qc | ScoringConfig: {"isWeighted": true, "ccpOverride": false, "scoringMode": "penalty", "deadlineDays": 7, "reminderDays": 2, "riskOverride": false, "confirmCorrect": false, "scoreDirection": "down", "weightedDensity": false, "progressiveRepeat": false}
+Template ID: 5d3829d0-a76e-4cc4-b658-3aef9ffd7876 | Title: Training Audit Template | Type: training | ScoringConfig: {"scoringMode": "accumulation"}
 
-==================== DATABASE: checkly_test ====================
---- templates ---
-Template ID: 25fe2fd7-978c-4ac8-92f8-9bb5f7c71995 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 627f4f47-b5ed-45d9-b100-809127922f69 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 49211da9-ffac-4213-979b-2e452e25d2d5 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: b211e4d2-cfb4-4044-8917-a50761a907a1 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 9aab2129-3405-429c-9aa3-a065d4fb8fec | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 754472df-8d7e-4f77-ba38-7462a1a8d355 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: c1406b56-303b-40e8-ad31-3479eb33b48f | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 20ce91ed-cbbc-44bc-afdb-75b9626b8fad | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 47352500-35bf-4194-9a68-9001d7d765d2 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 74aba366-7840-4ba9-8317-1846b0b71d0a | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 9bdd86ca-1d17-4079-b39c-643e74d8071f | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 3dade3fa-5e6d-4630-949e-225f6a3d8068 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 7dea8827-69a3-4ae1-9447-af455eaa60e2 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 60f587b9-17ca-467c-8b7a-0dcc55562e2f | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 6bd684b0-8f41-4762-910e-a043636313f8 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 4eee1cfe-e766-476a-a9c6-0f3ad0a968c7 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 078daca7-4bb3-4c6c-8724-3e68ad781bc2 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: ce0c80d9-5971-4273-857b-480ff22701a1 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 6d63b986-2403-4382-9c15-14b5961372d9 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 04e359ba-edd7-4afb-90cc-e7752e2f8d9e | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: fe660691-330f-4b42-a96c-fc6aff16d20a | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: bf36de92-e426-45ca-a67c-642b2575f9c6 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 3131082e-c91b-457b-bb89-36c93b5ddfad | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: d48d4131-2ba5-4d52-b5cc-3d2f8c8e7636 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 411ae13c-abf0-4ea5-99c7-c7eda7d20c80 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: c7bfb5bd-873d-4a3c-9f0e-ddf571636b9f | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 03695273-0a9c-4afd-8621-5d350289b614 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 0a214e2f-4b55-40cc-895e-2cfdd22c4b4f | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: eee2601d-b4bb-4464-b72e-865d9505182e | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 4c1d3f81-4791-4d13-be30-301537b785b0 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: a64a4ad1-ab6c-4b01-bd70-d708a58929d3 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 66a5b694-6c4e-4b09-a03e-6ae4c927be77 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 310e1f85-8265-44c6-a8b8-ed8af2b5b912 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: e3468662-a2a8-4ba1-aebc-a1ea41b09107 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 68914c33-1af6-460f-9d6e-83c02bca8a26 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: d4cac356-e983-4a82-9186-541456490286 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 3809e8dd-3c74-43d7-8270-0887134399e3 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 4475b7e2-df2f-4416-b4b6-bdd1a81e042d | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 7afb9104-3237-422b-9535-ae05ca39d32d | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 3eff7681-f43d-4fa3-98df-beae05edf105 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: ec53e166-93c4-4f74-a293-87f81cb4a2a3 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 68b0a2ff-608d-4023-b52a-5da8e77b5b40 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 0ba1f765-eda9-4a98-9e78-a64cca91f725 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 59642f4c-a35d-46a1-a9a0-d145084dc0e3 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: b8a7e584-dcb4-41a1-9fe9-e76e32e26910 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 1568c617-e85e-426f-9af6-546482001d81 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 591e7600-5573-4bca-a5e2-25d10eddb37c | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 22bb0571-b19a-4b57-86b9-271a0d6496cd | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 89466f55-97a6-4a46-b1e2-c5424835c8cb | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 3ca17c9e-2328-4356-962a-d8c27cc831bb | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 7b6e466d-69ec-4cc2-8442-440054a44831 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: ebd5f581-0d52-4026-b3a4-18b409abfffe | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 69038257-b5c0-4ae7-bda0-488bb71672a0 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 51cd9374-f06d-41e1-bee9-deeb7e752bb8 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 7c39b7bd-f108-4ebe-be57-7c61336b0800 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 5e0b43aa-99bc-4cd9-bfb2-db3bd38a3b02 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: 3d6c14e4-bf14-42c3-9e02-c7889d77a87d | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 4ebf1efb-fe9b-47d8-a709-fbe70726b0c5 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: ed17930b-30dc-45e1-96a6-01c59552876f | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: c8a2bdbd-a166-4d27-9a53-57814ebe6dc9 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 91f9460c-ca40-465d-aa2c-46b52fd269ca | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
-Template ID: 22ef088d-bea2-4063-b15b-aaeff245de37 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: e6948aba-124b-4fac-92dc-d3d54d3b3a23 | Title: General Tasks Audit | Type: General | Config: NULL
-  -- Groups --
-Template ID: ffa1f1df-e708-4c27-83ae-a5e60b1a30a1 | Title: General Tasks | Type: General | Config: NULL
-  -- Groups --
-Template ID: 9dd5082a-6f87-451e-a5ee-1d3fa7b5b585 | Title: General Tasks Live | Type: General | Config: NULL
-  -- Groups --
+=== SUBMISSIONS ===
+Submission ID: 913d5477-5d6c-4343-92be-c9e0d2204ba3 | Template: b5617868-2aeb-4c5d-bd68-a0f03653b393 | Score: 99.0 | SectionScores: {"e3727b38-8389-4cff-8c33-42263a9e1a3e": {"score": 1.0, "title": "Section A: Core Check", "weight": null, "maxScore": 2.0, "maxPoints": 2.0}} | Status: NULL | CreatedAt: 5/29/2026 2:25:50 PM
+Submission ID: db19ef7e-a8bc-4b5e-9fdb-219988f146b6 | Template: 5d3829d0-a76e-4cc4-b658-3aef9ffd7876 | Score: -1 | SectionScores: NULL | Status: NULL | CreatedAt: 5/29/2026 2:23:01 PM
+Submission ID: e174256f-f2f5-429c-b171-c6ecfcdc3252 | Template: 5d3829d0-a76e-4cc4-b658-3aef9ffd7876 | Score: -1 | SectionScores: NULL | Status: NULL | CreatedAt: 5/29/2026 2:22:45 PM
+Submission ID: c50324e7-70f6-4400-9fc2-3db100873f72 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 75.0 | SectionScores: NULL | Status: approved | CreatedAt: 5/23/2026 9:40:00 AM
+Submission ID: d5e7e7c6-8ced-4254-ab39-42c1cbae6618 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 79.4 | SectionScores: NULL | Status: approved | CreatedAt: 5/22/2026 10:38:00 AM
+Submission ID: 2fe856b6-a9e3-428e-8b3b-f9d8c16caf40 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 77.8 | SectionScores: NULL | Status: approved | CreatedAt: 5/22/2026 10:01:00 AM
+Submission ID: 3a234cc7-6cfb-441c-888f-b7ed5c267c5e | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 88.5 | SectionScores: NULL | Status: approved | CreatedAt: 5/22/2026 9:50:00 AM
+Submission ID: e15c2b7e-d196-4c9a-8b90-6041f1e64c0b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 84.1 | SectionScores: NULL | Status: approved | CreatedAt: 5/21/2026 1:49:00 PM
+Submission ID: 8d01a5b0-64de-414b-b9a2-4533ed465a6b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 91.9 | SectionScores: NULL | Status: approved | CreatedAt: 5/15/2026 12:05:00 PM
+Submission ID: ba38d536-7d50-4100-8119-26369cebdb77 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 88.4 | SectionScores: NULL | Status: approved | CreatedAt: 5/15/2026 11:00:00 AM
+Submission ID: 6a7a77a4-c159-4bfb-b8e2-abf339fb69b9 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.7 | SectionScores: NULL | Status: approved | CreatedAt: 5/15/2026 10:31:00 AM
+Submission ID: 0717cea8-275a-41e6-b91b-bdf1f4bddf0c | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.1 | SectionScores: NULL | Status: approved | CreatedAt: 5/15/2026 10:19:00 AM
+Submission ID: 69ea6169-f67d-4ca9-9eca-d9e0878e1dbe | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 89.4 | SectionScores: NULL | Status: approved | CreatedAt: 5/14/2026 1:35:00 PM
+Submission ID: 78e10b6a-62e2-444c-988b-7d5581a82658 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 78.3 | SectionScores: NULL | Status: approved | CreatedAt: 5/14/2026 1:33:00 PM
+Submission ID: e199031e-3466-4936-bda2-e416cbd8a014 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 96.0 | SectionScores: NULL | Status: approved | CreatedAt: 5/14/2026 12:18:00 PM
+Submission ID: 7af8d08c-ea1e-40ed-b513-c93a0767188f | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.7 | SectionScores: NULL | Status: approved | CreatedAt: 5/14/2026 11:25:00 AM
+Submission ID: 7e48a66f-563f-4331-a836-51d97f86196e | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.8 | SectionScores: NULL | Status: approved | CreatedAt: 5/14/2026 10:04:00 AM
+Submission ID: 4bf38914-1f72-4ab6-bf3d-e1b3f93bc925 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 83.5 | SectionScores: NULL | Status: approved | CreatedAt: 5/13/2026 9:59:00 AM
+Submission ID: 3a478a00-cc6e-46f0-a568-e401feaa1bad | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 88.0 | SectionScores: NULL | Status: approved | CreatedAt: 5/7/2026 1:27:00 PM
+Submission ID: cb848aa5-a96a-4ef7-a14b-caf72e7ca223 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 78.4 | SectionScores: NULL | Status: approved | CreatedAt: 5/7/2026 11:21:00 AM
+Submission ID: 29214909-4b1f-4b17-acc9-176c8a8e39a9 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 92.6 | SectionScores: NULL | Status: approved | CreatedAt: 5/7/2026 9:36:00 AM
+Submission ID: 01a8c749-d1c9-4788-8059-2dc76a0524f8 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.7 | SectionScores: NULL | Status: approved | CreatedAt: 5/6/2026 12:29:00 PM
+Submission ID: 1060ab86-6109-4934-868e-4095d69b7c57 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 86.6 | SectionScores: NULL | Status: approved | CreatedAt: 5/6/2026 9:39:00 AM
+Submission ID: 10648846-fa66-4b0d-aa2e-77550d019823 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 76.8 | SectionScores: NULL | Status: approved | CreatedAt: 5/6/2026 9:24:00 AM
+Submission ID: 94f8942f-f2ae-46de-8950-21d098c9136a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 92.6 | SectionScores: NULL | Status: approved | CreatedAt: 5/6/2026 9:12:00 AM
+Submission ID: 166d154b-d362-4a14-924c-eb1463596e7f | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 83.9 | SectionScores: NULL | Status: approved | CreatedAt: 5/5/2026 12:13:00 PM
+Submission ID: f15b8a0c-7841-494c-827b-883343fbde37 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.3 | SectionScores: NULL | Status: approved | CreatedAt: 5/5/2026 9:33:00 AM
+Submission ID: a7915863-3b9c-4c02-92af-07763a5cb12d | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.8 | SectionScores: NULL | Status: approved | CreatedAt: 5/5/2026 9:32:00 AM
+Submission ID: db2f9adb-38ca-4da7-843a-3bb47fcf4ebc | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 88.9 | SectionScores: NULL | Status: approved | CreatedAt: 4/23/2026 10:11:00 AM
+Submission ID: e6643d27-bb08-4fe3-a911-e6cc7946f140 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.0 | SectionScores: NULL | Status: approved | CreatedAt: 4/23/2026 10:08:00 AM
+Submission ID: d6bfea07-7fc5-475c-99ff-0ac4cab1ae9c | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 97.5 | SectionScores: NULL | Status: approved | CreatedAt: 4/22/2026 11:54:00 AM
+Submission ID: 27ba497b-e3eb-4663-a06a-2f77318f6f48 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 85.0 | SectionScores: NULL | Status: approved | CreatedAt: 4/22/2026 9:38:00 AM
+Submission ID: 355e533d-bd42-4c6d-aff6-30f9e2a5441d | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 86.7 | SectionScores: NULL | Status: approved | CreatedAt: 4/21/2026 1:14:00 PM
+Submission ID: f74ab72c-9023-452e-9aed-5dd62dd98dbf | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 93.8 | SectionScores: NULL | Status: approved | CreatedAt: 4/15/2026 1:59:00 PM
+Submission ID: d9cfa2ea-f36e-4243-b95e-8c2d15c16d04 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 75.9 | SectionScores: NULL | Status: approved | CreatedAt: 4/15/2026 1:34:00 PM
+Submission ID: 76026960-e879-471e-8809-b5a0d89f79d2 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 80.3 | SectionScores: NULL | Status: approved | CreatedAt: 4/15/2026 10:04:00 AM
+Submission ID: dfcf5d06-839d-4bea-9b2c-a81cf29c2c16 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 86.3 | SectionScores: NULL | Status: approved | CreatedAt: 4/15/2026 9:47:00 AM
+Submission ID: f7afc524-32ac-4c23-be21-1e2f637a5cb2 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 87.1 | SectionScores: NULL | Status: approved | CreatedAt: 4/15/2026 9:11:00 AM
+Submission ID: 72078641-626d-4f8f-8d1b-ea852860830a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 83.1 | SectionScores: NULL | Status: approved | CreatedAt: 4/14/2026 12:07:00 PM
+Submission ID: 4f6e7d7a-8750-48b5-a450-6c0d7026c860 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 85.6 | SectionScores: NULL | Status: approved | CreatedAt: 4/13/2026 12:09:00 PM
+Submission ID: 369c4d04-2741-4b48-8174-605e28f180d0 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 79.5 | SectionScores: NULL | Status: approved | CreatedAt: 4/13/2026 11:43:00 AM
+Submission ID: d96baef7-6238-4021-bdf9-f42ce4aa4299 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 94.2 | SectionScores: NULL | Status: approved | CreatedAt: 4/13/2026 11:21:00 AM
+Submission ID: de89057b-53dc-44aa-9ab9-44ac94b42f41 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 89.5 | SectionScores: NULL | Status: approved | CreatedAt: 4/13/2026 9:37:00 AM
+Submission ID: 0060a6fb-727b-444b-aaf8-8a1ca4ae0e8a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 77.1 | SectionScores: NULL | Status: approved | CreatedAt: 4/7/2026 1:32:00 PM
+Submission ID: 60349ef1-3ec8-4aa9-98b0-48dd503ee7c5 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 87.5 | SectionScores: NULL | Status: approved | CreatedAt: 4/7/2026 12:43:00 PM
+Submission ID: ccec504b-03d6-402b-a3f3-d844d23430ef | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.7 | SectionScores: NULL | Status: approved | CreatedAt: 4/7/2026 10:49:00 AM
+Submission ID: f027bf47-1898-4174-a1bf-bce640975774 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 84.9 | SectionScores: NULL | Status: approved | CreatedAt: 4/7/2026 10:31:00 AM
+Submission ID: 746c7277-81d5-43f8-a377-c72dfe7c0b2c | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.2 | SectionScores: NULL | Status: approved | CreatedAt: 4/7/2026 9:36:00 AM
+Submission ID: a4122994-8946-4d08-9847-ec1a11adbb3a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 75.2 | SectionScores: NULL | Status: approved | CreatedAt: 4/6/2026 11:42:00 AM
+Submission ID: d225b8d5-fbbb-4e46-9230-f43b98be8fbe | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.3 | SectionScores: NULL | Status: approved | CreatedAt: 4/6/2026 9:40:00 AM
+Submission ID: 58751f27-81df-420c-a0bb-2859249e4e4b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 76.1 | SectionScores: NULL | Status: approved | CreatedAt: 4/6/2026 9:03:00 AM
+Submission ID: a0091eed-8c9f-4b41-ba18-abf24dd62520 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 78.8 | SectionScores: NULL | Status: approved | CreatedAt: 4/5/2026 1:45:00 PM
+Submission ID: 901422da-5318-4ab6-abae-ddfd3a0020ca | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.4 | SectionScores: NULL | Status: approved | CreatedAt: 4/5/2026 1:45:00 PM
+Submission ID: a896c64b-ad37-447b-adc7-331085578c98 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 76.8 | SectionScores: NULL | Status: approved | CreatedAt: 3/23/2026 12:50:00 PM
+Submission ID: eafd188d-a522-4903-a01f-ff5b2bbbc40a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.4 | SectionScores: NULL | Status: approved | CreatedAt: 3/23/2026 9:09:00 AM
+Submission ID: 5890787b-f7e5-4c88-b0c4-5a6866967ea9 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 76.1 | SectionScores: NULL | Status: approved | CreatedAt: 3/22/2026 11:10:00 AM
+Submission ID: 36db3d48-f7ee-4dc8-a90b-85df32ead7b3 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 88.9 | SectionScores: NULL | Status: approved | CreatedAt: 3/21/2026 1:23:00 PM
+Submission ID: 7618b09e-3a63-4684-a14d-498e711060a7 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.1 | SectionScores: NULL | Status: approved | CreatedAt: 3/21/2026 10:24:00 AM
+Submission ID: dd1d01a7-fc64-435f-83ed-84edf6257f26 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 97.7 | SectionScores: NULL | Status: approved | CreatedAt: 3/15/2026 10:32:00 AM
+Submission ID: 198662d7-dbf3-421c-b8c4-39343ff2e87d | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.3 | SectionScores: NULL | Status: approved | CreatedAt: 3/15/2026 9:33:00 AM
+Submission ID: 77978cb1-5f39-47ed-bc89-d0487e2f709b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.6 | SectionScores: NULL | Status: approved | CreatedAt: 3/14/2026 1:57:00 PM
+Submission ID: ed79914f-0e59-4bb4-823b-cc210b74ded8 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.5 | SectionScores: NULL | Status: approved | CreatedAt: 3/14/2026 12:31:00 PM
+Submission ID: 7fe6509c-d7df-4162-b507-9b33a0b51d20 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.5 | SectionScores: NULL | Status: approved | CreatedAt: 3/14/2026 12:27:00 PM
+Submission ID: 9180dd97-f4bb-46b1-8354-5e097837a5e1 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 84.6 | SectionScores: NULL | Status: approved | CreatedAt: 3/13/2026 1:28:00 PM
+Submission ID: a4165384-cdc8-45b1-b380-a31a73a6563f | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 94.6 | SectionScores: NULL | Status: approved | CreatedAt: 3/13/2026 11:06:00 AM
+Submission ID: 6ef69875-41ce-4a5f-b73b-cd993afa20ee | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 83.4 | SectionScores: NULL | Status: approved | CreatedAt: 3/13/2026 10:12:00 AM
+Submission ID: dcd9c3a1-6027-490c-93b7-8a9077b7527f | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 86.2 | SectionScores: NULL | Status: approved | CreatedAt: 3/13/2026 10:01:00 AM
+Submission ID: 6b8d6656-7afb-4343-ab99-882b7fe75879 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 89.9 | SectionScores: NULL | Status: approved | CreatedAt: 3/13/2026 9:14:00 AM
+Submission ID: 0e0ed938-a2de-4a0c-877b-68815869e00c | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 79.9 | SectionScores: NULL | Status: approved | CreatedAt: 3/7/2026 1:11:00 PM
+Submission ID: 70d6aa0e-b279-4b5d-8967-754d1d7c7c83 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.2 | SectionScores: NULL | Status: approved | CreatedAt: 3/7/2026 12:53:00 PM
+Submission ID: df4a78a3-3a69-4d40-bcb1-91a5a3114d7b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 77.4 | SectionScores: NULL | Status: approved | CreatedAt: 3/7/2026 10:51:00 AM
+Submission ID: 8ca7ad20-c82d-4539-bc38-72c34e0a382f | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.7 | SectionScores: NULL | Status: approved | CreatedAt: 3/7/2026 9:28:00 AM
+Submission ID: a73e4538-eaec-4896-ab97-a42a727fc2b5 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.9 | SectionScores: NULL | Status: approved | CreatedAt: 3/7/2026 9:21:00 AM
+Submission ID: ffb995e3-24f6-43e5-8d62-1bfda52ba6d3 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 77.9 | SectionScores: NULL | Status: approved | CreatedAt: 3/6/2026 1:52:00 PM
+Submission ID: 4e728737-8f14-4797-992a-b1e272c9d5c3 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 83.2 | SectionScores: NULL | Status: approved | CreatedAt: 3/6/2026 12:53:00 PM
+Submission ID: c76fe306-0448-48e9-a647-74f51bef287e | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.8 | SectionScores: NULL | Status: approved | CreatedAt: 3/6/2026 11:21:00 AM
+Submission ID: 1f108754-3207-42a8-94d6-c28a61abe38b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.3 | SectionScores: NULL | Status: approved | CreatedAt: 3/6/2026 11:19:00 AM
+Submission ID: 5af4409e-75ba-4c9c-bced-9cee714fe604 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 97.5 | SectionScores: NULL | Status: approved | CreatedAt: 3/5/2026 11:22:00 AM
+Submission ID: 40e9256f-db95-4016-8237-56bc4f244994 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 84.7 | SectionScores: NULL | Status: approved | CreatedAt: 2/22/2026 1:02:00 PM
+Submission ID: e36834fc-d8a9-4445-8e0a-820f7750348e | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 94.0 | SectionScores: NULL | Status: approved | CreatedAt: 2/21/2026 10:54:00 AM
+Submission ID: 1c62d0d6-b133-41bb-9cd7-7b3fed614db1 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 88.2 | SectionScores: NULL | Status: approved | CreatedAt: 2/21/2026 10:49:00 AM
+Submission ID: 6ca539ac-2fe4-4fe2-bf08-9b86b63b7ae1 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 89.1 | SectionScores: NULL | Status: approved | CreatedAt: 2/21/2026 9:56:00 AM
+Submission ID: 8d477011-b7b4-4428-b07b-7e7754fa3894 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 97.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/21/2026 9:50:00 AM
+Submission ID: d0c6f014-231b-4158-93ee-6bd745454893 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 86.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/15/2026 11:54:00 AM
+Submission ID: a8b25921-851a-4b8d-b762-1582df1afa45 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 78.1 | SectionScores: NULL | Status: approved | CreatedAt: 2/15/2026 11:09:00 AM
+Submission ID: c23c4a11-83e6-4809-b551-05421c3a02ee | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 93.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/15/2026 9:42:00 AM
+Submission ID: b228ac5c-f814-40e1-a8e2-3480d3a7bda4 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/14/2026 12:54:00 PM
+Submission ID: 702e2e48-471c-4906-b04b-567a0df90ff4 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 89.2 | SectionScores: NULL | Status: approved | CreatedAt: 2/14/2026 12:51:00 PM
+Submission ID: 84c4a061-1001-4f45-8e45-98972a20839b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 87.2 | SectionScores: NULL | Status: approved | CreatedAt: 2/14/2026 11:43:00 AM
+Submission ID: e157ac17-18d2-482d-a3d7-f262753ca2bc | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.2 | SectionScores: NULL | Status: approved | CreatedAt: 2/14/2026 10:27:00 AM
+Submission ID: 5eb16d18-53e9-42f3-b528-0bb690ba237f | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 89.8 | SectionScores: NULL | Status: approved | CreatedAt: 2/14/2026 10:13:00 AM
+Submission ID: d1c409fb-17c5-4e23-8e4f-f55b2e78f02a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.6 | SectionScores: NULL | Status: approved | CreatedAt: 2/14/2026 9:53:00 AM
+Submission ID: 39b3c2d4-441f-4307-960c-d4758262e6ae | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.3 | SectionScores: NULL | Status: approved | CreatedAt: 2/13/2026 11:48:00 AM
+Submission ID: f377b7fb-056d-412f-be08-4ab9dcaadc57 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.2 | SectionScores: NULL | Status: approved | CreatedAt: 2/7/2026 1:56:00 PM
+Submission ID: 8cabee41-abc6-4744-8f02-0248a20237d6 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 90.1 | SectionScores: NULL | Status: approved | CreatedAt: 2/7/2026 12:01:00 PM
+Submission ID: a6cf3b1a-9d6d-4052-8ef1-78aaefcb0dd8 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 84.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/7/2026 11:32:00 AM
+Submission ID: bba16a63-00da-49c7-8bfe-6eb13cd32c73 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 91.4 | SectionScores: NULL | Status: approved | CreatedAt: 2/7/2026 11:18:00 AM
+Submission ID: 7d127039-ccfe-43f7-a67a-e0e03c66b94a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 75.0 | SectionScores: NULL | Status: approved | CreatedAt: 2/7/2026 10:32:00 AM
+Submission ID: 91dc6913-dd24-4a91-9a51-2901b6b4e316 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.2 | SectionScores: NULL | Status: approved | CreatedAt: 2/7/2026 9:03:00 AM
+Submission ID: becef460-d832-4195-a04e-50a4a7b32059 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.3 | SectionScores: NULL | Status: approved | CreatedAt: 2/6/2026 1:18:00 PM
+Submission ID: bdc27de2-f8cb-48a6-9823-79aeb24e6169 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/6/2026 12:50:00 PM
+Submission ID: fefd8d0b-4527-4ffa-9d2a-eac9f9aaca64 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 77.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/6/2026 9:10:00 AM
+Submission ID: d00eb27c-fa5b-4bd8-bd2d-79e0b4d88d16 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 86.5 | SectionScores: NULL | Status: approved | CreatedAt: 2/5/2026 11:12:00 AM
+Submission ID: 65514410-610b-43f1-9d19-17103020fa76 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 96.7 | SectionScores: NULL | Status: approved | CreatedAt: 1/23/2026 1:46:00 PM
+Submission ID: d05ebc84-4139-4650-a024-88c26358ea8b | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.1 | SectionScores: NULL | Status: approved | CreatedAt: 1/22/2026 1:01:00 PM
+Submission ID: b0ce7b13-b115-4cf1-9519-36395e812f4d | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 93.5 | SectionScores: NULL | Status: approved | CreatedAt: 1/22/2026 1:00:00 PM
+Submission ID: 7efc6f08-300e-4a6f-8b5f-02b634c39b1a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 83.0 | SectionScores: NULL | Status: approved | CreatedAt: 1/22/2026 10:52:00 AM
+Submission ID: 68b97da8-e796-4d59-9ffb-a048502edbd7 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 85.6 | SectionScores: NULL | Status: approved | CreatedAt: 1/22/2026 9:54:00 AM
+Submission ID: ae20c8e0-9418-4efd-817e-d70545353eeb | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.7 | SectionScores: NULL | Status: approved | CreatedAt: 1/15/2026 12:40:00 PM
+Submission ID: 9088cc8f-afd4-4798-ba17-77a700b99208 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 80.3 | SectionScores: NULL | Status: approved | CreatedAt: 1/15/2026 12:11:00 PM
+Submission ID: 4b46b70e-bceb-471d-ba67-b242b53b7aa8 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 75.2 | SectionScores: NULL | Status: approved | CreatedAt: 1/15/2026 11:30:00 AM
+Submission ID: 5742cf65-22f4-4060-9cab-f4bfa0c06933 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.4 | SectionScores: NULL | Status: approved | CreatedAt: 1/15/2026 10:15:00 AM
+Submission ID: 0901ef35-b931-498f-b021-213ad1968fdf | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 86.9 | SectionScores: NULL | Status: approved | CreatedAt: 1/15/2026 9:54:00 AM
+Submission ID: 7b7cbc04-41f8-4b82-a35b-654814be2b80 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.8 | SectionScores: NULL | Status: approved | CreatedAt: 1/15/2026 9:53:00 AM
+Submission ID: 01f7e814-3c03-47cb-bc1a-c65b2962e141 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 97.0 | SectionScores: NULL | Status: approved | CreatedAt: 1/14/2026 12:01:00 PM
+Submission ID: 3fa0cd02-855c-4945-88d6-caa308423bf4 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 95.5 | SectionScores: NULL | Status: approved | CreatedAt: 1/14/2026 9:54:00 AM
+Submission ID: 1d95446b-e8c8-4b64-8661-e5eccbb42096 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 96.3 | SectionScores: NULL | Status: approved | CreatedAt: 1/13/2026 1:53:00 PM
+Submission ID: 31a41b08-695a-4b5a-8dd2-ac4f76e65408 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 76.2 | SectionScores: NULL | Status: approved | CreatedAt: 1/13/2026 9:36:00 AM
+Submission ID: c6fc1eb5-2d04-47ef-bf98-b7cfd4f63491 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 77.1 | SectionScores: NULL | Status: approved | CreatedAt: 1/7/2026 11:23:00 AM
+Submission ID: e2e2609f-be57-4d0a-baf4-09c3b4786ae6 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 78.9 | SectionScores: NULL | Status: approved | CreatedAt: 1/7/2026 9:07:00 AM
+Submission ID: 4a71371b-77a7-4a82-8f55-d3a3c60aad4d | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 79.2 | SectionScores: NULL | Status: approved | CreatedAt: 1/7/2026 9:06:00 AM
+Submission ID: 56c1f3df-2ba8-4b9f-b048-b6923e316bf2 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 81.5 | SectionScores: NULL | Status: approved | CreatedAt: 1/6/2026 1:49:00 PM
+Submission ID: 9e521ac6-6e14-4ad6-aa67-382e4a2a05a3 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 79.2 | SectionScores: NULL | Status: approved | CreatedAt: 1/6/2026 12:11:00 PM
+Submission ID: 7c59a250-c4e9-4172-aace-5c3a2dcf6e2f | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 87.2 | SectionScores: NULL | Status: approved | CreatedAt: 1/6/2026 9:26:00 AM
+Submission ID: 6bb32a7e-2865-44f3-8527-e67ee522551c | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 82.4 | SectionScores: NULL | Status: approved | CreatedAt: 1/5/2026 1:07:00 PM
+Submission ID: 928dfa28-1a33-408a-8a0d-4bdff22e97a3 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 78.4 | SectionScores: NULL | Status: approved | CreatedAt: 1/5/2026 11:19:00 AM
+Submission ID: 83e0c2a3-4b5d-41ea-be18-6e9746fa56a7 | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 91.5 | SectionScores: NULL | Status: approved | CreatedAt: 1/5/2026 10:16:00 AM
+Submission ID: 580eb9ac-a2ac-4c51-bae2-cef93e2ba57a | Template: d1c26713-d9fe-4550-bca2-7608f969eb1d | Score: 77.6 | SectionScores: NULL | Status: approved | CreatedAt: 1/5/2026 9:46:00 AM
 
+=== ANSWERS ===
+Answer ID: 3d247cbb-853b-4246-860e-61040ba68971 | Sub: 913d5477-5d6c-4343-92be-c9e0d2204ba3 | Crit: 52178e14-8f64-48da-a11a-b5cb29afab2c (Criterion 1.1: Quality compliance check) | Val: conform | NumVal: -1 | RepFaults: 0 | Weight: 1.0
+Answer ID: ed1732c2-a2e9-4af6-94ff-47688e5381e6 | Sub: 913d5477-5d6c-4343-92be-c9e0d2204ba3 | Crit: febcfd46-6eb6-40ab-a7b5-481e4827acac (Criterion 1.2: Safety and procedure check) | Val: non_conform | NumVal: -1 | RepFaults: 0 | Weight: 1.0
+
+=== CRITERIA DETAILS ===
+Crit ID: 3f9bd58b-cedb-45f2-968e-46d762fbf320 | Group: 87f4f487-809a-4e62-8047-cf35cb04a54a | Label: Kiem tra cuoi ca ban hang | Weight: -1 | Minus: -1 | CCP: False | Type: text
+Crit ID: 77422a3f-2197-4b29-8d58-4635b89c2e26 | Group: 28dd0b87-f9e9-4b37-ab91-30c18eec2863 | Label: Log temperature readings | Weight: -1 | Minus: -1 | CCP: False | Type: single_choice
+Crit ID: 7caf6994-e644-4402-b32a-bee7abbd27b1 | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7 | Label: Brief team on objectives | Weight: 0.0 | Minus: -1 | CCP: False | Type: pass_fail
+Crit ID: 9a1f4cb2-1b48-4de1-bcb1-274e64bcafb4 | Group: 28dd0b87-f9e9-4b37-ab91-30c18eec2863 | Label: Perform visual inspection | Weight: -1 | Minus: -1 | CCP: False | Type: single_choice
+Crit ID: c826561b-a1a9-4c79-8641-020b764e3017 | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7 | Label: Unlock and secure premises | Weight: 1.0 | Minus: -1 | CCP: False | Type: pass_fail
+Crit ID: f3347f18-0c5f-41a0-a2f7-de7fe9705922 | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7 | Label: Power on equipment | Weight: -1 | Minus: -1 | CCP: False | Type: single_choice
+Crit ID: fe090bdd-21a7-4915-a0a4-933c199f184a | Group: 993033a8-2c36-4fad-8ff3-e7f5ba1b06b7 | Label: Check inventory levels | Weight: -1 | Minus: -1 | CCP: False | Type: multi_choice
+Crit ID: 26ef1ffd-d67a-4a43-8579-e83503e80d4a | Group: ec74584e-5f34-4a03-85d8-70e9a70ad762 | Label: Criterion 1.1: Quality compliance check | Weight: 1.0 | Minus: -1 | CCP: False | Type: pass_fail
+Crit ID: cfd856d7-42d7-42c0-b40f-dc0668e367d5 | Group: ec74584e-5f34-4a03-85d8-70e9a70ad762 | Label: Criterion 1.2: Safety and procedure check | Weight: 1.0 | Minus: -1 | CCP: False | Type: pass_fail
+Crit ID: a6d3befe-16ea-40bb-942f-a88b997f9157 | Group: c2293db1-a4ce-4b59-accc-7d14b09e88c3 | Label: Criterion 1.2: Safety and procedure check | Weight: 1.0 | Minus: 5.0 | CCP: False | Type: pass_fail
+Crit ID: b0f212d5-c99d-46c8-b109-4cf4d70681a4 | Group: c2293db1-a4ce-4b59-accc-7d14b09e88c3 | Label: Criterion 1.1: Quality compliance check | Weight: 1.0 | Minus: 10.0 | CCP: False | Type: pass_fail
+Crit ID: 52178e14-8f64-48da-a11a-b5cb29afab2c | Group: e3727b38-8389-4cff-8c33-42263a9e1a3e | Label: Criterion 1.1: Quality compliance check | Weight: 1.0 | Minus: -1 | CCP: False | Type: pass_fail
+Crit ID: febcfd46-6eb6-40ab-a7b5-481e4827acac | Group: e3727b38-8389-4cff-8c33-42263a9e1a3e | Label: Criterion 1.2: Safety and procedure check | Weight: 1.0 | Minus: -1 | CCP: False | Type: pass_fail

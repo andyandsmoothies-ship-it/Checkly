@@ -246,8 +246,6 @@ try
     builder.Services.AddHostedService<ReminderService>();
     builder.Services.AddHostedService<OutboxBackgroundService>();
     builder.Services.AddScoped<BodReportCalculator>();
-    builder.Services.AddSingleton<BodReportWorker>();
-    builder.Services.AddHostedService<BodReportWorker>(sp => sp.GetRequiredService<BodReportWorker>());
 
     builder.Services.AddResiliencePipeline("fcm", static pipeline =>
     {

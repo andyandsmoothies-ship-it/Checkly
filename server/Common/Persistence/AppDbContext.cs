@@ -39,7 +39,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ProfileStoreAssignment> ProfileStoreAssignments => Set<ProfileStoreAssignment>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<ProvinceBenchmarkSnapshot> ProvinceBenchmarkSnapshots => Set<ProvinceBenchmarkSnapshot>();
-    public DbSet<BodReportSnapshot> BodReportSnapshots => Set<BodReportSnapshot>();
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

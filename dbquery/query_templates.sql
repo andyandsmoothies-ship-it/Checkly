@@ -1,1 +1,1 @@
-SELECT id, title, type, category FROM templates;
+SELECT id, title, type, is_active FROM templates;

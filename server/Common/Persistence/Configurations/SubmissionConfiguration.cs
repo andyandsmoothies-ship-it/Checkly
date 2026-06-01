@@ -71,6 +71,8 @@ public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
         e.HasIndex(x => new { x.StoreId, x.CreatedAt }).IsDescending(false, true);
         e.HasIndex(x => new { x.TemplateId, x.ScoreDirection });
         e.HasIndex(x => new { x.AuditorId, x.Status, x.CreatedAt });
+        e.HasIndex(x => new { x.Status, x.CompletedAt }).IsDescending(false, true);
+        e.HasIndex(x => new { x.Status, x.StoreId, x.CompletedAt });
 
         e.HasOne(x => x.Template)
             .WithMany(t => t.Submissions)

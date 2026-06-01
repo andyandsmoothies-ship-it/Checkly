@@ -1,0 +1,156 @@
+﻿=== TABLES ===
+- Table: AspNetRoleClaims
+- Table: AspNetRoles
+- Table: AspNetUserClaims
+- Table: AspNetUserLogins
+- Table: AspNetUserRoles
+- Table: AspNetUserTokens
+- Table: AspNetUsers
+- Table: __EFMigrationsHistory
+- Table: action_plans
+- Table: answers
+- Table: bod_report_snapshots
+- Table: criteria
+- Table: global_risks
+- Table: groups
+- Table: notifications
+- Table: outbox_messages
+- Table: profile_store_assignments
+- Table: profiles
+- Table: program_assignments
+- Table: programs
+- Table: province_benchmark_snapshots
+- Table: role_capabilities
+- Table: store_analytics_snapshot
+- Table: stores
+- Table: submission_risks
+- Table: submission_section_scores
+- Table: submissions
+- Table: system_logs
+- Table: template_assignments
+- Table: templates
+- Table: user_device_tokens
+- Table: user_group_members
+- Table: user_groups
+- Table: user_roles
+
+=== COLUMNS FOR KEY TABLES ===
+
+Table: AspNetUsers
+  * Column: Id (uuid)
+  * Column: UserName (character varying)
+  * Column: NormalizedUserName (character varying)
+  * Column: Email (character varying)
+  * Column: NormalizedEmail (character varying)
+  * Column: EmailConfirmed (boolean)
+  * Column: PasswordHash (text)
+  * Column: SecurityStamp (text)
+  * Column: ConcurrencyStamp (text)
+  * Column: PhoneNumber (text)
+  * Column: PhoneNumberConfirmed (boolean)
+  * Column: TwoFactorEnabled (boolean)
+  * Column: LockoutEnd (timestamp with time zone)
+  * Column: LockoutEnabled (boolean)
+  * Column: AccessFailedCount (integer)
+  * Column: invalidate_tokens_before (timestamp with time zone)
+
+Table: profile_store_assignments
+  * Column: profile_id (uuid)
+  * Column: store_id (uuid)
+  * Column: created_at (timestamp with time zone)
+
+Table: stores
+  * Column: id (uuid)
+  * Column: name (text)
+  * Column: address (text)
+  * Column: gps_lat (numeric)
+  * Column: gps_lng (numeric)
+  * Column: created_at (timestamp with time zone)
+  * Column: updated_at (timestamp with time zone)
+  * Column: is_active (boolean)
+  * Column: address_district (text)
+  * Column: address_province (text)
+  * Column: address_street (text)
+  * Column: address_ward (text)
+  * Column: last_synced_at (timestamp with time zone)
+
+Table: submissions
+  * Column: id (uuid)
+  * Column: template_id (uuid)
+  * Column: auditor_id (uuid)
+  * Column: store_id (uuid)
+  * Column: status (text)
+  * Column: total_score (numeric)
+  * Column: section_scores (jsonb)
+  * Column: gps_lat (numeric)
+  * Column: gps_lng (numeric)
+  * Column: gps_verified_at (timestamp with time zone)
+  * Column: notes (text)
+  * Column: scheduled_at (timestamp with time zone)
+  * Column: completed_at (timestamp with time zone)
+  * Column: approved_by (uuid)
+  * Column: approved_at (timestamp with time zone)
+  * Column: created_at (timestamp with time zone)
+  * Column: updated_at (timestamp with time zone)
+  * Column: started_at (timestamp with time zone)
+  * Column: auditor_name (text)
+  * Column: auditor_email (text)
+  * Column: store_name (text)
+  * Column: template_title (text)
+  * Column: approver_name (text)
+  * Column: review_status (text)
+  * Column: idempotency_key (text)
+  * Column: display_noun (text)
+  * Column: scoring_mode (text)
+  * Column: template_snapshot (jsonb)
+  * Column: template_version (integer)
+  * Column: void_reason (text)
+  * Column: voided_at (timestamp with time zone)
+  * Column: template_type (text)
+  * Column: is_weighted (boolean)
+  * Column: raw_earned_points (numeric)
+  * Column: raw_max_points (numeric)
+  * Column: program_assignment_id (uuid)
+  * Column: score_direction (character varying)
+  * Column: distance_meters_off (integer)
+  * Column: is_geofence_bypassed (boolean)
+
+Table: action_plans
+  * Column: id (uuid)
+  * Column: answer_id (uuid)
+  * Column: submission_id (uuid)
+  * Column: store_id (uuid)
+  * Column: store_manager_id (uuid)
+  * Column: criteria_label (text)
+  * Column: group_title (text)
+  * Column: plan_description (text)
+  * Column: evidence_photo_url (text)
+  * Column: evidence_note (text)
+  * Column: status (text)
+  * Column: deadline (timestamp with time zone)
+  * Column: closed_at (timestamp with time zone)
+  * Column: verified_by (uuid)
+  * Column: verified_at (timestamp with time zone)
+  * Column: created_at (timestamp with time zone)
+  * Column: updated_at (timestamp with time zone)
+  * Column: root_cause (text)
+  * Column: correction_plan (text)
+  * Column: store_name (text)
+  * Column: store_manager_name (text)
+  * Column: verifier_name (text)
+  * Column: evidence_submitted_at (timestamp with time zone)
+  * Column: evidence_submitted_by_name (text)
+  * Column: SourceTitle (text)
+
+Table: submission_section_scores
+  * Column: id (uuid)
+  * Column: submission_id (uuid)
+  * Column: store_id (uuid)
+  * Column: template_id (uuid)
+  * Column: section_title (text)
+  * Column: score (numeric)
+  * Column: max_score (numeric)
+  * Column: ratio (numeric)
+  * Column: is_ccp_failed (boolean)
+  * Column: weight (numeric)
+  * Column: created_at (timestamp with time zone)

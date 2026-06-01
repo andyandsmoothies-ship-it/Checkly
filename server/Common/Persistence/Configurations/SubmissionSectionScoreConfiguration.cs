@@ -32,5 +32,6 @@ public class SubmissionSectionScoreConfiguration : IEntityTypeConfiguration<Subm
         e.HasIndex(x => x.SubmissionId);
         e.HasIndex(x => new { x.StoreId, x.SectionTitle });
         e.HasIndex(x => x.CreatedAt);
+        e.HasIndex(x => new { x.CreatedAt, x.StoreId });
     }
 }

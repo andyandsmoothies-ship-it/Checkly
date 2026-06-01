@@ -1,0 +1,8 @@
+﻿cmd : [rtk] /!\ No hook installed ΓÇö run `rtk init -g` for automatic token savings
+At line:1 char:1
++ cmd /c rtk dotnet test --filter Checkly.Api.Tests.Features.Analytics. ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([rtk] /!\ No ho...c token savings:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ok dotnet test: completed (binlog-only mode, counts unavailable, 0 warnings) (unknown)

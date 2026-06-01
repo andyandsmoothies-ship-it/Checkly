@@ -60,5 +60,6 @@ public class ActionPlanConfiguration : IEntityTypeConfiguration<ActionPlan>
         e.HasIndex(x => new { x.StoreId, x.Status });
         e.HasIndex(x => x.Deadline);
         e.HasIndex(x => x.UpdatedAt); // For offline delta sync
+        e.HasIndex(x => new { x.Status, x.Deadline });
     }
 }

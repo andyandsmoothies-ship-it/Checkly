@@ -1,7 +1,7 @@
-# Boardroom (BOD) Analytics — Complete Feature Scope & Architecture (V4)
+# Boardroom (BOD) Analytics — Complete Feature Scope & Architecture (V5)
 
-**Date**: 2026-05-27 | **ShortID**: c3563378
-**Status**: Approved & Reference Design (Resolves code drifts: aligned Action Plan Aging Funnel to server schema, mapped activeStores/totalAuditors KPIs, corrected BodGoldenStore mapping)
+**Date**: 2026-06-01 | **ShortID**: c3563378
+**Status**: Approved & Reference Design (Upgraded to Real-Time Live Queries Architecture, deprecated nightly snapshots)
 
 ---
 
@@ -15,43 +15,39 @@ To prevent confusion between business language and technical database language, 
 * **DB/Technical Code**: The database and API endpoints use the entity name **Submission** (e.g., `Submissions` table, `SubmissionSectionScores`, `GetBodReport`).
 * **Rule**: We never rename database tables or C# classes to match the business language. We map them cleanly at the presentation layer.
 
-### The Core Hybrid Design Pattern
-Executive dashboards must load instantly but also support live, interactive exploration. We solve this using a **Hybrid OLAP (Online Analytical Processing) and OLTP (Online Transaction Processing) Architecture**:
+### The Core Design Pattern: Real-Time Live Queries
+Executive dashboards must load instantly but also reflect the most up-to-date data. Previously, the system relied on a legacy nightly snapshot for the global view. We have now transitioned to a **Unified Real-Time Live Query Architecture**:
 
 ```
                   ┌──────────────────────────────────────────────┐
                   │                 Flutter UI                   │
                   └──────────────────────┬───────────────────────┘
                                          │
-                    No Filter Active     │     Filters Applied
               ┌──────────────────────────┴──────────────────────────┐
               ▼                                                     ▼
-    [ Nightly Cached Snapshot ]                            [ Live Dynamic Query ]
-    - Calculated at 2:00 AM daily                          - Fetched live from DB
-    - Loads in <50ms                                       - Computes filtered subset
-    - Shows latest today's data                            - Shows latest today's data
+    [ GET /api/analytics/bod (Global) ]         [ GET /api/analytics/bod?province=X ]
+              │                                                     │
+              └──────────────────────────┬──────────────────────────┘
+                                         ▼
+                            [ 60-Second IMemoryCache ]
+                                         │ (Cache Miss)
+                                         ▼
+                       [ PostgreSQL Live Indexed Queries ]
+                       - Sub-second performance via composite indexes
+                       - Limits historical scanning to recent timeframes (e.g. 30 days)
 ```
 
 ---
 
 ## 2. System Architecture & Data Flow
 
-### Pipeline A: The Nightly Snapshot Generator
-Every night at 2:00 AM (in the corporate timezone), a background worker aggregates all compliance data and caches it as a single JSON payload.
+### The Unified Aggregation Pipeline
+All Boardroom dashboard requests, regardless of whether they are unfiltered (Global) or filtered (Regional), route through the exact same database query pipeline.
 
-```
- [Db Background Job] ──► [Distributed Lock] ──► [BodReportCalculator] ──► [Save to PostgreSQL]
-```
-
-### Pipeline B: The Dynamic Live Filter & Drill-down
-When an executive applies a regional filter (e.g., filtering by a specific Province or District), or taps a card to drill down into details, the system shifts into **Live Query Mode**.
-
-```
- [Flutter UI Page] ──► [Selects Province] ──► [GET /api/analytics/bod?province=Hanoi]
-         │                                                      │
-         ▼                                                      ▼
- [Shows Dynamic Badge] ◄── [Returns Live Response] ◄── [Dynamic SQL Query on DB]
-```
+1. **Request Hits API**: The frontend calls `GET /api/analytics/bod`.
+2. **Cache Check**: The API checks a rapid 60-second in-memory cache (e.g., `bod:global` or `bod:hanoi:`) to prevent "thundering herd" database spikes when many executives load the dashboard simultaneously.
+3. **Database Execution**: On a cache miss, the API executes highly optimized `GROUP BY` and `COUNT` queries directly against the PostgreSQL database.
+4. **Composite Indexes**: The queries are mapped against B-Tree composite indexes (e.g., `(status, completed_at DESC)`) ensuring lightning-fast index-only scans, bypassing the need to load the full table into memory.
 
 ---
 
@@ -106,7 +102,7 @@ The owned `StoreAddress` configuration maps geographic boundaries natively (`Sto
 * **Query Parameters**:
   * `province` (string, optional)
   * `district` (string, optional)
-* **Response Model Schema**: Varies slightly depending on whether the baseline nightly snapshot is served or a live dynamic regional/date query is active. *(See V2 document for full schema example).*
+* **Response Model Schema**: A unified JSON payload containing `isLiveData: true` and all dashboard KPIs.
 * **Dashboard Filtering Design**: The dashboard does not support filtering by a singular template-level category tag (which was purged). It supports filtering by store geography (Province/District), and aggregates results by structural template `type` (e.g., QC, Training) to separate operational categories at the boardroom level.
 
 ### 2. Store Executive Summary Endpoint
@@ -136,10 +132,6 @@ The owned `StoreAddress` configuration maps geographic boundaries natively (`Sto
 * **Route**: `GET /api/analytics/auditors/productivity`
 * **Purpose**: Retrieves the top-level scatter plot data (Auditor ID, name, completed audits, average score, and dynamic Bias Rating).
 
-### 6. On-Demand Report Refresh Endpoint
-* **Route**: `POST /api/analytics/bod/refresh`
-* **Purpose**: Triggers a background recalculation of the BOD snapshot using an advisory lock.
-
 ---
 
 ## 6. Developer Gotchas & Safeguards
@@ -156,11 +148,11 @@ Always cancel and clean up animations, tick controllers, and delayed timers insi
 ### Gotcha 4: No Database Drops in Production
 Never use `EnsureDeleted()` in test setup without a hardcoded safeguard checking if the database connection string contains `_test`.
 
-### Gotcha 5: Pre-computed Snapshot Polling
-The Flutter frontend must poll the `GET /api/analytics/bod` result every 5 seconds until `computedAt` increases.
+### Gotcha 5: IN Clause Explosion (Global Filtering)
+When querying the global dashboard (no province selected), **do not** collect all thousands of `StoreId`s and pass them into an `.Contains()` (IN clause). This causes severe database CPU spikes. The Global path must execute a pristine query against the whole table without an `IN` constraint.
 
-### Gotcha 6: OLAP Background Aggregations (Advisory Locking)
-Protect background worker concurrency using PostgreSQL-native transaction-level advisory locks to eliminate race conditions.
+### Gotcha 6: Defeating Indexes with Null-Coalescing
+Never use `(s.CompletedAt ?? s.CreatedAt) >= date` in high-volume queries. PostgreSQL cannot use a B-Tree index on a dynamic coalesced value, resulting in full table scans. You must write explicit logic: `((s.CompletedAt.HasValue && s.CompletedAt >= date) || (!s.CompletedAt.HasValue && s.CreatedAt >= date))`.
 
 ### Gotcha 7: BOD Section Scores Key Mismatch
 The backend `SectionScoreExploder.cs` extracts the human-readable section title from the nested `"title"` property inside `SubmissionSectionScores` JSON.
