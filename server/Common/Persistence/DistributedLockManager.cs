@@ -44,7 +44,8 @@ public sealed class DistributedLockManager
         AppDbContext db,
         string lockScope,
         Func<CancellationToken, Task> criticalSection,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        TimeSpan? timeout = null)
     {
         // Gap1 guard: reject invalid scope strings immediately — before any DB round-trip.
         if (string.IsNullOrWhiteSpace(lockScope))
@@ -52,6 +53,10 @@ public sealed class DistributedLockManager
 
         var lockKey = ComputeFnv1a64(lockScope);
         var executed = false;
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        cts.CancelAfter(timeout ?? TimeSpan.FromSeconds(30));
+        var timeoutToken = cts.Token;
 
         try
         {
@@ -63,31 +68,35 @@ public sealed class DistributedLockManager
             var strategy = db.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () =>
             {
-                await using var transaction = await db.Database.BeginTransactionAsync(ct);
+                await using var transaction = await db.Database.BeginTransactionAsync(timeoutToken);
 
                 // EF Core 7+ SqlQuery<T> with column alias "Value" (required by EF Core scalar projection).
                 // pg_try_advisory_xact_lock returns true if lock acquired, false if held by another session.
                 // IMPORTANT: The column alias must be "Value" — EF Core maps scalar results to this name.
                 var acquired = await db.Database
                     .SqlQuery<bool>($"SELECT pg_try_advisory_xact_lock({lockKey}) AS \"Value\"")
-                    .SingleAsync(ct);
+                    .SingleAsync(timeoutToken);
 
                 if (!acquired)
                 {
-                    await transaction.RollbackAsync(ct);
+                    await transaction.RollbackAsync(timeoutToken);
                     return;
                 }
 
                 // Lock acquired: execute the caller's critical section inside this closure.
                 // All EF Core queries in criticalSection run within this strategy + transaction scope.
-                await criticalSection(ct);
-                await transaction.CommitAsync(ct);
+                await criticalSection(timeoutToken);
+                await transaction.CommitAsync(timeoutToken);
                 executed = true;
             });
         }
         catch (OperationCanceledException)
         {
-            throw; // Always re-throw — stoppingToken was cancelled, pod is shutting down.
+            if (ct.IsCancellationRequested)
+            {
+                throw; // Parent token was cancelled (e.g. host shutdown). Always re-throw.
+            }
+            return false; // Timeout token was cancelled. Return false (safe degradation).
         }
         catch (NpgsqlException)
         {

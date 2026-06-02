@@ -101,8 +101,8 @@ Future<ActionPlanDto> _closePlanLogic(
   return manager._api.updateActionPlan(plan.id, {
     'status': 'closed',
     'verifierName': verifierName,
-    if (rootCause != null) 'rootCause': rootCause,
-    if (correctionPlan != null) 'correctionPlan': correctionPlan,
+    'rootCause': ?rootCause,
+    'correctionPlan': ?correctionPlan,
   });
 }
 

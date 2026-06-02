@@ -6,6 +6,7 @@ import '../manager/bod_analytics_data.dart';
 import '../manager/bod_analytics_manager.dart';
 import 'bod_mom_delta_chip.dart';
 import 'bod_ap_bucket_detail_sheet.dart';
+import 'bod_kpi_card.dart';
 
 /// KPI Grid component displaying executive boardroom chain performance insights.
 ///
@@ -39,186 +40,23 @@ class BodKpiGrid extends StatelessWidget {
     final activeStores = chainKpis['activeStores'] ?? 0;
     final totalAuditors = chainKpis['totalAuditors'] ?? 0;
     final geofenceBypassCount = chainKpis['geofenceBypassCount'] ?? 0;
-
     final double? rawAvgTtrDays = chainKpis['avgTtrDays']?.toDouble();
-    final String avgTtrDisplay;
-    PillChip? avgTtrPill;
-
-    if (rawAvgTtrDays == null || rawAvgTtrDays <= 0.0) {
-      avgTtrDisplay = 'N/A';
-      avgTtrPill = null;
-    } else {
-      avgTtrDisplay = '${rawAvgTtrDays.toStringAsFixed(1)} days';
-      if (rawAvgTtrDays <= 7.0) {
-        avgTtrPill = const PillChip(label: 'Fast', type: PillChipType.green);
-      } else if (rawAvgTtrDays <= 14.0) {
-        avgTtrPill = const PillChip(
-          label: 'On Pace',
-          type: PillChipType.yellow,
-        );
-      } else {
-        avgTtrPill = const PillChip(label: 'Slow', type: PillChipType.red);
-      }
-    }
 
     return StrokeCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.insights,
-                color: AppColors.featherGreen,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Chain Performance KPIs',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.eel,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          _buildHeader(theme),
           const SizedBox(height: 16),
           Column(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Average Score',
-                      '${avgScore.toStringAsFixed(1)}%',
-                      description:
-                          'Average score of finished audits (last 30 days)',
-                      rightIndicator: BodMomDeltaChip(trend: trend),
-                      footer: goldenStore != null
-                          ? Text(
-                              '${((avgScore / goldenStore!.avgScore) * 100).toStringAsFixed(0)}% of flagship (${goldenStore!.storeName} ${goldenStore!.avgScore.toStringAsFixed(1)}%)',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: AppColors.wolf,
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            )
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Completion Rate',
-                      '${completionRate.toStringAsFixed(1)}%',
-                      description:
-                          'How many planned audits were actually finished (last 30 days)',
-                      rightIndicator: completionRateDelta != 0.0
-                          ? PillChip(
-                              label:
-                                  '${completionRateDelta >= 0.0 ? "↑" : "↓"} ${completionRateDelta.abs().toStringAsFixed(1)}%',
-                              type: completionRateDelta >= 0.0
-                                  ? PillChipType.green
-                                  : PillChipType.red,
-                            )
-                          : null,
-                    ),
-                  ),
-                ],
-              ),
+              _buildRow1(context, theme, avgScore, completionRate, completionRateDelta),
               const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Avg TTR Days',
-                      avgTtrDisplay,
-                      description: 'Average days to resolve an action plan',
-                      rightIndicator: avgTtrPill,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Overdue / Open APs',
-                      '$overdueAPs / $openAPs',
-                      description:
-                          'Late action plans out of all active action plans',
-                      isAlert: overdueAPs > 0,
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => BodApBucketDetailSheet(
-                            bucket: BodAgingBucket.all,
-                            manager: manager,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              _buildRow2(context, rawAvgTtrDays, overdueAPs, openAPs),
               const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Total Audits',
-                      '$totalAudits',
-                      description:
-                          'Total number of finished audits (last 30 days)',
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Active Stores',
-                      '$activeStores',
-                      description:
-                          'Total stores with audit activity (last 30 days)',
-                    ),
-                  ),
-                ],
-              ),
+              _buildRow3(totalAudits, activeStores),
               const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Total Auditors',
-                      '$totalAuditors',
-                      description: 'Total unique auditors submitting audits',
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildKpiCard(
-                      context,
-                      'Geofence Bypasses',
-                      '$geofenceBypassCount',
-                      description: 'Total audits completed outside geofence',
-                      isAlert: geofenceBypassCount > 0,
-                    ),
-                  ),
-                ],
-              ),
+              _buildRow4(totalAuditors, geofenceBypassCount),
             ],
           ),
         ],
@@ -226,89 +64,179 @@ class BodKpiGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildKpiCard(
+  Widget _buildHeader(ThemeData theme) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.insights,
+          color: AppColors.featherGreen,
+          size: 24,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            'Chain Performance KPIs',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: AppColors.eel,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRow1(
     BuildContext context,
-    String label,
-    String value, {
-    String? description,
-    Widget? rightIndicator,
-    Widget? footer,
-    bool isAlert = false,
-    VoidCallback? onTap,
-  }) {
-    final theme = Theme.of(context);
-
-    Widget cardContent = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppColors.polar,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.swan, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColors.wolf,
-              fontWeight: FontWeight.w700,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (description != null) ...[
-            const SizedBox(height: 2),
-            Text(
-              description,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.wolf.withAlpha(160),
-                fontSize: 8.5,
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-          const SizedBox(height: 6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    value,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: isAlert ? AppColors.cardinal : AppColors.eel,
+    ThemeData theme,
+    double avgScore,
+    double completionRate,
+    double completionRateDelta,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: BodKpiCard(
+            label: 'Average Score',
+            value: '${avgScore.toStringAsFixed(1)}%',
+            description: 'Average score of finished audits (last 30 days)',
+            rightIndicator: BodMomDeltaChip(trend: trend),
+            footer: goldenStore != null
+                ? Text(
+                    '${((avgScore / goldenStore!.avgScore) * 100).toStringAsFixed(0)}% of flagship (${goldenStore!.storeName} ${goldenStore!.avgScore.toStringAsFixed(1)}%)',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.wolf,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
                     ),
-                  ),
-                ),
-              ),
-              if (rightIndicator != null) ...[
-                const SizedBox(width: 4),
-                rightIndicator,
-              ],
-            ],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                : null,
           ),
-          if (footer != null) ...[const SizedBox(height: 4), footer],
-        ],
-      ),
-    );
-
-    if (onTap != null) {
-      cardContent = InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: cardContent,
-      );
-    }
-
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 92),
-      child: cardContent,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: BodKpiCard(
+            label: 'Completion Rate',
+            value: '${completionRate.toStringAsFixed(1)}%',
+            description: 'How many planned audits were actually finished (last 30 days)',
+            rightIndicator: completionRateDelta != 0.0
+                ? PillChip(
+                    label:
+                        '${completionRateDelta >= 0.0 ? "↑" : "↓"} ${completionRateDelta.abs().toStringAsFixed(1)}%',
+                    type: completionRateDelta >= 0.0
+                        ? PillChipType.green
+                        : PillChipType.red,
+                  )
+                : null,
+          ),
+        ),
+      ],
     );
   }
+
+  Widget _buildRow2(
+    BuildContext context,
+    double? rawAvgTtrDays,
+    int overdueAPs,
+    int openAPs,
+  ) {
+    final String avgTtrDisplay = rawAvgTtrDays == null || rawAvgTtrDays <= 0.0
+        ? 'N/A'
+        : '${rawAvgTtrDays.toStringAsFixed(1)} days';
+
+    final PillChip? avgTtrPill = rawAvgTtrDays == null || rawAvgTtrDays <= 0.0
+        ? null
+        : (rawAvgTtrDays <= 7.0
+            ? const PillChip(label: 'Fast', type: PillChipType.green)
+            : (rawAvgTtrDays <= 14.0
+                ? const PillChip(label: 'On Pace', type: PillChipType.yellow)
+                : const PillChip(label: 'Slow', type: PillChipType.red)));
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: BodKpiCard(
+            label: 'Avg TTR Days',
+            value: avgTtrDisplay,
+            description: 'Average days to resolve an action plan',
+            rightIndicator: avgTtrPill,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: BodKpiCard(
+            label: 'Overdue / Open APs',
+            value: '$overdueAPs / $openAPs',
+            description: 'Late action plans out of all active action plans',
+            isAlert: overdueAPs > 0,
+            onTap: () => _showApBottomSheet(context),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showApBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BodApBucketDetailSheet(
+        bucket: BodAgingBucket.all,
+        manager: manager,
+      ),
+    );
+  }
+
+  Widget _buildRow3(int totalAudits, int activeStores) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: BodKpiCard(
+            label: 'Total Audits',
+            value: '$totalAudits',
+            description: 'Total number of finished audits (last 30 days)',
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: BodKpiCard(
+            label: 'Active Stores',
+            value: '$activeStores',
+            description: 'Total stores with audit activity (last 30 days)',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRow4(int totalAuditors, int geofenceBypassCount) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: BodKpiCard(
+            label: 'Total Auditors',
+            value: '$totalAuditors',
+            description: 'Total unique auditors submitting audits',
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: BodKpiCard(
+            label: 'Geofence Bypasses',
+            value: '$geofenceBypassCount',
+            description: 'Total audits completed outside geofence',
+            isAlert: geofenceBypassCount > 0,
+          ),
+        ),
+      ],
+    );
+  }
+
 }

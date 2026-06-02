@@ -72,11 +72,17 @@ Workflow: /diagnose | Track: [A / B1 / B2 / C]
 
 - **Redundancy Check**: MANDATORY: Before proposing a fix that swaps in a shared utility/widget, verify if it makes surrounding `if` guards or boilerplate redundant. Delete the redundant code.
 
+- **First Principles Gate**: MANDATORY: Before choosing a fix, evaluate and answer these 4 questions in your report:
+  1. *Physics & Limit*: What physical system limit (network, memory, lock, CPU) causes this, and what is the absolute source of truth?
+  2. *Simplicity Check*: What is the absolute simplest (least code) way to patch this, and why should we NOT do it that way?
+  3. *Blast Radius*: If this fix fails or contains a new bug, what is the worst-case system impact?
+  4. *Observability*: How will we prove in production (using logs or metrics) that this fix worked without asking users?
+
 - **Artifact Gen**: Export `failure_report_[YYYYMMDD_HHMMSS].md`.
 
 - **Constraint (Micro-Experiments)**: PROHIBITED: Broad code refactors. ALLOWED: "Micro-Experiments" (max 5 lines) to falsify hypotheses. IF a test fails twice, you MUST formally reject it in the `task_` file and pivot.
 
-- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) If code was changed, was it strictly under 5 lines? (2) Did you delete redundant guards when applying shared tools? (3) If a test failed twice, did you officially pivot to a new hypothesis?
+- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) If code was changed, was it strictly under 5 lines? (2) Did you delete redundant guards when applying shared tools? (3) If a test failed twice, did you officially pivot to a new hypothesis? (4) Did you answer all 4 First Principles Gate questions?
 
 ## Step 5: Deliverable Handoff
 

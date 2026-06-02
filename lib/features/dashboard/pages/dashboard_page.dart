@@ -106,12 +106,12 @@ class _DashboardPageState extends State<DashboardPage> {
         onNewAudit: () => context.push('/templates'),
         onAssignTask: () => _showScheduleSheet(context),
       ),
-      body: Column(
-        children: [
-          // ── Compact header: greeting ──
-          SafeArea(
-            bottom: false,
-            child: Padding(
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // ── Compact header: greeting ──
+            Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
               child: ListenableBuilder(
                 listenable: _manager,
@@ -119,36 +119,36 @@ class _DashboardPageState extends State<DashboardPage> {
                     Greeting(persona: persona, isSyncing: _manager.isSyncing, lastSync: _manager.lastSync),
               ),
             ),
-          ),
-          // ── Role-scoped body ──
-          Expanded(
-            child: ListenableBuilder(
-              listenable: _manager,
-              builder: (context, _) {
-                return switch (_manager.dashboardState) {
-                  DashboardLoading() => const DashboardLoadingView(),
-                  DashboardErrorState e => DashboardErrorView(
-                    message: e.message,
-                    onRetry: () => _manager.loadStats(),
-                  ),
-                  AuditorDashboardState s => AuditorDashboardVariant(
-                    state: s,
-                    onRefresh: () => _manager.loadStats(showLoading: false),
-                  ),
-                  ManagerDashboardState s => ManagerDashboardVariant(
-                    state: s,
-                    persona: persona,
-                    onRefresh: () => _manager.loadStats(showLoading: false),
-                  ),
-                  AdminDashboardState s => AdminDashboardVariant(
-                    state: s,
-                    onRefresh: () => _manager.loadStats(showLoading: false),
-                  ),
-                };
-              },
+            // ── Role-scoped body ──
+            Expanded(
+              child: ListenableBuilder(
+                listenable: _manager,
+                builder: (context, _) {
+                  return switch (_manager.dashboardState) {
+                    DashboardLoading() => const DashboardLoadingView(),
+                    DashboardErrorState e => DashboardErrorView(
+                      message: e.message,
+                      onRetry: () => _manager.loadStats(),
+                    ),
+                    AuditorDashboardState s => AuditorDashboardVariant(
+                      state: s,
+                      onRefresh: () => _manager.loadStats(showLoading: false),
+                    ),
+                    ManagerDashboardState s => ManagerDashboardVariant(
+                      state: s,
+                      persona: persona,
+                      onRefresh: () => _manager.loadStats(showLoading: false),
+                    ),
+                    AdminDashboardState s => AdminDashboardVariant(
+                      state: s,
+                      onRefresh: () => _manager.loadStats(showLoading: false),
+                    ),
+                  };
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

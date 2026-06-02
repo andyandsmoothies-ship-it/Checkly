@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Services;
@@ -28,6 +29,12 @@ public static class CreateActionPlan
 
         if (submission is null)
             return TypedResults.BadRequest(new { error = "Submission not found" });
+
+        if (!await ResourceAccessGuard.CanAccessAsync(
+                user, new ResourceScope(StoreId: submission.StoreId, OwnerId: submission.AuditorId), db, ct))
+        {
+            return TypedResults.Forbid();
+        }
 
         var profile = await db.Profiles
             .AsNoTracking()

@@ -33,24 +33,32 @@ class ReviewValidationBanner extends StatelessWidget {
           ),
         ),
         initiallyExpanded: false,
-        children: errors
-            .map(
-              (e) => ListTile(
-                dense: true,
-                leading: Icon(
-                  Icons.error_outline,
-                  size: 16,
-                  color: theme.colorScheme.error,
-                ),
-                title: Text(
-                  e,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onErrorContainer,
-                  ),
-                ),
-              ),
-            )
-            .toList(),
+        children: errors.map((e) => _ValidationErrorTile(error: e)).toList(),
+      ),
+    );
+  }
+}
+
+class _ValidationErrorTile extends StatelessWidget {
+  final String error;
+
+  const _ValidationErrorTile({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      dense: true,
+      leading: Icon(
+        Icons.error_outline,
+        size: 16,
+        color: theme.colorScheme.error,
+      ),
+      title: Text(
+        error,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onErrorContainer,
+        ),
       ),
     );
   }
@@ -72,59 +80,86 @@ class ReviewQualityBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     if (isV6Valid && isProductionReady) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppTheme.successContainer,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppTheme.success.withValues(alpha: 0.4)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.check_circle_outline, color: AppTheme.success, size: 18),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                '$sectionCount sections, $totalCriteria criteria — Production ready',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppTheme.success,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
+      return _QualityValidBanner(
+        sectionCount: sectionCount,
+        totalCriteria: totalCriteria,
       );
     } else {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppTheme.warningContainer,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppTheme.warning.withValues(alpha: 0.4)),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.warning_amber_outlined,
-              color: AppTheme.warning,
-              size: 18,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'Consider adding more — aim for 3+ sections with 5+ criteria for a thorough audit.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppTheme.warning,
-                ),
+      return const _QualityWarningBanner();
+    }
+  }
+}
+
+class _QualityValidBanner extends StatelessWidget {
+  final int sectionCount;
+  final int totalCriteria;
+
+  const _QualityValidBanner({
+    required this.sectionCount,
+    required this.totalCriteria,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.successContainer,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppTheme.success.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: AppTheme.success, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              '$sectionCount sections, $totalCriteria criteria — Production ready',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppTheme.success,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QualityWarningBanner extends StatelessWidget {
+  const _QualityWarningBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.warningContainer,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppTheme.warning.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.warning_amber_outlined,
+            color: AppTheme.warning,
+            size: 18,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Consider adding more — aim for 3+ sections with 5+ criteria for a thorough audit.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppTheme.warning,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

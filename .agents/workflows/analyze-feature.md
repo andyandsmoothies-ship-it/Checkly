@@ -52,6 +52,12 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Risk & ROI**: Evaluate if change is worth the architectural cost. If blast radius is high or ROI negative, include a prominent "Risk Warning" at the top of the plan and in your chat response.
 
+- **First Principles Gate**: MANDATORY. Evaluate the system impact before planning a solution. You must explicitly evaluate and answer these 4 questions:
+  1. *Physics & Limit*: What physical system limit (network, memory, lock, CPU) causes the target behavior/problem, and what is the absolute source of truth?
+  2. *Simplicity Check*: What is the absolute simplest (least code) way to build/patch this, and why should we NOT do it that way?
+  3. *Blast Radius*: If this implementation/fix fails or contains a new bug, what is the worst-case system impact?
+  4. *Observability*: How will we prove in production (using logs or metrics) that this works without asking users?
+
 - **Find Connections**: Search 6 areas: UI, Routes, Database, Mocks, Events, and Dependency Injection to map all dependencies before modifying code.
 
 - **Dual-Stack Impact**: Do not change existing tests or mocks to pass. Adapt code to existing contract. If changing database/API, update both backend and frontend.
@@ -66,7 +72,7 @@ description: Concise, high-density analysis workflow for standard features and b
 
 - **Safety & Stability Checks**: MANDATORY. (1) **DI Safety**: Ensure all newly required services are planned for registration in `locator.dart`. (2) **Layout Safety**: Ensure UI components with infinite width (like `ElevatedButton`) used inside horizontal layouts (like `Row`) are explicitly bounded (e.g., using `Expanded` or `minimumSize`).
 
-- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified?
+- **Mandatory Scan**: Print checklist in response: (1) Is Risk/ROI acceptable? (2) Did you search everywhere for connections? (3) Did you map both backend and frontend? (4) Are System and Lifecycle Contexts defined? (5) Are DI and Layout Safety verified? (6) Did you answer all 4 First Principles Gate questions?
 
 ## Step 4: Create Plan
 
@@ -127,6 +133,8 @@ description: Concise, high-density analysis workflow for standard features and b
   - `## Input Lineage`: Absolute path of source requirement/lineage document.
 
   - `## Executive Summary & Out of Scope`: High-level goal and explicit out-of-scope boundaries.
+
+  - `## First Principles Gate`: Explicit answers to the 4 First Principles questions (Physics & Limit, Simplicity, Blast Radius, Observability).
 
   - `## System Context`: Offline/online behavior, APIs, RBAC capabilities, and telemetry.
 

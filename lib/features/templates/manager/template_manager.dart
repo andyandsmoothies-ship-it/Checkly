@@ -48,33 +48,31 @@ class TemplateManager extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. Read from Drift cache first
       final cached = await _dao.getAllTemplates();
       if (cached.isNotEmpty) {
         templates.value = cached;
         isLoading.value = false;
         notifyListeners();
       }
-
-      // 2. Background API fetch
-      try {
-        final fresh = await _api.getTemplates();
-        templates.value = fresh;
-        lastRefreshed = DateTime.now();
-
-        // 3. Update Drift cache
-        await _dao.upsertTemplates(fresh);
-      } catch (_) {
-        // API failed — use cached data silently
-        if (cached.isEmpty) {
-          error = 'Failed to load templates (offline)';
-        }
-      }
+      await _fetchFreshTemplates(cached.isEmpty);
     } catch (_) {
       error = 'Failed to load templates';
     } finally {
       isLoading.value = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> _fetchFreshTemplates(bool wasCacheEmpty) async {
+    try {
+      final fresh = await _api.getTemplates();
+      templates.value = fresh;
+      lastRefreshed = DateTime.now();
+      await _dao.upsertTemplates(fresh);
+    } catch (_) {
+      if (wasCacheEmpty) {
+        error = 'Failed to load templates (offline)';
+      }
     }
   }
 
@@ -85,7 +83,6 @@ class TemplateManager extends ChangeNotifier {
     _safeNotify();
 
     try {
-      // 1. Try Drift cache first
       final cached = await _dao.getTemplateTree(id);
       if (cached != null) {
         selectedTemplate.value = cached;
@@ -93,26 +90,10 @@ class TemplateManager extends ChangeNotifier {
         notifyListeners();
       }
 
-      // 2. Background API fetch
       try {
         final fresh = await _api.getTemplateTree(id);
         selectedTemplate.value = fresh;
-
-        // 3. Update Drift cache (template + groups + criteria)
-        await _dao.upsertTemplates([
-          TemplateDto(
-            id: fresh.id,
-            title: fresh.title,
-            description: fresh.description,
-            type: fresh.type,
-            version: fresh.version,
-            scoringLogicConfig: fresh.scoringLogicConfig,
-            isActive: fresh.isActive,
-            createdAt: fresh.createdAt,
-            updatedAt: fresh.updatedAt,
-          ),
-        ]);
-        await _dao.upsertGroups(id, fresh.groups, null);
+        await _updateDriftCache(fresh);
       } catch (_) {
         if (cached == null) {
           error = 'Failed to load template details (offline)';
@@ -124,6 +105,23 @@ class TemplateManager extends ChangeNotifier {
       isLoading.value = false;
       notifyListeners();
     }
+  }
+
+  Future<void> _updateDriftCache(TemplateTreeDto fresh) async {
+    await _dao.upsertTemplates([
+      TemplateDto(
+        id: fresh.id,
+        title: fresh.title,
+        description: fresh.description,
+        type: fresh.type,
+        version: fresh.version,
+        scoringLogicConfig: fresh.scoringLogicConfig,
+        isActive: fresh.isActive,
+        createdAt: fresh.createdAt,
+        updatedAt: fresh.updatedAt,
+      ),
+    ]);
+    await _dao.upsertGroups(fresh.id, fresh.groups, null);
   }
 
   // ---------- Save template (atomic tree save) ----------

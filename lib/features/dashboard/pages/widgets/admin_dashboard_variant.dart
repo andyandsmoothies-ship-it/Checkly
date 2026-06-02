@@ -29,6 +29,7 @@ class AdminDashboardVariant extends StatelessWidget {
           // Premium 2x2 Grid of KPIs
           GridView.count(
             crossAxisCount: 2,
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisSpacing: 12,

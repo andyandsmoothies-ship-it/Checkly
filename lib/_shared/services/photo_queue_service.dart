@@ -28,6 +28,9 @@ class PhotoQueueService {
   final PhotoApi _api;
   final List<int> _backoffDelays;
 
+  /// Keeps track of active upload submission IDs to prevent concurrent drainQueue operations on the same outbox batch.
+  final Set<String> _activeUploads = <String>{};
+
   /// Injectable file-existence check — defaults to `File(path).existsSync()`.
   /// Exposed for testing without touching the real filesystem.
   final bool Function(String path) fileExists;
@@ -47,78 +50,87 @@ class PhotoQueueService {
 
   /// Uploads all pending photos for [submissionId] in FIFO order.
   Future<DrainResult> drainQueue(String submissionId) async {
-    final photos = await _outbox.getPhotosForSubmission(submissionId);
-
-    // Filter to only 'pending' photos — skip already uploaded/errored/exhausted.
-    final pending = photos.where((p) => p.syncStatus == 'pending').toList();
-
-    if (pending.isEmpty) return const DrainSuccess();
-
-    // Rule 1.1 & 1.2: Jitter delay occurs ONCE before the loop — NOT per-photo.
-    // Breaks up synchronized reconnect stampedes (e.g. 10 auditors returning to office Wi-Fi).
-    final jitterSecs = _random.nextInt(16); // 0 to 15 inclusive
-    if (jitterSecs > 0) {
-      await Future<void>.delayed(Duration(seconds: jitterSecs));
+    if (!_activeUploads.add(submissionId)) {
+      // Already actively uploading this submission. Avoid overlapping runs.
+      return const DrainSuccess();
     }
 
-    for (final photo in pending) {
-      // ── Deterministic failure: missing local file ──
-      // Rule 3: Missing files are FATAL — bypass backoff entirely.
-      if (!fileExists(photo.localPath)) {
-        await _outbox.updatePhotoSyncStatus(
-          photo.id,
-          'error',
-          error: 'local_file_missing',
-          // CRITICAL: retryCount NOT incremented — this is deterministic, not retriable.
-        );
-        // CONTINUE — a missing temp file is unrecoverable, do not block others.
-        continue;
+    try {
+      final photos = await _outbox.getPhotosForSubmission(submissionId);
+
+      // Filter to only 'pending' photos — skip already uploaded/errored/exhausted.
+      final pending = photos.where((p) => p.syncStatus == 'pending').toList();
+
+      if (pending.isEmpty) return const DrainSuccess();
+
+      // Rule 1.1 & 1.2: Jitter delay occurs ONCE before the loop — NOT per-photo.
+      // Breaks up synchronized reconnect stampedes (e.g. 10 auditors returning to office Wi-Fi).
+      final jitterSecs = _random.nextInt(16); // 0 to 15 inclusive
+      if (jitterSecs > 0) {
+        await Future<void>.delayed(Duration(seconds: jitterSecs));
       }
 
-      // ── Retriable failure: network crash ──
-      try {
-        await _api.uploadPhoto(
-          submissionId,
-          photo.localPath,
-          answerId: photo.answerId,
-        );
-        await _outbox.updatePhotoSyncStatus(photo.id, 'uploaded');
-      } on Exception catch (e) {
-        // Rule 1.3: If server returned 429 with Retry-After header (ConcurrencyLimiter overload),
-        // respect the server's wait time instead of writing a backoff entry to SQLite.
-        // The SyncEngine will re-trigger drainQueue after the connection recovers.
-        final retryAfterSecs = _extractRetryAfter(e);
-        if (retryAfterSecs != null) {
-          return DrainRetryScheduled(Duration(seconds: retryAfterSecs));
+      for (final photo in pending) {
+        // ── Deterministic failure: missing local file ──
+        // Rule 3: Missing files are FATAL — bypass backoff entirely.
+        if (!fileExists(photo.localPath)) {
+          await _outbox.updatePhotoSyncStatus(
+            photo.id,
+            'error',
+            error: 'local_file_missing',
+            // CRITICAL: retryCount NOT incremented — this is deterministic, not retriable.
+          );
+          // CONTINUE — a missing temp file is unrecoverable, do not block others.
+          continue;
         }
 
-        // Apply SQLite-backed exponential backoff (Pillar D).
-        final currentRetries = photo.retryCount;
-        if (currentRetries < _backoffDelays.length) {
-          final delaySecs = _backoffDelays[currentRetries];
-          final nextRetry = DateTime.now().toUtc().add(
-            Duration(seconds: delaySecs),
+        // ── Retriable failure: network crash ──
+        try {
+          await _api.uploadPhoto(
+            submissionId,
+            photo.localPath,
+            answerId: photo.answerId,
           );
-          await _outbox.updatePhotoSyncStatus(
-            photo.id,
-            'pending',
-            retryCount: currentRetries + 1,
-            nextRetryAt: nextRetry,
-            error: e.toString(),
-          );
-        } else {
-          await _outbox.updatePhotoSyncStatus(
-            photo.id,
-            'exhausted',
-            error: 'Max retries exceeded',
-          );
+          await _outbox.updatePhotoSyncStatus(photo.id, 'uploaded');
+        } on Exception catch (e) {
+          // Rule 1.3: If server returned 429 with Retry-After header (ConcurrencyLimiter overload),
+          // respect the server's wait time instead of writing a backoff entry to SQLite.
+          // The SyncEngine will re-trigger drainQueue after the connection recovers.
+          final retryAfterSecs = _extractRetryAfter(e);
+          if (retryAfterSecs != null) {
+            return DrainRetryScheduled(Duration(seconds: retryAfterSecs));
+          }
+
+          // Apply SQLite-backed exponential backoff (Pillar D).
+          final currentRetries = photo.retryCount;
+          if (currentRetries < _backoffDelays.length) {
+            final delaySecs = _backoffDelays[currentRetries];
+            final nextRetry = DateTime.now().toUtc().add(
+              Duration(seconds: delaySecs),
+            );
+            await _outbox.updatePhotoSyncStatus(
+              photo.id,
+              'pending',
+              retryCount: currentRetries + 1,
+              nextRetryAt: nextRetry,
+              error: e.toString(),
+            );
+          } else {
+            await _outbox.updatePhotoSyncStatus(
+              photo.id,
+              'exhausted',
+              error: 'Max retries exceeded',
+            );
+          }
+          // BLOCK — network failure is retriable; pause remaining batch.
+          return const DrainFailure();
         }
-        // BLOCK — network failure is retriable; pause remaining batch.
-        return const DrainFailure();
       }
+
+      return const DrainSuccess();
+    } finally {
+      _activeUploads.remove(submissionId);
     }
-
-    return const DrainSuccess();
   }
 
   /// Extracts the [Retry-After] seconds value from a [DioException] response header.

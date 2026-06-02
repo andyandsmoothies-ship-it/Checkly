@@ -11,6 +11,8 @@ import '../../../_shared/widgets/section_header.dart';
 import '../../dashboard/manager/dashboard_manager.dart';
 import '../manager/admin_dashboard_manager.dart';
 import '../../../_shared/widgets/primitives/stroke_card.dart';
+import 'widgets/admin_menu_item.dart';
+import 'widgets/kpi_card.dart';
 
 final _di = GetIt.instance;
 
@@ -125,7 +127,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       mainAxisSpacing: 12,
                       childAspectRatio: 1.55,
                       children: [
-                        _KpiCard(
+                        KpiCard(
                           icon: Icons.people,
                           label: 'USERS',
                           value: isLoading
@@ -135,7 +137,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           backgroundColor: const Color(0xFFDDF4FF),
                           borderColor: AppColors.blueJay,
                         ),
-                        _KpiCard(
+                        KpiCard(
                           icon: Icons.store,
                           label: 'STORES',
                           value: isLoading
@@ -145,7 +147,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           backgroundColor: AppColors.seaSponge,
                           borderColor: AppColors.turtle,
                         ),
-                        _KpiCard(
+                        KpiCard(
                           icon: Icons.description,
                           label: 'TEMPLATES',
                           value: isLoading
@@ -155,7 +157,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           backgroundColor: const Color(0xFFFBE4FF),
                           borderColor: AppColors.starfish,
                         ),
-                        _KpiCard(
+                        KpiCard(
                           icon: Icons.hourglass_empty,
                           label: 'OPEN PLANS',
                           value: isLoading
@@ -210,10 +212,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       indent: 64,
       color: theme.colorScheme.outlineVariant,
     );
-    final gated = <({String? cap, _MenuItem item})>[
+    final gated = <({String? cap, AdminMenuItem item})>[
       (
         cap: AppCapabilities.usersManage,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.people,
           title: 'User Management',
           subtitle: 'Manage auditors & managers',
@@ -225,7 +227,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: AppCapabilities.storesWrite,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.store,
           title: 'Store Management',
           subtitle: 'Manage store locations',
@@ -237,7 +239,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: AppCapabilities.adminManageRoles,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.manage_accounts,
           title: 'Role Management',
           subtitle: 'Manage role capabilities',
@@ -249,7 +251,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: null,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.group_work_outlined,
           title: 'User Groups',
           subtitle: 'Manage user group assignments',
@@ -274,10 +276,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       indent: 64,
       color: theme.colorScheme.outlineVariant,
     );
-    final gated = <({String? cap, _MenuItem item})>[
+    final gated = <({String? cap, AdminMenuItem item})>[
       (
         cap: null,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.assignment,
           title: 'Audit Approvals',
           subtitle: 'Review submitted audits',
@@ -289,7 +291,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: null,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.event_note,
           title: 'Schedule Audit',
           subtitle: 'Delegate audits to auditors',
@@ -301,7 +303,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: null,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.bar_chart,
           title: 'Analytics',
           subtitle: 'View performance data',
@@ -313,7 +315,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: AppCapabilities.analyticsBod,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.analytics_outlined,
           title: 'BOD Analytics',
           subtitle: 'View executive performance data',
@@ -325,7 +327,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: null,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.warning_amber,
           title: 'System Logs',
           subtitle: 'Monitor application events',
@@ -337,7 +339,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       ),
       (
         cap: AppCapabilities.globalRisksManage,
-        item: _MenuItem(
+        item: AdminMenuItem(
           icon: Icons.shield_outlined,
           title: 'Global Risk Management',
           subtitle: 'Configure risk categories for audits',
@@ -353,7 +355,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   /// Filters gated items by capability and interleaves dividers.
   List<Widget> _interleave(
-    List<({String? cap, _MenuItem item})> gated,
+    List<({String? cap, AdminMenuItem item})> gated,
     Divider divider,
     PolicyManager pm,
   ) {
@@ -367,127 +369,5 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       if (i < visible.length - 1) widgets.add(divider);
     }
     return widgets;
-  }
-}
-
-/// A premium, distinct card representing a single boardroom KPI metric.
-class _KpiCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color iconColor;
-  final Color backgroundColor;
-  final Color borderColor;
-
-  const _KpiCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.iconColor,
-    required this.backgroundColor,
-    required this.borderColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return StrokeCard(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: borderColor, width: 2),
-                ),
-                child: Icon(icon, color: iconColor, size: 18),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-                color: AppColors.eel,
-                height: 1.0,
-              ),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: theme.colorScheme.onSurfaceVariant,
-              letterSpacing: 0.6,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Styled admin dashboard action menu item.
-class _MenuItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-  final Color iconColor;
-  final Color backgroundColor;
-  final Color borderColor;
-
-  const _MenuItem({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    required this.iconColor,
-    required this.backgroundColor,
-    required this.borderColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: borderColor, width: 2),
-        ),
-        child: Icon(icon, color: iconColor, size: 20),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-      ),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 13)),
-      trailing: Icon(
-        Icons.chevron_right,
-        color: theme.colorScheme.onSurfaceVariant,
-      ),
-      onTap: onTap,
-    );
   }
 }

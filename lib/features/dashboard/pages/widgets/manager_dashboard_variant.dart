@@ -52,7 +52,7 @@ class ManagerDashboardVariant extends StatelessWidget {
             const ActionRequiredWidget(),
 
           // ── Hero: Action Required Banner ──
-          if (state.overdueActionPlans > 0)
+          if (state.overdueActionPlans > 0) ...[
             HeroCard(
               icon: Icons.warning_amber_rounded,
               title:
@@ -62,8 +62,8 @@ class ManagerDashboardVariant extends StatelessWidget {
               iconColor: AppColors.destructive,
               onTap: () => context.go('/plans?sort=urgent'),
             ),
-
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
+          ],
 
           // ── Compact Status Panel ──
           CompactStatusPanel(

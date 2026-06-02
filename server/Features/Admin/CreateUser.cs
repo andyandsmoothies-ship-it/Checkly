@@ -160,6 +160,23 @@ public static class CreateUser
                 db.ProfileStoreAssignments.AddRange(newAssignments);
             }
 
+            // Log the admin action
+            var callerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            db.SystemLogs.Add(new SystemLog
+            {
+                Id = Guid.NewGuid(),
+                UserId = callerId,
+                Action = "create_user",
+                Category = "admin",
+                EntityType = "user",
+                EntityId = appUser.Id,
+                Message = $"Created user {profile.FullName} ({profile.Email}) with role {request.Role}",
+                Path = "/api/admin/users",
+                Level = "info",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UserEmail = user.FindFirstValue(ClaimTypes.Email)
+            });
+
             await db.SaveChangesAsync(ct);
         }
         catch

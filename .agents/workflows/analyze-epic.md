@@ -84,13 +84,19 @@ Workflow: /analyze-epic | Track: C
 
 - **Resilience Skills**: Load `dotnet-resilience` or concurrency skills to review risks.
 
+- **First Principles Gate**: Before finalizing the design, answer the 4 First Principles questions to prevent architectural flaws:
+  1. *Physics & Limit*: What is the ultimate ceiling/scale limit (e.g. TPS, DB locks, memory) and at what exact scale will this implementation fail?
+  2. *Simplicity*: How can this design be implemented with 50% fewer files/classes/lines of code, and what bloat/complexity is being introduced?
+  3. *Blast Radius*: If this component fails (e.g., deadlocks, timeout, DB down), what other systems are impacted and how does it fail-gracefully?
+  4. *Observability*: What metric, log, or telemetry proves this feature is healthy, and what is the exact alert condition for failure?
+
 - **Review Personas**: Grade the plan from 3 points of view (DB Architect, Security Auditor, Junior Dev) out of 10. If any score < 7, the plan fails.
 
 - **Check Rules**: Verify architecture complies with strict project rules. Fix plan if it violates any rules.
 
 - **Fix Flaws**: Mitigate low scores/risks or reject the plan entirely.
 
-- **@@SCAN**: Print checklist in response: (1) 3 points of view reviewed? (2) Solutions clear? (3) Strict rules followed?
+- **@@SCAN**: Print checklist in response: (1) 3 points of view reviewed? (2) First Principles Gate answered? (3) Solutions clear? (4) Strict rules followed?
 
 ## Step 4: Create Plan
 
@@ -136,27 +142,29 @@ Workflow: /analyze-epic | Track: C
 
 > 3. `## Executive Summary`
 
-> 3. `## Decision Matrix`
+> 4. `## First Principles Gate`: Explicit answers to the 4 First Principles questions (Physics & Limit, Simplicity, Blast Radius, Observability).
 
-> 4. `## Risk Assessment`
+> 5. `## Decision Matrix`
 
-> 5. `## Visual & Functional Context`: (Mapped UI Screens, Use Cases, and explicit Truncation/Overflow Routing tables for lists)
+> 6. `## Risk Assessment`
 
-> 6. `## System Context`: (Offline/Online, RBAC, API Contracts)
+> 7. `## Visual & Functional Context`: (Mapped UI Screens, Use Cases, and explicit Truncation/Overflow Routing tables for lists)
 
-> 7. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan)
+> 8. `## System Context`: (Offline/Online, RBAC, API Contracts)
 
-> 8. `## Data Context`: (Database Migrations, Schema)
+> 9. `## Lifecycle Context`: (Edge cases, Error states, Rollback Plan)
 
-> 9. `## Architecture Flow`: (Clear text summary of how data moves)
+> 10. `## Data Context`: (Database Migrations, Schema)
 
-> 10. `## Risk Review & Security`
+> 11. `## Architecture Flow`: (Clear text summary of how data moves)
 
-> 11. `## Logs & Audits`
+> 12. `## Risk Review & Security`
 
-> 13. `## Testing Expectations`
+> 13. `## Logs & Audits`
 
-> 14. `<command_logs>`: A list of terminal commands you ran.
+> 14. `## Testing Expectations`
+
+> 15. `<command_logs>`: A list of terminal commands you ran.
 
 >
 

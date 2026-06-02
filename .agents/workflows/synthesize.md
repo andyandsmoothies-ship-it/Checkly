@@ -34,13 +34,20 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 
 ## Step 3: The Pugh Decision Matrix
 
+- [ ] **First Principles Evaluation**: Grade all options against the 4 First Principles questions:
+  1. *Physics & Limit*: What is the ultimate ceiling/scale limit (e.g. TPS, DB locks, memory) and at what exact scale will this implementation fail?
+  2. *Simplicity*: How can this design be implemented with 50% fewer files/classes/lines of code, and what bloat/complexity is being introduced?
+  3. *Blast Radius*: If this component fails (e.g., deadlocks, timeout, DB down), what other systems are impacted and how does it fail-gracefully?
+  4. *Observability*: What metric, log, or telemetry proves this feature is healthy, and what is the exact alert condition for failure?
+  You MUST integrate these questions as critical rows/criteria in the Pugh Decision Matrix to mathematically score each option against them.
+
 - [ ] **Evaluate NFRs**: Create a Markdown table scoring each option against the project's strict Non-Functional Requirements (e.g., Offline Sync Capability, Main Thread Performance, Database Load, Blast Radius).
 
 - [ ] **Origin Idea Alignment Gate**: You MUST include "Origin Idea Alignment" as the highest-weight row in the matrix. If a technically brilliant option does not solve the user's actual starting idea, it must be heavily penalized.
 
 - [ ] **Scoring System**: Choose one option as the Baseline (`0`). Score competing options as Better (`+1`) or Worse (`-1`) relative to the baseline. Tabulate the final score.
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) Matrix strictly tabulated? (2) Baseline declared? (3) Final mathematical winner identified?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) First Principles Evaluated? (2) Matrix strictly tabulated? (3) Baseline declared? (4) Final mathematical winner identified?
 
 ## Step 4: Architectural Decision Record (ADR) Generation
 
@@ -52,19 +59,21 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 
     2. `[ORIGIN_IDEA]`: The immutable core business goal, preserved at the top.
 
-    2. `<latent_space_scratchpad>` for internal debate.
+    3. `<latent_space_scratchpad>` for internal debate.
 
-    3. The normalized summary of options.
+    4. The normalized summary of options.
 
-    4. The Red Team attack vectors.
+    5. The Red Team attack vectors.
 
-    5. The Pugh Decision Matrix.
+    6. `## First Principles Gate`: Detailed answers to the 4 First Principles questions for each option.
 
-    6. The Final Verdict (The mathematical winner).
+    7. The Pugh Decision Matrix.
 
-    6. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact).
+    8. The Final Verdict (The mathematical winner).
 
-    7. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Strict Constraints (critical context the next Agent must not ignore), (3) Execution Slices if applicable, (4) **Requirements Alignment Check**: If the winning technical architecture alters the user flow or business logic previously defined in a `requirements.md` file, you MUST explicitly inform the user that the Requirements document needs to be updated. (5) **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do), (6) The exact next workflow command, which MUST explicitly reference `{Absolute_Path_to_decision_record.md}` instead of pasting contents.
+    9. **Executive Business Summary**: A plain-English translation for the Product Owner explaining *what this means in real life* (e.g., business benefits, operational tradeoffs, maintenance costs, and UX impact).
+
+    10. **Handoff Block Suffix:** You MUST append a `## Handoff Block` at the absolute EOF containing: (1) Final Verdict, (2) Strict Constraints (critical context the next Agent must not ignore), (3) Execution Slices if applicable, (4) **Requirements Alignment Check**: If the winning technical architecture alters the user flow or business logic previously defined in a `requirements.md` file, you MUST explicitly inform the user that the Requirements document needs to be updated. (5) **AI Agent Mission Brief** (A short, concise 1-2 sentence TL;DR so the next AI agent instantly knows exactly what to do), (6) The exact next workflow command, which MUST explicitly reference `{Absolute_Path_to_decision_record.md}` instead of pasting contents.
 
 - [ ] **Verification**:
 

@@ -16,10 +16,10 @@ Workflow: /audit-arch | Track: C
 ## Input Lineage
 - **Source Input**: `[Absolute_Path_to_Source_File_or_Input]`
 ## Steps
-- [ ] Step 2: scope & Threat Modeling
-- [ ] Step 3: The Brutal Interrogation
-- [ ] Step 4: The Verdict Payload
-- [ ] Step 5: Deliverable Handoff
+- [ ] Step 1: Scope & Threat Modeling
+- [ ] Step 2: The Brutal Interrogation & First Principles Gate
+- [ ] Step 3: The Verdict Payload
+- [ ] Step 4: Deliverable Handoff
 ## Artifact Inventory
 | Status | File Path | Type |
 | [NEW]  | docs/reports/diagnostics/audit_arch_report_[YYYYMMDD_HHMMSS].md | Report |
@@ -40,9 +40,15 @@ You must subject the proposed architecture to these 4 hostile critics. If it sur
 - [ ] **Contextual Illusion (IDOR)**: Does the authorization check just verify a string (e.g., `can_write`), but forget to verify the *target* ID (e.g., `Resource == User.Resource`)? Is it relying on a generic role check to do a job Attribute-Based Access Control (ABAC) should be doing?
 ### Critic 5: Cognitive Debt (The Easy Button)
 - [ ] **Hasty Abstractions**: Did the AI generate an overly complex Design Pattern (e.g., massive AbstractFactories, Repositories) when a simple JSON dictionary, flat struct, or static function would suffice? Flag and demand deletion of fake-smart architectural bloat.
-- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Execute the interrogation. Record exact failure scenarios for each critic.
+### Critic 6: First Principles Gate
+- [ ] **First Principles Interrogation**: Before formulating a verdict, answer the 4 First Principles questions to identify deeper system-level constraints and design flaws:
+  1. *Physics & Limit*: What is the ultimate ceiling/scale limit (e.g. TPS, DB locks, memory) and at what exact scale will this implementation fail?
+  2. *Simplicity*: How can this design be implemented with 50% fewer files/classes/lines of code, and what bloat/complexity is being introduced?
+  3. *Blast Radius*: If this component fails (e.g., deadlocks, timeout, DB down), what other systems are impacted and how does it fail-gracefully?
+  4. *Observability*: What metric, log, or telemetry proves this feature is healthy, and what is the exact alert condition for failure?
+- **@@SCAN**: You MUST print this checklist directly into your chat response before proceeding. Execute the interrogation. Record exact failure scenarios for each critic and answers to the First Principles Gate.
 ## Step 3: The Verdict Payload
-- **Artifact Gen**: Create `audit_arch_report_[YYYYMMDD_HHMMSS].md` in `docs/reports/diagnostics/` folder. Format as a stark, unappeasing teardown.
+- **Artifact Gen**: Create `audit_arch_report_[YYYYMMDD_HHMMSS].md` in `docs/reports/diagnostics/` folder. Format as a stark, unappeasing teardown. Ensure it contains the **First Principles Gate** answers explicitly.
 - **Severity Matrix**: `🔴 Fatal` (Bricks the system / Data Corruption / DDoS) | `🟡 Brittle` (Fake-Smart. Will scale poorly or fail silently) | `🟢 Resilient` (Actually viable).
 - **Actionable Fix & Trade-offs**: MANDATORY: Do not just complain. Provide the exact system design fix (e.g., "Implement Exponential Backoff Retry").
   - **Complexity**: For each fix or refactor, add a **Complexity** bullet point (Low, Medium, or High) with a short, concise, plain-English explanation of EXACTLY why it is rated that way.

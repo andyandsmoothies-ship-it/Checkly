@@ -33,7 +33,7 @@ Workflow: /catch-flops | Track: C
 - [ ] Step 3: Calculation & Logical Border Sweeps
 - [ ] Step 4: Offline Sync & State Checks
 - [ ] Step 5: Visual, Layout & Animation Checks
-- [ ] Step 6: Create Verdict & Action Plan
+- [ ] Step 6: First Principles Gate, Verdict & Action Plan
 ```
 - [ ] **Identify the Target**: Locate the absolute path of the epic plan, feature plan, or active code files to be audited.
 
@@ -75,7 +75,12 @@ Verify layout scaling, animation disposes, and accessibility tags in Flutter:
 ---
 
 ## Step 6: Create Verdict & Action Plan
-- [ ] **Generate Report**: Save `audit_failure_report_[YYYYMMDD_HHMMSS].md` inside the absolute workspace folder `docs/reports/diagnostics/[topic]/`.
+- [ ] **First Principles Gate**: Answer the 4 First Principles questions to identify deeper system-level constraints and failure modes:
+  1. *Physics & Limit*: What is the ultimate ceiling/scale limit (e.g. TPS, DB locks, memory) and at what exact scale will this implementation fail?
+  2. *Simplicity*: How can this design be implemented with 50% fewer files/classes/lines of code, and what bloat/complexity is being introduced?
+  3. *Blast Radius*: If this component fails (e.g., deadlocks, timeout, DB down), what other systems are impacted and how does it fail-gracefully?
+  4. *Observability*: What metric, log, or telemetry proves this feature is healthy, and what is the exact alert condition for failure?
+- [ ] **Generate Report**: Save `audit_failure_report_[YYYYMMDD_HHMMSS].md` inside the absolute workspace folder `docs/reports/diagnostics/[topic]/`. Ensure it includes the **First Principles Gate** answers explicitly.
 - [ ] **Write the Failure Scenarios**: Explicitly list the discovered flops, categorizing them by severity:
   - `🔴 Critical`: Causes system crash, database error, or data corruption.
   - `🟡 Warning`: Causes visual/layout bugs, test hanging, or incorrect calculations.

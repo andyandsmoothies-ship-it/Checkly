@@ -149,14 +149,26 @@ class SyncEngine {
         return;
       }
 
-      await module.executePull();
+      try {
+        await module.executePull();
+      } catch (e, stackTrace) {
+        // ignore: avoid_print
+        debugPrint('[SyncEngine] ${module.runtimeType} pull error: $e\n$stackTrace');
+        throw Exception('Sync module failed during executePull: $e');
+      }
 
       if (!_connectivity.isOnline) {
         _state = SyncState.offline;
         return;
       }
 
-      await module.executePush();
+      try {
+        await module.executePush();
+      } catch (e, stackTrace) {
+        // ignore: avoid_print
+        debugPrint('[SyncEngine] ${module.runtimeType} push error: $e\n$stackTrace');
+        throw Exception('Sync module failed during executePush: $e');
+      }
     }
   }
 

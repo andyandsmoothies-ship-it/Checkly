@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
@@ -285,4 +288,61 @@ void main() {
     expect(result, isA<DrainRetryScheduled>());
     expect((result as DrainRetryScheduled).delay.inSeconds, 30);
   });
+
+  test('TC-F1-02: ConcurrentCalls_ForSameSubmissionId_PreventsOverlappingRuns', () async {
+    final photo = PendingPhoto(
+      id: 'p1',
+      pendingSubmissionId: 'sub-1',
+      localPath: '/tmp/1.jpg',
+      createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      syncStatus: 'pending',
+      retryCount: 0,
+    );
+
+    // Call 1 mock setup: wait on a completer inside getPhotosForSubmission
+    final completer = Completer<List<PendingPhoto>>();
+    when(
+      () => mockOutboxDao.getPhotosForSubmission('sub-1'),
+    ).thenAnswer((_) => completer.future);
+
+    final mockRandom = MockRandom();
+    when(() => mockRandom.nextInt(any())).thenReturn(0);
+
+    final service = PhotoQueueService(
+      mockOutboxDao,
+      mockApi,
+      fileExists: (_) => true,
+      random: mockRandom,
+    );
+
+    // Act 1: start the first drain call (will await the completer)
+    final future1 = service.drainQueue('sub-1');
+
+    // Act 2: synchronously trigger the second drain call (same ID)
+    final result2 = await service.drainQueue('sub-1');
+
+    // Assert: Call 2 should instantly return DrainSuccess
+    expect(result2, isA<DrainSuccess>());
+
+    // Complete Call 1 mock
+    completer.complete([photo]);
+
+    when(
+      () => mockApi.uploadPhoto(any(), any(), answerId: any(named: 'answerId')),
+    ).thenAnswer((_) async => 'url');
+    when(
+      () => mockOutboxDao.updatePhotoSyncStatus('p1', 'uploaded'),
+    ).thenAnswer((_) async {});
+
+    final result1 = await future1;
+
+    // Assert: Call 1 completes normally
+    expect(result1, isA<DrainSuccess>());
+
+    // Verify DB was queried only once
+    verify(() => mockOutboxDao.getPhotosForSubmission('sub-1')).called(1);
+  });
 }
+
+class MockRandom extends Mock implements Random {}
+

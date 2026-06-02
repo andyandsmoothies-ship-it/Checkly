@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Checkly.Api.Common;
 using Checkly.Api.Common.Persistence;
 using Checkly.Api.Common.Persistence.Entities;
 using Checkly.Api.Common.Services;
@@ -9,9 +10,7 @@ namespace Checkly.Api.Features.ActionPlans;
 /// <summary>
 /// POST /api/action-plans/{id}/comments — add a comment to an action plan.
 /// 
-/// Access rule: caller must be the plan's assigned StoreManagerId OR an admin.
-/// (SubmissionAccessGuard's profile-store lookup is NOT used here because the SM user's
-/// Profile.StoreId is null by default; direct plan ownership check is the correct gate.)
+/// Access rule: ResourceAccessGuard (admins, assigned store managers, linked auditors, and assigned area managers are allowed).
 ///
 /// Notification: if the plan is linked to a submission, inserts a Notification of type
 /// "action_plan_comment_added" targeting the submission's AuditorId.
@@ -31,15 +30,24 @@ public static class AddComment
         if (plan is null)
             return TypedResults.NotFound();
 
-        // Access gate: caller must be the plan's StoreManager or an admin.
-        if (!Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var callerId))
+        // Resolve AuditorId from linked submission (for auditor-role scoping).
+        Guid? linkedAuditorId = null;
+        if (plan.SubmissionId.HasValue)
+        {
+            linkedAuditorId = await db.Submissions
+                .AsNoTracking()
+                .Where(s => s.Id == plan.SubmissionId.Value)
+                .Select(s => s.AuditorId)
+                .FirstOrDefaultAsync(ct);
+        }
+
+        if (!await ResourceAccessGuard.CanAccessAsync(
+                user, new ResourceScope(StoreId: plan.StoreId, OwnerId: linkedAuditorId), db, ct))
+        {
             return TypedResults.Forbid();
+        }
 
-        var role = user.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
-        var isAdmin = role == "admin";
-        var isOwner = plan.StoreManagerId == callerId;
-
-        if (!isAdmin && !isOwner)
+        if (!Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var callerId))
             return TypedResults.Forbid();
 
         // Build comment DTO — no DB table needed; comment is the payload, not persisted separately.

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../_shared/theme/app_colors.dart';
-import '../../../_shared/widgets/primitives/stroke_card.dart';
-import '../../../_shared/widgets/primitives/universal_list_card.dart';
-import '../../../_shared/widgets/primitives/pill_chip.dart';
 import '../manager/area_bod_manager.dart';
+import 'regional_benchmarking_card.dart';
+import 'sla_overdue_action_plans_card.dart';
+import 'store_detail_skeleton.dart';
+import 'category_performance_section.dart';
+import 'recent_audits_section.dart';
 
 /// Modal bottom sheet displaying detailed historical audit metrics and weaknesses for a selected store in the Area Manager view.
 class AreaBodStoreDetailSheet extends StatefulWidget {
@@ -98,11 +100,11 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                 ),
                 const SizedBox(height: 16),
                 if (isLoading) ...[
-                  const _SkeletonItem(),
+                  StoreDetailSkeleton(backgroundColor: bgCol),
                   const SizedBox(height: 8),
-                  const _SkeletonItem(),
+                  StoreDetailSkeleton(backgroundColor: bgCol),
                   const SizedBox(height: 8),
-                  const _SkeletonItem(),
+                  StoreDetailSkeleton(backgroundColor: bgCol),
                 ] else if (error != null) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 32),
@@ -135,285 +137,34 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (detail.quartileLabel != null ||
-                              detail.regionalAvgScore != null) ...[
-                            StrokeCard(
-                              color: theme.colorScheme.surface,
-                              borderColor: AppColors.swan,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.analytics_outlined,
-                                        color: AppColors.macaw,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          'Regional Benchmarking',
-                                          style: theme.textTheme.bodyMedium
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.w900,
-                                                color: textCol,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      if (detail.quartileLabel != null)
-                                        PillChip(
-                                          label: detail.quartileLabel!,
-                                          type:
-                                              detail.quartileLabel!.contains(
-                                                    'Top 25%',
-                                                  ) ||
-                                                  detail.quartileLabel!
-                                                      .contains('Top 50%')
-                                              ? PillChipType.green
-                                              : PillChipType.yellow,
-                                        ),
-                                      if (detail.regionalAvgScore != null)
-                                        Text(
-                                          'Regional Avg: ${detail.regionalAvgScore!.toStringAsFixed(1)}%',
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: subTextCol,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                        ),
-                                    ],
-                                  ),
-                                  if (detail.recentAudits.isNotEmpty &&
-                                      detail.regionalAvgScore != null) ...[
-                                    const SizedBox(height: 8),
-                                    Builder(
-                                      builder: (context) {
-                                        final storeAvg =
-                                            detail.recentAudits
-                                                .map((e) => e.score)
-                                                .reduce((a, b) => a + b) /
-                                            detail.recentAudits.length;
-                                        final diff =
-                                            storeAvg - detail.regionalAvgScore!;
-                                        final isAbove = diff >= 0;
-                                        return Row(
-                                          children: [
-                                            Icon(
-                                              isAbove
-                                                  ? Icons.trending_up
-                                                  : Icons.trending_down,
-                                              color: isAbove
-                                                  ? AppColors.macaw
-                                                  : AppColors.cardinal,
-                                              size: 16,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              isAbove
-                                                  ? '${diff.toStringAsFixed(1)}% above regional average'
-                                                  : '${diff.abs().toStringAsFixed(1)}% below regional average',
-                                              style: theme.textTheme.bodySmall
-                                                  ?.copyWith(
-                                                    color: isAbove
-                                                        ? AppColors.macaw
-                                                        : AppColors.cardinal,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                          if (detail.slaOverdueBuckets != null &&
-                              detail.slaOverdueBuckets!.isNotEmpty) ...[
-                            StrokeCard(
-                              color: theme.colorScheme.surface,
-                              borderColor: AppColors.swan,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.assignment_late_outlined,
-                                        color: AppColors.cardinal,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          'SLA Overdue Action Plans',
-                                          style: theme.textTheme.bodyMedium
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.w900,
-                                                color: textCol,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: detail.slaOverdueBuckets!.map((
-                                      segment,
-                                    ) {
-                                      Color countColor;
-                                      if (segment.bucket.contains('31+')) {
-                                        countColor = AppColors.cardinal;
-                                      } else if (segment.bucket.contains(
-                                        '8-30',
-                                      )) {
-                                        countColor = AppColors.fox;
-                                      } else {
-                                        countColor = AppColors.macaw;
-                                      }
-                                      return Expanded(
-                                        child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 8,
-                                            horizontal: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.walkingFish
-                                                .withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                '${segment.count}',
-                                                style: theme
-                                                    .textTheme
-                                                    .titleMedium
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w900,
-                                                      color: countColor,
-                                                    ),
-                                              ),
-                                              const SizedBox(height: 2),
-                                              Text(
-                                                segment.bucket,
-                                                style: theme.textTheme.bodySmall
-                                                    ?.copyWith(
-                                                      color: subTextCol,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                          if (detail.categoryBreakdown.isNotEmpty) ...[
-                            Text(
-                              'Category Performance',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                color: textCol,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ...detail.categoryBreakdown.map((cat) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: UniversalListCard(
-                                  title: cat.categoryName,
-                                  subtitle: 'Average Section Score',
-                                  leading: Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      color: isLight
-                                          ? AppColors.walkingFish
-                                          : AppColors.walkingFish.withValues(
-                                              alpha: 0.2,
-                                            ),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const Icon(
-                                      Icons.category,
-                                      color: AppColors.cardinal,
-                                    ),
-                                  ),
-                                  badges: [
-                                    PillChip(
-                                      label:
-                                          '${cat.avgScore.toStringAsFixed(1)}%',
-                                      type: PillChipType.blue,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                            const SizedBox(height: 16),
-                          ],
-                          Text(
-                            'Recent Audits',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              color: textCol,
-                            ),
+                          RegionalBenchmarkingCard(
+                            quartileLabel: detail.quartileLabel,
+                            regionalAvgScore: detail.regionalAvgScore,
+                            recentAudits: detail.recentAudits,
+                            textColor: textCol,
+                            subtitleColor: subTextCol,
                           ),
-                          const SizedBox(height: 8),
-                          ...detail.recentAudits.map((audit) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: UniversalListCard(
-                                title: 'Audit by ${audit.auditorName}',
-                                subtitle:
-                                    'Date: ${audit.date.length >= 10 ? audit.date.substring(0, 10) : audit.date}',
-                                leading: Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    color: isLight
-                                        ? AppColors.walkingFish
-                                        : AppColors.walkingFish.withValues(
-                                            alpha: 0.2,
-                                          ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.assignment,
-                                    color: AppColors.cardinal,
-                                  ),
-                                ),
-                                badges: [
-                                  PillChip(
-                                    label: '${audit.score.toStringAsFixed(1)}%',
-                                    type: PillChipType.blue,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
+                          if (detail.quartileLabel != null ||
+                              detail.regionalAvgScore != null)
+                            const SizedBox(height: 16),
+                          SlaOverdueActionPlansCard(
+                            slaOverdueBuckets: detail.slaOverdueBuckets,
+                            textColor: textCol,
+                            subtitleColor: subTextCol,
+                          ),
+                          if (detail.slaOverdueBuckets != null &&
+                              detail.slaOverdueBuckets!.isNotEmpty)
+                            const SizedBox(height: 16),
+                           CategoryPerformanceSection(
+                            categoryBreakdown: detail.categoryBreakdown,
+                            textColor: textCol,
+                            isLight: isLight,
+                          ),
+                          RecentAuditsSection(
+                            recentAudits: detail.recentAudits,
+                            textColor: textCol,
+                            isLight: isLight,
+                          ),
                         ],
                       ),
                     ),
@@ -428,58 +179,3 @@ class _AreaBodStoreDetailSheetState extends State<AreaBodStoreDetailSheet> {
   }
 }
 
-class _SkeletonItem extends StatefulWidget {
-  const _SkeletonItem();
-
-  @override
-  State<_SkeletonItem> createState() => _SkeletonItemState();
-}
-
-class _SkeletonItemState extends State<_SkeletonItem>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (MediaQuery.disableAnimationsOf(context)) {
-      return Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: AppColors.swan.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-      );
-    }
-
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return Opacity(
-          opacity: 0.3 + (_controller.value * 0.4),
-          child: Container(
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.swan.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}

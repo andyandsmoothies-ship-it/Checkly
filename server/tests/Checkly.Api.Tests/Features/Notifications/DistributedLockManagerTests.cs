@@ -240,4 +240,56 @@ public class DistributedLockManagerTests : IClassFixture<TestWebApplicationFacto
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
             lockManager.TryExecuteInLockAsync(db, "Checkly.Test.Gap2", _ => Task.CompletedTask, cts.Token));
     }
+
+    // ── Gap3: Execution Timeout ─────────────────────────────────────────────
+
+    [Fact]
+    public async Task TryExecuteInLock_ExecutionTimeoutReached_ReturnsFalseGracefully()
+    {
+        // Arrange
+        using var scope = _sp.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var lockManager = new DistributedLockManager();
+
+        // Act: Set the timeout to 200 milliseconds, and let the critical section wait for 1 second
+        var result = await lockManager.TryExecuteInLockAsync(
+            db,
+            "Checkly.Test.Gap3",
+            async timeoutToken =>
+            {
+                await Task.Delay(1000, timeoutToken);
+            },
+            CancellationToken.None,
+            TimeSpan.FromMilliseconds(200));
+
+        // Assert: Return false due to timeout rather than throwing
+        Assert.False(result);
+    }
+
+    // ── Gap4: Parent token cancellation mid-run ─────────────────────────────
+
+    [Fact]
+    public async Task TryExecuteInLock_ParentCancellationRequestedDuringRun_ThrowsOperationCanceledException()
+    {
+        // Arrange
+        using var scope = _sp.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var lockManager = new DistributedLockManager();
+        using var cts = new CancellationTokenSource();
+
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+        {
+            await lockManager.TryExecuteInLockAsync(
+                db,
+                "Checkly.Test.Gap4",
+                async _ =>
+                {
+                    cts.Cancel(); // Cancel mid-execution
+                    await Task.Delay(500, cts.Token);
+                },
+                cts.Token,
+                TimeSpan.FromSeconds(5));
+        });
+    }
 }
