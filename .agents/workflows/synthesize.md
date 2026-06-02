@@ -45,9 +45,9 @@ description: Synthesize and rigorously compare multiple research artifacts. Use 
 
 - [ ] **Origin Idea Alignment Gate**: You MUST include "Origin Idea Alignment" as the highest-weight row in the matrix. If a technically brilliant option does not solve the user's actual starting idea, it must be heavily penalized.
 
-- [ ] **Scoring System**: Choose one option as the Baseline (`0`). Score competing options as Better (`+1`) or Worse (`-1`) relative to the baseline. Tabulate the final score.
+- [ ] **Scoring System**: Choose the **Status Quo** (current live codebase / doing nothing) as the baseline (`0`). Score Option A and Option B as Better (`+1`) or Worse (`-1`) relative to the baseline. Tabulate the final score.
 
-> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) First Principles Evaluated? (2) Matrix strictly tabulated? (3) Baseline declared? (4) Final mathematical winner identified?
+> **MANDATORY @@SCAN**: You MUST print this checklist directly into your chat response before proceeding. (1) First Principles Evaluated? (2) Matrix strictly tabulated? (3) Baseline declared as Status Quo? (4) Final mathematical winner identified?
 
 ## Step 4: Architectural Decision Record (ADR) Generation
 
